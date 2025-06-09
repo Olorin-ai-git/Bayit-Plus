@@ -19,7 +19,6 @@ from app.service.error_handling import (
     AuthorizationError,
     ClientException,
 )
-from app.utils.idps_utils import get_app_secret
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +33,8 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
     if settings_for_env.enable_langfuse:
         """Handler for setting up langfuse for tracing"""
         langfuse_handler = CallbackHandler(
-            public_key=get_app_secret(settings_for_env.langfuse_public_key),
-            secret_key=get_app_secret(settings_for_env.langfuse_secret_key),
+            public_key=settings_for_env.langfuse_public_key,
+            secret_key=settings_for_env.langfuse_secret_key,
             host=settings_for_env.langfuse_host,
             tags=[settings_for_env.app_id, env],
         )

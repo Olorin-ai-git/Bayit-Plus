@@ -11,8 +11,7 @@
     - [Initial Setup](#initial-setup)
   - [Pre-requisites for running your Agent](#pre-requisites-for-running-your-agent)
     - [Step 1: Onboard to the following downstream services](#step-1-onboard-to-the-following-downstream-services)
-    - [Step 2: Setup IDPS credentials](#step-2-setup-idps-credentials)
-    - [Step 3: Create or Reuse an Experience ID](#step-3-create-or-reuse-an-experience-id)
+    - [Step 2: Create or Reuse an Experience ID](#step-2-create-or-reuse-an-experience-id)
   - [Running the Server](#running-the-server)
     - [Option 1: Using Command Line](#option-1-using-command-line)
     - [Option 2: Using Docker via the provided script](#option-2-using-docker-via-the-provided-script)
@@ -93,12 +92,7 @@ After running `poetry install` for the first time, [commit your poetry.lock file
 - [LLM Execution Service - LXS](https://devportal.intuit.com/app/dp/resource/5768002816048966459/overview)
   - LXS is the proxy to various LLMs hosted on the GenOS platform. Discover the list of LLMs supported on the [Model Catalog](https://ai-workbench.app.intuit.com/wb/model-discovery) page in AI Workbench
 
-#### Step 2: Setup IDPS credentials
-
-- IDPS is the Intuit service and standard for key management, secret management and data at rest encryption developed by the Security R&D team.
-  - Add your app secret to IDPS following the instructions [here](https://devportal.intuit.com/app/dp/capability/CAP-2297/capabilityDocs/main/docs/agents/idps_onboarding.md)
-
-#### Step 3: Create or Reuse an Experience ID
+#### Step 2: Create or Reuse an Experience ID
 
 - Experience ID is used to track an AI experience end to end. It also enables access to LLMs hosted on the GenOS Platform. Eval, tracing, RAI also depend on Experience ID. Follow the steps below to create a new Experience ID. If you already have one created in the same DevPortal Project, you may reuse that. If you choose to reuse, jump to the [Running the Server](#running-the-server) section.
 
@@ -300,48 +294,6 @@ Learn more about code contributions: [Intuit's InnerSource Guidelines](http://in
 
 ## GAIA Backend
 
-## AWS Authentication in CI/CD
-
-To fix AWS authentication issues in CI/CD environments, we've implemented a mocking strategy in the root-level `conftest.py` file. This approach (Option 1) avoids AWS account mismatch errors by mocking the IDPS client and related authentication methods.
-
-### How It Works
-
-1. The root-level `conftest.py` file mocks:
-
-   - `idps_client.rest_client.RestClient`
-   - `machina_swagger_client.rest.ApiException`
-   - `app.utils.idps_utils.IdpsClientFactory.get_instance`
-   - `idps_client.rest_client.RestClient._get_temp_creds_with_presigned_url`
-
-2. These mocks prevent the AWS account mismatch error by returning mock credentials and secrets instead of attempting to authenticate with AWS.
-
-### CI/CD Configuration
-
-To ensure this solution works in CI/CD pipelines:
-
-1. Make sure the `conftest.py` file is included in your Docker image and copied to the root of the application.
-
-2. In your tox.ini or pytest configuration, add:
-
-   ```
-   --confcutdir=.
-   ```
-
-3. If you need to debug AWS mocking issues in CI, the conftest.py includes error logging that will appear in test output.
-
-### Running Tests Locally
-
-With this solution, you can run tests locally without needing actual AWS credentials:
-
-```bash
-# Run all tests
-python -m pytest
-
-# Run with coverage
-python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=50
-```
-
-The tests should pass with >70% coverage, exceeding the required 50% threshold.
 
 ### Development Setup
 
