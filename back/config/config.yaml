@@ -1,0 +1,90 @@
+system:
+  environment: development
+  log_level: INFO
+  debug_mode: false
+  api_port: 8080
+  
+thresholds:
+  risk_score: 0.6
+  confidence: 0.8
+  
+agents:
+  location:
+    enabled: true
+    cache_timeout: 300
+    max_history_days: 30
+    distance_threshold_km: 500
+    
+  network:
+    enabled: true
+    vpn_risk_threshold: 0.7
+    proxy_risk_threshold: 0.8
+    ip_change_threshold: 5
+    cache_timeout: 300
+    
+  device:
+    enabled: true
+    device_change_threshold: 3
+    browser_change_threshold: 2
+    timezone_check: true
+    cache_timeout: 300
+    
+  behavior:
+    enabled: true
+    login_frequency_threshold: 10
+    session_duration_threshold: 120
+    unusual_hour_threshold: 0.1
+    cache_timeout: 300
+    
+  anomaly:
+    enabled: true
+    baseline_days: 30
+    min_data_points: 10
+    false_positive_threshold: 0.2
+    
+clients:
+  kk_dash:
+    base_url: "http://localhost:8081"
+    timeout: 30
+    max_retries: 3
+    
+  tmx:
+    base_url: "http://localhost:8082"
+    timeout: 30
+    max_retries: 3
+    
+  splunk:
+    host: "localhost"
+    port: 8089
+    username: "admin"
+    password: "changeme"
+    
+  databricks:
+    workspace_url: "http://localhost:8083"
+    token: "your-token-here"
+    
+cache:
+  enabled: true
+  type: "redis"
+  host: "localhost"
+  port: 6379
+  ttl: 3600
+  
+database:
+  host: "localhost"
+  port: 3306
+  database: "fraud_detection"
+  user: "admin"
+  password: "changeme"
+  pool_size: 5
+  
+metrics:
+  enabled: true
+  port: 9090
+  path: "/metrics"
+  
+logging:
+  file: "logs/fraud_detection.log"
+  max_size: 100
+  backup_count: 5
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s" 

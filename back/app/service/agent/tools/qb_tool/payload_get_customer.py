@@ -1,0 +1,4 @@
+payload_get_customer = {
+    "query": "\n  query GetContactById($id: String!) {\n    contacts(or: [{ and: [{ equalsIn: { field: ID, value: [$id] } }] }]) {\n      data {\n        ...contactAttributes\n        ...projectAttributes\n      }\n    }\n  }\n  \n  fragment contactAttributes on Contact {\n    id\n    type\n    fullName\n    displayName\n    level\n    numberOfChildren\n    companyName\n    active\n    companyId\n    currencyType\n    sourceEntityVersion\n    emailDirectory {\n      primary {\n        id\n      }\n    }\n    score\n    \n    ... on Customer {\n      businessDirectoryReferenceId\n    }\n    ... on Vendor {\n      businessDirectoryReferenceId\n    }\n\n  }\n\n  \n  fragment projectAttributes on Project {\n    ... on Project {\n      customerType\n      projectId\n      projectStatus\n    }\n  }\n\n",
+    "variables": {"id": "1"},
+}

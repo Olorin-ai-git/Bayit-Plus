@@ -1,0 +1,28 @@
+{
+  "id": "gaia-webplugin",
+  "hasLayers": true,
+  "manifestVersion": "4",
+  "extensions": {
+    "routes": [
+      {
+        "path": "gaia-webplugin/gaia",
+        "accessLevel": "GUEST",
+        "widget": {
+          "id": "gaia-webplugin/gaia",
+          "appScreen": "shell"
+        }
+      }
+    ]
+  },
+  "widgets": {
+    "gaia-webplugin/gaia": {
+      "1.0.0": {
+        "descriptor": "gaia-webplugin/js/widgets/gaia/widget"
+      }
+    }
+  },
+  "dependencies": {
+    "widgets": ["gaia-webplugin/gaia@1.0.0"]
+  },
+  "extendedProperties": {}
+}

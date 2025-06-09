@@ -1,0 +1,7 @@
+# for more information about Dependabot, refer to this documentation: 'http://in/dependabot'
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"

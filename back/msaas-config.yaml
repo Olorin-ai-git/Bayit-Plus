@@ -1,0 +1,75 @@
+l1: fraudrisk
+l2: cas
+git_org: cas-hri
+#
+
+service_name: gaia
+asset_id: 3825825476777495228
+asset_alias: Intuit.cas.hri.gaia
+code_repo: github.intuit.com/cas-hri/gaia.git
+deploy_repo: github.intuit.com/cas-hri/gaia-deployment.git
+argocd_server: iis.argocd.tools-k8s-prd.a.intuit.com:443
+argocd_project: cas-hri-gaia
+argocd_project_enabled: true
+#
+
+registry: docker.intuit.com
+repo: cas-hri/gaia/service
+## change this to false once ready for PRD
+preprodOnly: false
+## change this to true for enable Code Analysis stage
+SonarQubeAnalysis: false
+## change this to true for stop your pipeline in quality gate error
+SonarQubeEnforce: false
+## change this to true for enabling Jira stories to be transitioned
+enableJiraTransition: false
+## enable this to true once test suite has matured in confidence to help automate deployments
+enableScorecardReadinessCheck: false
+renderManifest: true
+## to bypass the scorecard readiness check's fall back, gitOpsApproval, set this to true
+skipScorecardManualFallback: false
+coberturaReportFile: '**/coverage/coverage.xml'
+environments:
+  qal-usw2-air:
+    cluster: https://eksapi-iis-ppd-usw2-k8s-a0d2c83268f5c8d8.elb.us-west-2.amazonaws.com
+    namespace: cas-hri-gaia-qal
+    argocd_application: cas-hri-gaia-qal-usw2-31214
+    region: usw2
+    meshPolicyId: p-1c7iks85o992
+    cloudRole: k8s-cas-hri-gaia-qal
+    manifest_format: Express
+    iks_type: preprod
+  e2e-usw2-air:
+    cluster: https://eksapi-iis-ppd-usw2-k8s-a0d2c83268f5c8d8.elb.us-west-2.amazonaws.com
+    namespace: cas-hri-gaia-e2e
+    argocd_application: cas-hri-gaia-e2e-usw2-31214
+    region: usw2
+    meshPolicyId: p-ussjvsc47kvq
+    cloudRole: k8s-cas-hri-gaia-e2e
+    manifest_format: Express
+    iks_type: preprod
+  prd-usw2-air:
+    cluster: https://eksapi-iis-prd-usw2-k8s-046db98b744e06e6.elb.us-west-2.amazonaws.com
+    namespace: cas-hri-gaia-prd
+    argocd_application: cas-hri-gaia-prd-usw2-49199
+    region: usw2
+    meshPolicyId: p-687xfeasslv7
+    cloudRole: k8s-cas-hri-gaia-prd
+    manifest_format: Express
+    iks_type: prod
+api:
+  apiName: gaia-api
+  groupId: com.intuit.gaia
+  artifactId: gaia
+  specLocation: api/openapi/openapi.json
+  showApiReference: 'true'
+  convert:
+    skip: 'true'
+  lint:
+    skip: 'false'
+  generateAndPublishClient:
+    skip: 'true'
+    language: java
+  generateAndPublishServer:
+    skip: 'true'
+    language: java

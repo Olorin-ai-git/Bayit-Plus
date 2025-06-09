@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+When I ask you ti fix failing tests, start fixing all failing tests one by one, do not stop for user input until all tests are passing and coverage is at least 85%. do not change the non-test files, change the tests if needed.

@@ -1,0 +1,11 @@
+{
+    "image": "docker.intuit.com/cloud-workspaces/cloud-workspace-images/service/python:latest-debian",
+    "onCreateCommand": "sh -x .devcontainer/init.sh",
+    "postStartCommand": "sh -x .devcontainer/start.sh",
+    "customizations": {
+        "jetbrains": {
+            "backend": "pycharm"
+        }
+    },
+    "forwardPorts": ["8090:8090"]
+}

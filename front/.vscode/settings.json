@@ -1,0 +1,7 @@
+{
+  "typescript.tsdk": "",
+  "typescript.tsserver.nodePath": "./node_modules/",
+  "search.useIgnoreFiles": true,
+  "eslint.nodePath": "",
+  "eslint.nodeEnv": ""
+}
