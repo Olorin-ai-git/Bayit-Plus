@@ -1,6 +1,6 @@
 <div align="center">
 
-# [gaia-webplugin](https://devportal.intuit.com/app/dp/resource/6347841268104977808)
+# [olorin-webplugin](https://devportal.intuit.com/app/dp/resource/6347841268104977808)
 
 Powering Prosperity 🌎
 
@@ -8,8 +8,8 @@ Powering Prosperity 🌎
 
 <div align="center">
 
-[![Build Status](https://build.intuit.com/plugins-shared/buildStatus/buildIcon?job=cas-hri/gaia-webplugin/gaia-webplugin/master)](https://build.intuit.com/plugins-shared/blue/organizations/jenkins/cas-hri%2Fgaia-webplugin%2Fgaia-webplugin/activity/?branch=master)
-[![Code Coverage](https://codecov.tools.a.intuit.com/ghe/cas-hri/gaia-webplugin/branch/master/graph/badge.svg)](https://codecov.tools.a.intuit.com/ghe/cas-hri/gaia-webplugin/)
+[![Build Status](https://build.intuit.com/plugins-shared/buildStatus/buildIcon?job=cas-hri/olorin-webplugin/olorin-webplugin/master)](https://build.intuit.com/plugins-shared/blue/organizations/jenkins/cas-hri%2Folorin-webplugin%2Folorin-webplugin/activity/?branch=master)
+[![Code Coverage](https://codecov.tools.a.intuit.com/ghe/cas-hri/olorin-webplugin/branch/master/graph/badge.svg)](https://codecov.tools.a.intuit.com/ghe/cas-hri/olorin-webplugin/)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=shield)](https://github.com/prettier/prettier)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![slack](https://img.shields.io/badge/slack-join--the--discussion-3399ff.svg?logo=slack&style=flat)](https://intuit-teams.slack.com/messages/C3JK09N5D)
@@ -78,7 +78,7 @@ about the Plugin-CLI's technologies!
 
 ## Contributing
 
-Eager to contribute to gaia-webplugin? Check out our
+Eager to contribute to olorin-webplugin? Check out our
 [Contribution Guidelines](./CONTRIBUTING.md)!
 
 Learn more about Intuit's contribution policies -
@@ -86,7 +86,7 @@ Learn more about Intuit's contribution policies -
 
 ## 🛠️ Builds, Environments, and Deployments
 
-- [IBP Job](https://build.intuit.com/plugins-shared/blue/organizations/jenkins/cas-hri%2Fgaia-webplugin%2Fgaia-webplugin/activity/?branch=master)
+- [IBP Job](https://build.intuit.com/plugins-shared/blue/organizations/jenkins/cas-hri%2Folorin-webplugin%2Folorin-webplugin/activity/?branch=master)
 - [Plugin Deployment Configuration - DevPortal](https://devportal.intuit.com/app/dp/resource/6347841268104977808/addons/pluginConfiguration)
 
 ## 👀 Monitoring

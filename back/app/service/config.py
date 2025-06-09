@@ -34,10 +34,6 @@ class SvcSettings(BaseSettings):
         UpiHistoryConversationApiConfig()
     )
 
-    # IDPS settings - create a new policy for your app in IDPS and use the policy ID here
-    # This is used to access secrets in IDPS (app secret, langfuse keys, etc.)
-    idps_endpoint: str = "vkm-e2e.ps.idps.a.intuit.com"
-    idps_policy_id: str = "p-2abqgwqm8n5i"
 
     # App settings
     app_id: str = "Intuit.cas.hri.gaia"
@@ -52,16 +48,6 @@ class SvcSettings(BaseSettings):
     splunk_index: str = preprod_splunk_index
     splunk_port: int = Field(
         8089, description="Splunk management port", env="SPLUNK_PORT"
-    )
-    splunk_username_secret: str = Field(
-        "gaia/splunk_username",
-        description="IDPS secret path for Splunk username",
-        env="SPLUNK_USERNAME_SECRET",
-    )
-    splunk_password_secret: str = Field(
-        "gaia/splunk_password",
-        description="IDPS secret path for Splunk password",
-        env="SPLUNK_PASSWORD_SECRET",
     )
 
     # Allow overriding Splunk credentials directly via environment for local/dev
@@ -97,8 +83,6 @@ class PreProdSettings(SvcSettings):
     Settings shared by pre-prod environments
     """
 
-    idps_endpoint: str = "vkm-e2e.ps.idps.a.intuit.com"
-    idps_policy_id: str = "p-2abqgwqm8n5i"
     app_id: str = "Intuit.cas.hri.gaia"
     app_secret: str = "gaia/app_secret"
     rag_search_url: str = (

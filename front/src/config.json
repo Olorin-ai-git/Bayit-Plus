@@ -1,28 +1,28 @@
 {
-  "id": "gaia-webplugin",
+  "id": "olorin-webplugin",
   "hasLayers": true,
   "manifestVersion": "4",
   "extensions": {
     "routes": [
       {
-        "path": "gaia-webplugin/gaia",
+        "path": "olorin-webplugin/olorin",
         "accessLevel": "GUEST",
         "widget": {
-          "id": "gaia-webplugin/gaia",
+          "id": "olorin-webplugin/olorin",
           "appScreen": "shell"
         }
       }
     ]
   },
   "widgets": {
-    "gaia-webplugin/gaia": {
+    "olorin-webplugin/olorin": {
       "1.0.0": {
-        "descriptor": "gaia-webplugin/js/widgets/gaia/widget"
+        "descriptor": "olorin-webplugin/js/widgets/olorin/widget"
       }
     }
   },
   "dependencies": {
-    "widgets": ["gaia-webplugin/gaia@1.0.0"]
+    "widgets": ["olorin-webplugin/olorin@1.0.0"]
   },
   "extendedProperties": {}
 }

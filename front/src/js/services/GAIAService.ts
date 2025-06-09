@@ -1,3 +1,7 @@
+// All AppFabric dependencies removed. Add your own Olorin API service logic here as needed.
+
+export {};
+
 import { Sandbox } from '@appfabric/sandbox-spec';
 import RestService, {
   ApiMethod,
@@ -7,9 +11,9 @@ import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
 
 /**
- * The available Gaia API endpoints.
+ * The available Olorin API endpoints.
  */
-type GaiaApi =
+type OlorinApi =
   | 'getOii'
   | 'assessRisk'
   | 'analyzeNetwork'
@@ -18,9 +22,9 @@ type GaiaApi =
   | 'analyzeLogs';
 
 /**
- * Configuration for each Gaia API endpoint.
+ * Configuration for each Olorin API endpoint.
  */
-const GAIA_CONFIG: Record<GaiaApi, ApiMethod> = {
+const OLORIN_CONFIG: Record<OlorinApi, ApiMethod> = {
   getOii: {
     version: '',
     apiPath: 'api/oii',
@@ -60,7 +64,7 @@ const GAIA_CONFIG: Record<GaiaApi, ApiMethod> = {
 };
 
 /**
- * Generate required request options for Gaia API calls.
+ * Generate required request options for Olorin API calls.
  * @param {string} [originatingIp] - The originating IP address.
  * @returns {any} All options for the request.
  */
@@ -68,22 +72,22 @@ export const generateRequestOptions = (originatingIp?: string): any => ({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    intuit_originatingip: originatingIp,
+    'olorin_originatingip': originatingIp,
   },
   mode: 'cors',
 });
 
 /**
- * Get config for specified Gaia API.
- * @param {GaiaApi} key - Key of config.
+ * Get config for specified Olorin API.
+ * @param {OlorinApi} key - Key of config.
  * @returns {ApiMethod} API config.
  */
-export const getApiConfig = (key: GaiaApi): ApiMethod => GAIA_CONFIG[key];
+export const getApiConfig = (key: OlorinApi): ApiMethod => OLORIN_CONFIG[key];
 
 /**
- * Gaia service to call Gaia APIs.
+ * Olorin service to call Olorin APIs.
  */
-export class GAIAService {
+export class OlorinService {
   private sandbox: Sandbox;
 
   private restService: RestService;
@@ -91,33 +95,33 @@ export class GAIAService {
   private useMock: boolean;
 
   /**
-   * Create a new GAIAService.
+   * Create a new OlorinService.
    * @param {Sandbox} sandbox - The web-shell sandbox.
    * @param {boolean} [useMock=false] - Whether to use mock data instead of real API calls
    */
   constructor(sandbox: Sandbox, useMock = false) {
     this.sandbox = sandbox;
     this.useMock = useMock;
-    const config = getEnvConfig(sandbox, 'gaia');
-    this.restService = new RestService(config, 'GAIA');
+    const config = getEnvConfig(sandbox, 'olorin');
+    this.restService = new RestService(config, 'OLORIN');
   }
 
   /**
-   * Generic GET request to a Gaia API endpoint.
+   * Generic GET request to an Olorin API endpoint.
    * @param {string} entityId - The entity ID (user ID or device ID).
-   * @param {GaiaApi} action - The Gaia API action.
+   * @param {OlorinApi} action - The Olorin API action.
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {Record<string, string>} [queryParams] - Optional query parameters to append to the path.
    * @returns {Promise<RestResponse>} The REST response.
    */
   async get(
     entityId: string,
-    action: GaiaApi,
+    action: OlorinApi,
     entityType: string,
     queryParams?: Record<string, string>,
   ): Promise<RestResponse> {
     this.sandbox.logger.log(
-      `feature=GaiaService, action=${action}, entityId=${entityId}, entityType=${entityType}`,
+      `feature=OlorinService, action=${action}, entityId=${entityId}, entityType=${entityType}`,
     );
     const options = generateRequestOptions();
     const apiConfig = getApiConfig(action);
@@ -156,7 +160,7 @@ export class GAIAService {
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async assessRisk(
     entityId: string,
@@ -165,7 +169,7 @@ export class GAIAService {
     timeRange: string = '30d',
   ): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('network'); // or mock risk
+      return OlorinService.getMockResponse('network'); // or mock risk
     }
     const params: Record<string, string> = {
       investigation_id: investigationId,
@@ -178,11 +182,11 @@ export class GAIAService {
    * Get OII data for an entity.
    * @param {string} entityId - The entity ID (user ID or device ID).
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async getOii(entityId: string, entityType: string): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('oii');
+      return OlorinService.getMockResponse('oii');
     }
     return this.get(entityId, 'getOii', entityType);
   }
@@ -193,7 +197,7 @@ export class GAIAService {
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async analyzeNetwork(
     entityId: string,
@@ -202,7 +206,7 @@ export class GAIAService {
     timeRange: string = '30d',
   ): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('network');
+      return OlorinService.getMockResponse('network');
     }
     const params: Record<string, string> = {
       investigation_id: investigationId,
@@ -217,7 +221,7 @@ export class GAIAService {
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async analyzeLocation(
     entityId: string,
@@ -226,7 +230,7 @@ export class GAIAService {
     timeRange: string = '30d',
   ): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('location');
+      return OlorinService.getMockResponse('location');
     }
     const params: Record<string, string> = {
       investigation_id: investigationId,
@@ -241,7 +245,7 @@ export class GAIAService {
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async analyzeDevice(
     entityId: string,
@@ -250,7 +254,7 @@ export class GAIAService {
     timeRange: string = '30d',
   ): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('device');
+      return OlorinService.getMockResponse('device');
     }
     const params: Record<string, string> = {
       investigation_id: investigationId,
@@ -265,7 +269,7 @@ export class GAIAService {
    * @param {string} entityType - The entity type ('user_id' or 'device_id').
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise<RestResponse>} Gaia state response.
+   * @returns {Promise<RestResponse>} Olorin state response.
    */
   async analyzeLogs(
     entityId: string,
@@ -274,7 +278,7 @@ export class GAIAService {
     timeRange: string = '30d',
   ): Promise<RestResponse> {
     if (this.useMock) {
-      return GAIAService.getMockResponse('logs');
+      return OlorinService.getMockResponse('logs');
     }
     const params: Record<string, string> = {
       investigation_id: investigationId,
@@ -335,8 +339,8 @@ export class GAIAService {
           extracted_network_signals: [
             {
               ip_address: '223.185.128.58',
-              isp: 'bharti airtel ltd.',
-              organization: 'bharti',
+              isp: 'olorin inc.',
+              organization: 'olorin inc.',
               tm_sessionid: 'f002651918d540e374a0f1861bd779bb',
               _time: '2025-05-15T06:24:23.466-07:00',
               countries: [],
@@ -347,8 +351,8 @@ export class GAIAService {
             },
             {
               ip_address: '207.207.181.8',
-              isp: 'intuit inc.',
-              organization: 'intuit inc.',
+              isp: 'olorin inc.',
+              organization: 'olorin inc.',
               tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
               _time: '2025-05-15T06:31:46.027-07:00',
               countries: [],
@@ -358,10 +362,10 @@ export class GAIAService {
             risk_level: 0.85,
             risk_factors: [
               'Geographic inconsistency / possible impossible travel',
-              'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Intuit in the US)',
+              'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Olorin in the US)',
             ],
             anomaly_details: [
-              'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Intuit) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
+              'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Olorin) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
             ],
             confidence: 0.9,
             summary:
@@ -392,7 +396,7 @@ export class GAIAService {
               smartId: null,
               tm_smartid: null,
               tm_sessionid: null,
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: null,
               true_ip_city: null,
               true_ip_country: null,
@@ -407,7 +411,7 @@ export class GAIAService {
               smartId: '6c0998a4c9f0437abbc59706471aaedb',
               tm_smartid: '6c0998a4c9f0437abbc59706471aaedb',
               tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -447,7 +451,7 @@ export class GAIAService {
               _time: '2025-05-27T10:56:06.965-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -459,7 +463,7 @@ export class GAIAService {
               _time: '2025-05-15T07:08:39.584-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -499,7 +503,7 @@ export class GAIAService {
               _time: '2025-05-27T10:56:06.965-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',

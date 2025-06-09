@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 
 from app.models.agent_headers import IntuitHeader
 from app.service.config import get_settings_for_env
-from app.utils.idps_utils import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -42,7 +41,7 @@ class AgentContext(BaseContextModel):
     def get_header(self):
         return self.build_headers(
             app_id=settings_for_env.app_id,
-            app_secret=get_app_secret(settings_for_env.app_secret),
+            app_secret=settings_for_env.app_secret,
             intuit_user_id=self.intuit_header.auth_context.intuit_user_id,
             intuit_user_token=self.intuit_header.auth_context.intuit_user_token,
             intuit_tid=self.intuit_header.intuit_tid,

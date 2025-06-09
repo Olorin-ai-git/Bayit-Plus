@@ -1,6 +1,5 @@
 /* eslint-disable eslint-comments/disable-enable-pair */
 /* eslint-disable no-unused-vars */
-import type { SandboxPerformance } from '@appfabric/sandbox-spec';
 
 export const RUM_FCI_START_REQUEST = 'begin outbound request';
 export const RUM_FCI_END_REQUEST = 'end outbound request';
@@ -62,3 +61,5 @@ const fetchFCIWrapper =
   };
 
 export default fetchFCIWrapper;
+
+export {};

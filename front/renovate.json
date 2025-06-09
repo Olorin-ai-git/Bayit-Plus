@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "local>AppFabric/renovate-config",
-    "local>AppFabric/renovate-config:webPlugin"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "id": "gaia-webplugin",
-  "contacts": {
-    "dev": "INVALID@intuit.com"
-  },
-  "resource-dirs": ["src/nls"],
-  "url": "https://github.intuit.com/cas-hri/gaia-webplugin.git",
-  "enabled": false
-}

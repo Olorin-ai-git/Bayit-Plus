@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Persisted settings for the Gaia Web Plugin.
+ * Persisted settings for the Olorin Web Plugin.
  */
 export interface Settings {
   /** Default entity type for investigations (auth_id or device_id) */
@@ -14,7 +14,7 @@ export interface Settings {
   agentToolsMapping: Record<string, string[]>;
 }
 
-const STORAGE_KEY = 'gaia_webplugin_settings';
+const STORAGE_KEY = 'olorin_webplugin_settings';
 
 /**
  * Hook to get and set user settings, persisted to localStorage.

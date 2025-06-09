@@ -1,8 +1,0 @@
-id: 'gaia-webplugin/gaia'
-classification: public
-version: 1.0.0
-interface:
-  description: |
-    Displays a basic widget.
-
-main: './GaiaWidget'

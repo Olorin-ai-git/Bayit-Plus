@@ -1,0 +1,1 @@
+import OlorinWidget from 'src/js/widgets/olorin/OlorinWidget'; 

@@ -1,0 +1,37 @@
+{
+  "baselineScores": {
+    "https://plugin-test.app.intuit.com/app/gaia-webplugin/gaia": {
+      "src": {
+        "score": -1,
+        "metadata": {
+          "totalChunkSize": 31440,
+          "numWidgets": 1,
+          "budget": 51200,
+          "widgets": ["gaia-webplugin/js/widgets/gaia/widget"]
+        }
+      },
+      "node_modules": {
+        "score": -1,
+        "metadata": {
+          "totalChunkSize": 121604,
+          "numWidgets": 1
+        }
+      },
+      "i18n": {
+        "score": -1,
+        "metadata": {
+          "totali18nSize": 0
+        }
+      },
+      "asset": {
+        "score": 100,
+        "metadata": {
+          "assetSize": 0
+        }
+      },
+      "duplicate_pkgs": {
+        "score": 100
+      }
+    }
+  }
+}

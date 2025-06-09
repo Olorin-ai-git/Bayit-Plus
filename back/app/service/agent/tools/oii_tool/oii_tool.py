@@ -10,7 +10,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.agent_headers import IntuitHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
-from app.utils.idps_utils import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -84,7 +83,7 @@ class OIITool(BaseTool):
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
                 "intuit_assetalias": "Intuit.cas.hri.gaia",
-                "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={get_app_secret(settings_for_env.app_secret)},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
+                "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
             }
 
             conn.request("POST", "/v2/graphql", payload, request_headers)

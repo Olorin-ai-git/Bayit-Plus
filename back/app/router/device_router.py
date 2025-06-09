@@ -33,7 +33,6 @@ from app.service.config import get_settings_for_env
 from app.service.device_analysis_service import DeviceAnalysisService
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
-from app.utils.idps_utils import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
 from app.service.error_handling import AuthorizationError
