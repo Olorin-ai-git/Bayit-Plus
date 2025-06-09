@@ -342,3 +342,20 @@ python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=50
 ```
 
 The tests should pass with >70% coverage, exceeding the required 50% threshold.
+
+### Development Setup
+
+1. **Install Dependencies:**
+   ```bash
+   poetry install
+   ```
+
+2. **Run Tests:**
+   ```bash
+   poetry run pytest
+   ```
+
+3. **Start the Server:**
+   ```bash
+   poetry run uvicorn app.main:app --reload
+   ```

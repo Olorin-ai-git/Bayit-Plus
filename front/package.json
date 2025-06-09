@@ -36,8 +36,7 @@
     "prerelease": "plugin-cli build -p",
     "release": "plugin-cli release",
     "verify-dev-setup": "npx --yes -p @appfabric/scripts verify-dev-setup",
-    "awm:bootstrap": "is-ci || (appf-webtools-mgr version && appf-webtools-mgr bootstrap) || echo 'Skipping bootstrap since webtools manager is not installed: https://github.intuit.com/pages/UX-Infra/webtools-mgr/docs/getting-started'",
-    "postinstall": "is-ci || (husky install && yarn awm:bootstrap)"
+    "awm:bootstrap": "is-ci || (appf-webtools-mgr version && appf-webtools-mgr bootstrap) || echo 'Skipping bootstrap since webtools manager is not installed: https://github.intuit.com/pages/UX-Infra/webtools-mgr/docs/getting-started'"
   },
   "dependencies": {
     "@appfabric/providers": "2.2.61",
@@ -90,11 +89,9 @@
     "eslint-plugin-prettier": "3.3.1",
     "eslint-plugin-react": "7.34.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "husky": "8.0.3",
     "is-ci": "3.0.1",
     "jest-environment-jsdom": "27.2.2",
     "jest-styled-components": "6.3.4",
-    "lint-staged": "13.2.3",
     "postcss": "^8.4.0",
     "postcss-loader": "8.1.1",
     "prettier": "2.8.8",
