@@ -1,10 +1,10 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "gaia-api",
-    "description": "TODO: Add description here\n        The description SHOULD include a summary of the API, and the key use cases that the API solves.\n        Example: https://github.intuit.com/services-java/jsk-v4-service-initializr/blob/8c1d88f60e6fcafea0bc1dc01ba6995462332960/initializr-generator/src/main/resources/templates/spring-mvc-starter/api/openapi/openapi.yaml#L11\n        ",
+    "title": "olorin-api",
+    "description": "TODO: Add description here\n        The description SHOULD include a summary of the API, and the key use cases that the API solves.\n        Example: https://github.olorin.com/services-java/jsk-v4-service-initializr/blob/8c1d88f60e6fcafea0bc1dc01ba6995462332960/initializr-generator/src/main/resources/templates/spring-mvc-starter/api/openapi/openapi.yaml#L11\n        ",
     "contact": {
-      "url": "https://api.contact.info.intuit.com/"
+      "url": "https://api.contact.info.olorin.com/"
     },
     "version": "0.1.0"
   },
@@ -14,27 +14,27 @@
       "description": "Local development"
     },
     {
-      "url": "https://gaia-qal.api.intuit.com",
+      "url": "https://olorin-qal.api.olorin.com",
       "description": "QAL"
     },
     {
-      "url": "https://gaia-e2e.api.intuit.com",
+      "url": "https://olorin-e2e.api.olorin.com",
       "description": "E2E"
     },
     {
-      "url": "https://gaia-prf.api.intuit.com",
+      "url": "https://olorin-prf.api.olorin.com",
       "description": "Performance"
     },
     {
-      "url": "https://gaia-stg.api.intuit.com",
+      "url": "https://olorin-stg.api.olorin.com",
       "description": "Staging"
     },
     {
-      "url": "https://gaia-sandbox.api.intuit.com",
+      "url": "https://olorin-sandbox.api.olorin.com",
       "description": "Sandbox"
     },
     {
-      "url": "https://gaia.api.intuit.com",
+      "url": "https://olorin.api.olorin.com",
       "description": "Production"
     }
   ],

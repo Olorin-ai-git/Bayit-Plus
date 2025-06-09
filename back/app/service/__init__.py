@@ -4,6 +4,7 @@ import uuid
 from typing import Callable, Optional
 
 from fastapi import Depends, FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 
 # from pskgenos import add_genos_endpoints
 try:
@@ -31,6 +32,8 @@ from .config import (
     QALSettings,
     STGSettings,
     SvcSettings,
+    ServiceConfig,
+    default_config,
 )
 from .error_handling import register_error_handlers
 from .logging_helper import RequestFormatter, logging_context
@@ -229,13 +232,24 @@ class GaiaApplication:
             }
 
 
-def create_app(
-    test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None
-):
-    """
-    Factory function to create the FastAPI app via GaiaApplication.
-    """
-    return GaiaApplication(test_config=test_config, lifespan=lifespan).app
+def create_app(config: ServiceConfig = default_config) -> FastAPI:
+    """Create and configure the FastAPI application."""
+    app = FastAPI(
+        title=config.app_name,
+        version=config.version,
+        debug=config.debug
+    )
+
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=config.cors_origins,
+        allow_credentials=True,
+        allow_methods=config.cors_methods,
+        allow_headers=config.cors_headers,
+    )
+
+    return app
 
 
 # Dummy implementations for test patching

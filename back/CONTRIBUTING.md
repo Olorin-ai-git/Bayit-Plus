@@ -12,8 +12,8 @@ _Add in information about the owners of this repository and how to contact the t
 
 >Here is how you can contact the team:
 
->* Slack: [#YOUR SLACK CHANNEL](https://intuit-teams.slack.com/archives/FILL_IN_LINK)
->* JIRA: https://jira.intuit.com/browse/[YOUR JIRA SUBMIT POINT]
+>* Slack: [#YOUR SLACK CHANNEL](https://olorin-teams.slack.com/archives/FILL_IN_LINK)
+>* JIRA: https://jira.olorin.com/browse/[YOUR JIRA SUBMIT POINT]
 
 ## Contribution Expectations
 
@@ -36,14 +36,14 @@ _Add in information about pull-request and issue request SLAs.  For example:_
 
 1. Fork and Clone. From the GitHub UI, fork the project into your user space or another organization. Follow these steps, clone locally and add the upstream remote.
 	```text
-	$ git clone git@github.intuit.com:ORG/REPOSITORY.git
+	$ git clone git@github.olorin.com:ORG/REPOSITORY.git
 	$ cd <project>
 
 	## If you have SSH keys set up, then add the SSH URL as an upstream.
-	$ git remote add upstream git@github.intuit.com/ORG/REPOSITORY.git
+	$ git remote add upstream git@github.olorin.com/ORG/REPOSITORY.git
 
 	## If you want to type in your password when fetching from upstream, then add the HTTPS URL as an upstream.
-	$ git remote add upstream https://github.intuit.com/ORG/REPOSITORY.git
+	$ git remote add upstream https://github.olorin.com/ORG/REPOSITORY.git
 	```
 1. Create a branch (use the Jira project and prefix with "feature/" or "bugfix/").
 	```text

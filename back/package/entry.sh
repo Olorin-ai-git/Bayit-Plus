@@ -11,7 +11,7 @@ if [[ "$APP_ENV" == "local" ]]; then
 fi
 
 mkdir -p ./tls
-output=$(openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=US/ST=CA/L=Mountain View/O=Intuit/CN=app" -keyout ./tls/key.pem -out ./tls/cert.pem 2>&1) || echo "$output"
+output=$(openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=US/ST=CA/L=Mountain View/O=Olorin/CN=app" -keyout ./tls/key.pem -out ./tls/cert.pem 2>&1) || echo "$output"
 
 mkdir -p nginx
 /usr/sbin/nginx -c nginx.conf -p "$PWD/nginx"
@@ -30,7 +30,7 @@ echo Using command "${CMD}" with args "${CMD_ARGS[@]}"
 # see https://www.uvicorn.org/deployment/#running-behind-nginx
 
 # 8090 is the Mesh port
-# see https://github.intuit.com/pages/services-mesh/mesh-docs/getting-started/#step-3-inspectverifyupdate-necessary-changes-to-your-service-in-the-pr-and-merge-it
+# see https://github.olorin.com/pages/services-mesh/mesh-docs/getting-started/#step-3-inspectverifyupdate-necessary-changes-to-your-service-in-the-pr-and-merge-it
 
 # higher timeout-keep-alive is a workaround for
 # upstream_reset_before_response_started{connection_termination} errors from Service Mesh

@@ -1,147 +1,22 @@
 ---
-genos_registry_schema: "1.0.0"
-agents_experience_id: "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
+registry_schema: "1.0.0"
+
 agents:
-  - name: "demo_chat_agent"
-    description: |
-      This agent is designed to process natural language queries and retrieve relevant information using the LangChain framework.
-      It excels at understanding complex questions and providing accurate, concise answers.
-      This agent uses a combination of vector search and language model reasoning to deliver optimal results.
-    associated_experience_ids: ["d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"] # (Optional) list of upstream experience_ids calling this agent
-    framework: langgraph
-    tools:
-      - "qbo_knowledgebase_retriever"
-      - "tto_knowledgebase_retriever"
-      - "cdc_user_attribute_retriever"
-      - "cdc_company_attribute_retriever"
-      - "list_qb_customers"
-    prompt_id: ""
-    environments:
-      qal:
-        agent_url: "https://gaia-qal.api.intuit.com"
+  - name: "olorin-agent"
+    description: "Olorin Agent for handling customer interactions"
+    version: "1.0.0"
+    endpoints:
+      - name: "invoke"
         path: "/v1/agent/invoke"
-      e2e:
-        agent_url: "https://gaia-e2e.api.intuit.com"
-        path: "/v1/agent/invoke"
-      prd:
-        agent_url: "https://gaia-prd.api.intuit.com"
-        path: "/v1/agent/invoke"
+        method: "POST"
+        description: "Invoke the agent with a user query"
+
 tools:
-  - name: "qbo_knowledgebase_retriever"
-    scope: "public"
-    response_type: "sync"
-    tool_category_list:
-      - "knowledge_base"
-      - "api"
-    description: "This tool can read from QBO RAG Knowledge Base to answer questions related to QuickBooks Online"
-    environments:
-      qal:
-        tool_url: "https://gaia-qal.api.intuit.com"
-      e2e:
-        tool_url: "https://gaia-e2e.api.intuit.com"
-      prd:
-        tool_url: "https://gaia-prd.api.intuit.com"
-    tags:
-      - "A2D"
-      - "QBO"
-      - "RAG"
-    auth: "PrivateAuth"
-    protocol: "mcp"
-    input_schema: ""
-    output_schema: ""
-    tool_capabilities:
-      is_rollback_supported: false
-  - name: "tto_knowledgebase_retriever"
-    scope: "public"
-    response_type: "sync"
-    tool_category_list:
-      - "knowledge_base"
-      - "api"
-    description: "This tool can read from TTO RAG Knowledge Base to answer questions related to TurboTax Online"
-    environments:
-      qal:
-        tool_url: "https://gaia-qal.api.intuit.com"
-      e2e:
-        tool_url: "https://gaia-e2e.api.intuit.com"
-      prd:
-        tool_url: "https://gaia-prd.api.intuit.com"
-    tags:
-      - "A2D"
-      - "TTO"
-      - "RAG"
-    auth: "PrivateAuth"
-    protocol: "mcp"
-    input_schema: ""
-    output_schema: ""
-    tool_capabilities:
-      is_rollback_supported: true
-  - name: "cdc_user_attribute_retriever"
-    scope: "public"
-    response_type: "sync"
-    tool_category_list:
-      - "knowledge_base"
-      - "api"
-    description: "This tool can read from CDC to answer questions related to user attributes"
-    environments:
-      qal:
-        tool_url: "https://gaia-qal.api.intuit.com"
-      e2e:
-        tool_url: "https://gaia-e2e.api.intuit.com"
-      prd:
-        tool_url: "https://gaia-prd.api.intuit.com"
-    tags:
-      - "A2D"
-      - "CDC"
-    auth: "PrivateAuth"
-    protocol: "mcp"
-    input_schema: ""
-    output_schema: ""
-    tool_capabilities:
-      is_rollback_supported: true
-  - name: "cdc_company_attribute_retriever"
-    scope: "public"
-    response_type: "sync"
-    tool_category_list:
-      - "knowledge_base"
-      - "api"
-    description: "This tool can read from CDC to answer questions related to company attributes"
-    environments:
-      qal:
-        tool_url: "https://gaia-qal.api.intuit.com"
-      e2e:
-        tool_url: "https://gaia-e2e.api.intuit.com"
-      prd:
-        tool_url: "https://gaia-prd.api.intuit.com"
-    tags:
-      - "A2D"
-      - "TTO"
-      - "RAG"
-    auth: "PrivateAuth"
-    protocol: "mcp"
-    input_schema: ""
-    output_schema: ""
-    tool_capabilities:
-      is_rollback_supported: true
-  - name: "list_qb_customers"
-    scope: "public"
-    response_type: "sync"
-    tool_category_list:
-      - "api"
-    description: "This tool can read from QBO Service to answer questions related to QuickBooks Online customers"
-    environments:
-      qal:
-        tool_url: "https://gaia-qal.api.intuit.com"
-      e2e:
-        tool_url: "https://gaia-e2e.api.intuit.com"
-      prd:
-        tool_url: "https://gaia-prd.api.intuit.com"
-    tags:
-      - "A2D"
-      - "QBO"
-      - "API"
-    auth: "PrivateAuth"
-    protocol: "mcp"
-    input_schema: ""
-    output_schema: ""
-    tool_capabilities:
-      is_rollback_supported: true
+  - name: "knowledge-base"
+    description: "Knowledge base tool for retrieving information"
+    version: "1.0.0"
+    endpoints:
+      - name: "search"
+        path: "/v1/knowledge/search"
+        method: "POST"
+        description: "Search the knowledge base"

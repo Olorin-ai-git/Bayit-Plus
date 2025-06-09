@@ -1,12 +1,13 @@
 # test_upi_client.py
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, patch, MagicMock
 
 import aiohttp
 import pytest
 
-from app.adapters.upi_client import UPIConversationHistoryClient
+from app.adapters.upi_client import UPIConversationHistoryClient, UPIClient
 from app.models.upi_response import InteractionsResponse
 from app.service.error_handling import UPIServiceException
+from app.models.upi import UPIRequest, UPIResponse
 
 
 @pytest.mark.asyncio
@@ -251,3 +252,52 @@ async def test_send_request_unsupported_http_method():
             headers={"Authorization": "Bearer token"},
             params={},
         )
+
+
+@pytest.fixture
+def upi_client():
+    return UPIClient(base_url="https://api.olorin.com")
+
+@pytest.fixture
+def mock_response():
+    response = MagicMock()
+    response.status_code = 200
+    response.json.return_value = {
+        "response": "Test response",
+        "status": "success"
+    }
+    return response
+
+def test_upi_client_initialization(upi_client):
+    assert upi_client.base_url == "https://api.olorin.com"
+
+@patch('requests.post')
+def test_send_request_success(mock_post, upi_client, mock_response):
+    mock_post.return_value = mock_response
+    
+    request = UPIRequest(
+        content="Test content",
+        context={},
+        metadata={}
+    )
+    
+    response = upi_client.send_request(request)
+    
+    assert isinstance(response, UPIResponse)
+    assert response.response == "Test response"
+    assert response.status == "success"
+
+@patch('requests.post')
+def test_send_request_error(mock_post, upi_client):
+    mock_post.side_effect = Exception("API Error")
+    
+    request = UPIRequest(
+        content="Test content",
+        context={},
+        metadata={}
+    )
+    
+    with pytest.raises(Exception) as exc_info:
+        upi_client.send_request(request)
+    
+    assert str(exc_info.value) == "API Error"

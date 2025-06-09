@@ -1,9 +1,9 @@
 import os
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from fastapi import Request
-from pydantic import Field
+from pydantic import Field, BaseModel
 from pydantic_settings import BaseSettings
 
 preprod_splunk_index: str = "rss-e2eidx"
@@ -205,3 +205,60 @@ _ENV_SETTINGS = {
 def get_settings_for_env() -> SvcSettings:
     env = os.getenv("APP_ENV", "local")
     return _ENV_SETTINGS[env]()
+
+
+class ServiceConfig(BaseModel):
+    """Service configuration."""
+    app_name: str = "olorin-service"
+    version: str = "1.0.0"
+    environment: str = "development"
+    debug: bool = False
+    host: str = "0.0.0.0"
+    port: int = 8000
+    api_prefix: str = "/api/v1"
+    cors_origins: List[str] = ["*"]
+    cors_methods: List[str] = ["*"]
+    cors_headers: List[str] = ["*"]
+
+    # API endpoints
+    api_endpoints: Dict[str, str] = {
+        "knowledge_base": "https://api.olorin.com/v1/knowledge",
+        "user_profile": "https://api.olorin.com/v1/users",
+        "company_profile": "https://api.olorin.com/v1/companies",
+        "search": "https://api.olorin.com/v1/search"
+    }
+
+    # Authentication
+    auth_enabled: bool = True
+    auth_header: str = "Authorization"
+    auth_scheme: str = "Bearer"
+
+    # Logging
+    log_level: str = "INFO"
+    log_format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    class Config:
+        env_prefix = "OLORIN_"
+
+# Default configuration
+default_config = ServiceConfig()
+
+# Environment-specific configurations
+configs = {
+    "development": ServiceConfig(
+        debug=True,
+        environment="development",
+        log_level="DEBUG"
+    ),
+    "testing": ServiceConfig(
+        debug=True,
+        environment="testing",
+        log_level="DEBUG",
+        auth_enabled=False
+    ),
+    "production": ServiceConfig(
+        debug=False,
+        environment="production",
+        log_level="INFO"
+    )
+}

@@ -14,6 +14,8 @@ from app.utils.auth_utils import (
     get_auth_token,
     get_offline_auth_token,
     get_userid_and_token_from_authn_header,
+    validate_auth_token,
+    AuthError
 )
 
 
@@ -614,3 +616,41 @@ class TestIntegration:
         assert all(
             isinstance(val, (str, type(None))) for val in [userid, token, realmid]
         )
+
+@pytest.fixture
+def mock_token():
+    return "test_token"
+
+@pytest.fixture
+def mock_headers():
+    return {
+        "Authorization": "Bearer test_token",
+        "X-User-ID": "test_user",
+        "X-Realm-ID": "test_realm"
+    }
+
+def test_get_auth_token_success(mock_headers):
+    token = get_auth_token(mock_headers)
+    assert token == "test_token"
+
+def test_get_auth_token_missing():
+    with pytest.raises(AuthError) as exc_info:
+        get_auth_token({})
+    assert str(exc_info.value) == "Missing authorization header"
+
+def test_get_auth_token_invalid_format():
+    with pytest.raises(AuthError) as exc_info:
+        get_auth_token({"Authorization": "InvalidFormat"})
+    assert str(exc_info.value) == "Invalid authorization header format"
+
+@patch('app.utils.auth_utils.validate_token')
+def test_validate_auth_token_success(mock_validate, mock_token):
+    mock_validate.return_value = True
+    assert validate_auth_token(mock_token) is True
+
+@patch('app.utils.auth_utils.validate_token')
+def test_validate_auth_token_failure(mock_validate, mock_token):
+    mock_validate.return_value = False
+    with pytest.raises(AuthError) as exc_info:
+        validate_auth_token(mock_token)
+    assert str(exc_info.value) == "Invalid token"

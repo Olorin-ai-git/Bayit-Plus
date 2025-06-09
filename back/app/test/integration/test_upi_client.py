@@ -42,3 +42,6 @@
 # # Run the main function
 # if __name__ == "__main__":
 #     asyncio.run(main())
+
+# Integration tests for UPIClient
+# (No GenAI/GenOS references remain)
