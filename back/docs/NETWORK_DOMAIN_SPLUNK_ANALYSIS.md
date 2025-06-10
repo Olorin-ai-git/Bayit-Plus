@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides an in-depth analysis of the Network Domain's Splunk implementation in the Gaia fraud detection system. The analysis covers query construction, field extraction mechanisms, data processing pipelines, and real-world result examples from the master branch implementation.
+This document provides an in-depth analysis of the Network Domain's Splunk implementation in the Olorin fraud detection system. The analysis covers query construction, field extraction mechanisms, data processing pipelines, and real-world result examples from the master branch implementation.
 
 ## Table of Contents
 

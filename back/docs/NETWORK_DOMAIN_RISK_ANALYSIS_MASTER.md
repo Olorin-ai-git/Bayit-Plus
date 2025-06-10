@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Gaia fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
+This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Olorin fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
 
 ## Table of Contents
 

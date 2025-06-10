@@ -1,7 +1,7 @@
 # Splunk Performance Optimization Summary
 
 ## Problem Overview
-The Gaia fraud detection system was experiencing severe Splunk performance issues:
+The Olorin fraud detection system was experiencing severe Splunk performance issues:
 - Network queries taking several minutes to complete
 - Hundreds of repeated polling requests (every 0.5 seconds)
 - No timeout protection causing indefinite waits

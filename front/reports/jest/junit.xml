@@ -1733,19 +1733,19 @@ Received:
     <testcase classname="InvestigationHeader handleStopInvestigation with already true cancelledRef" name="InvestigationHeader handleStopInvestigation with already true cancelledRef" time="0.003">
     </testcase>
   </testsuite>
-  <testsuite name="GaiaWidget" errors="0" failures="2" skipped="10" timestamp="2025-06-03T18:34:11" time="5.438" tests="21">
-    <testcase classname="GaiaWidget renders without crashing" name="GaiaWidget renders without crashing" time="0.032">
+  <testsuite name="OlorinWidget" errors="0" failures="2" skipped="10" timestamp="2025-06-03T18:34:11" time="5.438" tests="21">
+    <testcase classname="OlorinWidget renders without crashing" name="OlorinWidget renders without crashing" time="0.032">
     </testcase>
-    <testcase classname="GaiaWidget renders the InvestigationPage component" name="GaiaWidget renders the InvestigationPage component" time="0.005">
+    <testcase classname="OlorinWidget renders the InvestigationPage component" name="OlorinWidget renders the InvestigationPage component" time="0.005">
     </testcase>
-    <testcase classname="GaiaWidget sets correct document styles on mount" name="GaiaWidget sets correct document styles on mount" time="0.004">
+    <testcase classname="OlorinWidget sets correct document styles on mount" name="OlorinWidget sets correct document styles on mount" time="0.004">
     </testcase>
-    <testcase classname="GaiaWidget calls sandbox.logger.log on mount" name="GaiaWidget calls sandbox.logger.log on mount" time="0.004">
+    <testcase classname="OlorinWidget calls sandbox.logger.log on mount" name="OlorinWidget calls sandbox.logger.log on mount" time="0.004">
     </testcase>
-    <testcase classname="GaiaWidget marks widget as ready after fetching critical data" name="GaiaWidget marks widget as ready after fetching critical data" time="0.011">
+    <testcase classname="OlorinWidget marks widget as ready after fetching critical data" name="OlorinWidget marks widget as ready after fetching critical data" time="0.011">
       <failure>Error: expect(received).toMatchSnapshot()
 
-Snapshot name: `GaiaWidget marks widget as ready after fetching critical data 1`
+Snapshot name: `OlorinWidget marks widget as ready after fetching critical data 1`
 
 - Snapshot  - 1
 + Received  + 1
@@ -1763,12 +1763,12 @@ Snapshot name: `GaiaWidget marks widget as ready after fetching critical data 1`
             &lt;span
               class=&quot;sr-only&quot;
             &gt;
-    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidget.test.tsx:121:23
+    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidget.test.tsx:121:23
     at Generator.next (&lt;anonymous&gt;)
-    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidget.test.tsx:8:71
+    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidget.test.tsx:8:71
     at new Promise (&lt;anonymous&gt;)
-    at Object.&lt;anonymous&gt;.__awaiter (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidget.test.tsx:4:12)
-    at Object.&lt;anonymous&gt; (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidget.test.tsx:110:71)
+    at Object.&lt;anonymous&gt;.__awaiter (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidget.test.tsx:4:12)
+    at Object.&lt;anonymous&gt; (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidget.test.tsx:110:71)
     at Promise.then.completed (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-circus/build/utils.js:391:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-circus/build/utils.js:316:10)
@@ -1783,33 +1783,33 @@ Snapshot name: `GaiaWidget marks widget as ready after fetching critical data 1`
     at runTest (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-runner/build/runTest.js:475:34)
     at Object.worker (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-runner/build/testWorker.js:133:12)</failure>
     </testcase>
-    <testcase classname="GaiaWidget calls ready in componentDidMount" name="GaiaWidget calls ready in componentDidMount" time="0">
+    <testcase classname="OlorinWidget calls ready in componentDidMount" name="OlorinWidget calls ready in componentDidMount" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget calls done in handleWidgetDone" name="GaiaWidget calls done in handleWidgetDone" time="0">
+    <testcase classname="OlorinWidget calls done in handleWidgetDone" name="OlorinWidget calls done in handleWidgetDone" time="0">
     </testcase>
-    <testcase classname="GaiaWidget calls err in handleWidgetError" name="GaiaWidget calls err in handleWidgetError" time="0.001">
+    <testcase classname="OlorinWidget calls err in handleWidgetError" name="OlorinWidget calls err in handleWidgetError" time="0.001">
     </testcase>
-    <testcase classname="GaiaWidget renders within SandboxContextProvider" name="GaiaWidget renders within SandboxContextProvider" time="0.002">
+    <testcase classname="OlorinWidget renders within SandboxContextProvider" name="OlorinWidget renders within SandboxContextProvider" time="0.002">
     </testcase>
-    <testcase classname="GaiaWidget switches tabs and updates state and URL" name="GaiaWidget switches tabs and updates state and URL" time="0">
+    <testcase classname="OlorinWidget switches tabs and updates state and URL" name="OlorinWidget switches tabs and updates state and URL" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget handleCreateInvestigation updates state and URL" name="GaiaWidget handleCreateInvestigation updates state and URL" time="0">
+    <testcase classname="OlorinWidget handleCreateInvestigation updates state and URL" name="OlorinWidget handleCreateInvestigation updates state and URL" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget renders investigation tab by default and sets investigationId in URL" name="GaiaWidget renders investigation tab by default and sets investigationId in URL" time="0">
+    <testcase classname="OlorinWidget renders investigation tab by default and sets investigationId in URL" name="OlorinWidget renders investigation tab by default and sets investigationId in URL" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget switches to investigations tab and clears investigationId from URL" name="GaiaWidget switches to investigations tab and clears investigationId from URL" time="0">
+    <testcase classname="OlorinWidget switches to investigations tab and clears investigationId from URL" name="OlorinWidget switches to investigations tab and clears investigationId from URL" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget switches back to investigation tab and sets investigationId" name="GaiaWidget switches back to investigation tab and sets investigationId" time="0">
+    <testcase classname="OlorinWidget switches back to investigation tab and sets investigationId" name="OlorinWidget switches back to investigation tab and sets investigationId" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget handleCreateInvestigation sets state and URL" name="GaiaWidget handleCreateInvestigation sets state and URL" time="0">
+    <testcase classname="OlorinWidget handleCreateInvestigation sets state and URL" name="OlorinWidget handleCreateInvestigation sets state and URL" time="0">
     </testcase>
-    <testcase classname="GaiaWidget navigates to the pluginDevTool" name="GaiaWidget navigates to the pluginDevTool" time="0.005">
+    <testcase classname="OlorinWidget navigates to the pluginDevTool" name="OlorinWidget navigates to the pluginDevTool" time="0.005">
       <failure>TestingLibraryElementError: Unable to find an element with the text: Set a Local Plugin Override. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
 &lt;body
@@ -1914,7 +1914,7 @@ Snapshot name: `GaiaWidget marks widget as ready after fetching critical data 1`
     at /Users/gklainert/Documents/gaia-webplugin/node_modules/@testing-library/dom/dist/query-helpers.js:90:38
     at /Users/gklainert/Documents/gaia-webplugin/node_modules/@testing-library/dom/dist/query-helpers.js:62:17
     at /Users/gklainert/Documents/gaia-webplugin/node_modules/@testing-library/dom/dist/query-helpers.js:111:19
-    at Object.&lt;anonymous&gt; (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidget.test.tsx:250:28)
+    at Object.&lt;anonymous&gt; (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidget.test.tsx:250:28)
     at Promise.then.completed (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-circus/build/utils.js:391:28)
     at new Promise (&lt;anonymous&gt;)
     at callAsyncCircusFn (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-circus/build/utils.js:316:10)
@@ -1929,19 +1929,19 @@ Snapshot name: `GaiaWidget marks widget as ready after fetching critical data 1`
     at runTest (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-runner/build/runTest.js:475:34)
     at Object.worker (/Users/gklainert/.local/share/appf-tools/@appfabric/plugin-cli/v_gt__eq_4.0.0__lt_5.0.0_0/package/node_modules/jest-runner/build/testWorker.js:133:12)</failure>
     </testcase>
-    <testcase classname="GaiaWidget componentDidMount calls ready and logs" name="GaiaWidget componentDidMount calls ready and logs" time="0">
+    <testcase classname="OlorinWidget componentDidMount calls ready and logs" name="OlorinWidget componentDidMount calls ready and logs" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget getInvestigationIdFromUrl returns null if not present" name="GaiaWidget getInvestigationIdFromUrl returns null if not present" time="0">
+    <testcase classname="OlorinWidget getInvestigationIdFromUrl returns null if not present" name="OlorinWidget getInvestigationIdFromUrl returns null if not present" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget setInvestigationIdInUrl sets investigationId in URL" name="GaiaWidget setInvestigationIdInUrl sets investigationId in URL" time="0">
+    <testcase classname="OlorinWidget setInvestigationIdInUrl sets investigationId in URL" name="OlorinWidget setInvestigationIdInUrl sets investigationId in URL" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget fetchCriticalData resolves correctly" name="GaiaWidget fetchCriticalData resolves correctly" time="0">
+    <testcase classname="OlorinWidget fetchCriticalData resolves correctly" name="OlorinWidget fetchCriticalData resolves correctly" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget switches tabs with no investigationId in URL" name="GaiaWidget switches tabs with no investigationId in URL" time="0.042">
+    <testcase classname="OlorinWidget switches tabs with no investigationId in URL" name="OlorinWidget switches tabs with no investigationId in URL" time="0.042">
     </testcase>
   </testsuite>
   <testsuite name="AgentDetailsTable" errors="0" failures="0" skipped="7" timestamp="2025-06-03T18:34:16" time="0.92" tests="42">
@@ -3641,23 +3641,23 @@ Received has value: null
     <testcase classname="AgentLogSidebar advanced coverage does not render sidebar if shouldRender is false" name="AgentLogSidebar advanced coverage does not render sidebar if shouldRender is false" time="0.004">
     </testcase>
   </testsuite>
-  <testsuite name="GaiaWidget class direct" errors="0" failures="1" skipped="0" timestamp="2025-06-03T18:34:11" time="7.103" tests="5">
-    <testcase classname="GaiaWidget class direct constructor sets initial state" name="GaiaWidget class direct constructor sets initial state" time="0">
+  <testsuite name="OlorinWidget class direct" errors="0" failures="1" skipped="0" timestamp="2025-06-03T18:34:11" time="7.103" tests="5">
+    <testcase classname="OlorinWidget class direct constructor sets initial state" name="OlorinWidget class direct constructor sets initial state" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class direct handleWidgetDone calls done()" name="GaiaWidget class direct handleWidgetDone calls done()" time="0.002">
+    <testcase classname="OlorinWidget class direct handleWidgetDone calls done()" name="OlorinWidget class direct handleWidgetDone calls done()" time="0.002">
     </testcase>
-    <testcase classname="GaiaWidget class direct handleWidgetError calls err()" name="GaiaWidget class direct handleWidgetError calls err()" time="0.001">
+    <testcase classname="OlorinWidget class direct handleWidgetError calls err()" name="OlorinWidget class direct handleWidgetError calls err()" time="0.001">
     </testcase>
-    <testcase classname="GaiaWidget class direct handleCreateInvestigation sets state and updates URL" name="GaiaWidget class direct handleCreateInvestigation sets state and updates URL" time="0.001">
+    <testcase classname="OlorinWidget class direct handleCreateInvestigation sets state and updates URL" name="OlorinWidget class direct handleCreateInvestigation sets state and updates URL" time="0.001">
     </testcase>
-    <testcase classname="GaiaWidget class direct componentDidMount calls ready and logs" name="GaiaWidget class direct componentDidMount calls ready and logs" time="0.001">
+    <testcase classname="OlorinWidget class direct componentDidMount calls ready and logs" name="OlorinWidget class direct componentDidMount calls ready and logs" time="0.001">
       <failure>Error: expect(jest.fn()).toHaveBeenCalled()
 
 Expected number of calls: &gt;= 1
 Received number of calls:    0
-    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidgetDirect.test.ts:44:22
+    at /Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidgetDirect.test.ts:44:22
     at Generator.next (&lt;anonymous&gt;)
-    at fulfilled (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/GaiaWidgetDirect.test.ts:5:58)
+    at fulfilled (/Users/gklainert/Documents/gaia-webplugin/test/unit/widgets/gaia/OlorinWidgetDirect.test.ts:5:58)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)</failure>
     </testcase>
   </testsuite>
@@ -3840,7 +3840,7 @@ Received number of calls:    0
     </testcase>
     <testcase classname="GAIAService generateRequestOptions returns correct headers without originatingIp" name="GAIAService generateRequestOptions returns correct headers without originatingIp" time="0">
     </testcase>
-    <testcase classname="GAIAService getApiConfig returns config for each GaiaApi" name="GAIAService getApiConfig returns config for each GaiaApi" time="0.001">
+    <testcase classname="GAIAService getApiConfig returns config for each OlorinApi" name="GAIAService getApiConfig returns config for each OlorinApi" time="0.001">
     </testcase>
     <testcase classname="GAIAService GAIAService constructor sets useMock to true when passed" name="GAIAService GAIAService constructor sets useMock to true when passed" time="0.001">
     </testcase>
@@ -4198,26 +4198,26 @@ Received number of calls:    0
     <testcase classname="InvestigationPage coverage boost handles empty/invalid investigationId prop" name="InvestigationPage coverage boost handles empty/invalid investigationId prop" time="0.009">
     </testcase>
   </testsuite>
-  <testsuite name="GaiaWidget class" errors="0" failures="0" skipped="3" timestamp="2025-06-03T18:34:16" time="3.607" tests="9">
-    <testcase classname="GaiaWidget class calls ready()" name="GaiaWidget class calls ready()" time="0">
+  <testsuite name="OlorinWidget class" errors="0" failures="0" skipped="3" timestamp="2025-06-03T18:34:16" time="3.607" tests="9">
+    <testcase classname="OlorinWidget class calls ready()" name="OlorinWidget class calls ready()" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class calls done()" name="GaiaWidget class calls done()" time="0">
+    <testcase classname="OlorinWidget class calls done()" name="OlorinWidget class calls done()" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class calls err()" name="GaiaWidget class calls err()" time="0.001">
+    <testcase classname="OlorinWidget class calls err()" name="OlorinWidget class calls err()" time="0.001">
     </testcase>
-    <testcase classname="GaiaWidget class calls handleWidgetDone()" name="GaiaWidget class calls handleWidgetDone()" time="0">
+    <testcase classname="OlorinWidget class calls handleWidgetDone()" name="OlorinWidget class calls handleWidgetDone()" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class calls handleWidgetError()" name="GaiaWidget class calls handleWidgetError()" time="0">
+    <testcase classname="OlorinWidget class calls handleWidgetError()" name="OlorinWidget class calls handleWidgetError()" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class calls handleCreateInvestigation()" name="GaiaWidget class calls handleCreateInvestigation()" time="0">
+    <testcase classname="OlorinWidget class calls handleCreateInvestigation()" name="OlorinWidget class calls handleCreateInvestigation()" time="0">
     </testcase>
-    <testcase classname="GaiaWidget class calls handleTabChange()" name="GaiaWidget class calls handleTabChange()" time="0">
+    <testcase classname="OlorinWidget class calls handleTabChange()" name="OlorinWidget class calls handleTabChange()" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget class calls componentDidMount()" name="GaiaWidget class calls componentDidMount()" time="0">
+    <testcase classname="OlorinWidget class calls componentDidMount()" name="OlorinWidget class calls componentDidMount()" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="GaiaWidget class calls componentWillUnmount()" name="GaiaWidget class calls componentWillUnmount()" time="0">
+    <testcase classname="OlorinWidget class calls componentWillUnmount()" name="OlorinWidget class calls componentWillUnmount()" time="0">
       <skipped/>
     </testcase>
   </testsuite>

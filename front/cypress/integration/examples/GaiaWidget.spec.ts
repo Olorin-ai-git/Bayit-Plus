@@ -1,6 +1,6 @@
 // / <reference types="Cypress" />
 
-context('GaiaWidget.tsx', () => {
+context('OlorinWidget.tsx', () => {
   // If cypress intends to run against a remote shell - invoke a simple test and eject early
   const { USE_REMOTE, PLUGIN_URL } = Cypress.env();
   if (USE_REMOTE) {
