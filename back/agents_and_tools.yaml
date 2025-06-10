@@ -20,3 +20,11 @@ tools:
         path: "/v1/knowledge/search"
         method: "POST"
         description: "Search the knowledge base"
+  - name: "snowflake-query"
+    description: "Execute SQL queries against Snowflake"
+    version: "1.0.0"
+    endpoints:
+      - name: "query"
+        path: "/v1/snowflake/query"
+        method: "POST"
+        description: "Run a SQL query in Snowflake"

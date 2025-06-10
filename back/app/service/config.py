@@ -3,8 +3,7 @@ from functools import lru_cache
 from typing import List, Optional, Dict
 
 from fastapi import Request
-from pydantic import Field, BaseModel
-from pydantic_settings import BaseSettings
+from pydantic import Field, BaseModel, BaseSettings
 
 preprod_splunk_index: str = "rss-e2eidx"
 preprod_splunk_host: str = "splunk-rest-us-east-2.e2e.cmn.cto.a.intuit.com"
@@ -62,6 +61,38 @@ class SvcSettings(BaseSettings):
         env="SPLUNK_PASSWORD",
     )
 
+    # Snowflake connection settings
+    snowflake_account: Optional[str] = Field(
+        None,
+        description="Snowflake account name",
+        env="SNOWFLAKE_ACCOUNT",
+    )
+    snowflake_user: Optional[str] = Field(
+        None,
+        description="Snowflake username",
+        env="SNOWFLAKE_USER",
+    )
+    snowflake_password: Optional[str] = Field(
+        None,
+        description="Snowflake password",
+        env="SNOWFLAKE_PASSWORD",
+    )
+    snowflake_warehouse: Optional[str] = Field(
+        None,
+        description="Snowflake warehouse",
+        env="SNOWFLAKE_WAREHOUSE",
+    )
+    snowflake_database: Optional[str] = Field(
+        None,
+        description="Snowflake database",
+        env="SNOWFLAKE_DATABASE",
+    )
+    snowflake_schema: Optional[str] = Field(
+        None,
+        description="Snowflake schema",
+        env="SNOWFLAKE_SCHEMA",
+    )
+
     enabled_tool_list: List[str] = [
         "QBRetrieverTool",
         "TTRetrieverTool",
@@ -69,6 +100,7 @@ class SvcSettings(BaseSettings):
         "CdcUserTool",
         "CdcCompanyTool",
         "OIITool",
+        "SnowflakeQueryTool",
     ]
 
 
