@@ -117,3 +117,9 @@ Learn more about
 For support related to the [AppFabric architecture](http://in/uxfabric/), check
 out [StackOverflow](https://stackoverflow.intuit.com/questions/tagged/1918) or
 ask us a question on [Slack](https://intuit-teams.slack.com/archives/C3JK09N5D)
+
+## Progress Webhook
+
+Run `npm run webhook` to start a local HTTP server that listens for progress
+events on `POST /progress`. The backend can post agent execution updates to this
+endpoint so the UI can display real-time status.

@@ -98,7 +98,7 @@ except Exception as e:
         llm_with_tools = llm
 
 
-def assistant(state: MessagesState, config: RunnableConfig):
+async def assistant(state: MessagesState, config: RunnableConfig):
     from app.models.agent_context import AgentContext
 
     agent_context: AgentContext = config["configurable"]["agent_context"]
@@ -106,6 +106,9 @@ def assistant(state: MessagesState, config: RunnableConfig):
     logger.debug(f"LangGraph State={state}")
 
     messages = []
+    from app.service.agent_service import send_progress
+
+    await send_progress("node_start", {"node": "assistant"})
 
     messages_from_checkpoint = state["messages"]
     messages.extend(messages_from_checkpoint)
@@ -126,7 +129,7 @@ def assistant(state: MessagesState, config: RunnableConfig):
     # )
     # messages.extend(messages_from_long_term)
 
-    return {
+    result = {
         "messages": [
             llm_with_tools.invoke(
                 [sys_msg] + messages,
@@ -135,6 +138,8 @@ def assistant(state: MessagesState, config: RunnableConfig):
             )
         ]
     }
+    await send_progress("node_end", {"node": "assistant"})
+    return result
 
 
 def convert_interaction_to_langgraph_messages(
@@ -163,9 +168,17 @@ def create_and_get_agent_graph():
     builder.add_node("assistant", assistant)
 
     # Add the tools node with error handling
+    from app.service.agent_service import send_progress
     try:
-        tool_node = ToolNode(tools)
-        builder.add_node("tools", tool_node)
+        raw_tool_node = ToolNode(tools)
+
+        async def tools_wrapper(state: MessagesState, config: RunnableConfig):
+            await send_progress("node_start", {"node": "tools"})
+            result = await raw_tool_node(state, config)
+            await send_progress("node_end", {"node": "tools"})
+            return result
+
+        builder.add_node("tools", tools_wrapper)
     except Exception as e:
         logger.error(f"Error creating ToolNode: {e}")
         # Create a filtered list of tools that can be successfully processed
@@ -180,8 +193,15 @@ def create_and_get_agent_graph():
                 pass
 
         # Create a ToolNode with only the working tools
-        tool_node = ToolNode(filtered_tools)
-        builder.add_node("tools", tool_node)
+        raw_tool_node = ToolNode(filtered_tools)
+
+        async def tools_wrapper(state: MessagesState, config: RunnableConfig):
+            await send_progress("node_start", {"node": "tools"})
+            result = await raw_tool_node(state, config)
+            await send_progress("node_end", {"node": "tools"})
+            return result
+
+        builder.add_node("tools", tools_wrapper)
 
     # Define edges: these determine how the control flow moves
     builder.add_edge(START, "assistant")

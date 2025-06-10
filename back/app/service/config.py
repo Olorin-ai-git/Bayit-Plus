@@ -71,6 +71,9 @@ class SvcSettings(BaseSettings):
         "OIITool",
     ]
 
+    # Optional webhook for progress events
+    progress_webhook_url: Optional[str] = None
+
 
 # see https://fastapi.tiangolo.com/advanced/settings/#settings-in-a-dependency
 @lru_cache(maxsize=1)

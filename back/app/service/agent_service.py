@@ -1,5 +1,8 @@
 import logging
 import os
+from typing import Any, Dict
+
+from aiohttp import ClientSession
 
 from fastapi import Request
 from langchain_core.messages import HumanMessage
@@ -25,8 +28,25 @@ logger = logging.getLogger(__name__)
 settings_for_env = get_settings_for_env()
 
 
+async def send_progress(event: str, data: Dict[str, Any] | None = None) -> None:
+    """Send a progress event to the configured webhook if available."""
+    webhook = settings_for_env.progress_webhook_url
+    if not webhook:
+        return
+    payload = {"event": event}
+    if data is not None:
+        payload["data"] = data
+    async with ClientSession() as session:
+        try:
+            await session.post(webhook, json=payload)
+        except Exception:
+            logger.exception("Failed to send progress webhook")
+
+
 async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, str):
     messages = [HumanMessage(content=agent_context.input)]
+
+    await send_progress("graph_start", {"thread_id": agent_context.thread_id})
 
     env = os.getenv("APP_ENV", "local")
 
@@ -72,6 +92,10 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
         else:
             output_content = result
             trace_id = None
+        await send_progress(
+            "graph_end",
+            {"thread_id": agent_context.thread_id, "trace_id": trace_id},
+        )
     except AuthenticationError as ex:
         logger.exception(f"Client Error: {ex}")
         raise AuthorizationError(ex)
