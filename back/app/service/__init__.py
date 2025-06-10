@@ -148,9 +148,9 @@ async def on_shutdown(app: FastAPI):
     pass
 
 
-class GaiaApplication:
+class OlorinApplication:
     """
-    Central application orchestrator for Gaia Fraud Detection System.
+    Central application orchestrator for Olorin Fraud Detection System.
     Encapsulates agent coordination, risk assessment, and exposes the FastAPI app.
     """
 

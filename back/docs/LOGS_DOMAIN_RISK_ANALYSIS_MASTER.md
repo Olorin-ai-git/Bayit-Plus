@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Gaia fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
+This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Olorin fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
 
 ## Table of Contents
 

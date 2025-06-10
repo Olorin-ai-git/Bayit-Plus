@@ -1077,14 +1077,14 @@ import locationMock from '../../mock/location.json';
 &nbsp;
 &nbsp;
 /**
- * The available Gaia API endpoints.
+ * The available Olorin API endpoints.
  */
-type GaiaApi = 'getOii' | 'assessRisk' | 'analyzeNetwork' | 'analyzeLocation' | 'analyzeDevice' | 'analyzeLogs';
+type OlorinApi = 'getOii' | 'assessRisk' | 'analyzeNetwork' | 'analyzeLocation' | 'analyzeDevice' | 'analyzeLogs';
 &nbsp;
 /**
- * Configuration for each Gaia API endpoint.
+ * Configuration for each Olorin API endpoint.
  */
-const GAIA_CONFIG: Record&lt;GaiaApi, ApiMethod&gt; = {
+const GAIA_CONFIG: Record&lt;OlorinApi, ApiMethod&gt; = {
   getOii: {
     version: '',
     apiPath: 'api/oii',
@@ -1124,7 +1124,7 @@ const GAIA_CONFIG: Record&lt;GaiaApi, ApiMethod&gt; = {
 };
 &nbsp;
 /**
- * Generate required request options for Gaia API calls.
+ * Generate required request options for Olorin API calls.
  * @param {string} [originatingIp] - The originating IP address.
  * @returns {any} All options for the request.
  */
@@ -1140,14 +1140,14 @@ export const generateRequestOptions = (
 });
 &nbsp;
 /**
- * Get config for specified Gaia API.
- * @param {GaiaApi} key - Key of config.
+ * Get config for specified Olorin API.
+ * @param {OlorinApi} key - Key of config.
  * @returns {ApiMethod} API config.
  */
-export const getApiConfig = (key: GaiaApi): ApiMethod =&gt; GAIA_CONFIG[key];
+export const getApiConfig = (key: OlorinApi): ApiMethod =&gt; GAIA_CONFIG[key];
 &nbsp;
 /**
- * Gaia service to call Gaia APIs.
+ * Olorin service to call Olorin APIs.
  */
 class GAIAService {
   private sandbox: Sandbox;
@@ -1169,15 +1169,15 @@ class GAIAService {
   }
 &nbsp;
   /**
-   * Generic GET request to a Gaia API endpoint.
+   * Generic GET request to a Olorin API endpoint.
    * @param {string} userId - The user ID.
-   * @param {GaiaApi} action - The Gaia API action.
+   * @param {OlorinApi} action - The Olorin API action.
    * @param {Record&lt;string, string&gt;} [queryParams] - Optional query parameters to append to the path.
    * @returns {Promise&lt;RestResponse&gt;} The REST response.
    */
-  async get(userId: string, action: GaiaApi, queryParams?: Record&lt;string, string&gt;): Promise&lt;RestResponse&gt; {
+  async get(userId: string, action: OlorinApi, queryParams?: Record&lt;string, string&gt;): Promise&lt;RestResponse&gt; {
     this.sandbox.logger.log(
-      `feature=GaiaService, action=${action}, userId=${userId}`,
+      `feature=OlorinService, action=${action}, userId=${userId}`,
     );
     const options = generateRequestOptions();
     const apiConfig = getApiConfig(action);
@@ -1210,7 +1210,7 @@ class GAIAService {
    * @param {string} userId - The user ID.
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise&lt;RestResponse&gt;} Gaia state response.
+   * @returns {Promise&lt;RestResponse&gt;} Olorin state response.
    */
   async assessRisk(userId: string, investigationId: string, timeRange: string = <span class="branch-0 cbranch-no" title="branch not covered" >'30d')</span>: Promise&lt;RestResponse&gt; {
     if (this.useMock) {
@@ -1498,7 +1498,7 @@ class GAIAService {
    * @param {string} userId - The user ID.
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise&lt;RestResponse&gt;} Gaia state response.
+   * @returns {Promise&lt;RestResponse&gt;} Olorin state response.
    */
   async analyzeNetwork(userId: string, investigationId: string, timeRange: string = '30d'): Promise&lt;RestResponse&gt; {
     if (this.useMock) {
@@ -1513,7 +1513,7 @@ class GAIAService {
    * @param {string} userId - The user ID.
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise&lt;RestResponse&gt;} Gaia state response.
+   * @returns {Promise&lt;RestResponse&gt;} Olorin state response.
    */
   async analyzeLocation(userId: string, investigationId: string, timeRange: string = '30d'): Promise&lt;RestResponse&gt; {
     if (this.useMock) {
@@ -1528,7 +1528,7 @@ class GAIAService {
    * @param {string} userId - The user ID.
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise&lt;RestResponse&gt;} Gaia state response.
+   * @returns {Promise&lt;RestResponse&gt;} Olorin state response.
    */
   async analyzeDevice(userId: string, investigationId: string, timeRange: string = '30d'): Promise&lt;RestResponse&gt; {
     if (this.useMock) {
@@ -1543,7 +1543,7 @@ class GAIAService {
    * @param {string} userId - The user ID.
    * @param {string} investigationId - The investigation ID (mandatory).
    * @param {string} [timeRange='30d'] - The time range for the analysis.
-   * @returns {Promise&lt;RestResponse&gt;} Gaia state response.
+   * @returns {Promise&lt;RestResponse&gt;} Olorin state response.
    */
   async analyzeLogs(userId: string, investigationId: string, timeRange: string = '30d'): Promise&lt;RestResponse&gt; {
     if (this.useMock) {

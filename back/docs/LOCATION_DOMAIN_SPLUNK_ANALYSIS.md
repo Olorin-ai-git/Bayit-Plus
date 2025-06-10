@@ -14,7 +14,7 @@
 
 ## Overview
 
-The Location Domain in the Gaia fraud detection system uses Splunk to retrieve and analyze location-based transaction data for risk assessment. The implementation is centered around the `LocationDataClient` class which constructs complex SPL (Search Processing Language) queries to extract geographic and device information from transaction logs.
+The Location Domain in the Olorin fraud detection system uses Splunk to retrieve and analyze location-based transaction data for risk assessment. The implementation is centered around the `LocationDataClient` class which constructs complex SPL (Search Processing Language) queries to extract geographic and device information from transaction logs.
 
 **Key Purpose**: Detect geographic anomalies, impossible travel patterns, and location-based fraud indicators by analyzing user transaction locations against their registered address.
 

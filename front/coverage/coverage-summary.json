@@ -204,7 +204,7 @@
     "statements": { "total": 5, "covered": 5, "skipped": 0, "pct": 100 },
     "branches": { "total": 2, "covered": 2, "skipped": 0, "pct": 100 }
   },
-  "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/GaiaWidget.tsx": {
+  "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/OlorinWidget.tsx": {
     "lines": { "total": 46, "covered": 0, "skipped": 0, "pct": 0 },
     "functions": { "total": 12, "covered": 0, "skipped": 0, "pct": 0 },
     "statements": { "total": 47, "covered": 0, "skipped": 0, "pct": 0 },

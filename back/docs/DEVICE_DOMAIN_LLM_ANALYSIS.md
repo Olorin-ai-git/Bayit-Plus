@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Device Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for device-based risk assessment using Large Language Models, emphasizing device fingerprinting and geographic correlation analysis.
+This document provides a comprehensive technical analysis of the **Device Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for device-based risk assessment using Large Language Models, emphasizing device fingerprinting and geographic correlation analysis.
 
 ## Table of Contents
 
@@ -161,7 +161,7 @@ if was_trimmed:
 
 ### 3.1 Device-Specialized System Prompt
 
-The Device domain uses the most sophisticated system prompt in the Gaia system:
+The Device domain uses the most sophisticated system prompt in the Olorin system:
 
 ```python
 SYSTEM_PROMPT_FOR_DEVICE_RISK = (
@@ -650,7 +650,7 @@ logger.error(f"LLM invocation or validation error for device risk for {user_id}:
 
 ### 10.5 Fraud Detection Excellence
 
-The Device domain represents the most sophisticated fraud detection capability in the Gaia system:
+The Device domain represents the most sophisticated fraud detection capability in the Olorin system:
 
 - **Highest Risk Detection**: 0.85 risk level with 0.9 confidence demonstrated
 - **Geographic Precision**: City-level impossible travel detection

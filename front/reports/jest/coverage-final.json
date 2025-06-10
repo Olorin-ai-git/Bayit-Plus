@@ -28912,8 +28912,8 @@
     "f": { "0": 81 },
     "b": { "0": [1], "1": [80] }
   },
-  "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/GaiaWidget.tsx": {
-    "path": "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/GaiaWidget.tsx",
+  "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/OlorinWidget.tsx": {
+    "path": "/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/OlorinWidget.tsx",
     "statementMap": {
       "0": {
         "start": { "line": 1, "column": 0 },

@@ -1642,7 +1642,7 @@
     </package>
     <package name="widgets.gaia">
       <metrics statements="126" coveredstatements="43" conditionals="20" coveredconditionals="7" methods="24" coveredmethods="11"/>
-      <file name="GaiaWidget.tsx" path="/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/GaiaWidget.tsx">
+      <file name="OlorinWidget.tsx" path="/Users/gklainert/Documents/gaia-webplugin/src/js/widgets/gaia/OlorinWidget.tsx">
         <metrics statements="46" coveredstatements="43" conditionals="8" coveredconditionals="7" methods="12" coveredmethods="11"/>
         <line num="1" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>

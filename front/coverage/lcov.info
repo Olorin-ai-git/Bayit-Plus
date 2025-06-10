@@ -4105,7 +4105,7 @@ BRF:2
 BRH:1
 end_of_record
 TN:
-SF:src/js/widgets/gaia/GaiaWidget.tsx
+SF:src/js/widgets/gaia/OlorinWidget.tsx
 FN:23,(anonymous_8)
 FN:23,(anonymous_9)
 FN:35,getInvestigationIdFromUrl

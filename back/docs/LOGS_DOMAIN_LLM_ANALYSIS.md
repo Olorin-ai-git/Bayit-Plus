@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
+This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
 
 ## 1. LLM Architecture Overview
 

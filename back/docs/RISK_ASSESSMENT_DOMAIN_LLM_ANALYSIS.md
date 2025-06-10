@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Risk Assessment Domain's LLM Implementation** within the Gaia fraud detection system. The Risk Assessment domain represents the **final aggregation layer** that synthesizes LLM thoughts and risk scores from all individual domains (Device, Location, Network, and Logs) to produce a unified overall risk assessment. This analysis focuses specifically on prompt construction, agent invocation, response processing, and the sophisticated risk aggregation methodologies.
+This document provides a comprehensive technical analysis of the **Risk Assessment Domain's LLM Implementation** within the Olorin fraud detection system. The Risk Assessment domain represents the **final aggregation layer** that synthesizes LLM thoughts and risk scores from all individual domains (Device, Location, Network, and Logs) to produce a unified overall risk assessment. This analysis focuses specifically on prompt construction, agent invocation, response processing, and the sophisticated risk aggregation methodologies.
 
 ## Table of Contents
 
@@ -156,7 +156,7 @@ You are a risk aggregation expert. Given the LLM thoughts and risk scores from e
 
 ### 3.1 Risk Aggregation Expert Prompt
 
-The Risk Assessment domain uses the most **sophisticated meta-analytical system prompt** in the entire Gaia system:
+The Risk Assessment domain uses the most **sophisticated meta-analytical system prompt** in the entire Olorin system:
 
 ```
 You are a risk aggregation expert. Given the LLM thoughts and risk scores from each domain (device, location, network, etc.), produce an overall risk score (0.0-1.0) and an accumulated LLM thoughts summary. Respond as JSON:
@@ -266,7 +266,7 @@ agent_context = AgentContext(
 
 **Agent Name**: `"Intuit.cas.hri.gaia:overall-risk-aggregator"`
 
-This naming convention clearly identifies the agent's role as the final risk aggregation component within the Gaia fraud detection system.
+This naming convention clearly identifies the agent's role as the final risk aggregation component within the Olorin fraud detection system.
 
 ---
 
@@ -543,7 +543,7 @@ investigation = get_investigation(investigation_id)
 
 ## Conclusion
 
-The Risk Assessment Domain represents the **culmination of the Gaia fraud detection system**, implementing the most sophisticated LLM-based risk aggregation architecture. Through its advanced prompt engineering, comprehensive error handling, and intelligent cross-domain synthesis capabilities, it successfully transforms fragmented domain insights into coherent, actionable fraud risk assessments.
+The Risk Assessment Domain represents the **culmination of the Olorin fraud detection system**, implementing the most sophisticated LLM-based risk aggregation architecture. Through its advanced prompt engineering, comprehensive error handling, and intelligent cross-domain synthesis capabilities, it successfully transforms fragmented domain insights into coherent, actionable fraud risk assessments.
 
 **Key Strengths:**
 - **Meta-Analytical Architecture**: Successfully synthesizes complex multi-domain evidence

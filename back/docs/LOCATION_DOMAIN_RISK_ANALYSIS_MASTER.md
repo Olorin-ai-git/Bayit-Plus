@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the Location Domain Risk Analysis implementation in the master branch of the Gaia fraud detection system. The location domain is responsible for analyzing user location patterns, identifying geographic anomalies, and assessing risk through sophisticated LLM-powered analysis combined with vector search capabilities.
+This document provides a comprehensive analysis of the Location Domain Risk Analysis implementation in the master branch of the Olorin fraud detection system. The location domain is responsible for analyzing user location patterns, identifying geographic anomalies, and assessing risk through sophisticated LLM-powered analysis combined with vector search capabilities.
 
 ## Table of Contents
 
