@@ -31,21 +31,13 @@ for this Web Plugin include: _fill this in (screenshots recommended)_
 
 ## Local Development
 
-1. To build this repo, you will need
-   [Plugin-CLI v4](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/webtools-manager)
-   and Node 18. (run `nvm install && nvm use` to switch to the correct Node
-   version)
+1. To build this repo, you will need Node 18 (run `nvm install && nvm use` to
+   switch to the correct Node version)
 1. Clone this repo to your local machine via `git clone`.
 1. In your terminal window, navigate into this repo using `cd`.
 1. Run `yarn` to install dependencies to your repo.
-1. Once you have Plugin-CLI installed, you can proceed to run
-   [`yarn start`](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/commands-overview#plugin-cli-start)
-   to start a
+1. After installing dependencies run `yarn start` to start a
    [local development server](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
-   For local development within an AppFabric Shell, you can proceed to run
-   [`yarn serve`](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/commands-overview#plugin-cli-serve)
-   and follow this
-   [guide](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/usecases/testing-plugin-within-app.md#to-run-a-local-version-of-a-non-deployed-plugin).
 
 ### Next Steps
 
@@ -73,8 +65,6 @@ for this Web Plugin include: _fill this in (screenshots recommended)_
 [Learn more](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-applications/get-started/env-set-up.md?searchTerm=Windows%20Setup#technologies-overview)
 about all the technologies AppFabric Widgets use!
 
-[Learn more](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/cli-used-technologies)
-about the Plugin-CLI's technologies!
 
 ## Contributing
 

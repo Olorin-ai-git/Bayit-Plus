@@ -63,13 +63,8 @@ The team that owns this web plugin is expected to practice the following:
 
 1. In your terminal window, navigate into this repo using `cd`
 1. Run `yarn` to install dependencies to your repo
-1. Once you have Plugin-CLI installed, you can proceed to run
-   [`yarn serve`](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/commands-overview/#plugin-cli-serve)
-   to start a
+1. After installing dependencies run `yarn start` to start a
    [local development server](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
-   For local development within an AppFabric Shell, you can proceed to run
-   `yarn serve` and follow this
-   [guide](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-local-plugin-in-a-remote-application-with-the-remote-dev-server).
 1. Make your changes including related tests and documentation
 
 1. Make sure you build and test your changes

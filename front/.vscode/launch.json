@@ -1,25 +1,13 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
       "type": "chrome",
       "request": "launch",
-      "name": "chrome remote server debug",
-      "url": "<INSERT WEB APP URL>",
-      "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "start remote server",
-      "postDebugTask": "Terminate All Tasks"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "chrome local server debug",
+      "name": "chrome debug",
       "url": "http://localhost:34212",
       "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "start local server",
+      "preLaunchTask": "start dev server",
       "postDebugTask": "Terminate All Tasks"
     }
   ]
