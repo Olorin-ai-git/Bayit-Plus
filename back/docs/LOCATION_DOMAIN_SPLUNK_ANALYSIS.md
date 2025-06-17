@@ -14,7 +14,7 @@
 
 ## Overview
 
-The Location Domain in the Olorin fraud detection system uses Splunk to retrieve and analyze location-based transaction data for risk assessment. The implementation is centered around the `LocationDataClient` class which constructs complex SPL (Search Processing Language) queries to extract geographic and device information from transaction logs.
+The Location Domain in the Gaia fraud detection system uses Splunk to retrieve and analyze location-based transaction data for risk assessment. The implementation is centered around the `LocationDataClient` class which constructs complex SPL (Search Processing Language) queries to extract geographic and device information from transaction logs.
 
 **Key Purpose**: Detect geographic anomalies, impossible travel patterns, and location-based fraud indicators by analyzing user transaction locations against their registered address.
 
@@ -46,7 +46,7 @@ The location domain constructs its SPL query in the `LocationDataClient.get_loca
 
 ```python
 spl_query = (
-    f"search index={index} intuit_userid={user_id} "
+    f"search index={index} olorin_userid={user_id} "
     # Field extraction using rex commands
     # URL decoding using eval commands  
     # Final field selection using table command
@@ -57,11 +57,11 @@ spl_query = (
 
 #### 1. Base Search
 ```spl
-search index=rss-e2eidx intuit_userid=4621097846089147992
+search index=rss-e2eidx olorin_userid=4621097846089147992
 ```
 - **Purpose**: Filter records for specific user from the RSS event index
 - **Index**: `rss-e2eidx` (from settings)
-- **Filter**: `intuit_userid` matches the target user
+- **Filter**: `olorin_userid` matches the target user
 
 #### 2. Field Extraction (rex commands)
 
@@ -410,7 +410,7 @@ async def search(self, query: str, time_range: str = "-365d"):
 1. **Time Range Filtering**: Uses `-365d` default time range
 2. **Field Selection**: `table` command limits returned fields
 3. **Index Specification**: Targets specific index (`rss-e2eidx`)
-4. **User Filtering**: Early filtering by `intuit_userid`
+4. **User Filtering**: Early filtering by `olorin_userid`
 
 ### Asynchronous Execution
 

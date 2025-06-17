@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Olorin fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
+This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Gaia fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
 
 ## Table of Contents
 
@@ -81,12 +81,12 @@ The Logs domain implements a comprehensive authentication analysis pipeline desi
 #### Primary Authentication Fields
 ```python
 AUTHENTICATION_FIELDS = [
-    'intuit_userid',
+    'olorin_userid',
     'email_address', 
-    'intuit_username',
-    'intuit_offeringId',
+    'olorin_username',
+    'olorin_offeringId',
     'transaction',           # Key field for authentication events
-    'intuit_originatingip',
+    'olorin_originatingip',
     'input_ip_isp',
     'true_ip_city',
     'input_ip_region', 
@@ -174,11 +174,11 @@ def build_authentication_query(user_id: str, time_range: str) -> str:
     """
     return f"""
     search index="rss-e2eidx" 
-    intuit_userid="{user_id}" 
+    olorin_userid="{user_id}" 
     earliest=-{time_range} latest=now
     transaction IN ("auth_passed", "challenge_failed_incorrect_password", 
                    "challenge_initiated", "password_passed", "account_creation_passed")
-    | stats values(*) as * by intuit_userid
+    | stats values(*) as * by olorin_userid
     | eval failed_auth_count=mvcount(mvfilter(match(transaction, "challenge_failed")))
     | eval successful_auth_count=mvcount(mvfilter(match(transaction, "auth_passed")))
     | eval auth_success_rate=successful_auth_count/(successful_auth_count+failed_auth_count)
@@ -189,14 +189,14 @@ def build_authentication_query(user_id: str, time_range: str) -> str:
 ```splunk
 | stats 
     values(email_address) as email_addresses,
-    values(intuit_username) as usernames,
-    values(intuit_offeringId) as offering_ids,
+    values(olorin_username) as usernames,
+    values(olorin_offeringId) as offering_ids,
     values(transaction) as transactions,
-    values(intuit_originatingip) as originating_ips,
+    values(olorin_originatingip) as originating_ips,
     values(true_ip_city) as cities,
     values(fuzzy_device_id) as device_ids,
     values(tm_sessionid) as session_ids
-    by intuit_userid
+    by olorin_userid
 | eval geographic_diversity=mvcount(mvdedup(cities))
 | eval device_count=mvcount(mvdedup(device_ids))
 | eval session_count=mvcount(mvdedup(session_ids))
@@ -248,7 +248,7 @@ def analyze_geographic_auth_patterns(auth_data: Dict[str, Any]) -> Dict[str, Any
     Analyze geographic patterns in authentication events
     """
     cities = auth_data.get('true_ip_city', [])
-    ips = auth_data.get('intuit_originatingip', [])
+    ips = auth_data.get('olorin_originatingip', [])
     
     # Clean and normalize city data
     unique_cities = list(set([c.lower().strip() for c in cities if c and c.strip()]))
@@ -547,13 +547,13 @@ def construct_auth_prompt_data(
         sanitized_record = {}
         
         # Priority fields that are always included
-        priority_fields = ['intuit_userid', 'transaction', 'true_ip_city', 'fuzzy_device_id']
+        priority_fields = ['olorin_userid', 'transaction', 'true_ip_city', 'fuzzy_device_id']
         for field in priority_fields:
             if record.get(field):
                 sanitized_record[field] = record[field]
         
         # Secondary fields included if space allows
-        secondary_fields = ['intuit_username', 'intuit_originatingip', 'tm_sessionid']
+        secondary_fields = ['olorin_username', 'olorin_originatingip', 'tm_sessionid']
         for field in secondary_fields:
             if record.get(field) and field not in sanitized_record:
                 sanitized_record[field] = record[field]
@@ -667,8 +667,8 @@ def prioritize_auth_records(auth_records: List[Dict]) -> List[Dict]:
 {
   "splunk_data": [
     {
-      "intuit_userid": "4621097846089147992",
-      "values(intuit_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+      "olorin_userid": "4621097846089147992",
+      "values(olorin_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
       "values(transaction)": [
         "account_creation_passed",
         "auth_passed", 
@@ -676,7 +676,7 @@ def prioritize_auth_records(auth_records: List[Dict]) -> List[Dict]:
         "challenge_initiated",
         "password_passed"
       ],
-      "values(intuit_originatingip)": [
+      "values(olorin_originatingip)": [
         "123.45.67.89",
         "207.207.177.101", 
         "207.207.177.21",

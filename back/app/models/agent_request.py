@@ -42,7 +42,9 @@ class Metadata(BaseModel):
     supported_output_formats: Optional[List[SupportedOutputFormat]] = Field(
         alias="supportedOutputFormats", default_factory=list
     )
-    additional_metadata: Optional[Dict[str, str]] = Field(alias="additionalMetadata")
+    additional_metadata: Optional[Dict[str, str]] = Field(
+        alias="additionalMetadata", default=None
+    )
 
 
 class Context(BaseModel):

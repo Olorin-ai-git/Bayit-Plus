@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Device Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for device-based risk assessment using Large Language Models, emphasizing device fingerprinting and geographic correlation analysis.
+This document provides a comprehensive technical analysis of the **Device Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for device-based risk assessment using Large Language Models, emphasizing device fingerprinting and geographic correlation analysis.
 
 ## Table of Contents
 
@@ -161,7 +161,7 @@ if was_trimmed:
 
 ### 3.1 Device-Specialized System Prompt
 
-The Device domain uses the most sophisticated system prompt in the Olorin system:
+The Device domain uses the most sophisticated system prompt in the Gaia system:
 
 ```python
 SYSTEM_PROMPT_FOR_DEVICE_RISK = (
@@ -263,7 +263,7 @@ The prompt defines comprehensive risk categorization:
 The system retrieves authentication tokens for secure LLM access:
 
 ```python
-app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
+app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
 ```
 
 ### 4.2 Agent Context Construction
@@ -273,26 +273,26 @@ A specialized agent context is created for device risk analysis:
 ```python
 agent_context_for_device_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:device-risk-analyzer",
+    agent_name="Olorin.cas.hri.gaia:device-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"device-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid=request.headers.get(
-            "intuit-tid", f"gaia-device-risk-{user_id}"
+    olorin_header=OlorinHeader(
+        olorin_tid=request.headers.get(
+            "olorin-tid", f"gaia-device-risk-{user_id}"
         ),
-        intuit_originating_assetalias=request.headers.get(
-            "intuit_originating_assetalias",
-            settings.intuit_originating_assetalias,
+        olorin_originating_assetalias=request.headers.get(
+            "olorin_originating_assetalias",
+            settings.olorin_originating_assetalias,
         ),
-        intuit_experience_id=request.headers.get(
-            "intuit_experience_id", settings.intuit_experience_id
+        olorin_experience_id=request.headers.get(
+            "olorin_experience_id", settings.olorin_experience_id
         ),
         auth_context=AuthContext(
-            intuit_user_id=app_intuit_userid,
-            intuit_user_token=app_intuit_token,
-            intuit_realmid=app_intuit_realmid,
+            olorin_user_id=app_olorin_userid,
+            olorin_user_token=app_olorin_token,
+            olorin_realmid=app_olorin_realmid,
         ),
     ),
 )
@@ -300,9 +300,9 @@ agent_context_for_device_risk = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a device-specific naming scheme: `"Intuit.cas.hri.gaia:device-risk-analyzer"`
+The agent uses a device-specific naming scheme: `"Olorin.cas.hri.gaia:device-risk-analyzer"`
 
-- **Domain**: `Intuit.cas.hri.gaia`
+- **Domain**: `Olorin.cas.hri.gaia`
 - **Function**: `device-risk-analyzer`
 - **Purpose**: Device fingerprinting and geographic risk analysis
 
@@ -608,7 +608,7 @@ logger.error(f"LLM invocation or validation error for device risk for {user_id}:
 ### 10.2 Security Considerations
 
 #### Data Protection
-- **User Isolation**: Device queries filtered by `intuit_userid`
+- **User Isolation**: Device queries filtered by `olorin_userid`
 - **Connection Security**: Secure Splunk and LLM service connections
 - **Token Management**: Secure authentication token handling
 - **Data Minimization**: Optimized field selection for device analysis
@@ -650,7 +650,7 @@ logger.error(f"LLM invocation or validation error for device risk for {user_id}:
 
 ### 10.5 Fraud Detection Excellence
 
-The Device domain represents the most sophisticated fraud detection capability in the Olorin system:
+The Device domain represents the most sophisticated fraud detection capability in the Gaia system:
 
 - **Highest Risk Detection**: 0.85 risk level with 0.9 confidence demonstrated
 - **Geographic Precision**: City-level impossible travel detection

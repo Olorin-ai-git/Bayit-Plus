@@ -41,10 +41,10 @@ class ListCustomersTool(BaseTool):
         logger.info("Customer Tool: Calling list_customers API (sync)")
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
-        intuit_header = agent_context.get_header()
+        olorin_header = agent_context.get_header()
 
         qbo_service = QBOService()
-        resp = qbo_service.get_customers_sync(intuit_header)
+        resp = qbo_service.get_customers_sync(olorin_header)
         customers = resp["data"]["contacts"]["data"]
         keys_to_select = ["id", "firstName", "lastName", "displayName", "companyName"]
         customers = [
@@ -67,10 +67,10 @@ class ListCustomersTool(BaseTool):
                 raise ValueError("Config is required but was not provided")
 
             agent_context: AgentContext = config["configurable"]["agent_context"]
-            intuit_header = agent_context.get_header()
+            olorin_header = agent_context.get_header()
 
             qbo_service_instance = QBOService()
-            resp = await qbo_service_instance.get_customers(intuit_header)
+            resp = await qbo_service_instance.get_customers(olorin_header)
 
             if not resp or "data" not in resp:
                 raise ValueError("Invalid response from QBO service")

@@ -16,7 +16,8 @@ def settings():
 def app(settings):
     app = create_app(settings)
     # Patch app.state.graph for agent tests
-    app.state.graph = AsyncMock()
+    app.state.graph_parallel = AsyncMock()
+    app.state.graph_sequential = AsyncMock()
 
     # Patch ainvoke to return a valid string for all agent calls
     async def ainvoke(*args, **kwargs):
@@ -42,7 +43,8 @@ def app(settings):
             ]
         }, "test-trace-id"
 
-    app.state.graph.ainvoke.side_effect = ainvoke
+    app.state.graph_parallel.ainvoke.side_effect = ainvoke
+    app.state.graph_sequential.ainvoke.side_effect = ainvoke
     return app
 
 

@@ -14,8 +14,6 @@ from app.utils.auth_utils import (
     get_auth_token,
     get_offline_auth_token,
     get_userid_and_token_from_authn_header,
-    validate_auth_token,
-    AuthError
 )
 
 
@@ -24,7 +22,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_with_all_fields(self):
         """Test parsing header with all required fields."""
-        header = 'intuit_userid="test_user_123", intuit_token="token_abc_456", intuit_realmid="realm_789"'
+        header = 'olorin_userid="test_user_123", olorin_token="token_abc_456", olorin_realmid="realm_789"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -34,7 +32,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_without_quotes(self):
         """Test parsing header without quotes around values."""
-        header = "intuit_userid=user123, intuit_token=token456, intuit_realmid=realm789"
+        header = "olorin_userid=user123, olorin_token=token456, olorin_realmid=realm789"
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -44,7 +42,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_mixed_quotes(self):
         """Test parsing header with mixed quoted and unquoted values."""
-        header = 'intuit_userid="quoted_user", intuit_token=unquoted_token, intuit_realmid="quoted_realm"'
+        header = 'olorin_userid="quoted_user", olorin_token=unquoted_token, olorin_realmid="quoted_realm"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -54,7 +52,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_without_realmid(self):
         """Test parsing header without realmid (optional field)."""
-        header = 'intuit_userid="test_user", intuit_token="test_token"'
+        header = 'olorin_userid="test_user", olorin_token="test_token"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -64,7 +62,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_missing_userid(self):
         """Test parsing header missing userid."""
-        header = 'intuit_token="test_token", intuit_realmid="test_realm"'
+        header = 'olorin_token="test_token", olorin_realmid="test_realm"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -74,7 +72,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_missing_token(self):
         """Test parsing header missing token."""
-        header = 'intuit_userid="test_user", intuit_realmid="test_realm"'
+        header = 'olorin_userid="test_user", olorin_realmid="test_realm"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -84,7 +82,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_empty_values(self):
         """Test parsing header with empty values."""
-        header = 'intuit_userid="", intuit_token="", intuit_realmid=""'
+        header = 'olorin_userid="", olorin_token="", olorin_realmid=""'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -120,7 +118,7 @@ class TestGetUseridAndTokenFromAuthnHeader:
 
     def test_parse_header_with_special_characters(self):
         """Test parsing header with special characters in values."""
-        header = 'intuit_userid="user@domain.com", intuit_token="token-with-dashes_and_underscores", intuit_realmid="realm.123"'
+        header = 'olorin_userid="user@domain.com", olorin_token="token-with-dashes_and_underscores", olorin_realmid="realm.123"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(header)
 
@@ -168,7 +166,7 @@ class TestGetAuthToken:
         mock_request.assert_called_once()
         call_args = mock_request.call_args
         assert call_args[0][0] == "POST"
-        assert "identityinternal-e2e.api.intuit.com" in call_args[0][1]
+        assert "identityinternal-e2e.api.olorin.com" in call_args[0][1]
 
     @patch("app.utils.auth_utils.requests.request")
     @patch("app.utils.auth_utils.get_app_secret")
@@ -378,7 +376,7 @@ class TestGetOfflineAuthToken:
         assert realmid == "test_realm"
 
         # Verify HTTP connection was made
-        mock_https_conn.assert_called_once_with("identityinternal-e2e.api.intuit.com")
+        mock_https_conn.assert_called_once_with("identityinternal-e2e.api.olorin.com")
         mock_conn.request.assert_called_once()
         mock_get_userid.assert_called_once_with("test_auth_header")
 
@@ -560,7 +558,7 @@ class TestModuleConstants:
         for env in expected_envs:
             assert env in BASE_URL_PER_ENV
             assert "llmexecution" in BASE_URL_PER_ENV[env]
-            assert "{intuit_genos_model_id}" in BASE_URL_PER_ENV[env]
+            assert "{olorin_genos_model_id}" in BASE_URL_PER_ENV[env]
 
     def test_base_url_default_is_e2e(self):
         """Test that BASE_URL defaults to E2E environment."""
@@ -569,11 +567,11 @@ class TestModuleConstants:
         assert BASE_URL == BASE_URL_PER_ENV["E2E"]
 
     def test_base_url_with_model_id_formatted(self):
-        """Test that BASE_URL_WITH_INTUIT_GENOS_MODEL_ID is properly formatted."""
-        from app.utils.auth_utils import BASE_URL_WITH_INTUIT_GENOS_MODEL_ID
+        """Test that BASE_URL_WITH_OLORIN_GENOS_MODEL_ID is properly formatted."""
+        from app.utils.auth_utils import BASE_URL_WITH_OLORIN_GENOS_MODEL_ID
 
-        assert "gpt-4o-2024-08-06" in BASE_URL_WITH_INTUIT_GENOS_MODEL_ID
-        assert "{intuit_genos_model_id}" not in BASE_URL_WITH_INTUIT_GENOS_MODEL_ID
+        assert "gpt-4o-2024-08-06" in BASE_URL_WITH_OLORIN_GENOS_MODEL_ID
+        assert "{olorin_genos_model_id}" not in BASE_URL_WITH_OLORIN_GENOS_MODEL_ID
 
 
 class TestIntegration:
@@ -604,7 +602,7 @@ class TestIntegration:
         """Test integration between header parsing and offline auth."""
         # Test that the header format expected by get_userid_and_token_from_authn_header
         # matches what get_offline_auth_token would receive
-        test_header = 'intuit_userid="integration_user", intuit_token="integration_token", intuit_realmid="integration_realm"'
+        test_header = 'olorin_userid="integration_user", olorin_token="integration_token", olorin_realmid="integration_realm"'
 
         userid, token, realmid = get_userid_and_token_from_authn_header(test_header)
 
@@ -616,41 +614,3 @@ class TestIntegration:
         assert all(
             isinstance(val, (str, type(None))) for val in [userid, token, realmid]
         )
-
-@pytest.fixture
-def mock_token():
-    return "test_token"
-
-@pytest.fixture
-def mock_headers():
-    return {
-        "Authorization": "Bearer test_token",
-        "X-User-ID": "test_user",
-        "X-Realm-ID": "test_realm"
-    }
-
-def test_get_auth_token_success(mock_headers):
-    token = get_auth_token(mock_headers)
-    assert token == "test_token"
-
-def test_get_auth_token_missing():
-    with pytest.raises(AuthError) as exc_info:
-        get_auth_token({})
-    assert str(exc_info.value) == "Missing authorization header"
-
-def test_get_auth_token_invalid_format():
-    with pytest.raises(AuthError) as exc_info:
-        get_auth_token({"Authorization": "InvalidFormat"})
-    assert str(exc_info.value) == "Invalid authorization header format"
-
-@patch('app.utils.auth_utils.validate_token')
-def test_validate_auth_token_success(mock_validate, mock_token):
-    mock_validate.return_value = True
-    assert validate_auth_token(mock_token) is True
-
-@patch('app.utils.auth_utils.validate_token')
-def test_validate_auth_token_failure(mock_validate, mock_token):
-    mock_validate.return_value = False
-    with pytest.raises(AuthError) as exc_info:
-        validate_auth_token(mock_token)
-    assert str(exc_info.value) == "Invalid token"

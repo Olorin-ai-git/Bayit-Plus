@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 async def initialize_agent(app: FastAPI):
-    # Initialize the graph.
-    app.state.graph = create_and_get_agent_graph()
-    logger.info("Graph initialized")
+    # Initialize both parallel and sequential graphs
+    app.state.graph_parallel = create_and_get_agent_graph(parallel=True)
+    app.state.graph_sequential = create_and_get_agent_graph(parallel=False)
+    logger.info("Both parallel and sequential graphs initialized")
     app.include_router(agent_router.router)

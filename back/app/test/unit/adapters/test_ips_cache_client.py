@@ -238,7 +238,7 @@ async def test_pipeline_exception(client):
 @pytest.mark.asyncio
 async def test_hset_with_and_without_headers(client):
     with patch.object(client, "_send_request", return_value=None) as mock_send:
-        await client.hset("key", ["field", "value"], intuit_header={"foo": "bar"})
+        await client.hset("key", ["field", "value"], olorin_header={"foo": "bar"})
         await client.hset("key", ["field", "value"])
         assert mock_send.call_count == 2
 
@@ -246,7 +246,7 @@ async def test_hset_with_and_without_headers(client):
 @pytest.mark.asyncio
 async def test_expire_with_and_without_headers(client):
     with patch.object(client, "_send_request", return_value=None) as mock_send:
-        await client.expire("key", 10, intuit_header={"foo": "bar"})
+        await client.expire("key", 10, olorin_header={"foo": "bar"})
         await client.expire("key", 10)
         assert mock_send.call_count == 2
 
@@ -254,6 +254,6 @@ async def test_expire_with_and_without_headers(client):
 @pytest.mark.asyncio
 async def test_zadd_with_and_without_headers(client):
     with patch.object(client, "_send_request", return_value=None) as mock_send:
-        await client.zadd("zset", 1.0, "key", intuit_header={"foo": "bar"})
+        await client.zadd("zset", 1.0, "key", olorin_header={"foo": "bar"})
         await client.zadd("zset", 1.0, "key")
         assert mock_send.call_count == 2

@@ -12,7 +12,7 @@ router = APIRouter(prefix="/v1/example", tags=["example"])
 
 
 class LogLevelResponse(BaseModel):
-    # see https://github.intuit.com/pages/intuit-one-api/one-api-standards-governance/#/REST/guidelines?id=_711-string
+    # see https://github.olorin.com/pages/olorin-one-api/one-api-standards-governance/#/REST/guidelines?id=_711-string
     log_level: str = Field(
         description="The configured log level",
         min_length=1,

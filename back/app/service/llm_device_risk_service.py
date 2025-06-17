@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.device_risk import DeviceSignalRiskLLMAssessment
 from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
@@ -24,7 +24,7 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for device risk assessment."""
-        return "Intuit.cas.hri.gaia:device-risk-analyzer"
+        return "Olorin.cas.hri.gaia:device-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the Pydantic model class for device risk assessment."""
@@ -90,27 +90,70 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
         # For LLM errors, categorize and create intelligent fallback
         risk_factors, summary, thoughts = self.categorize_error(error_message)
 
-        # Create rule-based fallback assessment
+        # Create rule-based fallback assessment with enhanced geographic detection
         fallback_risk_level = 0.0
         if extracted_signals:
             unique_countries = set()
             unique_devices = set()
+            unique_cities = set()
+
             for signal in extracted_signals:
-                if signal.get("true_ip_country"):
-                    unique_countries.add(signal["true_ip_country"])
-                if signal.get("fuzzy_device_id"):
-                    unique_devices.add(signal["fuzzy_device_id"])
+                # Check for country data in multiple possible field names
+                country = (
+                    signal.get("true_ip_country")
+                    or signal.get("country")
+                    or signal.get("true_ip_geo")
+                )
+                if country:
+                    unique_countries.add(str(country).upper())
 
-            if len(unique_countries) > 3:
-                fallback_risk_level = 0.6
-                risk_factors.append("Multiple countries detected in device signals")
+                # Check for city data
+                city = signal.get("true_ip_city") or signal.get("city")
+                if city:
+                    unique_cities.add(str(city).lower())
+
+                # Check for device ID
+                device_id = signal.get("fuzzy_device_id")
+                if device_id:
+                    unique_devices.add(device_id)
+
+                # Also check countries array if present
+                if signal.get("countries"):
+                    for c in signal["countries"]:
+                        unique_countries.add(str(c).upper())
+
+            # Enhanced geographic risk scoring based on actual patterns
+            if len(unique_countries) > 2:
+                fallback_risk_level = 0.7
+                risk_factors.append(
+                    f"Multiple countries detected in device signals: {', '.join(unique_countries)}"
+                )
             elif len(unique_countries) > 1:
-                fallback_risk_level = 0.3
-                risk_factors.append("Multiple countries detected")
+                fallback_risk_level = 0.5
+                risk_factors.append(
+                    f"Cross-country device usage detected: {', '.join(unique_countries)}"
+                )
 
-            if len(unique_devices) > 5:
+            # City diversity as additional risk factor
+            if len(unique_cities) > 3:
                 fallback_risk_level = max(fallback_risk_level, 0.4)
-                risk_factors.append("High number of unique devices")
+                risk_factors.append(
+                    f"Multiple cities detected: {len(unique_cities)} unique locations"
+                )
+
+            # Device proliferation risk
+            if len(unique_devices) > 3:
+                fallback_risk_level = max(fallback_risk_level, 0.4)
+                risk_factors.append(
+                    f"Multiple devices detected: {len(unique_devices)} unique device fingerprints"
+                )
+
+            # Provide baseline risk if we have any geographic data
+            if unique_countries and fallback_risk_level == 0.0:
+                fallback_risk_level = 0.3
+                risk_factors.append(
+                    "Device activity detected with geographic indicators"
+                )
 
         return DeviceSignalRiskLLMAssessment(
             risk_level=fallback_risk_level,

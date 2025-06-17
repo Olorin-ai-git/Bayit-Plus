@@ -9,9 +9,10 @@ from langchain_core.callbacks import Callbacks
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
+from app.utils.idps_utils import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -74,7 +75,7 @@ class ChronosTool(BaseTool):
         self,
         user_id: str,
         select: list[str],
-        headers: Optional[IntuitHeader] = None,
+        headers: Optional[OlorinHeader] = None,
         extra_headers: Optional[dict] = None,
         range_override: Optional[dict] = None,
     ) -> Dict[str, Any]:
@@ -85,18 +86,18 @@ class ChronosTool(BaseTool):
         try:
             # Use the same authentication approach as the working curl
             # First get a fresh token using the correct app credentials
-            intuit_userid, intuit_token, intuit_realmid = self._get_fresh_auth_token()
+            olorin_userid, olorin_token, olorin_realmid = self._get_fresh_auth_token()
 
             # Check if we got valid auth tokens
-            if not intuit_userid or not intuit_token:
+            if not olorin_userid or not olorin_token:
                 logger.error("Failed to get valid auth tokens")
                 return {"error": "Authentication failed", "entities": []}
 
             logger.info(
-                f"Got auth tokens - userid: {intuit_userid[:10]}..., realmid: {intuit_realmid}"
+                f"Got auth tokens - userid: {olorin_userid[:10]}..., realmid: {olorin_realmid}"
             )
 
-            conn = http.client.HTTPSConnection("elcdsl-e2e.api.intuit.com")
+            conn = http.client.HTTPSConnection("elcdsl-e2e.api.olorin.com")
 
             if range_override:
                 range_dict = range_override
@@ -122,15 +123,15 @@ class ChronosTool(BaseTool):
             payload_json = json.dumps(payload)
 
             request_headers = {
-                "intuit_originatingip": "127.0.0.1",
-                "intuit_country": "US",
-                "intuit_locale": "en-US",
+                "olorin_originatingip": "127.0.0.1",
+                "olorin_country": "US",
+                "olorin_locale": "en-US",
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.gaia",
-                "intuit_offeringid": "Intuit.cto.iam.ius",  # Add missing header from working curl
-                "intuit_tid": "480e8643-d4fb-4546-bda8-555c67c14432",  # Use working intuit_tid
-                "Authorization": f"Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid},intuit_appid=Intuit.secfraud.shared.ghost,intuit_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",
+                "olorin_assetalias": "Olorin.cas.hri.gaia",
+                "olorin_offeringid": "Olorin.cto.iam.ius",  # Add missing header from working curl
+                "olorin_tid": "480e8643-d4fb-4546-bda8-555c67c14432",  # Use working olorin_tid
+                "Authorization": f"Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid},olorin_appid=Olorin.secfraud.shared.ghost,olorin_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",
             }
             # Merge/override with extra_headers if provided
             if extra_headers:
@@ -180,7 +181,7 @@ class ChronosTool(BaseTool):
     def _get_fresh_auth_token(self):
         """Get a fresh authentication token using the correct app credentials for Chronos."""
         try:
-            conn = http.client.HTTPSConnection("identityinternal-e2e.api.intuit.com")
+            conn = http.client.HTTPSConnection("identityinternal-e2e.api.olorin.com")
 
             # Use the profile ID from the working example
             profile_id = "9341450868951246"
@@ -188,9 +189,9 @@ class ChronosTool(BaseTool):
             payload = f'{{"query":"mutation identitySignInInternalApplicationWithPrivateAuth($input:Identity_SignInApplicationWithPrivateAuthInput!) {{                                                \\n        identitySignInInternalApplicationWithPrivateAuth(input: $input) {{\\n            authorizationHeader\\n    }}\\n}}","variables":{{"input":{{"profileId":"{profile_id}"}}}}}}'
 
             headers = {
-                "intuit_tid": "480e8643-d4fb-4546-bda8-555c67c14432",
-                "intuit_assetalias": "Intuit.shared.fraudlistclient",
-                "Authorization": "Intuit_IAM_Authentication intuit_appid=Intuit.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+                "olorin_tid": "480e8643-d4fb-4546-bda8-555c67c14432",
+                "olorin_assetalias": "Olorin.shared.fraudlistclient",
+                "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
                 "Content-Type": "application/json",
             }
 
@@ -221,11 +222,11 @@ class ChronosTool(BaseTool):
             # Parse the auth header to extract components
             from app.utils.auth_utils import get_userid_and_token_from_authn_header
 
-            intuit_userid, intuit_token, intuit_realmid = (
+            olorin_userid, olorin_token, olorin_realmid = (
                 get_userid_and_token_from_authn_header(auth_header)
             )
 
-            return intuit_userid, intuit_token, intuit_realmid
+            return olorin_userid, olorin_token, olorin_realmid
 
         except Exception as e:
             logger.error(f"Error getting fresh auth token: {str(e)}")

@@ -32,8 +32,6 @@ from .config import (
     QALSettings,
     STGSettings,
     SvcSettings,
-    ServiceConfig,
-    default_config,
 )
 from .error_handling import register_error_handlers
 from .logging_helper import RequestFormatter, logging_context
@@ -53,19 +51,19 @@ lifespan_function = None
 
 
 async def inject_transaction_id(request: Request, call_next: Callable) -> Response:
-    """Middleware that Injects Intuit TID into the request & response
+    """Middleware that Injects Olorin TID into the request & response
 
     Something to note is that Gateway automatically injects a tid if there isn't one,
     but it doesn't use UUIDs, it seems to use Amazons Trace ID, which looks like
     '1-61c4fe1f-515d47eb73b71369335f8225'. This has caused issues in the past if you
     assume tid will be a UUID. Consider it a string with any characters allowed.
     """
-    # based on https://github.intuit.com/global-core/global-content-service/blob/master/app/api/middleware.py
-    intuit_tid = request.headers.get("intuit_tid", str(uuid.uuid4()))
-    request.state.intuit_tid = intuit_tid
-    with logging_context(intuit_tid=intuit_tid):
+    # based on https://github.olorin.com/global-core/global-content-service/blob/master/app/api/middleware.py
+    olorin_tid = request.headers.get("olorin_tid", str(uuid.uuid4()))
+    request.state.olorin_tid = olorin_tid
+    with logging_context(olorin_tid=olorin_tid):
         response: Response = await call_next(request)
-        response.headers["intuit_tid"] = intuit_tid
+        response.headers["olorin_tid"] = olorin_tid
         return response
 
 
@@ -148,9 +146,9 @@ async def on_shutdown(app: FastAPI):
     pass
 
 
-class OlorinApplication:
+class GaiaApplication:
     """
-    Central application orchestrator for Olorin Fraud Detection System.
+    Central application orchestrator for Gaia Fraud Detection System.
     Encapsulates agent coordination, risk assessment, and exposes the FastAPI app.
     """
 
@@ -176,12 +174,12 @@ class OlorinApplication:
             title=service_name,
             description="""TODO: Add description here
             The description SHOULD include a summary of the API, and the key use cases that the API solves.
-            Example: https://github.intuit.com/services-java/jsk-v4-service-initializr/blob/8c1d88f60e6fcafea0bc1dc01ba6995462332960/initializr-generator/src/main/resources/templates/spring-mvc-starter/api/openapi/openapi.yaml#L11
+            Example: https://github.olorin.com/services-java/jsk-v4-service-initializr/blob/8c1d88f60e6fcafea0bc1dc01ba6995462332960/initializr-generator/src/main/resources/templates/spring-mvc-starter/api/openapi/openapi.yaml#L11
             """,
             docs_url="/apidoc/swagger",
             redoc_url="/apidoc/redoc",
             dependencies=[Depends(check_route_allowed)],
-            contact={"url": "https://api.contact.info.intuit.com"},
+            contact={"url": "https://api.contact.info.olorin.com"},
             openapi_tags=[{"name": "example", "description": "Example API endpoints"}],
             lifespan=self.lifespan or default_lifespan,
         )
@@ -193,15 +191,25 @@ class OlorinApplication:
         configure_logger(app)
         logger.info(f"config: {self.config}")
 
-        from app.router import agent_router, api_router
+        # Add CORS middleware to allow cross-origin requests
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],  # In production, replace with specific origins
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allow_headers=["*"],
+        )
+
+        from app.router import agent_router, api_router, websocket_router
 
         from . import example
 
         app.include_router(example.router)
         app.include_router(agent_router.router)
         app.include_router(api_router.router)
+        app.include_router(websocket_router.router)
 
-        # Add Intuit TID middleware
+        # Add Olorin TID middleware
         from starlette.middleware.base import BaseHTTPMiddleware
 
         app.add_middleware(BaseHTTPMiddleware, dispatch=inject_transaction_id)
@@ -232,24 +240,13 @@ class OlorinApplication:
             }
 
 
-def create_app(config: ServiceConfig = default_config) -> FastAPI:
-    """Create and configure the FastAPI application."""
-    app = FastAPI(
-        title=config.app_name,
-        version=config.version,
-        debug=config.debug
-    )
-
-    # Configure CORS
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=config.cors_origins,
-        allow_credentials=True,
-        allow_methods=config.cors_methods,
-        allow_headers=config.cors_headers,
-    )
-
-    return app
+def create_app(
+    test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None
+):
+    """
+    Factory function to create the FastAPI app via GaiaApplication.
+    """
+    return GaiaApplication(test_config=test_config, lifespan=lifespan).app
 
 
 # Dummy implementations for test patching

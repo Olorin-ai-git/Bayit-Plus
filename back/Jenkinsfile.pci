@@ -2,61 +2,292 @@
 // This must be used in conjunction with Jenkinsfile.*.pci from deployment repo
 // The library version is controlled from the Jenkins configuration
 // To force a version add after lib '@' followed by the version.
+@Library(value = 'msaas-shared-lib', changelog = false) _
+
+node {
+    // setup the global static configuration
+    config = setupMsaasPipeline('msaas-config.yaml')
+}
 
 pipeline {
-    agent any
 
-    environment {
-        DOCKER_REGISTRY = 'docker.olorin.com'
-        IMAGE_NAME = 'cas-hri/olorin/service'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    options {
+        preserveStashes(buildCount: 5)
+        lock resource: getAssetLockName(config)
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                sh 'docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'docker run --rm ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} pytest'
-            }
-        }
-        stage('Push') {
-            steps {
-                sh 'docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}'
-            }
+    agent {
+        kubernetes {
+            label "${config.pod_label}"
+            yaml "${config.KubernetesPods}"
         }
     }
 
     post {
         always {
-            cleanWs()
+            sendMetrics(config)
+            iksExpressNotify(config, 'pipeline-post-always')
         }
-        success {
-            emailext (
-                subject: "Build Successful: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+        fixed {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}", 
                 body: """
-                    Build was successful!
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Build URL: ${env.BUILD_URL}
-                """,
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """, 
                 to: 'some_email@olorin.com'
             )
         }
-        failure {
-            emailext (
-                subject: "Build Failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+        unsuccessful {
+            emailext(
+                subject: "Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' ${currentBuild.result}", 
                 body: """
-                    Build failed!
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Build URL: ${env.BUILD_URL}
-                """,
+                        Job Status for '${env.JOB_NAME} [${env.BUILD_NUMBER}]': ${currentBuild.result}\n\nCheck console output at ${env.BUILD_URL}
+                """, 
                 to: 'some_email@olorin.com'
             )
+        }
+    }
+    environment {
+        PY_COLORS = '1'
+        APP_ENV = 'jenkins'
+//  environment variables required for evaluation
+        EVAL_CONFIG_FILE = 'evaluation/eval_config.json'
+        EVAL_DATASET_FILE = 'evaluation/dataset_without_genai_response.csv'
+        ENABLE_EVAL_RUN = false
+        AGENT_ASSET_ID = "${config.asset_id}"
+        TIMEOUT_MINUTES = 30
+        FAIL_BUILD_ON_EVAL_FAILURE = false
+        IS_BLOCKING = false
+        GITHUB_TOKEN = credentials('github-ci-readonly-token')
+    }
+
+    stages {
+        stage('PRE-BUILD:') {
+            when {
+                anyOf {
+                    branch 'master'
+                    changeRequest()
+                }
+            }
+            steps {
+                setupCapabilities(config, [filepathExclusionRegexes: []])
+            }
+        }
+        stage('BUILD:') {
+            when {
+                anyOf {
+                    branch 'master'
+                    changeRequest()
+                }
+            }
+            stages {
+                stage('Docker Multi Stage Build') {
+                    steps {
+                        container('podman') {
+                            podmanBuild("--rm=false --target test -t ${config.image_full_name}_test .")
+                            // export the codecov report for later uploading
+                            podmanRun("${config.image_full_name}_test", "--name=${config.git_org}_${config.service_name}_unit_test_${env.BUILD_NUMBER}")
+                            sh label: 'Create Folder', script: 'mkdir -p coverage'
+                            podmanCopy("${config.git_org}_${config.service_name}_unit_test_${env.BUILD_NUMBER}:/app/coverage/coverage.xml", 'coverage/coverage.xml')
+                            sh label: 'Create OpenAPI Spec Folder', script: 'mkdir -p openapi'
+                            podmanCopy("${config.git_org}_${config.service_name}_unit_test_${env.BUILD_NUMBER}:/app/api/openapi/openapi.json", 'openapi/openapi.json')
+                            podmanBuild("--rm=false -t ${config.image_full_name} .")
+                            podmanPush(config)
+                        }
+                    }
+                }
+                stage('Publish') {
+                    parallel {
+                        stage('Report Coverage') {
+                            steps {
+                                container('jnlp') {
+                                    codeCov(config)
+                                    olorinReportCobertura(config)
+                                }
+                            }
+                        }
+                        stage('CPD Certification & Publish') {
+                            steps {
+                                container('cpd2') {
+                                    olorinCPD2Podman(config, "-i ${config.image_full_name} --buildfile Dockerfile")
+                                }
+                                container('podman') {
+                                    podmanPull(config, config.image_full_name)
+                                    podmanInspect(config, '-s', 'image-metadata.json')
+                                    archiveArtifacts(artifacts: 'image-metadata.json', allowEmptyArchive: true)
+                                }
+                            }
+                        }
+                        stage('Render Manifests') {
+                            when {
+                                beforeOptions true
+                                allOf {
+                                    branch 'master'
+                                    not {changeRequest()}
+                                }
+                            }
+                            steps {
+                                container('cdtools') {
+                                    gitOpsRenderAllManifests(config)
+                                }
+                            }
+                        }
+                        stage('Register Agents and Tools') {
+                            when {
+                                beforeOptions true
+                                allOf {
+                                    branch 'master'
+                                    not {changeRequest()}
+                                }
+                            }
+                            steps {
+                                script {
+                                    registerGenOSAgentsAndTools(config)
+                                }
+                            }
+                        }
+                    }
+                }
+                // jira transitioning
+                stage('Transition Jira Tickets') {
+                    steps {
+                        script {
+                            if (env.BRANCH_NAME != 'master' && changeRequest()) {
+                                transitionJiraTickets(config, 'Ready for Review')
+                            } else if (env.BRANCH_NAME == 'master') {
+                                transitionJiraTickets(config, 'Closed')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('qal-usw2-air') {
+            when {
+                beforeOptions true
+                allOf {
+                    branch 'master'
+                    not {changeRequest()}
+                }
+            }
+            options {
+                lock(resource: getEnv(config, 'qal-usw2-air').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+                stage('Scorecard Check') {
+                    when {expression {return config.enableScorecardReadinessCheck}}
+                    steps {
+                        scorecardPreprodReadiness(config, 'qal-usw2-air')
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            // This has to be the first action in the first sub-stage
+                            milestone(ordinal: 10, label: 'Deploy-qal-usw2-air-milestone')
+                            gitOpsDeploy(config, 'qal-usw2-air', config.image_full_name)
+                        }
+                    }
+                }
+                stage('Transition Jira Tickets') {
+                    when {expression {return config.enableJiraTransition}}
+                    steps {
+                        transitionJiraTickets(config, 'Deployed to PreProd')
+                    }
+                }
+                stage('Update deployment to registry') {
+                    when {
+                        allOf {
+                            branch 'master'
+                            not {changeRequest()}
+                        }
+                    }
+                    steps {
+                        updateDeploymentToGenOSRegistry(config, 'qal')
+                    }
+                }
+            }
+        }
+        stage('e2e-usw2-air') {
+            when {
+                beforeOptions true
+                allOf {
+                    branch 'master'
+                    not {changeRequest()}
+                }
+            }
+            options {
+                lock(resource: getEnv(config, 'e2e-usw2-air').namespace, inversePrecedence: true)
+                timeout(time: 32, unit: 'MINUTES')
+            }
+            stages {
+                stage('Scorecard Check') {
+                    when {expression {return config.enableScorecardReadinessCheck}}
+                    steps {
+                        scorecardPreprodReadiness(config, 'e2e-usw2-air')
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        container('cdtools') {
+                            // This has to be the first action in the first sub-stage
+                            milestone(ordinal: 20, label: 'Deploy-e2e-usw2-air-milestone')
+                            gitOpsDeploy(config, 'e2e-usw2-air', config.image_full_name)
+                        }
+                    }
+                }
+                stage('Transition Jira Tickets') {
+                    when {expression {return config.enableJiraTransition}}
+                    steps {
+                        transitionJiraTickets(config, 'Deployed to PreProd')
+                    }
+                }
+                stage('Update deployment to registry') {
+                    when {
+                        allOf {
+                            branch 'master'
+                            not {changeRequest()}
+                        }
+                    }
+                    steps {
+                        updateDeploymentToGenOSRegistry(config, 'e2e')
+                    }
+                }
+            }
+        }
+        stage('PR Deploy to primary') {
+            when {
+                beforeOptions true
+                allOf {
+                    branch 'master'
+                    not {changeRequest()}
+                }
+            }
+            options {
+                lock(resource: getEnv(config, 'primary').namespace, inversePrecedence: true)
+                timeout(time: 22, unit: 'MINUTES')
+            }
+            stages {
+                stage('Scorecard Readiness Check') {
+                    when {expression {return config.enableScorecardReadinessCheck}}
+                    steps {
+                        scorecardProdReadiness(config, 'primary')
+                    }
+                }
+                stage('Push changes to Git') {
+                    steps {
+                        container('cdtools') {
+                            gitOpsPRDeploy(config, 'primary', config.image_full_name)
+                        }
+                    }
+                }
+                stage('Raise a PR') {
+                    steps {
+                        createLinkToRaisePR(config)
+                    }
+                }
+            }
         }
     }
 }

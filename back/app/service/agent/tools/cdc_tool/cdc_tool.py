@@ -1,8 +1,12 @@
 import logging
 from abc import ABC
 
-from cdcdatalib.cdc_svc import CDCService
-from cdcdatalib.cdc_svc_async import CDCServiceAsync
+try:
+    from cdcdatalib.cdc_svc import CDCService
+    from cdcdatalib.cdc_svc_async import CDCServiceAsync
+except ImportError:
+    CDCService = None
+    CDCServiceAsync = None
 from langchain_core.runnables.config import RunnableConfig
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -183,14 +187,14 @@ class CdcTool(BaseTool):
         from app.models.agent_context import AgentContext
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
-        intuit_header = agent_context.get_header()
+        olorin_header = agent_context.get_header()
 
         resp_data: str = CDCApi.fetch_attribute_data(
-            headers=intuit_header,
+            headers=olorin_header,
             account_type=self.account_type,
             only_trusted_attrs=self.only_trusted_attrs,
-            userid=agent_context.intuit_header.auth_context.intuit_user_id,
-            realmid=agent_context.intuit_header.auth_context.intuit_realmid,
+            userid=agent_context.olorin_header.auth_context.olorin_user_id,
+            realmid=agent_context.olorin_header.auth_context.olorin_realmid,
             attributes=self.attributes,
         )
         logger.debug(f"response from CDC search resp_data={resp_data}")
@@ -215,14 +219,14 @@ class CdcTool(BaseTool):
         from app.models.agent_context import AgentContext
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
-        intuit_header = agent_context.get_header()
+        olorin_header = agent_context.get_header()
 
         resp_data: str = await CDCApi.afetch_attribute_data(
-            headers=intuit_header,
+            headers=olorin_header,
             account_type=self.account_type,
             only_trusted_attrs=self.only_trusted_attrs,
-            userid=agent_context.intuit_header.auth_context.intuit_user_id,
-            realmid=agent_context.intuit_header.auth_context.intuit_realmid,
+            userid=agent_context.olorin_header.auth_context.olorin_user_id,
+            realmid=agent_context.olorin_header.auth_context.olorin_realmid,
             attributes=self.attributes,
         )
         logger.debug(f"async response from CDC search resp_data={resp_data}")

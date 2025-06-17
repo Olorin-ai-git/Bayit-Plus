@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient
@@ -42,7 +42,7 @@ class LocationAnalysisService:
         entity_type: str,
         request: Request,
         investigation_id: str,
-        time_range: str = "1m",
+        time_range: str = "30d",
         splunk_host: str = None,
         raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     ) -> dict:
@@ -77,9 +77,11 @@ class LocationAnalysisService:
                 splunk_results = raw_splunk_override
                 oii_results = []
             else:
-                # Only real-data logic remains
+                # Only real-data logic remains; include requested time_range
                 location_data = await self.location_data_client.get_location_data(
-                    entity_id
+                    entity_id,
+                    entity_type,
+                    time_range,
                 )
                 splunk_results = location_data.get("splunk_results", [])
                 oii_results = location_data.get("oii_results", [])

@@ -27,7 +27,7 @@ from langgraph.checkpoint.base import (
 from langgraph.checkpoint.serde.base import SerializerProtocol
 
 from app.adapters.ips_cache_client import IPSCacheClient
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 
 logger = logging.getLogger(__name__)
@@ -323,7 +323,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = checkpoint["id"]
         parent_checkpoint_id = config["configurable"].get("checkpoint_id")
@@ -362,7 +362,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
             ["EXPIRE", zset_name, EXPIRATION_SECONDS],
         ]
 
-        await self.ips_cache.pipeline(pipeline_commands, intuit_header=intuit_header)
+        await self.ips_cache.pipeline(pipeline_commands, olorin_header=olorin_header)
 
         return {
             "configurable": {
@@ -389,7 +389,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = config["configurable"]["checkpoint_id"]
 
@@ -424,7 +424,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
                 ]
             )
 
-        await self.ips_cache.pipeline(pipeline_commands, intuit_header=intuit_header)
+        await self.ips_cache.pipeline(pipeline_commands, olorin_header=olorin_header)
 
         return config
 
@@ -441,25 +441,25 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_id = get_checkpoint_id(config)
         checkpoint_ns = config["configurable"].get("checkpoint_ns", "")
 
         # Get the checkpoint key
         checkpoint_key = await self._aget_checkpoint_key(
-            thread_id, checkpoint_ns, checkpoint_id, intuit_header=intuit_header
+            thread_id, checkpoint_ns, checkpoint_id, olorin_header=olorin_header
         )
         if not checkpoint_key:
             return None
 
         coroutines = [
-            self._load_checkpoint_data(checkpoint_key, intuit_header=intuit_header),
+            self._load_checkpoint_data(checkpoint_key, olorin_header=olorin_header),
             self._load_pending_writes(
                 thread_id,
                 checkpoint_ns,
                 checkpoint_id,
                 checkpoint_key,
-                intuit_header=intuit_header,
+                olorin_header=olorin_header,
             ),
         ]
         checkpoint_data, pending_writes = await asyncio.gather(*coroutines)
@@ -471,10 +471,10 @@ class AsyncRedisSaver(BaseCheckpointSaver):
         )
 
     async def _load_checkpoint_data(
-        self, checkpoint_key: str, intuit_header: dict[str, Any] = None
+        self, checkpoint_key: str, olorin_header: dict[str, Any] = None
     ) -> Optional[Dict[str, Any]]:
         """Asynchronously fetch checkpoint data using the checkpoint_key."""
-        return await self.ips_cache.hgetall(checkpoint_key, intuit_header=intuit_header)
+        return await self.ips_cache.hgetall(checkpoint_key, olorin_header=olorin_header)
 
     async def _load_pending_writes(
         self,
@@ -482,7 +482,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
         checkpoint_ns,
         checkpoint_id,
         checkpoint_key,
-        intuit_header: dict[str, Any] = None,
+        olorin_header: dict[str, Any] = None,
     ) -> List[PendingWrite]:
         """Asynchronously fetch intermediate writes linked to a checkpoint."""
 
@@ -498,7 +498,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
             checkpoint_ns,
         )
         matching_keys = await self.ips_cache.zscan(
-            zset_name, intuit_header=intuit_header
+            zset_name, olorin_header=olorin_header
         )
         if matching_keys:
             parsed_keys = [
@@ -510,7 +510,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
             batch_commands = _create_chunks_commands(commands, 500)
             tmp_results = await asyncio.gather(
                 *[
-                    self.ips_cache.pipeline(batch, intuit_header=intuit_header)
+                    self.ips_cache.pipeline(batch, olorin_header=olorin_header)
                     for batch in batch_commands
                 ]
             )
@@ -555,7 +555,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: dict[str, Any] = agent_context.get_header()
+        olorin_header: dict[str, Any] = agent_context.get_header()
         checkpoint_ns = config["configurable"].get("checkpoint_ns", "")
 
         zset_name = _make_checkpoints_zset_name(
@@ -564,7 +564,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
         )
 
         matching_keys = await self.ips_cache.zscan(
-            zset_name, intuit_header=intuit_header
+            zset_name, olorin_header=olorin_header
         )
         pattern = f"checkpoint:{self.namespace}:{thread_id}"
         if checkpoint_ns:
@@ -577,7 +577,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         # Prepare HGETALL commands for all keys
         commands = [["HGETALL", str(key)] for key in keys]
-        results = await self.ips_cache.pipeline(commands, intuit_header=intuit_header)
+        results = await self.ips_cache.pipeline(commands, olorin_header=olorin_header)
 
         # Process the results and yield them
         for key, data in zip(keys, results):
@@ -591,7 +591,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
         thread_id: str,
         checkpoint_ns: str,
         checkpoint_id: Optional[str],
-        intuit_header: dict[str, Any] = None,
+        olorin_header: dict[str, Any] = None,
     ) -> Optional[str]:
         """Get the key for a checkpoint corresponding to the given
         thread_id, checkpoint_ns and checkpont_id values.
@@ -610,7 +610,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
             self.namespace,
             thread_id,
         )
-        scan_keys = await self.ips_cache.zscan(zset_name, intuit_header=intuit_header)
+        scan_keys = await self.ips_cache.zscan(zset_name, olorin_header=olorin_header)
 
         if not scan_keys:
             return None

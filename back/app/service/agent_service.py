@@ -1,13 +1,14 @@
 import logging
 import os
-from typing import Any, Dict
-
-from aiohttp import ClientSession
 
 from fastapi import Request
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
-from langfuse.callback import CallbackHandler
+
+try:
+    from langfuse.callback import CallbackHandler
+except ImportError:
+    CallbackHandler = None
 from openai import (
     APIConnectionError,
     AuthenticationError,
@@ -22,39 +23,23 @@ from app.service.error_handling import (
     AuthorizationError,
     ClientException,
 )
+from app.utils.idps_utils import get_app_secret
 
 logger = logging.getLogger(__name__)
 
 settings_for_env = get_settings_for_env()
 
 
-async def send_progress(event: str, data: Dict[str, Any] | None = None) -> None:
-    """Send a progress event to the configured webhook if available."""
-    webhook = settings_for_env.progress_webhook_url
-    if not webhook:
-        return
-    payload = {"event": event}
-    if data is not None:
-        payload["data"] = data
-    async with ClientSession() as session:
-        try:
-            await session.post(webhook, json=payload)
-        except Exception:
-            logger.exception("Failed to send progress webhook")
-
-
 async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, str):
     messages = [HumanMessage(content=agent_context.input)]
 
-    await send_progress("graph_start", {"thread_id": agent_context.thread_id})
-
     env = os.getenv("APP_ENV", "local")
 
-    if settings_for_env.enable_langfuse:
-        """Handler for setting up langfuse for tracing"""
+    if settings_for_env.enable_langfuse and CallbackHandler:
+        # Handler for setting up langfuse for tracing
         langfuse_handler = CallbackHandler(
-            public_key=settings_for_env.langfuse_public_key,
-            secret_key=settings_for_env.langfuse_secret_key,
+            public_key=get_app_secret(settings_for_env.langfuse_public_key),
+            secret_key=get_app_secret(settings_for_env.langfuse_secret_key),
             host=settings_for_env.langfuse_host,
             tags=[settings_for_env.app_id, env],
         )
@@ -63,6 +48,7 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
             configurable={
                 "agent_context": agent_context,
                 "thread_id": agent_context.thread_id,
+                "request": request,  # Add request to config for graph nodes
             },
             callbacks=[langfuse_handler],
         )
@@ -73,6 +59,7 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
             configurable={
                 "agent_context": agent_context,
                 "thread_id": agent_context.thread_id,
+                "request": request,  # Add request to config for graph nodes
             },
         )
 
@@ -84,18 +71,52 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
     )
 
     try:
-        result = await request.app.state.graph.ainvoke(
-            {"messages": messages}, config=runnable_config
+        # Determine which graph to use based on investigation settings
+        from app.service.websocket_manager import websocket_manager
+
+        # Extract investigation_id from agent_context metadata
+        investigation_id = None
+        if hasattr(agent_context, "metadata") and agent_context.metadata:
+            md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
+            investigation_id = md.get("investigationId") or md.get("investigation_id")
+
+        # Get parallel setting for this investigation (defaults to False - sequential)
+        use_parallel = False
+        if investigation_id:
+            use_parallel = websocket_manager.get_investigation_parallel_setting(
+                investigation_id
+            )
+
+        # TEMPORARY: Force sequential to test recursion issue
+        use_parallel = False
+
+        # Select appropriate graph - handle case where request is None
+        if (
+            request is not None
+            and hasattr(request, "app")
+            and hasattr(request.app, "state")
+        ):
+            graph = (
+                request.app.state.graph_parallel
+                if use_parallel
+                else request.app.state.graph_sequential
+            )
+        else:
+            # Fallback: create graph directly when request is None (e.g., from LLM services)
+            from app.service.agent.agent import create_and_get_agent_graph
+
+            graph = create_and_get_agent_graph(parallel=use_parallel)
+
+        logger.info(
+            f"Using {'parallel' if use_parallel else 'sequential'} graph for investigation {investigation_id}"
         )
+
+        result = await graph.ainvoke({"messages": messages}, config=runnable_config)
         if isinstance(result, tuple) and len(result) == 2:
             output_content, trace_id = result
         else:
             output_content = result
             trace_id = None
-        await send_progress(
-            "graph_end",
-            {"thread_id": agent_context.thread_id, "trace_id": trace_id},
-        )
     except AuthenticationError as ex:
         logger.exception(f"Client Error: {ex}")
         raise AuthorizationError(ex)

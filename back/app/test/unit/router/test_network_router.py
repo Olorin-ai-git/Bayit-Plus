@@ -29,8 +29,8 @@ def get_mock_settings():
     """Helper function to get properly configured mock settings"""
     return MagicMock(
         splunk_host="dummy_host",
-        intuit_originating_assetalias="test-asset",
-        intuit_experience_id="test-exp-id",
+        olorin_originating_assetalias="test-asset",
+        olorin_experience_id="test-exp-id",
     )
 
 
@@ -44,8 +44,8 @@ def test_analyze_network_success(client):
             "app.service.network_analysis_service.get_settings_for_env",
             return_value=MagicMock(
                 splunk_host="dummy_host",
-                intuit_originating_assetalias="test-asset",
-                intuit_experience_id="test-exp-id",
+                olorin_originating_assetalias="test-asset",
+                olorin_experience_id="test-exp-id",
             ),
         ) as mock_settings,
         patch(

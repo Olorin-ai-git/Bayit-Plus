@@ -72,10 +72,10 @@ location_splunk_data = [
 logs_splunk_data = [
     {
         "email_address": "user@example.com",
-        "intuit_username": "testuser",
-        "intuit_offeringId": "QBO",
+        "olorin_username": "testuser",
+        "olorin_offeringId": "QBO",
         "transaction": "login",
-        "intuit_originatingip": "192.168.1.10",
+        "olorin_originatingip": "192.168.1.10",
         "input_ip_isp": "Comcast",
         "true_ip_city": "San Francisco",
         "input_ip_region": "CA",
@@ -85,10 +85,10 @@ logs_splunk_data = [
     },
     {
         "email_address": "user@example.com",
-        "intuit_username": "testuser",
-        "intuit_offeringId": "QBO",
+        "olorin_username": "testuser",
+        "olorin_offeringId": "QBO",
         "transaction": "failed_login",
-        "intuit_originatingip": "203.0.113.5",
+        "olorin_originatingip": "203.0.113.5",
         "input_ip_isp": "Vodafone India",
         "true_ip_city": "Mumbai",
         "input_ip_region": "MH",

@@ -1,16 +1,17 @@
 import os
 from functools import lru_cache
-from typing import List, Optional, Dict
+from typing import List, Optional
 
 from fastapi import Request
-from pydantic import Field, BaseModel, BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 preprod_splunk_index: str = "rss-e2eidx"
-preprod_splunk_host: str = "splunk-rest-us-east-2.e2e.cmn.cto.a.intuit.com"
+preprod_splunk_host: str = "splunk-rest-us-east-2.e2e.cmn.cto.a.olorin.com"
 
 
 class UpiHistoryConversationApiConfig(BaseSettings):
-    upi_base_url: str = "https://genosuxsvc-e2e.api.intuit.com"
+    upi_base_url: str = "https://genosuxsvc-e2e.api.olorin.com"
     upi_path: str = "/v1/interactions"
     upi_mock_response: bool = False
 
@@ -21,32 +22,46 @@ class SvcSettings(BaseSettings):
     expose_metrics: bool = True
     mesh_port: int = Field(8090, validation_alias="MESH_TRAFFIC_PORT")
     asset_id: str = "3825825476777495228"
-    intuit_originating_assetalias: Optional[str] = "Intuit.cas.hri.gaia"
+    olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.gaia"
 
     # Cache settings
     use_ips_cache: bool = (
         False  # Changing this to True will use IPS cache implementation - AsyncRedisSaver instead of Langgraph's MemorySaver
     )
-    ips_base_url: str = "https://ipscache-qal.api.intuit.com"
+    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
     ips_base_path: str = "/v1/cache"
     upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
         UpiHistoryConversationApiConfig()
     )
 
+    # IDPS settings - create a new policy for your app in IDPS and use the policy ID here
+    # This is used to access secrets in IDPS (app secret, langfuse keys, etc.)
+    idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
+    idps_policy_id: str = "p-2abqgwqm8n5i"
 
     # App settings
-    app_id: str = "Intuit.cas.hri.gaia"
+    app_id: str = "Olorin.cas.hri.gaia"
     # Store app secret in IDPS and provide the secret name path here
     app_secret: str = "gaia/app_secret"
 
     # QB Tool settings
-    ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
+    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
 
     # Splunk agent settings: host, index, port, and IDPS secret paths for credentials
     splunk_host: str = preprod_splunk_host
     splunk_index: str = preprod_splunk_index
     splunk_port: int = Field(
         8089, description="Splunk management port", env="SPLUNK_PORT"
+    )
+    splunk_username_secret: str = Field(
+        "gaia/splunk_username",
+        description="IDPS secret path for Splunk username",
+        env="SPLUNK_USERNAME_SECRET",
+    )
+    splunk_password_secret: str = Field(
+        "gaia/splunk_password",
+        description="IDPS secret path for Splunk password",
+        env="SPLUNK_PASSWORD_SECRET",
     )
 
     # Allow overriding Splunk credentials directly via environment for local/dev
@@ -61,38 +76,6 @@ class SvcSettings(BaseSettings):
         env="SPLUNK_PASSWORD",
     )
 
-    # Snowflake connection settings
-    snowflake_account: Optional[str] = Field(
-        None,
-        description="Snowflake account name",
-        env="SNOWFLAKE_ACCOUNT",
-    )
-    snowflake_user: Optional[str] = Field(
-        None,
-        description="Snowflake username",
-        env="SNOWFLAKE_USER",
-    )
-    snowflake_password: Optional[str] = Field(
-        None,
-        description="Snowflake password",
-        env="SNOWFLAKE_PASSWORD",
-    )
-    snowflake_warehouse: Optional[str] = Field(
-        None,
-        description="Snowflake warehouse",
-        env="SNOWFLAKE_WAREHOUSE",
-    )
-    snowflake_database: Optional[str] = Field(
-        None,
-        description="Snowflake database",
-        env="SNOWFLAKE_DATABASE",
-    )
-    snowflake_schema: Optional[str] = Field(
-        None,
-        description="Snowflake schema",
-        env="SNOWFLAKE_SCHEMA",
-    )
-
     enabled_tool_list: List[str] = [
         "QBRetrieverTool",
         "TTRetrieverTool",
@@ -100,11 +83,7 @@ class SvcSettings(BaseSettings):
         "CdcUserTool",
         "CdcCompanyTool",
         "OIITool",
-        "SnowflakeQueryTool",
     ]
-
-    # Optional webhook for progress events
-    progress_webhook_url: Optional[str] = None
 
 
 # see https://fastapi.tiangolo.com/advanced/settings/#settings-in-a-dependency
@@ -118,26 +97,28 @@ class PreProdSettings(SvcSettings):
     Settings shared by pre-prod environments
     """
 
-    app_id: str = "Intuit.cas.hri.gaia"
+    idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
+    idps_policy_id: str = "p-2abqgwqm8n5i"
+    app_id: str = "Olorin.cas.hri.gaia"
     app_secret: str = "gaia/app_secret"
     rag_search_url: str = (
-        "https://aimqasvc-e2e.api.intuit.com/v1/genosplugins/AIMSearchPlugin/generate"
+        "https://aimqasvc-e2e.api.olorin.com/v1/genosplugins/AIMSearchPlugin/generate"
     )
     enable_langfuse: bool = True  # Set to True to enable langfuse tracing;
     # and set the langfuse_public_key and langfuse_secret_key to the values in IDPS below
     langfuse_public_key: str = "gaia/langfuse/public_key"
     langfuse_secret_key: str = "gaia/langfuse/secret_key"
-    langfuse_host: str = "https://langfuse-e2e.api.intuit.com"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
+    langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
+    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
     cdc_env: str = "preprod"
 
     # Test settings
-    identity_url: str = "https://identityinternal-e2e.api.intuit.com/signin/graphql"
+    identity_url: str = "https://identityinternal-e2e.api.olorin.com/signin/graphql"
     identity_payload: str = (
-        '{"query":"mutation {\\n    identityTestSignInWithPassword(input: {\\n        username: \\"iamtestpass_116696787517509\\",\\n        password: \\"Intuit01-\\",\\n        tenantId: \\"50000003\\",\\n        intent: {\\n            appGroup: \\"QBO\\",\\n            assetAlias: \\"Intuit.sandbox.sandbox.resttestclient\\"\\n        }\\n    }) {\\n        accessToken\\n        legacyAuthId\\n    }\\n}\\n","variables":{}}'
+        '{"query":"mutation {\\n    identityTestSignInWithPassword(input: {\\n        username: \\"iamtestpass_116696787517509\\",\\n        password: \\"Olorin01-\\",\\n        tenantId: \\"50000003\\",\\n        intent: {\\n            appGroup: \\"QBO\\",\\n            assetAlias: \\"Olorin.sandbox.sandbox.resttestclient\\"\\n        }\\n    }) {\\n        accessToken\\n        legacyAuthId\\n    }\\n}\\n","variables":{}}'
     )
-    intuit_experience_id: str = "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
-    llm_base_url: str = "https://llmexecution-e2e.api.intuit.com/v3/o1-2024-12-17/"
+    olorin_experience_id: str = "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
+    llm_base_url: str = "https://llmexecution-e2e.api.olorin.com/v3/o1-2024-12-17/"
 
 
 class ProdSettings(SvcSettings):
@@ -145,18 +126,18 @@ class ProdSettings(SvcSettings):
     Settings shared by STG and PRD (see STGSettings and PRDSettings below)
     """
 
-    ceres_endpoint: str = "https://ceres-das.api.intuit.com"
+    ceres_endpoint: str = "https://ceres-das.api.olorin.com"
     cdc_env: str = "prd"
 
 
 class LocalSettings(PreProdSettings):
     log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.intuit.com"
+    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
     ips_base_path: str = "/v1/cache"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
+    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
     upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
         UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.intuit.com", upi_mock_response=True
+            upi_base_url="https://genosuxsvc-e2e.api.olorin.com", upi_mock_response=True
         )
     )
     default_profile_id: str = "9341454513864369"
@@ -166,11 +147,11 @@ class LocalSettings(PreProdSettings):
 
 class QALSettings(PreProdSettings):
     log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.intuit.com"
+    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
     ips_base_path: str = "/v1/cache"
     upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
         UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.intuit.com"
+            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
         )
     )
     default_profile_id: str = "9341454513864369"
@@ -180,11 +161,11 @@ class QALSettings(PreProdSettings):
 
 class E2ESettings(PreProdSettings):
     log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-e2e.api.intuit.com"
+    ips_base_url: str = "https://ipscache-e2e.api.olorin.com"
     ips_base_path: str = "/v1/cache"
     upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
         UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.intuit.com"
+            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
         )
     )
     default_profile_id: str = "9341454513864369"
@@ -206,7 +187,7 @@ class STGSettings(ProdSettings):
 
 class PRDSettings(ProdSettings):
     log_level: str = "INFO"
-    splunk_host: str = "ip.adhoc.rest.splunk.intuit.com"
+    splunk_host: str = "ip.adhoc.rest.splunk.olorin.com"
     splunk_index: str = "rss-prdidx"
 
 
@@ -224,60 +205,3 @@ _ENV_SETTINGS = {
 def get_settings_for_env() -> SvcSettings:
     env = os.getenv("APP_ENV", "local")
     return _ENV_SETTINGS[env]()
-
-
-class ServiceConfig(BaseModel):
-    """Service configuration."""
-    app_name: str = "olorin-service"
-    version: str = "1.0.0"
-    environment: str = "development"
-    debug: bool = False
-    host: str = "0.0.0.0"
-    port: int = 8000
-    api_prefix: str = "/api/v1"
-    cors_origins: List[str] = ["*"]
-    cors_methods: List[str] = ["*"]
-    cors_headers: List[str] = ["*"]
-
-    # API endpoints
-    api_endpoints: Dict[str, str] = {
-        "knowledge_base": "https://api.olorin.com/v1/knowledge",
-        "user_profile": "https://api.olorin.com/v1/users",
-        "company_profile": "https://api.olorin.com/v1/companies",
-        "search": "https://api.olorin.com/v1/search"
-    }
-
-    # Authentication
-    auth_enabled: bool = True
-    auth_header: str = "Authorization"
-    auth_scheme: str = "Bearer"
-
-    # Logging
-    log_level: str = "INFO"
-    log_format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-    class Config:
-        env_prefix = "OLORIN_"
-
-# Default configuration
-default_config = ServiceConfig()
-
-# Environment-specific configurations
-configs = {
-    "development": ServiceConfig(
-        debug=True,
-        environment="development",
-        log_level="DEBUG"
-    ),
-    "testing": ServiceConfig(
-        debug=True,
-        environment="testing",
-        log_level="DEBUG",
-        auth_enabled=False
-    ),
-    "production": ServiceConfig(
-        debug=False,
-        environment="production",
-        log_level="INFO"
-    )
-}

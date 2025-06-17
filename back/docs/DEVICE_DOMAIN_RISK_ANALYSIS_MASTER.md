@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Device Domain Risk Assessment System** within the Olorin fraud detection platform. The Device domain represents one of the most critical fraud detection vectors, focusing on device fingerprinting, geographic correlation, and behavioral pattern analysis to identify compromised accounts, shared credentials, and impossible travel scenarios.
+This document provides a comprehensive analysis of the **Device Domain Risk Assessment System** within the Gaia fraud detection platform. The Device domain represents one of the most critical fraud detection vectors, focusing on device fingerprinting, geographic correlation, and behavioral pattern analysis to identify compromised accounts, shared credentials, and impossible travel scenarios.
 
 ## Table of Contents
 
@@ -78,7 +78,7 @@ This document provides a comprehensive analysis of the **Device Domain Risk Asse
 def build_device_query(user_id: str, time_range: str, splunk_host: str) -> str:
     return f"""
     search index="rss-e2eidx" 
-    intuit_userid="{user_id}" 
+    olorin_userid="{user_id}" 
     earliest=-{time_range} latest=now 
     | eval fuzzy_device_id=coalesce(device_id, tm_smartid, "unknown") 
     | stats values(*) as * by fuzzy_device_id 
@@ -88,7 +88,7 @@ def build_device_query(user_id: str, time_range: str, splunk_host: str) -> str:
 
 #### Data Fields Extracted
 - **Device Identifiers**: `device_id`, `fuzzy_device_id`, `tm_smartid`
-- **Session Data**: `tm_sessionid`, `intuit_tid`
+- **Session Data**: `tm_sessionid`, `olorin_tid`
 - **Geographic Data**: `true_ip`, `true_ip_city`, `true_ip_country`, `true_ip_region`
 - **Temporal Data**: `_time` (timestamp analysis)
 
@@ -184,7 +184,7 @@ def group_device_signals(raw_results: List[Dict]) -> List[Dict]:
             'true_ip_region': result.get('true_ip_region'),
             'tm_smartid': result.get('tm_smartid'),
             'tm_sessionid': result.get('tm_sessionid'),
-            'intuit_tid': result.get('intuit_tid'),
+            'olorin_tid': result.get('olorin_tid'),
             '_time': result.get('_time'),
             'countries': countries
         }

@@ -31,8 +31,8 @@ def mock_request():
     request = MagicMock(spec=Request)
     request.headers = {
         "authorization": "Bearer test_token",
-        "intuit_tid": "test_tid",
-        "intuit_originating_assetalias": "test_asset",
+        "olorin_tid": "test_tid",
+        "olorin_originating_assetalias": "test_asset",
     }
     return request
 

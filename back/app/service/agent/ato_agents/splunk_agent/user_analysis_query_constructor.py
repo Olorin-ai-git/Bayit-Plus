@@ -18,7 +18,7 @@ identity_index = (
 
 def _build_auth_device_query(user_id: str) -> str:
     """Builds the authentication and device history query for a user."""
-    query = f"""index={rss_index} intuit_userid={user_id} 
+    query = f"""index={rss_index} olorin_userid={user_id} 
 | eval CHALLENGE=case(
     transactionDetail="challenge_type=idp","IDP",
     transactionDetail="challenge_type=otp_email","Email",
@@ -38,8 +38,8 @@ def _build_auth_device_query(user_id: str) -> str:
 | eval "Device_First_Seen"=urldecode(fuzzy_device_first_seen)
 | eval "TrueIP_State"=urldecode(true_ip_region)
 | eval eventDate=strftime(_time,"%D")
-| stats dc(intuit_tid) values(Device_First_Seen) values(eventDate) AS "Days Accessed" 
-  dc(eventDate) AS "Number of Days Accessed" values(intuit_offeringId) values(transaction) 
+| stats dc(olorin_tid) values(Device_First_Seen) values(eventDate) AS "Days Accessed" 
+  dc(eventDate) AS "Number of Days Accessed" values(olorin_offeringId) values(transaction) 
   values(CHALLENGE) values(TRUE_IP_CITY) values(TrueIP_State) values(true_ip_geo) 
   values(INPUT_ISP) values(TRUE_ISP) by fuzzy_device_id 
 | sort -"Number of Days Accessed"
@@ -51,15 +51,15 @@ def _build_email_credentials_query(user_id: str) -> str:
     """Builds the email and credential updates query for a user."""
     query = f"""index={rss_index} fuzzy_device_id=* [| index={identity_index} api_result="*"
 CredentialWriteCheck.authId="{user_id}"
-| rename CredentialWriteCheck.authId AS "intuit_userid" 
-| rename intuit_sessionid AS "sessionId" 
+| rename CredentialWriteCheck.authId AS "olorin_userid" 
+| rename olorin_sessionid AS "sessionId" 
 | fields sessionId, Authenticator_Add_Date] 
 | rex field=data "(email=(?<account_email>.+))"
 | rex field=data "(Username=(?<account_email>.+))"
 | eval email_address=urldecode(Username)
 | eval "Email_Updated_Date"=strftime(_time,"%D")
 | search event=*
-| table intuit_userid, intuit_realmid, _time, email_address, fuzzy_device_id, event, true_ip, true_ip_isp, true_ip_city, sessionId, intuit_tid
+| table olorin_userid, olorin_realmid, _time, email_address, fuzzy_device_id, event, true_ip, true_ip_isp, true_ip_city, sessionId, olorin_tid
 | dedup email_address
 | sort +_time
 """
@@ -68,11 +68,11 @@ CredentialWriteCheck.authId="{user_id}"
 
 def _build_smart_id_query(user_id: str) -> str:
     """Builds the smart ID and proxy information query for a user."""
-    query = f"""index={rss_index} [index={rss_index} intuit_userid={user_id} | fields smartId] 
+    query = f"""index={rss_index} [index={rss_index} olorin_userid={user_id} | fields smartId] 
 | eval "TRUE_ISP"=urldecode(true_ip_isp) 
 | eval "INPUT_ISP"=urldecode(input_ip_isp) 
 | stats values(proxyType) values(dnsIpGeo) by smartId 
-| sort -dc(intuit_userid)
+| sort -dc(olorin_userid)
 """
     return query
 
@@ -90,7 +90,7 @@ def get_direct_auth_query(user_id: str) -> str:
     Returns:
         A Splunk query string ready for direct execution
     """
-    return f"""index="{rss_index}" intuit_userid={user_id} 
+    return f"""index="{rss_index}" olorin_userid={user_id} 
 | eval CHALLENGE=case(
     transactionDetail="challenge_type=idp","IDP",
     transactionDetail="challenge_type=otp_email","Email",
@@ -110,8 +110,8 @@ def get_direct_auth_query(user_id: str) -> str:
 | eval "Device_First_Seen"=urldecode(fuzzy_device_first_seen)
 | eval "TrueIP_State"=urldecode(true_ip_region)
 | eval eventDate=strftime(_time,"%D")
-| stats dc(intuit_tid) values(Device_First_Seen) values(eventDate) AS "Days Accessed" 
-  dc(eventDate) AS "Number of Days Accessed" values(intuit_offeringId) values(transaction) 
+| stats dc(olorin_tid) values(Device_First_Seen) values(eventDate) AS "Days Accessed" 
+  dc(eventDate) AS "Number of Days Accessed" values(olorin_offeringId) values(transaction) 
   values(CHALLENGE) values(TRUE_IP_CITY) values(TrueIP_State) values(true_ip_geo) 
   values(INPUT_ISP) values(TRUE_ISP) by fuzzy_device_id 
 | sort -"Number of Days Accessed\""""
@@ -132,15 +132,15 @@ def get_direct_email_query(user_id: str) -> str:
         A Splunk query string ready for direct execution
     """
     return f"""index="{rss_index}" fuzzy_device_id=* [index="{identity_index}" api_result="*" CredentialWriteCheck.authId="{user_id}"
-| rename CredentialWriteCheck.authId AS "intuit_userid" 
-| rename intuit_sessionid AS "sessionId" 
+| rename CredentialWriteCheck.authId AS "olorin_userid" 
+| rename olorin_sessionid AS "sessionId" 
 | fields sessionId, Authenticator_Add_Date] 
 | rex field=data "(email=(?<account_email>.+))"
 | rex field=data "(Username=(?<account_email>.+))"
 | eval email_address=urldecode(Username)
 | eval "Email_Updated_Date"=strftime(_time,"%D")
 | search event=*
-| table intuit_userid, intuit_realmid, _time, email_address, fuzzy_device_id, event, true_ip, true_ip_isp, true_ip_city, sessionId, intuit_tid
+| table olorin_userid, olorin_realmid, _time, email_address, fuzzy_device_id, event, true_ip, true_ip_isp, true_ip_city, sessionId, olorin_tid
 | dedup email_address
 | sort +_time"""
 
@@ -158,8 +158,8 @@ def get_direct_smart_id_query(user_id: str) -> str:
     Returns:
         A Splunk query string ready for direct execution
     """
-    return f"""index="{rss_index}" intuit_userid={user_id} 
-| table _time intuit_userid smartId true_ip_isp input_ip_isp proxyType dnsIpGeo
+    return f"""index="{rss_index}" olorin_userid={user_id} 
+| table _time olorin_userid smartId true_ip_isp input_ip_isp proxyType dnsIpGeo
 | sort -_time"""
 
 
@@ -212,8 +212,8 @@ def get_simple_smart_id_debug_query(user_id: str) -> str:
     Returns:
         A simple Splunk debug query for smartId
     """
-    return f"""index="{rss_index}" intuit_userid={user_id} smartId=*
-| table _time intuit_userid smartId"""
+    return f"""index="{rss_index}" olorin_userid={user_id} smartId=*
+| table _time olorin_userid smartId"""
 
 
 # Dictionary mapping query types to builder functions

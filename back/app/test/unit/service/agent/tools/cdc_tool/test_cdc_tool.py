@@ -12,7 +12,7 @@ from app.service.agent.tools.cdc_tool.cdc_tool import (
 
 @pytest.fixture
 def mock_headers():
-    return {"Authorization": "Bearer test_token", "intuit-tid": "test-tid"}
+    return {"Authorization": "Bearer test_token", "olorin-tid": "test-tid"}
 
 
 @pytest.fixture
@@ -20,14 +20,14 @@ def mock_agent_context():
     mock_context = MagicMock()
     mock_context.get_header.return_value = {
         "Authorization": "Bearer test_token",
-        "intuit-tid": "test-tid",
+        "olorin-tid": "test-tid",
     }
 
     # Setup auth context
     mock_auth_context = MagicMock()
-    mock_auth_context.intuit_user_id = "test-user-id"
-    mock_auth_context.intuit_realmid = "test-realm-id"
-    mock_context.intuit_header.auth_context = mock_auth_context
+    mock_auth_context.olorin_user_id = "test-user-id"
+    mock_auth_context.olorin_realmid = "test-realm-id"
+    mock_context.olorin_header.auth_context = mock_auth_context
 
     return mock_context
 
@@ -263,10 +263,10 @@ class TestCdcTool:
             only_trusted_attrs=True,
             userid=mock_config["configurable"][
                 "agent_context"
-            ].intuit_header.auth_context.intuit_user_id,
+            ].olorin_header.auth_context.olorin_user_id,
             realmid=mock_config["configurable"][
                 "agent_context"
-            ].intuit_header.auth_context.intuit_realmid,
+            ].olorin_header.auth_context.olorin_realmid,
             attributes=["firstName", "lastName", "email"],
         )
         assert result == mock_cdc_response["data"]["PersonAccount"]
@@ -300,10 +300,10 @@ class TestCdcTool:
             only_trusted_attrs=True,
             userid=mock_config["configurable"][
                 "agent_context"
-            ].intuit_header.auth_context.intuit_user_id,
+            ].olorin_header.auth_context.olorin_user_id,
             realmid=mock_config["configurable"][
                 "agent_context"
-            ].intuit_header.auth_context.intuit_realmid,
+            ].olorin_header.auth_context.olorin_realmid,
             attributes=["firstName", "lastName", "email"],
         )
         assert result == mock_cdc_response["data"]["PersonAccount"]

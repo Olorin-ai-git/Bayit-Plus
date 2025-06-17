@@ -40,7 +40,7 @@ def post_comment_message(investigation_id: str, msg: CommentMessageCreate):
     # Check if investigation exists, create if not (in-memory only)
     from app.persistence import ensure_investigation_exists
 
-    ensure_investigation_exists(investigation_id, msg.entity_id)
+    ensure_investigation_exists(investigation_id, msg.entity_id, msg.entity_type)
     # Use CommentMessageRead for the response
     comment_msg = CommentMessageRead(
         id=len(IN_MEMORY_COMMENTS) + 1,

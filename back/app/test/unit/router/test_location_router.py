@@ -101,9 +101,9 @@ def test_analyze_location_with_vector_search(client):
     # Mock request with proper headers
     mock_request = MagicMock()
     mock_request.headers = {
-        "intuit-tid": "test-tid",
-        "intuit_originating_assetalias": "test-asset",
-        "intuit_experience_id": "test-exp-id",
+        "olorin-tid": "test-tid",
+        "olorin_originating_assetalias": "test-asset",
+        "olorin_experience_id": "test-exp-id",
     }
 
     result = asyncio.run(

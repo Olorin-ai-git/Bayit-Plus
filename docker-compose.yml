@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  olorin-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GIT_COMMIT=${GIT_COMMIT:-dev}
+        - GIT_BRANCH=${GIT_BRANCH:-main}
+        - BUILD_DATE=${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}
+    container_name: olorin-container
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PYTHONPATH=/app
+      - APP_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      # Optional: Mount logs for debugging
+      - ./logs:/app/logs:rw
+    labels:
+      - "com.olorin.service=olorin-app"
+      - "com.olorin.version=${GIT_COMMIT:-dev}"
+      - "com.olorin.environment=production"
+
+  # Optional: Add a development service
+  olorin-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    container_name: olorin-dev-container
+    ports:
+      - "8090:8090"  # Backend
+      - "3001:3000"  # Frontend dev server
+    restart: "no"
+    environment:
+      - NODE_ENV=development
+      - PYTHONPATH=/app
+      - APP_ENV=development
+      - WATCHFILES_FORCE_POLLING=true
+    volumes:
+      # Mount source code for development
+      - ./back:/app:rw
+      - ./front:/app/frontend:rw
+    profiles:
+      - dev
+    command: >
+      bash -c "
+        echo 'Starting development environment...'
+        cd /app && PYTHONPATH=. python app/local_server.py &
+        cd /app/frontend && npm install && npm start
+      "
+
+networks:
+  default:
+    name: olorin-network
+    driver: bridge
+
+volumes:
+  olorin-logs:
+    driver: local 

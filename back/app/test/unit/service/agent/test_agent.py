@@ -26,15 +26,20 @@ from app.service.agent.agent import (
 @pytest.fixture
 def mock_agent_context():
     from app.models.agent_context import AgentContext
-    from app.models.agent_headers import IntuitHeader
+    from app.models.agent_headers import OlorinHeader
+    from app.models.upi_response import Metadata
 
     context = MagicMock(spec=AgentContext)
-    header = MagicMock(spec=IntuitHeader)
+    header = MagicMock(spec=OlorinHeader)
+    metadata = MagicMock(spec=Metadata)
+    metadata.additional_metadata = {"test": "value"}
+
     context.get_header.return_value = {
         "Authorization": "Bearer sample_token",
-        "intuit-tid": "sample_tid",
+        "olorin-tid": "sample_tid",
     }
-    context.intuit_header = header
+    context.olorin_header = header
+    context.metadata = metadata
     return context
 
 
@@ -112,7 +117,7 @@ def test_create_and_get_agent_graph(
     assert result == mock_graph
 
     # Verify the graph was built correctly
-    mock_builder.add_node.assert_any_call("assistant", assistant)
+    mock_builder.add_node.assert_any_call("fraud_investigation", assistant)
 
     # Check that add_node was called with "tools" and the mock_tool_node_instance
     mock_builder.add_node.assert_any_call("tools", mock_tool_node_instance)
@@ -120,8 +125,11 @@ def test_create_and_get_agent_graph(
     # Verify that ToolNode was instantiated with the tools list
     mock_tool_node.assert_called_once()
 
-    assert mock_builder.add_edge.call_count >= 2
-    mock_builder.add_conditional_edges.assert_called_once()
+    # Verify edges were added (parallel graph has many edges)
+    assert (
+        mock_builder.add_edge.call_count >= 8
+    )  # START->start_investigation, start_investigation->fraud_investigation, fraud_investigation->4 agents, 4 agents->risk_agent
+    # No conditional edges in the new simplified structure
     mock_builder.compile.assert_called_once()
 
 

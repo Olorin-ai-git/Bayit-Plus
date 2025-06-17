@@ -36,7 +36,7 @@ class Metadata(BaseModel):
     interaction_id: Optional[str] = Field(None, alias="interactionId")
     experience_id: Optional[str] = Field(None, alias="experienceId")
     originating_asset_alias: Optional[str] = Field(None, alias="originatingAssetAlias")
-    intuit_tid: Optional[str] = Field(None)
+    olorin_tid: Optional[str] = Field(None)
     agent: Optional[Agent] = Field(None)
     additional_metadata: Optional[dict] = Field(None, alias="additionalMetadata")
     supported_output_formats: Optional[str] = Field(

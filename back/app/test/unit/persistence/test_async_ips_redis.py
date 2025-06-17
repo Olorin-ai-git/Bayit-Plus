@@ -5,7 +5,7 @@ import pytest
 
 from app.adapters.ips_cache_client import IPSCacheClient
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.persistence.async_ips_redis import (
     AsyncRedisSaver,
     _create_chunks_commands,
@@ -29,7 +29,7 @@ def mock_agent_context():
     """Create a mock AgentContext for testing."""
     mock_context = MagicMock(spec=AgentContext)
     mock_context.thread_id = "test_thread_id"
-    mock_context.get_header.return_value = {"intuit_tid": "test_tid"}
+    mock_context.get_header.return_value = {"olorin_tid": "test_tid"}
     return mock_context
 
 

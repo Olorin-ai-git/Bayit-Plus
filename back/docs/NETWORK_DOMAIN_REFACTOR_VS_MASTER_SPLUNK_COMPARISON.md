@@ -26,7 +26,7 @@ Both branches use **exactly the same** SPL query for network analysis:
 
 #### Master Branch Query (Documented)
 ```spl
-index=rss-e2eidx intuit_userid=4621097846089147992
+index=rss-e2eidx olorin_userid=4621097846089147992
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
 | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -44,7 +44,7 @@ index=rss-e2eidx intuit_userid=4621097846089147992
 
 #### Refactor Branch Query (Actual Implementation)
 ```spl
-search index=rss-e2eidx intuit_userid=4621097846089147992
+search index=rss-e2eidx olorin_userid=4621097846089147992
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
 | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -71,7 +71,7 @@ Both branches use the same centralized query construction approach:
 def _build_network_query(id_value: str) -> str:
     """Builds a query for the network agent, only selecting required columns."""
     index_search = f"index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    query = f"""{index_search} olorin_userid={id_value}
     | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
     [... identical field extractions ...]
     | table _time, true_ip, proxy_ip, input_ip, isp, organization, tm_sessionid
@@ -84,7 +84,7 @@ def _build_network_query(id_value: str) -> str:
 def _build_network_query(id_value: str) -> str:
     """Builds a query for the network agent, only selecting required columns."""
     index_search = f"search index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    query = f"""{index_search} olorin_userid={id_value}
     | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
     [... identical field extractions ...]
     | table _time, true_ip, proxy_ip, input_ip, isp, organization, tm_sessionid
@@ -273,8 +273,8 @@ def _process_splunk_results(self, splunk_results: List[Dict[str, Any]]) -> List[
   "extracted_network_signals": [
     {
       "ip_address": "207.207.181.8",
-      "isp": "intuit inc.",
-      "organization": "intuit inc.",
+      "isp": "olorin inc.",
+      "organization": "olorin inc.",
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00"
     },
@@ -296,8 +296,8 @@ def _process_splunk_results(self, splunk_results: List[Dict[str, Any]]) -> List[
   "extracted_network_signals": [
     {
       "timestamp": "2025-05-15T06:31:46.027-07:00",
-      "isp": "intuit inc.",
-      "organization": "intuit inc."
+      "isp": "olorin inc.",
+      "organization": "olorin inc."
     },
     {
       "timestamp": "2025-05-15T07:08:39.584-07:00", 
@@ -314,7 +314,7 @@ Both implementations successfully detect the **same fraud patterns**:
 
 | Pattern Type | Master Branch (Documented) | Refactor Branch (Actual) | Status |
 |--------------|----------------------------|---------------------------|--------|
-| **ISP Diversity** | "intuit inc." → "bharti airtel ltd." | "intuit inc." → "bharti airtel ltd." | ✅ **Identical** |
+| **ISP Diversity** | "olorin inc." → "bharti airtel ltd." | "olorin inc." → "bharti airtel ltd." | ✅ **Identical** |
 | **Geographic Transition** | US corporate → India telecom | US corporate → India telecom | ✅ **Identical** |
 | **Time Window** | 37-minute transition | Same timestamps detected | ✅ **Identical** |
 | **Risk Assessment** | Medium-high risk | 0.6 risk score | ✅ **Consistent** |
@@ -396,8 +396,8 @@ def create_fallback_assessment(self, user_id: str, extracted_signals: List[Dict[
   "extracted_network_signals": [
     {
       "ip_address": "207.207.181.8",
-      "isp": "intuit inc.",
-      "organization": "intuit inc.", 
+      "isp": "olorin inc.",
+      "organization": "olorin inc.", 
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00"
     }
@@ -412,8 +412,8 @@ def create_fallback_assessment(self, user_id: str, extracted_signals: List[Dict[
   "extracted_network_signals": [
     {
       "timestamp": "2025-05-15T06:31:46.027-07:00",
-      "isp": "intuit inc.",
-      "organization": "intuit inc."
+      "isp": "olorin inc.",
+      "organization": "olorin inc."
     }
   ],
   "network_risk_assessment": {
@@ -473,7 +473,7 @@ def create_fallback_assessment(self, user_id: str, extracted_signals: List[Dict[
 - **Performance**: Equivalent Splunk execution performance
 
 #### ✅ **Fraud Detection Accuracy**
-- **ISP Analysis**: Same "intuit inc." vs "bharti airtel ltd." detection
+- **ISP Analysis**: Same "olorin inc." vs "bharti airtel ltd." detection
 - **Geographic Patterns**: Identical US-to-India transition detection
 - **Risk Scoring**: Consistent medium-high risk assessment (0.6-0.65)
 

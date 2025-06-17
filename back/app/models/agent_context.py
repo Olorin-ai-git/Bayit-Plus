@@ -6,8 +6,9 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
+from app.utils.idps_utils import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -20,7 +21,7 @@ class BaseContextModel(BaseModel):
     """
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    intuit_header: IntuitHeader
+    olorin_header: OlorinHeader
     query_params: dict = Field(default_factory=dict)
     start_time: float = Field(default_factory=lambda: time.time())
 
@@ -36,54 +37,54 @@ class AgentContext(BaseContextModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         session_id = self.metadata.interaction_group_id
-        self.thread_id = f"{session_id}-{self.intuit_header.intuit_experience_id}"
+        self.thread_id = f"{session_id}-{self.olorin_header.olorin_experience_id}"
 
     def get_header(self):
         return self.build_headers(
             app_id=settings_for_env.app_id,
-            app_secret=settings_for_env.app_secret,
-            intuit_user_id=self.intuit_header.auth_context.intuit_user_id,
-            intuit_user_token=self.intuit_header.auth_context.intuit_user_token,
-            intuit_tid=self.intuit_header.intuit_tid,
-            intuit_realmid=self.intuit_header.auth_context.intuit_realmid,
-            intuit_experience_id=self.intuit_header.intuit_experience_id,
-            intuit_originating_assetalias=self.intuit_header.intuit_originating_assetalias,
+            app_secret=get_app_secret(settings_for_env.app_secret),
+            olorin_user_id=self.olorin_header.auth_context.olorin_user_id,
+            olorin_user_token=self.olorin_header.auth_context.olorin_user_token,
+            olorin_tid=self.olorin_header.olorin_tid,
+            olorin_realmid=self.olorin_header.auth_context.olorin_realmid,
+            olorin_experience_id=self.olorin_header.olorin_experience_id,
+            olorin_originating_assetalias=self.olorin_header.olorin_originating_assetalias,
         )
 
     def build_headers(
         self,
         app_id: str,
         app_secret: str,
-        intuit_user_id: str,
-        intuit_user_token: str,
-        intuit_tid: str,
-        intuit_realmid=None,
-        intuit_experience_id: str = None,
-        intuit_originating_assetalias: str = None,
+        olorin_user_id: str,
+        olorin_user_token: str,
+        olorin_tid: str,
+        olorin_realmid=None,
+        olorin_experience_id: str = None,
+        olorin_originating_assetalias: str = None,
     ):
-        # Intuit PrivateAuth+ headers
+        # Olorin PrivateAuth+ headers
         AUTHN_STRING = (
-            "Intuit_IAM_Authentication "
-            f"intuit_appid='{app_id}',"
-            f"intuit_app_secret={app_secret},"
-            "intuit_token_type='IAM-Ticket',"
-            f"intuit_userid={intuit_user_id},"
-            f"intuit_token={intuit_user_token}"
+            "Olorin_IAM_Authentication "
+            f"olorin_appid='{app_id}',"
+            f"olorin_app_secret={app_secret},"
+            "olorin_token_type='IAM-Ticket',"
+            f"olorin_userid={olorin_user_id},"
+            f"olorin_token={olorin_user_token}"
         )
 
-        if intuit_realmid:
-            AUTHN_STRING += f",intuit_realmid={intuit_realmid}"
+        if olorin_realmid:
+            AUTHN_STRING += f",olorin_realmid={olorin_realmid}"
 
         runtime_header = {
             "Authorization": AUTHN_STRING,
-            "intuit_tid": intuit_tid,
+            "olorin_tid": olorin_tid,
         }
 
-        if intuit_experience_id:
-            runtime_header["intuit_experience_id"] = intuit_experience_id
-        if intuit_originating_assetalias:
-            runtime_header["intuit_originating_assetalias"] = (
-                intuit_originating_assetalias
+        if olorin_experience_id:
+            runtime_header["olorin_experience_id"] = olorin_experience_id
+        if olorin_originating_assetalias:
+            runtime_header["olorin_originating_assetalias"] = (
+                olorin_originating_assetalias
             )
 
         return runtime_header

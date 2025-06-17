@@ -17,15 +17,15 @@
 #     headers = {
 #         "Content-Type": "application/json",
 #         "Authorization": (
-#             "Intuit_IAM_Authentication intuit_token_type=IAM-Ticket, "
-#             "intuit_appid=Intuit.appfabric.genuxtestclient, "
-#             "intuit_app_secret=<secret>, "
-#             "intuit_userid=<userid>, "
-#             "intuit_token=<token>, "
+#             "Olorin_IAM_Authentication olorin_token_type=IAM-Ticket, "
+#             "olorin_appid=Olorin.appfabric.genuxtestclient, "
+#             "olorin_app_secret=<secret>, "
+#             "olorin_userid=<userid>, "
+#             "olorin_token=<token>, "
 #         ),
-#         "intuit_originating_assetalias": "Intuit.data.mlplatform.genosux",
-#         "intuit_tid": "a233523b-4a57-4a05-9fb4-3e886e58fc4d",
-#         "intuit_experience_id": "test1"
+#         "olorin_originating_assetalias": "Olorin.data.mlplatform.genosux",
+#         "olorin_tid": "a233523b-4a57-4a05-9fb4-3e886e58fc4d",
+#         "olorin_experience_id": "test1"
 #     }
 #
 #     # Define the experience_id and agent_name
@@ -34,7 +34,7 @@
 #
 #     # Make the call to the UPI service
 #     try:
-#         result = await upi_client.call_upi_service(experience_id=experience_id, agent_name=agent_name,intuit_headers= headers)
+#         result = await upi_client.call_upi_service(experience_id=experience_id, agent_name=agent_name,olorin_headers= headers)
 #         print("UPI Service Response:", result)
 #     except Exception as e:
 #         print(f"An error occurred: {e}")
@@ -42,6 +42,3 @@
 # # Run the main function
 # if __name__ == "__main__":
 #     asyncio.run(main())
-
-# Integration tests for UPIClient
-# (No GenAI/GenOS references remain)

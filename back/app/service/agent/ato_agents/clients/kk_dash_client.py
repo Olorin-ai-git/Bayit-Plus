@@ -41,8 +41,8 @@ class KKDashClient:
         """
         spl_query = (
             f'index=fraudprevention sourcetype=kk_investigation user_id="{user_id}" '
-            "| table fuzzy_device_id, dc(intuit_userid), values(intuit_username), values(intuit_userid), "
-            "values(intuit_offeringId), values(timezone_name), values(TRUE_IP_CITY), values(TRUE_IP_REGION), "
+            "| table fuzzy_device_id, dc(olorin_userid), values(olorin_username), values(olorin_userid), "
+            "values(olorin_offeringId), values(timezone_name), values(TRUE_IP_CITY), values(TRUE_IP_REGION), "
             "values(true_ip_geo), values(INPUT_ISP), values(TRUE_ISP), values(BrowserStrings) "
             "| sort - _time"
         )

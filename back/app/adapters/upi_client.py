@@ -97,7 +97,7 @@ class UPIConversationHistoryClient:
         cls,
         experience_id: str,
         agent_name: str,
-        intuit_headers: Dict[str, str],
+        olorin_headers: Dict[str, str],
         after: Optional[str] = None,
         limit: Optional[int] = None,
         filter: Optional[str] = None,
@@ -107,7 +107,7 @@ class UPIConversationHistoryClient:
         Args:
             experience_id (str): Unique identifier for the experience
             agent_name (str): Name of the agent
-            intuit_headers (Dict[str, str]): Headers required for Intuit authentication
+            olorin_headers (Dict[str, str]): Headers required for Olorin authentication
             after (Optional[str]): Pagination token for fetching next set of results
             limit (Optional[int]): Maximum number of interactions to fetch
             filter_param (Optional[str]): Filter criteria for the interactions
@@ -124,7 +124,7 @@ class UPIConversationHistoryClient:
 
         interaction_response: InteractionsResponse = (
             await cls._fetch_paginated_interactions(
-                endpoint=endpoint, headers=intuit_headers, params=params, limit=limit
+                endpoint=endpoint, headers=olorin_headers, params=params, limit=limit
             )
         )
 

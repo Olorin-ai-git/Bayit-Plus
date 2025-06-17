@@ -29,13 +29,13 @@ The Device domain specializes in **device fingerprinting and geographic correlat
 
 #### Complete SPL Query Structure
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id}
+search index=rss-e2eidx olorin_userid={user_id}
 | rex field=contextualData "device_id=(?<device_id>[^&]+)"
 | rex field=contextualData "fuzzy_device_id=(?<fuzzy_device_id>[^&]+)"
 | rex field=contextualData "smartId=(?<smartId>[^&]+)"
 | rex field=contextualData "tm_smartid=(?<tm_smartid>[^&]+)"
 | rex field=contextualData "tm_sessionid=(?<tm_sessionid>[^&]+)"
-| rex field=contextualData "intuit_tid=(?<intuit_tid>[^&]+)"
+| rex field=contextualData "olorin_tid=(?<olorin_tid>[^&]+)"
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "true_ip_city=(?<true_ip_city>[^&]+)"
 | rex field=contextualData "true_ip_geo=(?<true_ip_geo>[^&]+)"
@@ -47,14 +47,14 @@ search index=rss-e2eidx intuit_userid={user_id}
 | eval smartId=urldecode(smartId)
 | eval tm_smartid=urldecode(tm_smartid)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| eval intuit_tid=urldecode(intuit_tid)
+| eval olorin_tid=urldecode(olorin_tid)
 | eval true_ip=urldecode(true_ip)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval true_ip_country=urldecode(true_ip_geo)
 | eval true_ip_region=urldecode(true_ip_region)
 | eval true_ip_latitude=urldecode(true_ip_latitude)
 | eval true_ip_longitude=urldecode(true_ip_longitude)
-| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, intuit_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
+| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, olorin_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
 ```
 
 ### 2.2 Field Extraction Analysis
@@ -65,7 +65,7 @@ search index=rss-e2eidx intuit_userid={user_id}
 - **`smartId`** - ThreatMetrix smart ID
 - **`tm_smartid`** - ThreatMetrix session smart ID  
 - **`tm_sessionid`** - ThreatMetrix session identifier
-- **`intuit_tid`** - Intuit transaction identifier
+- **`olorin_tid`** - Olorin transaction identifier
 - **`true_ip`** - True IP address
 - **`true_ip_city`** - Geographic city location
 - **`true_ip_country`** - Geographic country (critical for risk assessment)
@@ -108,7 +108,7 @@ search index=rss-e2eidx intuit_userid={user_id}
     "device_id": "6c0998a4c9f0437abbc59706471aaedb",
     "fuzzy_device_id": "f394742f39214c908476c01623bf4bcd",
     "tm_sessionid": "5b2cd1da38f4403d99c2b6fea53604d9",
-    "intuit_tid": "1-6825f56e-2cd5258e16844df3289ca4b1",
+    "olorin_tid": "1-6825f56e-2cd5258e16844df3289ca4b1",
     "true_ip": "223.185.128.58",
     "true_ip_city": "bengaluru",
     "true_ip_country": "in",
@@ -120,7 +120,7 @@ search index=rss-e2eidx intuit_userid={user_id}
     "fuzzy_device_id": "392b4bf1e3ed430090a9f50f1d72563a",
     "tm_smartid": "392b4bf1e3ed430090a9f50f1d72563a",
     "tm_sessionid": "9ab7db13594b4bf27996b4f65a056a9d",
-    "intuit_tid": "1-6825dd0c-2b8ae7857012ae9c472cda9f",
+    "olorin_tid": "1-6825dd0c-2b8ae7857012ae9c472cda9f",
     "true_ip": "207.207.181.8",
     "true_ip_city": "mountain view",
     "true_ip_country": "US",
@@ -138,7 +138,7 @@ search index=rss-e2eidx intuit_userid={user_id}
   "true_ip_country": "US",
   "true_ip_region": "california",
   "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
-  "intuit_tid": "1-6825ecc1-0e3042790dd25ab8716e3001",
+  "olorin_tid": "1-6825ecc1-0e3042790dd25ab8716e3001",
   "_time": "2025-05-15T06:31:46.027-07:00",
   "countries": ["US"]
 }
@@ -419,7 +419,7 @@ update_investigation_llm_thoughts(investigation_id, "device", llm_thoughts)
 ```
 
 #### Data Retention and Privacy
-- **User Data Isolation**: Query filtering by `intuit_userid`
+- **User Data Isolation**: Query filtering by `olorin_userid`
 - **Session Management**: Secure connection lifecycle management
 - **Audit Logging**: Complete operation audit trail
 - **Data Minimization**: Field selection optimization

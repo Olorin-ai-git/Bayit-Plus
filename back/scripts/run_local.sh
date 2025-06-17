@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-docker build --build-arg WATCHFILES_FORCE_POLLING=true -t "olorin" .
+docker build --build-arg WATCHFILES_FORCE_POLLING=true -t "gaia" .
 
 # Verify that the volume mount works
 docker run \
@@ -16,10 +16,10 @@ docker run \
 # 8090 is the Service Mesh port
 # 8000 is the FastAPI application port
 docker run \
-  --name "olorin" \
+  --name "gaia" \
   --rm \
   -e APP_ENV=local \
-  -e APP_NAME="olorin" \
+  -e APP_NAME="gaia" \
   -p 8443:8443 \
   -p 8490:8490 \
   -p 8090:8090 \
@@ -27,4 +27,4 @@ docker run \
   -v ~/.aws:/home/appuser/.aws \
   -v ~/.deviceauth:/home/appuser/.deviceauth \
   -v ./app:/app/app \
-  "olorin"
+  "gaia"

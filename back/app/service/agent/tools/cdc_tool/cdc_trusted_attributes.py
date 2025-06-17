@@ -520,7 +520,7 @@ CDC_TRUSTED_COMPANY_ATTRIBUTE_LIST = [
     "accounting.ftu.ownableMoments",
     "accounting.ftu.recommendedFlow",
     "accounting.ftu.relatedIVIDs",
-    "accounting.ftu.sbmIntuitID",
+    "accounting.ftu.sbmOlorinID",
     "accounting.insights.numConnectedFinancialInstitutions",
     "accounting.insights.numReviewedTxn",
     "accounting.insights.numUnreviewedTxn",

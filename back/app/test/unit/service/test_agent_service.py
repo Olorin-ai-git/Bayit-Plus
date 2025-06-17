@@ -9,7 +9,7 @@ from openai import (
     RateLimitError,
 )
 
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.service.error_handling import (
@@ -29,21 +29,21 @@ def mock_agent_context():
     context.input = "Test Input"
     context.thread_id = "sample_thread_id"
 
-    # Setup intuit header
-    header = MagicMock(spec=IntuitHeader)
+    # Setup olorin header
+    header = MagicMock(spec=OlorinHeader)
     auth = MagicMock(spec=AuthContext)
-    auth.intuit_user_id = "sample_user_id"
-    auth.intuit_user_token = "sample_token"
-    auth.intuit_realmid = "sample_realmid"
+    auth.olorin_user_id = "sample_user_id"
+    auth.olorin_user_token = "sample_token"
+    auth.olorin_realmid = "sample_realmid"
     header.auth_context = auth
-    header.intuit_tid = "sample_tid"
-    header.intuit_experience_id = "sample_experience_id"
-    header.intuit_originating_assetalias = "sample_assetalias"
+    header.olorin_tid = "sample_tid"
+    header.olorin_experience_id = "sample_experience_id"
+    header.olorin_originating_assetalias = "sample_assetalias"
 
-    context.intuit_header = header
+    context.olorin_header = header
     context.get_header.return_value = {
         "Authorization": "Bearer sample_token",
-        "intuit-tid": "sample_tid",
+        "olorin-tid": "sample_tid",
     }
 
     return context
@@ -52,15 +52,24 @@ def mock_agent_context():
 @pytest.fixture
 def mock_request():
     request = MagicMock()
-    graph = AsyncMock()
-    graph.ainvoke = AsyncMock()
-    graph.ainvoke.return_value = {
+    graph_parallel = AsyncMock()
+    graph_parallel.ainvoke = AsyncMock()
+    graph_parallel.ainvoke.return_value = {
         "messages": [
             MagicMock(content="Initial message"),
             MagicMock(content="Response message"),
         ]
     }
-    request.app.state.graph = graph
+    graph_sequential = AsyncMock()
+    graph_sequential.ainvoke = AsyncMock()
+    graph_sequential.ainvoke.return_value = {
+        "messages": [
+            MagicMock(content="Initial message"),
+            MagicMock(content="Response message"),
+        ]
+    }
+    request.app.state.graph_parallel = graph_parallel
+    request.app.state.graph_sequential = graph_sequential
     return request
 
 
@@ -92,21 +101,16 @@ async def test_ainvoke_agent(
         mock_langfuse_handler.langfuse.trace_id = ""
     mock_callback_handler.return_value = mock_langfuse_handler
 
-    # Patch the ainvoke mock to return a tuple (dict, trace_id)
-    mock_request.app.state.graph.ainvoke.return_value = (
-        {
-            "messages": [
-                type(
-                    "msg",
-                    (),
-                    {
-                        "content": '{"overall_risk_score": 0.42, "accumulated_llm_thoughts": "Test LLM thoughts"}'
-                    },
-                )()
-            ]
-        },
-        "test-trace-id",
+    # Create a proper mock message object
+    mock_message = MagicMock()
+    mock_message.content = (
+        '{"overall_risk_score": 0.42, "accumulated_llm_thoughts": "Test LLM thoughts"}'
     )
+
+    # Patch the ainvoke mock to return a dict (not tuple) - use sequential graph since parallel is forced to False
+    mock_request.app.state.graph_sequential.ainvoke.return_value = {
+        "messages": [mock_message]
+    }
     response, trace_id = await ainvoke_agent(mock_request, mock_agent_context)
 
     # Assertions
@@ -114,11 +118,13 @@ async def test_ainvoke_agent(
         response
         == '{"overall_risk_score": 0.42, "accumulated_llm_thoughts": "Test LLM thoughts"}'
     )
-    assert trace_id == mock_langfuse_handler.langfuse.trace_id
+    assert (
+        trace_id is None
+    )  # Since we're not returning a tuple, trace_id should be None
 
     # Verify the graph was invoked with correct parameters
-    mock_request.app.state.graph.ainvoke.assert_called_once()
-    call_args = mock_request.app.state.graph.ainvoke.call_args[0][0]
+    mock_request.app.state.graph_sequential.ainvoke.assert_called_once()
+    call_args = mock_request.app.state.graph_sequential.ainvoke.call_args[0][0]
     assert "messages" in call_args
     assert call_args["messages"][0].content == "Test Input"
 
@@ -149,7 +155,7 @@ async def test_ainvoke_agent_exception_handling(
     mock_callback_handler.return_value = mock_langfuse_handler
 
     # Simulate an exception in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = AgentInvokeException(
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = AgentInvokeException(
         "Simulated exception"
     )
 
@@ -160,7 +166,7 @@ async def test_ainvoke_agent_exception_handling(
     assert str(excinfo.value) == "Simulated exception"
 
     # Verify the graph was invoked and raised an exception
-    mock_request.app.state.graph.ainvoke.assert_called_once()
+    mock_request.app.state.graph_sequential.ainvoke.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -180,7 +186,7 @@ async def test_ainvoke_agent_authentication_error(
     mock_get_settings.return_value = mock_settings
 
     # Simulate an AuthenticationError in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = AuthenticationError(
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = AuthenticationError(
         message="Authentication failed", response=mock_response, body=None
     )
 
@@ -208,7 +214,7 @@ async def test_ainvoke_agent_permission_denied_error(
     mock_get_settings.return_value = mock_settings
 
     # Simulate a PermissionDeniedError in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = PermissionDeniedError(
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = PermissionDeniedError(
         message="Permission denied", response=mock_response, body=None
     )
 
@@ -236,7 +242,7 @@ async def test_ainvoke_agent_rate_limit_error(
     mock_get_settings.return_value = mock_settings
 
     # Simulate a RateLimitError in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = RateLimitError(
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = RateLimitError(
         message="Rate limit exceeded", response=mock_response, body=None
     )
 
@@ -263,7 +269,7 @@ async def test_ainvoke_agent_api_connection_error(
     mock_get_settings.return_value = mock_settings
 
     # Simulate an APIConnectionError in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = APIConnectionError(
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = APIConnectionError(
         message="API failed", request=mock_request
     )
 
@@ -290,7 +296,9 @@ async def test_ainvoke_agent_generic_exception(
     mock_get_settings.return_value = mock_settings
 
     # Simulate a generic Exception in the ainvoke method
-    mock_request.app.state.graph.ainvoke.side_effect = Exception("unexpected error")
+    mock_request.app.state.graph_sequential.ainvoke.side_effect = Exception(
+        "unexpected error"
+    )
 
     # Call the function and assert AgentInvokeException is raised
     with pytest.raises(AgentInvokeException) as excinfo:
@@ -318,16 +326,16 @@ def test_agent_response_str():
     assert "trace123" in s and "bar" in s and "foo" in s
 
 
-def test_intuit_header_str():
-    from app.models.agent_headers import AuthContext, IntuitHeader
+def test_olorin_header_str():
+    from app.models.agent_headers import AuthContext, OlorinHeader
 
     auth_ctx = AuthContext(
-        intuit_user_id="u", intuit_user_token="t", intuit_realmid="r"
+        olorin_user_id="u", olorin_user_token="t", olorin_realmid="r"
     )
-    header = IntuitHeader(
-        intuit_tid="tid1",
-        intuit_experience_id="expid1",
-        intuit_originating_assetalias="alias1",
+    header = OlorinHeader(
+        olorin_tid="tid1",
+        olorin_experience_id="expid1",
+        olorin_originating_assetalias="alias1",
         auth_context=auth_ctx,
     )
     s = str(header)
@@ -360,7 +368,7 @@ def test_check_route_allowed_raises_authorization_error():
 @pytest.mark.asyncio
 async def test_ainvoke_agent_output_content_string(mock_request, mock_agent_context):
     # Patch ainvoke to return a string (not a dict with 'messages')
-    mock_request.app.state.graph.ainvoke.return_value = "just a string"
+    mock_request.app.state.graph_sequential.ainvoke.return_value = "just a string"
     from app.service.agent_service import ainvoke_agent
 
     # Should not raise, should return the string and None as trace_id

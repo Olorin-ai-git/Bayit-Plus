@@ -185,7 +185,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
 ### 4.1 Agent Naming - **IDENTICAL**
 
 Both branches use the same agent identification:
-- **Agent Name**: `"Intuit.cas.hri.gaia:network-risk-analyzer"`
+- **Agent Name**: `"Olorin.cas.hri.gaia:network-risk-analyzer"`
 - **Hierarchical Structure**: Domain + function identification
 - **Consistency**: Maintained across both implementations
 
@@ -196,7 +196,7 @@ Both branches use the same agent identification:
 # Monolithic context creation in router
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.gaia:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
@@ -382,15 +382,15 @@ if extracted_signals:
 {
   "risk_level": 0.8,
   "risk_factors": [
-    "Significant ISP switch from Intuit Inc. to Bharti Airtel within ~37 minutes",
+    "Significant ISP switch from Olorin Inc. to Bharti Airtel within ~37 minutes",
     "Possible rapid country transition (US to India) in a short timeframe"
   ],
   "anomaly_details": [
-    "User switched from IP 207.207.181.8 (Intuit Inc.) at ~06:31 to IP 223.185.128.58 (Bharti Airtel) at ~07:08"
+    "User switched from IP 207.207.181.8 (Olorin Inc.) at ~06:31 to IP 223.185.128.58 (Bharti Airtel) at ~07:08"
   ],
   "confidence": 0.9,
   "summary": "High risk due to rapid ISP change indicating a likely international jump in a short period.",
-  "thoughts": "The user's network signals show a swift move from Intuit Inc. (likely US) to Bharti Airtel (likely India) in under an hour, suggesting suspicious activity. Possible explanations include VPN/proxy usage or account sharing between separate locations. The abrupt ISP transition leads to a high level of suspicion.",
+  "thoughts": "The user's network signals show a swift move from Olorin Inc. (likely US) to Bharti Airtel (likely India) in under an hour, suggesting suspicious activity. Possible explanations include VPN/proxy usage or account sharing between separate locations. The abrupt ISP transition leads to a high level of suspicion.",
   "timestamp": "2023-10-06T12:00:00Z"
 }
 ```

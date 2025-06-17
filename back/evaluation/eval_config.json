@@ -1,17 +1,49 @@
 {
-    "eval_run_config": {
-        "timeout_minutes": 30,
-        "fail_build_on_eval_failure": false,
-        "is_blocking": false
+    "project_asset_id": "3825825476777495228",
+    "evaluation_env": "e2e",
+    "genos_eval_run_config": {
+        "auth_params": {
+            "env": "e2e",
+            "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+            "olorin_originating_assetalias": "Olorin.cas.hri.gaia"
+        },
+        "genai_params": {
+            "model_type": "skip_endpoint"
+        },
+        "metrics": {
+            "metrics_list": [
+                "AutoEvalMetric",
+                "GroundTruthAutoEvalMetric"
+            ]
+        },
+        "general_settings": {
+            "logging_level": "DEBUG",
+            "run_srf_test": true
+        },
+        "input": {
+            "user_prompt_col": "text",
+            "user_provided_answer_col": "user_provided_answer"
+        },
+        "user_experiment_config": {
+            "identifier_type": "UNIQUE_ID",
+            "identifier": "enter your experience id here",
+            "experiment_params": {
+                "userId": "",
+                "email": ""
+            },
+            "experiment_name": "experiment"
+        }
     },
-    "eval_params": {
-        "model": "gpt-4",
-        "temperature": 0.7,
-        "max_tokens": 1000
-    },
-    "eval_pipeline_config": {
-        "dataset_file": "evaluation/dataset.csv",
-        "output_file": "evaluation/eval_results.json",
-        "metrics": ["accuracy", "precision", "recall", "f1"]
+    "genos_eval_pipeline_config": {
+        "components": [
+            {
+                "name": "pre_processing_component",
+                "component_config": {
+                    "image": "docker.olorin.com/intlgntsys-mlservices/ageval-preprocessor/service/ageval-preprocessor:latest"
+                }
+            }
+        ],
+        "is_agentic_evaluation": true,
+        "input_data_s3_path": ""
     }
 }

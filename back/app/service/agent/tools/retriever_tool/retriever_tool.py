@@ -155,10 +155,10 @@ class RetrieverTool(BaseTool):
         from app.models.agent_context import AgentContext
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
-        intuit_header = agent_context.get_header()
+        olorin_header = agent_context.get_header()
 
         resp_data = RAGApi.search(
-            headers=intuit_header,
+            headers=olorin_header,
             payload=payload,
         )
         logger.debug(f"response from RAG search {resp_data}")
@@ -192,10 +192,10 @@ class RetrieverTool(BaseTool):
         from app.models.agent_context import AgentContext
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
-        intuit_header = agent_context.get_header()
+        olorin_header = agent_context.get_header()
 
         resp_data = await RAGApi.asearch(
-            headers=intuit_header,
+            headers=olorin_header,
             payload=payload,
         )
         logger.debug(f"async response from RAG search {resp_data}")  # pragma: no cover
@@ -206,7 +206,7 @@ class RetrieverTool(BaseTool):
 class QBRetrieverTool(RetrieverTool):
     name: str = Field(
         "qbo_knowledgebase_retriever",
-        description="Intuit RAG paved path tool which can be used to search any index",
+        description="Olorin RAG paved path tool which can be used to search any index",
     )
     description: str = Field(
         "This tool helps find relevant help content about Quickbooks",
@@ -229,7 +229,7 @@ class QBRetrieverTool(RetrieverTool):
 class TTRetrieverTool(RetrieverTool):
     name: str = Field(
         "tto_knowledgebase_retriever",
-        description="Intuit RAG paved path tool which can be used to search any index",
+        description="Olorin RAG paved path tool which can be used to search any index",
     )
     description: str = Field(
         "This tool helps find relevant help content about Turbotax and Tax.",

@@ -1,3 +1,4 @@
+import argparse
 import os
 import time
 from datetime import datetime
@@ -5,18 +6,44 @@ from datetime import datetime
 import requests
 from fpdf import FPDF
 
-BASE_URL = "http://localhost:8000/api"  # Change if your API runs elsewhere
+parser = argparse.ArgumentParser(
+    description="Run investigation flow for a given device and generate a PDF summary."
+)
+parser.add_argument(
+    "--device-id",
+    dest="device_id",
+    help="Device ID to investigate",
+    default="f394742f39214c908476c01623bf4bcd",
+)
+parser.add_argument(
+    "--investigation-id",
+    dest="investigation_id",
+    help="Investigation ID to use (default: TEST-ALL-FOR-DEVICE-<device_id>)",
+)
+parser.add_argument(
+    "--time-range",
+    default="120d",
+    help="Time range for investigation (default: 120d)",
+)
+parser.add_argument(
+    "--base-url",
+    default="http://localhost:8000/api",
+    dest="base_url",
+    help="Base URL for the API (default: http://localhost:8000/api)",
+)
+args = parser.parse_args()
 
-investigation_id = "TEST-ALL-FOR-DEVICE-f394742f39214c908476c01623bf4bcd"
-device_id = "f394742f39214c908476c01623bf4bcd"
-time_range = "120d"
+device_id = args.device_id
+investigation_id = args.investigation_id or f"TEST-ALL-FOR-DEVICE-{device_id}"
+time_range = args.time_range
+BASE_URL = args.base_url
 
 headers = {
-    "Authorization": "Intuit_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
+    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
-    "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Intuit.cas.hri.gaia",
+    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+    "olorin_originating_assetalias": "Olorin.cas.hri.gaia",
 }
 
 
@@ -62,9 +89,11 @@ assert create_resp.status_code in (
 
 # 0. Test POST comment before investigation exists
 print(
-    "\nTesting POST /investigation/{investigation_id}/comment before investigation exists..."
+    f"\nTesting POST /investigation/{investigation_id}/comment before investigation exists..."
 )
 comment_payload = {
+    "entity_id": device_id,
+    "entity_type": "device_id",
     "user_id": device_id,
     "sender": "Investigator",
     "text": "Initial comment message for investigation creation test.",
@@ -81,7 +110,7 @@ comment_msg = resp.json()
 assert comment_msg["text"] == comment_payload["text"]
 
 # Confirm comment is retrievable
-print("\nTesting GET /investigation/{investigation_id}/comment...")
+print(f"\nTesting GET /investigation/{investigation_id}/comment...")
 resp = requests.get(
     f"{BASE_URL}/investigation/{investigation_id}/comment",
     headers=headers,
@@ -261,16 +290,18 @@ else:
     }
 
 # --- PDF SUMMARY GENERATION ---
-# Use existing DejaVuSans.ttf, do not delete or download
-if not os.path.exists("DejaVuSans.ttf"):
+script_dir = os.path.abspath(os.path.dirname(__file__))
+font_path = os.path.join(script_dir, os.pardir, "DejaVuSans.ttf")
+font_path = os.path.abspath(font_path)
+if not os.path.exists(font_path):
     print(
         "WARNING: DejaVuSans.ttf font file is missing. Skipping PDF summary generation."
     )
 else:
     pdf = FPDF()
     pdf.add_page()
-    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
-    pdf.add_font("DejaVu", "B", "DejaVuSans.ttf", uni=True)
+    pdf.add_font("DejaVu", "", font_path, uni=True)
+    pdf.add_font("DejaVu", "B", font_path, uni=True)
 
     # --- AUTHOR AND DATE ---
     pdf.set_font("DejaVu", "", 10)

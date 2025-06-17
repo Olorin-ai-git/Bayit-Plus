@@ -18,8 +18,8 @@ def mock_request():
     request = MagicMock(spec=Request)
     request.headers = {
         "authorization": "Bearer test_token",
-        "intuit_tid": "test_tid",
-        "intuit_originating_assetalias": "test_asset",
+        "olorin_tid": "test_tid",
+        "olorin_originating_assetalias": "test_asset",
     }
     return request
 
@@ -28,7 +28,7 @@ def mock_request():
 def sample_splunk_data():
     return [
         {
-            "intuit_userid": "test_user",
+            "olorin_userid": "test_user",
             "true_ip": "192.168.1.1",
             "true_ip_country": "US",
             "true_ip_city": "San Francisco",
@@ -39,7 +39,7 @@ def sample_splunk_data():
             "_time": "2023-01-01T00:00:00Z",
         },
         {
-            "intuit_userid": "test_user",
+            "olorin_userid": "test_user",
             "true_ip": "10.0.0.1",
             "true_ip_country": "CA",
             "true_ip_city": "Toronto",
@@ -81,7 +81,7 @@ class TestNetworkAnalysisService:
                     mock_llm.return_value = mock_llm_assessment
 
                     result = await network_service.analyze_network(
-                        user_id="test_user",
+                        entity_id="test_user",
                         request=mock_request,
                         investigation_id="test_inv",
                         time_range="1d",
@@ -107,7 +107,7 @@ class TestNetworkAnalysisService:
                 {"demo_user": {"network": cached_response}},
             ):
                 result = await network_service.analyze_network(
-                    user_id="demo_user",
+                    entity_id="demo_user",
                     request=mock_request,
                     investigation_id="test_inv",
                 )
@@ -132,14 +132,16 @@ class TestNetworkAnalysisService:
                     mock_llm.return_value = mock_llm_assessment
 
                     result = await network_service.analyze_network(
-                        user_id="test_user",
+                        entity_id="test_user",
                         request=mock_request,
                         investigation_id="test_inv",
                         time_range="1d",
                     )
 
                     # Verify Splunk fetch was called
-                    mock_fetch.assert_called_once_with("test_user", "1d", None, None)
+                    mock_fetch.assert_called_once_with(
+                        "test_user", "1d", None, None, "user_id"
+                    )
                     assert len(result["extracted_network_signals"]) == 2
 
     @pytest.mark.asyncio
@@ -151,7 +153,7 @@ class TestNetworkAnalysisService:
             mock_fetch.side_effect = Exception("Unexpected error")
 
             result = await network_service.analyze_network(
-                user_id="test_user", request=mock_request, investigation_id="test_inv"
+                entity_id="test_user", request=mock_request, investigation_id="test_inv"
             )
 
             assert "error" in result

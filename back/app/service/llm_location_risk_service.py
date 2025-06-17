@@ -50,7 +50,7 @@ class LLMLocationRiskService(BaseLLMRiskService[LocationRiskAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for location risk assessment."""
-        return "Intuit.cas.hri.gaia:location-risk-analyzer"
+        return "Olorin.cas.hri.gaia:location-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the assessment class for location risk assessment."""
@@ -122,26 +122,76 @@ class LLMLocationRiskService(BaseLLMRiskService[LocationRiskAssessment]):
         # For LLM errors, categorize and create intelligent fallback
         risk_factors, summary, thoughts = self.categorize_error(error_message)
 
-        # Create rule-based fallback assessment
+        # Create rule-based fallback assessment with enhanced geographic detection
         fallback_risk_level = 0.0
         if (
             extracted_signals
         ):  # extracted_signals are device_locations for location domain
             unique_countries = set()
             unique_cities = set()
-            for location in extracted_signals:
-                if location.get("true_ip_country"):
-                    unique_countries.add(location["true_ip_country"])
-                if location.get("true_ip_city"):
-                    unique_cities.add(location["true_ip_city"])
+            unique_devices = set()
 
-            if len(unique_countries) > 3:
-                fallback_risk_level = 0.6
-                risk_factors.append("Multiple countries detected in location signals")
+            for location in extracted_signals:
+                # Check for country data in multiple possible field names
+                country = (
+                    location.get("true_ip_country")
+                    or location.get("country")
+                    or location.get("true_ip_geo")
+                )
+                if country:
+                    unique_countries.add(str(country).upper())
+
+                # Check for city data in multiple possible field names
+                city = location.get("true_ip_city") or location.get("city")
+                if city:
+                    unique_cities.add(str(city).lower())
+
+                # Check for device ID
+                device_id = location.get("fuzzy_device_id")
+                if device_id:
+                    unique_devices.add(device_id)
+
+                # Also check countries array if present
+                if location.get("countries"):
+                    for c in location["countries"]:
+                        unique_countries.add(str(c).upper())
+
+            # Enhanced geographic risk scoring with detailed information
+            if len(unique_countries) > 2:
+                fallback_risk_level = 0.7
+                risk_factors.append(
+                    f"Multiple countries detected in location signals: {', '.join(unique_countries)}"
+                )
             elif len(unique_countries) > 1:
+                fallback_risk_level = 0.5
+                risk_factors.append(
+                    f"Cross-country location activity: {', '.join(unique_countries)}"
+                )
+
+            # City diversity analysis
+            if len(unique_cities) > 5:
+                fallback_risk_level = max(fallback_risk_level, 0.4)
+                risk_factors.append(
+                    f"High geographic diversity: {len(unique_cities)} unique cities"
+                )
+            elif len(unique_cities) > 2:
+                fallback_risk_level = max(fallback_risk_level, 0.3)
+                risk_factors.append(
+                    f"Multiple cities detected: {len(unique_cities)} locations"
+                )
+
+            # Device tracking across locations
+            if len(unique_devices) > 2:
+                fallback_risk_level = max(fallback_risk_level, 0.3)
+                risk_factors.append(
+                    f"Multiple devices across locations: {len(unique_devices)} unique devices"
+                )
+
+            # Provide baseline risk if we have any location data
+            if unique_countries and fallback_risk_level == 0.0:
                 fallback_risk_level = 0.3
                 risk_factors.append(
-                    "More than one country detected in location signals"
+                    "Location activity detected with geographic indicators"
                 )
 
         return LocationRiskAssessment(
@@ -213,7 +263,7 @@ class LLMLocationRiskService(BaseLLMRiskService[LocationRiskAssessment]):
         try:
             logger.info(f"Invoking LLM for location risk assessment for user {user_id}")
 
-            # Invoke LLM
+            # Use agent infrastructure for LLM calls (like refactor branch)
             from app.service.agent_service import ainvoke_agent
 
             raw_llm_response_str, _ = await ainvoke_agent(request, agent_context)

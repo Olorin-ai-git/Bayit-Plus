@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from starlette.requests import Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.network_risk import NetworkRiskLLMAssessment
 from app.models.upi_response import Metadata
 from app.persistence import (
@@ -41,50 +41,51 @@ class NetworkAnalysisService:
 
     async def analyze_network(
         self,
-        user_id: str,
+        entity_id: str,
         request: Request,
         investigation_id: str,
-        time_range: str = "1m",
+        time_range: str = "30d",
         splunk_host: Optional[str] = None,
         raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
+        entity_type: str = "user_id",
     ) -> dict:
-        """Analyze network risk for a user."""
+        """Analyze network risk for a user or device."""
         try:
             logger.info(f"=== NETWORK ENDPOINT HIT (service) ===")
-            logger.info(f"Processing network request for user {user_id}")
+            logger.info(f"Processing network request for {entity_type} {entity_id}")
 
             network_llm_assessment = None  # Always define at start
             settings = get_settings_for_env()
 
             logger.debug(
-                f"[DEMO CHECK] user_id={user_id} in demo_mode_users={user_id in demo_mode_users}, in demo_cache={user_id in demo_cache}, cache keys={list(demo_cache.get(user_id, {}).keys()) if user_id in demo_cache else None}"
+                f"[DEMO CHECK] entity_id={entity_id} in demo_mode_users={entity_id in demo_mode_users}, in demo_cache={entity_id in demo_cache}, cache keys={list(demo_cache.get(entity_id, {}).keys()) if entity_id in demo_cache else None}"
             )
 
-            # Check demo mode
+            # Check demo mode (using entity_id for backward compatibility)
             if (
-                user_id in demo_mode_users
-                and user_id in demo_cache
-                and "network" in demo_cache[user_id]
+                entity_id in demo_mode_users
+                and entity_id in demo_cache
+                and "network" in demo_cache[entity_id]
                 and raw_splunk_override is None
             ):
-                return demo_cache[user_id]["network"]
+                return demo_cache[entity_id]["network"]
 
             auth_header = request.headers.get("authorization")
-            print(f"Authorization header for /network/{user_id}: {auth_header}")
+            print(f"Authorization header for /network/{entity_id}: {auth_header}")
             splunk_warning = None
             llm_error_details = None
 
             # --- Fetch Splunk results ---
             self._splunk_error = None  # Reset error state
             splunk_results = await self._fetch_splunk_data(
-                user_id, time_range, splunk_host, raw_splunk_override
+                entity_id, time_range, splunk_host, raw_splunk_override, entity_type
             )
             # Check if there was a Splunk error
             if hasattr(self, "_splunk_error") and self._splunk_error:
                 splunk_warning = self._splunk_error
 
             logger.warning(
-                f"[DEBUG] Full network splunk_results for user {user_id}: {splunk_results}"
+                f"[DEBUG] Full network splunk_results for {entity_type} {entity_id}: {splunk_results}"
             )
 
             # --- Process Splunk results for network signals ---
@@ -94,14 +95,14 @@ class NetworkAnalysisService:
             oii_country = self._extract_oii_country()
 
             logger.info(
-                f"Extracted {len(extracted_signals)} network signals for user {user_id}"
+                f"Extracted {len(extracted_signals)} network signals for {entity_type} {entity_id}"
             )
 
             # Process LLM assessment using dedicated service
             if network_llm_assessment is None:
                 network_llm_assessment, llm_error_details = (
                     await self._process_llm_assessment(
-                        user_id,
+                        entity_id,
                         request,
                         extracted_signals,
                         oii_country,
@@ -111,7 +112,7 @@ class NetworkAnalysisService:
 
             if not network_llm_assessment:
                 logger.info(
-                    f"No network signals extracted or Splunk error occurred for user {user_id}. Creating default network assessment."
+                    f"No network signals extracted or Splunk error occurred for {entity_type} {entity_id}. Creating default network assessment."
                 )
                 network_llm_assessment = NetworkRiskLLMAssessment(
                     risk_level=0.0,
@@ -124,7 +125,8 @@ class NetworkAnalysisService:
 
             # Build response
             response_dict = self._build_response(
-                user_id,
+                entity_id,
+                entity_type,
                 investigation_id,
                 splunk_results,
                 extracted_signals,
@@ -144,10 +146,11 @@ class NetworkAnalysisService:
 
     async def _fetch_splunk_data(
         self,
-        user_id: str,
+        entity_id: str,
         time_range: str,
         splunk_host: Optional[str],
         raw_splunk_override: Optional[List[Dict[str, Any]]],
+        entity_type: str = "user_id",
     ) -> List[Dict[str, Any]]:
         """Fetch Splunk data for network analysis."""
         if raw_splunk_override is not None:
@@ -158,11 +161,13 @@ class NetworkAnalysisService:
             # Use SplunkQueryTool like logs domain for better performance
             splunk_tool = SplunkQueryTool()
 
-            # Build the base SPL query and add time range constraint
-            base_query = build_base_search(
-                id_value=user_id,
-                id_type="network",
+            # Build the base SPL query using the network query builder
+            # Call the network query builder directly with correct entity_type
+            from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
+                _build_network_query,
             )
+
+            base_query = _build_network_query(entity_id, entity_type)
             # Add earliest time constraint using proper SPL syntax
             splunk_query = base_query.replace(
                 f"search index={get_settings_for_env().splunk_index}",
@@ -211,7 +216,8 @@ class NetworkAnalysisService:
         for event in splunk_results:
             # Extract network-related fields
             signal = {
-                "user_id": event.get("user_id"),
+                "entity_id": event.get("user_id")
+                or event.get("device_id"),  # Support both
                 "timestamp": event.get("_time"),
                 "ip_address": event.get("ip_address"),
                 "country": event.get("country"),
@@ -243,7 +249,7 @@ class NetworkAnalysisService:
 
     async def _process_llm_assessment(
         self,
-        user_id: str,
+        entity_id: str,
         request: Request,
         extracted_signals: List[Dict[str, Any]],
         oii_country: Optional[str],
@@ -253,7 +259,7 @@ class NetworkAnalysisService:
         try:
             # Use the dedicated LLM service
             network_llm_assessment = await self.llm_service.assess_network_risk(
-                user_id=user_id,
+                user_id=entity_id,  # LLM service still expects user_id parameter
                 extracted_signals=extracted_signals,
                 request=request,
                 oii_country=oii_country,
@@ -303,7 +309,8 @@ class NetworkAnalysisService:
 
     def _build_response(
         self,
-        user_id: str,
+        entity_id: str,
+        entity_type: str,
         investigation_id: str,
         splunk_results: List[Dict[str, Any]],
         extracted_signals: List[Dict[str, Any]],
@@ -312,8 +319,11 @@ class NetworkAnalysisService:
         llm_error_details: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Build the final response dictionary."""
+        # Choose the correct ID key based on entity_type
+        id_key = "userId" if entity_type == "user_id" else "deviceId"
+
         response_dict = {
-            "user_id": user_id,
+            id_key: entity_id,
             "raw_splunk_results_count": len(splunk_results),
             "extracted_network_signals": [
                 {k: v for k, v in signal.items() if v is not None}
@@ -333,10 +343,6 @@ class NetworkAnalysisService:
 
         # Add investigationId to the response
         response_dict["investigationId"] = investigation_id
-
-        # Rename user_id to userId for consistency
-        if "user_id" in response_dict:
-            response_dict["userId"] = response_dict.pop("user_id")
 
         # Remove None values
         response_dict = {k: v for k, v in response_dict.items() if v is not None}

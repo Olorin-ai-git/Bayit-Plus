@@ -2,7 +2,7 @@ import logging
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
 
-# Logging approach based on https://github.intuit.com/global-core/global-content-service/blob/master/app/logs.py
+# Logging approach based on https://github.olorin.com/global-core/global-content-service/blob/master/app/logs.py
 
 # Use an immutable frozenset so resets on state can point to a different object
 # A dictionary would reset to the same dictionary, while the items inside remained the

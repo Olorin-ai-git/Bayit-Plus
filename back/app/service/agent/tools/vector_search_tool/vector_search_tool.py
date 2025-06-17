@@ -2,7 +2,6 @@ import time
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
-import numpy as np
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 

@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 # Direct import to avoid the agents module dependency
 from app.service.agent.ato_agents.splunk_agent.client import SplunkClient
 from app.service.config import get_settings_for_env
+from app.utils.idps_utils import get_app_secret
 
 
 class _SplunkQueryArgs(BaseModel):
@@ -27,7 +28,7 @@ class SplunkQueryTool(BaseTool):
 
     # Connection parameters can be overridden via constructor if needed
     host: str = Field(
-        "ip.adhoc.rest.splunk.intuit.com",
+        "ip.adhoc.rest.splunk.olorin.com",
         description="Splunk host name",
     )
     port: int = Field(443, description="Splunk port")
@@ -41,13 +42,21 @@ class SplunkQueryTool(BaseTool):
 
     async def _arun(self, query: str) -> Dict[str, Any]:  # type: ignore[override]
         """Async execution of the Splunk query."""
-        # Fetch the Splunk password from settings or environment
         settings = get_settings_for_env()
-        password = settings.splunk_password or ""
+
+        # Use environment variables if available, otherwise fall back to IDPS secrets
+        if settings.splunk_username and settings.splunk_password:
+            username = settings.splunk_username
+            password = settings.splunk_password
+        else:
+            # Fallback to IDPS secrets and hardcoded username
+            username = self.username
+            password = get_app_secret("gaia/splunk_password")
+
         client = SplunkClient(
             host=settings.splunk_host,
             port=self.port,
-            username=self.username,
+            username=username,
             password=password,
         )
 

@@ -16,7 +16,8 @@ app.include_router(api_router)
 
 @pytest.fixture
 def client():
-    return TestClient(app)
+    # Use keyword argument for app to match TestClient signature
+    return TestClient(app=app)
 
 
 def clear_demo_mode():
@@ -103,8 +104,8 @@ def test_api_logs_splunk_error(client):
                             mock_settings.return_value = MagicMock(
                                 splunk_host="dummy_host",
                                 splunk_index="dummy_index",
-                                intuit_experience_id="id",
-                                intuit_originating_assetalias="alias",
+                                olorin_experience_id="id",
+                                olorin_originating_assetalias="alias",
                             )
                             mock_splunk_tool.return_value.arun = AsyncMock(
                                 side_effect=Exception("fail")
@@ -140,8 +141,8 @@ def test_api_logs_chronos_error(client):
                             mock_settings.return_value = MagicMock(
                                 splunk_host="dummy_host",
                                 splunk_index="dummy_index",
-                                intuit_experience_id="id",
-                                intuit_originating_assetalias="alias",
+                                olorin_experience_id="id",
+                                olorin_originating_assetalias="alias",
                             )
                             mock_splunk_tool.return_value.arun = AsyncMock(
                                 return_value={"results": []}
@@ -177,8 +178,8 @@ def test_api_logs_llm_json_decode_error(client):
                             mock_settings.return_value = MagicMock(
                                 splunk_host="dummy_host",
                                 splunk_index="dummy_index",
-                                intuit_experience_id="id",
-                                intuit_originating_assetalias="alias",
+                                olorin_experience_id="id",
+                                olorin_originating_assetalias="alias",
                             )
                             mock_splunk_tool.return_value.arun = AsyncMock(
                                 return_value={"results": []}
@@ -218,8 +219,8 @@ def test_api_logs_llm_missing_risk_assessment(client):
                             mock_settings.return_value = MagicMock(
                                 splunk_host="dummy_host",
                                 splunk_index="dummy_index",
-                                intuit_experience_id="id",
-                                intuit_originating_assetalias="alias",
+                                olorin_experience_id="id",
+                                olorin_originating_assetalias="alias",
                             )
                             mock_splunk_tool.return_value.arun = AsyncMock(
                                 return_value={"results": []}

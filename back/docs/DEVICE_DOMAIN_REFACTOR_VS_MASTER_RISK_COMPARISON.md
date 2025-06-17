@@ -116,7 +116,7 @@ def group_device_signals(raw_results: List[Dict]) -> List[Dict]:
             'true_ip_region': result.get('true_ip_region'),
             'tm_smartid': result.get('tm_smartid'),
             'tm_sessionid': result.get('tm_sessionid'),
-            'intuit_tid': result.get('intuit_tid'),
+            'olorin_tid': result.get('olorin_tid'),
             '_time': result.get('_time'),
             'countries': countries
         }
@@ -154,7 +154,7 @@ async def analyze_device(self, user_id: str, investigation_id: str, ...):
             "true_ip_region": event.get("true_ip_region"),
             "tm_smartid": event.get("tm_smartid"),
             "tm_sessionid": event.get("tm_sessionid"),
-            "intuit_tid": event.get("intuit_tid"),
+            "olorin_tid": event.get("olorin_tid"),
             "_time": event.get("_time"),
         })
     
@@ -317,7 +317,7 @@ CRITICAL ANALYSIS REQUIREMENTS:
 ```python
 class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:device-risk-analyzer"
+        return "Olorin.cas.hri.gaia:device-risk-analyzer"
 
     def get_system_prompt_template(self) -> str:
         return SYSTEM_PROMPT_FOR_DEVICE_RISK  # Same prompt

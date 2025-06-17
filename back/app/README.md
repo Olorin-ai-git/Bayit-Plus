@@ -1,4 +1,4 @@
-# Olorin Fraud Detection System
+# Gaia Fraud Detection System
 
 A comprehensive, multi-agent fraud detection system designed to analyze and detect suspicious activities in real-time. The system uses multiple data sources and sophisticated analysis techniques to provide accurate risk assessments.
 
@@ -15,7 +15,7 @@ A comprehensive, multi-agent fraud detection system designed to analyze and dete
 
 ## Overview
 
-The Olorin Fraud Detection System is a distributed, agent-based solution that combines multiple analysis techniques to detect potential fraud:
+The Gaia Fraud Detection System is a distributed, agent-based solution that combines multiple analysis techniques to detect potential fraud:
 
 - Location-based analysis
 - Network pattern analysis
@@ -37,7 +37,7 @@ The Olorin Fraud Detection System is a distributed, agent-based solution that co
 ### Components
 
 1. **Core System**
-   - `OlorinApplication`: Central coordination and risk assessment
+   - `GaiaApplication`: Central coordination and risk assessment
    - `ConfigurationManager`: YAML-based configuration management
    - `RiskAssessment`: Risk scoring and decision making
 
@@ -159,7 +159,7 @@ java -jar target/gaia-1.0-SNAPSHOT-jar-with-dependencies.jar <user_id>
 public class Example {
     public static void main(String[] args) {
         String userId = "test_user_123";
-        OlorinApplication app = new OlorinApplication();
+        GaiaApplication app = new GaiaApplication();
         app.initialize();
         app.startFraudDetection(userId);
     }
@@ -175,7 +175,7 @@ public class Example {
 mvn test
 
 # Run with specific test
-mvn test -Dtest=OlorinApplicationTest
+mvn test -Dtest=GaiaApplicationTest
 
 # Run with coverage
 mvn verify

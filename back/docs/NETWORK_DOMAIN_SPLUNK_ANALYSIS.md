@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides an in-depth analysis of the Network Domain's Splunk implementation in the Olorin fraud detection system. The analysis covers query construction, field extraction mechanisms, data processing pipelines, and real-world result examples from the master branch implementation.
+This document provides an in-depth analysis of the Network Domain's Splunk implementation in the Gaia fraud detection system. The analysis covers query construction, field extraction mechanisms, data processing pipelines, and real-world result examples from the master branch implementation.
 
 ## Table of Contents
 
@@ -43,7 +43,7 @@ The network domain is handled by the `_build_network_query()` function:
 def _build_network_query(id_value: str) -> str:
     """Builds a query for the network agent, only selecting required columns."""
     index_search = f"index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    query = f"""{index_search} olorin_userid={id_value}
     | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
     | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
     | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -81,7 +81,7 @@ rss_index = settings.splunk_index  # Default: "rss-e2eidx"
 For user ID `4621097846089147992`, the complete SPL query is:
 
 ```spl
-index=rss-e2eidx intuit_userid=4621097846089147992
+index=rss-e2eidx olorin_userid=4621097846089147992
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
 | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -101,11 +101,11 @@ index=rss-e2eidx intuit_userid=4621097846089147992
 
 #### 2.2.1 Index and Filter Clause
 ```spl
-index=rss-e2eidx intuit_userid=4621097846089147992
+index=rss-e2eidx olorin_userid=4621097846089147992
 ```
 - **Purpose**: Targets the specific Splunk index and filters for user-specific events
 - **Index**: `rss-e2eidx` (RSS E2E Index)
-- **Filter**: `intuit_userid` for precise user targeting
+- **Filter**: `olorin_userid` for precise user targeting
 
 #### 2.2.2 REX Field Extraction Commands
 The query uses 6 specific `rex` commands to extract network-related fields from the `contextualData` field:
@@ -298,7 +298,7 @@ Splunk returns results in `json_rows` format:
 {
   "fields": ["_time", "true_ip", "proxy_ip", "input_ip", "isp", "organization", "tm_sessionid"],
   "rows": [
-    ["2025-05-15T06:31:46.027-07:00", "207.207.181.8", null, null, "intuit inc.", "intuit inc.", "1a977456cfcd4778f2670e3e0cd56efb"],
+    ["2025-05-15T06:31:46.027-07:00", "207.207.181.8", null, null, "olorin inc.", "olorin inc.", "1a977456cfcd4778f2670e3e0cd56efb"],
     ["2025-05-15T07:08:39.584-07:00", "223.185.128.58", null, null, "bharti airtel ltd.", "bharti", "5b2cd1da38f4403d99c2b6fea53604d9"]
   ]
 }
@@ -349,14 +349,14 @@ for signal in extracted_signals:
 From real-world data analysis, typical network signals show:
 
 #### 6.1.1 ISP Distribution Patterns
-- **US-based ISPs**: "intuit inc.", "comcast", "verizon"
+- **US-based ISPs**: "olorin inc.", "comcast", "verizon"
 - **India-based ISPs**: "bharti airtel ltd.", "reliance jio"
-- **Corporate ISPs**: "intuit inc." (internal company network)
+- **Corporate ISPs**: "olorin inc." (internal company network)
 - **Telecom ISPs**: "bharti airtel ltd.", regional providers
 
 #### 6.1.2 Organization Patterns
 - **Simplified Organization Names**: "bharti" (from "bharti airtel ltd.")
-- **Corporate Organizations**: "intuit inc."
+- **Corporate Organizations**: "olorin inc."
 - **Provider Organizations**: ISP company names
 
 #### 6.1.3 Session ID Patterns
@@ -373,8 +373,8 @@ From real-world data analysis, typical network signals show:
 From real data, activity patterns:
 ```
 2025-05-15T05:22:48.585-07:00  (Early morning - India time zone)
-2025-05-15T05:24:44.618-07:00  (Intuit Inc. - US activity)
-2025-05-15T06:31:46.027-07:00  (US peak activity - Intuit Inc.)
+2025-05-15T05:24:44.618-07:00  (Olorin Inc. - US activity)
+2025-05-15T06:31:46.027-07:00  (US peak activity - Olorin Inc.)
 2025-05-15T07:08:39.584-07:00  (India ISP activity - Bharti Airtel)
 ```
 
@@ -397,8 +397,8 @@ For user `4621097846089147992` with 90-day time range:
   "extracted_network_signals": [
     {
       "ip_address": "207.207.181.8",
-      "isp": "intuit inc.",
-      "organization": "intuit inc.", 
+      "isp": "olorin inc.",
+      "organization": "olorin inc.", 
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00",
       "countries": []
@@ -418,12 +418,12 @@ For user `4621097846089147992` with 90-day time range:
 ### 7.2 Fraud Pattern Analysis
 
 #### 7.2.1 ISP Diversity Detection
-- **US ISP**: "intuit inc." (Corporate network)
+- **US ISP**: "olorin inc." (Corporate network)
 - **India ISP**: "bharti airtel ltd." (Telecom provider)
 - **Risk Factor**: Geographic ISP switching in short timeframe
 
 #### 7.2.2 IP Address Analysis
-- **US IP**: `207.207.181.8` (Intuit corporate range)
+- **US IP**: `207.207.181.8` (Olorin corporate range)
 - **India IP**: `223.185.128.58` (Bharti Airtel consumer range)
 - **Pattern**: Corporate-to-consumer ISP transition
 
@@ -480,7 +480,7 @@ signals_for_llm = [
 
 #### 8.3.1 Index Strategy
 - **Targeted Index**: `rss-e2eidx` (specific to fraud data)
-- **User Filtering**: Direct `intuit_userid` filter reduces search scope
+- **User Filtering**: Direct `olorin_userid` filter reduces search scope
 - **Field Targeting**: Specific `contextualData` field extraction
 
 #### 8.3.2 Time Range Handling

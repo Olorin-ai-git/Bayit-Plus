@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Olorin fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
+This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Gaia fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
 
 ## Table of Contents
 
@@ -108,7 +108,7 @@ if not password:
 The network domain uses a specialized SPL query optimized for network analysis:
 
 ```spl
-index=rss-e2eidx intuit_userid={user_id}
+index=rss-e2eidx olorin_userid={user_id}
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
 | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -147,7 +147,7 @@ The system uses a specialized query constructor:
 def _build_network_query(id_value: str) -> str:
     """Builds a query for the network agent, only selecting required columns."""
     index_search = f"index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    query = f"""{index_search} olorin_userid={id_value}
     | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
     [... additional field extractions ...]
     | table _time, true_ip, proxy_ip, input_ip, isp, organization, tm_sessionid
@@ -306,23 +306,23 @@ Specialized agent context for network analysis:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.gaia:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid=request.headers.get("intuit-tid", f"gaia-network-risk-{user_id}"),
-        intuit_originating_assetalias=request.headers.get(
-            "intuit_originating_assetalias", settings.intuit_originating_assetalias
+    olorin_header=OlorinHeader(
+        olorin_tid=request.headers.get("olorin-tid", f"gaia-network-risk-{user_id}"),
+        olorin_originating_assetalias=request.headers.get(
+            "olorin_originating_assetalias", settings.olorin_originating_assetalias
         ),
-        intuit_experience_id=request.headers.get(
-            "intuit_experience_id", settings.intuit_experience_id
+        olorin_experience_id=request.headers.get(
+            "olorin_experience_id", settings.olorin_experience_id
         ),
         auth_context=AuthContext(
-            intuit_user_id=app_intuit_userid,
-            intuit_user_token=app_intuit_token,
-            intuit_realmid=app_intuit_realmid,
+            olorin_user_id=app_olorin_userid,
+            olorin_user_token=app_olorin_token,
+            olorin_realmid=app_olorin_realmid,
         ),
     ),
 )
@@ -595,7 +595,7 @@ For user ID `4621097846089147992` with 90-day network analysis:
 
 1. **Query Construction**:
    ```spl
-   index=rss-e2eidx intuit_userid=4621097846089147992
+   index=rss-e2eidx olorin_userid=4621097846089147992
    | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
    | rex field=contextualData "true_ip_isp=(?<true_ip_isp>[^&]+)"
    [... field extractions ...]

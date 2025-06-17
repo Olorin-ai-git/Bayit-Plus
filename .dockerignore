@@ -1,0 +1,63 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+*.md
+README*
+docs/
+
+# Node modules and build artifacts
+front/node_modules
+front/build
+front/coverage
+front/reports
+
+# Python
+back/venv
+back/__pycache__
+back/.pytest_cache
+back/.tox
+back/htmlcov
+back/.coverage
+back/coverage.txt
+back/coverage/
+back/logs/
+back/metrics/
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Scripts
+git_commit_push.sh
+
+# Test files and reports
+test_*
+*test_report*
+*.pdf
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/ 

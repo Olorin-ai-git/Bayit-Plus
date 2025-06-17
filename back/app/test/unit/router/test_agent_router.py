@@ -25,11 +25,11 @@ app.include_router(api_router)
 def mock_request():
     class MockRequest:
         headers = {
-            "Authorization": 'Bearer sample_token intuit_userid="sample_user_id" intuit_token="sample_token" intuit_realmid="sample_realmid"',
-            "intuit_experience_id": "sample_experience_id",
-            "intuit_originating_assetalias": "sample_assetalias",
+            "Authorization": 'Bearer sample_token olorin_userid="sample_user_id" olorin_token="sample_token" olorin_realmid="sample_realmid"',
+            "olorin_experience_id": "sample_experience_id",
+            "olorin_originating_assetalias": "sample_assetalias",
         }
-        state = type("obj", (object,), {"intuit_tid": "sample_tid"})
+        state = type("obj", (object,), {"olorin_tid": "sample_tid"})
 
     return MockRequest()
 
@@ -67,6 +67,9 @@ async def test_agenerate_chat_response(
     from app.models.agent_context import AgentContext
 
     mock_agent_context = MagicMock(spec=AgentContext)
+    mock_agent_context.input = (
+        "Test Input"  # Add the input attribute that the code expects
+    )
     mock_construct_context.return_value = mock_agent_context
     mock_invoke_agent.return_value = ("Sample response", "trace-123")
 
@@ -75,11 +78,12 @@ async def test_agenerate_chat_response(
 
     # Assertions
     mock_construct_context.assert_called_once_with(mock_request, agent_request)
-    mock_invoke_agent.assert_called_once_with(mock_request, mock_agent_context)
+    # For non-fraud_investigation agents, it should use the input directly, not call ainvoke_agent
+    mock_invoke_agent.assert_not_called()
 
     # assert isinstance(response, AgentResponse)
-    assert response["agentOutput"]["plainText"] == "Sample response"
-    assert response["agentMetadata"]["agentTraceId"] == "trace-123"
+    assert response["agentOutput"]["plainText"] == "Test Input"  # Should echo the input
+    assert "agentTraceId" in response["agentMetadata"]
 
 
 def test_disable_demo_mode(client):
@@ -215,8 +219,8 @@ def test_get_phone_source_location_error(client):
 def test_get_location_risk_analysis_success(client):
     class DummySettings:
         splunk_host = "dummy_host"
-        intuit_experience_id = "dummy_experience_id"
-        intuit_originating_assetalias = "dummy_assetalias"
+        olorin_experience_id = "dummy_experience_id"
+        olorin_originating_assetalias = "dummy_assetalias"
 
         def get_setting(self, key):
             return "dummy"

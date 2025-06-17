@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Network Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for network-based risk assessment using Large Language Models.
+This document provides a comprehensive technical analysis of the **Network Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for network-based risk assessment using Large Language Models.
 
 ## Table of Contents
 
@@ -218,7 +218,7 @@ if was_trimmed:
 The system retrieves authentication tokens for secure LLM access:
 
 ```python
-app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
+app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
 ```
 
 ### 4.2 Agent Context Construction
@@ -228,26 +228,26 @@ A comprehensive agent context is created for LLM invocation:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.gaia:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid=request.headers.get(
-            "intuit-tid", f"gaia-network-risk-{user_id}"
+    olorin_header=OlorinHeader(
+        olorin_tid=request.headers.get(
+            "olorin-tid", f"gaia-network-risk-{user_id}"
         ),
-        intuit_originating_assetalias=request.headers.get(
-            "intuit_originating_assetalias",
-            settings.intuit_originating_assetalias,
+        olorin_originating_assetalias=request.headers.get(
+            "olorin_originating_assetalias",
+            settings.olorin_originating_assetalias,
         ),
-        intuit_experience_id=request.headers.get(
-            "intuit_experience_id", settings.intuit_experience_id
+        olorin_experience_id=request.headers.get(
+            "olorin_experience_id", settings.olorin_experience_id
         ),
         auth_context=AuthContext(
-            intuit_user_id=app_intuit_userid,
-            intuit_user_token=app_intuit_token,
-            intuit_realmid=app_intuit_realmid,
+            olorin_user_id=app_olorin_userid,
+            olorin_user_token=app_olorin_token,
+            olorin_realmid=app_olorin_realmid,
         ),
     ),
 )
@@ -255,9 +255,9 @@ agent_context_for_network_risk = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.gaia:network-risk-analyzer"`
+The agent uses a hierarchical naming scheme: `"Olorin.cas.hri.gaia:network-risk-analyzer"`
 
-- **Domain**: `Intuit.cas.hri.gaia`
+- **Domain**: `Olorin.cas.hri.gaia`
 - **Function**: `network-risk-analyzer`
 - **Purpose**: Clear identification in logging and monitoring
 
@@ -266,7 +266,7 @@ The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.gaia:network-risk-
 The system intelligently handles HTTP headers:
 
 ```python
-intuit_tid=request.headers.get("intuit-tid", f"gaia-network-risk-{user_id}")
+olorin_tid=request.headers.get("olorin-tid", f"gaia-network-risk-{user_id}")
 ```
 
 **Header Priority**:
@@ -517,8 +517,8 @@ For user `4621097846089147992`, the LLM receives processed network signals:
   "network_signals": [
     {
       "ip_address": "207.207.181.8",
-      "isp": "intuit inc.",
-      "organization": "intuit inc.",
+      "isp": "olorin inc.",
+      "organization": "olorin inc.",
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00"
     },
@@ -550,15 +550,15 @@ The LLM produces a structured JSON response:
 {
   "risk_level": 0.8,
   "risk_factors": [
-    "Significant ISP switch from Intuit Inc. to Bharti Airtel within ~37 minutes",
+    "Significant ISP switch from Olorin Inc. to Bharti Airtel within ~37 minutes",
     "Possible rapid country transition (US to India) in a short timeframe"
   ],
   "anomaly_details": [
-    "User switched from IP 207.207.181.8 (Intuit Inc.) at ~06:31 to IP 223.185.128.58 (Bharti Airtel) at ~07:08"
+    "User switched from IP 207.207.181.8 (Olorin Inc.) at ~06:31 to IP 223.185.128.58 (Bharti Airtel) at ~07:08"
   ],
   "confidence": 0.9,
   "summary": "High risk due to rapid ISP change indicating a likely international jump in a short period.",
-  "thoughts": "The user's network signals show a swift move from Intuit Inc. (likely US) to Bharti Airtel (likely India) in under an hour, suggesting suspicious activity. Possible explanations include VPN/proxy usage or account sharing between separate locations. The abrupt ISP transition leads to a high level of suspicion.",
+  "thoughts": "The user's network signals show a swift move from Olorin Inc. (likely US) to Bharti Airtel (likely India) in under an hour, suggesting suspicious activity. Possible explanations include VPN/proxy usage or account sharing between separate locations. The abrupt ISP transition leads to a high level of suspicion.",
   "timestamp": "2023-10-06T12:00:00Z"
 }
 ```
@@ -646,7 +646,7 @@ logger.error(f"LLM JSON parsing error for network risk for {user_id}: {json_err}
 
 #### Credential Management
 ```python
-app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
+app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
 ```
 
 **Security Features**:

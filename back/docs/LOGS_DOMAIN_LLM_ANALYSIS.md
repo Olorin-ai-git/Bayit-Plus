@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
+This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
 
 ## 1. LLM Architecture Overview
 
@@ -34,7 +34,7 @@ The Logs domain implements dual data acquisition strategies:
 #### Primary Implementation (logs_router.py)
 ```python
 spl_query = (
-    f"search index={index} intuit_userid={user_id} "
+    f"search index={index} olorin_userid={user_id} "
     '| rex field=email_address "(email_address=(?<email_address>.+))" '
     '| rex field=username "(username=(?<username>.+))" '
     '| rex field=offering_ids "(offering_ids=(?<offering_ids>.+))" '
@@ -223,7 +223,7 @@ if was_trimmed:
 The system retrieves authentication tokens for secure LLM access:
 
 ```python
-intuit_userid, intuit_token, intuit_realmid = get_auth_token()
+olorin_userid, olorin_token, olorin_realmid = get_auth_token()
 ```
 
 ### 4.2 Agent Context Construction
@@ -233,19 +233,19 @@ A specialized agent context is created for logs analysis:
 ```python
 agent_context = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:fpl-splunk",
+    agent_name="Olorin.cas.hri.gaia:fpl-splunk",
     metadata=Metadata(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid="test",
-        intuit_originating_assetalias="Intuit.cas.hri.gaia",
-        intuit_experience_id=settings.intuit_experience_id,
+    olorin_header=OlorinHeader(
+        olorin_tid="test",
+        olorin_originating_assetalias="Olorin.cas.hri.gaia",
+        olorin_experience_id=settings.olorin_experience_id,
         auth_context=AuthContext(
-            intuit_user_id=intuit_userid,
-            intuit_user_token=intuit_token,
-            intuit_realmid=intuit_realmid,
+            olorin_user_id=olorin_userid,
+            olorin_user_token=olorin_token,
+            olorin_realmid=olorin_realmid,
         ),
     ),
 )
@@ -253,9 +253,9 @@ agent_context = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a specialized naming scheme: `"Intuit.cas.hri.gaia:fpl-splunk"`
+The agent uses a specialized naming scheme: `"Olorin.cas.hri.gaia:fpl-splunk"`
 
-- **Domain**: `Intuit.cas.hri.gaia`
+- **Domain**: `Olorin.cas.hri.gaia`
 - **Function**: `fpl-splunk` (Fraud Prevention Layer - Splunk)
 - **Purpose**: Authentication-focused fraud analysis
 
@@ -503,7 +503,7 @@ For user `4621097846089147992`, the LLM receives comprehensive authentication da
       "offering_ids": "QBO,TTO",
       "transactions": "sign_in,challenge_failed_incorrect_password",
       "originating_ips": "207.207.181.8,223.185.128.58",
-      "isp": "intuit inc.,bharti airtel ltd.",
+      "isp": "olorin inc.,bharti airtel ltd.",
       "cities": "mountain view,bengaluru",
       "region": "california,karnataka",
       "device_ids": "dev1,dev2,dev3",
@@ -622,7 +622,7 @@ logger.error(f"LLM invocation error for logs risk for {user_id}: {llm_err}")
 
 #### Credential Management
 ```python
-intuit_userid, intuit_token, intuit_realmid = get_auth_token()
+olorin_userid, olorin_token, olorin_realmid = get_auth_token()
 ```
 
 **Security Features**:

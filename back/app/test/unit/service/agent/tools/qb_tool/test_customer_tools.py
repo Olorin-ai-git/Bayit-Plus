@@ -11,7 +11,7 @@ def mock_agent_context():
     mock_context = MagicMock()
     mock_context.get_header.return_value = {
         "Authorization": "Bearer test_token",
-        "intuit-tid": "test-tid",
+        "olorin-tid": "test-tid",
     }
     return mock_context
 

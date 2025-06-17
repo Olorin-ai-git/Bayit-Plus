@@ -10,11 +10,11 @@ time_range = "90d"
 investigation_id = "INV-TEST-DEVICE-90D"
 
 headers = {
-    "Authorization": "Intuit_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
+    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
-    "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Intuit.cas.hri.gaia",
+    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+    "olorin_originating_assetalias": "Olorin.cas.hri.gaia",
 }
 
 

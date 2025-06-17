@@ -28,7 +28,7 @@ The Logs domain specializes in **authentication event analysis**, monitoring:
 
 #### Primary Implementation (logs_router.py)
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id} 
+search index=rss-e2eidx olorin_userid={user_id} 
 | rex field=email_address "(email_address=(?<email_address>.+))" 
 | rex field=username "(username=(?<username>.+))" 
 | rex field=offering_ids "(offering_ids=(?<offering_ids>.+))" 
@@ -54,7 +54,7 @@ search index=rss-e2eidx intuit_userid={user_id}
 
 #### Alternative Implementation (api_router.py)
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id}
+search index=rss-e2eidx olorin_userid={user_id}
 | rex field=data "(account_email=(?<account_email>.+))"
 | rex field=data "(account_login=(?<account_email>.+))"
 | rex field=fuzzy_device_first_seen "(fuzzy_device_first_seen=(?<fuzzy_device_first_seen>.+))"
@@ -70,17 +70,17 @@ search index=rss-e2eidx intuit_userid={user_id}
 | eval input_ip_region=urldecode(input_ip_region)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| stats values(email_address) values(intuit_username) values(intuit_offeringId) values(transaction) values(intuit_originatingip) values(input_ip_isp) values(true_ip_city) values(input_ip_region) values(fuzzy_device_id) values(fuzzy_device_first_seen) values(tm_sessionid) by intuit_userid
+| stats values(email_address) values(olorin_username) values(olorin_offeringId) values(transaction) values(olorin_originatingip) values(input_ip_isp) values(true_ip_city) values(input_ip_region) values(fuzzy_device_id) values(fuzzy_device_first_seen) values(tm_sessionid) by olorin_userid
 ```
 
 ### 2.2 Field Extraction Analysis
 
 #### Core Authentication Fields (10 fields)
 - `email_address` / `account_email` - User email identifiers
-- `username` / `intuit_username` - Authentication usernames  
-- `offering_ids` / `intuit_offeringId` - Service/product identifiers
+- `username` / `olorin_username` - Authentication usernames  
+- `offering_ids` / `olorin_offeringId` - Service/product identifiers
 - `transactions` / `transaction` - Authentication transaction types
-- `originating_ips` / `intuit_originatingip` - Source IP addresses
+- `originating_ips` / `olorin_originatingip` - Source IP addresses
 - `isp` / `input_ip_isp` - Internet service provider data
 - `cities` / `true_ip_city` - Geographic city information
 - `region` / `input_ip_region` - Geographic region/state data
@@ -113,12 +113,12 @@ search index=rss-e2eidx intuit_userid={user_id}
 #### Authentication Summary
 ```json
 {
-  "intuit_userid": "4621097846089147992",
-  "values(intuit_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
-  "values(intuit_offeringId)": [
-    "Intuit.cto.iam.ius",
-    "Intuit.dev.test.testeasy", 
-    "Intuit.fraudprevention.arrtestclient"
+  "olorin_userid": "4621097846089147992",
+  "values(olorin_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+  "values(olorin_offeringId)": [
+    "Olorin.cto.iam.ius",
+    "Olorin.dev.test.testeasy", 
+    "Olorin.fraudprevention.arrtestclient"
   ],
   "values(transaction)": [
     "account_creation_passed",
@@ -133,7 +133,7 @@ search index=rss-e2eidx intuit_userid={user_id}
 #### Geographic & Device Patterns
 ```json
 {
-  "values(intuit_originatingip)": [
+  "values(olorin_originatingip)": [
     "123.45.67.89",
     "207.207.177.101", 
     "207.207.177.21",
@@ -350,7 +350,7 @@ return {
 
 ### 8.2 Access Control
 - **Investigation Tracking**: Mandatory `investigation_id` parameter
-- **User Isolation**: Query filtering by `intuit_userid`
+- **User Isolation**: Query filtering by `olorin_userid`
 - **Session Management**: Secure Splunk client connection handling
 - **Audit Trail**: Comprehensive logging of all operations
 
@@ -361,10 +361,10 @@ return {
 def _build_auth_id_query(id_value: str) -> str:
     """Builds the base query for the 'auth_id' type (device/logs), full set of fields."""
     index_search = f"index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    query = f"""{index_search} olorin_userid={id_value}
     | rex field=data "(account_email=(?<account_email>.+))"
     | eval email_address=urldecode(account_email)
-    | stats values(email_address) values(intuit_username) ... by intuit_userid"""
+    | stats values(email_address) values(olorin_username) ... by olorin_userid"""
     return query
 ```
 

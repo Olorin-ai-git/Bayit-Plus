@@ -138,7 +138,7 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
     async def get_vpn_proxy_usage(self, user_id: str) -> Dict[str, Any]:
         self._validate_user_id(user_id)
         spl_query = (
-            f'index=fraudprevention sourcetype=kk_investigation intuit_userid="{user_id}" '
+            f'index=fraudprevention sourcetype=kk_investigation olorin_userid="{user_id}" '
             '| rex field=smartId "(smartId=(?<smartId>.+))" '
             '| rex field=proxyType "(proxyType=(?<proxyType>.+))" '
             '| rex field=dnsIpGeo "(dnsIpGeo=(?<dnsIpGeo>.+))" '

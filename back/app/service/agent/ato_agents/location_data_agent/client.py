@@ -257,7 +257,12 @@ class LocationDataClient:
 
         return risk_indicators
 
-    async def get_location_data(self, user_id: str) -> Dict[str, Any]:
+    async def get_location_data(
+        self,
+        user_id: str,
+        entity_type: str = "user_id",
+        time_range: str = "30d",
+    ) -> Dict[str, Any]:
         """Get location data for a user from all available sources.
 
         Args:
@@ -350,8 +355,13 @@ class LocationDataClient:
             logging.error(f"Error getting phone location data: {str(e)}")
 
         logger.warning("=== ENTERING SPLUNK BLOCK ===")
-        # Get Splunk location
-        logger.warning("=== ABOUT TO RUN SPLUNK QUERY === user_id=%s", user_id)
+        # Get Splunk location (filter by user_id or device_id based on entity_type)
+        logger.warning(
+            "=== ABOUT TO RUN SPLUNK QUERY === entity=%s, type=%s, time_range=%s",
+            user_id,
+            entity_type,
+            time_range,
+        )
         try:
             from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
             from app.service.config import get_settings_for_env
@@ -359,8 +369,12 @@ class LocationDataClient:
             settings = get_settings_for_env()
             index = settings.splunk_index
             splunk_tool = SplunkQueryTool()
+            # Choose filter field dynamically based on entity_type and apply time range
+            filter_field = (
+                "olorin_userid" if entity_type == "user_id" else "fuzzy_device_id"
+            )
             spl_query = (
-                f"search index={index} intuit_userid={user_id} "
+                f"search index={index} {filter_field}={user_id} earliest=-{time_range} "
                 '| rex field=true_ip_city "(true_ip_city=(?<true_ip_city>.+))" '
                 '| rex field=TrueIP_State "(TrueIP_State=(?<TrueIP_State>.+))" '
                 '| rex field=true_ip_geo "(true_ip_geo=(?<true_ip_geo>.+))" '

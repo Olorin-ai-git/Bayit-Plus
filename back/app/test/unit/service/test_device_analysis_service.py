@@ -17,8 +17,8 @@ def mock_request():
     request = MagicMock(spec=Request)
     request.headers = {
         "authorization": "Bearer test_token",
-        "intuit_tid": "test_tid",
-        "intuit_originating_assetalias": "test_asset",
+        "olorin_tid": "test_tid",
+        "olorin_originating_assetalias": "test_asset",
     }
     return request
 
@@ -36,7 +36,7 @@ def sample_splunk_data():
             "true_ip": "192.168.1.1",
             "tm_smartid": "smart123",
             "tm_sessionid": "session123",
-            "intuit_tid": "tid123",
+            "olorin_tid": "tid123",
             "_time": "2023-01-01T00:00:00Z",
         },
         {
@@ -49,7 +49,7 @@ def sample_splunk_data():
             "true_ip": "192.168.1.2",
             "tm_smartid": "smart456",
             "tm_sessionid": "session456",
-            "intuit_tid": "tid456",
+            "olorin_tid": "tid456",
             "_time": "2023-01-01T01:00:00Z",
         },
     ]
@@ -274,7 +274,7 @@ class TestDeviceAnalysisService:
                     mock_tool_class.return_value = mock_tool
 
                     mock_build.return_value = (
-                        "search index=testindex intuit_userid=test_user"
+                        "search index=testindex olorin_userid=test_user"
                     )
                     mock_settings.return_value.splunk_index = "testindex"
 
@@ -304,7 +304,7 @@ class TestDeviceAnalysisService:
                     mock_tool_class.return_value = mock_tool
 
                     mock_build.return_value = (
-                        "search index=testindex intuit_userid=test_user"
+                        "search index=testindex olorin_userid=test_user"
                     )
                     mock_settings.return_value.splunk_index = "testindex"
 
@@ -338,7 +338,7 @@ class TestDeviceAnalysisService:
                 mock_tool_class.return_value = mock_tool
 
                 mock_build.return_value = (
-                    "search index=testindex intuit_userid=test_user"
+                    "search index=testindex olorin_userid=test_user"
                 )
 
                 result = await device_service._fetch_splunk_data(
@@ -364,7 +364,7 @@ class TestDeviceAnalysisService:
                     mock_tool_class.return_value = mock_tool
 
                     mock_build.return_value = (
-                        "search index=testindex intuit_userid=test_user"
+                        "search index=testindex olorin_userid=test_user"
                     )
                     mock_settings.return_value.splunk_index = "testindex"
 

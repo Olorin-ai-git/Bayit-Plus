@@ -63,6 +63,11 @@ clients:
     workspace_url: "http://localhost:8083"
     token: "your-token-here"
     
+  mfa:
+    base_url: "http://localhost:8084"
+    timeout: 30
+    max_retries: 3
+    
 cache:
   enabled: true
   type: "redis"

@@ -139,7 +139,7 @@ Traceback (most recent call last):
 splunklib.binding.AuthenticationError: Login failed.
 [2025-06-01T17:05:04-0400] INFO [] module=chronos_tool: Got auth tokens - userid: 9130360342..., realmid: 123145964165782
 [2025-06-01T17:05:04-0400] DEBUG [] module=chronos_tool: Making Chronos API request for user testuser with payload: {"metadata": {"limit": 300}, "range": {"from": "2025-05-02T21:05:04+00:00", "to": "2025-06-01T21:05:04+00:00"}, "filter": {"auth_id": ["testuser"]}, "select": ["os", "osVersion", "trueIpCity", "trueIpGeo", "ts", "kdid", "smartId", "offeringId", "trueIpFirstSeen", "trueIpRegion", "trueIpLatitude", "trueIpLongitude", "agentType", "browserString", "fuzzyDeviceFirstSeen", "timezone", "tmResponse.tmxReasonCodes", "sessionId"], "queryId": "GAIA", "routingLabel": "elc"}
-[2025-06-01T17:05:04-0400] DEBUG [] module=chronos_tool: Request headers: {'intuit_originatingip': '127.0.0.1', 'intuit_country': 'US', 'intuit_locale': 'en-US', 'Content-Type': 'application/json', 'Accept': 'application/json', 'intuit_assetalias': 'Intuit.cas.hri.gaia', 'intuit_offeringid': 'Intuit.cto.iam.ius', 'intuit_tid': '480e8643-d4fb-4546-bda8-555c67c14432', 'Authorization': 'Intuit_IAM_Authentication intuit_realmid=123145964...'}
+[2025-06-01T17:05:04-0400] DEBUG [] module=chronos_tool: Request headers: {'olorin_originatingip': '127.0.0.1', 'olorin_country': 'US', 'olorin_locale': 'en-US', 'Content-Type': 'application/json', 'Accept': 'application/json', 'olorin_assetalias': 'Olorin.cas.hri.gaia', 'olorin_offeringid': 'Olorin.cto.iam.ius', 'olorin_tid': '480e8643-d4fb-4546-bda8-555c67c14432', 'Authorization': 'Olorin_IAM_Authentication olorin_realmid=123145964...'}
 [2025-06-01T17:05:05-0400] INFO [] module=chronos_tool: Chronos API response status: 200
 [2025-06-01T17:05:05-0400] DEBUG [] module=chronos_tool: Chronos API response data: {"metadata":{"limit":300,"entitiesCount":0,"totalCount":0},"entities":[]}
 [2025-06-01T17:05:05-0400] DEBUG [] module=device_router: Chronos response structure check failed for user testuser:
@@ -148,17 +148,17 @@ splunklib.binding.AuthenticationError: Login failed.
 [2025-06-01T17:05:05-0400] DEBUG [] module=device_router:   - has 'entities' key: True
 [2025-06-01T17:05:05-0400] DEBUG [] module=device_router:   - entities value: []
 [2025-06-01T17:05:05-0400] WARNING [] module=device_router: No sessionId found in Chronos response for user testuser. DI Tool will not be called.
-[2025-06-01T17:05:05-0400] DEBUG [] module=connectionpool: Starting new HTTPS connection (1): identityinternal-e2e.api.intuit.com:443
-[2025-06-01T17:05:08-0400] DEBUG [] module=connectionpool: https://identityinternal-e2e.api.intuit.com:443 "POST /signin/graphql HTTP/1.1" 401 0
+[2025-06-01T17:05:05-0400] DEBUG [] module=connectionpool: Starting new HTTPS connection (1): identityinternal-e2e.api.olorin.com:443
+[2025-06-01T17:05:08-0400] DEBUG [] module=connectionpool: https://identityinternal-e2e.api.olorin.com:443 "POST /signin/graphql HTTP/1.1" 401 0
 [2025-06-01T17:05:08-0400] ERROR [] module=auth_utils: Identity service returned status 401: 
 [2025-06-01T17:05:08-0400] ERROR [] module=auth_utils: Failed to get authentication token: Identity service authentication failed with status 401
 [2025-06-01T17:05:08-0400] INFO [] module=device_router: Invoking LLM for device risk assessment for user testuser
 [2025-06-01T17:05:08-0400] DEBUG [] module=agent_service: Invoking LangGraph with agent_context={
     "id": "ed5b678b-9764-481f-bf2d-a47bce4d7fa4",
-    "intuit_header": {
-        "intuit_tid": "gaia-device-risk-testuser",
-        "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-        "intuit_originating_assetalias": "Intuit.cas.hri.gaia"
+    "olorin_header": {
+        "olorin_tid": "gaia-device-risk-testuser",
+        "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+        "olorin_originating_assetalias": "Olorin.cas.hri.gaia"
     },
     "query_params": {},
     "start_time": 1748811908.1870599,
@@ -167,13 +167,13 @@ splunklib.binding.AuthenticationError: Login failed.
         "interaction_id": null,
         "experience_id": null,
         "originating_asset_alias": null,
-        "intuit_tid": null,
+        "olorin_tid": null,
         "agent": null,
         "additional_metadata": null,
         "supported_output_formats": null,
         "interaction_group_id": null
     },
-    "agent_name": "Intuit.cas.hri.gaia:device-risk-analyzer",
+    "agent_name": "Olorin.cas.hri.gaia:device-risk-analyzer",
     "session_id": null,
     "thread_id": "None-d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
 } with enable_langfuse=True
@@ -262,7 +262,7 @@ Traceback (most recent call last):
 splunklib.binding.AuthenticationError: Login failed.
 [32mINFO    [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:96 Got auth tokens - userid: 9130360342..., realmid: 123145964165782
 [35mDEBUG   [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:143 Making Chronos API request for user testuser with payload: {"metadata": {"limit": 300}, "range": {"from": "2025-05-02T21:05:04+00:00", "to": "2025-06-01T21:05:04+00:00"}, "filter": {"auth_id": ["testuser"]}, "select": ["os", "osVersion", "trueIpCity", "trueIpGeo", "ts", "kdid", "smartId", "offeringId", "trueIpFirstSeen", "trueIpRegion", "trueIpLatitude", "trueIpLongitude", "agentType", "browserString", "fuzzyDeviceFirstSeen", "timezone", "tmResponse.tmxReasonCodes", "sessionId"], "queryId": "GAIA", "routingLabel": "elc"}
-[35mDEBUG   [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:146 Request headers: {'intuit_originatingip': '127.0.0.1', 'intuit_country': 'US', 'intuit_locale': 'en-US', 'Content-Type': 'application/json', 'Accept': 'application/json', 'intuit_assetalias': 'Intuit.cas.hri.gaia', 'intuit_offeringid': 'Intuit.cto.iam.ius', 'intuit_tid': '480e8643-d4fb-4546-bda8-555c67c14432', 'Authorization': 'Intuit_IAM_Authentication intuit_realmid=123145964...'}
+[35mDEBUG   [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:146 Request headers: {'olorin_originatingip': '127.0.0.1', 'olorin_country': 'US', 'olorin_locale': 'en-US', 'Content-Type': 'application/json', 'Accept': 'application/json', 'olorin_assetalias': 'Olorin.cas.hri.gaia', 'olorin_offeringid': 'Olorin.cto.iam.ius', 'olorin_tid': '480e8643-d4fb-4546-bda8-555c67c14432', 'Authorization': 'Olorin_IAM_Authentication olorin_realmid=123145964...'}
 [32mINFO    [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:154 Chronos API response status: 200
 [35mDEBUG   [0m app.service.agent.tools.chronos_tool.chronos_tool:chronos_tool.py:155 Chronos API response data: {"metadata":{"limit":300,"entitiesCount":0,"totalCount":0},"entities":[]}
 [35mDEBUG   [0m app.router.device_router:device_router.py:339 Chronos response structure check failed for user testuser:
@@ -271,17 +271,17 @@ splunklib.binding.AuthenticationError: Login failed.
 [35mDEBUG   [0m app.router.device_router:device_router.py:345   - has 'entities' key: True
 [35mDEBUG   [0m app.router.device_router:device_router.py:348   - entities value: []
 [33mWARNING [0m app.router.device_router:device_router.py:364 No sessionId found in Chronos response for user testuser. DI Tool will not be called.
-[35mDEBUG   [0m urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): identityinternal-e2e.api.intuit.com:443
-[35mDEBUG   [0m urllib3.connectionpool:connectionpool.py:544 https://identityinternal-e2e.api.intuit.com:443 "POST /signin/graphql HTTP/1.1" 401 0
+[35mDEBUG   [0m urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): identityinternal-e2e.api.olorin.com:443
+[35mDEBUG   [0m urllib3.connectionpool:connectionpool.py:544 https://identityinternal-e2e.api.olorin.com:443 "POST /signin/graphql HTTP/1.1" 401 0
 [31m[1mERROR   [0m app.utils.auth_utils:auth_utils.py:89 Identity service returned status 401: 
 [31m[1mERROR   [0m app.utils.auth_utils:auth_utils.py:137 Failed to get authentication token: Identity service authentication failed with status 401
 [32mINFO    [0m app.router.device_router:device_router.py:436 Invoking LLM for device risk assessment for user testuser
 [35mDEBUG   [0m app.service.agent_service:agent_service.py:60 Invoking LangGraph with agent_context={
     "id": "ed5b678b-9764-481f-bf2d-a47bce4d7fa4",
-    "intuit_header": {
-        "intuit_tid": "gaia-device-risk-testuser",
-        "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-        "intuit_originating_assetalias": "Intuit.cas.hri.gaia"
+    "olorin_header": {
+        "olorin_tid": "gaia-device-risk-testuser",
+        "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+        "olorin_originating_assetalias": "Olorin.cas.hri.gaia"
     },
     "query_params": {},
     "start_time": 1748811908.1870599,
@@ -290,13 +290,13 @@ splunklib.binding.AuthenticationError: Login failed.
         "interaction_id": null,
         "experience_id": null,
         "originating_asset_alias": null,
-        "intuit_tid": null,
+        "olorin_tid": null,
         "agent": null,
         "additional_metadata": null,
         "supported_output_formats": null,
         "interaction_group_id": null
     },
-    "agent_name": "Intuit.cas.hri.gaia:device-risk-analyzer",
+    "agent_name": "Olorin.cas.hri.gaia:device-risk-analyzer",
     "session_id": null,
     "thread_id": "None-d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58"
 } with enable_langfuse=True

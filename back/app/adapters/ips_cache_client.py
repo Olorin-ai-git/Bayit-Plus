@@ -26,7 +26,7 @@ class IPSCacheClient:
         method: str,
         endpoint: str,
         data=None,
-        intuit_header: dict[str, Any] = None,
+        olorin_header: dict[str, Any] = None,
     ):
         # TODO: Refactor to pass headers as parameter instead of building them inside the client
 
@@ -34,7 +34,7 @@ class IPSCacheClient:
         try:
             async with aiohttp.ClientSession() as session:
                 if method == "GET":
-                    async with session.get(url, headers=intuit_header) as response:
+                    async with session.get(url, headers=olorin_header) as response:
                         response.raise_for_status()
                         result = await response.json()
                         logger.debug(
@@ -42,7 +42,7 @@ class IPSCacheClient:
                         )
                 elif method == "POST":
                     async with session.post(
-                        url, headers=intuit_header, json=data
+                        url, headers=olorin_header, json=data
                     ) as response:
                         response.raise_for_status()
                         result = await response.json()
@@ -63,21 +63,21 @@ class IPSCacheClient:
             raise e
 
     async def hset(
-        self, key: str, data: List[Any], intuit_header: dict[str, Any] = None
+        self, key: str, data: List[Any], olorin_header: dict[str, Any] = None
     ):
         data_as_list = ["HSET", key] + data
         await self._send_request(
-            method="POST", endpoint="", data=data_as_list, intuit_header=intuit_header
+            method="POST", endpoint="", data=data_as_list, olorin_header=olorin_header
         )
 
     async def expire(
-        self, key: str, seconds: int, intuit_header: dict[str, Any] = None
+        self, key: str, seconds: int, olorin_header: dict[str, Any] = None
     ):
         await self._send_request(
             method="POST",
             endpoint="",
             data=["EXPIRE", key, seconds],
-            intuit_header=intuit_header,
+            olorin_header=olorin_header,
         )
 
     async def zadd(
@@ -85,21 +85,21 @@ class IPSCacheClient:
         zset_name: str,
         score: float,
         key: str,
-        intuit_header: dict[str, Any] = None,
+        olorin_header: dict[str, Any] = None,
     ):
         await self._send_request(
             method="POST",
             endpoint="",
             data=["ZADD", zset_name, score, key],
-            intuit_header=intuit_header,
+            olorin_header=olorin_header,
         )
 
     async def hgetall(
-        self, key: str, intuit_header: dict[str, Any] = None
+        self, key: str, olorin_header: dict[str, Any] = None
     ) -> Dict[str, Any]:
         endpoint = f"hgetall/{key}"
         return await self._send_request(
-            method="GET", endpoint=endpoint, data=None, intuit_header=intuit_header
+            method="GET", endpoint=endpoint, data=None, olorin_header=olorin_header
         )
 
     async def zscan(
@@ -107,13 +107,13 @@ class IPSCacheClient:
         zset_name: str,
         cursor: int = 0,
         count: int = 2000,
-        intuit_header: dict[str, Any] = None,
+        olorin_header: dict[str, Any] = None,
     ) -> List[str]:
         matching_keys = []
         while True:
             endpoint = f"zscan/{zset_name}/{cursor}/COUNT/{count}"
             result = await self._send_request(
-                method="GET", endpoint=endpoint, data=None, intuit_header=intuit_header
+                method="GET", endpoint=endpoint, data=None, olorin_header=olorin_header
             )
             cursor, keys = result
             matching_keys.extend(keys)
@@ -124,13 +124,13 @@ class IPSCacheClient:
         ]  # Remove scores from the keys
 
     async def pipeline(
-        self, commands: List[List[Any]], intuit_header: dict[str, Any] = None
+        self, commands: List[List[Any]], olorin_header: dict[str, Any] = None
     ):
         try:
             if commands is None or not commands:
                 return []
             pipeline_output = await self._send_request(
-                "POST", "pipeline", commands, intuit_header
+                "POST", "pipeline", commands, olorin_header
             )
             logger.debug(f"pipeline_output={pipeline_output}")
             return pipeline_output

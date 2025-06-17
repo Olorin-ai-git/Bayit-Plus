@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Risk Assessment Domain's LLM Implementation** within the Olorin fraud detection system. The Risk Assessment domain represents the **final aggregation layer** that synthesizes LLM thoughts and risk scores from all individual domains (Device, Location, Network, and Logs) to produce a unified overall risk assessment. This analysis focuses specifically on prompt construction, agent invocation, response processing, and the sophisticated risk aggregation methodologies.
+This document provides a comprehensive technical analysis of the **Risk Assessment Domain's LLM Implementation** within the Gaia fraud detection system. The Risk Assessment domain represents the **final aggregation layer** that synthesizes LLM thoughts and risk scores from all individual domains (Device, Location, Network, and Logs) to produce a unified overall risk assessment. This analysis focuses specifically on prompt construction, agent invocation, response processing, and the sophisticated risk aggregation methodologies.
 
 ## Table of Contents
 
@@ -156,7 +156,7 @@ You are a risk aggregation expert. Given the LLM thoughts and risk scores from e
 
 ### 3.1 Risk Aggregation Expert Prompt
 
-The Risk Assessment domain uses the most **sophisticated meta-analytical system prompt** in the entire Olorin system:
+The Risk Assessment domain uses the most **sophisticated meta-analytical system prompt** in the entire Gaia system:
 
 ```
 You are a risk aggregation expert. Given the LLM thoughts and risk scores from each domain (device, location, network, etc.), produce an overall risk score (0.0-1.0) and an accumulated LLM thoughts summary. Respond as JSON:
@@ -216,7 +216,7 @@ The prompt guides the LLM to consider:
 The system retrieves authentication tokens for secure LLM access:
 
 ```python
-app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
+app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
 settings_for_env = get_settings_for_env()
 ```
 
@@ -226,14 +226,14 @@ Dynamic header extraction with fallback to configuration:
 
 ```python
 # Extract headers with fallback to settings_for_env
-intuit_tid_header = request.headers.get(
-    "intuit-tid", f"gaia-overall-risk-{user_id}"
+olorin_tid_header = request.headers.get(
+    "olorin-tid", f"gaia-overall-risk-{user_id}"
 )
-intuit_experience_id_header = request.headers.get(
-    "intuit_experience_id", settings_for_env.intuit_experience_id
+olorin_experience_id_header = request.headers.get(
+    "olorin_experience_id", settings_for_env.olorin_experience_id
 )
-intuit_originating_assetalias_header = request.headers.get(
-    "intuit_originating_assetalias", settings_for_env.intuit_originating_assetalias
+olorin_originating_assetalias_header = request.headers.get(
+    "olorin_originating_assetalias", settings_for_env.olorin_originating_assetalias
 )
 ```
 
@@ -244,19 +244,19 @@ The Risk Assessment domain creates a specialized agent context for meta-analysis
 ```python
 agent_context = AgentContext(
     input=system_prompt,
-    agent_name="Intuit.cas.hri.gaia:overall-risk-aggregator",
+    agent_name="Olorin.cas.hri.gaia:overall-risk-aggregator",
     metadata=Metadata(
         interaction_group_id=f"overall-risk-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid=intuit_tid_header,
-        intuit_originating_assetalias=intuit_originating_assetalias_header,
-        intuit_experience_id=intuit_experience_id_header,
+    olorin_header=OlorinHeader(
+        olorin_tid=olorin_tid_header,
+        olorin_originating_assetalias=olorin_originating_assetalias_header,
+        olorin_experience_id=olorin_experience_id_header,
         auth_context=AuthContext(
-            intuit_user_id=app_intuit_userid,
-            intuit_user_token=app_intuit_token,
-            intuit_realmid=app_intuit_realmid,
+            olorin_user_id=app_olorin_userid,
+            olorin_user_token=app_olorin_token,
+            olorin_realmid=app_olorin_realmid,
         ),
     ),
 )
@@ -264,9 +264,9 @@ agent_context = AgentContext(
 
 ### 4.4 Agent Naming Convention
 
-**Agent Name**: `"Intuit.cas.hri.gaia:overall-risk-aggregator"`
+**Agent Name**: `"Olorin.cas.hri.gaia:overall-risk-aggregator"`
 
-This naming convention clearly identifies the agent's role as the final risk aggregation component within the Olorin fraud detection system.
+This naming convention clearly identifies the agent's role as the final risk aggregation component within the Gaia fraud detection system.
 
 ---
 
@@ -543,7 +543,7 @@ investigation = get_investigation(investigation_id)
 
 ## Conclusion
 
-The Risk Assessment Domain represents the **culmination of the Olorin fraud detection system**, implementing the most sophisticated LLM-based risk aggregation architecture. Through its advanced prompt engineering, comprehensive error handling, and intelligent cross-domain synthesis capabilities, it successfully transforms fragmented domain insights into coherent, actionable fraud risk assessments.
+The Risk Assessment Domain represents the **culmination of the Gaia fraud detection system**, implementing the most sophisticated LLM-based risk aggregation architecture. Through its advanced prompt engineering, comprehensive error handling, and intelligent cross-domain synthesis capabilities, it successfully transforms fragmented domain insights into coherent, actionable fraud risk assessments.
 
 **Key Strengths:**
 - **Meta-Analytical Architecture**: Successfully synthesizes complex multi-domain evidence

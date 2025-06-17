@@ -25,13 +25,13 @@ Both branches execute **identical Splunk queries** with the same field extractio
 
 #### **Current Refactor Branch Query** (from `_build_device_query`)
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id} earliest=-{time_range}
+search index=rss-e2eidx olorin_userid={user_id} earliest=-{time_range}
 | rex field=contextualData "device_id=(?<device_id>[^&]+)"
 | rex field=contextualData "fuzzy_device_id=(?<fuzzy_device_id>[^&]+)"
 | rex field=contextualData "smartId=(?<smartId>[^&]+)"
 | rex field=contextualData "tm_smartid=(?<tm_smartid>[^&]+)"
 | rex field=contextualData "tm_sessionid=(?<tm_sessionid>[^&]+)"
-| rex field=contextualData "intuit_tid=(?<intuit_tid>[^&]+)"
+| rex field=contextualData "olorin_tid=(?<olorin_tid>[^&]+)"
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "true_ip_city=(?<true_ip_city>[^&]+)"
 | rex field=contextualData "true_ip_geo=(?<true_ip_geo>[^&]+)"
@@ -43,25 +43,25 @@ search index=rss-e2eidx intuit_userid={user_id} earliest=-{time_range}
 | eval smartId=urldecode(smartId)
 | eval tm_smartid=urldecode(tm_smartid)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| eval intuit_tid=urldecode(intuit_tid)
+| eval olorin_tid=urldecode(olorin_tid)
 | eval true_ip=urldecode(true_ip)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval true_ip_country=urldecode(true_ip_geo)
 | eval true_ip_region=urldecode(true_ip_region)
 | eval true_ip_latitude=urldecode(true_ip_latitude)
 | eval true_ip_longitude=urldecode(true_ip_longitude)
-| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, intuit_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
+| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, olorin_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
 ```
 
 #### **Master Branch Query** (from documentation)
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id}
+search index=rss-e2eidx olorin_userid={user_id}
 | rex field=contextualData "device_id=(?<device_id>[^&]+)"
 | rex field=contextualData "fuzzy_device_id=(?<fuzzy_device_id>[^&]+)"
 | rex field=contextualData "smartId=(?<smartId>[^&]+)"
 | rex field=contextualData "tm_smartid=(?<tm_smartid>[^&]+)"
 | rex field=contextualData "tm_sessionid=(?<tm_sessionid>[^&]+)"
-| rex field=contextualData "intuit_tid=(?<intuit_tid>[^&]+)"
+| rex field=contextualData "olorin_tid=(?<olorin_tid>[^&]+)"
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "true_ip_city=(?<true_ip_city>[^&]+)"
 | rex field=contextualData "true_ip_geo=(?<true_ip_geo>[^&]+)"
@@ -73,14 +73,14 @@ search index=rss-e2eidx intuit_userid={user_id}
 | eval smartId=urldecode(smartId)
 | eval tm_smartid=urldecode(tm_smartid)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| eval intuit_tid=urldecode(intuit_tid)
+| eval olorin_tid=urldecode(olorin_tid)
 | eval true_ip=urldecode(true_ip)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval true_ip_country=urldecode(true_ip_geo)
 | eval true_ip_region=urldecode(true_ip_region)
 | eval true_ip_latitude=urldecode(true_ip_latitude)
 | eval true_ip_longitude=urldecode(true_ip_longitude)
-| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, intuit_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
+| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, olorin_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude
 ```
 
 ### **Key Compatibility Points**
@@ -164,7 +164,7 @@ Both branches extract the same comprehensive device signal data:
 - **`smartId`** - ThreatMetrix smart ID ✅
 - **`tm_smartid`** - ThreatMetrix session smart ID ✅
 - **`tm_sessionid`** - ThreatMetrix session identifier ✅
-- **`intuit_tid`** - Intuit transaction identifier ✅
+- **`olorin_tid`** - Olorin transaction identifier ✅
 
 #### **Geographic Fields**
 - **`true_ip`** - True IP address ✅
@@ -391,7 +391,7 @@ class DeviceAnalysisService:
 ```python
 class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:device-risk-analyzer"
+        return "Olorin.cas.hri.gaia:device-risk-analyzer"
     
     def prepare_prompt_data(self, user_id: str, extracted_signals: List[Dict], **kwargs):
         # Device signal grouping and prompt construction

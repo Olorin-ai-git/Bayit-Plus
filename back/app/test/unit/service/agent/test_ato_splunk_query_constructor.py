@@ -23,28 +23,28 @@ def patch_settings(monkeypatch):
 def test_build_auth_id_query():
     q = constructor._build_auth_id_query("foo")
     assert "index=testindex" in q
-    assert "intuit_userid=foo" in q
+    assert "olorin_userid=foo" in q
     assert "account_email" in q
 
 
 def test_build_location_query():
     q = constructor._build_location_query("bar")
     assert "index=testindex" in q
-    assert "intuit_userid=bar" in q
+    assert "olorin_userid=bar" in q
     assert "true_ip_city" in q
 
 
 def test_build_network_query():
     q = constructor._build_network_query("baz")
     assert "index=testindex" in q
-    assert "intuit_userid=baz" in q
+    assert "olorin_userid=baz" in q
     assert "proxy_ip" in q
 
 
 def test_build_device_query():
     q = constructor._build_device_query("dev")
     assert "index=testindex" in q
-    assert "intuit_userid=dev" in q
+    assert "olorin_userid=dev" in q
     assert "device_id" in q
 
 

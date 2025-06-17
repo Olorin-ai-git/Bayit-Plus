@@ -39,7 +39,7 @@ graph TD
 ### Integration Points
 
 - **Input Sources**: Splunk transaction logs, OII address data, vector search analysis
-- **LLM Service**: Intuit's LLM Execution service (O1-2024-12-17 model)
+- **LLM Service**: Olorin's LLM Execution service (O1-2024-12-17 model)
 - **Output Format**: Structured JSON risk assessment
 - **Fallback**: Rule-based assessment when LLM fails
 
@@ -312,19 +312,19 @@ except ImportError:
 ```python
 agent_context_for_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:location-risk-analyzer",
+    agent_name="Olorin.cas.hri.gaia:location-risk-analyzer",
     metadata=Metadata(
         interaction_group_id="location-risk-assessment",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid=intuit_tid_header,
-        intuit_originating_assetalias=intuit_originating_assetalias_header,
-        intuit_experience_id=intuit_experience_id_header,
+    olorin_header=OlorinHeader(
+        olorin_tid=olorin_tid_header,
+        olorin_originating_assetalias=olorin_originating_assetalias_header,
+        olorin_experience_id=olorin_experience_id_header,
         auth_context=AuthContext(
-            intuit_user_id=app_intuit_userid,
-            intuit_user_token=app_intuit_token,
-            intuit_realmid=app_intuit_realmid,
+            olorin_user_id=app_olorin_userid,
+            olorin_user_token=app_olorin_token,
+            olorin_realmid=app_olorin_realmid,
         ),
     ),
 )

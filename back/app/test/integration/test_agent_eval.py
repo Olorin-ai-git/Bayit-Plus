@@ -39,7 +39,8 @@ def settings():
 @pytest.fixture
 def app(settings):
     app = create_app(settings)
-    app.state.graph = create_and_get_agent_graph()
+    app.state.graph_parallel = create_and_get_agent_graph(parallel=True)
+    app.state.graph_sequential = create_and_get_agent_graph(parallel=False)
     app.include_router(router)
     return app
 
@@ -59,7 +60,7 @@ def get_ius_token_and_user(settings_for_env):
     payload = settings_for_env.identity_payload
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={get_app_secret(settings_for_env.app_secret)}",
+        "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={get_app_secret(settings_for_env.app_secret)}",
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -125,10 +126,10 @@ def cross_encoder_score(cross_encoder_model, output: str, expected_output: str):
 # Utility Functions
 def construct_headers(token, userid, settings_for_env):
     return {
-        "Authorization": f"Intuit_IAM_Authentication intuit_appid = {settings_for_env.app_id}, intuit_app_secret = {get_app_secret(settings_for_env.app_secret)}, intuit_token_type=IAM-Ticket, intuit_token={token}, intuit_userid={userid}",
+        "Authorization": f"Olorin_IAM_Authentication olorin_appid = {settings_for_env.app_id}, olorin_app_secret = {get_app_secret(settings_for_env.app_secret)}, olorin_token_type=IAM-Ticket, olorin_token={token}, olorin_userid={userid}",
         "Content-Type": "application/json",
-        "intuit_experience_id": settings_for_env.intuit_experience_id,
-        "intuit_originating_assetalias": settings_for_env.app_id,
+        "olorin_experience_id": settings_for_env.olorin_experience_id,
+        "olorin_originating_assetalias": settings_for_env.app_id,
         "X-Forwarded-Port": str(settings_for_env.mesh_port),
     }
 

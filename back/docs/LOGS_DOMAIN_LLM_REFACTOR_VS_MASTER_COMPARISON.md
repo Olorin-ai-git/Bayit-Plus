@@ -30,9 +30,9 @@ async def analyze_logs(user_id: str, request: Request, ...):
     # Direct LLM invocation within router logic
     agent_context = AgentContext(
         input=llm_input_prompt,
-        agent_name="Intuit.cas.hri.gaia:fpl-splunk",
+        agent_name="Olorin.cas.hri.gaia:fpl-splunk",
         metadata=Metadata(...),
-        intuit_header=IntuitHeader(...)
+        olorin_header=OlorinHeader(...)
     )
     
     try:
@@ -49,7 +49,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     """Service for LLM-based logs risk assessment."""
     
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:fpl-splunk"
+        return "Olorin.cas.hri.gaia:fpl-splunk"
     
     def get_assessment_model_class(self) -> type[LogsRiskAssessment]:
         return LogsRiskAssessment
@@ -137,19 +137,19 @@ Both implementations use **exactly the same** system prompt:
 ```python
 agent_context = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:fpl-splunk",
+    agent_name="Olorin.cas.hri.gaia:fpl-splunk",
     metadata=Metadata(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
-        intuit_tid="test",
-        intuit_originating_assetalias="Intuit.cas.hri.gaia",
-        intuit_experience_id=settings.intuit_experience_id,
+    olorin_header=OlorinHeader(
+        olorin_tid="test",
+        olorin_originating_assetalias="Olorin.cas.hri.gaia",
+        olorin_experience_id=settings.olorin_experience_id,
         auth_context=AuthContext(
-            intuit_user_id=intuit_userid,
-            intuit_user_token=intuit_token,
-            intuit_realmid=intuit_realmid,
+            olorin_user_id=olorin_userid,
+            olorin_user_token=olorin_token,
+            olorin_realmid=olorin_realmid,
         ),
     ),
 )
@@ -159,12 +159,12 @@ agent_context = AgentContext(
 ```python
 # Inherited from BaseLLMRiskService
 def get_agent_name(self) -> str:
-    return "Intuit.cas.hri.gaia:fpl-splunk"  # IDENTICAL agent name
+    return "Olorin.cas.hri.gaia:fpl-splunk"  # IDENTICAL agent name
 
 # Base service handles agent context creation with same parameters:
-# - agent_name: "Intuit.cas.hri.gaia:fpl-splunk"
+# - agent_name: "Olorin.cas.hri.gaia:fpl-splunk"
 # - interaction_group_id: "fraud_flow"
-# - intuit_originating_assetalias: "Intuit.cas.hri.gaia"
+# - olorin_originating_assetalias: "Olorin.cas.hri.gaia"
 # - Authentication context with tokens
 ```
 
@@ -172,9 +172,9 @@ def get_agent_name(self) -> str:
 
 | Component | Master Branch | Refactor Branch |
 |-----------|---------------|-----------------|
-| **Agent Name** | "Intuit.cas.hri.gaia:fpl-splunk" | **"Intuit.cas.hri.gaia:fpl-splunk" (identical)** |
+| **Agent Name** | "Olorin.cas.hri.gaia:fpl-splunk" | **"Olorin.cas.hri.gaia:fpl-splunk" (identical)** |
 | **Interaction Group** | "fraud_flow" | **"fraud_flow" (same)** |
-| **Asset Alias** | "Intuit.cas.hri.gaia" | **"Intuit.cas.hri.gaia" (same)** |
+| **Asset Alias** | "Olorin.cas.hri.gaia" | **"Olorin.cas.hri.gaia" (same)** |
 | **Authentication** | Token-based auth context | **Identical token-based auth** |
 | **Metadata** | User ID tracking | **Same user ID tracking** |
 
@@ -412,7 +412,7 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
       "offering_ids": "QBO,TTO",
       "transactions": "sign_in,challenge_failed_incorrect_password",
       "originating_ips": "207.207.181.8,223.185.128.58",
-      "isp": "intuit inc.,bharti airtel ltd.",
+      "isp": "olorin inc.,bharti airtel ltd.",
       "cities": "mountain view,bengaluru",
       "region": "california,karnataka",
       "device_ids": "dev1,dev2,dev3",
@@ -429,16 +429,16 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
   "user_id": "4621097846089147992",
   "splunk_data": [
     {
-      "intuit_userid": "4621097846089147992",
+      "olorin_userid": "4621097846089147992",
       "values(email_address)": null,
-      "values(intuit_username)": [
+      "values(olorin_username)": [
         "gaia_test_20250515",
         "iamtestpass_15171910655948"
       ],
-      "values(intuit_offeringId)": [
-        "Intuit.cto.iam.ius",
-        "Intuit.dev.test.testeasy",
-        "Intuit.fraudprevention.arrtestclient"
+      "values(olorin_offeringId)": [
+        "Olorin.cto.iam.ius",
+        "Olorin.dev.test.testeasy",
+        "Olorin.fraudprevention.arrtestclient"
       ],
       "values(transaction)": [
         "account_creation_passed",
@@ -447,7 +447,7 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
         "challenge_initiated",
         "password_passed"
       ],
-      "values(intuit_originatingip)": [
+      "values(olorin_originatingip)": [
         "123.45.67.89",
         "207.207.177.101",
         "207.207.177.21",
@@ -638,7 +638,7 @@ langfuse_handler = CallbackHandler(
 The refactor branch maintains **100% compatibility** with master branch LLM capabilities:
 
 1. **Identical System Prompts**: Same authentication-specialized prompt engineering
-2. **Same Agent Identity**: "Intuit.cas.hri.gaia:fpl-splunk" agent consistency
+2. **Same Agent Identity**: "Olorin.cas.hri.gaia:fpl-splunk" agent consistency
 3. **Equivalent Risk Assessment**: 0.6-0.7 risk levels for identical authentication patterns
 4. **Consistent Authentication Analysis**: Failed challenge detection and geographic analysis
 

@@ -7,9 +7,10 @@ from langchain_core.callbacks import Callbacks
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
+from app.utils.idps_utils import get_app_secret
 
 settings_for_env = get_settings_for_env()
 
@@ -28,11 +29,11 @@ class OIIInput(BaseModel):
 
 
 class OIITool(BaseTool):
-    """Tool for retrieving Online Identity Information (OII) from Intuit Identity API."""
+    """Tool for retrieving Online Identity Information (OII) from Olorin Identity API."""
 
     name: str = "identity_info_tool"
     description: str = """Use this tool to retrieve online identity information about a user 
-    from the Intuit Identity API using GraphQL.
+    from the Olorin Identity API using GraphQL.
     You'll need to provide a user_id.
     """
     args_schema: Type[BaseModel] = OIIInput
@@ -54,12 +55,12 @@ class OIITool(BaseTool):
         return json.dumps(identity_data, indent=2)
 
     def _query_identity_api(
-        self, user_id: str, headers: Optional[IntuitHeader] = None
+        self, user_id: str, headers: Optional[OlorinHeader] = None
     ) -> Dict[str, Any]:
-        """Query the Intuit Identity API for information about the user."""
+        """Query the Olorin Identity API for information about the user."""
         try:
-            intuit_userid, intuit_token, intuit_realmid = get_offline_auth_token()
-            conn = http.client.HTTPSConnection("identity-e2e.api.intuit.com")
+            olorin_userid, olorin_token, olorin_realmid = get_offline_auth_token()
+            conn = http.client.HTTPSConnection("identity-e2e.api.olorin.com")
 
             payload_template = """
             {
@@ -78,12 +79,12 @@ class OIITool(BaseTool):
             payload = payload_template.replace("USER_ID", user_id)
 
             request_headers = {
-                "intuit_originatingip": "127.0.0.1",
-                "intuit_country": "US",
-                "intuit_locale": "en-US",
+                "olorin_originatingip": "127.0.0.1",
+                "olorin_country": "US",
+                "olorin_locale": "en-US",
                 "Content-Type": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.gaia",
-                "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
+                "olorin_assetalias": "Olorin.cas.hri.gaia",
+                "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={get_app_secret(settings_for_env.app_secret)},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
             }
 
             conn.request("POST", "/v2/graphql", payload, request_headers)

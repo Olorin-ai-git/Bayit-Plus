@@ -23,7 +23,7 @@ class DeviceAnalysisService:
         entity_id: str,
         entity_type: str,
         investigation_id: str,
-        time_range: str = "1m",
+        time_range: str = "30d",
         raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
         request: Optional[Request] = None,
         chronos_response_dict: Optional[dict] = None,
@@ -58,7 +58,7 @@ class DeviceAnalysisService:
             true_ip = event.get("true_ip")
             tm_smartid = event.get("tm_smartid")
             tm_sessionid = event.get("tm_sessionid")
-            intuit_tid = event.get("intuit_tid")
+            olorin_tid = event.get("olorin_tid")
             _time = event.get("_time")
             if country:
                 country = country.upper()
@@ -78,7 +78,7 @@ class DeviceAnalysisService:
                     "true_ip_longitude": longitude,
                     "tm_smartid": tm_smartid,
                     "tm_sessionid": tm_sessionid,
-                    "intuit_tid": intuit_tid,
+                    "olorin_tid": olorin_tid,
                     "_time": _time,
                 }
             )
@@ -157,18 +157,37 @@ class DeviceAnalysisService:
             # Use SplunkQueryTool like other domains for consistency
             splunk_tool = SplunkQueryTool()
 
-            # Build the base SPL query using the device-level query builder
+            # Build the base SPL query using the device query builder
+            # The device query builder supports both user_id and device_id via id_type parameter
+            if entity_type not in ["user_id", "device_id"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsupported entity_type: {entity_type}. Use 'user_id' or 'device_id'.",
+                )
+
+            # Pass entity_type directly as id_type to the device query builder
+            # The _build_device_query function handles user_id vs device_id correctly
             base_query = build_base_search(
                 id_value=entity_id,
                 id_type="device",
             )
+
+            # TEMPORARY FIX: Call the device query builder directly with correct id_type
+            # since build_base_search doesn't accept user_id/device_id as id_type
+            from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
+                _build_device_query,
+            )
+
+            base_query = _build_device_query(entity_id, entity_type)
             # Add earliest time constraint using proper SPL syntax
             splunk_query = base_query.replace(
                 f"search index={get_settings_for_env().splunk_index}",
                 f"search index={get_settings_for_env().splunk_index} earliest=-{time_range}",
             )
 
-            logger.info(f"Executing Splunk query for device data: {splunk_query}")
+            logger.info(
+                f"Executing Splunk query for device data (entity_type={entity_type}): {splunk_query}"
+            )
 
             splunk_result = await splunk_tool.arun({"query": splunk_query})
             logger.info(f"Retrieved device events from Splunk: {type(splunk_result)}")

@@ -3,6 +3,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+from app.service.websocket_manager import AgentPhase, websocket_manager
+
 from .interfaces import (
     AnomalyDetectionAgent,
     BaseAgent,
@@ -42,6 +44,12 @@ class FraudDetectionCoordinator:
     async def initialize(self) -> None:
         """Initialize all agents."""
         logger.info("Initializing fraud detection system...")
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.INITIALIZATION,
+            0.0,
+            "Initializing agents...",
+        )
 
         initialization_tasks = [
             self.location_agent.initialize(),
@@ -52,6 +60,12 @@ class FraudDetectionCoordinator:
         ]
 
         await asyncio.gather(*initialization_tasks)
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.INITIALIZATION,
+            1.0,
+            "All agents initialized successfully",
+        )
         logger.info("All agents initialized successfully")
 
     async def shutdown(self) -> None:
@@ -70,26 +84,29 @@ class FraudDetectionCoordinator:
         logger.info("All agents shut down successfully")
 
     async def analyze_user(
-        self, user_id: str, timeframe_days: int = 30
+        self, user_id: str, investigation_id: str, timeframe_days: int = 30
     ) -> Dict[str, Any]:
-        """
-        Perform comprehensive fraud analysis for a user.
-
-        Args:
-            user_id: The ID of the user to analyze
-            timeframe_days: Number of days of history to analyze
-
-        Returns:
-            Dict containing analysis results and risk assessment
-        """
-        logger.info(f"Starting comprehensive analysis for user_id: {user_id}")
+        """Analyze user activity for potential fraud."""
+        self.current_investigation_id = investigation_id
 
         try:
             # Establish baseline first
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.ANOMALY_DETECTION,
+                0.1,
+                "Establishing baseline...",
+            )
             baseline = await self.anomaly_agent.establish_baseline(user_id)
             logger.info(f"Established baseline for user_id: {user_id}")
 
             # Gather data from all agents in parallel
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.ANOMALY_DETECTION,
+                0.2,
+                "Gathering data from all agents...",
+            )
             tasks = [
                 self._gather_location_data(user_id, timeframe_days),
                 self._gather_network_data(user_id, timeframe_days),
@@ -102,6 +119,12 @@ class FraudDetectionCoordinator:
             )
 
             # Detect anomalies from each agent
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.ANOMALY_DETECTION,
+                0.5,
+                "Detecting anomalies...",
+            )
             anomaly_tasks = [
                 self.network_agent.detect_network_anomalies(user_id),
                 self.device_agent.detect_device_anomalies(user_id),
@@ -114,6 +137,12 @@ class FraudDetectionCoordinator:
             )
 
             # Combine all risk assessments
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.RISK_ASSESSMENT,
+                0.7,
+                "Combining risk assessments...",
+            )
             all_risks = network_risks + device_risks + behavior_risks + location_risks
 
             # Filter false positives
@@ -128,110 +157,81 @@ class FraudDetectionCoordinator:
                 location_risk = 0.0
                 location_factors = []
 
-            # Calculate final risk score (now includes location)
+            # Calculate final risk score
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.RISK_ASSESSMENT,
+                0.9,
+                "Calculating final risk score...",
+            )
             final_risk = await self.anomaly_agent.calculate_risk_score(
                 user_id, location_risk, location_factors
             )
 
-            # Check for legitimate scenarios
-            is_legitimate = await self.anomaly_agent.detect_legitimate_scenarios(
-                user_id, final_risk
+            await websocket_manager.broadcast_progress(
+                investigation_id, AgentPhase.COMPLETED, 1.0, "Analysis completed"
             )
 
             return {
-                "timestamp": datetime.utcnow().isoformat(),
-                "user_id": user_id,
-                "risk_assessment": final_risk,
-                "is_legitimate": is_legitimate,
-                "risk_factors": filtered_risks,
-                "data": {
-                    "location": location_data,
-                    "network": network_data,
-                    "device": device_data,
-                    "behavior": behavior_data,
-                },
-                "baseline": baseline,
+                "risk_score": final_risk.risk_level,
+                "risk_factors": final_risk.risk_factors,
+                "location_risk": location_risk,
+                "network_risks": [r.dict() for r in network_risks],
+                "device_risks": [r.dict() for r in device_risks],
+                "behavior_risks": [r.dict() for r in behavior_risks],
+                "location_risks": [r.dict() for r in location_risks],
             }
 
         except Exception as e:
             logger.error(f"Error analyzing user {user_id}: {str(e)}")
+            await websocket_manager.broadcast_progress(
+                investigation_id,
+                AgentPhase.COMPLETED,
+                1.0,
+                f"Error during analysis: {str(e)}",
+            )
             raise
 
     async def _gather_location_data(
         self, user_id: str, timeframe_days: int
     ) -> Dict[str, Any]:
-        """Gather all location-related data."""
-        logger.info(f"Gathering location data for user_id: {user_id}")
-
-        try:
-            customer_location = await self.location_agent.get_customer_location(user_id)
-            business_location = await self.location_agent.get_business_location(user_id)
-            phone_location = await self.location_agent.get_phone_location(user_id)
-            login_history = await self.location_agent.get_login_history(
-                user_id, timeframe_days
-            )
-
-            return {
-                "customer_location": customer_location,
-                "business_location": business_location,
-                "phone_location": phone_location,
-                "login_history": login_history,
-            }
-
-        except Exception as e:
-            logger.error(f"Error gathering location data for {user_id}: {str(e)}")
-            raise
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.LOCATION_ANALYSIS,
+            0.3,
+            "Gathering location data...",
+        )
+        return await self.location_agent.get_location_info(user_id)
 
     async def _gather_network_data(
         self, user_id: str, timeframe_days: int
     ) -> Dict[str, Any]:
-        """Gather all network-related data."""
-        logger.info(f"Gathering network data for user_id: {user_id}")
-
-        try:
-            current_info = await self.network_agent.get_network_info(user_id)
-            patterns = await self.network_agent.analyze_network_patterns(
-                user_id, timeframe_days
-            )
-
-            return {"current": current_info, "patterns": patterns}
-
-        except Exception as e:
-            logger.error(f"Error gathering network data for {user_id}: {str(e)}")
-            raise
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.NETWORK_ANALYSIS,
+            0.3,
+            "Gathering network data...",
+        )
+        return await self.network_agent.get_network_info(user_id)
 
     async def _gather_device_data(
         self, user_id: str, timeframe_days: int
     ) -> Dict[str, Any]:
-        """Gather all device-related data."""
-        logger.info(f"Gathering device data for user_id: {user_id}")
-
-        try:
-            current_info = await self.device_agent.get_device_info(user_id)
-            history = await self.device_agent.get_device_history(
-                user_id, timeframe_days
-            )
-
-            return {"current": current_info, "history": history}
-
-        except Exception as e:
-            logger.error(f"Error gathering device data for {user_id}: {str(e)}")
-            raise
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.DEVICE_ANALYSIS,
+            0.3,
+            "Gathering device data...",
+        )
+        return await self.device_agent.get_device_info(user_id)
 
     async def _gather_behavior_data(
         self, user_id: str, timeframe_days: int
     ) -> Dict[str, Any]:
-        """Gather all behavior-related data."""
-        logger.info(f"Gathering behavior data for user_id: {user_id}")
-
-        try:
-            profile = await self.behavior_agent.get_behavior_profile(user_id)
-            patterns = await self.behavior_agent.analyze_behavior_patterns(
-                user_id, timeframe_days
-            )
-
-            return {"profile": profile, "patterns": patterns}
-
-        except Exception as e:
-            logger.error(f"Error gathering behavior data for {user_id}: {str(e)}")
-            raise
+        await websocket_manager.broadcast_progress(
+            self.current_investigation_id,
+            AgentPhase.BEHAVIOR_ANALYSIS,
+            0.3,
+            "Gathering behavior data...",
+        )
+        return await self.behavior_agent.get_behavior_profile(user_id)

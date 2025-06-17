@@ -23,7 +23,7 @@ def patch_settings(monkeypatch):
 def test_build_auth_device_query():
     q = constructor._build_auth_device_query("foo")
     assert "index=testindex" in q
-    assert "intuit_userid=foo" in q
+    assert "olorin_userid=foo" in q
     assert "CHALLENGE" in q
 
 
@@ -43,7 +43,7 @@ def test_build_smart_id_query():
 def test_get_direct_auth_query():
     q = constructor.get_direct_auth_query("foo")
     assert 'index="testindex"' in q
-    assert "intuit_userid=foo" in q
+    assert "olorin_userid=foo" in q
     assert "CHALLENGE" in q
 
 
@@ -57,7 +57,7 @@ def test_get_direct_email_query():
 def test_get_direct_smart_id_query():
     q = constructor.get_direct_smart_id_query("baz")
     assert 'index="testindex"' in q
-    assert "intuit_userid=baz" in q
+    assert "olorin_userid=baz" in q
     assert "smartId" in q
 
 
@@ -77,7 +77,7 @@ def test_get_simple_email_debug_query():
 def test_get_simple_smart_id_debug_query():
     q = constructor.get_simple_smart_id_debug_query("baz")
     assert 'index="testindex"' in q
-    assert "intuit_userid=baz" in q
+    assert "olorin_userid=baz" in q
     assert "smartId" in q
 
 

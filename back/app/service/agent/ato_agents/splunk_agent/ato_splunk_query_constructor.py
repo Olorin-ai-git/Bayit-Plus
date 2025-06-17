@@ -10,10 +10,13 @@ rss_index = settings.splunk_index
 # --- Helper functions for building specific query types ---
 
 
-def _build_auth_id_query(id_value: str) -> str:
+def _build_auth_id_query(id_value: str, id_type: str = "user_id") -> str:
     """Builds the base query for the 'auth_id' type (device/logs), full set of fields."""
     index_search = f"search index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    # Choose filter field based on id_type
+    filter_field = "olorin_userid" if id_type == "user_id" else "fuzzy_device_id"
+
+    query = f"""{index_search} {filter_field}={id_value}
 | rex field=data "(account_email=(?<account_email>.+))"
 | rex field=data "(account_login=(?<account_email>.+))"
 | rex field=fuzzy_device_first_seen "(fuzzy_device_first_seen=(?<fuzzy_device_first_seen>.+))"
@@ -29,14 +32,15 @@ def _build_auth_id_query(id_value: str) -> str:
 | eval input_ip_region=urldecode(input_ip_region)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| stats values(email_address) values(intuit_username) values(intuit_offeringId) values(transaction) values(intuit_originatingip) values(input_ip_isp) values(true_ip_city) values(input_ip_region) values(fuzzy_device_id) values(fuzzy_device_first_seen) values(tm_sessionid) by intuit_userid"""
+| stats values(email_address) values(olorin_username) values(olorin_offeringId) values(transaction) values(olorin_originatingip) values(input_ip_isp) values(true_ip_city) values(input_ip_region) values(fuzzy_device_id) values(fuzzy_device_first_seen) values(tm_sessionid) by olorin_userid"""
     return query
 
 
-def _build_location_query(id_value: str) -> str:
+def _build_location_query(id_value: str, id_type: str = "user_id") -> str:
     """Builds a query for the location agent, only selecting required columns."""
     index_search = f"search index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    filter_field = "olorin_userid" if id_type == "user_id" else "fuzzy_device_id"
+    query = f"""{index_search} {filter_field}={id_value}
 | rex field=contextualData "true_ip_city=(?<true_ip_city>[^&]+)"
 | rex field=contextualData "true_ip_region=(?<true_ip_region>[^&]+)"
 | rex field=contextualData "true_ip_geo=(?<true_ip_geo>[^&]+)"
@@ -56,10 +60,11 @@ def _build_location_query(id_value: str) -> str:
     return query
 
 
-def _build_network_query(id_value: str) -> str:
+def _build_network_query(id_value: str, id_type: str = "user_id") -> str:
     """Builds a query for the network agent, only selecting required columns."""
     index_search = f"search index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    filter_field = "olorin_userid" if id_type == "user_id" else "fuzzy_device_id"
+    query = f"""{index_search} {filter_field}={id_value}
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "proxy_ip=(?<proxy_ip>[^&]+)"
 | rex field=contextualData "input_ip_address=(?<input_ip_address>[^&]+)"
@@ -77,16 +82,17 @@ def _build_network_query(id_value: str) -> str:
     return query
 
 
-def _build_device_query(id_value: str) -> str:
+def _build_device_query(id_value: str, id_type: str = "user_id") -> str:
     """Builds a query for the device agent, only selecting required columns."""
     index_search = f"search index={rss_index}"
-    query = f"""{index_search} intuit_userid={id_value}
+    filter_field = "olorin_userid" if id_type == "user_id" else "fuzzy_device_id"
+    query = f"""{index_search} {filter_field}={id_value}
 | rex field=contextualData "device_id=(?<device_id>[^&]+)"
 | rex field=contextualData "fuzzy_device_id=(?<fuzzy_device_id>[^&]+)"
 | rex field=contextualData "smartId=(?<smartId>[^&]+)"
 | rex field=contextualData "tm_smartid=(?<tm_smartid>[^&]+)"
 | rex field=contextualData "tm_sessionid=(?<tm_sessionid>[^&]+)"
-| rex field=contextualData "intuit_tid=(?<intuit_tid>[^&]+)"
+| rex field=contextualData "olorin_tid=(?<olorin_tid>[^&]+)"
 | rex field=contextualData "true_ip=(?<true_ip>[^&]+)"
 | rex field=contextualData "true_ip_city=(?<true_ip_city>[^&]+)"
 | rex field=contextualData "true_ip_geo=(?<true_ip_geo>[^&]+)"
@@ -98,14 +104,14 @@ def _build_device_query(id_value: str) -> str:
 | eval smartId=urldecode(smartId)
 | eval tm_smartid=urldecode(tm_smartid)
 | eval tm_sessionid=urldecode(tm_sessionid)
-| eval intuit_tid=urldecode(intuit_tid)
+| eval olorin_tid=urldecode(olorin_tid)
 | eval true_ip=urldecode(true_ip)
 | eval true_ip_city=urldecode(true_ip_city)
 | eval true_ip_country=urldecode(true_ip_geo)
 | eval true_ip_region=urldecode(true_ip_region)
 | eval true_ip_latitude=urldecode(true_ip_latitude)
 | eval true_ip_longitude=urldecode(true_ip_longitude)
-| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, intuit_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude"""
+| table _time, device_id, fuzzy_device_id, smartId, tm_smartid, tm_sessionid, olorin_tid, true_ip, true_ip_city, true_ip_country, true_ip_region, true_ip_latitude, true_ip_longitude"""
     return query
 
 
@@ -121,7 +127,8 @@ def build_base_search(id_value: str, id_type: str) -> str:
     builder_func = QUERY_BUILDERS.get(id_type)
 
     if builder_func:
-        return builder_func(id_value)
+        # Pass id_type to all query builders
+        return builder_func(id_value, id_type)
     else:
         supported_types = ", ".join(QUERY_BUILDERS.keys())
         raise ValueError(

@@ -35,29 +35,63 @@ async def mock_external_api(session_id: str, user_id: str) -> Dict[str, Any]:
 
 
 class DITool:
-    """Data Integration Tool for handling business transactions."""
+    async def run(
+        self,
+        session_id: str,
+        user_id: str,
+        use_mock: bool = False,
+    ) -> DIResponse:
+        if use_mock:
+            mock_resp = await mock_external_api(session_id, user_id)
+            return DIResponse(
+                session_id=session_id,
+                user_id=user_id,
+                data=mock_resp["data"],
+                errorMessage=mock_resp.get("errorMessage"),
+                elapsedTime=mock_resp.get("elapsedTime"),
+                status=mock_resp.get("status"),
+            )
 
-    def __init__(self):
-        self.business_transactions = {
-            "eligibility": "EligibilityPolicy",
-            "authentication": "AuthenticationPolicy",
-            "authorization": "AuthorizationPolicy"
+        url = "https://deviceintelbb-e2e.api.olorin.com/v1/session/bbscore"
+        headers = {
+            "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.fraudprevention.ditestclient,olorin_app_secret=preprd6JxXTUUeMF57WYrZx0wvW8zdyWzITgNPlC",
+            "olorin_tid": "tid70324582-f038-426e-9165-f3990846543",
+            "olorin_offeringid": "Olorin.fraudprevention.deviceintelligencedf",
+            "Content-Type": "application/json",
         }
-
-    def get_transaction_policy(self, transaction_type: str) -> str:
-        """Get the policy for a given transaction type."""
-        return self.business_transactions.get(transaction_type, "DefaultPolicy")
-
-    def process_transaction(self, transaction_type: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process a business transaction."""
-        policy = self.get_transaction_policy(transaction_type)
-        # Process the transaction according to the policy
-        return {
-            "status": "success",
-            "policy": policy,
-            "data": data
+        payload = {
+            "sessionId": session_id,
+            "businessTransaction": "genOSEligibilityPolicy",
         }
-
-    async def run(self, transaction_type: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Run the data integration tool."""
-        return self.process_transaction(transaction_type, data)
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, headers=headers, json=payload)
+                response.raise_for_status()
+                resp_json = response.json()
+                # Parse the 'data' field if it's a JSON string
+                data_field = resp_json.get("data", "{}")
+                try:
+                    data_parsed = (
+                        json.loads(data_field)
+                        if isinstance(data_field, str)
+                        else data_field
+                    )
+                except Exception:
+                    data_parsed = data_field
+                errorMessage = resp_json.get("errorMessage")
+                elapsedTime = resp_json.get("elapsedTime")
+                status = resp_json.get("status")
+        except Exception as e:
+            logger.error(f"DI Tool API call failed: {e}")
+            data_parsed = {}
+            errorMessage = str(e)
+            elapsedTime = None
+            status = "ERROR"
+        return DIResponse(
+            session_id=session_id,
+            user_id=user_id,
+            data=data_parsed,
+            errorMessage=errorMessage,
+            elapsedTime=elapsedTime,
+            status=status,
+        )

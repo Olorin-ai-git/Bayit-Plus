@@ -16,7 +16,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for network risk assessment."""
-        return "Intuit.cas.hri.gaia:network-risk-analyzer"
+        return "Olorin.cas.hri.gaia:network-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the Pydantic model class for network risk assessment."""
@@ -77,29 +77,78 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
         # For LLM errors, categorize and create intelligent fallback
         risk_factors, summary, thoughts = self.categorize_error(error_message)
 
-        # Create rule-based fallback assessment
+        # Create rule-based fallback assessment with enhanced network pattern detection
         fallback_risk_level = 0.0
         if extracted_signals:
-            # Simple rule-based risk assessment as fallback
             unique_isps = set()
             unique_orgs = set()
+            unique_countries = set()
+            unique_ips = set()
+
             for signal in extracted_signals:
-                if signal.get("isp"):
-                    unique_isps.add(signal["isp"])
-                if signal.get("organization"):
-                    unique_orgs.add(signal["organization"])
+                # ISP analysis
+                isp = signal.get("isp")
+                if isp:
+                    unique_isps.add(str(isp).lower())
 
-            # Basic risk scoring based on patterns
-            if len(unique_isps) > 5:
-                fallback_risk_level = 0.5
-                risk_factors.append("Multiple ISPs detected in network signals")
-            elif len(unique_isps) > 2:
-                fallback_risk_level = 0.3
-                risk_factors.append("Multiple ISPs detected")
+                # Organization analysis
+                org = signal.get("organization")
+                if org:
+                    unique_orgs.add(str(org).lower())
 
-            if len(unique_orgs) > 3:
+                # IP analysis
+                ip = signal.get("ip_address") or signal.get("true_ip")
+                if ip:
+                    unique_ips.add(ip)
+
+                # Country extraction from ISP patterns
+                if isp:
+                    isp_lower = str(isp).lower()
+                    if "olorin" in isp_lower:
+                        unique_countries.add("US")
+                    elif (
+                        "bharti" in isp_lower
+                        or "airtel" in isp_lower
+                        or "jio" in isp_lower
+                    ):
+                        unique_countries.add("IN")
+                    elif "comcast" in isp_lower or "verizon" in isp_lower:
+                        unique_countries.add("US")
+
+            # Enhanced risk scoring based on network diversity patterns
+            if len(unique_countries) > 1:
+                fallback_risk_level = 0.6
+                risk_factors.append(
+                    f"Network activity across multiple countries: {', '.join(unique_countries)}"
+                )
+
+            if len(unique_isps) > 3:
+                fallback_risk_level = max(fallback_risk_level, 0.5)
+                risk_factors.append(
+                    f"Multiple ISPs detected: {len(unique_isps)} different providers"
+                )
+            elif len(unique_isps) > 1:
+                fallback_risk_level = max(fallback_risk_level, 0.3)
+                risk_factors.append(
+                    f"Multiple ISPs detected: {', '.join(list(unique_isps)[:3])}"
+                )
+
+            if len(unique_orgs) > 2:
                 fallback_risk_level = max(fallback_risk_level, 0.4)
-                risk_factors.append("Multiple organizations detected")
+                risk_factors.append(
+                    f"Multiple organizations detected: {len(unique_orgs)} different entities"
+                )
+
+            if len(unique_ips) > 5:
+                fallback_risk_level = max(fallback_risk_level, 0.4)
+                risk_factors.append(
+                    f"High IP diversity: {len(unique_ips)} unique IP addresses"
+                )
+
+            # Provide baseline risk if we have any network data
+            if unique_isps and fallback_risk_level == 0.0:
+                fallback_risk_level = 0.3
+                risk_factors.append("Network activity detected with provider diversity")
 
         return NetworkRiskLLMAssessment(
             risk_level=fallback_risk_level,

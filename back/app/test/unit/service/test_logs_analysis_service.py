@@ -19,8 +19,8 @@ def mock_request():
     request = MagicMock(spec=Request)
     request.headers = {
         "authorization": "Bearer test_token",
-        "intuit_tid": "test_tid",
-        "intuit_originating_assetalias": "test_asset",
+        "olorin_tid": "test_tid",
+        "olorin_originating_assetalias": "test_asset",
     }
     return request
 
@@ -120,7 +120,7 @@ class TestLogsAnalysisService:
                             mock_llm.return_value = mock_llm_assessment
 
                             result = await logs_service.analyze_logs(
-                                user_id="test_user",
+                                entity_id="test_user",
                                 request=mock_request,
                                 investigation_id="test_inv",
                                 time_range="1d",
@@ -147,7 +147,7 @@ class TestLogsAnalysisService:
                     {"demo_user": {"logs": cached_response}},
                 ):
                     result = await logs_service.analyze_logs(
-                        user_id="demo_user",
+                        entity_id="demo_user",
                         request=mock_request,
                         investigation_id="test_inv",
                     )
@@ -164,7 +164,7 @@ class TestLogsAnalysisService:
                 mock_splunk.side_effect = Exception("Splunk connection failed")
 
                 result = await logs_service.analyze_logs(
-                    user_id="test_user",
+                    entity_id="test_user",
                     request=mock_request,
                     investigation_id="test_inv",
                 )

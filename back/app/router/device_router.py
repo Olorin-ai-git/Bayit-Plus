@@ -8,11 +8,9 @@ from urllib.parse import unquote_plus
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from starlette.requests import Request
-from fastapi.responses import JSONResponse
-import aiohttp
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.api_models import InvestigationCreate
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
@@ -33,22 +31,22 @@ from app.service.config import get_settings_for_env
 from app.service.device_analysis_service import DeviceAnalysisService
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
+from app.utils.idps_utils import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
-from app.service.error_handling import AuthorizationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/device")
 
 
 async def get_identity_authorization_header(
-    profile_id: str, intuit_tid: str = "demo-6790ae9b-553a-4312-9f5e-55964d21c380"
+    profile_id: str, olorin_tid: str = "demo-6790ae9b-553a-4312-9f5e-55964d21c380"
 ):
-    url = "https://identityinternal-e2e.api.intuit.com/v1/graphql"
+    url = "https://identityinternal-e2e.api.olorin.com/v1/graphql"
     headers = {
-        "intuit_tid": intuit_tid,
-        "intuit_assetalias": "Intuit.shared.fraudlistclient",
-        "Authorization": "Intuit_IAM_Authentication intuit_appid=Intuit.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+        "olorin_tid": olorin_tid,
+        "olorin_assetalias": "Olorin.shared.fraudlistclient",
+        "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
         "Content-Type": "application/json",
     }
     body = {
@@ -79,7 +77,7 @@ async def analyze_device(
     entity_id: str,
     request: Request,
     investigation_id: str,
-    time_range: str = "1m",
+    time_range: str = "30d",
     splunk_host: str = None,
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     entity_type: str = Query(..., pattern="^(user_id|device_id)$"),
@@ -87,7 +85,7 @@ async def analyze_device(
     service: DeviceAnalysisService = Depends(DeviceAnalysisService),
 ) -> dict:
     # Only keep HTTP-specific logic here
-    ensure_investigation_exists(investigation_id, entity_id)
+    ensure_investigation_exists(investigation_id, entity_id, entity_type)
     return await service.analyze_device(
         entity_id=entity_id,
         entity_type=entity_type,
@@ -114,47 +112,88 @@ def get_chronos_range(time_range: str):
     return {"from": start.strftime(formatter), "to": now.strftime(formatter)}
 
 
-@router.get("/device/chronos")
-async def get_chronos_data(
-    request: Request,
+@router.post("/chronos")
+async def call_chronos_tool(
+    user_id: str,
+    fields: Optional[List[str]] = None,
     time_range: str = "30d",
-    user_id: Optional[str] = None,
-    fields: Optional[List[str]] = None
-) -> JSONResponse:
+    request: Request = None,
+    profile_id: str = "9341450868951246",
+):
     """
     Call the Chronos tool for a given AuthId (user_id) and return the raw Chronos response.
-    
-    Example:
+    Optionally specify a list of fields to retrieve. If not provided, a default set is used.
+    The time_range URL parameter controls the date range (e.g. 7d, 30d, 1m). Default is 30d.
+
+    Example CURL:
     curl -X POST "http://localhost:8000/device/chronos?time_range=30d" -H "Content-Type: application/json" -d '{"user_id": "AUTHID", "fields": ["sessionId", "os", "osVersion"]}'
     """
+    import json
+    from datetime import datetime, timedelta, timezone
+
+    from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
+
+    default_fields = [
+        "sessionId",
+        "os",
+        "osVersion",
+        "trueIpCity",
+        "trueIpGeo",
+        "ts",
+        "kdid",
+        "smartId",
+        "offeringId",
+        "trueIpFirstSeen",
+        "trueIpRegion",
+        "trueIpLatitude",
+        "trueIpLongitude",
+        "agentType",
+        "browserString",
+        "fuzzyDeviceFirstSeen",
+        "timezone",
+        "tmResponse.tmxReasonCodes",
+    ]
+    select_fields = fields if fields is not None else default_fields
+
+    # Extract relevant headers
+    incoming_headers = {}
+    for header in ["authorization", "olorin_tid", "accept", "content-type"]:
+        if header in request.headers:
+            incoming_headers[header] = request.headers[header]
+
+    # Parse time_range
+    now = datetime.now(timezone.utc)
     try:
-        # Get request body
-        body = await request.json()
-        user_id = body.get("user_id", user_id)
-        fields = body.get("fields", fields or [])
-
-        if not user_id:
-            raise HTTPException(status_code=400, detail="user_id is required")
-
-        # Initialize ChronosTool
-        chronos_tool = ChronosTool()
-        
-        # Prepare headers
-        headers = {}
-        for header in ["authorization", "intuit_tid", "accept", "content-type"]:
-            if header in request.headers:
-                headers[header] = request.headers[header]
-
-        # Get data from Chronos
-        response = await chronos_tool.get_data(
-            user_id=user_id,
-            time_range=time_range,
-            fields=fields,
-            headers=headers
+        if time_range.endswith("d"):
+            days = int(time_range[:-1])
+            start = now - timedelta(days=days)
+        elif time_range.endswith("m"):
+            months = int(time_range[:-1])
+            start = now - timedelta(days=30 * months)
+        else:
+            start = now - timedelta(days=30)
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid time_range format: {time_range}"
         )
 
-        return JSONResponse(content=response)
+    # Use the same format as ChronosTool expects
+    formatter = "%Y-%m-%dT%H:%M:%S+00:00"
+    range_dict = {"from": start.strftime(formatter), "to": now.strftime(formatter)}
 
+    chronos_tool = ChronosTool()
+    try:
+        # Don't override the authentication - let ChronosTool handle it
+        response = await chronos_tool._arun(
+            user_id=user_id,
+            select=select_fields,
+            range=range_dict,
+            extra_headers=incoming_headers,
+        )
+        try:
+            return json.loads(response)
+        except Exception:
+            return {"raw_response": response}
     except Exception as e:
-        logger.error(f"Error in get_chronos_data: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Chronos tool call failed: {e}")
+        return {"error": f"Chronos tool call failed: {e}"}

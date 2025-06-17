@@ -25,7 +25,7 @@ This document provides a detailed comparison between the **refactor branch** Log
 
 #### **Master Branch Query** (from documentation)
 ```splunk
-search index=rss-e2eidx intuit_userid={user_id} 
+search index=rss-e2eidx olorin_userid={user_id} 
 | rex field=email_address "(email_address=(?<email_address>.+))" 
 | rex field=username "(username=(?<username>.+))" 
 | rex field=offering_ids "(offering_ids=(?<offering_ids>.+))" 
@@ -51,7 +51,7 @@ search index=rss-e2eidx intuit_userid={user_id}
 
 #### **Refactor Branch Query** (current implementation)
 ```splunk
-index=rss-e2eidx intuit_userid=4621097846089147992 
+index=rss-e2eidx olorin_userid=4621097846089147992 
 | rex field=email_address "(email_address=(?<email_address>.+))" 
 | rex field=username "(username=(?<username>.+))" 
 | rex field=offering_ids "(offering_ids=(?<offering_ids>.+))" 
@@ -79,7 +79,7 @@ index=rss-e2eidx intuit_userid=4621097846089147992
 
 Both implementations use **identical SPL (Search Processing Language)** structure:
 
-1. **Base Query**: `index=rss-e2eidx intuit_userid={user_id}`
+1. **Base Query**: `index=rss-e2eidx olorin_userid={user_id}`
 2. **Field Extraction**: Identical 10 `rex` commands for authentication field parsing
 3. **URL Decoding**: Same `urldecode()` operations for all fields
 4. **Output Format**: Identical `table` command with same field order
@@ -158,12 +158,12 @@ Both implementations extract **identical authentication fields**:
 #### **Master Branch Results** (from documentation)
 ```json
 {
-  "intuit_userid": "4621097846089147992",
-  "values(intuit_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
-  "values(intuit_offeringId)": [
-    "Intuit.cto.iam.ius",
-    "Intuit.dev.test.testeasy", 
-    "Intuit.fraudprevention.arrtestclient"
+  "olorin_userid": "4621097846089147992",
+  "values(olorin_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+  "values(olorin_offeringId)": [
+    "Olorin.cto.iam.ius",
+    "Olorin.dev.test.testeasy", 
+    "Olorin.fraudprevention.arrtestclient"
   ],
   "values(transaction)": [
     "account_creation_passed",
@@ -178,15 +178,15 @@ Both implementations extract **identical authentication fields**:
 #### **Refactor Branch Results** (current execution)
 ```json
 {
-  "intuit_userid": "4621097846089147992",
-  "values(intuit_username)": [
+  "olorin_userid": "4621097846089147992",
+  "values(olorin_username)": [
     "gaia_test_20250515",
     "iamtestpass_15171910655948"
   ],
-  "values(intuit_offeringId)": [
-    "Intuit.cto.iam.ius",
-    "Intuit.dev.test.testeasy",
-    "Intuit.fraudprevention.arrtestclient"
+  "values(olorin_offeringId)": [
+    "Olorin.cto.iam.ius",
+    "Olorin.dev.test.testeasy",
+    "Olorin.fraudprevention.arrtestclient"
   ],
   "values(transaction)": [
     "account_creation_passed",
@@ -241,7 +241,7 @@ Your response MUST be a JSON object with the following structure:
 ```python
 class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:fpl-splunk"
+        return "Olorin.cas.hri.gaia:fpl-splunk"
     
     def get_system_prompt_template(self) -> str:
         return SYSTEM_PROMPT_FOR_LOG_RISK  # Same prompt as master
@@ -294,7 +294,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
 
 | Feature | Master Branch | Refactor Branch |
 |---------|---------------|-----------------|
-| **Agent Name** | Basic implementation | **"Intuit.cas.hri.gaia:fpl-splunk"** |
+| **Agent Name** | Basic implementation | **"Olorin.cas.hri.gaia:fpl-splunk"** |
 | **Risk Score** | 0.6 (Medium Risk) | **0.6 (Identical assessment)** |
 | **Confidence** | 0.7 | **0.7 (Same confidence level)** |
 | **Service Architecture** | Monolithic processing | **Inherited BaseLLMRiskService** |

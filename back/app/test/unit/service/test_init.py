@@ -55,15 +55,15 @@ async def test_inject_transaction_id_with_existing_tid(
     """Test inject_transaction_id middleware when a transaction ID is already present."""
     # Setup
     tid_value = "existing-tid-value"
-    mock_request.headers = Headers({"intuit_tid": tid_value})
+    mock_request.headers = Headers({"olorin_tid": tid_value})
 
     # Call the middleware
     response = await inject_transaction_id(mock_request, mock_call_next)
 
     # Assertions
-    assert mock_request.state.intuit_tid == tid_value
+    assert mock_request.state.olorin_tid == tid_value
     mock_call_next.assert_called_once_with(mock_request)
-    assert response.headers["intuit_tid"] == tid_value
+    assert response.headers["olorin_tid"] == tid_value
 
 
 @pytest.mark.asyncio
@@ -75,10 +75,10 @@ async def test_inject_transaction_id_without_tid(
     response = await inject_transaction_id(mock_request, mock_call_next)
 
     # Assertions
-    assert mock_request.state.intuit_tid is not None
-    assert isinstance(mock_request.state.intuit_tid, str)
+    assert mock_request.state.olorin_tid is not None
+    assert isinstance(mock_request.state.olorin_tid, str)
     mock_call_next.assert_called_once_with(mock_request)
-    assert response.headers["intuit_tid"] == mock_request.state.intuit_tid
+    assert response.headers["olorin_tid"] == mock_request.state.olorin_tid
 
 
 @patch("app.service.logging.StreamHandler")
@@ -217,8 +217,8 @@ def test_create_app(
     mock_add_health_endpoint.assert_called_once_with(mock_app)
     mock_add_actuator_endpoints.assert_called_once_with(mock_app)
     mock_app.include_router.assert_called()
-    # Instead of checking if BaseHTTPMiddleware was called, check if add_middleware was called on the app
-    mock_app.add_middleware.assert_called_once()
+    # Check that add_middleware was called twice: once for CORS and once for transaction ID injection
+    assert mock_app.add_middleware.call_count == 2
     mock_register_error_handlers.assert_called_once_with(mock_app)
     mock_expose_metrics.assert_called_once_with(mock_app)
 

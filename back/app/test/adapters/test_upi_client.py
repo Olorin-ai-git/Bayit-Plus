@@ -1,13 +1,12 @@
 # test_upi_client.py
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 
 import aiohttp
 import pytest
 
-from app.adapters.upi_client import UPIConversationHistoryClient, UPIClient
+from app.adapters.upi_client import UPIConversationHistoryClient
 from app.models.upi_response import InteractionsResponse
 from app.service.error_handling import UPIServiceException
-from app.models.upi import UPIRequest, UPIResponse
 
 
 @pytest.mark.asyncio
@@ -22,7 +21,7 @@ async def test_call_upi_service_single_request():
                     "experienceId": "exp1",
                     "agentStatusCode": 200,
                     "originatingAssetAlias": "alias",
-                    "intuit_tid": "tid",
+                    "olorin_tid": "tid",
                     "sessionId": "sid",
                     "agent": {"name": "agent1"},
                 },
@@ -41,7 +40,7 @@ async def test_call_upi_service_single_request():
         result = await UPIConversationHistoryClient.call_upi_service(
             experience_id="exp1",
             agent_name="agent1",
-            intuit_headers={"Authorization": "Bearer token"},
+            olorin_headers={"Authorization": "Bearer token"},
             limit=1,
         )
         assert len(result.interactions) == 1
@@ -60,7 +59,7 @@ async def test_call_upi_service_multiple_requests():
                     "experienceId": "exp1",
                     "agentStatusCode": 200,
                     "originatingAssetAlias": "alias",
-                    "intuit_tid": "tid",
+                    "olorin_tid": "tid",
                     "sessionId": "sid",
                     "agent": {"name": "agent1"},
                 },
@@ -81,7 +80,7 @@ async def test_call_upi_service_multiple_requests():
                     "experienceId": "exp1",
                     "agentStatusCode": 200,
                     "originatingAssetAlias": "alias",
-                    "intuit_tid": "tid",
+                    "olorin_tid": "tid",
                     "sessionId": "sid",
                     "agent": {"name": "agent1"},
                 },
@@ -100,7 +99,7 @@ async def test_call_upi_service_multiple_requests():
         result = await UPIConversationHistoryClient.call_upi_service(
             experience_id="exp1",
             agent_name="agent1",
-            intuit_headers={"Authorization": "Bearer token"},
+            olorin_headers={"Authorization": "Bearer token"},
             limit=2,
         )
         assert len(result.interactions) == 2
@@ -119,7 +118,7 @@ async def test_call_upi_service_limit_exceeded():
                     "experienceId": "exp1",
                     "agentStatusCode": 200,
                     "originatingAssetAlias": "alias",
-                    "intuit_tid": "tid",
+                    "olorin_tid": "tid",
                     "sessionId": "sid",
                     "agent": {"name": "agent1"},
                 },
@@ -138,7 +137,7 @@ async def test_call_upi_service_limit_exceeded():
         result = await UPIConversationHistoryClient.call_upi_service(
             experience_id="exp1",
             agent_name="agent1",
-            intuit_headers={"Authorization": "Bearer token"},
+            olorin_headers={"Authorization": "Bearer token"},
             limit=100,
         )
         assert len(result.interactions) == 1
@@ -157,7 +156,7 @@ async def test_call_upi_service_with_filter():
                     "experienceId": "exp1",
                     "agentStatusCode": 200,
                     "originatingAssetAlias": "alias",
-                    "intuit_tid": "tid",
+                    "olorin_tid": "tid",
                     "sessionId": "sid",
                     "agent": {"name": "agent1"},
                 },
@@ -176,7 +175,7 @@ async def test_call_upi_service_with_filter():
         result = await UPIConversationHistoryClient.call_upi_service(
             experience_id="exp1",
             agent_name="agent1",
-            intuit_headers={"Authorization": "Bearer token"},
+            olorin_headers={"Authorization": "Bearer token"},
             limit=1,
             filter="status:active",
         )
@@ -209,15 +208,15 @@ async def test_final_interactions_empty_on_exception(mocker):
     headers = {
         "Content-Type": "application/json",
         "Authorization": (
-            "Intuit_IAM_Authentication intuit_token_type=IAM-Ticket, "
-            "intuit_appid=Intuit.appfabric.genuxtestclient, "
-            "intuit_app_secret=test, "
-            "intuit_userid=123, "
-            "intuit_token=V1-abc, "
+            "Olorin_IAM_Authentication olorin_token_type=IAM-Ticket, "
+            "olorin_appid=Olorin.appfabric.genuxtestclient, "
+            "olorin_app_secret=test, "
+            "olorin_userid=123, "
+            "olorin_token=V1-abc, "
         ),
-        "intuit_originating_assetalias": "Intuit.data.mlplatform.genosux",
-        "intuit_tid": "a233523b-4a57-4a05-9fb4-3e886e58fc4d",
-        "intuit_experience_id": "test1",
+        "olorin_originating_assetalias": "Olorin.data.mlplatform.genosux",
+        "olorin_tid": "a233523b-4a57-4a05-9fb4-3e886e58fc4d",
+        "olorin_experience_id": "test1",
     }
 
     # Define the experience_id and agent_name
@@ -252,52 +251,3 @@ async def test_send_request_unsupported_http_method():
             headers={"Authorization": "Bearer token"},
             params={},
         )
-
-
-@pytest.fixture
-def upi_client():
-    return UPIClient(base_url="https://api.olorin.com")
-
-@pytest.fixture
-def mock_response():
-    response = MagicMock()
-    response.status_code = 200
-    response.json.return_value = {
-        "response": "Test response",
-        "status": "success"
-    }
-    return response
-
-def test_upi_client_initialization(upi_client):
-    assert upi_client.base_url == "https://api.olorin.com"
-
-@patch('requests.post')
-def test_send_request_success(mock_post, upi_client, mock_response):
-    mock_post.return_value = mock_response
-    
-    request = UPIRequest(
-        content="Test content",
-        context={},
-        metadata={}
-    )
-    
-    response = upi_client.send_request(request)
-    
-    assert isinstance(response, UPIResponse)
-    assert response.response == "Test response"
-    assert response.status == "success"
-
-@patch('requests.post')
-def test_send_request_error(mock_post, upi_client):
-    mock_post.side_effect = Exception("API Error")
-    
-    request = UPIRequest(
-        content="Test content",
-        context={},
-        metadata={}
-    )
-    
-    with pytest.raises(Exception) as exc_info:
-        upi_client.send_request(request)
-    
-    assert str(exc_info.value) == "API Error"

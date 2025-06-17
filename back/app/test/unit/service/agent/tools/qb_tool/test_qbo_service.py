@@ -15,7 +15,7 @@ from app.service.error_handling import QBOApiError
 
 @pytest.fixture
 def mock_headers():
-    return {"Authorization": "Bearer test_token", "intuit-tid": "test-tid"}
+    return {"Authorization": "Bearer test_token", "olorin-tid": "test-tid"}
 
 
 @pytest.fixture

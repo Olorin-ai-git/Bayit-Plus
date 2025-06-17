@@ -13,7 +13,7 @@ from starlette.requests import Request
 
 from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
 from app.models.agent_response import AgentResponse
 from app.models.api_models import (
@@ -57,6 +57,7 @@ from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
+from app.utils.idps_utils import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
 
@@ -70,11 +71,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
 DEFAULT_HEADERS = {
-    "Authorization": "Intuit_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
+    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
-    "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Intuit.cas.hri.gaia",
+    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+    "olorin_originating_assetalias": "Olorin.cas.hri.gaia",
 }
 
 location_data_client = LocationDataClient()
@@ -170,231 +171,6 @@ def get_chronos_range(time_range: str):
     return {"from": start.isoformat(), "to": now.isoformat()}
 
 
-@router.get("/logs/{user_id}")
-async def analyze_logs(
-    user_id: str,
-    request: Request,
-    investigation_id: str,
-    time_range: str = "1m",
-    raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
-) -> Dict[str, Any]:
-    try:
-        settings = get_settings_for_env()
-        logger.debug(
-            f"[DEMO CHECK] user_id={user_id} in demo_mode_users={user_id in demo_mode_users}, in demo_cache={user_id in demo_cache}, cache keys={list(demo_cache.get(user_id, {}).keys()) if user_id in demo_cache else None}"
-        )
-        if (
-            user_id in demo_mode_users
-            and user_id in demo_cache
-            and "logs" in demo_cache[user_id]
-            and raw_splunk_override is None
-        ):
-            return demo_cache[user_id]["logs"]
-        auth_header = request.headers.get("authorization")
-        print(f"Authorization header: {auth_header}")
-        if raw_splunk_override is not None:
-            splunk_data = raw_splunk_override
-        else:
-            splunk_data = []
-            try:
-                # First, verify the agent graph exists
-                if (
-                    not hasattr(request.app.state, "graph")
-                    or request.app.state.graph is None
-                ):
-                    raise HTTPException(
-                        status_code=503,
-                        detail="Agent service is not available. The server is still initializing or encountered an error.",
-                    )
-                # Use SplunkQueryTool for consistency with other domains
-                from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
-                    build_base_search,
-                )
-                from app.service.agent.tools.splunk_tool.splunk_tool import (
-                    SplunkQueryTool,
-                )
-
-                # Build the raw SPL query
-                base_query = build_base_search(
-                    id_value=user_id,
-                    id_type="auth_id",
-                )
-                # Add earliest time constraint
-                splunk_query = base_query.replace(
-                    f"search index={settings.splunk_index}",
-                    f"search index={settings.splunk_index} earliest=-{time_range}",
-                )
-
-                logger.info(f"Executing Splunk query for logs: {splunk_query}")
-
-                # Use SplunkQueryTool instead of direct client
-                splunk_tool = SplunkQueryTool()
-                splunk_result = await splunk_tool.arun({"query": splunk_query})
-
-                if (
-                    splunk_result
-                    and isinstance(splunk_result, dict)
-                    and splunk_result.get("results")
-                ):
-                    splunk_data = splunk_result["results"]
-                elif isinstance(splunk_result, list):
-                    splunk_data = splunk_result
-                else:
-                    logger.warning(
-                        f"Unexpected Splunk result format: {type(splunk_result)}"
-                    )
-                    splunk_data = []
-            except Exception as splunk_err:
-                logger.error(
-                    f"Splunk operation failed for logs analysis (user {user_id}): {str(splunk_err)}",
-                    exc_info=True,
-                )
-                splunk_data = []
-
-        sanitized_data = sanitize_splunk_data(splunk_data)
-        # --- CHRONOS DATA ---
-        chronos_fields = [
-            "os",
-            "osVersion",
-            "trueIpCity",
-            "trueIpGeo",
-            "ts",
-            "kdid",
-            "smartId",
-            "offeringId",
-            "trueIpFirstSeen",
-            "trueIpRegion",
-            "trueIpLatitude",
-            "trueIpLongitude",
-            "agentType",
-            "browserString",
-            "fuzzyDeviceFirstSeen",
-            "timezone",
-            "tmResponse.tmxReasonCodes",
-        ]
-        chronos_request = {
-            "metadata": {"limit": 300},
-            "range": get_chronos_range(time_range),
-            "filter": {"auth_id": user_id},
-            "select": chronos_fields,
-            "queryId": "GAIA",
-            "routingLabel": "elc",
-        }
-        from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
-
-        chronos_tool = ChronosTool()
-        chronos_response_str = await chronos_tool._arun(
-            user_id=user_id, select=chronos_fields
-        )
-        chronos_response = json.loads(chronos_response_str)
-        chronos_entities = chronos_response.get("entities", [])
-
-        # --- LLM Prompt Construction ---
-        prompt_data = {
-            "user_id": user_id,
-            "splunk_data": sanitized_data,
-            "chronosEntities": chronos_entities,
-        }
-        chat_history_for_prompt = []
-        system_prompt_for_log_risk = SYSTEM_PROMPT_FOR_LOG_RISK
-        prompt_data, llm_input_prompt, was_trimmed = trim_prompt_to_token_limit(
-            prompt_data,
-            system_prompt_for_log_risk,
-            MAX_PROMPT_TOKENS,
-            LIST_FIELDS_PRIORITY,
-        )
-        # Use llm_input_prompt for the LLM call
-        if was_trimmed:
-            logger.warning(f"Prompt was trimmed for user {user_id}")
-
-        metadata = Metadata(
-            interaction_group_id="fraud_flow",
-            additional_metadata={"userId": user_id},
-        )
-        agent_name = "Intuit.cas.hri.gaia:fpl-splunk"
-        intuit_userid, intuit_token, intuit_realmid = get_auth_token()
-        agent_context = AgentContext(
-            input=llm_input_prompt,
-            agent_name=agent_name,
-            metadata=metadata,
-            intuit_header=IntuitHeader(
-                intuit_tid="test",
-                intuit_originating_assetalias="Intuit.cas.hri.gaia",
-                intuit_experience_id=settings.intuit_experience_id,
-                auth_context=AuthContext(
-                    intuit_user_id=intuit_userid,
-                    intuit_user_token=intuit_token,
-                    intuit_realmid=intuit_realmid,
-                ),
-            ),
-        )
-
-        # Invoke the agent graph (this will allow the LLM to analyze the Splunk data)
-        response_str, trace_id = await ainvoke_agent(request, agent_context)
-
-        # Parse and validate the response as with other agents
-        try:
-            parsed_llm_risk_response = json.loads(response_str)
-            risk_assessment_data = parsed_llm_risk_response.get("risk_assessment")
-            if risk_assessment_data:
-                risk_assessment_data["timestamp"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
-            else:
-                logger.warning(
-                    f"LLM did not return 'risk_assessment' key for user {user_id}. Response: {response_str}"
-                )
-                risk_assessment_data = {
-                    "risk_level": 0.0,
-                    "risk_factors": ["LLM assessment failed or malformed"],
-                    "confidence": 0.0,
-                    "summary": "Could not obtain LLM risk assessment.",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
-            if was_trimmed:
-                return {
-                    "risk_assessment": risk_assessment_data,
-                    "splunk_data": sanitized_data,
-                    "chronosEntities": chronos_entities,
-                    "warning": "The LLM prompt was trimmed to fit the token limit. The result may not be fully accurate.",
-                }
-            return {
-                "risk_assessment": risk_assessment_data,
-                "splunk_data": sanitized_data,
-                "chronosEntities": chronos_entities,
-            }
-        except json.JSONDecodeError as json_err:
-            logger.error(
-                f"Failed to parse LLM JSON response for log risk: {json_err}. Response: {response_str}"
-            )
-            return {
-                "risk_assessment": {
-                    "risk_level": 0.0,
-                    "risk_factors": ["LLM response not valid JSON"],
-                    "confidence": 0.0,
-                    "summary": "LLM response was not valid JSON.",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                },
-                "splunk_data": sanitized_data,
-                "chronosEntities": [],
-            }
-    except Exception as e:
-        logger.error(
-            f"Error in log risk assessment for user {user_id}: {e}", exc_info=True
-        )
-        return {
-            "risk_assessment": {
-                "risk_level": 0.0,
-                "risk_factors": [f"LLM invocation/validation error: {str(e)}"],
-                "confidence": 0.0,
-                "summary": f"Error during LLM log risk assessment: {str(e)}",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            },
-            "splunk_data": [],
-            "chronosEntities": [],
-        }
-
-
 # --- Individual Location Source Endpoints ---
 @router.get("/location/source/oii/{user_id}", response_model=Optional[LocationInfo])
 async def get_oii_source_location(user_id: str) -> Optional[LocationInfo]:
@@ -451,7 +227,7 @@ async def get_location_risk_analysis(
     user_id: str,
     request: Request,  # Needed for analyze_device and ainvoke_agent
     investigation_id: str,
-    time_range: str = "1m",  # Changed default from "1y" to "2m"
+    time_range: str = "30d",  # Changed default from "1y" to "2m"
     splunk_host: Optional[str] = None,  # For analyze_device
 ) -> LocationRiskAnalysisResponse:
     try:
@@ -615,29 +391,29 @@ Ensure all fields are populated. The input data is as follows:
                 logger.warning(f"Prompt was trimmed for user {user_id}")
 
             settings = get_settings_for_env()
-            app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
+            app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
             agent_context_for_risk = AgentContext(
                 input=llm_input_prompt,
-                agent_name="Intuit.cas.hri.gaia:location-risk-analyzer",  # Dedicated agent name
+                agent_name="Olorin.cas.hri.gaia:location-risk-analyzer",  # Dedicated agent name
                 metadata=Metadata(
                     interaction_group_id=f"loc-risk-analysis-{user_id}",
                     additional_metadata={"userId": user_id},
                 ),
-                intuit_header=IntuitHeader(
-                    intuit_tid=request.headers.get(
-                        "intuit-tid", f"gaia-loc-risk-analysis-{user_id}"
+                olorin_header=OlorinHeader(
+                    olorin_tid=request.headers.get(
+                        "olorin-tid", f"gaia-loc-risk-analysis-{user_id}"
                     ),
-                    intuit_originating_assetalias=request.headers.get(
-                        "intuit_originating_assetalias",
-                        settings.intuit_originating_assetalias,
+                    olorin_originating_assetalias=request.headers.get(
+                        "olorin_originating_assetalias",
+                        settings.olorin_originating_assetalias,
                     ),
-                    intuit_experience_id=request.headers.get(
-                        "intuit_experience_id", settings.intuit_experience_id
+                    olorin_experience_id=request.headers.get(
+                        "olorin_experience_id", settings.olorin_experience_id
                     ),
                     auth_context=AuthContext(
-                        intuit_user_id=app_intuit_userid,
-                        intuit_user_token=app_intuit_token,
-                        intuit_realmid=app_intuit_realmid,
+                        olorin_user_id=app_olorin_userid,
+                        olorin_user_token=app_olorin_token,
+                        olorin_realmid=app_olorin_realmid,
                     ),
                 ),
             )
@@ -691,8 +467,15 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
     """Cancel a Splunk job by its SID using the same credentials as the SplunkTool."""
     settings = get_settings_for_env()
     splunk_host = settings.splunk_host
-    username = "ged_temp_credentials"
-    password = settings.splunk_password or ""
+
+    # Use environment variables if available, otherwise fall back to IDPS secrets
+    if settings.splunk_username and settings.splunk_password:
+        username = settings.splunk_username
+        password = settings.splunk_password
+    else:
+        # Fallback to IDPS secrets and hardcoded username
+        username = "ged_temp_credentials"
+        password = get_app_secret("gaia/splunk_password")
     url = f"https://{splunk_host}:443/services/search/v2/jobs/{job_id}/control"
     try:
         async with httpx.AsyncClient(verify=False) as client:

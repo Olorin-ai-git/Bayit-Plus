@@ -1,7 +1,7 @@
 # test_agent_router_helper.py
 import pytest
 
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import (
     Agent,
     AgentInput,
@@ -16,11 +16,11 @@ from app.models.agent_request import (
 def mock_request():
     class MockRequest:
         headers = {
-            "Authorization": 'Bearer sample_token intuit_userid="sample_user_id" intuit_token="sample_token" intuit_realmid="sample_realmid"',
-            "intuit_experience_id": "sample_experience_id",
-            "intuit_originating_assetalias": "sample_assetalias",
+            "Authorization": 'Bearer sample_token olorin_userid="sample_user_id" olorin_token="sample_token" olorin_realmid="sample_realmid"',
+            "olorin_experience_id": "sample_experience_id",
+            "olorin_originating_assetalias": "sample_assetalias",
         }
-        state = type("obj", (object,), {"intuit_tid": "sample_tid"})
+        state = type("obj", (object,), {"olorin_tid": "sample_tid"})
 
     return MockRequest()
 
@@ -56,13 +56,13 @@ def test_construct_agent_context(mock_request, agent_request):
         supportedOutputFormats=[],
         additionalMetadata={},
     )
-    assert isinstance(agent_context.intuit_header, IntuitHeader)
-    assert agent_context.intuit_header.intuit_tid == "sample_tid"
-    assert agent_context.intuit_header.intuit_experience_id == "sample_experience_id"
+    assert isinstance(agent_context.olorin_header, OlorinHeader)
+    assert agent_context.olorin_header.olorin_tid == "sample_tid"
+    assert agent_context.olorin_header.olorin_experience_id == "sample_experience_id"
     assert (
-        agent_context.intuit_header.intuit_originating_assetalias == "sample_assetalias"
+        agent_context.olorin_header.olorin_originating_assetalias == "sample_assetalias"
     )
-    assert isinstance(agent_context.intuit_header.auth_context, AuthContext)
-    assert agent_context.intuit_header.auth_context.intuit_user_id == "sample_user_id"
-    assert agent_context.intuit_header.auth_context.intuit_user_token == "sample_token"
-    assert agent_context.intuit_header.auth_context.intuit_realmid == "sample_realmid"
+    assert isinstance(agent_context.olorin_header.auth_context, AuthContext)
+    assert agent_context.olorin_header.auth_context.olorin_user_id == "sample_user_id"
+    assert agent_context.olorin_header.auth_context.olorin_user_token == "sample_token"
+    assert agent_context.olorin_header.auth_context.olorin_realmid == "sample_realmid"
