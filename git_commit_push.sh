@@ -123,16 +123,7 @@ if [ "$DOCKER_ONLY" = false ]; then
     echo "🤖 Generating AI commit message..."
     COMMIT_MESSAGE=$(generate_commit_message)
     echo "Generated message: $COMMIT_MESSAGE"
-
-    # Confirm before proceeding
-    echo ""
-    read -p "🔍 Do you want to proceed with this commit message? [y/N]: " -n 1 -r
-    echo ""
-
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "❌ Aborted by user"
-        exit 1
-    fi
+    echo "📝 Proceeding with commit..."
 
     # Add all files
     echo "📝 Adding all files to staging..."

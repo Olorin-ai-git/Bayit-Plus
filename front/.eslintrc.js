@@ -1,12 +1,12 @@
 /**
- * NOTE: This config is purely for IDE integration. Rules can be overridden here
- * and used by tooling as needed.
+ * ESLint configuration for Olorin webapp
  */
 
-const { getPresetPath } = require('@appfabric/eslint-config-appfabric/next');
-
 module.exports = {
-  extends: '@appfabric/eslint-config-appfabric',
+  extends: [
+    'react-app',
+    'react-app/jest'
+  ],
   rules: {
     'react/prop-types': 'off',
     // Disable require-jsdoc for public functions
@@ -20,8 +20,13 @@ module.exports = {
   },
   overrides: [
     {
-      parser: require.resolve('@typescript-eslint/parser'),
+      files: ['**/*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
+      extends: [
+        'react-app',
+        'react-app/jest'
+      ],
       settings: {
         'import/resolver': {
           node: {
@@ -39,8 +44,6 @@ module.exports = {
         ecmaVersion: 2018,
         project: ['tsconfig.json', './cypress/tsconfig.json'],
       },
-      files: ['**/*.{ts,tsx}'],
-      extends: [getPresetPath('typescript')],
     },
   ],
 };

@@ -505,18 +505,14 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
               {chronos_warning && (
                 <div className="text-yellow-800">
-                  <React.Fragment>
-                    <span className="font-medium">Chronos Warning:</span>{' '}
-                    {chronos_warning}
-                  </React.Fragment>
+                  <span className="font-medium">Chronos Warning: </span>
+                  {renderValue(chronos_warning)}
                 </div>
               )}
               {di_tool_warning && (
                 <div className="text-yellow-800">
-                  <React.Fragment>
-                    <span className="font-medium">DI Tool Warning:</span>{' '}
-                    {di_tool_warning}
-                  </React.Fragment>
+                  <span className="font-medium">DI Tool Warning: </span>
+                  {renderValue(di_tool_warning)}
                 </div>
               )}
             </div>
@@ -528,7 +524,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">LLM Thoughts</div>
             <div className="pl-4 border-l-2 border-blue-300">
-              <div className="text-blue-800">{llm_thoughts}</div>
+              <div className="text-blue-800">{renderValue(llm_thoughts)}</div>
             </div>
           </div>
         )}
