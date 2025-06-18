@@ -4,7 +4,7 @@ import {
   InvestigationStepId,
 } from '../types/RiskAssessment';
 // Tools available per agent
-const TOOLS = ['Splunk', 'OII', 'CHRONOS', 'NELI', 'DI BB', 'DATA LAKE'];
+const TOOLS = ['Splunk', 'OII', 'DI BB', 'DATA LAKE'];
 
 // eslint-disable-next-line no-unused-vars
 interface EditStepsModalProps {

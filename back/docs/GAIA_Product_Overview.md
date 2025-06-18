@@ -339,7 +339,7 @@ graph LR
 
 ### Additional Tool Integrations
 - **ATHENA DB Integration**: Direct connectivity to Amazon Athena for advanced data lake queries and analytics
-- **NELI Integration**: Enhanced natural language processing capabilities for log analysis and pattern recognition
+
 
 ### CRM and Case Management Integration
 - **PEGA CRM Integration**: Seamless case management workflow integration for fraud investigation tracking

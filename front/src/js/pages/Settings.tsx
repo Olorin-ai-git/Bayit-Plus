@@ -95,7 +95,7 @@ const SettingsPage: React.FC = () => {
             <fieldset key={agent} className="border rounded p-3">
               <legend className="font-semibold">{agent}</legend>
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {['Splunk', 'OII', 'CHRONOS', 'NELI', 'DI BB', 'DATA LAKE'].map(
+                {['Splunk', 'OII', 'DI BB', 'DATA LAKE'].map(
                   (tool) => (
                     <label key={tool} className="flex items-center gap-1">
                       <input

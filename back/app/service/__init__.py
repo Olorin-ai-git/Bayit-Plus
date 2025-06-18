@@ -201,6 +201,7 @@ class OlorinApplication:
         )
 
         from app.router import agent_router, api_router, websocket_router
+        from app.router.mcp_bridge_router import router as mcp_bridge_router
 
         from . import example
 
@@ -208,6 +209,7 @@ class OlorinApplication:
         app.include_router(agent_router.router)
         app.include_router(api_router.router)
         app.include_router(websocket_router.router)
+        app.include_router(mcp_bridge_router)
 
         # Add Olorin TID middleware
         from starlette.middleware.base import BaseHTTPMiddleware

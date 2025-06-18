@@ -327,7 +327,6 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       raw_splunk_results = [],
       extracted_device_signals = [],
       device_signal_risk_assessment,
-      chronos_warning,
       di_tool_warning,
       llm_thoughts,
       // Legacy fields for backward compatibility
@@ -335,8 +334,6 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       device_history,
       risk_assessment,
       di_bb,
-      chronos_data,
-      parsed_chronos,
       ...rest
     } = details;
 
@@ -352,8 +349,6 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       ? device_history
       : [];
     const di_bb_object = typeof di_bb === 'object' ? di_bb : {};
-    const chronos_data_object =
-      typeof chronos_data === 'object' ? chronos_data : {};
     const anomalies_array = Array.isArray(details.anomalies)
       ? details.anomalies
       : [];
@@ -499,16 +494,10 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
         )}
 
         {/* Warnings */}
-        {(chronos_warning || di_tool_warning) && (
+        {di_tool_warning && (
           <div className="bg-yellow-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Warnings</div>
             <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-              {chronos_warning && (
-                <div className="text-yellow-800">
-                  <span className="font-medium">Chronos Warning: </span>
-                  {renderValue(chronos_warning)}
-                </div>
-              )}
               {di_tool_warning && (
                 <div className="text-yellow-800">
                   <span className="font-medium">DI Tool Warning: </span>

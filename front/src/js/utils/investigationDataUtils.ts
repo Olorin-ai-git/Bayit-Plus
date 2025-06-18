@@ -109,14 +109,6 @@ export function processNetworkData(response: any) {
       timestamp: formatTimestamp(ra.timestamp),
     };
   }
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
   return {
     ...response,
     current_network: response?.current_network
@@ -138,8 +130,6 @@ export function processNetworkData(response: any) {
           ),
         }
       : null,
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
   };
 }
 
@@ -198,15 +188,6 @@ export function processDeviceData(response: any) {
       _time: signal._time ? formatTimestamp(signal._time) : signal._time,
     })) || [];
 
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
-
   // DI BB integration
   let diBB = null;
   if (response?.di_bb) {
@@ -256,13 +237,10 @@ export function processDeviceData(response: any) {
         }
       : null,
     // Common fields
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
     di_bb: diBB,
     // Additional fields from new format
     user_id: response?.user_id,
     timestamp: response?.timestamp ? formatTimestamp(response.timestamp) : null,
-    chronos_warning: response?.chronos_warning,
     di_tool_warning: response?.di_tool_warning,
     llm_thoughts: response?.llm_thoughts,
   };
@@ -298,14 +276,6 @@ export function processLogData(response: any) {
       timestamp: formatTimestamp(response.risk_assessment.timestamp),
     };
   }
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
   return {
     ...response,
     behavior_patterns: response
@@ -324,8 +294,6 @@ export function processLogData(response: any) {
     })),
     risk_assessment: riskAssessment,
     log_risk_assessment: logRiskAssessment,
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
   };
 }
 

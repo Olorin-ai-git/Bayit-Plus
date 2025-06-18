@@ -128,7 +128,7 @@ export interface DeviceAgentResponse {
   extracted_device_signals: ExtractedDeviceSignal[];
   device_signal_risk_assessment: DeviceSignalRiskAssessment;
   timestamp: string;
-  chronos_warning?: string;
+
   di_tool_warning?: string;
   llm_thoughts?: string;
 }
