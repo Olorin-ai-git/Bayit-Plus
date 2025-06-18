@@ -1,196 +1,121 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-
-// Mock useConfig to provide a fake API key in every test
-const mockConfig = (key = 'fake-key') => {
-  jest.doMock('src/js/hooks/useConfig', () => () => ({
-    googleMapsApiKey: key,
-  }));
-};
+import '@testing-library/jest-dom';
 
 describe('LocationMap', () => {
+  const mockLocations = [
+    { lat: 37.7749, lng: -122.4194, type: 'customer', title: 'Customer Location', description: 'Main customer office' },
+    { lat: 40.7128, lng: -74.0060, type: 'merchant', title: 'Merchant Location', description: 'Store location' },
+    { lat: 34.0522, lng: -118.2437, type: 'device', title: 'Device Location', description: 'Mobile device' },
+  ];
+
   beforeEach(() => {
-    jest.resetModules();
+    jest.clearAllMocks();
   });
 
-  it('renders error if no API key', () => {
-    mockConfig('');
+  it('renders no data message when locations array is empty', () => {
     const LocationMap = require('src/js/components/LocationMap').default;
-    const { container } = render(<LocationMap locations={[]} />);
-    expect(container.textContent).toMatch(
-      /Google Maps API key is not configured/i,
-    );
+    render(<LocationMap locations={[]} />);
+    
+    expect(screen.getByText('No location data available')).toBeInTheDocument();
+    expect(screen.getByText('📍')).toBeInTheDocument();
   });
 
-  it('renders error if no valid locations', () => {
-    mockConfig();
+  it('renders no data message when locations is undefined', () => {
     const LocationMap = require('src/js/components/LocationMap').default;
-    const { container } = render(<LocationMap locations={[]} />);
-    expect(container.textContent).toMatch(/No valid locations provided/i);
+    render(<LocationMap locations={undefined} />);
+    
+    expect(screen.getByText('No location data available')).toBeInTheDocument();
   });
 
-  it('renders map and legend for valid locations', async () => {
-    mockConfig();
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest.fn().mockResolvedValue({
-          maps: {
-            Map: jest.fn().mockImplementation(() => ({
-              setCenter: jest.fn(),
-              setZoom: jest.fn(),
-              fitBounds: jest.fn(),
-            })),
-            Marker: jest.fn().mockImplementation(() => ({
-              setMap: jest.fn(),
-              addListener: jest.fn(),
-            })),
-            InfoWindow: jest.fn().mockImplementation(() => ({
-              open: jest.fn(),
-            })),
-            LatLngBounds: jest.fn().mockImplementation(() => ({
-              extend: jest.fn(),
-            })),
-            SymbolPath: { CIRCLE: 'circle' },
-          },
-        }),
-      })),
-    }));
+  it('renders location data in table format', () => {
     const LocationMap = require('src/js/components/LocationMap').default;
-    const locations = [
-      { lat: 1, lng: 2, type: 'customer', timestamp: '2024-01-01T00:00:00Z' },
-      { lat: 3, lng: 4, type: 'business' },
+    render(<LocationMap locations={mockLocations} />);
+    
+    // Check table headers
+    expect(screen.getByText('Type')).toBeInTheDocument();
+    expect(screen.getByText('Coordinates')).toBeInTheDocument();
+    expect(screen.getByText('Title')).toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    
+    // Check location data
+    expect(screen.getByText('customer')).toBeInTheDocument();
+    expect(screen.getByText('merchant')).toBeInTheDocument();
+    expect(screen.getByText('device')).toBeInTheDocument();
+    
+    expect(screen.getByText('Customer Location')).toBeInTheDocument();
+    expect(screen.getByText('Merchant Location')).toBeInTheDocument();
+    expect(screen.getByText('Device Location')).toBeInTheDocument();
+    
+    expect(screen.getByText('Main customer office')).toBeInTheDocument();
+    expect(screen.getByText('Store location')).toBeInTheDocument();
+    expect(screen.getByText('Mobile device')).toBeInTheDocument();
+  });
+
+  it('displays coordinates correctly', () => {
+    const LocationMap = require('src/js/components/LocationMap').default;
+    render(<LocationMap locations={mockLocations} />);
+    
+    // Check that coordinates are displayed with proper precision
+    expect(screen.getByText('Lat: 37.774900')).toBeInTheDocument();
+    expect(screen.getByText('Lng: -122.419400')).toBeInTheDocument();
+    expect(screen.getByText('Lat: 40.712800')).toBeInTheDocument();
+    expect(screen.getByText('Lng: -74.006000')).toBeInTheDocument();
+  });
+
+  it('displays center and zoom information when provided', () => {
+    const LocationMap = require('src/js/components/LocationMap').default;
+    const center = { lat: 37.7749, lng: -122.4194 };
+    const zoom = 12;
+    
+    render(<LocationMap locations={mockLocations} center={center} zoom={zoom} />);
+    
+    expect(screen.getByText(/Center: 37\.774900, -122\.419400 \| Zoom: 12/)).toBeInTheDocument();
+  });
+
+  it('displays location count correctly', () => {
+    const LocationMap = require('src/js/components/LocationMap').default;
+    render(<LocationMap locations={mockLocations} />);
+    
+    expect(screen.getByText('Showing 3 locations')).toBeInTheDocument();
+  });
+
+  it('displays singular location count for single location', () => {
+    const LocationMap = require('src/js/components/LocationMap').default;
+    const singleLocation = [mockLocations[0]];
+    render(<LocationMap locations={singleLocation} />);
+    
+    expect(screen.getByText('Showing 1 location')).toBeInTheDocument();
+  });
+
+  it('handles missing title and description gracefully', () => {
+    const LocationMap = require('src/js/components/LocationMap').default;
+    const locationWithoutTitleDesc = [
+      { lat: 37.7749, lng: -122.4194, type: 'customer' }
     ];
-    render(<LocationMap locations={locations} />);
-    expect(
-      await screen.findByTestId('location-map-container'),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Customer/)).toBeInTheDocument();
-    expect(screen.getByText(/Business/)).toBeInTheDocument();
-    expect(screen.getByText(/Phone/)).toBeInTheDocument();
-    expect(screen.getByText(/Rss/)).toBeInTheDocument();
-    expect(screen.getAllByText(/Device/)[0]).toBeInTheDocument();
+    
+    render(<LocationMap locations={locationWithoutTitleDesc} />);
+    
+    // Should display dashes for missing title and description
+    const dashElements = screen.getAllByText('-');
+    expect(dashElements).toHaveLength(2); // One for title, one for description
   });
 
-  it('shows InvalidKey error message', async () => {
-    mockConfig();
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest.fn().mockRejectedValue(new Error('InvalidKey')),
-      })),
-    }));
+  it('applies correct styling for different location types', () => {
     const LocationMap = require('src/js/components/LocationMap').default;
-    const { findByText } = render(
-      <LocationMap locations={[{ lat: 1, lng: 2, type: 'customer' }]} />,
-    );
-    expect(
-      await findByText(/Invalid Google Maps API key/i),
-    ).toBeInTheDocument();
-  });
-
-  it('shows RefererNotAllowedMapError error message', async () => {
-    mockConfig();
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest
-          .fn()
-          .mockRejectedValue(new Error('RefererNotAllowedMapError')),
-      })),
-    }));
-    const LocationMap = require('src/js/components/LocationMap').default;
-    const { findByText } = render(
-      <LocationMap locations={[{ lat: 1, lng: 2, type: 'customer' }]} />,
-    );
-    expect(
-      await findByText(/not authorized for this domain/i),
-    ).toBeInTheDocument();
-  });
-
-  it('shows generic error message for unknown error', async () => {
-    mockConfig();
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest.fn().mockRejectedValue(new Error('SomeOtherError')),
-      })),
-    }));
-    const LocationMap = require('src/js/components/LocationMap').default;
-    const { findByText } = render(
-      <LocationMap locations={[{ lat: 1, lng: 2, type: 'customer' }]} />,
-    );
-    expect(await findByText(/Error loading Google Maps/i)).toBeInTheDocument();
-  });
-
-  it('uses defaultProps for center and zoom', async () => {
-    mockConfig();
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest.fn().mockResolvedValue({
-          maps: {
-            Map: jest.fn().mockImplementation(() => ({
-              setCenter: jest.fn(),
-              setZoom: jest.fn(),
-              fitBounds: jest.fn(),
-            })),
-            Marker: jest.fn().mockImplementation(() => ({
-              setMap: jest.fn(),
-              addListener: jest.fn(),
-            })),
-            InfoWindow: jest.fn().mockImplementation(() => ({
-              open: jest.fn(),
-            })),
-            LatLngBounds: jest.fn().mockImplementation(() => ({
-              extend: jest.fn(),
-            })),
-            SymbolPath: { CIRCLE: 'circle' },
-          },
-        }),
-      })),
-    }));
-    const LocationMap = require('src/js/components/LocationMap').default;
-    render(<LocationMap locations={[{ lat: 1, lng: 2, type: 'customer' }]} />);
-    expect(
-      await screen.findByTestId('location-map-container'),
-    ).toBeInTheDocument();
-  });
-
-  it('triggers info window on marker click', async () => {
-    mockConfig();
-    const open = jest.fn();
-    const addListener = jest.fn((event, cb) => {
-      if (event === 'click') cb();
-    });
-    const Marker = jest.fn().mockImplementation(() => ({ addListener }));
-    const InfoWindow = jest.fn().mockImplementation(() => ({ open }));
-    const Map = jest.fn();
-    const LatLngBounds = jest
-      .fn()
-      .mockImplementation(() => ({ extend: jest.fn() }));
-    jest.doMock('@googlemaps/js-api-loader', () => ({
-      Loader: jest.fn().mockImplementation(() => ({
-        load: jest.fn().mockResolvedValue({
-          maps: {
-            Map,
-            Marker,
-            InfoWindow,
-            LatLngBounds,
-            SymbolPath: { CIRCLE: 'circle' },
-          },
-        }),
-      })),
-    }));
-    const LocationMap = require('src/js/components/LocationMap').default;
-    render(<LocationMap locations={[{ lat: 1, lng: 2, type: 'customer' }]} />);
-    expect(open).toHaveBeenCalled();
-  });
-
-  it('handles invalid location type (not in locationStyles)', async () => {
-    mockConfig();
-    const LocationMap = require('src/js/components/LocationMap').default;
-    const { findByText } = render(
-      <LocationMap locations={[{ lat: 1, lng: 2, type: 'notarealtype' }]} />,
-    );
-    expect(
-      await findByText(/No valid locations provided/i),
-    ).toBeInTheDocument();
+    render(<LocationMap locations={mockLocations} />);
+    
+    // Check that customer type has blue styling
+    const customerBadge = screen.getByText('customer').closest('span');
+    expect(customerBadge).toHaveClass('bg-blue-100', 'text-blue-800');
+    
+    // Check that merchant type has green styling
+    const merchantBadge = screen.getByText('merchant').closest('span');
+    expect(merchantBadge).toHaveClass('bg-green-100', 'text-green-800');
+    
+    // Check that device type has gray styling (default)
+    const deviceBadge = screen.getByText('device').closest('span');
+    expect(deviceBadge).toHaveClass('bg-gray-100', 'text-gray-800');
   });
 });
 

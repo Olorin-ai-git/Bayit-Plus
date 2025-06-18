@@ -158,7 +158,7 @@ result = await risk_service.assess_risk(
 # New domains follow same pattern
 class LLMNewDomainService(BaseLLMRiskService[NewDomainAssessment]):
     def get_agent_name(self) -> str:
-        return "Olorin.cas.hri.gaia:new-domain-analyzer"
+        return "Olorin.cas.hri.olorin:new-domain-analyzer"
     
     def get_assessment_model_class(self):
         return NewDomainAssessment

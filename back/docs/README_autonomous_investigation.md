@@ -114,7 +114,7 @@ The scripts generate comprehensive PDF reports containing:
 
 ## Prerequisites
 
-1. **API Server**: Ensure the GAIA API server is running on `localhost:8000`
+1. **API Server**: Ensure the OLORIN API server is running on `localhost:8000`
 2. **WebSocket Support**: The server must have WebSocket support enabled
 3. **Font File**: `DejaVuSans.ttf` must be available in the project root for PDF generation
 4. **Dependencies**: All required Python packages (websockets, requests, fpdf) must be installed

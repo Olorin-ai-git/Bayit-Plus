@@ -1,10 +1,10 @@
-# GAIA Investigation System - Product Overview
+# OLORIN Investigation System - Product Overview
 
 **Created by GIL KLAINERT, Fraud Prevention NYC - June 2025**
 
 ## Executive Summary
 
-The GAIA (Generative AI Investigation Agents) system is an intelligent fraud investigation platform that automates risk assessment across multiple data domains. It combines specialized domain agents with AI-powered analysis to provide comprehensive security insights for user accounts and devices.
+The OLORIN (Generative AI Investigation Agents) system is an intelligent fraud investigation platform that automates risk assessment across multiple data domains. It combines specialized domain agents with AI-powered analysis to provide comprehensive security insights for user accounts and devices.
 
 ## System Architecture Overview
 
@@ -163,7 +163,7 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant PM as Product Manager
-    participant API as GAIA API
+    participant API as OLORIN API
     participant Agent as Domain Agent
     participant LLM as AI Analyzer
     participant Data as Data Sources

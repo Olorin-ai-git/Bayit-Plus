@@ -75,7 +75,7 @@ DEFAULT_HEADERS = {
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
     "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "olorin_originating_assetalias": "Olorin.cas.hri.gaia",
+    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
 }
 
 location_data_client = LocationDataClient()
@@ -394,14 +394,14 @@ Ensure all fields are populated. The input data is as follows:
             app_olorin_userid, app_olorin_token, app_olorin_realmid = get_auth_token()
             agent_context_for_risk = AgentContext(
                 input=llm_input_prompt,
-                agent_name="Olorin.cas.hri.gaia:location-risk-analyzer",  # Dedicated agent name
+                agent_name="Olorin.cas.hri.olorin:location-risk-analyzer",  # Dedicated agent name
                 metadata=Metadata(
                     interaction_group_id=f"loc-risk-analysis-{user_id}",
                     additional_metadata={"userId": user_id},
                 ),
                 olorin_header=OlorinHeader(
                     olorin_tid=request.headers.get(
-                        "olorin-tid", f"gaia-loc-risk-analysis-{user_id}"
+                        "olorin-tid", f"olorin-loc-risk-analysis-{user_id}"
                     ),
                     olorin_originating_assetalias=request.headers.get(
                         "olorin_originating_assetalias",
@@ -475,7 +475,7 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
     else:
         # Fallback to IDPS secrets and hardcoded username
         username = "ged_temp_credentials"
-        password = get_app_secret("gaia/splunk_password")
+        password = get_app_secret("olorin/splunk_password")
     url = f"https://{splunk_host}:443/services/search/v2/jobs/{job_id}/control"
     try:
         async with httpx.AsyncClient(verify=False) as client:

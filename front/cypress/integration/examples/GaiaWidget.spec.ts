@@ -10,7 +10,7 @@ context('OlorinWidget.tsx', () => {
           'content-type',
           'application/json; charset=utf-8',
         );
-        expect(resp.body).to.have.property('id', 'gaia-webplugin');
+        expect(resp.body).to.have.property('id', 'olorin-webplugin');
       });
     });
     return;
@@ -22,19 +22,19 @@ context('OlorinWidget.tsx', () => {
    */
   it('Widget contains "Hello Intuit Application Fabric!"', () => {
     // Navigate to the local server that webpack serves the route from
-    cy.visit(`${PLUGIN_URL}/generic/gaia100`);
+    cy.visit(`${PLUGIN_URL}/generic/olorin100`);
 
-    cy.get('[data-cy=gaia-header]').should(
+    cy.get('[data-cy=olorin-header]').should(
       'have.html',
-      'Hello Intuit Application Fabric!',
+      'Hello Olorin Application!',
     );
   });
 
-  it('Widget contains Intuit Logo', () => {
+  it('Widget contains Olorin Logo', () => {
     // Navigate to the local server that webpack serves the route from
-    cy.visit(`${PLUGIN_URL}/generic/gaia100`);
+    cy.visit(`${PLUGIN_URL}/generic/olorin100`);
 
     // eslint-disable-next-line no-unused-expressions
-    expect(cy.get('[data-cy=intuit-logo-banner]')).to.exist;
+    expect(cy.get('[data-cy=olorin-logo-banner]')).to.exist;
   });
 });

@@ -1,5 +1,12 @@
 /**
- * NOTE: This config is purely for IDE integration. Rules can be overridden here
- * and used by tooling as needed.
+ * ESLint configuration for mock files
  */
-module.exports = require('@appfabric/eslint-config-appfabric/jest');
+
+module.exports = {
+  extends: ['react-app', 'react-app/jest'],
+  rules: {
+    'import/no-extraneous-dependencies': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    'no-unused-vars': 'off',
+  },
+};

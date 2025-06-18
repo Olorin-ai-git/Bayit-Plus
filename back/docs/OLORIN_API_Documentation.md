@@ -1,4 +1,4 @@
-# 📚 GAIA API Documentation - Complete Request/Response Guide
+# 📚 OLORIN API Documentation - Complete Request/Response Guide
 
 ## Table of Contents
 - [Investigation Management APIs](#investigation-management-apis)
@@ -766,7 +766,7 @@ Invoke AI agent for analysis
 ```json
 {
   "agent": {
-    "name": "Olorin.cas.hri.gaia:fpl-splunk"
+    "name": "Olorin.cas.hri.olorin:fpl-splunk"
   },
   "agentInput": {
     "content": [
@@ -815,10 +815,10 @@ Invoke AI agent for analysis
 ```
 
 **Available Agent Names:**
-- `Olorin.cas.hri.gaia:fpl-splunk` - Splunk-based fraud prevention analysis
-- `Olorin.cas.hri.gaia:device-analysis` - Device fingerprinting analysis
-- `Olorin.cas.hri.gaia:location-analysis` - Location-based risk analysis
-- `Olorin.cas.hri.gaia:network-analysis` - Network behavior analysis
+- `Olorin.cas.hri.olorin:fpl-splunk` - Splunk-based fraud prevention analysis
+- `Olorin.cas.hri.olorin:device-analysis` - Device fingerprinting analysis
+- `Olorin.cas.hri.olorin:location-analysis` - Location-based risk analysis
+- `Olorin.cas.hri.olorin:network-analysis` - Network behavior analysis
 
 ---
 
@@ -1791,7 +1791,7 @@ user-agent: <your-application-name>
 
 1. **Create Investigation:**
 ```bash
-curl -X POST "https://gaia-api.olorin.com/api/investigation" \
+curl -X POST "https://olorin-api.olorin.com/api/investigation" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1804,31 +1804,31 @@ curl -X POST "https://gaia-api.olorin.com/api/investigation" \
 2. **Analyze All Domains:**
 ```bash
 # Device Analysis
-curl -X GET "https://gaia-api.olorin.com/api/device/user123456?investigation_id=INV-12345&entity_type=user_id" \
+curl -X GET "https://olorin-api.olorin.com/api/device/user123456?investigation_id=INV-12345&entity_type=user_id" \
   -H "Authorization: Bearer $TOKEN"
 
 # Network Analysis  
-curl -X GET "https://gaia-api.olorin.com/api/network/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/network/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 
 # Location Analysis
-curl -X GET "https://gaia-api.olorin.com/api/location/user123456?investigation_id=INV-12345&entity_type=user_id" \
+curl -X GET "https://olorin-api.olorin.com/api/location/user123456?investigation_id=INV-12345&entity_type=user_id" \
   -H "Authorization: Bearer $TOKEN"
 
 # Logs Analysis
-curl -X GET "https://gaia-api.olorin.com/api/logs/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/logs/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 3. **Get Overall Risk Assessment:**
 ```bash
-curl -X GET "https://gaia-api.olorin.com/api/risk-assessment/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/risk-assessment/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 4. **Add Investigation Comments:**
 ```bash
-curl -X POST "https://gaia-api.olorin.com/api/investigation/INV-12345/comment" \
+curl -X POST "https://olorin-api.olorin.com/api/investigation/INV-12345/comment" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1842,7 +1842,7 @@ curl -X POST "https://gaia-api.olorin.com/api/investigation/INV-12345/comment" \
 
 5. **Update Investigation Status:**
 ```bash
-curl -X PUT "https://gaia-api.olorin.com/api/investigation/INV-12345" \
+curl -X PUT "https://olorin-api.olorin.com/api/investigation/INV-12345" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1893,9 +1893,9 @@ Current API version: **v1**
 ## 📞 **Support & Contact**
 
 For API support and questions:
-- **Documentation**: [Internal Wiki](https://wiki.olorin.com/gaia-api)
-- **Support Channel**: #gaia-api-support
-- **On-call**: Page GAIA-API team for production issues
+- **Documentation**: [Internal Wiki](https://wiki.olorin.com/olorin-api)
+- **Support Channel**: #olorin-api-support
+- **On-call**: Page OLORIN-API team for production issues
 
 ---
 

@@ -43,8 +43,8 @@ from .logging_helper import RequestFormatter, logging_context
 
 
 logger = logging.getLogger(__name__)
-module_name = "gaia"
-service_name = "gaia"
+module_name = "olorin"
+service_name = "olorin"
 
 # Dummy lifespan_function for test patching
 lifespan_function = None
@@ -146,9 +146,9 @@ async def on_shutdown(app: FastAPI):
     pass
 
 
-class GaiaApplication:
+class OlorinApplication:
     """
-    Central application orchestrator for Gaia Fraud Detection System.
+    Central application orchestrator for Olorin Fraud Detection System.
     Encapsulates agent coordination, risk assessment, and exposes the FastAPI app.
     """
 
@@ -235,8 +235,8 @@ class GaiaApplication:
         @app.get("/version")
         async def version():
             return {
-                "version": os.environ.get("GAIA_VERSION", "unknown"),
-                "git_sha": os.environ.get("GAIA_GIT_SHA", "unknown"),
+                "version": os.environ.get("OLORIN_VERSION", "unknown"),
+                "git_sha": os.environ.get("OLORIN_GIT_SHA", "unknown"),
             }
 
 
@@ -244,9 +244,9 @@ def create_app(
     test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None
 ):
     """
-    Factory function to create the FastAPI app via GaiaApplication.
+    Factory function to create the FastAPI app via OlorinApplication.
     """
-    return GaiaApplication(test_config=test_config, lifespan=lifespan).app
+    return OlorinApplication(test_config=test_config, lifespan=lifespan).app
 
 
 # Dummy implementations for test patching

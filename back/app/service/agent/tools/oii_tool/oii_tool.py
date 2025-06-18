@@ -83,7 +83,7 @@ class OIITool(BaseTool):
                 "olorin_country": "US",
                 "olorin_locale": "en-US",
                 "Content-Type": "application/json",
-                "olorin_assetalias": "Olorin.cas.hri.gaia",
+                "olorin_assetalias": "Olorin.cas.hri.olorin",
                 "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={get_app_secret(settings_for_env.app_secret)},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
             }
 

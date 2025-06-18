@@ -22,7 +22,7 @@ class SvcSettings(BaseSettings):
     expose_metrics: bool = True
     mesh_port: int = Field(8090, validation_alias="MESH_TRAFFIC_PORT")
     asset_id: str = "3825825476777495228"
-    olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.gaia"
+    olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 
     # Cache settings
     use_ips_cache: bool = (
@@ -40,9 +40,9 @@ class SvcSettings(BaseSettings):
     idps_policy_id: str = "p-2abqgwqm8n5i"
 
     # App settings
-    app_id: str = "Olorin.cas.hri.gaia"
+    app_id: str = "Olorin.cas.hri.olorin"
     # Store app secret in IDPS and provide the secret name path here
-    app_secret: str = "gaia/app_secret"
+    app_secret: str = "olorin/app_secret"
 
     # QB Tool settings
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
@@ -54,12 +54,12 @@ class SvcSettings(BaseSettings):
         8089, description="Splunk management port", env="SPLUNK_PORT"
     )
     splunk_username_secret: str = Field(
-        "gaia/splunk_username",
+        "olorin/splunk_username",
         description="IDPS secret path for Splunk username",
         env="SPLUNK_USERNAME_SECRET",
     )
     splunk_password_secret: str = Field(
-        "gaia/splunk_password",
+        "olorin/splunk_password",
         description="IDPS secret path for Splunk password",
         env="SPLUNK_PASSWORD_SECRET",
     )
@@ -99,15 +99,15 @@ class PreProdSettings(SvcSettings):
 
     idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
     idps_policy_id: str = "p-2abqgwqm8n5i"
-    app_id: str = "Olorin.cas.hri.gaia"
-    app_secret: str = "gaia/app_secret"
+    app_id: str = "Olorin.cas.hri.olorin"
+    app_secret: str = "olorin/app_secret"
     rag_search_url: str = (
         "https://aimqasvc-e2e.api.olorin.com/v1/genosplugins/AIMSearchPlugin/generate"
     )
     enable_langfuse: bool = True  # Set to True to enable langfuse tracing;
     # and set the langfuse_public_key and langfuse_secret_key to the values in IDPS below
-    langfuse_public_key: str = "gaia/langfuse/public_key"
-    langfuse_secret_key: str = "gaia/langfuse/secret_key"
+    langfuse_public_key: str = "olorin/langfuse/public_key"
+    langfuse_secret_key: str = "olorin/langfuse/secret_key"
     langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
     cdc_env: str = "preprod"

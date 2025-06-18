@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Gaia fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
+This document provides a comprehensive analysis of the Network Domain Risk Analysis implementation in the master branch of the Olorin fraud detection system. The network domain is responsible for analyzing network patterns, ISP behavior, proxy/VPN detection, and assessing network-based fraud risk through LLM-powered analysis with intelligent rule-based fallbacks.
 
 ## Table of Contents
 
@@ -91,7 +91,7 @@ earliest_time = f"-{time_range}"
 Network data access uses secure credential retrieval:
 
 ```python
-password = get_app_secret("gaia/splunk_password")
+password = get_app_secret("olorin/splunk_password")
 splunk_host = settings.splunk_host
 
 if not password:
@@ -306,13 +306,13 @@ Specialized agent context for network analysis:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Olorin.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
     olorin_header=OlorinHeader(
-        olorin_tid=request.headers.get("olorin-tid", f"gaia-network-risk-{user_id}"),
+        olorin_tid=request.headers.get("olorin-tid", f"olorin-network-risk-{user_id}"),
         olorin_originating_assetalias=request.headers.get(
             "olorin_originating_assetalias", settings.olorin_originating_assetalias
         ),

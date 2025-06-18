@@ -72,7 +72,7 @@ headers = {
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
     "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "olorin_originating_assetalias": "Olorin.cas.hri.gaia",
+    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
 }
 
 
@@ -724,7 +724,7 @@ def generate_comprehensive_pdf_report(test_results: List[TestResult]):
     # Title Page
     pdf.add_page()
     pdf.set_font("DejaVu", "B", 20)
-    pdf.cell(0, 20, "GAIA Investigation System", ln=1, align="C")
+    pdf.cell(0, 20, "OLORIN Investigation System", ln=1, align="C")
     pdf.cell(0, 15, "Comprehensive Test Report", ln=1, align="C")
     pdf.ln(10)
 
@@ -1035,7 +1035,7 @@ def generate_comprehensive_pdf_report(test_results: List[TestResult]):
         align="C",
     )
     pdf.cell(
-        0, 5, "GAIA Investigation System - Comprehensive Test Report", ln=1, align="C"
+        0, 5, "OLORIN Investigation System - Comprehensive Test Report", ln=1, align="C"
     )
 
     # Save PDF
@@ -1113,12 +1113,12 @@ def main():
     if successful_tests == total_tests:
         print(f"\n🎉 ALL {total_tests} TEST PERMUTATIONS PASSED! 🎉")
         print(
-            "The GAIA investigation system is working correctly across all configurations."
+            "The OLORIN investigation system is working correctly across all configurations."
         )
         return True
     else:
         print(f"\n❌ {total_tests - successful_tests} TEST PERMUTATIONS FAILED!")
-        print("The GAIA investigation system has issues that need to be addressed.")
+        print("The OLORIN investigation system has issues that need to be addressed.")
         print("Check the comprehensive PDF report for detailed analysis.")
         return False
 

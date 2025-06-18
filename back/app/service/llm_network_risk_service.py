@@ -16,7 +16,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for network risk assessment."""
-        return "Olorin.cas.hri.gaia:network-risk-analyzer"
+        return "Olorin.cas.hri.olorin:network-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the Pydantic model class for network risk assessment."""

@@ -1,5 +1,17 @@
 /**
- * NOTE: This config is purely for IDE integration. Rules can be overridden here
- * and used by tooling as needed.
+ * ESLint configuration for Cypress tests
  */
-module.exports = require('@appfabric/eslint-config-appfabric/cypress');
+
+module.exports = {
+  extends: ['react-app'],
+  env: {
+    'cypress/globals': true,
+  },
+  plugins: ['cypress'],
+  rules: {
+    'cypress/no-assigning-return-values': 'error',
+    'cypress/no-unnecessary-waiting': 'error',
+    'cypress/assertion-before-screenshot': 'warn',
+    'cypress/no-force': 'warn',
+  },
+};

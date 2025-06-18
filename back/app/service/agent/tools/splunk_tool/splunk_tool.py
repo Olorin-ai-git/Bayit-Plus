@@ -51,7 +51,7 @@ class SplunkQueryTool(BaseTool):
         else:
             # Fallback to IDPS secrets and hardcoded username
             username = self.username
-            password = get_app_secret("gaia/splunk_password")
+            password = get_app_secret("olorin/splunk_password")
 
         client = SplunkClient(
             host=settings.splunk_host,

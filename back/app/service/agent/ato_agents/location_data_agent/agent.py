@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from agents import Agent
-
 from app.service.agent.ato_agents.clients.kk_dash_client import KKDashClient
 
 from ..utils.logging import get_logger

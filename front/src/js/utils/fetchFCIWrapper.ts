@@ -18,15 +18,54 @@ interface RUMWrapperFn {
 }
 
 /**
- * Wraps custom fetch calls with RUM FCI
+ * Simple performance tracker without AppFabric dependencies
+ */
+interface SimplePerformance {
+  createCustomerInteraction: (name: string) => SimpleInteraction;
+  record: (interaction: SimpleInteraction) => void;
+}
+
+interface SimpleInteraction {
+  mark: (name: string) => void;
+  measure: (startMark: string, endMark: string) => void;
+  success: () => void;
+  fail: (message: string) => void;
+}
+
+/**
+ * Simple implementation of performance tracking
+ */
+const createSimplePerformance = (): SimplePerformance => ({
+  createCustomerInteraction: (name: string) => ({
+    mark: (markName: string) => {
+      console.debug(`[Performance] Mark: ${markName} for ${name}`);
+    },
+    measure: (startMark: string, endMark: string) => {
+      console.debug(`[Performance] Measure: ${startMark} to ${endMark} for ${name}`);
+    },
+    success: () => {
+      console.debug(`[Performance] Success: ${name}`);
+    },
+    fail: (message: string) => {
+      console.debug(`[Performance] Fail: ${name} - ${message}`);
+    },
+  }),
+  record: (interaction: SimpleInteraction) => {
+    console.debug('[Performance] Recording interaction');
+  },
+});
+
+/**
+ * Wraps custom fetch calls with simple performance tracking
  *
- * @param {SandboxPerformance} performance the sandbox performance API
+ * @param {SimplePerformance} performance the performance API
  * @returns {function} returns a wrapper function to wrap fetch calls
  */
 const fetchFCIWrapper =
-  (performance: SandboxPerformance): RUMWrapperFn =>
+  (performance?: SimplePerformance): RUMWrapperFn =>
   async (fetchRequest, interactionMetadata) => {
-    const interaction = performance.createCustomerInteraction(
+    const perf = performance || createSimplePerformance();
+    const interaction = perf.createCustomerInteraction(
       interactionMetadata.name,
     );
     interaction.mark(RUM_FCI_START_REQUEST);
@@ -52,7 +91,7 @@ const fetchFCIWrapper =
       );
     }
 
-    performance.record(interaction);
+    perf.record(interaction);
 
     if (error) throw error;
 

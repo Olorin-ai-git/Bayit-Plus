@@ -1,12 +1,12 @@
-# GAIA - Fraud Investigation System
+# OLORIN - Fraud Investigation System
 
-GAIA is an advanced fraud investigation system that provides comprehensive risk assessment across multiple domains including network analysis, device fingerprinting, location analysis, and behavioral monitoring.
+OLORIN is an advanced fraud investigation system that provides comprehensive risk assessment across multiple domains including network analysis, device fingerprinting, location analysis, and behavioral monitoring.
 
 ## 🚀 Quick Start
 
 For detailed documentation, please see the [`/docs`](./docs) folder:
 
-- **[API Documentation](./docs/GAIA_API_Documentation.md)** - Complete API reference with examples
+- **[API Documentation](./docs/OLORIN_API_Documentation.md)** - Complete API reference with examples
 - **[WebSocket API Guide](./docs/websocket_example_responses.md)** - Real-time investigation monitoring
 - **[Autonomous Investigation Guide](./docs/README_autonomous_investigation.md)** - Testing autonomous investigations
 - **[Contributing Guide](./docs/CONTRIBUTING.md)** - Development guidelines
@@ -16,7 +16,7 @@ For detailed documentation, please see the [`/docs`](./docs) folder:
 All documentation has been organized in the [`/docs`](./docs) folder:
 
 ### Core Documentation
-- [`GAIA_API_Documentation.md`](./docs/GAIA_API_Documentation.md) - Complete API reference
+- [`OLORIN_API_Documentation.md`](./docs/OLORIN_API_Documentation.md) - Complete API reference
 - [`README.md`](./docs/README.md) - Detailed project overview
 - [`CONTRIBUTING.md`](./docs/CONTRIBUTING.md) - Development and contribution guidelines
 
@@ -61,7 +61,7 @@ python tests/run_autonomous_investigation_for_device.py
 
 ## 🔗 Quick Links
 
-- [API Documentation](./docs/GAIA_API_Documentation.md)
+- [API Documentation](./docs/OLORIN_API_Documentation.md)
 - [WebSocket Guide](./docs/websocket_example_responses.md)
 - [Testing Scripts](./docs/README_autonomous_investigation.md)
 - [Contributing](./docs/CONTRIBUTING.md)

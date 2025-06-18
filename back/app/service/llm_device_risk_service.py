@@ -24,7 +24,7 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for device risk assessment."""
-        return "Olorin.cas.hri.gaia:device-risk-analyzer"
+        return "Olorin.cas.hri.olorin:device-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the Pydantic model class for device risk assessment."""

@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "gaia"
+name = "olorin"
 version = "0.1.0"
 description = ""
-authors = ["Maintainers <some_email@olorin.com>"]
+authors = ["Maintainers <admin@olorin.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -11,7 +11,7 @@ pydantic = ">=1.10.7"
 pydantic-settings = ">=2.2.1"
 fastapi = ">=0.95.0"
 uvicorn = ">=0.21.0"
-services-python-pskbom-pskbom = {version = ">=1.7.0", extras = ["service", "telemetry"]}
+# services-python-pskbom-pskbom = {version = ">=1.7.0", extras = ["service", "telemetry"]}
 # services-python-pskgenos-pskgenos = ">=0.1.0"
 langgraph = "^0.2.70"
 langchain-openai = "^0.3.4"
@@ -22,8 +22,8 @@ langchain = "^0.3.18"
 langfuse = "^2.59.2"
 httpcore = "^1.0.7"
 redis = "^5.2.1"
-idps-sdk = "^3.9936.0"
-identity-c360-cdcdatalib-cdcdatalib = "^4.0.3"
+# idps-sdk = "^3.9936.0"
+# identity-c360-cdcdatalib-cdcdatalib = "^4.0.3"
 grandalf = "^0.8"
 aiohttp = ">=3.8.0"
 pyyaml = ">=6.0"
@@ -47,6 +47,7 @@ fpdf = "^1.7.2"
 numpy = "*"
 reportlab = "^4.4.1"
 markdown2 = "^2.5.3"
+websockets = "^12.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
@@ -78,6 +79,7 @@ target-version = ['py311']
 
 [tool.isort]
 profile = "black"
+skip_glob = ["venv/*", ".venv/*", ".tox/*", "**/venv/*", "**/.venv/*", "**/.tox/*"]
 
 [tool.pytest.ini_options]
 log_level = "DEBUG"

@@ -1,6 +1,6 @@
 # Tests Directory
 
-This directory contains all test files for the Gaia application, including unit tests, integration tests, and test utilities.
+This directory contains all test files for the Olorin application, including unit tests, integration tests, and test utilities.
 
 ## Test Files Overview
 

@@ -58,7 +58,7 @@ The team that owns this web plugin is expected to practice the following:
 1. Add an upstream to this main repository
 
    ```sh
-   git remote add upstream https://github.intuit.com/cas-hri/gaia-webplugin.git
+   git remote add upstream https://github.intuit.com/cas-hri/olorin-webplugin.git
    ```
 
 1. In your terminal window, navigate into this repo using `cd`

@@ -312,7 +312,7 @@ except ImportError:
 ```python
 agent_context_for_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Olorin.cas.hri.gaia:location-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:location-risk-analyzer",
     metadata=Metadata(
         interaction_group_id="location-risk-assessment",
         additional_metadata={"userId": user_id},

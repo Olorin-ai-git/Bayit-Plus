@@ -116,7 +116,7 @@ class ChronosTool(BaseTool):
                     "auth_id": [user_id]
                 },  # Use array format like the working curl
                 "select": select,
-                "queryId": "GAIA",
+                "queryId": "OLORIN",
                 "routingLabel": "elc",
             }
 
@@ -128,7 +128,7 @@ class ChronosTool(BaseTool):
                 "olorin_locale": "en-US",
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "olorin_assetalias": "Olorin.cas.hri.gaia",
+                "olorin_assetalias": "Olorin.cas.hri.olorin",
                 "olorin_offeringid": "Olorin.cto.iam.ius",  # Add missing header from working curl
                 "olorin_tid": "480e8643-d4fb-4546-bda8-555c67c14432",  # Use working olorin_tid
                 "Authorization": f"Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid},olorin_appid=Olorin.secfraud.shared.ghost,olorin_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",

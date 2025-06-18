@@ -30,7 +30,7 @@ async def analyze_logs(user_id: str, request: Request, ...):
     # Direct LLM invocation within router logic
     agent_context = AgentContext(
         input=llm_input_prompt,
-        agent_name="Olorin.cas.hri.gaia:fpl-splunk",
+        agent_name="Olorin.cas.hri.olorin:fpl-splunk",
         metadata=Metadata(...),
         olorin_header=OlorinHeader(...)
     )
@@ -49,7 +49,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     """Service for LLM-based logs risk assessment."""
     
     def get_agent_name(self) -> str:
-        return "Olorin.cas.hri.gaia:fpl-splunk"
+        return "Olorin.cas.hri.olorin:fpl-splunk"
     
     def get_assessment_model_class(self) -> type[LogsRiskAssessment]:
         return LogsRiskAssessment
@@ -137,14 +137,14 @@ Both implementations use **exactly the same** system prompt:
 ```python
 agent_context = AgentContext(
     input=llm_input_prompt,
-    agent_name="Olorin.cas.hri.gaia:fpl-splunk",
+    agent_name="Olorin.cas.hri.olorin:fpl-splunk",
     metadata=Metadata(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
     olorin_header=OlorinHeader(
         olorin_tid="test",
-        olorin_originating_assetalias="Olorin.cas.hri.gaia",
+        olorin_originating_assetalias="Olorin.cas.hri.olorin",
         olorin_experience_id=settings.olorin_experience_id,
         auth_context=AuthContext(
             olorin_user_id=olorin_userid,
@@ -159,12 +159,12 @@ agent_context = AgentContext(
 ```python
 # Inherited from BaseLLMRiskService
 def get_agent_name(self) -> str:
-    return "Olorin.cas.hri.gaia:fpl-splunk"  # IDENTICAL agent name
+    return "Olorin.cas.hri.olorin:fpl-splunk"  # IDENTICAL agent name
 
 # Base service handles agent context creation with same parameters:
-# - agent_name: "Olorin.cas.hri.gaia:fpl-splunk"
+# - agent_name: "Olorin.cas.hri.olorin:fpl-splunk"
 # - interaction_group_id: "fraud_flow"
-# - olorin_originating_assetalias: "Olorin.cas.hri.gaia"
+# - olorin_originating_assetalias: "Olorin.cas.hri.olorin"
 # - Authentication context with tokens
 ```
 
@@ -172,9 +172,9 @@ def get_agent_name(self) -> str:
 
 | Component | Master Branch | Refactor Branch |
 |-----------|---------------|-----------------|
-| **Agent Name** | "Olorin.cas.hri.gaia:fpl-splunk" | **"Olorin.cas.hri.gaia:fpl-splunk" (identical)** |
+| **Agent Name** | "Olorin.cas.hri.olorin:fpl-splunk" | **"Olorin.cas.hri.olorin:fpl-splunk" (identical)** |
 | **Interaction Group** | "fraud_flow" | **"fraud_flow" (same)** |
-| **Asset Alias** | "Olorin.cas.hri.gaia" | **"Olorin.cas.hri.gaia" (same)** |
+| **Asset Alias** | "Olorin.cas.hri.olorin" | **"Olorin.cas.hri.olorin" (same)** |
 | **Authentication** | Token-based auth context | **Identical token-based auth** |
 | **Metadata** | User ID tracking | **Same user ID tracking** |
 
@@ -432,7 +432,7 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
       "olorin_userid": "4621097846089147992",
       "values(email_address)": null,
       "values(olorin_username)": [
-        "gaia_test_20250515",
+        "olorin_test_20250515",
         "iamtestpass_15171910655948"
       ],
       "values(olorin_offeringId)": [
@@ -638,7 +638,7 @@ langfuse_handler = CallbackHandler(
 The refactor branch maintains **100% compatibility** with master branch LLM capabilities:
 
 1. **Identical System Prompts**: Same authentication-specialized prompt engineering
-2. **Same Agent Identity**: "Olorin.cas.hri.gaia:fpl-splunk" agent consistency
+2. **Same Agent Identity**: "Olorin.cas.hri.olorin:fpl-splunk" agent consistency
 3. **Equivalent Risk Assessment**: 0.6-0.7 risk levels for identical authentication patterns
 4. **Consistent Authentication Analysis**: Failed challenge detection and geographic analysis
 

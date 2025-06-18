@@ -90,7 +90,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
             .replace("llmservice", "")
             .replace("service", "")
         )
-        default_tid = f"gaia-{assessment_type}-risk-{user_id}"
+        default_tid = f"olorin-{assessment_type}-risk-{user_id}"
 
         # Create metadata with required fields for LangGraph workflow
         additional_metadata = {

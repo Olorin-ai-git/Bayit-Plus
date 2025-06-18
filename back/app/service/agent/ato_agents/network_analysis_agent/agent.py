@@ -8,7 +8,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
 
 from agents import Agent
-
 from app.service.agent.tools.oii_tool.oii_tool import OIITool
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 

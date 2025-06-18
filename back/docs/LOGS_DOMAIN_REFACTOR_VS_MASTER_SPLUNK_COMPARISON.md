@@ -159,7 +159,7 @@ Both implementations extract **identical authentication fields**:
 ```json
 {
   "olorin_userid": "4621097846089147992",
-  "values(olorin_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+  "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
   "values(olorin_offeringId)": [
     "Olorin.cto.iam.ius",
     "Olorin.dev.test.testeasy", 
@@ -180,7 +180,7 @@ Both implementations extract **identical authentication fields**:
 {
   "olorin_userid": "4621097846089147992",
   "values(olorin_username)": [
-    "gaia_test_20250515",
+    "olorin_test_20250515",
     "iamtestpass_15171910655948"
   ],
   "values(olorin_offeringId)": [
@@ -241,7 +241,7 @@ Your response MUST be a JSON object with the following structure:
 ```python
 class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     def get_agent_name(self) -> str:
-        return "Olorin.cas.hri.gaia:fpl-splunk"
+        return "Olorin.cas.hri.olorin:fpl-splunk"
     
     def get_system_prompt_template(self) -> str:
         return SYSTEM_PROMPT_FOR_LOG_RISK  # Same prompt as master
@@ -294,7 +294,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
 
 | Feature | Master Branch | Refactor Branch |
 |---------|---------------|-----------------|
-| **Agent Name** | Basic implementation | **"Olorin.cas.hri.gaia:fpl-splunk"** |
+| **Agent Name** | Basic implementation | **"Olorin.cas.hri.olorin:fpl-splunk"** |
 | **Risk Score** | 0.6 (Medium Risk) | **0.6 (Identical assessment)** |
 | **Confidence** | 0.7 | **0.7 (Same confidence level)** |
 | **Service Architecture** | Monolithic processing | **Inherited BaseLLMRiskService** |

@@ -1,6 +1,6 @@
 ============================= test session starts ==============================
 platform darwin -- Python 3.9.22, pytest-8.3.5, pluggy-1.5.0
-rootdir: /Users/gklainert/Documents/gaia-webplugin
+rootdir: /Users/gklainert/Documents/olorin-webplugin
 plugins: anyio-4.8.0, asyncio-0.25.3, cov-6.1.1
 asyncio: mode=strict, asyncio_default_fixture_loop_scope=None
 collected 0 items
