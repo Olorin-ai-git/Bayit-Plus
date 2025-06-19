@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "push": "./git_commit_push.sh",
-    "push:no-docker": "./git_commit_push.sh --skip-docker",
+    "push:with-docker": "./git_commit_push.sh --with-docker",
     "push:docker-only": "./git_commit_push.sh --docker-only",
     "push:help": "./git_commit_push.sh --help"
   },

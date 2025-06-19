@@ -1,23 +1,25 @@
 #!/bin/bash
 
-# Script to add all files, commit with AI-generated message, push, and deploy Docker
-# Usage: ./git_commit_push.sh [optional_custom_message] [--skip-docker] [--docker-only]
+# Script to add all files, commit with AI-generated message, and push
+# Docker deployment is optional and requires --with-docker flag
+# Usage: ./git_commit_push.sh [optional_custom_message] [--with-docker] [--docker-only]
 
 set -e
 
 # Parse command line arguments
-SKIP_DOCKER=false
+SKIP_DOCKER=true  # Docker is OFF by default
 DOCKER_ONLY=false
 CUSTOM_MESSAGE=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --skip-docker|--no-docker)
-            SKIP_DOCKER=true
+        --with-docker)
+            SKIP_DOCKER=false
             shift
             ;;
         --docker-only)
             DOCKER_ONLY=true
+            SKIP_DOCKER=false
             shift
             ;;
         --help|-h)
@@ -27,16 +29,14 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  MESSAGE           Custom commit message (optional)"
-            echo "  --skip-docker     Skip Docker build and deployment"
-            echo "  --no-docker       Skip Docker build and deployment (alias for --skip-docker)"
+            echo "  --with-docker     Include Docker build and deployment"
             echo "  --docker-only     Skip git operations, only build and deploy Docker"
             echo "  --help, -h        Show this help message"
             echo ""
             echo "Examples:"
-            echo "  $0                          # Git commit + push + Docker deploy"
-            echo "  $0 \"Fix bug in auth\"       # Custom commit message"
-            echo "  $0 --skip-docker           # Only git operations"
-            echo "  $0 --no-docker             # Only git operations (same as --skip-docker)"
+            echo "  $0                          # Git commit + push (no Docker)"
+            echo "  $0 \"Fix bug in auth\"       # Custom commit message (no Docker)"
+            echo "  $0 --with-docker           # Git operations + Docker deploy"
             echo "  $0 --docker-only           # Only Docker operations"
             exit 0
             ;;
@@ -47,12 +47,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "🚀 Starting Git commit, push, and Docker deployment workflow..."
+echo "🚀 Starting Git commit and push workflow..."
 
 # Skip git operations if docker-only flag is set
 if [ "$DOCKER_ONLY" = true ]; then
     echo "🐳 Docker-only mode enabled. Skipping git operations..."
-    SKIP_DOCKER=false
     # Set dummy values for Docker build
     CURRENT_BRANCH="main"
     COMMIT_MESSAGE="Docker deployment"
@@ -278,7 +277,11 @@ if [ "$SKIP_DOCKER" = false ]; then
 fi
 
 echo ""
-echo "🎉 Deployment completed successfully!"
+if [ "$SKIP_DOCKER" = false ]; then
+    echo "🎉 Deployment completed successfully!"
+else
+    echo "🎉 Git operations completed successfully!"
+fi
 echo "📊 Summary:"
 echo "   • Branch: $CURRENT_BRANCH"
 echo "   • Commit: $COMMIT_MESSAGE"
