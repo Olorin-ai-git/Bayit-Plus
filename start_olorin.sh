@@ -25,6 +25,9 @@ BACKEND_PORT=8000
 FRONTEND_PORT=3000
 MCP_PORT=8001
 
+# Default log level
+LOG_LEVEL=${LOG_LEVEL:-info}
+
 # PID files for process management
 BACKEND_PID_FILE="$LOG_DIR/backend.pid"
 FRONTEND_PID_FILE="$LOG_DIR/frontend.pid"
@@ -124,8 +127,9 @@ start_backend() {
     fi
     
     # Start backend server with console output
-    print_status "Backend output (log level: INFO):"
-    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload --log-level info 2>&1 | sed "s/^/$(printf '\033[0;34m')[BACKEND] /" | sed "s/$/$(printf '\033[0m')/" &
+    local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
+    print_status "Backend output (log level: $log_level_upper):"
+    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload --log-level $LOG_LEVEL 2>&1 | sed "s/^/$(printf '\033[0;34m')[BACKEND] /" | sed "s/$/$(printf '\033[0m')/" &
     local backend_pid=$!
     echo $backend_pid > "$BACKEND_PID_FILE"
     
@@ -152,8 +156,9 @@ start_mcp() {
     cd "$BACKEND_DIR"
     
     # Start MCP server with console output
-    print_status "MCP server output (log level: INFO):"
-    LOG_LEVEL=INFO poetry run python -m app.mcp_server.cli 2>&1 | sed "s/^/$(printf '\033[0;32m')[MCP] /" | sed "s/$/$(printf '\033[0m')/" &
+    local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
+    print_status "MCP server output (log level: $log_level_upper):"
+    LOG_LEVEL=$log_level_upper poetry run python -m app.mcp_server.cli 2>&1 | sed "s/^/$(printf '\033[0;32m')[MCP] /" | sed "s/$/$(printf '\033[0m')/" &
     local mcp_pid=$!
     echo $mcp_pid > "$MCP_PID_FILE"
     
@@ -203,9 +208,27 @@ start_frontend() {
     fi
     
     # Start frontend server with console output
-    print_status "Frontend output (log level: INFO):"
-    # Show all npm output with color coding
-    npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+    local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
+    print_status "Frontend output (log level: $log_level_upper):"
+    # Filter frontend output based on log level
+    case $LOG_LEVEL in
+        debug|info)
+            # Show all output for debug and info levels
+            npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+            ;;
+        warning)
+            # Show warnings and errors only
+            npm start 2>&1 | grep -E "(WARNING|WARN|Warning|warning|ERROR|Error|error|Failed)" | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+            ;;
+        error)
+            # Show errors only
+            npm start 2>&1 | grep -E "(ERROR|Error|error|Failed|FAIL)" | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+            ;;
+        *)
+            # Default to showing all output
+            npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+            ;;
+    esac
     local frontend_pid=$!
     echo $frontend_pid > "$FRONTEND_PID_FILE"
     
@@ -263,22 +286,29 @@ check_status() {
 
 # Function to show usage
 usage() {
-    echo "Usage: $0 [OPTIONS]"
-    echo "       npm run olorin"
+    echo "Usage: $0 [OPTIONS] [--log-level LEVEL]"
+    echo "       npm run olorin -- --log-level LEVEL"
     echo ""
     echo "Options:"
-    echo "  start     Start all services (default)"
-    echo "  stop      Stop all services"
-    echo "  restart   Restart all services"
-    echo "  status    Check service status"
-    echo "  logs      Show logs info"
-    echo "  --help    Show this help message"
+    echo "  start             Start all services (default)"
+    echo "  stop              Stop all services"
+    echo "  restart           Restart all services"
+    echo "  status            Check service status"
+    echo "  logs              Show logs info"
+    echo "  --log-level LEVEL Set log level (debug, info, warning, error)"
+    echo "  --help            Show this help message"
     echo ""
     echo "Environment Variables:"
     echo "  BACKEND_PORT   Backend server port (default: 8000)"
     echo "  FRONTEND_PORT  Frontend server port (default: 3000)"
+    echo "  LOG_LEVEL      Default log level (default: info)"
     echo ""
-    echo "Note: Console output shows INFO level logs from all services"
+    echo "Examples:"
+    echo "  npm run olorin                      # Start with default INFO level"
+    echo "  npm run olorin -- --log-level debug # Start with DEBUG level"
+    echo "  ./start_olorin.sh --log-level error # Start with ERROR level"
+    echo ""
+    echo "Note: Console output shows logs at specified level from all services"
     echo "      Backend logs in Blue, MCP logs in Green, Frontend logs in Cyan"
 }
 
@@ -286,20 +316,55 @@ usage() {
 show_logs() {
     print_status "Logs are displayed in the console during service execution."
     print_status "To see logs, run: npm run olorin"
-    print_status "Console shows INFO level logs from all services:"
-    echo -e "  - ${BLUE}Backend server${NC} (uvicorn) with --log-level info"
-    echo -e "  - ${GREEN}MCP server${NC} with LOG_LEVEL=INFO"
-    echo -e "  - ${CYAN}Frontend server${NC} showing all output"
+    local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
+    print_status "Current log level: $log_level_upper (change with --log-level option)"
+    echo -e "  - ${BLUE}Backend server${NC} (uvicorn) with --log-level $LOG_LEVEL"
+    echo -e "  - ${GREEN}MCP server${NC} with LOG_LEVEL=$log_level_upper"
+    echo -e "  - ${CYAN}Frontend server${NC} filtered based on log level"
 }
 
 # Main execution
 main() {
     local command=${1:-start}
     
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --log-level)
+                if [[ -n "$2" && ! "$2" =~ ^- ]]; then
+                    LOG_LEVEL=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+                    shift 2
+                else
+                    print_error "Error: --log-level requires an argument"
+                    usage
+                    exit 1
+                fi
+                ;;
+            start|stop|restart|status|logs|--help|-h)
+                command=$1
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    # Validate log level
+    case $LOG_LEVEL in
+        debug|info|warning|error)
+            ;;
+        *)
+            print_warning "Invalid log level: $LOG_LEVEL. Using default: info"
+            LOG_LEVEL=info
+            ;;
+    esac
+    
     case $command in
         start)
             print_status "Starting Olorin services..."
-            print_status "Console output will show INFO level logs from all services"
+            local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
+            print_status "Console output will show $log_level_upper level logs from all services"
             echo -e "  ${BLUE}■ Backend${NC} (Blue) - ${GREEN}■ MCP${NC} (Green) - ${CYAN}■ Frontend${NC} (Cyan)"
             echo ""
             
