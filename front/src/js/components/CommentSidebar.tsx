@@ -38,24 +38,24 @@ const commentPrefix = 'Investigation Comment: ';
  * @returns {JSX.Element|null} The rendered sidebar component or null if not open
  */
 const CommentSidebar: React.FC<CommentSidebarProps> = ({
-  isOpen,
+  isOpen = false,
   width: initialWidth,
   investigatorComments,
   policyComments,
   onInvestigatorSend,
   onPolicySend,
   investigationId,
-  entityId,
-  entityType,
-  onClose,
+  entityId = '',
+  entityType = 'user_id',
+  onClose = () => {},
   onCommentLogUpdateRequest,
   commentLog,
   selectedRole,
-  messages,
-  onSend,
-  onLogUpdateRequest,
-  isLoading,
-  currentInvestigationId,
+  messages = [],
+  onSend = () => {},
+  onLogUpdateRequest = () => {},
+  isLoading = false,
+  currentInvestigationId = '',
 }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
@@ -237,18 +237,6 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
       </div>
     </div>
   );
-};
-
-CommentSidebar.defaultProps = {
-  isOpen: false,
-  onClose: () => {},
-  messages: [],
-  onSend: () => {},
-  onLogUpdateRequest: () => {},
-  isLoading: false,
-  currentInvestigationId: '',
-  entityId: '',
-  entityType: 'user_id',
 };
 
 export default CommentSidebar;

@@ -22,7 +22,7 @@ export class MCPWebClient {
   async initialize(): Promise<void> {
     try {
       // Test connection to MCP server
-      const response = await fetch(`${this.httpBaseUrl}/health`);
+      const response = await fetch(`${this.httpBaseUrl}/api/mcp/status`);
       if (!response.ok) {
         throw new Error('MCP Server not accessible');
       }
@@ -36,32 +36,20 @@ export class MCPWebClient {
 
   // Send HTTP request to MCP server
   private async sendHttpRequest(method: string, params?: any): Promise<any> {
-    const request: MCPRequest = {
-      id: String(this.requestId++),
-      method,
-      params
-    };
-
     try {
-      const response = await fetch(`${this.httpBaseUrl}/mcp`, {
+      const response = await fetch(`${this.httpBaseUrl}/api/mcp/${method}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(request)
+        body: JSON.stringify(params || {})
       });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const mcpResponse: MCPResponse = await response.json();
-      
-      if (mcpResponse.error) {
-        throw new Error(`MCP Error: ${mcpResponse.error.message}`);
-      }
-
-      return mcpResponse.result;
+      return await response.json();
     } catch (error) {
       console.error(`MCP Request failed:`, error);
       throw error;

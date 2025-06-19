@@ -94,7 +94,7 @@ interface ErrorResponse {
  * @returns {JSX.Element} The rendered component.
  */
 const InvestigationPage: React.FC<InvestigationPageProps> = ({
-  investigationId,
+  investigationId = null,
 }) => {
   const sandbox = useSandboxContext();
   const api = useMemo(() => new OlorinService(sandbox, false), [sandbox]);
@@ -1880,11 +1880,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       />
     </div>
   );
-};
-
-// Add defaultProps for investigationId
-InvestigationPage.defaultProps = {
-  investigationId: null,
 };
 
 export default InvestigationPage;

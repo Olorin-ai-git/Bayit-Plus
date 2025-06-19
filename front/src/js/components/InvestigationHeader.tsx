@@ -41,8 +41,8 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
   handleSubmit,
   cancelledRef,
   closeInvestigation,
-  startTime,
-  endTime,
+  startTime = null,
+  endTime = null,
   isChatSidebarOpen,
   setIsChatSidebarOpen,
   currentInvestigationId,
@@ -270,11 +270,6 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
       </div>
     </>
   );
-};
-
-InvestigationHeader.defaultProps = {
-  startTime: null,
-  endTime: null,
 };
 
 export default InvestigationHeader;

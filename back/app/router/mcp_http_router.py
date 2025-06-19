@@ -259,6 +259,113 @@ index=device_logs
         logger.error(f"Failed to read resource: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to read resource: {e}")
 
+@router.post("/prompts/list")
+async def list_prompts():
+    """List available prompts"""
+    try:
+        # For now, return investigation-related prompts
+        prompts = [
+            {
+                "name": "fraud_investigation",
+                "description": "Comprehensive fraud investigation prompt",
+                "arguments": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID to investigate"
+                        },
+                        "investigation_type": {
+                            "type": "string",
+                            "enum": ["full", "quick", "deep"],
+                            "description": "Type of investigation to perform"
+                        }
+                    },
+                    "required": ["user_id"]
+                }
+            },
+            {
+                "name": "risk_assessment",
+                "description": "Risk assessment prompt for user activity",
+                "arguments": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "object",
+                            "description": "Investigation data to assess"
+                        }
+                    },
+                    "required": ["data"]
+                }
+            }
+        ]
+        
+        return {"prompts": prompts}
+    except Exception as e:
+        logger.error(f"Failed to list prompts: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list prompts: {e}")
+
+@router.post("/prompts/get")
+async def get_prompt(request: Dict[str, Any]):
+    """Get a specific prompt with arguments"""
+    try:
+        prompt_name = request.get("name")
+        arguments = request.get("arguments", {})
+        
+        if prompt_name == "fraud_investigation":
+            user_id = arguments.get("user_id", "unknown")
+            investigation_type = arguments.get("investigation_type", "full")
+            
+            prompt_text = f"""
+You are investigating potential fraud for user {user_id}.
+Investigation type: {investigation_type}
+
+Please analyze the following:
+1. User authentication patterns
+2. Device usage anomalies
+3. Location inconsistencies
+4. Transaction patterns
+5. Account access patterns
+
+Provide a comprehensive risk assessment.
+"""
+            return {
+                "messages": [
+                    {"role": "system", "content": "You are a fraud investigation expert."},
+                    {"role": "user", "content": prompt_text}
+                ]
+            }
+            
+        elif prompt_name == "risk_assessment":
+            data = arguments.get("data", {})
+            
+            prompt_text = f"""
+Analyze the following investigation data and provide a risk assessment:
+
+{json.dumps(data, indent=2)}
+
+Please provide:
+1. Overall risk score (0-100)
+2. Key risk factors identified
+3. Recommended actions
+4. Confidence level in assessment
+"""
+            return {
+                "messages": [
+                    {"role": "system", "content": "You are a risk assessment expert."},
+                    {"role": "user", "content": prompt_text}
+                ]
+            }
+        
+        else:
+            raise HTTPException(status_code=404, detail=f"Prompt '{prompt_name}' not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get prompt: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get prompt: {e}")
+
 @router.get("/resources/subscribe")
 async def subscribe_to_resources():
     """Subscribe to resource changes via Server-Sent Events"""

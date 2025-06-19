@@ -64,10 +64,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   );
 };
 
-AnimatedText.defaultProps = {
-  className: '',
-  charSpeed: ANIMATION_TIMING.CHARACTER_SPEED,
-};
+
 
 /**
  * A blinking caret component that appears after each log message for 3 seconds
@@ -468,11 +465,6 @@ const AgentLogSidebar: React.FC<AgentLogSidebarProps> = ({
       </div>
     </>
   );
-};
-
-AgentLogSidebar.defaultProps = {
-  onLogDisplayed: undefined,
-  onCopyLogs: undefined,
 };
 
 export default AgentLogSidebar;
