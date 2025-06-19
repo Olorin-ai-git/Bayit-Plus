@@ -5,6 +5,7 @@ export interface ExtractedNetworkSignal {
   tm_sessionid?: string;
   _time: string;
   countries: string[];
+  timestamp?: string;
 }
 
 export interface NetworkRiskAssessment {
@@ -23,6 +24,8 @@ export interface NetworkAgentResponse {
   extracted_network_signals: ExtractedNetworkSignal[];
   network_risk_assessment: NetworkRiskAssessment;
   llm_thoughts?: string;
+  investigationId?: string;
+  userId?: string;
 }
 
 export interface SplunkLocation {
@@ -77,11 +80,17 @@ export interface VectorSearchResults {
 }
 
 export interface LocationAgentResponse {
-  splunk_locations: SplunkLocation[];
-  user_id: string;
-  timestamp: string;
-  llm_thoughts: LocationRiskAssessment;
+  splunk_locations?: SplunkLocation[];
+  user_id?: string;
+  timestamp?: string;
+  llm_thoughts?: LocationRiskAssessment;
   vector_search_results?: VectorSearchResults;
+  // API documented format fields
+  location_risk_assessment?: LocationRiskAssessment;
+  overall_location_risk_assessment?: LocationRiskAssessment;
+  device_locations?: any[];
+  // Legacy fields
+  locations?: LocationAgentLocation[];
 }
 
 export interface RawSplunkDeviceResult {
@@ -91,7 +100,7 @@ export interface RawSplunkDeviceResult {
   smartId: string | null;
   tm_smartid: string | null;
   tm_sessionid: string | null;
-  olorin_tid: string;
+  intuit_tid: string;
   true_ip: string | null;
   true_ip_city: string | null;
   true_ip_country: string | null;
@@ -107,7 +116,7 @@ export interface ExtractedDeviceSignal {
   true_ip_region?: string;
   tm_smartid?: string;
   tm_sessionid?: string;
-  olorin_tid: string;
+  intuit_tid: string;
   _time: string;
   countries: string[];
 }
@@ -123,14 +132,23 @@ export interface DeviceSignalRiskAssessment {
 }
 
 export interface DeviceAgentResponse {
-  user_id: string;
-  raw_splunk_results: RawSplunkDeviceResult[];
-  extracted_device_signals: ExtractedDeviceSignal[];
-  device_signal_risk_assessment: DeviceSignalRiskAssessment;
-  timestamp: string;
-
+  user_id?: string;
+  raw_splunk_results?: RawSplunkDeviceResult[];
+  extracted_device_signals?: ExtractedDeviceSignal[];
+  device_signal_risk_assessment?: DeviceSignalRiskAssessment;
+  timestamp?: string;
+  chronos_warning?: string;
   di_tool_warning?: string;
   llm_thoughts?: string;
+  // API documented format fields
+  device_risk_assessment?: DeviceSignalRiskAssessment;
+  device_llm_assessment?: DeviceSignalRiskAssessment;
+  risk_assessment?: DeviceSignalRiskAssessment;
+  // Additional API fields
+  entity_id?: string;
+  retrieved_signals?: any[];
+  num_device_signals?: number;
+  splunk_warning?: string | null;
 }
 
 // Legacy interfaces - keeping for backward compatibility

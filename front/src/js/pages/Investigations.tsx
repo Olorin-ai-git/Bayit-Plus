@@ -1,4 +1,36 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Checkbox,
+  IconButton,
+  Chip,
+  Alert,
+  LinearProgress,
+  Card,
+  CardContent,
+  Grid,
+  useTheme
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Refresh as RefreshIcon,
+  Visibility as ViewIcon,
+  BugReport as BugReportIcon,
+  Person as PersonIcon,
+  Computer as ComputerIcon
+} from '@mui/icons-material';
 
 const DEMO_MODE = true; // Set to true for demo mode (mock data)
 
@@ -131,6 +163,8 @@ interface InvestigationsProps {
 const Investigations: React.FC<InvestigationsProps> = ({
   onCreateInvestigation,
 }) => {
+  const navigate = useNavigate();
+  const theme = useTheme();
   const [investigations, setInvestigations] = useState<any[]>(
     DEMO_MODE ? MOCK_INVESTIGATIONS : [],
   );
@@ -198,24 +232,12 @@ const Investigations: React.FC<InvestigationsProps> = ({
           setInvestigations,
         );
         newId = newInv.id;
-        if (onCreateInvestigation) {
-          onCreateInvestigation(newId);
-        }
       } else {
-        // Use a default entityId for now; replace with actual entityId if available
-        const entityId = 'test-entity';
-        const entityType = 'user_id';
-        const newInv = await createInvestigation(
-          undefined,
-          undefined,
-          entityId,
-          entityType,
-        );
-        setInvestigations((prev) => [newInv, ...prev]);
+        const newInv = await createInvestigation();
         newId = newInv.id;
-        if (onCreateInvestigation) {
-          onCreateInvestigation(newId);
-        }
+      }
+      if (onCreateInvestigation) {
+        onCreateInvestigation(newId);
       }
     } catch (err: any) {
       setError('create error');
@@ -224,7 +246,7 @@ const Investigations: React.FC<InvestigationsProps> = ({
   };
 
   /**
-   * Handles editing selected investigations.
+   * Handles editing of selected investigations.
    */
   const handleEdit = async () => {
     setLoading(true);
@@ -234,8 +256,8 @@ const Investigations: React.FC<InvestigationsProps> = ({
         await editInvestigations(selected, investigations, setInvestigations);
       } else {
         await editInvestigations(selected);
-        await fetchInvestigations();
       }
+      setSelected([]);
     } catch (err: any) {
       setError('edit error');
     }
@@ -266,136 +288,327 @@ const Investigations: React.FC<InvestigationsProps> = ({
 
   const handleRefresh = fetchInvestigations;
 
+  /**
+   * Navigates to the investigation page to view a specific investigation.
+   * @param {string} id - The investigation ID.
+   */
+  const handleViewInvestigation = (id: string) => {
+    navigate(`/investigation/${id}`);
+  };
+
+  /**
+   * Navigates to create a new investigation.
+   */
+  const handleNewInvestigation = () => {
+    navigate('/investigation');
+  };
+
+  const getRiskScoreColor = (score: number) => {
+    if (score >= 0.7) return 'error';
+    if (score >= 0.4) return 'warning';
+    return 'success';
+  };
+
+  const getEntityTypeIcon = (type: string) => {
+    switch (type) {
+      case 'user_id':
+        return <PersonIcon fontSize="small" />;
+      case 'device_id':
+        return <ComputerIcon fontSize="small" />;
+      default:
+        return <BugReportIcon fontSize="small" />;
+    }
+  };
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Investigations</h1>
-      <div className="flex space-x-2 mb-6">
-        <button
-          type="button"
-          onClick={handleCreate}
-          disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          Create
-        </button>
-        <button
-          type="button"
-          onClick={handleEdit}
-          disabled={loading || selected.length === 0}
-          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={loading || selected.length === 0}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
-        >
-          Delete
-        </button>
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={loading}
-          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
-        >
-          Refresh
-        </button>
-      </div>
+    <Box sx={{ p: 0 }}>
+      {/* Header Section */}
+      <Box sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+              Investigations
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Manage and monitor your fraud investigations
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleNewInvestigation}
+            sx={{
+              px: 3,
+              py: 1.5,
+              borderRadius: 2,
+              textTransform: 'none',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
+              '&:hover': {
+                boxShadow: '0 6px 16px rgba(147, 51, 234, 0.4)',
+              },
+            }}
+          >
+            New Investigation
+          </Button>
+        </Box>
+
+        {/* Stats Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%)',
+              border: '1px solid',
+              borderColor: 'primary.200'
+            }}>
+              <CardContent>
+                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
+                  {investigations.length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Investigations
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
+              border: '1px solid',
+              borderColor: 'error.200'
+            }}>
+              <CardContent>
+                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'error.main', mb: 1 }}>
+                  {investigations.filter(inv => inv.overall_risk_score >= 0.7).length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  High Risk Cases
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%)',
+              border: '1px solid',
+              borderColor: 'warning.200'
+            }}>
+              <CardContent>
+                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'warning.main', mb: 1 }}>
+                  {investigations.filter(inv => inv.overall_risk_score >= 0.4 && inv.overall_risk_score < 0.7).length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Medium Risk Cases
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)',
+              border: '1px solid',
+              borderColor: 'success.200'
+            }}>
+              <CardContent>
+                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'success.main', mb: 1 }}>
+                  {investigations.filter(inv => inv.overall_risk_score < 0.4).length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Low Risk Cases
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={handleCreate}
+            disabled={loading}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Create
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<EditIcon />}
+            onClick={handleEdit}
+            disabled={loading || selected.length === 0}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Edit ({selected.length})
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleDelete}
+            disabled={loading || selected.length === 0}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Delete ({selected.length})
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={handleRefresh}
+            disabled={loading}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Refresh
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Error Alert */}
       {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
-        </div>
+        </Alert>
       )}
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.length === investigations.length}
-                  onChange={handleSelectAll}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Entity ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Entity Type
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Policy Comments
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Investigator Comments
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Risk Score
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {investigations.map((inv) => (
-              <tr key={inv.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(inv.id)}
-                    onChange={() => handleSelect(inv.id)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+
+      {/* Loading Progress */}
+      {loading && (
+        <LinearProgress sx={{ mb: 3 }} />
+      )}
+
+      {/* Investigations Table */}
+      <Paper sx={{ 
+        borderRadius: 3,
+        overflow: 'hidden',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+      }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'grey.50' }}>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selected.length === investigations.length && investigations.length > 0}
+                    indeterminate={selected.length > 0 && selected.length < investigations.length}
+                    onChange={handleSelectAll}
+                    sx={{ color: 'primary.main' }}
                   />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {inv.id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {inv.entityId}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {inv.entityType}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {inv.policy_comments}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {inv.investigator_comments}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {inv.overall_risk_score}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Entity</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Type</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Policy Comments</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Investigator Comments</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Risk Score</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {investigations.map((inv) => (
+                <TableRow 
+                  key={inv.id} 
+                  hover
+                  sx={{ 
+                    '&:hover': { 
+                      backgroundColor: 'primary.50',
+                      '& .MuiTableCell-root': {
+                        borderBottom: '1px solid ' + theme.palette.primary.main
+                      }
+                    }
+                  }}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selected.includes(inv.id)}
+                      onChange={() => handleSelect(inv.id)}
+                      sx={{ color: 'primary.main' }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                      {inv.id}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {inv.entityId}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {getEntityTypeIcon(inv.entityType)}
+                      <Typography variant="body2" color="text.secondary">
+                        {inv.entityType}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 200 }}>
+                      {inv.policy_comments}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 200 }}>
+                      {inv.investigator_comments}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={`${(inv.overall_risk_score * 100).toFixed(0)}%`}
+                      color={getRiskScoreColor(inv.overall_risk_score)}
+                      size="small"
+                      sx={{ fontWeight: 600 }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => handleViewInvestigation(inv.id)}
+                      size="small"
+                      sx={{ 
+                        color: 'primary.main',
+                        '&:hover': { 
+                          backgroundColor: 'primary.50',
+                          color: 'primary.dark'
+                        }
+                      }}
+                    >
+                      <ViewIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      {/* Empty State */}
+      {investigations.length === 0 && !loading && (
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 8,
+          backgroundColor: 'grey.50',
+          borderRadius: 3,
+          border: '2px dashed',
+          borderColor: 'grey.300'
+        }}>
+          <BugReportIcon sx={{ fontSize: 64, color: 'grey.400', mb: 2 }} />
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            No investigations found
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Create your first investigation to get started
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleNewInvestigation}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Create Investigation
+          </Button>
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -23,7 +23,7 @@ from app.persistence import (
     get_investigation,
     update_investigation_llm_thoughts,
 )
-from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
+# from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool  # Chronos removed
 from app.service.agent.tools.di_tool.di_tool import DITool
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
@@ -131,7 +131,8 @@ async def call_chronos_tool(
     import json
     from datetime import datetime, timedelta, timezone
 
-    from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
+    # from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool  # Chronos removed
+    raise HTTPException(status_code=501, detail="Chronos tool has been removed")
 
     default_fields = [
         "sessionId",
@@ -181,19 +182,7 @@ async def call_chronos_tool(
     formatter = "%Y-%m-%dT%H:%M:%S+00:00"
     range_dict = {"from": start.strftime(formatter), "to": now.strftime(formatter)}
 
-    chronos_tool = ChronosTool()
-    try:
-        # Don't override the authentication - let ChronosTool handle it
-        response = await chronos_tool._arun(
-            user_id=user_id,
-            select=select_fields,
-            range=range_dict,
-            extra_headers=incoming_headers,
-        )
-        try:
-            return json.loads(response)
-        except Exception:
-            return {"raw_response": response}
-    except Exception as e:
-        logger.error(f"Chronos tool call failed: {e}")
-        return {"error": f"Chronos tool call failed: {e}"}
+    # chronos_tool = ChronosTool()  # Chronos removed
+    # Chronos functionality has been removed
+    logger.warning("Chronos functionality has been removed")
+    return {"error": "Chronos functionality has been removed", "entities": []}

@@ -1,6 +1,8 @@
 id: 'olorin-webplugin/olorin'
 classification: public
-version: 1.0.0
+version: '1.0.0'
+name: 'Olorin Widget'
+description: 'Olorin Investigation Widget'
 interface:
   description: |
     Displays a basic widget.

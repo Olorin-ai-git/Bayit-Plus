@@ -1,114 +1,242 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
+import useConfig from '../hooks/useConfig';
 
-interface LocationData {
+interface Location {
   lat: number;
   lng: number;
-  type: string;
-  title?: string;
-  description?: string;
+  type: 'customer' | 'business' | 'phone' | 'rss' | 'device';
+  timestamp?: string;
 }
 
 interface LocationMapProps {
-  locations: LocationData[];
+  locations: Location[];
   center?: { lat: number; lng: number };
   zoom?: number;
 }
 
 /**
- * LocationMap component displays location data in a table format
+ * LocationMap component displays various locations on a Google Map
  * @param {LocationMapProps} props - Component props containing location data
- * @returns {JSX.Element} The rendered location table component
+ * @returns {JSX.Element} The rendered map component
  */
 const LocationMap = ({
-  locations = [],
-  center,
-  zoom,
+  locations,
+  center = { lat: 37.7749, lng: -122.4194 }, // Default to San Francisco
+  zoom = 4,
 }: LocationMapProps): JSX.Element => {
-  if (!locations || locations.length === 0) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
+  const config = useConfig();
+  const [error, setError] = useState<string | null>(null);
+
+  // Define marker colors and icons for different location types
+  const locationStyles = {
+    customer: {
+      color: '#4CAF50', // Green
+      icon: '📍',
+    },
+    business: {
+      color: '#2196F3', // Blue
+      icon: '🏢',
+    },
+    phone: {
+      color: '#9C27B0', // Purple
+      icon: '📱',
+    },
+    rss: {
+      color: '#FF9800', // Orange
+      icon: '💻',
+    },
+    device: {
+      color: '#F44336', // Red
+      icon: '💻',
+    },
+  };
+
+  useEffect(() => {
+    /**
+     * Initializes the Google Maps instance and adds markers
+     * @returns {Promise<void>} A promise that resolves when the map is initialized
+     */
+    const initMap = async () => {
+      const apiKey = config.googleMapsApiKey;
+      if (!apiKey) {
+        setError(
+          'Google Maps API key is not configured. Please add it to the plugin configuration.',
+        );
+        return;
+      }
+
+      // Validate locations data
+      const validLocations = locations.filter(
+        (location) =>
+          location &&
+          typeof location.lat === 'number' &&
+          typeof location.lng === 'number' &&
+          location.type in locationStyles,
+      );
+
+      if (validLocations.length === 0) {
+        setError('No valid locations provided to display on the map.');
+        return;
+      }
+
+      const loader = new Loader({
+        apiKey,
+        version: 'weekly',
+        libraries: ['places'],
+      });
+
+      try {
+        const google = await loader.load();
+
+        if (mapRef.current && !mapInstanceRef.current) {
+          mapInstanceRef.current = new google.maps.Map(mapRef.current, {
+            center,
+            zoom,
+            styles: [
+              {
+                featureType: 'poi',
+                elementType: 'labels',
+                stylers: [{ visibility: 'off' }],
+              },
+            ],
+          });
+        }
+
+        // Clear existing markers
+        markersRef.current.forEach((marker) => marker.setMap(null));
+        markersRef.current = [];
+
+        // Add markers for each location
+        validLocations.forEach((location) => {
+          const marker = new google.maps.Marker({
+            position: { lat: location.lat, lng: location.lng },
+            map: mapInstanceRef.current,
+            title: `${location.type} location${
+              location.timestamp ? ` (${location.timestamp})` : ''
+            }`,
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              fillColor: locationStyles[location.type].color,
+              fillOpacity: 1,
+              strokeColor: '#FFFFFF',
+              strokeWeight: 2,
+            },
+          });
+
+          // Add info window with location details
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <div style="padding: 8px;">
+                <strong>${
+                  location.type.charAt(0).toUpperCase() + location.type.slice(1)
+                } Location</strong>
+                ${location.timestamp ? `<br>Time: ${location.timestamp}` : ''}
+                <br>Lat: ${location.lat.toFixed(4)}
+                <br>Lng: ${location.lng.toFixed(4)}
+              </div>
+            `,
+          });
+
+          marker.addListener('click', () => {
+            infoWindow.open(mapInstanceRef.current, marker);
+          });
+
+          markersRef.current.push(marker);
+        });
+
+        // Fit map bounds to show all markers
+        if (validLocations.length > 0) {
+          const bounds = new google.maps.LatLngBounds();
+          validLocations.forEach((location) => {
+            bounds.extend({ lat: location.lat, lng: location.lng });
+          });
+          mapInstanceRef.current?.fitBounds(bounds);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
+        if (errorMessage.includes('InvalidKey')) {
+          setError(
+            'Invalid Google Maps API key. Please check that the key is valid and has the necessary permissions enabled.',
+          );
+        } else if (errorMessage.includes('RefererNotAllowedMapError')) {
+          setError(
+            'The Google Maps API key is not authorized for this domain. Please check the key restrictions.',
+          );
+        } else {
+          setError(`Error loading Google Maps: ${errorMessage}`);
+        }
+      }
+    };
+
+    initMap();
+  }, [locations, center, zoom, config.googleMapsApiKey]);
+
+  if (error) {
     return (
-      <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-        <div className="text-center">
-          <div className="text-gray-500 text-lg mb-2">📍</div>
-          <p className="text-gray-500">No location data available</p>
+      <div
+        className="location-map-container"
+        data-testid="location-map-container"
+      >
+        <div
+          className="error-message"
+          style={{
+            padding: '20px',
+            backgroundColor: '#fee2e2',
+            border: '1px solid #ef4444',
+            borderRadius: '4px',
+            color: '#991b1b',
+            marginBottom: '10px',
+          }}
+        >
+          {error}
+        </div>
+        <div className="location-legend">
+          {Object.entries(locationStyles).map(([type, style]) => (
+            <div key={type} className="legend-item">
+              <span className="legend-icon" style={{ color: style.color }}>
+                {style.icon}
+              </span>
+              <span className="legend-label">
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-        <h3 className="text-lg font-medium text-gray-900">Location Data</h3>
-        {center && (
-          <p className="text-sm text-gray-500 mt-1">
-            Center: {center.lat.toFixed(6)}, {center.lng.toFixed(6)}
-            {zoom && ` | Zoom: ${zoom}`}
-          </p>
-        )}
-      </div>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Coordinates
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {locations.map((location, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    location.type === 'customer' 
-                      ? 'bg-blue-100 text-blue-800'
-                      : location.type === 'merchant'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {location.type}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div className="font-mono">
-                    <div>Lat: {location.lat.toFixed(6)}</div>
-                    <div>Lng: {location.lng.toFixed(6)}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {location.title || '-'}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {location.description || '-'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      
-      <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-        <p className="text-sm text-gray-500">
-          Showing {locations.length} location{locations.length !== 1 ? 's' : ''}
-        </p>
+    <div
+      className="location-map-container"
+      data-testid="location-map-container"
+    >
+      <div ref={mapRef} style={{ width: '100%', height: '400px' }} />
+      <div className="location-legend">
+        {Object.entries(locationStyles).map(([type, style]) => (
+          <div key={type} className="legend-item">
+            <span className="legend-icon" style={{ color: style.color }}>
+              {style.icon}
+            </span>
+            <span className="legend-label">
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 LocationMap.defaultProps = {
-  center: { lat: 0, lng: 0 },
-  zoom: 10,
+  center: { lat: 37.7749, lng: -122.4194 },
+  zoom: 4,
 };
 
 export default LocationMap;

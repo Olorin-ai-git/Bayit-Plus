@@ -35,6 +35,37 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
   };
 
   /**
+   * Generates a unique key for React components to avoid duplicate key warnings.
+   * @param {string} prefix - The prefix for the key
+   * @param {number} index - The index in the array or object
+   * @param {DetailValue} value - The value to include in the key
+   * @param {string} [suffix] - Optional suffix for additional uniqueness
+   * @returns {string} A unique key string
+   */
+  const generateUniqueKey = (
+    prefix: string,
+    index: number,
+    value: DetailValue,
+    suffix?: string,
+  ): string => {
+    let valueStr = '';
+    if (value === null) valueStr = 'null';
+    else if (value === undefined) valueStr = 'undefined';
+    else if (typeof value === 'object') {
+      // Use a hash of the object structure instead of full JSON.stringify
+      valueStr = `obj-${Object.keys(value as object).join('-')}-${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+    } else {
+      valueStr = String(value).substring(0, 50); // Limit length to avoid huge keys
+    }
+
+    const parts = [prefix, index, valueStr];
+    if (suffix) parts.push(suffix);
+    return parts.join('-');
+  };
+
+  /**
    * Renders a value in a user-friendly way for the details table.
    * @param {DetailValue} value - The value to render
    * @returns {JSX.Element} The rendered value
@@ -63,8 +94,10 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
     if (Array.isArray(value)) {
       return (
         <ul className="list-disc pl-4 space-y-1">
-          {value.map((item) => (
-            <li key={JSON.stringify(item)}>{renderValue(item)}</li>
+          {value.map((item, index) => (
+            <li key={generateUniqueKey('array-item', index, item)}>
+              {renderValue(item)}
+            </li>
           ))}
         </ul>
       );
@@ -73,8 +106,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
     if (typeof value === 'object') {
       return (
         <div className="pl-4 border-l-2 border-gray-200">
-          {Object.entries(value).map(([key, val]) => (
-            <div key={JSON.stringify(val)} className="py-1">
+          {Object.entries(value).map(([key, val], index) => (
+            <div
+              key={generateUniqueKey('object', index, val, key)}
+              className="py-1"
+            >
               <span className="font-medium text-gray-900">{key}: </span>
               {renderValue(val)}
             </div>
@@ -120,9 +156,9 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Splunk Locations
             </div>
             <div className="space-y-2">
-              {splunk_locations_array.map((info: any) => (
+              {splunk_locations_array.map((info: any, index: number) => (
                 <div
-                  key={JSON.stringify(info)}
+                  key={generateUniqueKey('splunk-location', index, info)}
                   className="pl-4 border-l-2 border-gray-200"
                 >
                   <div className="font-medium text-gray-700 mb-1">
@@ -178,8 +214,16 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
               {Object.entries(location_signal_risk_assessment).map(
-                ([key, value]) => (
-                  <div key={JSON.stringify(value)} className="py-1">
+                ([key, value], index) => (
+                  <div
+                    key={generateUniqueKey(
+                      'location-signal',
+                      index,
+                      value,
+                      key,
+                    )}
+                    className="py-1"
+                  >
                     <span className="font-medium text-gray-900">
                       {labelMap[key] || key}:{' '}
                     </span>
@@ -196,8 +240,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">LLM Thoughts</div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(llm_thoughts).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(llm_thoughts).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey('llm-thoughts', index, value, key)}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">
                     {labelMap[key] || key}:{' '}
                   </span>
@@ -223,8 +270,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
         {/* Additional Details - only show non-null values */}
         {Object.entries(rest)
           .filter(([, value]) => value !== null && value !== undefined)
-          .map(([, value]) => (
-            <div key={JSON.stringify(value)} className="py-1">
+          .map(([key, value], index) => (
+            <div
+              key={generateUniqueKey('rest', index, value, key)}
+              className="py-1"
+            >
               {renderValue(value as DetailValue)}
             </div>
           ))}
@@ -257,26 +307,37 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Extracted Network Signals
             </div>
             <div className="space-y-2">
-              {extracted_network_signals_array.map((signal: any) => (
-                <div
-                  key={JSON.stringify(signal)}
-                  className="pl-4 border-l-2 border-gray-200"
-                >
-                  {Object.entries(signal).map(([key, value]) => (
-                    <div
-                      key={JSON.stringify(value)}
-                      className="flex items-start"
-                    >
-                      <span className="font-medium text-gray-600 w-32">
-                        {key}:
-                      </span>
-                      <span className="text-gray-700">
-                        {value === null ? 'null' : String(value)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ))}
+              {extracted_network_signals_array.map(
+                (signal: any, signalIndex: number) => (
+                  <div
+                    key={generateUniqueKey(
+                      'network-signal',
+                      signalIndex,
+                      signal,
+                    )}
+                    className="pl-4 border-l-2 border-gray-200"
+                  >
+                    {Object.entries(signal).map(([key, value], entryIndex) => (
+                      <div
+                        key={generateUniqueKey(
+                          'network-signal-entry',
+                          entryIndex,
+                          value as DetailValue,
+                          `${signalIndex}-${key}`,
+                        )}
+                        className="flex items-start"
+                      >
+                        <span className="font-medium text-gray-600 w-32">
+                          {key}:
+                        </span>
+                        <span className="text-gray-700">
+                          {value === null ? 'null' : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ),
+              )}
             </div>
           </div>
         )}
@@ -287,14 +348,19 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Network Risk Assessment
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(network_risk_assessment).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
-                  <span className="font-medium text-gray-900">
-                    {labelMap[key] || key}:{' '}
-                  </span>
-                  {renderValue(value)}
-                </div>
-              ))}
+              {Object.entries(network_risk_assessment).map(
+                ([key, value], index) => (
+                  <div
+                    key={generateUniqueKey('network-risk', index, value, key)}
+                    className="py-1"
+                  >
+                    <span className="font-medium text-gray-900">
+                      {labelMap[key] || key}:{' '}
+                    </span>
+                    {renderValue(value)}
+                  </div>
+                ),
+              )}
             </div>
           </div>
         )}
@@ -305,8 +371,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Additional Information
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(rest).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(rest).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey('network-rest', index, value, key)}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">{key}: </span>
                   {renderValue(value as DetailValue)}
                 </div>
@@ -327,6 +396,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       raw_splunk_results = [],
       extracted_device_signals = [],
       device_signal_risk_assessment,
+      chronos_warning,
       di_tool_warning,
       llm_thoughts,
       // Legacy fields for backward compatibility
@@ -334,6 +404,8 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       device_history,
       risk_assessment,
       di_bb,
+      chronos_data,
+      parsed_chronos,
       ...rest
     } = details;
 
@@ -349,6 +421,8 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       ? device_history
       : [];
     const di_bb_object = typeof di_bb === 'object' ? di_bb : {};
+    const chronos_data_object =
+      typeof chronos_data === 'object' ? chronos_data : {};
     const anomalies_array = Array.isArray(details.anomalies)
       ? details.anomalies
       : [];
@@ -366,7 +440,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                 .slice(0, 5)
                 .map((result: any, index: number) => (
                   <div
-                    key={JSON.stringify(result)}
+                    key={generateUniqueKey('splunk-result', index, result)}
                     className="pl-4 border-l-2 border-gray-200 text-xs"
                   >
                     <div className="font-medium text-gray-700 mb-1">
@@ -401,8 +475,8 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                         {result.tm_sessionid || 'N/A'}
                       </div>
                       <div>
-                        <span className="font-medium">Olorin TID:</span>{' '}
-                        {result.olorin_tid}
+                        <span className="font-medium">Intuit TID:</span>{' '}
+                        {result.intuit_tid}
                       </div>
                     </div>
                   </div>
@@ -424,50 +498,54 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               signals)
             </div>
             <div className="space-y-2">
-              {extracted_device_signals_array.map((signal: any) => (
-                <div
-                  key={JSON.stringify(signal)}
-                  className="pl-4 border-l-2 border-gray-200"
-                >
-                  <div className="font-medium text-gray-700 mb-1">
-                    {signal.fuzzy_device_id || signal.olorin_tid}
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    {signal.true_ip && (
+              {extracted_device_signals_array.map(
+                (signal: any, index: number) => (
+                  <div
+                    key={generateUniqueKey('device-signal', index, signal)}
+                    className="pl-4 border-l-2 border-gray-200"
+                  >
+                    <div className="font-medium text-gray-700 mb-1">
+                      {signal.fuzzy_device_id || signal.intuit_tid}
+                    </div>
+                    <div className="space-y-1 text-sm">
+                      {signal.true_ip && (
+                        <div>
+                          <span className="font-medium text-gray-600">IP:</span>{' '}
+                          {signal.true_ip}
+                        </div>
+                      )}
+                      {signal.true_ip_city && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            City:
+                          </span>{' '}
+                          {signal.true_ip_city}
+                        </div>
+                      )}
+                      {signal.true_ip_region && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Region:
+                          </span>{' '}
+                          {signal.true_ip_region}
+                        </div>
+                      )}
+                      {signal.tm_sessionid && (
+                        <div>
+                          <span className="font-medium text-gray-600">
+                            Session:
+                          </span>{' '}
+                          {signal.tm_sessionid}
+                        </div>
+                      )}
                       <div>
-                        <span className="font-medium text-gray-600">IP:</span>{' '}
-                        {signal.true_ip}
+                        <span className="font-medium text-gray-600">Time:</span>{' '}
+                        {signal.time}
                       </div>
-                    )}
-                    {signal.true_ip_city && (
-                      <div>
-                        <span className="font-medium text-gray-600">City:</span>{' '}
-                        {signal.true_ip_city}
-                      </div>
-                    )}
-                    {signal.true_ip_region && (
-                      <div>
-                        <span className="font-medium text-gray-600">
-                          Region:
-                        </span>{' '}
-                        {signal.true_ip_region}
-                      </div>
-                    )}
-                    {signal.tm_sessionid && (
-                      <div>
-                        <span className="font-medium text-gray-600">
-                          Session:
-                        </span>{' '}
-                        {signal.tm_sessionid}
-                      </div>
-                    )}
-                    <div>
-                      <span className="font-medium text-gray-600">Time:</span>{' '}
-                      {signal.time}
                     </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
         )}
@@ -480,8 +558,16 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
               {Object.entries(device_signal_risk_assessment).map(
-                ([key, value]) => (
-                  <div key={JSON.stringify(value)} className="py-1">
+                ([key, value], index) => (
+                  <div
+                    key={generateUniqueKey(
+                      'device-signal-risk',
+                      index,
+                      value,
+                      key,
+                    )}
+                    className="py-1"
+                  >
                     <span className="font-medium text-gray-900">
                       {labelMap[key] || key}:{' '}
                     </span>
@@ -494,26 +580,29 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
         )}
 
         {/* Warnings */}
-        {di_tool_warning && (
-          <div className="bg-yellow-50 rounded-lg p-4">
-            <div className="font-medium text-gray-900 mb-2">Warnings</div>
-            <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-              {di_tool_warning && (
-                <div className="text-yellow-800">
-                  <span className="font-medium">DI Tool Warning: </span>
-                  {renderValue(di_tool_warning)}
-                </div>
-              )}
-            </div>
+        <div className="bg-yellow-50 rounded-lg p-4">
+          <div className="font-medium text-gray-900 mb-2">Warnings</div>
+          <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
+            {(chronos_warning || di_tool_warning) && (
+              <div className="text-yellow-800">
+                <span>
+                  {chronos_warning && `Chronos Warning: ${chronos_warning}`}
+                  {chronos_warning && di_tool_warning && ' | '}
+                  {di_tool_warning && `DI Tool Warning: ${di_tool_warning}`}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* LLM Thoughts */}
         {llm_thoughts && (
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">LLM Thoughts</div>
             <div className="pl-4 border-l-2 border-blue-300">
-              <div className="text-blue-800">{renderValue(llm_thoughts)}</div>
+              <div className="text-blue-800">
+                {typeof llm_thoughts === 'string' ? llm_thoughts : JSON.stringify(llm_thoughts)}
+              </div>
             </div>
           </div>
         )}
@@ -523,8 +612,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Current Device</div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(current_device).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(current_device).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey('current-device', index, value, key)}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">{key}: </span>
                   {renderValue(value)}
                 </div>
@@ -538,19 +630,35 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Device History</div>
             <div className="space-y-2">
-              {device_history_array.map((history: any) => (
-                <div
-                  key={JSON.stringify(history)}
-                  className="pl-4 border-l-2 border-gray-200"
-                >
-                  {Object.entries(history).map(([key, value]) => (
-                    <div key={JSON.stringify(value)} className="py-1">
-                      <span className="font-medium text-gray-900">{key}: </span>
-                      {renderValue(value as DetailValue)}
-                    </div>
-                  ))}
-                </div>
-              ))}
+              {device_history_array.map(
+                (history: any, historyIndex: number) => (
+                  <div
+                    key={generateUniqueKey(
+                      'device-history',
+                      historyIndex,
+                      history,
+                    )}
+                    className="pl-4 border-l-2 border-gray-200"
+                  >
+                    {Object.entries(history).map(([key, value], entryIndex) => (
+                      <div
+                        key={generateUniqueKey(
+                          'device-history-entry',
+                          entryIndex,
+                          value as DetailValue,
+                          `${historyIndex}-${key}`,
+                        )}
+                        className="py-1"
+                      >
+                        <span className="font-medium text-gray-900">
+                          {key}:{' '}
+                        </span>
+                        {renderValue(value as DetailValue)}
+                      </div>
+                    ))}
+                  </div>
+                ),
+              )}
             </div>
           </div>
         )}
@@ -562,8 +670,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Risk Assessment
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(risk_assessment).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(risk_assessment).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey('risk-assessment', index, value, key)}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">
                     {labelMap[key] || key}:{' '}
                   </span>
@@ -601,8 +712,16 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Additional Information
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(rest).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(rest).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey(
+                    'device-additional',
+                    index,
+                    value as DetailValue,
+                    key,
+                  )}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">{key}: </span>
                   {renderValue(value as DetailValue)}
                 </div>
@@ -633,12 +752,22 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Behavior Patterns
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(behavior_patterns_object).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
-                  <span className="font-medium text-gray-900">{key}: </span>
-                  {renderValue(value as DetailValue)}
-                </div>
-              ))}
+              {Object.entries(behavior_patterns_object).map(
+                ([key, value], index) => (
+                  <div
+                    key={generateUniqueKey(
+                      'behavior-pattern',
+                      index,
+                      value,
+                      key,
+                    )}
+                    className="py-1"
+                  >
+                    <span className="font-medium text-gray-900">{key}: </span>
+                    {renderValue(value as DetailValue)}
+                  </div>
+                ),
+              )}
             </div>
           </div>
         )}
@@ -648,13 +777,21 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Anomalies</div>
             <div className="space-y-2">
-              {anomalies_array.map((anomaly: any) => (
+              {anomalies_array.map((anomaly: any, anomalyIndex: number) => (
                 <div
-                  key={JSON.stringify(anomaly)}
+                  key={generateUniqueKey('anomaly', anomalyIndex, anomaly)}
                   className="pl-4 border-l-2 border-gray-200"
                 >
-                  {Object.entries(anomaly).map(([key, value]) => (
-                    <div key={JSON.stringify(value)} className="py-1">
+                  {Object.entries(anomaly).map(([key, value], index) => (
+                    <div
+                      key={generateUniqueKey(
+                        'anomaly-entry',
+                        index,
+                        value as DetailValue,
+                        `${anomalyIndex}-${key}`,
+                      )}
+                      className="py-1"
+                    >
                       <span className="font-medium text-gray-900">{key}: </span>
                       {renderValue(value as DetailValue)}
                     </div>
@@ -672,8 +809,11 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Risk Assessment
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(risk_assessment).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(risk_assessment).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey('log-risk', index, value, key)}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">
                     {labelMap[key] || key}:{' '}
                   </span>
@@ -691,8 +831,16 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
               Additional Information
             </div>
             <div className="pl-4 border-l-2 border-gray-200">
-              {Object.entries(rest).map(([key, value]) => (
-                <div key={JSON.stringify(value)} className="py-1">
+              {Object.entries(rest).map(([key, value], index) => (
+                <div
+                  key={generateUniqueKey(
+                    'log-additional',
+                    index,
+                    value as DetailValue,
+                    key,
+                  )}
+                  className="py-1"
+                >
                   <span className="font-medium text-gray-900">{key}: </span>
                   {renderValue(value as DetailValue)}
                 </div>
@@ -721,9 +869,9 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       default:
         return (
           <div className="space-y-4">
-            {Object.entries(details).map(([key, value]) => (
+            {Object.entries(details).map(([key, value], index) => (
               <div
-                key={JSON.stringify(key) + JSON.stringify(value)}
+                key={generateUniqueKey('default', index, value, key)}
                 className="bg-gray-50 rounded-lg p-4"
               >
                 <div className="font-medium text-gray-900 mb-2">{key}</div>

@@ -1,4 +1,6 @@
 import { CommentMessage } from '../components/CommentWindow';
+import { processCommentData } from '../utils/investigationDataUtils';
+import { CommentResponse } from '../types/ApiResponses';
 
 /**
  * Saves a comment for a given investigation and user.
@@ -13,8 +15,8 @@ export async function saveComment(
   entityId: string,
   entityType: string,
   message: Omit<CommentMessage, 'investigationId' | 'entityId' | 'entityType'>,
-) {
-  const res = await fetch(`/investigation/${investigationId}/comment`, {
+): Promise<CommentMessage> {
+  const res = await fetch(`/api/investigation/${investigationId}/comment`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -24,7 +26,10 @@ export async function saveComment(
     }),
   });
   if (!res.ok) throw new Error('Failed to save comment');
-  return res.json();
+  const data = await res.json();
+  const processedData = processCommentData(data);
+  // Return first item since save returns a single comment
+  return processedData[0];
 }
 
 /**
@@ -38,12 +43,13 @@ export async function fetchCommentMessages(
   entityType: string = 'user_id',
 ): Promise<CommentMessage[]> {
   const res = await fetch(
-    `/investigation/${investigationId}/comment?entity_type=${encodeURIComponent(
+    `/api/investigation/${investigationId}/comment?entity_type=${encodeURIComponent(
       entityType,
     )}`,
   );
   if (!res.ok) throw new Error('Failed to fetch comment messages');
-  return res.json();
+  const data = await res.json();
+  return processCommentData(data);
 }
 
 // Alias for compatibility with old usage
@@ -119,12 +125,13 @@ export async function fetchCommentLog(
     ];
   }
   const res = await fetch(
-    `/investigation/${investigationId}/comment?sender=${encodeURIComponent(
+    `/api/investigation/${investigationId}/comment?sender=${encodeURIComponent(
       sender,
     )}&entity_type=${encodeURIComponent(entityType)}`,
   );
   if (!res.ok) throw new Error('Failed to fetch comment log');
-  return res.json();
+  const data = await res.json();
+  return processCommentData(data);
 }
 
 export const getMockMessages = (
@@ -204,6 +211,6 @@ export async function saveChatMessage(
   entityId: string,
   entityType: string,
   message: Omit<CommentMessage, 'investigationId' | 'entityId' | 'entityType'>,
-) {
+): Promise<CommentMessage> {
   return saveComment(investigationId, entityId, entityType, message);
 }

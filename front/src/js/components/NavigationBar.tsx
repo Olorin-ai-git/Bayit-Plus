@@ -1,13 +1,13 @@
 import React from 'react';
-import { MdSearch, MdListAlt, MdSettings } from 'react-icons/md';
+import { MdSearch, MdListAlt, MdSettings, MdCode } from 'react-icons/md';
 
 /**
  * Props for the NavigationBar component.
  */
 interface NavigationBarProps {
-  activeTab: 'investigation' | 'investigations' | 'settings';
+  activeTab: 'investigation' | 'investigations' | 'settings' | 'mcp';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onTabChange: (tab: 'investigation' | 'investigations' | 'settings') => void;
+  onTabChange: (tab: 'investigation' | 'investigations' | 'settings' | 'mcp') => void;
 }
 
 /**
@@ -58,6 +58,26 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
       </button>
       <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
         All Investigations
+      </div>
+    </div>
+    <div className="relative group mb-4 w-full flex justify-center">
+      <button
+        type="button"
+        className={`flex flex-col items-center px-2 py-4 rounded-lg transition-colors duration-200 w-16 ${
+          activeTab === 'mcp'
+            ? 'bg-blue-100 text-blue-700'
+            : 'text-gray-700 hover:bg-gray-100'
+        }`}
+        onClick={() => onTabChange('mcp')}
+        aria-label="MCP Client"
+      >
+        {React.createElement(MdCode as unknown as React.ElementType, {
+          size: 28,
+        })}
+        <span className="sr-only">MCP Client</span>
+      </button>
+      <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
+        MCP Client
       </div>
     </div>
     <div className="relative group w-full flex justify-center">

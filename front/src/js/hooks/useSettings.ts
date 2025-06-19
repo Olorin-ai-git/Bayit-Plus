@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
  * Persisted settings for the Olorin Web Plugin.
  */
 export interface Settings {
-  /** Default entity type for investigations (auth_id or device_id) */
-  defaultEntityType: 'auth_id' | 'device_id';
+  /** Default entity type for investigations (user_id or device_id) */
+  defaultEntityType: 'user_id' | 'device_id';
   /** Agents selected by default for investigations */
   selectedAgents: string[];
   /** Prefix text to prepend to comments */
@@ -34,7 +34,7 @@ export function useSettings(): [
       // ignore
     }
     return {
-      defaultEntityType: 'device_id',
+      defaultEntityType: 'user_id',
       selectedAgents: [],
       commentPrefix: '',
       agentToolsMapping: {},

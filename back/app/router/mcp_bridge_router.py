@@ -195,9 +195,6 @@ async def lookup_identity(user_id: str):
     return await call_tool("identity_info_tool", request, BackgroundTasks())
 
 
-
-
-
 @router.post("/web/search")
 async def web_search(query: str, max_results: int = 10):
     """Perform web search."""

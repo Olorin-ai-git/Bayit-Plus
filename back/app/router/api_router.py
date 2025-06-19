@@ -110,6 +110,7 @@ from .comment_router import comment_router
 from .demo_router import router as demo_router
 from .location_router import router as location_router
 from .logs_router import router as logs_router
+from .mcp_http_router import router as mcp_http_router
 
 # --- IMPORT NEW ROUTERS ---
 from .network_router import router as network_router
@@ -122,6 +123,7 @@ router.include_router(location_router)
 router.include_router(demo_router)
 router.include_router(comment_router)
 router.include_router(logs_router)
+router.include_router(mcp_http_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
 

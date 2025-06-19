@@ -16,7 +16,7 @@ from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor impo
     _build_auth_id_query,
     build_base_search,
 )
-from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
+# from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool  # Chronos removed
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.config import get_settings_for_env
 from app.service.llm_logs_risk_service import LLMLogsRiskService, LogsRiskAssessment
@@ -293,23 +293,10 @@ class LogsAnalysisService:
             "tmResponse.tmxReasonCodes",
         ]
 
-        chronos_tool = ChronosTool()
-        chronos_response_str = None
-        chronos_response = None
-
-        try:
-            chronos_response_str = await chronos_tool._arun(
-                user_id=user_id, select=chronos_fields
-            )
-            chronos_response = json.loads(chronos_response_str)
-        except Exception as e:
-            logger.warning(f"Chronos tool error: {str(e)}")
-            chronos_response = {"entities": []}
-
-        if chronos_response is None:
-            chronos_response = {"entities": []}
-
-        return chronos_response.get("entities", [])
+        # chronos_tool = ChronosTool()  # Chronos removed
+        # Chronos functionality has been removed - return empty entities
+        logger.warning("Chronos functionality has been removed")
+        return []
 
     async def _process_llm_assessment(
         self,

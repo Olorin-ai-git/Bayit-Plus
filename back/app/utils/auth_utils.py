@@ -54,7 +54,7 @@ def get_auth_token():
     """Using test client and user specifically created for GED."""
     try:
         appId = settings_for_env.app_id
-        password = get_app_secret("gaia/test_user_pwd")
+        password = get_app_secret("olorin/test_user_pwd")
         url = "https://identityinternal-e2e.api.olorin.com/signin/graphql"
         payload = json.dumps(
             {

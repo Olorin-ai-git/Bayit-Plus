@@ -223,13 +223,19 @@ class OlorinMCPServer:
         
         try:
             if transport_uri == "stdio://":
-                # Run with stdio transport (most common for MCP)
+                # Run with stdio transport, but keep it alive
                 from mcp.server.stdio import stdio_server
-                async with stdio_server() as (read_stream, write_stream):
-                    await self.server.run(
-                        read_stream, write_stream, 
-                        self.server.create_initialization_options()
-                    )
+                while True:  # Keep the server running
+                    try:
+                        async with stdio_server() as (read_stream, write_stream):
+                            await self.server.run(
+                                read_stream, write_stream,
+                                self.server.create_initialization_options()
+                            )
+                    except Exception as loop_error:
+                        logger.error(f"Error in stdio server loop: {loop_error}")
+                        logger.error("Restarting stdio listener in 5 seconds...")
+                        await asyncio.sleep(5)
             else:
                 # Handle other transport types if needed
                 logger.error(f"Unsupported transport: {transport_uri}")

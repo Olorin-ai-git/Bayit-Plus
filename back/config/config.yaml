@@ -3,6 +3,8 @@ system:
   log_level: INFO
   debug_mode: false
   api_port: 8080
+  expose_metrics: true
+  mesh_port: 8091
   
 thresholds:
   risk_score: 0.6

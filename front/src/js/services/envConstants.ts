@@ -1,42 +1,77 @@
-// Environment constants without AppFabric dependencies
-
-export interface EnvConfig {
-  baseUrl: string;
-  timeout?: number;
-  apiVersion?: string;
+export interface Sandbox {
+  env?: string;
+  logger?: {
+    log: (message: string) => void;
+    error: (message: string) => void;
+  };
+  pluginConfig?: {
+    extendedProperties?: {
+      API_KEY?: string;
+    };
+  };
+  on?: (event: string, handler: (data: any) => void) => void;
+  off?: (event: string, handler: (data: any) => void) => void;
+  send?: (event: string, data: any) => void;
 }
+
+export interface RestClientConfig {
+  baseUrl: string;
+  apiKey?: string;
+  authType?: string;
+  onRequestStart?: any;
+  onRequestEnd?: any;
+  noRetry?: boolean;
+}
+
+export type StaticRestClientConfig = Omit<RestClientConfig, 'sandbox'>;
 
 /**
- * Get environment configuration for a service
- * @param context - Not used in standalone version
- * @param serviceName - Name of the service
- * @returns Environment configuration
+ * Environment configuration for different services.
  */
-export function getEnvConfig(context: any, serviceName: string): EnvConfig {
-  // Default configuration - can be overridden by environment variables
-  const defaultConfig: EnvConfig = {
-    baseUrl: process.env.REACT_APP_OLORIN_API_URL || 'http://localhost:8000',
-    timeout: 30000,
-    apiVersion: 'v1',
-  };
+type Service = 'olorin';
 
-  // You can add environment-specific logic here
-  const environment = process.env.NODE_ENV || 'development';
-  
-  switch (environment) {
-    case 'production':
-      return {
-        ...defaultConfig,
-        baseUrl: process.env.REACT_APP_OLORIN_API_URL || 'https://api.olorin.com',
-      };
-    case 'staging':
-      return {
-        ...defaultConfig,
-        baseUrl: process.env.REACT_APP_OLORIN_API_URL || 'https://staging-api.olorin.com',
-      };
-    default:
-      return defaultConfig;
-  }
+type Environment = 'e2e' | 'qal' | 'prod';
+
+interface ServiceConfig {
+  baseUrl: string;
 }
 
-export default getEnvConfig;
+const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
+  e2e: {
+    olorin: {
+      baseUrl: 'https://olorin-e2e.api.intuit.com',
+    },
+  },
+  qal: {
+    olorin: {
+      baseUrl: 'https://olorin-qal.api.intuit.com',
+    },
+  },
+  prod: {
+    olorin: {
+      baseUrl: 'https://olorin-e2e.api.intuit.com',
+    },
+  },
+};
+
+/**
+ * Get environment configuration for a service.
+ * @param {Sandbox} sandbox - The web-shell sandbox.
+ * @param {Service} service - The service name.
+ * @returns {ServiceConfig} The service configuration.
+ */
+export const getEnvConfig = (sandbox: Sandbox, service: Service): ServiceConfig => {
+  const env = sandbox.env || 'e2e';
+  return ENV_CONFIG[env as Environment]?.[service] || ENV_CONFIG.e2e[service];
+};
+
+/**
+ * get environment config data
+ * @param {string} environment : environment
+ * @returns {RestClientConfig} envConfig
+ */
+const getEnvConfigData = (
+  environment: string,
+): Record<Service, StaticRestClientConfig> => ENV_CONFIG[environment as Environment];
+
+export { getEnvConfigData };

@@ -3,10 +3,13 @@ import useSandbox from './useSandbox';
 /**
  * This is an addition to ./useSandbox and it returns
  * the config part from sandbox context. In other words it
- * returns sandbox.pluginConfig.extendedProperties
- * @returns {Record<string, any>} Extended properties from config
+ * abstracts out where the config is coming from.
+ *
+ * @returns {Record} environment specific config
  */
-export default (): Record<string, any> => {
+const useConfig = (): Record<string, any> => {
   const sandbox = useSandbox();
-  return sandbox.pluginConfig.extendedProperties || {};
+  return sandbox.pluginConfig?.extendedProperties || {};
 };
+
+export default useConfig;

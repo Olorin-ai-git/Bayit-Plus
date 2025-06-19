@@ -7,6 +7,8 @@ export interface MCPTool {
   name: string;
   description: string;
   inputSchema: Record<string, any>;
+  schema?: Record<string, any>;
+  category?: string;
 }
 
 export interface MCPResource {
@@ -32,7 +34,7 @@ export interface MCPServerInfo {
   enabled_categories: string[];
 }
 
-class MCPClient {
+export class MCPClient {
   private baseUrl: string;
   private isConnected: boolean = false;
   private tools: MCPTool[] = [];
@@ -133,7 +135,7 @@ class MCPClient {
   /**
    * Call a tool with arguments
    */
-  async callTool(toolName: string, arguments: Record<string, any>): Promise<MCPToolResult> {
+  async callTool(toolName: string, args: Record<string, any>): Promise<MCPToolResult> {
     if (!this.isConnected) {
       throw new Error('MCP client not connected. Call connect() first.');
     }
@@ -144,7 +146,7 @@ class MCPClient {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ arguments })
+        body: JSON.stringify({ arguments: args })
       });
 
       if (!response.ok) {

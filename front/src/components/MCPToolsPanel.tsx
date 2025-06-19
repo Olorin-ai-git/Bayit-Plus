@@ -111,7 +111,7 @@ const MCPToolsPanel: React.FC<MCPToolsPanelProps> = ({ className = '' }) => {
           <div key={key} className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               {key}
-              {tool.schema.required?.includes(key) && <span className="text-red-500">*</span>}
+              {tool.schema?.required?.includes(key) && <span className="text-red-500">*</span>}
             </label>
             <div className="text-xs text-gray-500">{schema.description}</div>
             
