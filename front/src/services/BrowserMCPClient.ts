@@ -5,6 +5,7 @@
 
 export interface MCPTool {
   name: string;
+  display_name?: string;
   description: string;
   inputSchema: {
     type: string;
@@ -47,7 +48,7 @@ export class BrowserMCPClient {
   private resources: MCPResource[] = [];
   private isConnected: boolean = false;
 
-  constructor(baseUrl: string = 'http://localhost:8000') {
+  constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
   }
 

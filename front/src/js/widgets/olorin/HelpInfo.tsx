@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Button, Chip } from '@mui/material';
-import styled from 'styled-components';
+import { Button, Chip, Typography, Divider, Box, List, ListItem, ListItemText } from '@mui/material';
 
 // Simplified interface
 interface Sandbox {
@@ -8,13 +7,6 @@ interface Sandbox {
     log: (message: string) => void;
   };
 }
-
-const StyledHR = styled.hr`
-  border: 0;
-  height: 1px;
-  background: #e5e7eb;
-  margin: 1rem 0;
-`;
 
 interface HelpInfoProps {
   sandbox?: Sandbox;
@@ -28,50 +20,68 @@ const HelpInfo: React.FC<HelpInfoProps> = ({ sandbox, children }) => {
   };
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0 }}>Olorin Investigation Platform</h2>
+    <Box sx={{ p: 2, maxWidth: 600 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+          Olorin Investigation Platform
+        </Typography>
         <Chip label="v1.0.0" color="success" size="small" />
-      </div>
+      </Box>
       
-      <StyledHR />
+      <Divider sx={{ my: 2 }} />
       
-      <div style={{ marginBottom: '1rem' }}>
-        <h3>About</h3>
-        <p>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" component="h3" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+          About
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
           Olorin is an AI-powered fraud investigation platform that provides autonomous 
           and manual investigation capabilities for detecting and assessing security risks.
-        </p>
-      </div>
+        </Typography>
+      </Box>
       
-      <div style={{ marginBottom: '1rem' }}>
-        <h3>Features</h3>
-        <ul style={{ paddingLeft: '1.5rem' }}>
-          <li>Autonomous investigation with multiple AI agents</li>
-          <li>Real-time risk assessment and scoring</li>
-          <li>Comprehensive logging and audit trails</li>
-          <li>Integration with multiple data sources</li>
-          <li>Customizable investigation workflows</li>
-        </ul>
-      </div>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" component="h3" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+          Features
+        </Typography>
+        <List dense>
+          <ListItem>
+            <ListItemText primary="Autonomous investigation with multiple AI agents" />
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Real-time risk assessment and scoring" />
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Comprehensive logging and audit trails" />
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Integration with multiple data sources" />
+          </ListItem>
+          <ListItem>
+            <ListItemText primary="Customizable investigation workflows" />
+          </ListItem>
+        </List>
+      </Box>
       
-      <div style={{ marginBottom: '1rem' }}>
-        <h3>Getting Started</h3>
-        <p>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" component="h3" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+          Getting Started
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
           To start an investigation, navigate to the Investigations tab and create a new 
           investigation for a user or device ID. The system will automatically run 
           multiple agents to assess risk and provide detailed analysis.
-        </p>
-      </div>
+        </Typography>
+      </Box>
       
       {children}
       
-      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+      <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Button onClick={handleHelpClick} variant="outlined">
           Get More Help
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -19,6 +19,7 @@ import { InvestigationStepId, StepStatus } from '../constants/definitions';
 import { OlorinService } from '../services/OlorinService';
 import AgentLogSidebar from '../components/AgentLogSidebar';
 import EditStepsModal from '../components/EditStepsModal';
+import ToolsSidebar from '../components/ToolsSidebar';
 import { updateStepStatus } from '../utils/investigation';
 import { DEFAULT_USER_ID } from '../constants/definitions';
 import '../components/LocationMap.css';
@@ -42,6 +43,7 @@ import {
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
 import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
+import { useStepTools } from '../hooks/useStepTools';
 
 /**
  * Represents a single log entry in the investigation.
@@ -99,6 +101,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const theme = useTheme();
   const sandbox = useSandboxContext();
   const api = useMemo(() => new OlorinService(sandbox, false), [sandbox]);
+  const [getToolsForStep] = useStepTools();
   const [userId, setUserId] = useState(DEFAULT_USER_ID);
   const [hasDemoOffCalled, setHasDemoOffCalled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -1329,6 +1332,27 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     'Investigator' | 'Policy Team'
   >('Investigator');
 
+  // Tools sidebar state
+  const [toolsSidebarOpen, setToolsSidebarOpen] = useState(false);
+  const [selectedStepForTools, setSelectedStepForTools] = useState<InvestigationStep | null>(null);
+
+  /**
+   * Handler for opening the tools sidebar with a specific step
+   * @param {InvestigationStep} step - The step to configure tools for
+   */
+  const handleOpenToolsForStep = (step: InvestigationStep) => {
+    setSelectedStepForTools(step);
+    setToolsSidebarOpen(true);
+  };
+
+  /**
+   * Handler for closing the tools sidebar
+   */
+  const handleCloseToolsSidebar = () => {
+    setToolsSidebarOpen(false);
+    setSelectedStepForTools(null);
+  };
+
   /**
    * Handler for sending investigator chat messages
    * @param {string} text - The message text
@@ -1826,6 +1850,15 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
               onLogDisplayed={handleLogDisplayed}
             />
       </Paper>
+      
+      {/* Tools Sidebar */}
+      <ToolsSidebar
+        isOpen={toolsSidebarOpen}
+        onClose={handleCloseToolsSidebar}
+        selectedStep={selectedStepForTools}
+        width={320}
+      />
+      
       {/* ... other overlays/modals ... */}
       <EditStepsModal
         isOpen={isEditModalOpen}
@@ -1833,6 +1866,12 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         allSteps={allPossibleSteps}
         selectedSteps={selectedInvestigationSteps}
         onSave={(selected) => {
+          // Update each step with its selected tools
+          const stepsWithTools = selected.map(step => ({
+            ...step,
+            tools: getToolsForStep(step.id, step.agent)
+          }));
+          
           // Always include Risk Assessment step
           const riskStep = {
             id: InvestigationStepId.RISK,
@@ -1843,10 +1882,11 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             status: StepStatus.PENDING,
             details: {},
             timestamp: new Date().toISOString(),
-            tools: [],
+            tools: getToolsForStep(InvestigationStepId.RISK, 'Risk Assessment Agent'),
           };
+          
           // Ensure Risk Assessment is always the last step
-          const updatedSteps = [...selected].filter(
+          const updatedSteps = [...stepsWithTools].filter(
             (step) => step.id !== InvestigationStepId.RISK,
           );
           updatedSteps.push(riskStep);

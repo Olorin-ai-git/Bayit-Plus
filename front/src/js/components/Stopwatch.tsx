@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { AccessTime } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 interface StopwatchProps {
   startTime: Date | null;
@@ -19,6 +20,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   className = '',
 }) => {
   const [elapsedTime, setElapsedTime] = useState<string>('0m 0s');
+  const theme = useTheme();
 
   useEffect(() => {
     if (!startTime) return;
@@ -53,9 +55,12 @@ const Stopwatch: React.FC<StopwatchProps> = ({
         icon={<AccessTime />}
         label={elapsedTime}
         size="small"
-        sx={{ 
-          fontFamily: 'monospace',
+        sx={{
+          fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
           backgroundColor: 'action.hover',
+          '& .MuiChip-label': {
+            fontWeight: 500,
+          },
           '& .MuiChip-icon': {
             fontSize: '1rem'
           }

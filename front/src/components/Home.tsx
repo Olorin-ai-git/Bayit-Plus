@@ -5,7 +5,7 @@ import {
   Search as SearchIcon,
   BugReport as BugReportIcon,
   Settings as SettingsIcon,
-  Extension as ExtensionIcon,
+  Chat as ChatIcon,
   ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 
@@ -29,18 +29,18 @@ const Home: React.FC = () => {
       color: 'secondary'
     },
     {
+      icon: <ChatIcon sx={{ fontSize: 40, color: 'success.main' }} />,
+      title: 'Investigate with AI',
+      description: 'Interact with AI agents to get insights and assistance with your investigations.',
+      action: () => navigate('/mcp'),
+      color: 'success'
+    },
+    {
       icon: <SettingsIcon sx={{ fontSize: 40, color: 'info.main' }} />,
       title: 'Settings',
       description: 'Configure your investigation preferences, default agents, and tool mappings.',
       action: () => navigate('/settings'),
       color: 'info'
-    },
-    {
-      icon: <ExtensionIcon sx={{ fontSize: 40, color: 'success.main' }} />,
-      title: 'MCP Tools',
-      description: 'Access Model Context Protocol tools for advanced data analysis and automation.',
-      action: () => navigate('/mcp'),
-      color: 'success'
     }
   ];
 

@@ -22,6 +22,49 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/mcp", tags=["MCP Bridge"])
 
 
+def get_tool_display_names() -> Dict[str, str]:
+    """
+    Get user-friendly display names for tools.
+    Maps technical tool names to human-readable labels.
+    """
+    return {
+        # Web & Search Tools
+        "web_search": "Web Search",
+        "web_scrape": "Web Page Scraper",
+        
+        # File System Tools
+        "file_read": "File Reader",
+        "file_write": "File Writer",
+        "file_search": "File Search",
+        "directory_list": "Directory Listing",
+        
+        # API & Network Tools
+        "http_request": "HTTP Request",
+        "json_api": "JSON API Client",
+        
+        # Database Tools
+        "database_query": "Database Query",
+        "database_schema": "Database Schema",
+        
+        # Olorin-specific Tools
+        "splunk_query": "Splunk Query",
+        "splunk_query_tool": "Splunk Search",
+        "identity_info_tool": "Identity Lookup",
+        "oii_tool": "Online Identity Info",
+        "di_tool": "Device Intelligence",
+        
+        # Search & Analytics
+        "vector_search": "Vector Search",
+        "vector_search_tool": "Semantic Search",
+        
+        # Legacy/Fallback names
+        "chronos_tool": "Chronos Analytics",
+        "kk_dashboard": "KK Dashboard",
+        "cdc_tool": "Customer Data",
+        "qb_tool": "QuickBooks Data"
+    }
+
+
 # Request/Response Models
 class ToolCallRequest(BaseModel):
     """Request model for calling a tool."""
@@ -38,6 +81,7 @@ class ToolCallResponse(BaseModel):
 class ToolInfo(BaseModel):
     """Tool information model."""
     name: str
+    display_name: str = Field(..., description="User-friendly display name")
     description: str
     category: str
     schema: Dict[str, Any]
@@ -93,7 +137,9 @@ async def list_tools(category: Optional[str] = None):
         else:
             tools = tool_registry.get_all_tools()
         
+        display_names = get_tool_display_names()
         tool_infos = []
+        
         for tool in tools:
             # Determine category
             tool_category = "unknown"
@@ -103,8 +149,12 @@ async def list_tools(category: Optional[str] = None):
                     tool_category = cat
                     break
             
+            # Get display name
+            display_name = display_names.get(tool.name, tool.name.replace("_", " ").title())
+            
             tool_infos.append(ToolInfo(
                 name=tool.name,
+                display_name=display_name,
                 description=tool.description,
                 category=tool_category,
                 schema=tool.args_schema.model_json_schema() if tool.args_schema else {}
@@ -124,11 +174,15 @@ async def list_olorin_tools():
             initialize_tools()
         
         tools = get_olorin_tools()
+        display_names = get_tool_display_names()
         tool_infos = []
         
         for tool in tools:
+            display_name = display_names.get(tool.name, tool.name.replace("_", " ").title())
+            
             tool_infos.append(ToolInfo(
                 name=tool.name,
+                display_name=display_name,
                 description=tool.description,
                 category="olorin",
                 schema=tool.args_schema.model_json_schema() if tool.args_schema else {}
@@ -229,4 +283,109 @@ async def health_check():
         "status": "healthy",
         "service": "MCP Bridge",
         "initialized": tool_registry.is_initialized() if hasattr(tool_registry, 'is_initialized') else False
-    } 
+    }
+
+
+@router.get("/tools/categories", response_model=Dict[str, List[ToolInfo]])
+async def get_tools_by_categories():
+    """Get tools organized by categories (Olorin vs MCP Tools)."""
+    try:
+        if not tool_registry.is_initialized():
+            initialize_tools()
+        
+        all_tools = tool_registry.get_all_tools()
+        display_names = get_tool_display_names()
+        
+        olorin_tools = []
+        mcp_tools = []
+        
+        for tool in all_tools:
+            # Determine category
+            tool_category = "unknown"
+            summary = tool_registry.get_tools_summary()
+            for cat, cat_info in summary["categories"].items():
+                if any(t["name"] == tool.name for t in cat_info["tools"]):
+                    tool_category = cat
+                    break
+            
+            # Get display name
+            display_name = display_names.get(tool.name, tool.name.replace("_", " ").title())
+            
+            tool_info = ToolInfo(
+                name=tool.name,
+                display_name=display_name,
+                description=tool.description,
+                category=tool_category,
+                schema=tool.args_schema.model_json_schema() if tool.args_schema else {}
+            )
+            
+            # Categorize into Olorin vs MCP
+            if tool_category == "olorin" or any(keyword in tool.name.lower() for keyword in 
+                ['splunk', 'oii', 'identity', 'chronos', 'di_tool', 'fraud', 'investigation']):
+                olorin_tools.append(tool_info)
+            else:
+                mcp_tools.append(tool_info)
+        
+        return {
+            "olorin_tools": olorin_tools,
+            "mcp_tools": mcp_tools
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting tools by categories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/prompts", response_model=List[Dict[str, str]])
+async def get_investigation_prompts():
+    """Get available investigation prompts for the chat interface."""
+    try:
+        # Pre-defined investigation prompts
+        prompts = [
+            {
+                "title": "Analyze User Activity",
+                "description": "Investigate suspicious user behavior patterns",
+                "prompt": "Analyze the recent activity for user {user_id}. Look for any suspicious patterns in login locations, device usage, and transaction behavior. Use Splunk logs and identity information to build a comprehensive profile."
+            },
+            {
+                "title": "Device Risk Assessment", 
+                "description": "Evaluate device security and usage patterns",
+                "prompt": "Perform a comprehensive device risk assessment for device {device_id}. Check for unusual network activity, location changes, and compare against known good devices. Use device intelligence and network analysis tools."
+            },
+            {
+                "title": "Location Anomaly Detection",
+                "description": "Detect unusual location patterns and travel",
+                "prompt": "Investigate location anomalies for user {user_id}. Check for impossible travel, unusual login locations, and compare against historical patterns. Use location data and identity lookup tools."
+            },
+            {
+                "title": "Fraud Pattern Analysis",
+                "description": "Identify potential fraud indicators and patterns", 
+                "prompt": "Analyze potential fraud patterns for {entity_type} {entity_id}. Look for indicators like rapid transactions, unusual amounts, device switching, and location inconsistencies. Use all available investigation tools."
+            },
+            {
+                "title": "Network Security Investigation",
+                "description": "Investigate network-based security threats",
+                "prompt": "Investigate network security concerns for {entity_id}. Check for suspicious IP addresses, proxy usage, VPN patterns, and network anomalies. Use network analysis and Splunk data."
+            },
+            {
+                "title": "Identity Verification Check",
+                "description": "Verify user identity and detect impersonation",
+                "prompt": "Perform identity verification for user {user_id}. Check online identity information, verify personal details, and look for signs of identity theft or account takeover. Use identity lookup tools."
+            },
+            {
+                "title": "Timeline Reconstruction",
+                "description": "Build a detailed timeline of events",
+                "prompt": "Reconstruct a detailed timeline of events for {entity_type} {entity_id} from {start_date} to {end_date}. Include login events, transactions, location changes, and device usage. Use log analysis and search tools."
+            },
+            {
+                "title": "Cross-Reference Investigation",
+                "description": "Cross-reference data across multiple sources",
+                "prompt": "Cross-reference information for {entity_id} across all available data sources. Look for inconsistencies, correlations, and patterns that might indicate fraudulent activity. Use multiple investigation tools."
+            }
+        ]
+        
+        return prompts
+        
+    except Exception as e:
+        logger.error(f"Error getting investigation prompts: {e}")
+        raise HTTPException(status_code=500, detail=str(e)) 

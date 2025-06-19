@@ -62,7 +62,7 @@ const getBaseUrl = (defaultUrl: string): string => {
 const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
   local: {
     olorin: {
-      baseUrl: getBaseUrl('http://localhost:8000'),
+      baseUrl: getBaseUrl('http://localhost:8090'),
     },
   },
   e2e: {

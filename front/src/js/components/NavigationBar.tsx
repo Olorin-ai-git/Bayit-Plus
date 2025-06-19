@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdSearch, MdListAlt, MdSettings, MdCode } from 'react-icons/md';
+import { MdSearch, MdListAlt, MdSettings, MdChat } from 'react-icons/md';
 
 /**
  * Props for the NavigationBar component.
@@ -69,15 +69,15 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
             : 'text-gray-700 hover:bg-gray-100'
         }`}
         onClick={() => onTabChange('mcp')}
-        aria-label="MCP Client"
+        aria-label="Investigate with AI"
       >
-        {React.createElement(MdCode as unknown as React.ElementType, {
+        {React.createElement(MdChat as unknown as React.ElementType, {
           size: 28,
         })}
-        <span className="sr-only">MCP Client</span>
+        <span className="sr-only">Investigate with AI</span>
       </button>
       <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
-        MCP Client
+        Investigate with AI
       </div>
     </div>
     <div className="relative group w-full flex justify-center">

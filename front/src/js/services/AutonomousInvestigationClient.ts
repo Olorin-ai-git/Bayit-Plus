@@ -60,7 +60,7 @@ export class AutonomousInvestigationClient {
 
   constructor(options: AutonomousInvestigationOptions = {}) {
     this.apiBaseUrl = options.apiBaseUrl || '/api';
-    this.wsBaseUrl = options.wsBaseUrl || 'ws://localhost:8000';
+    this.wsBaseUrl = options.wsBaseUrl || 'ws://localhost:8090';
     this.parallel = options.parallel ?? true;
     this.retryAttempts = options.retryAttempts || 3;
     this.retryDelay = options.retryDelay || 1000;

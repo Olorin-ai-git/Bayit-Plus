@@ -171,5 +171,5 @@ export class MCPWebClient {
 
 // Singleton instance
 export const mcpClient = new MCPWebClient(
-  process.env.REACT_APP_MCP_SERVER_URL || 'http://localhost:8000'
+  process.env.REACT_APP_MCP_SERVER_URL || ''
 ); 

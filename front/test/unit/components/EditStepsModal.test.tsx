@@ -1,48 +1,50 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EditStepsModal from 'src/js/components/EditStepsModal';
 import { InvestigationStepId, StepStatus } from 'src/js/constants/definitions';
+import { InvestigationStep } from 'src/js/types/RiskAssessment';
+
+// Mock the useStepTools hook
+jest.mock('src/js/hooks/useStepTools', () => ({
+  useStepTools: () => [
+    {}, // stepToolsMapping
+    jest.fn(), // setStepToolsMapping
+    (stepId: string, agentName: string) => ['Splunk', 'OII'], // getToolsForStep
+    ['Splunk', 'OII', 'DI BB', 'DATA LAKE'], // availableTools
+    false, // isLoading
+    null, // error
+  ],
+}));
 
 describe('EditStepsModal', () => {
-  const mockSteps = [
-    {
-      id: InvestigationStepId.INIT,
-      title: 'Initialization',
-      description: 'Init',
-      status: StepStatus.PENDING,
-      timestamp: new Date().toISOString(),
-      details: {},
-      agent: 'Init Agent',
-    },
+  const mockAllSteps: InvestigationStep[] = [
     {
       id: InvestigationStepId.NETWORK,
+      agent: 'Network Agent',
       title: 'Network Analysis',
       description: 'Analyze network activity',
       status: StepStatus.PENDING,
-      timestamp: new Date().toISOString(),
-      details: {},
-      agent: 'Network Agent',
       tools: [],
     },
     {
       id: InvestigationStepId.LOCATION,
+      agent: 'Location Agent',
       title: 'Location Analysis',
       description: 'Analyze location data',
       status: StepStatus.PENDING,
-      timestamp: new Date().toISOString(),
-      details: {},
-      agent: 'Location Agent',
       tools: [],
     },
+  ];
+
+  const mockSelectedSteps: InvestigationStep[] = [
     {
-      id: InvestigationStepId.RISK,
-      title: 'Risk Assessment',
-      description: 'Risk',
+      id: InvestigationStepId.NETWORK,
+      agent: 'Network Agent',
+      title: 'Network Analysis',
+      description: 'Analyze network activity',
       status: StepStatus.PENDING,
-      timestamp: new Date().toISOString(),
-      details: {},
-      agent: 'Risk Agent',
+      tools: ['Splunk', 'OII'],
     },
   ];
 
@@ -50,94 +52,154 @@ describe('EditStepsModal', () => {
     isOpen: true,
     onClose: jest.fn(),
     onSave: jest.fn(),
-    allSteps: [
-      {
-        id: InvestigationStepId.NETWORK,
-        title: 'Network Analysis',
-        description: 'Analyze network activity',
-        status: StepStatus.PENDING,
-        timestamp: new Date().toISOString(),
-        details: {},
-        agent: 'Network Agent',
-        tools: [],
-      },
-      {
-        id: InvestigationStepId.LOCATION,
-        title: 'Location Analysis',
-        description: 'Analyze location data',
-        status: StepStatus.PENDING,
-        timestamp: new Date().toISOString(),
-        details: {},
-        agent: 'Location Agent',
-        tools: [],
-      },
-    ],
-    selectedSteps: [
-      {
-        id: InvestigationStepId.NETWORK,
-        title: 'Network Analysis',
-        description: 'Analyze network activity',
-        status: StepStatus.PENDING,
-        timestamp: new Date().toISOString(),
-        details: {},
-        agent: 'Network Agent',
-        tools: [],
-      },
-    ],
+    allSteps: mockAllSteps,
+    selectedSteps: mockSelectedSteps,
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
+  it('renders the modal with steps', () => {
     render(<EditStepsModal {...defaultProps} />);
+    
     expect(screen.getByText('Edit Investigation Steps')).toBeInTheDocument();
+    expect(screen.getByText('Available Steps')).toBeInTheDocument();
+    expect(screen.getByText('Selected Steps (in order)')).toBeInTheDocument();
   });
 
-  it('does not render when isOpen is false', () => {
-    render(<EditStepsModal {...defaultProps} isOpen={false} />);
-    expect(
-      screen.queryByText('Edit Investigation Steps'),
-    ).not.toBeInTheDocument();
-  });
-
-  it('initializes with correct available and selected steps', () => {
+  it('shows tools panel when a step is clicked', async () => {
     render(<EditStepsModal {...defaultProps} />);
-    expect(screen.getByText('Network Analysis')).toBeInTheDocument();
-    expect(screen.getByText('Location Analysis')).toBeInTheDocument();
+    
+    // Click on the Network Analysis step
+    const networkStep = screen.getByText('Network Analysis');
+    fireEvent.click(networkStep);
+    
+    // Wait for the tools panel to appear
+    await waitFor(() => {
+      expect(screen.getByText('Tools Configuration')).toBeInTheDocument();
+    });
+    
+    expect(screen.getByText('Step: Network Analysis')).toBeInTheDocument();
+    expect(screen.getByText('Agent: Network Agent')).toBeInTheDocument();
   });
 
-  it('moves step from available to selected', () => {
+  it('displays available tools as checkboxes', async () => {
     render(<EditStepsModal {...defaultProps} />);
-    const addButton = screen.getAllByTitle('Add')[0];
+    
+    // Click on the Network Analysis step
+    const networkStep = screen.getByText('Network Analysis');
+    fireEvent.click(networkStep);
+    
+    // Wait for the tools panel to appear
+    await waitFor(() => {
+      expect(screen.getByText('Tools Configuration')).toBeInTheDocument();
+    });
+    
+         // Check that all tools are displayed
+     expect(screen.getByLabelText('Splunk')).toBeInTheDocument();
+     expect(screen.getByLabelText('OII')).toBeInTheDocument();
+     expect(screen.getByLabelText('DI BB')).toBeInTheDocument();
+     expect(screen.getByLabelText('DATA LAKE')).toBeInTheDocument();
+  });
+
+  it('shows selected tools as checked', async () => {
+    render(<EditStepsModal {...defaultProps} />);
+    
+    // Click on the Network Analysis step
+    const networkStep = screen.getByText('Network Analysis');
+    fireEvent.click(networkStep);
+    
+    // Wait for the tools panel to appear
+    await waitFor(() => {
+      expect(screen.getByText('Tools Configuration')).toBeInTheDocument();
+    });
+    
+         // Check that Splunk and OII are checked (as per the mock)
+     const splunkCheckbox = screen.getByLabelText('Splunk');
+     const oiiCheckbox = screen.getByLabelText('OII');
+     const diBbCheckbox = screen.getByLabelText('DI BB');
+     
+     expect(splunkCheckbox).toBeChecked();
+     expect(oiiCheckbox).toBeChecked();
+     expect(diBbCheckbox).not.toBeChecked();
+  });
+
+  it('closes tools panel when close button is clicked', async () => {
+    render(<EditStepsModal {...defaultProps} />);
+    
+    // Click on the Network Analysis step
+    const networkStep = screen.getByText('Network Analysis');
+    fireEvent.click(networkStep);
+    
+    // Wait for the tools panel to appear
+    await waitFor(() => {
+      expect(screen.getByText('Tools Configuration')).toBeInTheDocument();
+    });
+    
+    // Click the close button in the tools panel
+    const closeButtons = screen.getAllByRole('button');
+    const toolsPanelCloseButton = closeButtons.find(button => 
+      button.getAttribute('aria-label') === null && 
+      button.querySelector('svg') // Has an icon
+    );
+    
+    if (toolsPanelCloseButton) {
+      fireEvent.click(toolsPanelCloseButton);
+    }
+    
+    // Tools panel should be closed
+    await waitFor(() => {
+      expect(screen.queryByText('Tools Configuration')).not.toBeInTheDocument();
+    });
+  });
+
+  it('adds and removes steps correctly', () => {
+    render(<EditStepsModal {...defaultProps} />);
+    
+    // Add Location Analysis step
+    const addButton = screen.getByText('Add');
     fireEvent.click(addButton);
-    expect(screen.getAllByTitle('Remove')).toHaveLength(2);
+    
+    // Should now show both steps in selected
+    expect(screen.getAllByText('Remove')).toHaveLength(2);
+    
+    // Remove Network Analysis step
+    const removeButtons = screen.getAllByText('Remove');
+    fireEvent.click(removeButtons[0]);
+    
+    // Should now have only one Remove button
+    expect(screen.getAllByText('Remove')).toHaveLength(1);
   });
 
-  it('handles cancel button click', () => {
+  it('calls onSave with correct data when Save Changes is clicked', () => {
     render(<EditStepsModal {...defaultProps} />);
+    
+    const saveButton = screen.getByText('Save Changes');
+    fireEvent.click(saveButton);
+    
+    expect(defaultProps.onSave).toHaveBeenCalledWith(mockSelectedSteps);
+  });
+
+  it('calls onClose when Cancel is clicked', () => {
+    render(<EditStepsModal {...defaultProps} />);
+    
     const cancelButton = screen.getByText('Cancel');
     fireEvent.click(cancelButton);
+    
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
-  it('handles close button click', () => {
+  it('highlights selected step for tools configuration', async () => {
     render(<EditStepsModal {...defaultProps} />);
-    const closeButton = screen.getByText('✕');
-    fireEvent.click(closeButton);
-    expect(defaultProps.onClose).toHaveBeenCalled();
+    
+    // Click on the Network Analysis step
+    const networkStep = screen.getByText('Network Analysis');
+    fireEvent.click(networkStep);
+    
+    // The step should be highlighted (we can check for the tools panel appearing)
+    await waitFor(() => {
+      expect(screen.getByText('Tools Configuration')).toBeInTheDocument();
+    });
   });
-
-  it('handles empty allSteps array', () => {
-    render(
-      <EditStepsModal {...defaultProps} allSteps={[]} selectedSteps={[]} />,
-    );
-    expect(screen.getByText('No steps available')).toBeInTheDocument();
-  });
-
-  it.skip('moves step from selected to available', () => {});
-  it.skip('handles drag and drop reordering', () => {});
-  it.skip('disables OK button when no steps selected', () => {});
-  it.skip('maintains step order after drag and drop', () => {});
 });

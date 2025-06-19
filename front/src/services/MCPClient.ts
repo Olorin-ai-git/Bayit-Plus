@@ -5,6 +5,7 @@
 
 export interface MCPTool {
   name: string;
+  display_name?: string;
   description: string;
   inputSchema: Record<string, any>;
   schema?: Record<string, any>;
@@ -40,7 +41,7 @@ export class MCPClient {
   private tools: MCPTool[] = [];
   private resources: MCPResource[] = [];
 
-  constructor(baseUrl: string = 'http://localhost:8001') {
+  constructor(baseUrl: string = '') {
     this.baseUrl = baseUrl;
   }
 

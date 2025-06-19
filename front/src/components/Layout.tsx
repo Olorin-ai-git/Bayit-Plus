@@ -25,7 +25,7 @@ import {
   Search as SearchIcon,
   Settings as SettingsIcon,
   BugReport as BugReportIcon,
-  Extension as ExtensionIcon,
+  Chat as ChatIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
 
@@ -59,14 +59,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: <BugReportIcon />
     },
     {
+      path: '/mcp',
+      label: 'Investigate with AI',
+      icon: <ChatIcon />
+    },
+    {
       path: '/settings',
       label: 'Settings',
       icon: <SettingsIcon />
-    },
-    {
-      path: '/mcp',
-      label: 'MCP Tools',
-      icon: <ExtensionIcon />
     }
   ];
 

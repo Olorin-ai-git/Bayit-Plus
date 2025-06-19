@@ -1,7 +1,7 @@
 // Jest setup for Olorin webapp tests
 
 // Mock environment variables
-process.env.REACT_APP_OLORIN_API_URL = 'http://localhost:8000';
+process.env.REACT_APP_OLORIN_API_URL = 'http://localhost:8090';
 
 // Mock console methods to reduce noise in tests
 global.console = {

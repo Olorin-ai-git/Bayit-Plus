@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Typography, Box, Alert } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 // Simplified interfaces
@@ -26,11 +26,6 @@ const StyledForm = styled.form`
   background: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-const StyledTextField = styled(TextField)`
-  width: 100%;
-  margin-top: 1rem;
 `;
 
 interface UserInfoFormProps {
@@ -70,33 +65,45 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ sandbox, onSubmit }) => {
 
   return (
     <StyledForm ref={formRef} onSubmit={handleSubmit}>
-      <h2>User Information</h2>
-      <StyledTextField
+      <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 600 }}>
+        User Information
+      </Typography>
+      <TextField
         label="User ID"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
         required
+        fullWidth
+        sx={{ mb: 2 }}
       />
-      <select
-        value={entityType}
-        onChange={(e) => setEntityType(e.target.value)}
-        style={{ width: '100%', marginTop: '1rem', padding: '0.5rem' }}
-      >
-        <option value="user_id">User ID</option>
-        <option value="device_id">Device ID</option>
-      </select>
+      <FormControl fullWidth sx={{ mb: 2 }}>
+        <InputLabel>Entity Type</InputLabel>
+        <Select
+          value={entityType}
+          onChange={(e) => setEntityType(e.target.value)}
+          label="Entity Type"
+        >
+          <MenuItem value="user_id">User ID</MenuItem>
+          <MenuItem value="device_id">Device ID</MenuItem>
+        </Select>
+      </FormControl>
       <Button
         type="submit"
         disabled={isSubmitting || !userId}
-        style={{ marginTop: '1rem', width: '100%' }}
+        variant="contained"
+        fullWidth
+        sx={{ mb: 2 }}
       >
         {isSubmitting ? 'Submitting...' : 'Submit'}
       </Button>
       {isSuccess && (
-        <div style={{ marginTop: '1rem', color: 'green', display: 'flex', alignItems: 'center' }}>
-          <CheckCircleIcon fontSize="small" style={{ marginRight: '0.5rem' }} />
+        <Alert 
+          severity="success" 
+          icon={<CheckCircleIcon />}
+          sx={{ mt: 1 }}
+        >
           Successfully submitted!
-        </div>
+        </Alert>
       )}
     </StyledForm>
   );

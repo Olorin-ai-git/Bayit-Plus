@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useMCPClient } from '../hooks/useMCPClient';
 import { useMCPTools } from '../hooks/useMCPTools';
-import { ChatMessage, OlorinTool } from '../services/mcpTypes';
 import {
   Box,
   Typography,
@@ -16,7 +15,14 @@ import {
   LinearProgress,
   Grid,
   useTheme,
-  Divider
+  Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -25,29 +31,105 @@ import {
   Send as SendIcon,
   Close as CloseIcon,
   Extension as ExtensionIcon,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  ExpandMore as ExpandMoreIcon,
+  Security as SecurityIcon,
+  Search as SearchIcon,
+  QuestionMark as QuestionMarkIcon
 } from '@mui/icons-material';
+
+interface ToolInfo {
+  name: string;
+  display_name: string;
+  description: string;
+  category: string;
+  schema: {
+    type: string;
+    properties: Record<string, any>;
+    required?: string[];
+  };
+}
+
+interface InvestigationPrompt {
+  id: string;
+  title: string;
+  description: string;
+  prompt: string;
+}
+
+interface SimpleChatMessage {
+  id: string;
+  content: string;
+  sender: 'user' | 'assistant' | 'system';
+  timestamp: Date;
+}
+
+interface CategorizedTools {
+  olorin_tools: ToolInfo[];
+  mcp_tools: ToolInfo[];
+}
 
 /**
  * Main MCP Client page component that provides access to MCP tools and chat interface
  */
 const MCPPage: React.FC = () => {
-  const { state, connect, disconnect, executeTool, sendMessage } = useMCPClient();
-  const { isExecuting } = useMCPTools();
+  const { client, isConnected, error: connectionError } = useMCPClient();
+  const { executeTool, isExecuting } = useMCPTools();
   const theme = useTheme();
   
-  // UI state
-  const [selectedTool, setSelectedTool] = useState<OlorinTool | null>(null);
-  const [toolArgs, setToolArgs] = useState<Record<string, any>>({});
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  // Data state
+  const [categorizedTools, setCategorizedTools] = useState<CategorizedTools>({ olorin_tools: [], mcp_tools: [] });
+  const [investigationPrompts, setInvestigationPrompts] = useState<InvestigationPrompt[]>([]);
+  const [loadingPrompts, setLoadingPrompts] = useState(false);
   
-  // Layout state
+  // UI state
+  const [selectedTool, setSelectedTool] = useState<ToolInfo | null>(null);
+  const [toolArgs, setToolArgs] = useState<Record<string, any>>({});
+  const [messages, setMessages] = useState<SimpleChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<'olorin' | 'mcp' | 'prompts'>('olorin');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPrompt, setSelectedPrompt] = useState<InvestigationPrompt | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [toolsSectionHeight, setToolsSectionHeight] = useState(400);
+  
+  // Refs
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const splitterRef = useRef<HTMLDivElement>(null);
+
+  // Load categorized tools and prompts
+  useEffect(() => {
+    const loadCategorizedData = async () => {
+      try {
+        // Load categorized tools - use the MCP endpoint that includes schema info
+        const toolsResponse = await fetch('/api/mcp/tools/categories');
+        if (toolsResponse.ok) {
+          const toolsData = await toolsResponse.json();
+          setCategorizedTools(toolsData);
+        }
+
+        // Load investigation prompts
+        setLoadingPrompts(true);
+        const promptsResponse = await fetch('/api/mcp/prompts');
+        if (promptsResponse.ok) {
+          const promptsData = await promptsResponse.json();
+          setInvestigationPrompts(promptsData);
+        }
+      } catch (error) {
+        console.error('Failed to load categorized data:', error);
+      } finally {
+        setLoadingPrompts(false);
+      }
+    };
+
+    if (isConnected) {
+      loadCategorizedData();
+    }
+  }, [isConnected]);
 
   // Mouse event handlers for resizable splitter
   useEffect(() => {
@@ -71,38 +153,52 @@ const MCPPage: React.FC = () => {
   }, [toolsSectionHeight]);
 
   // Handle tool execution
-  const handleToolExecution = async (tool: OlorinTool, args: Record<string, any>) => {
+  const handleToolExecution = async (tool: ToolInfo, args: Record<string, any>) => {
     try {
       const result = await executeTool({
         name: tool.name,
         arguments: args
       });
-
-      const resultText = result.content
-        .map(c => c.text)
-        .join('\n');
-
-      // Add tool execution to chat
-      const toolMessage: ChatMessage = {
-        role: 'assistant',
-        content: [{ type: 'text', text: `**Tool Executed: ${tool.name}**\n\n${resultText}` }],
+      
+      const newMessage: SimpleChatMessage = {
+        id: Date.now().toString(),
+        content: `Executed ${tool.name}: ${JSON.stringify(result, null, 2)}`,
+        sender: 'assistant',
+        timestamp: new Date()
       };
-
-      setMessages(prev => [...prev, toolMessage]);
+      
+      setMessages(prev => [...prev, newMessage]);
       setSelectedTool(null);
       setToolArgs({});
     } catch (error) {
       console.error('Tool execution failed:', error);
+      const errorMessage: SimpleChatMessage = {
+        id: Date.now().toString(),
+        content: `Error executing ${tool.name}: ${error}`,
+        sender: 'system',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
     }
   };
 
-  // Handle chat message sending
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isSendingMessage) return;
+  // Handle sending a prompt
+  const handleSendPrompt = (prompt: string) => {
+    setInputMessage(prompt);
+    // Auto-send the prompt
+    handleSendMessage(prompt);
+  };
 
-    const userMessage: ChatMessage = {
-      role: 'user',
-      content: [{ type: 'text', text: inputMessage }],
+  // Handle chat message sending
+  const handleSendMessage = async (messageText?: string) => {
+    const textToSend = messageText || inputMessage;
+    if (!textToSend.trim() || isSendingMessage) return;
+
+    const userMessage: SimpleChatMessage = {
+      id: Date.now().toString(),
+      content: textToSend,
+      sender: 'user',
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -111,9 +207,11 @@ const MCPPage: React.FC = () => {
 
     // Simple response - in a real implementation, this would integrate with an AI service
     try {
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: [{ type: 'text', text: `I received your message: "${inputMessage}". You can use the available tools on the left to analyze data or perform specific tasks. There are ${state.tools.length} tools available.` }],
+      const assistantMessage: SimpleChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: `I received your message: "${textToSend}". This is a placeholder response. In a real implementation, this would connect to an AI service.`,
+        sender: 'assistant',
+        timestamp: new Date()
       };
 
       setTimeout(() => {
@@ -129,13 +227,16 @@ const MCPPage: React.FC = () => {
     setToolArgs(prev => ({ ...prev, [argName]: value }));
   };
 
-  const renderToolCard = (tool: OlorinTool) => (
+  const renderToolCard = (tool: ToolInfo, isOlorinTool: boolean = false) => (
     <Card 
       key={tool.name} 
       sx={{ 
         mb: 2,
+        border: isOlorinTool ? '2px solid' : '1px solid',
+        borderColor: isOlorinTool ? 'primary.main' : 'divider',
+        backgroundColor: isOlorinTool ? 'primary.25' : 'background.paper',
         '&:hover': { 
-          boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+          boxShadow: isOlorinTool ? '0 6px 16px rgba(147, 51, 234, 0.25)' : '0 4px 12px rgba(147, 51, 234, 0.15)',
           transform: 'translateY(-2px)'
         },
         transition: 'all 0.2s ease-in-out'
@@ -143,9 +244,12 @@ const MCPPage: React.FC = () => {
     >
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
-            {tool.name}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {isOlorinTool && <SecurityIcon sx={{ color: 'primary.main', fontSize: '1.2rem' }} />}
+            <Typography variant="h6" sx={{ fontWeight: 600, color: isOlorinTool ? 'primary.main' : 'text.primary' }}>
+              {tool.display_name || tool.name.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+            </Typography>
+          </Box>
           <IconButton
             onClick={() => setSelectedTool(tool)}
             disabled={isExecuting}
@@ -157,19 +261,22 @@ const MCPPage: React.FC = () => {
             <BuildIcon />
           </IconButton>
         </Box>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <strong>Tool:</strong> <code>{tool.name}</code>
+        </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {tool.description}
         </Typography>
         
-        {tool.inputSchema.required && tool.inputSchema.required.length > 0 && (
+        {tool.schema?.required && Array.isArray(tool.schema.required) && tool.schema.required.length > 0 && (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {tool.inputSchema.required.map(req => (
+            {tool.schema.required.map((req: string) => (
               <Chip
                 key={req}
                 label={`${req} *`}
                 size="small"
                 sx={{ 
-                  backgroundColor: 'primary.100',
+                  backgroundColor: isOlorinTool ? 'primary.200' : 'primary.100',
                   color: 'primary.main',
                   fontWeight: 600
                 }}
@@ -181,7 +288,7 @@ const MCPPage: React.FC = () => {
     </Card>
   );
 
-  if (state.isLoading) {
+  if (isLoading) {
     return (
       <Box sx={{ 
         height: '100%', 
@@ -200,7 +307,7 @@ const MCPPage: React.FC = () => {
     );
   }
 
-  if (state.error) {
+  if (connectionError) {
     return (
       <Box sx={{ 
         height: '100%', 
@@ -215,13 +322,13 @@ const MCPPage: React.FC = () => {
               Connection Error
             </Typography>
             <Typography variant="body2">
-              {state.error}
+              {connectionError}
             </Typography>
           </Alert>
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
-            onClick={connect}
+            onClick={() => window.location.reload()}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Retry Connection
@@ -231,7 +338,7 @@ const MCPPage: React.FC = () => {
     );
   }
 
-  if (!state.isConnected) {
+  if (!isConnected) {
     return (
       <Box sx={{ 
         height: '100%', 
@@ -248,7 +355,7 @@ const MCPPage: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<RefreshIcon />}
-            onClick={connect}
+            onClick={() => window.location.reload()}
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Connect
@@ -265,20 +372,20 @@ const MCPPage: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-              MCP Tools
+              Investigation Assistant
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Model Context Protocol tools and chat interface
+              AI-powered investigation interface with specialized Olorin tools for fraud detection
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="outlined"
               startIcon={<SettingsIcon />}
-              onClick={disconnect}
+              onClick={() => window.location.reload()}
               sx={{ textTransform: 'none', fontWeight: 600 }}
             >
-              Disconnect
+              Refresh
             </Button>
             <Button
               variant="contained"
@@ -308,18 +415,34 @@ const MCPPage: React.FC = () => {
           p: 3,
           overflow: 'auto'
         }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: 'text.primary' }}>
-            Available Tools ({state.tools.length})
+          {/* Olorin Investigation Tools */}
+          <Alert severity="info" sx={{ mb: 3, backgroundColor: 'primary.50', borderColor: 'primary.200' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}>
+              🔍 Olorin Investigation Tools
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              These specialized tools are designed for fraud investigation and security analysis. Use them to analyze user behavior, device patterns, network activity, and more.
+            </Typography>
+          </Alert>
+          
+          {categorizedTools.olorin_tools.map(tool => renderToolCard(tool, true))}
+
+          {/* Standard MCP Tools */}
+          <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, mt: 4, color: 'text.primary' }}>
+            🛠️ Standard MCP Tools ({categorizedTools.mcp_tools.length})
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            General-purpose tools for web search, file operations, API calls, and data processing.
           </Typography>
           
-          {state.tools.map(renderToolCard)}
+          {categorizedTools.mcp_tools.map(tool => renderToolCard(tool, false))}
 
           {/* Selected Tool Details */}
           {selectedTool && (
             <Paper sx={{ p: 3, mt: 3, backgroundColor: 'primary.50' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                  Execute: {selectedTool.name}
+                  Execute: {selectedTool.display_name || selectedTool.name.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                 </Typography>
                 <IconButton
                   onClick={() => setSelectedTool(null)}
@@ -329,16 +452,19 @@ const MCPPage: React.FC = () => {
                 </IconButton>
               </Box>
               
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                <strong>Tool:</strong> <code>{selectedTool.name}</code>
+              </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 {selectedTool.description}
               </Typography>
 
-              {selectedTool.inputSchema.required && selectedTool.inputSchema.required.length > 0 && (
+              {selectedTool.schema?.required && Array.isArray(selectedTool.schema.required) && selectedTool.schema.required.length > 0 && (
                 <Box sx={{ mb: 3 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
                     Required Parameters:
                   </Typography>
-                  {selectedTool.inputSchema.required.map(param => (
+                  {selectedTool.schema.required.map((param: string) => (
                     <TextField
                       key={param}
                       label={param}
@@ -384,7 +510,7 @@ const MCPPage: React.FC = () => {
             }}>
               <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                  Chat Interface
+                  Investigation Assistant
                 </Typography>
               </Box>
               
@@ -399,15 +525,15 @@ const MCPPage: React.FC = () => {
                   <Box key={index} sx={{ mb: 2 }}>
                     <Paper sx={{ 
                       p: 2, 
-                      backgroundColor: message.role === 'user' ? 'primary.50' : 'white',
-                      border: message.role === 'user' ? '1px solid' : 'none',
+                      backgroundColor: message.sender === 'user' ? 'primary.50' : 'white',
+                      border: message.sender === 'user' ? '1px solid' : 'none',
                       borderColor: 'primary.200'
                     }}>
                       <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                        {message.role === 'user' ? 'You' : 'Assistant'}
+                        {message.sender === 'user' ? 'You' : 'Assistant'}
                       </Typography>
                       <Typography variant="body2">
-                        {message.content.map(c => c.text).join(' ')}
+                        {message.content}
                       </Typography>
                     </Paper>
                   </Box>
@@ -418,27 +544,73 @@ const MCPPage: React.FC = () => {
               <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <TextField
-                    variant="outlined"
-                    placeholder="Type your message..."
+                    fullWidth
+                    placeholder="Ask me to investigate suspicious activity..."
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    disabled={isSendingMessage}
                     size="small"
-                    sx={{ width: '100%' }}
                   />
                   <IconButton
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isSendingMessage}
-                    sx={{ 
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                      '&:hover': { backgroundColor: 'primary.dark' },
-                      '&:disabled': { backgroundColor: 'grey.300' }
-                    }}
+                    onClick={() => handleSendMessage()}
+                    disabled={isSendingMessage || !inputMessage.trim()}
+                    sx={{ color: 'primary.main' }}
                   >
                     <SendIcon />
                   </IconButton>
                 </Box>
+              </Box>
+
+              {/* Investigation Prompts */}
+              <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>
+                <Accordion>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <QuestionMarkIcon sx={{ color: 'primary.main', fontSize: '1.2rem' }} />
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Investigation Prompts
+                      </Typography>
+                    </Box>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 0 }}>
+                    {loadingPrompts ? (
+                      <Box sx={{ p: 2, textAlign: 'center' }}>
+                        <LinearProgress sx={{ mb: 1 }} />
+                        <Typography variant="body2" color="text.secondary">
+                          Loading prompts...
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <List dense>
+                        {investigationPrompts.map((prompt, index) => (
+                          <ListItem key={index} disablePadding>
+                            <ListItemButton 
+                              onClick={() => handleSendPrompt(prompt.prompt)}
+                              sx={{ 
+                                '&:hover': { backgroundColor: 'primary.25' }
+                              }}
+                            >
+                              <ListItemText
+                                primary={prompt.title}
+                                secondary={prompt.description}
+                                primaryTypographyProps={{ 
+                                  variant: 'body2', 
+                                  fontWeight: 600,
+                                  color: 'primary.main'
+                                }}
+                                secondaryTypographyProps={{ 
+                                  variant: 'caption',
+                                  color: 'text.secondary'
+                                }}
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        ))}
+                      </List>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
               </Box>
             </Box>
           </>

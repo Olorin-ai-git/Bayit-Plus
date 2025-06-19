@@ -36,8 +36,9 @@ export interface MCPResponse extends MCPMessage {
 // Olorin-specific Types
 export interface OlorinTool {
   name: string;
+  display_name?: string;
   description: string;
-  inputSchema: {
+  inputSchema?: {
     type: string;
     properties: Record<string, any>;
     required: string[];

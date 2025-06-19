@@ -241,6 +241,14 @@ class OlorinApplication:
                 "git_sha": os.environ.get("OLORIN_GIT_SHA", "unknown"),
             }
 
+        @app.get("/favicon.ico")
+        async def favicon():
+            """Return a simple favicon response to prevent 404 errors."""
+            from fastapi.responses import Response
+            # Return a 1x1 transparent GIF as a minimal favicon
+            gif_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
+            return Response(content=gif_data, media_type="image/gif")
+
 
 def create_app(
     test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None

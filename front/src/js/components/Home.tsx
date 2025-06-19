@@ -1,23 +1,17 @@
 import React from 'react';
-import { Chip } from '@mui/material';
-import styled from 'styled-components';
-
-const StyledHR = styled.hr`
-  border: 0;
-  height: 1px;
-  background: #e0e0e0;
-  margin: 1rem 0;
-`;
+import { Chip, Typography, Divider, Box } from '@mui/material';
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0 }}>Olorin Investigation Platform</h2>
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+          Olorin Investigation Platform
+        </Typography>
         <Chip label="v1.0.0" color="success" size="small" />
-      </div>
-      <StyledHR />
-    </div>
+      </Box>
+      <Divider sx={{ my: 2 }} />
+    </Box>
   );
 };
 
