@@ -10,6 +10,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Configuration
@@ -123,7 +125,7 @@ start_backend() {
     
     # Start backend server with console output
     print_status "Backend output (log level: ERROR):"
-    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload --log-level error 2>&1 | sed 's/^/[BACKEND] /' &
+    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload --log-level error 2>&1 | sed "s/^/$(printf '\033[0;34m')[BACKEND] /" | sed "s/$/$(printf '\033[0m')/" &
     local backend_pid=$!
     echo $backend_pid > "$BACKEND_PID_FILE"
     
@@ -151,7 +153,7 @@ start_mcp() {
     
     # Start MCP server with console output
     print_status "MCP server output (log level: ERROR):"
-    LOG_LEVEL=ERROR poetry run python -m app.mcp_server.cli 2>&1 | sed 's/^/[MCP] /' &
+    LOG_LEVEL=ERROR poetry run python -m app.mcp_server.cli 2>&1 | sed "s/^/$(printf '\033[0;32m')[MCP] /" | sed "s/$/$(printf '\033[0m')/" &
     local mcp_pid=$!
     echo $mcp_pid > "$MCP_PID_FILE"
     
@@ -203,7 +205,7 @@ start_frontend() {
     # Start frontend server with console output
     print_status "Frontend output (showing errors and warnings):"
     # Filter npm output to show only errors and warnings
-    npm start 2>&1 | grep -E "(ERROR|WARNING|Failed|Error|error|warn|Warning)" | sed 's/^/[FRONTEND] /' &
+    npm start 2>&1 | grep -E "(ERROR|WARNING|Failed|Error|error|warn|Warning)" | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
     local frontend_pid=$!
     echo $frontend_pid > "$FRONTEND_PID_FILE"
     
@@ -277,6 +279,7 @@ usage() {
     echo "  FRONTEND_PORT  Frontend server port (default: 3000)"
     echo ""
     echo "Note: Console output shows ERROR level logs from all services"
+    echo "      Backend logs in Blue, MCP logs in Green, Frontend logs in Cyan"
 }
 
 # Function to show logs
@@ -284,9 +287,9 @@ show_logs() {
     print_status "Logs are displayed in the console during service execution."
     print_status "To see logs, run: npm run olorin"
     print_status "Console shows ERROR level logs from all services:"
-    echo "  - Backend server (uvicorn) with --log-level error"
-    echo "  - MCP server with LOG_LEVEL=ERROR"
-    echo "  - Frontend server filtered for errors and warnings"
+    echo -e "  - ${BLUE}Backend server${NC} (uvicorn) with --log-level error"
+    echo -e "  - ${GREEN}MCP server${NC} with LOG_LEVEL=ERROR"
+    echo -e "  - ${CYAN}Frontend server${NC} filtered for errors and warnings"
 }
 
 # Main execution
@@ -297,6 +300,7 @@ main() {
         start)
             print_status "Starting Olorin services..."
             print_status "Console output will show ERROR level logs from all services"
+            echo -e "  ${BLUE}■ Backend${NC} (Blue) - ${GREEN}■ MCP${NC} (Green) - ${CYAN}■ Frontend${NC} (Cyan)"
             echo ""
             
             # Set up signal handlers
