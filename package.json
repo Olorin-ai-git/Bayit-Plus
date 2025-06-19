@@ -7,7 +7,8 @@
     "push": "./git_commit_push.sh",
     "push:with-docker": "./git_commit_push.sh --with-docker",
     "push:docker-only": "./git_commit_push.sh --docker-only",
-    "push:help": "./git_commit_push.sh --help"
+    "push:help": "./git_commit_push.sh --help",
+    "olorin": "./start_olorin.sh"
   },
   "repository": {
     "type": "git",

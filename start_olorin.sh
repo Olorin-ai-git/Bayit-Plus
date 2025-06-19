@@ -121,8 +121,9 @@ start_backend() {
         return 1
     fi
     
-    # Start backend server
-    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload > "$BACKEND_LOG" 2>&1 &
+    # Start backend server with console output
+    print_status "Backend output (log level: ERROR):"
+    poetry run uvicorn app.main:app --host 0.0.0.0 --port $BACKEND_PORT --reload --log-level error 2>&1 | sed 's/^/[BACKEND] /' &
     local backend_pid=$!
     echo $backend_pid > "$BACKEND_PID_FILE"
     
@@ -130,10 +131,9 @@ start_backend() {
     sleep 3
     if kill -0 $backend_pid 2>/dev/null; then
         print_success "Backend server started (PID: $backend_pid, Port: $BACKEND_PORT)"
-        print_status "Backend logs: $BACKEND_LOG"
         return 0
     else
-        print_error "Backend server failed to start. Check logs: $BACKEND_LOG"
+        print_error "Backend server failed to start."
         return 1
     fi
 }
@@ -149,8 +149,9 @@ start_mcp() {
     
     cd "$BACKEND_DIR"
     
-    # Start MCP server
-    poetry run python -m app.mcp_server.cli > "$MCP_LOG" 2>&1 &
+    # Start MCP server with console output
+    print_status "MCP server output (log level: ERROR):"
+    LOG_LEVEL=ERROR poetry run python -m app.mcp_server.cli 2>&1 | sed 's/^/[MCP] /' &
     local mcp_pid=$!
     echo $mcp_pid > "$MCP_PID_FILE"
     
@@ -158,10 +159,9 @@ start_mcp() {
     sleep 3
     if kill -0 $mcp_pid 2>/dev/null; then
         print_success "MCP server started (PID: $mcp_pid)"
-        print_status "MCP logs: $MCP_LOG"
         return 0
     else
-        print_error "MCP server failed to start. Check logs: $MCP_LOG"
+        print_error "MCP server failed to start."
         return 1
     fi
 }
@@ -200,8 +200,10 @@ start_frontend() {
         npm install
     fi
     
-    # Start frontend server
-    npm start > "$FRONTEND_LOG" 2>&1 &
+    # Start frontend server with console output
+    print_status "Frontend output (showing errors and warnings):"
+    # Filter npm output to show only errors and warnings
+    npm start 2>&1 | grep -E "(ERROR|WARNING|Failed|Error|error|warn|Warning)" | sed 's/^/[FRONTEND] /' &
     local frontend_pid=$!
     echo $frontend_pid > "$FRONTEND_PID_FILE"
     
@@ -209,10 +211,9 @@ start_frontend() {
     sleep 5
     if kill -0 $frontend_pid 2>/dev/null; then
         print_success "Frontend server started (PID: $frontend_pid, Port: $FRONTEND_PORT)"
-        print_status "Frontend logs: $FRONTEND_LOG"
         return 0
     else
-        print_error "Frontend server failed to start. Check logs: $FRONTEND_LOG"
+        print_error "Frontend server failed to start."
         return 1
     fi
 }
@@ -261,43 +262,31 @@ check_status() {
 # Function to show usage
 usage() {
     echo "Usage: $0 [OPTIONS]"
+    echo "       npm run olorin"
     echo ""
     echo "Options:"
     echo "  start     Start all services (default)"
     echo "  stop      Stop all services"
     echo "  restart   Restart all services"
     echo "  status    Check service status"
-    echo "  logs      Show logs"
+    echo "  logs      Show logs info"
     echo "  --help    Show this help message"
     echo ""
     echo "Environment Variables:"
     echo "  BACKEND_PORT   Backend server port (default: 8000)"
     echo "  FRONTEND_PORT  Frontend server port (default: 3000)"
     echo ""
+    echo "Note: Console output shows ERROR level logs from all services"
 }
 
 # Function to show logs
 show_logs() {
-    print_status "Recent logs from all services:"
-    echo ""
-    
-    if [ -f "$BACKEND_LOG" ]; then
-        echo -e "${BLUE}=== Backend Logs ===${NC}"
-        tail -20 "$BACKEND_LOG"
-        echo ""
-    fi
-    
-    if [ -f "$MCP_LOG" ]; then
-        echo -e "${BLUE}=== MCP Server Logs ===${NC}"
-        tail -20 "$MCP_LOG"
-        echo ""
-    fi
-    
-    if [ -f "$FRONTEND_LOG" ]; then
-        echo -e "${BLUE}=== Frontend Logs ===${NC}"
-        tail -20 "$FRONTEND_LOG"
-        echo ""
-    fi
+    print_status "Logs are displayed in the console during service execution."
+    print_status "To see logs, run: npm run olorin"
+    print_status "Console shows ERROR level logs from all services:"
+    echo "  - Backend server (uvicorn) with --log-level error"
+    echo "  - MCP server with LOG_LEVEL=ERROR"
+    echo "  - Frontend server filtered for errors and warnings"
 }
 
 # Main execution
@@ -307,6 +296,8 @@ main() {
     case $command in
         start)
             print_status "Starting Olorin services..."
+            print_status "Console output will show ERROR level logs from all services"
+            echo ""
             
             # Set up signal handlers
             trap cleanup SIGINT SIGTERM
