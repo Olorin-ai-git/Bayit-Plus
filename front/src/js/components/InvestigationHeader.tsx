@@ -1,6 +1,24 @@
 import React from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { FaComments, FaBars } from 'react-icons/fa';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormLabel,
+  Paper,
+  IconButton,
+  Tooltip,
+  useTheme,
+} from '@mui/material';
 import Stopwatch from './Stopwatch';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -51,6 +69,7 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
   selectedInputType,
   setSelectedInputType,
 }) => {
+  const theme = useTheme();
   const timeRangeOptions = [
     '1d',
     '3d',
@@ -90,185 +109,169 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
   };
 
   return (
-    <>
-      <div className="sticky top-0 bg-white z-10">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              ATO Fraud Investigation System
-            </h1>
-            <h2 className="text-lg text-gray-500 mt-1 mb-6">
-              Investigation ID:{' '}
-              <span className="text-blue-500">{currentInvestigationId}</span>
-            </h2>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="timeRange" className="mr-2 font-medium">
-              Time Range:
-            </label>
-            <select
+    <Paper sx={{ p: 3, mb: 3, backgroundColor: 'background.paper' }} elevation={1}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+            ATO Fraud Investigation System
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
+            Investigation ID:{' '}
+            <Typography component="span" sx={{ color: 'primary.main', fontWeight: 500 }}>
+              {currentInvestigationId}
+            </Typography>
+          </Typography>
+        </Box>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel id="time-range-label">Time Range</InputLabel>
+            <Select
+              labelId="time-range-label"
               id="timeRange"
               value={timeRange}
+              label="Time Range"
               onChange={(e) => onTimeRangeChange(e.target.value)}
-              className="border rounded px-2 py-1"
             >
               {timeRangeOptions.map((opt) => (
-                <option key={opt} value={opt}>
+                <MenuItem key={opt} value={opt}>
                   {opt}
-                </option>
+                </MenuItem>
               ))}
-            </select>
-          </div>
-          <div className="flex gap-2">
-            <div className="relative group">
-              <button
-                type="button"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center gap-2"
-                aria-label="Toggle Logs Sidebar"
-                data-testid="toggle-logs-btn"
+            </Select>
+          </FormControl>
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title="Edit Steps">
+              <IconButton
+                onClick={() => setIsEditModalOpen(true)}
+                color="default"
+                disabled={isLoading}
+                sx={{ 
+                  backgroundColor: 'action.hover',
+                  '&:hover': { backgroundColor: 'action.selected' }
+                }}
+                data-testid="edit-steps-btn"
               >
-                {React.createElement(FaBars as unknown as React.ElementType, {
-                  size: 16,
-                })}
-              </button>
-              <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
-                Toggle Logs Sidebar
-              </div>
-            </div>
-            <div className="relative group">
-              <button
-                type="button"
+                <PencilSquareIcon style={{ width: 20, height: 20 }} />
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Toggle Chat Sidebar">
+              <IconButton
                 onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center gap-2"
-                aria-label="Toggle Chat Sidebar"
+                color="default"
+                sx={{ 
+                  backgroundColor: 'action.hover',
+                  '&:hover': { backgroundColor: 'action.selected' }
+                }}
                 data-testid="toggle-chat-btn"
               >
                 {React.createElement(
                   FaComments as unknown as React.ElementType,
-                  { size: 16 },
+                  { size: 20 },
                 )}
-              </button>
-              <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
-                Toggle Chat Sidebar
-              </div>
-            </div>
-            <div className="relative group">
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(true)}
-                className={`px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-                aria-label="Edit Steps"
-                disabled={isLoading}
-                data-testid="edit-steps-btn"
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Toggle Logs Sidebar">
+              <IconButton
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                color="default"
+                sx={{ 
+                  backgroundColor: 'action.hover',
+                  '&:hover': { backgroundColor: 'action.selected' }
+                }}
+                data-testid="toggle-logs-btn"
               >
-                <PencilSquareIcon className="w-5 h-5 mr-1" />
-              </button>
-              <div className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity duration-200">
-                Edit Steps
-              </div>
-            </div>
-          </div>
-        </div>
+                {React.createElement(FaBars as unknown as React.ElementType, {
+                  size: 20,
+                })}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+      </Box>
 
-        <div className="flex flex-col gap-4">
-          {/* Radio button group for input type selection */}
-          <div className="flex gap-6">
-            <div className="flex items-center">
-              <input
-                id="user-id-radio"
-                name="input-type"
-                type="radio"
-                value="userId"
-                checked={selectedInputType === 'userId'}
-                onChange={(e) =>
-                  setSelectedInputType(e.target.value as 'userId' | 'deviceId')
-                }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-              />
-              <label
-                htmlFor="user-id-radio"
-                className="ml-2 text-sm font-medium text-gray-700"
-              >
-                User ID
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="device-id-radio"
-                name="input-type"
-                type="radio"
-                value="deviceId"
-                checked={selectedInputType === 'deviceId'}
-                onChange={(e) =>
-                  setSelectedInputType(e.target.value as 'userId' | 'deviceId')
-                }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-              />
-              <label
-                htmlFor="device-id-radio"
-                className="ml-2 text-sm font-medium text-gray-700"
-              >
-                Device ID
-              </label>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !isLoading && userId.trim() !== '') {
-                  handleSubmit(e as React.FormEvent);
-                }
-              }}
-              placeholder={
-                selectedInputType === 'userId'
-                  ? 'Enter User ID'
-                  : 'Enter Device ID'
-              }
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {/* Radio button group for input type selection */}
+        <FormControl component="fieldset">
+          <RadioGroup
+            row
+            value={selectedInputType}
+            onChange={(e) => setSelectedInputType(e.target.value as 'userId' | 'deviceId')}
+          >
+            <FormControlLabel 
+              value="userId" 
+              control={<Radio />} 
+              label="User ID"
+              sx={{ mr: 4 }}
             />
-            {!isLoading ? (
-              <button
-                type="button"
-                onClick={handleButtonClick}
-                disabled={userId.trim() === '' || isLoading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                title="Start the investigation"
-              >
-                Start investigation
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleStopInvestigation}
-                disabled={!isLoading}
-                className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
-                title="Stop the investigation"
-              >
-                Stop investigation
-              </button>
-            )}
-          </div>
-          {startTime && (
-            <div className="flex justify-end">
-              <Stopwatch
-                startTime={startTime}
-                endTime={endTime}
-                label="Investigation Time"
-                className="text-lg"
-                data-testid="stopwatch"
-              />
-            </div>
+            <FormControlLabel 
+              value="deviceId" 
+              control={<Radio />} 
+              label="Device ID"
+            />
+          </RadioGroup>
+        </FormControl>
+
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+          <TextField
+            fullWidth
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isLoading && userId.trim() !== '') {
+                handleSubmit(e as React.FormEvent);
+              }
+            }}
+            placeholder={
+              selectedInputType === 'userId'
+                ? 'Enter User ID'
+                : 'Enter Device ID'
+            }
+            variant="outlined"
+            size="medium"
+          />
+          
+          {!isLoading ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleButtonClick}
+              disabled={userId.trim() === '' || isLoading}
+              size="large"
+              sx={{ px: 4, whiteSpace: 'nowrap' }}
+            >
+              Start investigation
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleStopInvestigation}
+              disabled={!isLoading}
+              size="large"
+              sx={{ px: 4, whiteSpace: 'nowrap' }}
+            >
+              Stop investigation
+            </Button>
           )}
-        </div>
-      </div>
-    </>
+        </Box>
+        
+        {startTime && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Stopwatch
+              startTime={startTime}
+              endTime={endTime}
+              label="Investigation Time"
+              className="text-lg"
+              data-testid="stopwatch"
+            />
+          </Box>
+        )}
+      </Box>
+    </Paper>
   );
 };
 

@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import {
   InvestigationStep,
-  StepStatus,
-  InvestigationStepId,
 } from '../types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from '../constants/definitions';
 import { formatTimestamp } from '../utils/investigation';
 import LocationMap from './LocationMap';
 import AgentDetailsTable from './AgentDetailsTable';

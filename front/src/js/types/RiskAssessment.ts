@@ -1,3 +1,5 @@
+import { InvestigationStepId, StepStatus } from '../constants/definitions';
+
 export interface ExtractedNetworkSignal {
   ip_address?: string;
   isp?: string;
@@ -194,35 +196,6 @@ export interface LegacyLocationAgentResponse {
   timestamp: string;
 }
 
-export enum InvestigationStepId {
-  INIT = 'init',
-  NETWORK = 'network',
-  LOCATION = 'location',
-  DEVICE = 'device',
-  LOG = 'log',
-  RISK = 'risk',
-}
-
-export enum StepStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
-
-export interface InvestigationStep {
-  id: InvestigationStepId;
-  agent: string;
-  title: string;
-  description: string;
-  status: StepStatus;
-  details?: any;
-  data?: any;
-  timestamp?: string;
-  /** Tools selected for this agent */
-  tools: string[];
-}
-
 export enum LogLevel {
   INFO = 'info',
   WARNING = 'warning',
@@ -260,4 +233,17 @@ export interface AgentResponses {
   deviceResponse?: DeviceAgentResponse;
   logResponse?: LogAgentResponse;
   oiiResponse?: any; // Keeping this as any since we don't have its type defined
+}
+
+export interface InvestigationStep {
+  id: InvestigationStepId;
+  agent: string;
+  title: string;
+  description: string;
+  status: StepStatus;
+  details?: any;
+  data?: any;
+  timestamp?: string;
+  /** Tools selected for this agent */
+  tools: string[];
 }

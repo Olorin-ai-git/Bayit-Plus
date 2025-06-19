@@ -306,6 +306,32 @@ const AgentLogSidebar: React.FC<AgentLogSidebarProps> = ({
                         0%, 100% { opacity: 1; }
                         50% { opacity: 0; }
                     }
+                    @keyframes slideInRight {
+                        0% {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOutRight {
+                        0% {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                    }
+                    .slide-fade-in {
+                        animation: slideInRight 0.3s ease-out forwards;
+                    }
+                    .slide-fade-out {
+                        animation: slideOutRight 0.3s ease-in forwards;
+                    }
                     .sidebar-tooltip {
                         position: absolute;
                         left: 50%;

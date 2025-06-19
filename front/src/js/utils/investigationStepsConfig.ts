@@ -1,8 +1,7 @@
 import {
   InvestigationStep,
-  InvestigationStepId,
-  StepStatus,
 } from '../types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from '../constants/definitions';
 
 export const allPossibleSteps: InvestigationStep[] = [
   {

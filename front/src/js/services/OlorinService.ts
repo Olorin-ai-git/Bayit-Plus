@@ -33,104 +33,104 @@ type OlorinApi =
  */
 const OLORIN_CONFIG: Record<OlorinApi, ApiMethod> = {
   getOii: {
-    version: '',
-    apiPath: 'api/oii',
+    version: 'api',
+    apiPath: 'oii',
     noRetry: false,
     isJsonResponse: true,
   },
   assessRisk: {
-    version: '',
-    apiPath: 'api/risk-assessment',
+    version: 'api',
+    apiPath: 'risk-assessment',
     noRetry: false,
     isJsonResponse: true,
   },
   analyzeNetwork: {
-    version: '',
-    apiPath: 'api/network',
+    version: 'api',
+    apiPath: 'network',
     noRetry: false,
     isJsonResponse: true,
   },
   analyzeLocation: {
-    version: '',
-    apiPath: 'api/location',
+    version: 'api',
+    apiPath: 'location',
     noRetry: false,
     isJsonResponse: true,
   },
   analyzeDevice: {
-    version: '',
-    apiPath: 'api/device',
+    version: 'api',
+    apiPath: 'device',
     noRetry: false,
     isJsonResponse: true,
   },
   analyzeLogs: {
-    version: '',
-    apiPath: 'api/logs',
+    version: 'api',
+    apiPath: 'logs',
     noRetry: false,
     isJsonResponse: true,
   },
   investigation: {
-    version: '',
-    apiPath: 'api/investigation',
+    version: 'api',
+    apiPath: 'investigation',
     noRetry: false,
     isJsonResponse: true,
   },
   investigations: {
-    version: '',
-    apiPath: 'api/investigations',
+    version: 'api',
+    apiPath: 'investigations',
     noRetry: false,
     isJsonResponse: true,
   },
   locationRiskAnalysis: {
-    version: '',
-    apiPath: 'api/location/risk-analysis',
+    version: 'api',
+    apiPath: 'location/risk-analysis',
     noRetry: false,
     isJsonResponse: true,
   },
   deviceChronos: {
-    version: '',
-    apiPath: 'api/device/chronos',
+    version: 'api',
+    apiPath: 'device/chronos',
     noRetry: false,
     isJsonResponse: true,
   },
   oiiLocationSource: {
-    version: '',
-    apiPath: 'api/location/source/oii',
+    version: 'api',
+    apiPath: 'location/source/oii',
     noRetry: false,
     isJsonResponse: true,
   },
   businessLocationSource: {
-    version: '',
-    apiPath: 'api/location/source/business',
+    version: 'api',
+    apiPath: 'location/source/business',
     noRetry: false,
     isJsonResponse: true,
   },
   phoneLocationSource: {
-    version: '',
-    apiPath: 'api/location/source/phone',
+    version: 'api',
+    apiPath: 'location/source/phone',
     noRetry: false,
     isJsonResponse: true,
   },
   agentInvoke: {
-    version: 'v1',
-    apiPath: 'api/v1/agent/invoke',
+    version: 'api/v1',
+    apiPath: 'agent/invoke',
     noRetry: false,
     isJsonResponse: true,
   },
   splunkJobCancel: {
-    version: '',
-    apiPath: 'api/splunk/job/cancel',
+    version: 'api',
+    apiPath: 'splunk/job/cancel',
     noRetry: false,
     isJsonResponse: true,
   },
   demoDisable: {
-    version: '',
-    apiPath: 'api/demo',
+    version: 'api',
+    apiPath: 'demo',
     noRetry: false,
     isJsonResponse: true,
   },
   demoAll: {
-    version: '',
-    apiPath: 'api/demo',
+    version: 'api',
+    apiPath: 'demo',
     noRetry: false,
     isJsonResponse: true,
   },
@@ -193,7 +193,7 @@ export class OlorinService {
     const requestOptions = generateRequestOptions();
 
     return this.restService.get({
-      version: 'v1',
+      version: 'api',
       apiPath: url,
       options: requestOptions,
       isJsonResponse: true,
@@ -215,7 +215,7 @@ export class OlorinService {
     const requestOptions = generateRequestOptions();
 
     return this.restService.post({
-      version: 'v1',
+      version: 'api',
       apiPath: url,
       body,
       options: requestOptions,
@@ -235,7 +235,7 @@ export class OlorinService {
     const requestOptions = generateRequestOptions();
 
     return this.restService.get({
-      version: 'v1',
+      version: 'api',
       apiPath: url,
       options: requestOptions,
       isJsonResponse: true,
@@ -254,7 +254,7 @@ export class OlorinService {
     const requestOptions = generateRequestOptions();
 
     return this.restService.get({
-      version: 'v1',
+      version: 'api',
       apiPath: url,
       options: requestOptions,
       isJsonResponse: true,
@@ -278,12 +278,38 @@ export class OlorinService {
     options?: any,
   ): Promise<RestResponse> {
     const config = getApiConfig(action);
-    const params = new URLSearchParams({
-      ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
-      ...queryParams,
-    });
-
-    const url = `${config.apiPath}?${params.toString()}`;
+    
+    // For certain endpoints, entity_id is part of the path
+    const pathBasedEndpoints = [
+      'analyzeNetwork', 
+      'analyzeLocation', 
+      'analyzeDevice', 
+      'analyzeLogs',
+      'getOii',
+      'oiiLocationSource',
+      'businessLocationSource',
+      'phoneLocationSource',
+      'locationRiskAnalysis',
+      'assessRisk'
+    ];
+    let url: string;
+    
+    if (pathBasedEndpoints.includes(action)) {
+      // Entity ID is part of the path for these endpoints
+      const params = new URLSearchParams({
+        entity_type: entityType,
+        ...queryParams,
+      });
+      url = `${config.apiPath}/${entityId}?${params.toString()}`;
+    } else {
+      // Entity ID is a query parameter for other endpoints
+      const params = new URLSearchParams({
+        ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
+        ...queryParams,
+      });
+      url = `${config.apiPath}?${params.toString()}`;
+    }
+    
     const requestOptions = {
       ...generateRequestOptions(),
       ...options,
@@ -294,7 +320,7 @@ export class OlorinService {
     );
 
     return this.restService.get({
-      version: 'v1',
+      version: config.version,
       apiPath: url,
       options: requestOptions,
       isJsonResponse: true,
@@ -336,7 +362,7 @@ export class OlorinService {
     );
 
     return this.restService.post({
-      version: 'v1',
+      version: config.version,
       apiPath: url,
       body,
       options: requestOptions,

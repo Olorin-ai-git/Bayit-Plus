@@ -63,3 +63,12 @@ export interface AnalyzeResponse {
   anomalies?: Anomaly[];
   risk_assessment?: RiskAssessment;
 }
+
+export enum AutonomousInvestigationStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+  PAUSED = 'PAUSED',
+}

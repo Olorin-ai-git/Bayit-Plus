@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { Box, Typography, useTheme, keyframes } from '@mui/material';
 import { CommentMessage } from './CommentWindow';
 import { ANIMATION_TIMING } from '../constants/definitions';
 
@@ -14,6 +15,16 @@ interface AnimatedTextProps {
   text: string;
   className?: string;
 }
+
+const blink = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 /**
  * Animated text that reveals one character at a time.
@@ -54,7 +65,9 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
  * @returns {JSX.Element} The caret element.
  */
 const Caret: React.FC = () => {
+  const theme = useTheme();
   const [isVisible, setIsVisible] = useState(true);
+  
   useEffect(() => {
     const timer = setTimeout(
       () => setIsVisible(false),
@@ -62,11 +75,20 @@ const Caret: React.FC = () => {
     );
     return () => clearTimeout(timer);
   }, []);
+  
   if (!isVisible) return null;
+  
   return (
-    <span
-      className="inline-block border-r-2 border-black ml-1 animate-blink"
-      style={{ height: '1em' }}
+    <Box
+      component="span"
+      sx={{
+        display: 'inline-block',
+        width: '2px',
+        height: '1em',
+        backgroundColor: theme.palette.text.primary,
+        ml: 0.5,
+        animation: `${blink} 1s step-end infinite`,
+      }}
     />
   );
 };
@@ -78,8 +100,9 @@ const Caret: React.FC = () => {
  */
 const ChatLogAnimated: React.FC<ChatLogAnimatedProps> = ({
   messages,
-  className,
+  className = '',
 }) => {
+  const theme = useTheme();
   const [visibleCount, setVisibleCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -106,38 +129,58 @@ const ChatLogAnimated: React.FC<ChatLogAnimatedProps> = ({
   }, [visibleCount]);
 
   return (
-    <div
+    <Box
       ref={containerRef}
-      className={`flex-1 overflow-y-auto ${className || ''}`}
-      style={{ minHeight: 0 }}
+      className={className}
+      sx={{
+        flex: 1,
+        overflowY: 'auto',
+        minHeight: 0,
+        pr: 1,
+      }}
       data-testid="chat-log-animated"
     >
       {messages.slice(0, visibleCount).map((msg) => (
-        <div
+        <Box
           key={`${msg.timestamp ?? ''}`}
-          className="mb-3 last:mb-0 animate-fade-in"
+          sx={{
+            mb: 1.5,
+            '&:last-child': { mb: 0 },
+            animation: `${fadeIn} 0.3s ease-out`,
+          }}
         >
-          <div className="text-xs text-black-500 mb-1">
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.palette.text.secondary,
+              display: 'block',
+              mb: 0.5,
+            }}
+          >
             {new Date(msg.timestamp ?? Date.now()).toLocaleDateString()}{' '}
             {new Date(msg.timestamp ?? Date.now()).toLocaleTimeString()}
-          </div>
-          <div className="text-xs flex items-baseline">
-            <span className="font-semibold mr-1">{msg.sender ?? ''}</span>
-            <AnimatedText text={msg.text ?? ''} />
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
+            <Typography
+              component="span"
+              variant="caption"
+              sx={{ fontWeight: 600, mr: 0.5 }}
+            >
+              {msg.sender ?? ''}
+            </Typography>
+            <Typography component="span" variant="caption">
+              <AnimatedText text={msg.text ?? ''} />
+            </Typography>
             <Caret />
-          </div>
-        </div>
+          </Box>
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 };
 
 ChatLogAnimated.propTypes = {
   className: PropTypes.string,
-};
-
-ChatLogAnimated.defaultProps = {
-  className: '',
 };
 
 export default ChatLogAnimated;

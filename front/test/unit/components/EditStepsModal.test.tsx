@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EditStepsModal from 'src/js/components/EditStepsModal';
-import { InvestigationStepId, StepStatus } from 'src/js/types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from 'src/js/constants/definitions';
 
 describe('EditStepsModal', () => {
   const mockSteps = [

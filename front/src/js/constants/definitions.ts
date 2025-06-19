@@ -68,3 +68,25 @@ export const SIDEBAR_DIMENSIONS = {
   MAX_WIDTH: 800,
   DEFAULT_WIDTH: 384,
 } as const;
+
+/**
+ * Investigation step IDs
+ */
+export enum InvestigationStepId {
+  INIT = 'initialization',
+  NETWORK = 'network',
+  LOCATION = 'location',
+  DEVICE = 'device',
+  LOG = 'log',
+  RISK = 'risk-assessment',
+}
+
+/**
+ * Investigation step status
+ */
+export enum StepStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}

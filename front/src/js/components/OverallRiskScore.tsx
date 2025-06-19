@@ -1,4 +1,5 @@
 import React from 'react';
+import { Paper, Typography, Box, useTheme } from '@mui/material';
 
 /**
  * Component to display the overall risk score
@@ -6,22 +7,47 @@ import React from 'react';
  * @param {number} props.score - The overall risk score
  * @returns {JSX.Element} The rendered overall risk score component
  */
-const OverallRiskScore: React.FC<{
+interface OverallRiskScoreProps {
   score: number;
-}> = ({ score }) => (
-  <div className="bg-white rounded-lg shadow-md p-6 mb-8 relative">
-    <h3 className="text-lg font-semibold text-gray-700 mb-2">
-      Overall Risk Score
-    </h3>
-    <div className="flex items-center gap-4">
-      <div
-        className="text-4xl font-bold text-blue-600"
-        style={{ margin: 'auto' }}
+}
+
+const OverallRiskScore: React.FC<OverallRiskScoreProps> = ({ score }) => {
+  const theme = useTheme();
+  
+  return (
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        mb: 3,
+        position: 'relative',
+        backgroundColor: theme.palette.background.paper,
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          color: theme.palette.text.secondary,
+          mb: 1,
+        }}
       >
-        {score.toFixed(2)}
-      </div>
-    </div>
-  </div>
-);
+        Overall Risk Score
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Typography
+          variant="h3"
+          component="div"
+          sx={{
+            color: theme.palette.primary.main,
+            fontWeight: 'bold',
+          }}
+          data-testid="risk-score-value"
+        >
+          {score.toFixed(2)}
+        </Typography>
+      </Box>
+    </Paper>
+  );
+};
 
 export default OverallRiskScore;

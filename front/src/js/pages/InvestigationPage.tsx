@@ -8,8 +8,6 @@ import React, {
 import { useSandboxContext } from '../hooks/useSandboxContext';
 import {
   InvestigationStep,
-  InvestigationStepId,
-  StepStatus,
   LogLevel,
   AgentResponses,
   NetworkAgentResponse,
@@ -17,6 +15,7 @@ import {
   DeviceAgentResponse,
   LogAgentResponse,
 } from '../types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from '../constants/definitions';
 import { OlorinService } from '../services/OlorinService';
 import AgentLogSidebar from '../components/AgentLogSidebar';
 import EditStepsModal from '../components/EditStepsModal';
@@ -41,7 +40,7 @@ import {
   processLocationData,
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
-import { AutonomousInvestigationPanel } from '../components/AutonomousInvestigationPanel';
+import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
 import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
 
 /**
@@ -1472,13 +1471,17 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 
   return (
     <Box sx={{ 
-      height: '100%', 
+      height: 'calc(100vh - 16px)', // Full viewport height minus padding
       backgroundColor: 'background.default',
       position: 'relative',
       display: 'flex',
       flexDirection: 'row',
-      minHeight: 0
+      minHeight: 0,
+      overflow: 'hidden',
+      gap: 1, // Small gap between panels
+      p: 1 // Small padding around the entire layout
     }}>
+      {/* Comment Sidebar */}
       <CommentSidebar
         isOpen={commentSidebarOpen}
         width={320}
@@ -1508,347 +1511,311 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         currentInvestigationId={investigationIdState}
       />
       {/* Main content area */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
-        <Box sx={{ px: { xs: 2, sm: 3, lg: 4 }, py: 1, flex: 1, minWidth: 0, height: '100%', minHeight: 0 }}>
-          <Box sx={{ display: 'flex', gap: 2, height: '100%', minHeight: 0 }}>
-            <Box sx={{ 
-              flex: 1, 
-              transition: 'all 0.3s', 
-              height: '100%', 
-              minHeight: 0 
-            }}>
+      <Paper 
+        elevation={3}
+        sx={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'row',
+          height: '100%', 
+          minHeight: 0,
+          overflow: 'hidden',
+          backgroundColor: 'background.paper'
+        }}
+      >
+        <Box sx={{ 
+          flex: 1, 
+          transition: 'all 0.3s', 
+          height: '100%', 
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          p: 2 // Add padding inside the main content
+        }}>
+              <InvestigationHeader
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
+                setIsEditModalOpen={setIsEditModalOpen}
+                isLoading={isLoading}
+                userId={userId}
+                setUserId={setUserId}
+                handleSubmit={handleSubmit}
+                cancelledRef={cancelledRef}
+                closeInvestigation={closeInvestigation}
+                startTime={investigationStartTime}
+                endTime={investigationEndTime}
+                isChatSidebarOpen={commentSidebarOpen}
+                setIsChatSidebarOpen={setCommentSidebarOpen}
+                currentInvestigationId={investigationIdState}
+                timeRange={timeRange}
+                onTimeRangeChange={setTimeRange}
+                selectedInputType={selectedInputType}
+                setSelectedInputType={setSelectedInputType}
+              />
+
+              {/* Autonomous Mode Toggle */}
               <Paper sx={{ 
-                borderRadius: 2, 
-                height: '100%', 
-                boxShadow: 1, 
-                p: 3, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                minHeight: 0,
-                backgroundColor: 'background.paper'
+                mb: 2, 
+                p: 2, 
+                background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
+                border: `1px solid ${theme.palette.primary.light}30`
               }}>
-                <InvestigationHeader
-                  isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={setIsSidebarOpen}
-                  setIsEditModalOpen={setIsEditModalOpen}
-                  isLoading={isLoading}
-                  userId={userId}
-                  setUserId={setUserId}
-                  handleSubmit={handleSubmit}
-                  cancelledRef={cancelledRef}
-                  closeInvestigation={closeInvestigation}
-                  startTime={investigationStartTime}
-                  endTime={investigationEndTime}
-                  isChatSidebarOpen={commentSidebarOpen}
-                  setIsChatSidebarOpen={setCommentSidebarOpen}
-                  currentInvestigationId={investigationIdState}
-                  timeRange={timeRange}
-                  onTimeRangeChange={setTimeRange}
-                  selectedInputType={selectedInputType}
-                  setSelectedInputType={setSelectedInputType}
-                />
-
-                {/* Autonomous Mode Toggle */}
-                <Paper sx={{ 
-                  mb: 2, 
-                  p: 2, 
-                  background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
-                  border: `1px solid ${theme.palette.primary.light}30`
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Box>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                        Investigation Mode
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        {autonomousMode
-                          ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
-                          : 'Manual mode allows step-by-step investigation control'}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          color: !autonomousMode ? 'primary.main' : 'text.secondary'
-                        }}
-                      >
-                        Manual
-                      </Typography>
-                      <Switch
-                        checked={autonomousMode}
-                        onChange={() => setAutonomousMode(!autonomousMode)}
-                        disabled={isLoading}
-                        color="primary"
-                      />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          color: autonomousMode ? 'primary.main' : 'text.secondary'
-                        }}
-                      >
-                        Autonomous
-                      </Typography>
-                    </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                      Investigation Mode
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {autonomousMode
+                        ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
+                        : 'Manual mode allows step-by-step investigation control'}
+                    </Typography>
                   </Box>
-                </Paper>
-
-                {/* Conditional rendering based on investigation mode */}
-                {autonomousMode ? (
-                  <AutonomousInvestigationPanel
-                    entityId={userId}
-                    entityType={
-                      selectedInputType === 'userId' ? 'user_id' : 'device_id'
-                    }
-                    onLog={addLog}
-                    onComplete={(results) => {
-                      addLog(
-                        'Autonomous investigation completed successfully',
-                        LogLevel.SUCCESS,
-                      );
-                      setIsInvestigationClosed(true);
-                      setInvestigationEndTime(new Date());
-
-                      // Process and update step states with autonomous results
-                      const updatedSteps = selectedInvestigationSteps.map(
-                        (step) => {
-                          const phaseResult =
-                            results[step.id] ||
-                            results[
-                              step.agent?.toLowerCase().replace(' ', '_')
-                            ];
-                          if (phaseResult) {
-                            return {
-                              ...step,
-                              status: StepStatus.COMPLETED,
-                              details: phaseResult,
-                              timestamp: new Date().toISOString(),
-                            };
-                          }
-                          return step;
-                        },
-                      );
-                      setStepStates(updatedSteps);
-                    }}
-                    onPhaseUpdate={(phase, progress, message) => {
-                      addLog(
-                        `[${phase.toUpperCase()}] ${(progress * 100).toFixed(
-                          1,
-                        )}% - ${message}`,
-                        LogLevel.INFO,
-                      );
-
-                      // Update current step based on phase
-                      const phaseToStepMap: Record<
-                        string,
-                        InvestigationStepId
-                      > = {
-                        network_analysis: InvestigationStepId.NETWORK,
-                        device_analysis: InvestigationStepId.DEVICE,
-                        log_analysis: InvestigationStepId.LOG,
-                        location_analysis: InvestigationStepId.LOCATION,
-                        risk_assessment: InvestigationStepId.RISK,
-                      };
-
-                      const stepId = phaseToStepMap[phase];
-                      if (stepId) {
-                        setCurrentStep(stepId);
-
-                        // Update step status to in progress
-                        setStepStates((prevSteps) =>
-                          prevSteps.map((step) =>
-                            step.id === stepId
-                              ? { ...step, status: StepStatus.IN_PROGRESS }
-                              : step,
-                          ),
-                        );
-                      }
-                    }}
-                  />
-                ) : null}
-
-                {/* Error and warning banners */}
-                {errorLogs.length > 0 &&
-                  errorLogs
-                    .filter(
-                      (log) =>
-                        !dismissedErrorKeys.includes(
-                          `${log.timestamp}-${log.message}`,
-                        ),
-                    )
-                    .map((log) => (
-                      <Alert
-                        key={`${log.timestamp}-${log.message}`}
-                        severity="error"
-                        onClose={() =>
-                          setDismissedErrorKeys((keys) => [
-                            ...keys,
-                            `${log.timestamp}-${log.message}`,
-                          ])
-                        }
-                        sx={{ mb: 1 }}
-                        data-testid="error-banner"
-                      >
-                        {log.message.replace(/<[^>]+>/g, '')}
-                      </Alert>
-                    ))}
-                {/* Always render the current error state as a persistent error banner for test visibility */}
-                {error && (
-                  <>
-                    <Alert
-                      severity="error"
-                      onClose={() => setError(null)}
-                      sx={{ mb: 1 }}
-                      data-testid="error-banner"
-                    >
-                      {error}
-                    </Alert>
-                    {/* Always render error text in a visible span for test assertions */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Typography
-                      component="span"
-                      data-testid="error-text"
+                      variant="body2"
                       sx={{
-                        display: 'block',
-                        color: 'error.main',
-                        fontWeight: 'bold',
+                        fontWeight: 500,
+                        color: !autonomousMode ? 'primary.main' : 'text.secondary'
                       }}
                     >
-                      {error}
+                      Manual
                     </Typography>
-                  </>
-                )}
-                {warningLogs.length > 0 &&
-                  warningLogs.map((log) => (
+                    <Switch
+                      checked={autonomousMode}
+                      onChange={() => setAutonomousMode(!autonomousMode)}
+                      disabled={isLoading}
+                      color="primary"
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 500,
+                        color: autonomousMode ? 'primary.main' : 'text.secondary'
+                      }}
+                    >
+                      Autonomous
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+
+              {/* Conditional rendering based on investigation mode */}
+              {autonomousMode ? (
+                <AutonomousInvestigationPanel
+                  entityId={userId}
+                  entityType={
+                    selectedInputType === 'userId' ? 'user_id' : 'device_id'
+                  }
+                  investigationId={investigationId || ''}
+                  onInvestigationComplete={() => {
+                    addLog(
+                      'Autonomous investigation completed successfully',
+                      LogLevel.SUCCESS,
+                    );
+                    setIsInvestigationClosed(true);
+                    setInvestigationEndTime(new Date());
+
+                    // Mark all steps as completed
+                    const updatedSteps = selectedInvestigationSteps.map(
+                      (step) => ({
+                        ...step,
+                        status: StepStatus.COMPLETED,
+                        timestamp: new Date().toISOString(),
+                      }),
+                    );
+                    setStepStates(updatedSteps);
+                  }}
+                  onInvestigationStart={() => {
+                    addLog(
+                      'Starting autonomous investigation...',
+                      LogLevel.INFO,
+                    );
+                  }}
+                />
+              ) : null}
+
+              {/* Error and warning banners */}
+              {errorLogs.length > 0 &&
+                errorLogs
+                  .filter(
+                    (log) =>
+                      !dismissedErrorKeys.includes(
+                        `${log.timestamp}-${log.message}`,
+                      ),
+                  )
+                  .map((log) => (
                     <Alert
                       key={`${log.timestamp}-${log.message}`}
-                      severity="warning"
+                      severity="error"
+                      onClose={() =>
+                        setDismissedErrorKeys((keys) => [
+                          ...keys,
+                          `${log.timestamp}-${log.message}`,
+                        ])
+                      }
                       sx={{ mb: 1 }}
-                      data-testid="warning-banner"
+                      data-testid="error-banner"
                     >
                       {log.message.replace(/<[^>]+>/g, '')}
                     </Alert>
                   ))}
-
-                {/* DEBUG: Render all log messages for test visibility */}
-                {process.env.NODE_ENV === 'test' && logs.length > 0 && (
-                  <Paper
-                    data-testid="debug-log-banner"
+              {/* Always render the current error state as a persistent error banner for test visibility */}
+              {error && (
+                <>
+                  <Alert
+                    severity="error"
+                    onClose={() => setError(null)}
+                    sx={{ mb: 1 }}
+                    data-testid="error-banner"
+                  >
+                    {error}
+                  </Alert>
+                  {/* Always render error text in a visible span for test assertions */}
+                  <Typography
+                    component="span"
+                    data-testid="error-text"
                     sx={{
-                      backgroundColor: 'grey.100',
-                      borderLeft: '4px solid',
-                      borderColor: 'grey.400',
-                      p: 1,
-                      mb: 1
+                      display: 'block',
+                      color: 'error.main',
+                      fontWeight: 'bold',
                     }}
                   >
-                    <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
-                      {logs.map((log) => (
-                        <Box key={log.timestamp}>
-                          {log.message.replace(/<[^>]+>/g, '')}
-                        </Box>
-                      ))}
-                    </Box>
-                  </Paper>
-                )}
-
-                {/* Manual Mode: Splitter layout for risk scores and steps */}
-                {!autonomousMode && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      minHeight: 0,
-                      height: '100%',
-                      flex: 1
-                    }}
+                    {error}
+                  </Typography>
+                </>
+              )}
+              {warningLogs.length > 0 &&
+                warningLogs.map((log) => (
+                  <Alert
+                    key={`${log.timestamp}-${log.message}`}
+                    severity="warning"
+                    sx={{ mb: 1 }}
+                    data-testid="warning-banner"
                   >
-                    {(isLoading || isInvestigationClosed) && (
-                      <Box
-                        sx={{
-                          height: `${riskScoreHeight}px`,
-                          minHeight: '20px',
-                          maxHeight: '300px',
-                          overflow: 'hidden'
-                        }}
-                      >
-                        <RiskScoreDisplay steps={stepStates} />
+                    {log.message.replace(/<[^>]+>/g, '')}
+                  </Alert>
+                ))}
+
+              {/* DEBUG: Render all log messages for test visibility */}
+              {process.env.NODE_ENV === 'test' && logs.length > 0 && (
+                <Paper
+                  data-testid="debug-log-banner"
+                  sx={{
+                    backgroundColor: 'grey.100',
+                    borderLeft: '4px solid',
+                    borderColor: 'grey.400',
+                    p: 1,
+                    mb: 1
+                  }}
+                >
+                  <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                    {logs.map((log) => (
+                      <Box key={log.timestamp}>
+                        {log.message.replace(/<[^>]+>/g, '')}
                       </Box>
-                    )}
-                    {/* Splitter bar between risk scores and steps */}
-                    <Box
-                      ref={splitterRef}
-                      sx={{
-                        height: '8px',
-                        cursor: 'row-resize',
-                        backgroundColor: 'divider',
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        zIndex: 10,
-                        '&:hover': {
-                          backgroundColor: 'action.hover'
-                        }
-                      }}
-                      tabIndex={0}
-                      role="separator"
-                      aria-orientation="horizontal"
-                      aria-label="Resize risk scores and steps"
-                      onMouseDown={() => {
-                        draggingRef.current = true;
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'ArrowUp')
-                          setRiskScoreHeight((h) => Math.max(60, h - 10));
-                        if (e.key === 'ArrowDown')
-                          setRiskScoreHeight((h) => Math.min(300, h + 10));
-                      }}
-                    >
-                      <Box sx={{ 
-                        height: '8px', 
-                        width: '96px', 
-                        backgroundColor: 'text.disabled', 
-                        borderRadius: 1 
-                      }} />
-                    </Box>
-                    {/* Steps section */}
-                    <Box
-                      sx={{ 
-                        flex: 1, 
-                        minHeight: 0, 
-                        overflow: 'auto' 
-                      }}
-                    >
-                      {stepStates.length > 0 && (
-                        <InvestigationSteps
-                          stepStates={stepStates}
-                          selectedInvestigationSteps={
-                            selectedInvestigationSteps
-                          }
-                          currentStep={currentStep}
-                          currentStepIndex={currentStepIndex}
-                          isLoading={isLoading}
-                          isInvestigationClosed={isInvestigationClosed}
-                          stepStartTimes={stepStartTimes}
-                          stepEndTimes={stepEndTimes}
-                        />
-                      )}
-                    </Box>
+                    ))}
                   </Box>
-                )}
+                </Paper>
+              )}
 
-                {/* Autonomous Mode: Show risk scores if investigation completed */}
-                {autonomousMode &&
-                  (isLoading || isInvestigationClosed) &&
-                  stepStates.length > 0 && (
-                    <Box sx={{ mb: 3 }}>
+              {/* Manual Mode: Splitter layout for risk scores and steps */}
+              {!autonomousMode && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                    height: '100%',
+                    flex: 1,
+                    overflow: 'hidden'
+                  }}
+                >
+                  {(isLoading || isInvestigationClosed) && (
+                    <Box
+                      sx={{
+                        height: `${riskScoreHeight}px`,
+                        minHeight: '20px',
+                        maxHeight: '300px',
+                        overflow: 'hidden'
+                      }}
+                    >
                       <RiskScoreDisplay steps={stepStates} />
                     </Box>
                   )}
-              </Paper>
+                  {/* Splitter bar between risk scores and steps */}
+                  <Box
+                    ref={splitterRef}
+                    sx={{
+                      height: '8px',
+                      cursor: 'row-resize',
+                      backgroundColor: 'divider',
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      zIndex: 10,
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      }
+                    }}
+                    tabIndex={0}
+                    role="separator"
+                    aria-orientation="horizontal"
+                    aria-label="Resize risk scores and steps"
+                    onMouseDown={() => {
+                      draggingRef.current = true;
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'ArrowUp')
+                        setRiskScoreHeight((h) => Math.max(60, h - 10));
+                      if (e.key === 'ArrowDown')
+                        setRiskScoreHeight((h) => Math.min(300, h + 10));
+                    }}
+                  >
+                    <Box sx={{ 
+                      height: '8px', 
+                      width: '96px', 
+                      backgroundColor: 'text.disabled', 
+                      borderRadius: 1 
+                    }} />
+                  </Box>
+                  {/* Steps section */}
+                  <Box
+                    sx={{ 
+                      flex: 1, 
+                      minHeight: 0, 
+                      overflow: 'auto' 
+                    }}
+                  >
+                    {stepStates.length > 0 && (
+                      <InvestigationSteps
+                        stepStates={stepStates}
+                        selectedInvestigationSteps={
+                          selectedInvestigationSteps
+                        }
+                        currentStep={currentStep}
+                        currentStepIndex={currentStepIndex}
+                        isLoading={isLoading}
+                        isInvestigationClosed={isInvestigationClosed}
+                        stepStartTimes={stepStartTimes}
+                        stepEndTimes={stepEndTimes}
+                      />
+                    )}
+                  </Box>
+                </Box>
+              )}
+
+              {/* Autonomous Mode: Show risk scores if investigation completed */}
+              {autonomousMode &&
+                (isLoading || isInvestigationClosed) &&
+                stepStates.length > 0 && (
+                  <Box sx={{ mb: 3 }}>
+                    <RiskScoreDisplay steps={stepStates} />
+                  </Box>
+                )}
             </Box>
             <AgentLogSidebar
               isOpen={isSidebarOpen}
@@ -1858,9 +1825,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
               cancelledRef={cancelledRef}
               onLogDisplayed={handleLogDisplayed}
             />
-          </Box>
-        </Box>
-      </Box>
+      </Paper>
       {/* ... other overlays/modals ... */}
       <EditStepsModal
         isOpen={isEditModalOpen}

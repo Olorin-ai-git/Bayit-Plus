@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import RiskScoreDisplay from 'src/js/components/RiskScoreDisplay';
-import { InvestigationStepId, StepStatus } from 'src/js/types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from 'src/js/constants/definitions';
 
 describe('RiskScoreDisplay', () => {
   const mockSteps = [

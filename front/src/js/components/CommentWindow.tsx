@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  useTheme,
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
 /**
  * Represents a single comment message in the chat window.
@@ -36,6 +45,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   sender,
   prefix = '',
 }) => {
+  const theme = useTheme();
   const [input, setInput] = useState('');
 
   /**
@@ -52,39 +62,81 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <div className="bg-white border rounded-lg shadow-md p-4 w-full h-64 flex flex-col">
-      <div className="font-bold mb-2">{title}</div>
-      <div className="flex-1 overflow-y-auto mb-2 border p-1 rounded bg-gray-50">
+    <Paper
+      elevation={1}
+      sx={{
+        p: 2,
+        width: '100%',
+        height: '16rem',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: theme.palette.background.paper,
+      }}
+    >
+      <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+        {title}
+      </Typography>
+      
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          mb: 1,
+          p: 1,
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 1,
+          backgroundColor: theme.palette.grey[50],
+        }}
+      >
         {messages.map((msg) => (
-          <div
+          <Box
             key={`${msg.timestamp}-${msg.sender}-${msg.text}`}
-            className="mb-1"
+            sx={{ mb: 1 }}
           >
-            <span className="font-semibold">{msg.sender}:</span> {msg.text}
-            <span className="text-xs text-gray-400 ml-2">
+            <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>
+              {msg.sender}:
+            </Typography>{' '}
+            <Typography component="span" variant="body2">
+              {msg.text}
+            </Typography>
+            <Typography
+              component="span"
+              variant="caption"
+              sx={{ ml: 1, color: theme.palette.text.secondary }}
+            >
               {new Date(msg.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
+            </Typography>
+          </Box>
         ))}
-      </div>
-      <div className="flex gap-1">
-        <input
-          className="flex-1 border rounded px-2 py-1 text-sm"
+      </Box>
+      
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <TextField
+          size="small"
+          fullWidth
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={`Type a comment as ${sender}...`}
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: theme.palette.background.paper,
+            },
+          }}
         />
-        <button
-          type="button"
-          className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
+        <Button
+          variant="contained"
+          size="small"
           onClick={handleSend}
-          title="Send message"
+          endIcon={<SendIcon />}
+          sx={{ minWidth: 'auto', px: 2 }}
         >
           Send
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Paper>
   );
 };
 

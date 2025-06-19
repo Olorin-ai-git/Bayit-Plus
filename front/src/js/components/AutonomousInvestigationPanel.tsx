@@ -1,124 +1,172 @@
-import React, { useState, useEffect } from 'react';
-import { LogLevel } from '../types/RiskAssessment';
+import React, { useEffect, useState } from 'react';
+import {
+  Paper,
+  Typography,
+  Button,
+  Box,
+  LinearProgress,
+  useTheme,
+} from '@mui/material';
+import { useSimpleAutonomousInvestigation } from '../hooks/useAutonomousInvestigation';
+import { AutonomousInvestigationStatus } from '../types/AnalyzeResponse';
 
 interface AutonomousInvestigationPanelProps {
   entityId: string;
   entityType: string;
-  onLog: (message: string, level?: LogLevel) => void;
-  onComplete: (results: any) => void;
-  onPhaseUpdate: (phase: string, progress: number, message: string) => void;
+  investigationId: string;
+  onInvestigationComplete?: () => void;
+  onInvestigationStart?: () => void;
 }
 
-export const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> = ({
+const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> = ({
   entityId,
   entityType,
-  onLog,
-  onComplete,
-  onPhaseUpdate,
+  investigationId,
+  onInvestigationComplete,
+  onInvestigationStart,
 }) => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [currentPhase, setCurrentPhase] = useState('');
-  const [progress, setProgress] = useState(0);
+  const theme = useTheme();
+  const {
+    startInvestigation,
+    checkStatus,
+    status,
+    isLoading,
+    error,
+    progress,
+  } = useSimpleAutonomousInvestigation();
 
-  const phases = [
-    'network_analysis',
-    'device_analysis', 
-    'log_analysis',
-    'location_analysis',
-    'risk_assessment'
-  ];
+  const [isInvestigating, setIsInvestigating] = useState(false);
+  const [statusCheckInterval, setStatusCheckInterval] = useState<NodeJS.Timeout | null>(null);
 
-  const startAutonomousInvestigation = async () => {
-    setIsRunning(true);
-    setProgress(0);
-    setCurrentPhase('');
-
-    // Simulate autonomous investigation
-    for (let i = 0; i < phases.length; i++) {
-      const phase = phases[i];
-      setCurrentPhase(phase);
-      
-      // Simulate progress through each phase
-      for (let p = 0; p <= 100; p += 10) {
-        setProgress(p);
-        onPhaseUpdate(phase, p / 100, `Processing ${phase.replace('_', ' ')}...`);
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-    }
-
-    // Simulate completion with mock results
-    const mockResults = {
-      network_analysis: {
-        risk_level: 0.3,
-        risk_factors: ['Suspicious IP patterns'],
-        confidence: 0.8
-      },
-      device_analysis: {
-        risk_level: 0.2,
-        risk_factors: ['Device fingerprint changes'],
-        confidence: 0.7
-      },
-      log_analysis: {
-        risk_level: 0.4,
-        risk_factors: ['Unusual login patterns'],
-        confidence: 0.9
-      },
-      location_analysis: {
-        risk_level: 0.1,
-        risk_factors: ['Location consistency'],
-        confidence: 0.6
-      },
-      risk_assessment: {
-        overall_risk_score: 0.25,
-        accumulated_llm_thoughts: 'Overall assessment indicates moderate risk level'
+  useEffect(() => {
+    return () => {
+      if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
       }
     };
+  }, [statusCheckInterval]);
 
-    setIsRunning(false);
-    setProgress(100);
-    onComplete(mockResults);
+  useEffect(() => {
+    if (status === AutonomousInvestigationStatus.COMPLETED) {
+      if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+        setStatusCheckInterval(null);
+      }
+      setIsInvestigating(false);
+      onInvestigationComplete?.();
+    }
+  }, [status, statusCheckInterval, onInvestigationComplete]);
+
+  const handleStartInvestigation = async () => {
+    try {
+      setIsInvestigating(true);
+      onInvestigationStart?.();
+      
+      await startInvestigation(entityId, entityType, investigationId);
+      
+      // Start polling for status
+      const interval = setInterval(async () => {
+        await checkStatus(investigationId);
+      }, 2000); // Check every 2 seconds
+      
+      setStatusCheckInterval(interval);
+    } catch (err) {
+      setIsInvestigating(false);
+      console.error('Failed to start investigation:', err);
+    }
+  };
+
+  const getButtonColor = () => {
+    if (isLoading || isInvestigating) return 'primary';
+    if (status === AutonomousInvestigationStatus.COMPLETED) return 'success';
+    if (error) return 'error';
+    return 'primary';
+  };
+
+  const getButtonText = () => {
+    if (isLoading) return 'Starting...';
+    if (isInvestigating) return 'Investigating...';
+    if (status === AutonomousInvestigationStatus.COMPLETED) return 'Investigation Complete';
+    if (error) return 'Investigation Failed';
+    return 'Start Autonomous Investigation';
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+    <Paper
+      elevation={1}
+      sx={{
+        p: 3,
+        mb: 3,
+        border: 1,
+        borderColor: 'divider',
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
           Autonomous Investigation
-        </h3>
-        <button
-          onClick={startAutonomousInvestigation}
-          disabled={isRunning}
-          className={`px-4 py-2 rounded-md text-white font-medium ${
-            isRunning 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-blue-600 hover:bg-blue-700'
-          }`}
+        </Typography>
+        <Button
+          variant="contained"
+          color={getButtonColor()}
+          onClick={handleStartInvestigation}
+          disabled={isLoading || isInvestigating || status === AutonomousInvestigationStatus.COMPLETED}
+          sx={{ fontWeight: 500 }}
         >
-          {isRunning ? 'Running...' : 'Start Autonomous Investigation'}
-        </button>
-      </div>
+          {getButtonText()}
+        </Button>
+      </Box>
 
-      {isRunning && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">
-              Current Phase: {currentPhase.replace('_', ' ').toUpperCase()}
-            </span>
-            <span className="text-sm text-gray-500">{progress}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+      {(isInvestigating || status === AutonomousInvestigationStatus.IN_PROGRESS) && (
+        <>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.secondary }}>
+              Investigation Progress
+            </Typography>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+              {progress}%
+            </Typography>
+          </Box>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              height: 8,
+              borderRadius: 1,
+              backgroundColor: theme.palette.grey[200],
+              '& .MuiLinearProgress-bar': {
+                borderRadius: 1,
+                backgroundColor: theme.palette.primary.main,
+              },
+            }}
+          />
+        </>
       )}
 
-      <div className="mt-4 text-sm text-gray-600">
-        <p>Entity ID: {entityId}</p>
-        <p>Entity Type: {entityType}</p>
-      </div>
-    </div>
+      {status && (
+        <Typography
+          variant="body2"
+          sx={{
+            mt: 2,
+            color: theme.palette.text.secondary,
+          }}
+        >
+          Status: {status}
+        </Typography>
+      )}
+
+      {error && (
+        <Typography
+          variant="body2"
+          sx={{
+            mt: 2,
+            color: theme.palette.error.main,
+          }}
+        >
+          Error: {error}
+        </Typography>
+      )}
+    </Paper>
   );
-}; 
+};
+
+export default AutonomousInvestigationPanel; 

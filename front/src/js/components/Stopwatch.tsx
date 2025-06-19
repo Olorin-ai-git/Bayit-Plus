@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Box, Typography, Chip } from '@mui/material';
+import { AccessTime } from '@mui/icons-material';
 
 interface StopwatchProps {
   startTime: Date | null;
@@ -41,12 +43,25 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   }, [startTime, endTime]);
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {label && <span className="text-sm text-gray-600">{label}:</span>}
-      <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-        {elapsedTime}
-      </span>
-    </div>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} className={className}>
+      {label && (
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          {label}:
+        </Typography>
+      )}
+      <Chip
+        icon={<AccessTime />}
+        label={elapsedTime}
+        size="small"
+        sx={{ 
+          fontFamily: 'monospace',
+          backgroundColor: 'action.hover',
+          '& .MuiChip-icon': {
+            fontSize: '1rem'
+          }
+        }}
+      />
+    </Box>
   );
 };
 

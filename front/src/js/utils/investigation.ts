@@ -1,8 +1,7 @@
 import {
   InvestigationStep,
-  InvestigationStepId,
-  StepStatus,
 } from '../types/RiskAssessment';
+import { InvestigationStepId, StepStatus } from '../constants/definitions';
 
 /**
  * Formats a timestamp into a consistent string format

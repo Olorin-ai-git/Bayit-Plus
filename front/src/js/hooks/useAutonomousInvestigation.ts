@@ -253,3 +253,51 @@ export function useAutonomousInvestigation(
 
   return [state, controls];
 }
+
+// Simplified hook for the AutonomousInvestigationPanel component
+export const useSimpleAutonomousInvestigation = () => {
+  const [status, setStatus] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  const startInvestigation = async (
+    entityId: string,
+    entityType: string,
+    investigationId: string
+  ) => {
+    setIsLoading(true);
+    setError(null);
+    setStatus('IN_PROGRESS');
+    setProgress(0);
+
+    // Simulate investigation progress
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setStatus('COMPLETED');
+          setIsLoading(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 500);
+
+    return Promise.resolve();
+  };
+
+  const checkStatus = async (investigationId: string) => {
+    // Simulate status check
+    return Promise.resolve();
+  };
+
+  return {
+    startInvestigation,
+    checkStatus,
+    status,
+    isLoading,
+    error,
+    progress,
+  };
+};

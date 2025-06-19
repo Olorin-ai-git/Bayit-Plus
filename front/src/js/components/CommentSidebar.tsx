@@ -1,4 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Paper,
+  Typography,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  IconButton,
+  Divider,
+  useTheme,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import CommentWindow, { CommentMessage } from './CommentWindow';
 // import { fetchChatLog } from '../services/ChatService';
 import ChatLogAnimated from './ChatLogAnimated';
@@ -57,148 +69,157 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
   isLoading = false,
   currentInvestigationId = '',
 }) => {
+  const theme = useTheme();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
+  const [width, setWidth] = useState(initialWidth || DEFAULT_WIDTH);
+  const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
   const [shouldRender, setShouldRender] = useState(isOpen);
-  const [fadeState, setFadeState] = useState(
-    isOpen ? 'slide-fade-in' : 'slide-fade-out',
+  const [animationState, setAnimationState] = useState<'entering' | 'entered' | 'exiting' | 'exited'>(
+    isOpen ? 'entered' : 'exited'
   );
-  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    // Set initial width on mount
-    if (sidebarRef.current) {
-      sidebarRef.current.style.width = `${Math.max(
-        initialWidth || DEFAULT_WIDTH,
-        MIN_WIDTH,
-      )}px`;
-    }
-  }, [initialWidth]);
-  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDraggingRef.current || !sidebarRef.current) return;
+      if (!isDragging) return;
       const dx = e.clientX - startXRef.current;
       const newWidth = Math.max(
         MIN_WIDTH,
         Math.min(MAX_WIDTH, startWidthRef.current + dx),
       );
-      sidebarRef.current.style.width = `${newWidth}px`;
+      setWidth(newWidth);
     };
 
     const handleMouseUp = () => {
-      isDraggingRef.current = false;
       setIsDragging(false);
       document.body.style.userSelect = '';
+      document.body.style.cursor = '';
     };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
+    }
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []);
+  }, [isDragging]);
 
-  const handleDragMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX;
-    startWidthRef.current = sidebarRef.current?.offsetWidth || DEFAULT_WIDTH;
-    document.body.style.userSelect = 'none';
-  };
-
+  // Handle visibility state for animations
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
-      setFadeState('slide-fade-in');
-    } else if (shouldRender) {
-      setFadeState('slide-fade-out');
-      const timeout = setTimeout(() => setShouldRender(false), 400);
-      return () => clearTimeout(timeout);
+      setAnimationState('entering');
+      // Small delay to ensure DOM is ready before starting animation
+      const enterTimeout = setTimeout(() => setAnimationState('entered'), 10);
+      return () => clearTimeout(enterTimeout);
+    } else {
+      setAnimationState('exiting');
+      // Delay hiding to allow animation to complete
+      const exitTimeout = setTimeout(() => {
+        setAnimationState('exited');
+        setShouldRender(false);
+      }, 300);
+      return () => clearTimeout(exitTimeout);
     }
-  }, [isOpen, shouldRender]);
+  }, [isOpen]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    startXRef.current = e.clientX;
+    startWidthRef.current = width;
+  };
 
   if (!shouldRender) return null;
 
   return (
-    <div
+    <Paper
       ref={sidebarRef}
-      className={`flex flex-col h-full z-40 relative ${
-        isDragging ? '' : 'transition-all duration-500 ease-in-out'
-      } ${fadeState}`}
-      style={{
-        background: 'rgba(255,255,255,0.98)',
-        boxShadow: '0 0 16px rgba(0,0,0,0.08)',
+      elevation={3}
+      sx={{
+        width: `${width}px`,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: theme.palette.background.paper,
+        transition: isDragging ? 'none' : 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
+        height: '100%',
+        position: 'relative',
+        transform: 
+          animationState === 'entered' ? 'translateX(0)' : 'translateX(-100%)',
+        opacity: 
+          animationState === 'entered' ? 1 : 0,
       }}
     >
-      {/* Drag handle on right edge */}
-      <div
+      {/* Drag handle */}
+      <Box
         ref={dragHandleRef}
-        onMouseDown={handleDragMouseDown}
-        className="absolute top-0 right-0 bottom-0 w-2 cursor-col-resize hover:bg-blue-200 active:bg-blue-300 transition-colors"
-        style={{ zIndex: 100 }}
-        role="separator"
-        tabIndex={0}
-        aria-orientation="vertical"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            // Optionally, start dragging on Enter/Space
-            handleDragMouseDown(e as any);
-          }
+        onMouseDown={handleMouseDown}
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          width: '4px',
+          cursor: 'col-resize',
+          backgroundColor: 'transparent',
+          '&:hover': {
+            backgroundColor: theme.palette.primary.light,
+          },
+          '&:active': {
+            backgroundColor: theme.palette.primary.main,
+          },
+          zIndex: 1,
         }}
       />
-      <div className="p-4 border-b bg-white flex justify-between items-center">
-        <div className="flex gap-4 items-center">
-          <label
-            className="flex items-center gap-1"
-            htmlFor="chatRole-investigator"
-          >
-            <input
-              id="chatRole-investigator"
-              type="radio"
-              name="chatRole"
-              value="Investigator"
-              checked={selectedRole === 'Investigator'}
-              onChange={() => onCommentLogUpdateRequest('Investigator')}
-            />
-            Investigator
-          </label>
-          <label className="flex items-center gap-1" htmlFor="chatRole-policy">
-            <input
-              id="chatRole-policy"
-              type="radio"
-              name="chatRole"
-              value="Policy Team"
-              checked={selectedRole === 'Policy Team'}
-              onChange={() => onCommentLogUpdateRequest('Policy Team')}
-            />
-            Policy Team
-          </label>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none"
-          aria-label="Close chat sidebar"
+
+      {/* Header */}
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
+        <RadioGroup
+          row
+          value={selectedRole}
+          onChange={(e) => onCommentLogUpdateRequest(e.target.value as 'Investigator' | 'Policy Team')}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
-      <div className="flex flex-col flex-1">
-        <div>
+          <FormControlLabel
+            value="Investigator"
+            control={<Radio size="small" />}
+            label="Investigator"
+            sx={{ mr: 2 }}
+          />
+          <FormControlLabel
+            value="Policy Team"
+            control={<Radio size="small" />}
+            label="Policy Team"
+          />
+        </RadioGroup>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          sx={{ color: theme.palette.text.secondary }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Box>
+
+      {/* Content */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        {/* Comment Window */}
+        <Box sx={{ p: 2 }}>
           {selectedRole === 'Investigator' ? (
             <CommentWindow
               title="Investigator Comments"
@@ -222,20 +243,36 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
               prefix={commentPrefix}
             />
           )}
-        </div>
-        {/* Comment Log Window */}
-        <div className="flex-1 bg-gray-100 rounded p-4 border border-gray-200 min-h-0">
-          <div className="font-bold text-xs mb-1 text-gray-700">
+        </Box>
+
+        <Divider />
+
+        {/* Comment Log */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 2,
+            backgroundColor: theme.palette.grey[50],
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography variant="caption" sx={{ fontWeight: 'bold', mb: 0.5 }}>
             Comment Log for Investigation ID:{' '}
-            <span className="font-mono">{investigationId}</span>
-          </div>
-          <div className="font-semibold text-xs mb-2 text-gray-600">
+            <Box component="span" sx={{ fontFamily: 'monospace' }}>
+              {investigationId}
+            </Box>
+          </Typography>
+          <Typography variant="caption" sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.secondary }}>
             {selectedRole} Comment Log
-          </div>
-          <ChatLogAnimated messages={commentLog} />
-        </div>
-      </div>
-    </div>
+          </Typography>
+          <Box sx={{ flex: 1, overflow: 'hidden' }}>
+            <ChatLogAnimated messages={commentLog} />
+          </Box>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 

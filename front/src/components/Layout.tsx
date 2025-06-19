@@ -256,7 +256,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1, backgroundColor: 'background.default' }}>
-        <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3, md: 4 } }}>
+        <Container maxWidth="xl" sx={{ py: 2, px: { xs: 2, sm: 3, md: 4 } }}>
           {children}
         </Container>
       </Box>

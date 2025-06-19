@@ -13,6 +13,44 @@ interface LocationMapProps {
   locations: Location[];
   center?: { lat: number; lng: number };
   zoom?: number;
+  onMarkerClick?: (event: google.maps.MapMouseEvent) => void;
+  onMapClick?: (event: google.maps.MapMouseEvent) => void;
+  onMapLoad?: () => void;
+  onBoundsChanged?: (event: google.maps.MapMouseEvent) => void;
+  onCenterChanged?: (event: google.maps.MapMouseEvent) => void;
+  onZoomChanged?: (event: google.maps.MapMouseEvent) => void;
+  onTilesLoaded?: () => void;
+  onIdle?: () => void;
+  onDragEnd?: (event: google.maps.MapMouseEvent) => void;
+  onDragStart?: (event: google.maps.MapMouseEvent) => void;
+  onMouseMove?: (event: google.maps.MapMouseEvent) => void;
+  onMouseOut?: (event: google.maps.MapMouseEvent) => void;
+  onMouseOver?: (event: google.maps.MapMouseEvent) => void;
+  onRightClick?: (event: google.maps.MapMouseEvent) => void;
+  onTiltChanged?: (event: google.maps.MapMouseEvent) => void;
+  onHeadingChanged?: (event: google.maps.MapMouseEvent) => void;
+  onProjectionChanged?: (event: google.maps.MapMouseEvent) => void;
+  onTypeChanged?: (event: google.maps.MapMouseEvent) => void;
+  onVisibleRegionChanged?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelChanged?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequested?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedEnd?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedStart?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedCancel?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedComplete?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedError?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedProgress?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedSuccess?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedTimeout?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedAbort?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoad?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadStart?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadEnd?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadError?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadAbort?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadTimeout?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadProgress?: (event: google.maps.MapMouseEvent) => void;
+  onZoomLevelRequestedLoadSuccess?: (event: google.maps.MapMouseEvent) => void;
 }
 
 /**
@@ -20,11 +58,49 @@ interface LocationMapProps {
  * @param {LocationMapProps} props - Component props containing location data
  * @returns {JSX.Element} The rendered map component
  */
-const LocationMap = ({
-  locations,
-  center = { lat: 37.7749, lng: -122.4194 }, // Default to San Francisco
+const LocationMap: React.FC<LocationMapProps> = ({
+  locations = [],
+  center = { lat: 37.7749, lng: -122.4194 },
   zoom = 4,
-}: LocationMapProps): JSX.Element => {
+  onMarkerClick = () => {},
+  onMapClick = () => {},
+  onMapLoad = () => {},
+  onBoundsChanged = () => {},
+  onCenterChanged = () => {},
+  onZoomChanged = () => {},
+  onTilesLoaded = () => {},
+  onIdle = () => {},
+  onDragEnd = () => {},
+  onDragStart = () => {},
+  onMouseMove = () => {},
+  onMouseOut = () => {},
+  onMouseOver = () => {},
+  onRightClick = () => {},
+  onTiltChanged = () => {},
+  onHeadingChanged = () => {},
+  onProjectionChanged = () => {},
+  onTypeChanged = () => {},
+  onVisibleRegionChanged = () => {},
+  onZoomLevelChanged = () => {},
+  onZoomLevelRequested = () => {},
+  onZoomLevelRequestedEnd = () => {},
+  onZoomLevelRequestedStart = () => {},
+  onZoomLevelRequestedCancel = () => {},
+  onZoomLevelRequestedComplete = () => {},
+  onZoomLevelRequestedError = () => {},
+  onZoomLevelRequestedProgress = () => {},
+  onZoomLevelRequestedSuccess = () => {},
+  onZoomLevelRequestedTimeout = () => {},
+  onZoomLevelRequestedAbort = () => {},
+  onZoomLevelRequestedLoad = () => {},
+  onZoomLevelRequestedLoadStart = () => {},
+  onZoomLevelRequestedLoadEnd = () => {},
+  onZoomLevelRequestedLoadError = () => {},
+  onZoomLevelRequestedLoadAbort = () => {},
+  onZoomLevelRequestedLoadTimeout = () => {},
+  onZoomLevelRequestedLoadProgress = () => {},
+  onZoomLevelRequestedLoadSuccess = () => {},
+}) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -232,11 +308,6 @@ const LocationMap = ({
       </div>
     </div>
   );
-};
-
-LocationMap.defaultProps = {
-  center: { lat: 37.7749, lng: -122.4194 },
-  zoom: 4,
 };
 
 export default LocationMap;

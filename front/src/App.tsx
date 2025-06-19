@@ -101,21 +101,19 @@ function App() {
       <CssBaseline />
       <SandboxProvider>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <div className="min-h-screen bg-gray-50">
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Navigate to="/investigations" replace />} />
-                <Route path="/investigations" element={<Investigations />} />
-                <Route path="/investigation" element={<InvestigationPage />} />
-                <Route path="/investigation/:id" element={<InvestigationPage />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/mcp" element={<MCPPage />} />
-                {/* Legacy routes for backward compatibility */}
-                <Route path="/home" element={<Home />} />
-                <Route path="/legacy-investigation" element={<Investigation />} />
-              </Routes>
-            </Layout>
-          </div>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Navigate to="/investigations" replace />} />
+              <Route path="/investigations" element={<Investigations />} />
+              <Route path="/investigation" element={<InvestigationPage />} />
+              <Route path="/investigation/:id" element={<InvestigationPage />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/mcp" element={<MCPPage />} />
+              {/* Legacy routes for backward compatibility */}
+              <Route path="/home" element={<Home />} />
+              <Route path="/legacy-investigation" element={<Investigation />} />
+            </Routes>
+          </Layout>
         </Router>
       </SandboxProvider>
     </ThemeProvider>

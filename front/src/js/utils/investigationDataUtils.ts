@@ -1,4 +1,5 @@
-import { InvestigationStepId, LogLevel } from '../types/RiskAssessment';
+import { LogLevel } from '../types/RiskAssessment';
+import { InvestigationStepId } from '../constants/definitions';
 import { formatTimestamp } from './investigation';
 import {
   NetworkAnalysisResponse,
