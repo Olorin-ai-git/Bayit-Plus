@@ -115,21 +115,6 @@ if [ "$DOCKER_ONLY" = false ]; then
     CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     echo "📡 Current branch: $CURRENT_BRANCH"
     
-    # Pull latest changes with rebase
-    echo "🔄 Pulling latest changes with rebase..."
-    if git remote get-url origin > /dev/null 2>&1; then
-        if git pull --rebase origin "$CURRENT_BRANCH"; then
-            echo "✅ Successfully pulled and rebased latest changes"
-        else
-            echo "❌ Failed to pull changes. Please resolve conflicts manually."
-            echo "   Run 'git rebase --abort' to cancel the rebase"
-            echo "   or resolve conflicts and run 'git rebase --continue'"
-            exit 1
-        fi
-    else
-        echo "⚠️  No remote 'origin' configured. Skipping pull."
-    fi
-    
     # Show current status
     echo ""
     echo "📊 Current git status:"
@@ -148,6 +133,48 @@ if [ "$DOCKER_ONLY" = false ]; then
     # Add all files
     echo "📝 Adding all files to staging..."
     git add .
+
+    # Check if there are changes to stash
+    if ! git diff --cached --quiet || ! git diff --quiet; then
+        # Stash changes temporarily for pull
+        echo "📦 Temporarily stashing changes for pull..."
+        git stash push -m "Temporary stash for pull --rebase"
+        STASHED=true
+    else
+        STASHED=false
+    fi
+
+    # Pull latest changes with rebase
+    echo ""
+    echo "🔄 Pulling latest changes with rebase..."
+    if git remote get-url origin > /dev/null 2>&1; then
+        if git pull --rebase origin "$CURRENT_BRANCH"; then
+            echo "✅ Successfully pulled and rebased latest changes"
+        else
+            echo "❌ Failed to pull changes. Please resolve conflicts manually."
+            if [ "$STASHED" = true ]; then
+                echo "   Your changes are stashed. Run 'git stash pop' after resolving."
+            fi
+            echo "   Run 'git rebase --abort' to cancel the rebase"
+            echo "   or resolve conflicts and run 'git rebase --continue'"
+            exit 1
+        fi
+    else
+        echo "⚠️  No remote 'origin' configured. Skipping pull."
+    fi
+
+    # Pop stash if we stashed earlier
+    if [ "$STASHED" = true ]; then
+        echo "📦 Restoring stashed changes..."
+        if git stash pop; then
+            echo "✅ Changes restored successfully"
+            # Re-add files after stash pop
+            git add .
+        else
+            echo "❌ Failed to restore stashed changes. Please run 'git stash pop' manually."
+            exit 1
+        fi
+    fi
 
     # Check if there are staged changes
     if git diff --cached --quiet; then
