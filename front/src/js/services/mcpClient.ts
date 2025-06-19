@@ -13,6 +13,8 @@ import {
 export class MCPWebClient {
   private httpBaseUrl: string;
   private requestId = 1;
+  private isInitialized = false;
+  private initializationPromise: Promise<void> | null = null;
 
   constructor(baseUrl: string) {
     this.httpBaseUrl = baseUrl;
@@ -20,6 +22,29 @@ export class MCPWebClient {
 
   // Initialize connection
   async initialize(): Promise<void> {
+    // If already initialized, return immediately
+    if (this.isInitialized) {
+      return;
+    }
+
+    // If initialization is in progress, wait for it
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    // Start initialization
+    this.initializationPromise = this._doInitialize();
+    
+    try {
+      await this.initializationPromise;
+      this.isInitialized = true;
+    } catch (error) {
+      this.initializationPromise = null;
+      throw error;
+    }
+  }
+
+  private async _doInitialize(): Promise<void> {
     try {
       // Test connection to MCP server
       const response = await fetch(`${this.httpBaseUrl}/api/mcp/status`);
@@ -135,6 +160,12 @@ export class MCPWebClient {
       console.error('Failed to get prompt:', error);
       throw error;
     }
+  }
+
+  // Reset initialization state (useful for reconnection)
+  reset(): void {
+    this.isInitialized = false;
+    this.initializationPromise = null;
   }
 }
 

@@ -100,6 +100,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               target.src = '/logo.png';
             }}
           />
+          <Box component="span" sx={{ color: 'text.primary', fontSize: '1.25rem' }}>
+            Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
+          </Box>
         </Typography>
       </Box>
       <List>
@@ -185,6 +188,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   target.src = '/logo.png';
                 }}
               />
+              <Box component="span" sx={{ fontSize: '1.25rem' }}>
+                Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
+              </Box>
             </Typography>
           </Box>
 

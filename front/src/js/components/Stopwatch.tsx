@@ -12,8 +12,8 @@ interface StopwatchProps {
  */
 const Stopwatch: React.FC<StopwatchProps> = ({
   startTime,
-  endTime,
-  label,
+  endTime = undefined,
+  label = '',
   className = '',
 }) => {
   const [elapsedTime, setElapsedTime] = useState<string>('0m 0s');
@@ -48,12 +48,6 @@ const Stopwatch: React.FC<StopwatchProps> = ({
       </span>
     </div>
   );
-};
-
-Stopwatch.defaultProps = {
-  endTime: undefined,
-  label: '',
-  className: '',
 };
 
 export default Stopwatch;

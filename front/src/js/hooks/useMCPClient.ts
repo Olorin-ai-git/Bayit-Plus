@@ -48,6 +48,7 @@ export const useMCPClient = () => {
   }, [initialize]);
 
   const disconnect = useCallback(() => {
+    mcpClient.reset();
     setState(prev => ({
       ...prev,
       isConnected: false,

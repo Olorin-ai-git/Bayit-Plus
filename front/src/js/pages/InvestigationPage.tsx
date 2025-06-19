@@ -42,6 +42,7 @@ import {
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import { AutonomousInvestigationPanel } from '../components/AutonomousInvestigationPanel';
+import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
 
 /**
  * Represents a single log entry in the investigation.
@@ -96,6 +97,7 @@ interface ErrorResponse {
 const InvestigationPage: React.FC<InvestigationPageProps> = ({
   investigationId = null,
 }) => {
+  const theme = useTheme();
   const sandbox = useSandboxContext();
   const api = useMemo(() => new OlorinService(sandbox, false), [sandbox]);
   const [userId, setUserId] = useState(DEFAULT_USER_ID);
@@ -1469,7 +1471,14 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   }, [errorLogs, dismissedErrorKeys]);
 
   return (
-    <div className="h-full bg-gray-50 relative flex flex-row min-h-0">
+    <Box sx={{ 
+      height: '100%', 
+      backgroundColor: 'background.default',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'row',
+      minHeight: 0
+    }}>
       <CommentSidebar
         isOpen={commentSidebarOpen}
         width={320}
@@ -1499,11 +1508,25 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         currentInvestigationId={investigationIdState}
       />
       {/* Main content area */}
-      <div className="flex-1 flex flex-col h-full min-h-0">
-        <div className="px-4 sm:px-6 lg:px-8 py-2 flex-1 min-w-0 h-full min-h-0">
-          <div className="flex gap-2 h-full min-h-0">
-            <div className="flex-1 transition-all duration-300 h-full min-h-0">
-              <div className="bg-white rounded-lg h-full shadow-md p-6 flex flex-col min-h-0">
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+        <Box sx={{ px: { xs: 2, sm: 3, lg: 4 }, py: 1, flex: 1, minWidth: 0, height: '100%', minHeight: 0 }}>
+          <Box sx={{ display: 'flex', gap: 2, height: '100%', minHeight: 0 }}>
+            <Box sx={{ 
+              flex: 1, 
+              transition: 'all 0.3s', 
+              height: '100%', 
+              minHeight: 0 
+            }}>
+              <Paper sx={{ 
+                borderRadius: 2, 
+                height: '100%', 
+                boxShadow: 1, 
+                p: 3, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                minHeight: 0,
+                backgroundColor: 'background.paper'
+              }}>
                 <InvestigationHeader
                   isSidebarOpen={isSidebarOpen}
                   setIsSidebarOpen={setIsSidebarOpen}
@@ -1526,47 +1549,51 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                 />
 
                 {/* Autonomous Mode Toggle */}
-                <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Investigation Mode
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {autonomousMode
-                        ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
-                        : 'Manual mode allows step-by-step investigation control'}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span
-                      className={`text-sm font-medium ${
-                        !autonomousMode ? 'text-blue-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Manual
-                    </span>
-                    <button
-                      onClick={() => setAutonomousMode(!autonomousMode)}
-                      disabled={isLoading}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                        autonomousMode ? 'bg-blue-600' : 'bg-gray-200'
-                      } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          autonomousMode ? 'translate-x-6' : 'translate-x-1'
-                        }`}
+                <Paper sx={{ 
+                  mb: 2, 
+                  p: 2, 
+                  background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
+                  border: `1px solid ${theme.palette.primary.light}30`
+                }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                        Investigation Mode
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        {autonomousMode
+                          ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
+                          : 'Manual mode allows step-by-step investigation control'}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 500,
+                          color: !autonomousMode ? 'primary.main' : 'text.secondary'
+                        }}
+                      >
+                        Manual
+                      </Typography>
+                      <Switch
+                        checked={autonomousMode}
+                        onChange={() => setAutonomousMode(!autonomousMode)}
+                        disabled={isLoading}
+                        color="primary"
                       />
-                    </button>
-                    <span
-                      className={`text-sm font-medium ${
-                        autonomousMode ? 'text-blue-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Autonomous
-                    </span>
-                  </div>
-                </div>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 500,
+                          color: autonomousMode ? 'primary.main' : 'text.secondary'
+                        }}
+                      >
+                        Autonomous
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Paper>
 
                 {/* Conditional rendering based on investigation mode */}
                 {autonomousMode ? (
@@ -1652,142 +1679,120 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                         ),
                     )
                     .map((log) => (
-                      <div
+                      <Alert
                         key={`${log.timestamp}-${log.message}`}
-                        className="bg-red-50 border-l-4 border-red-400 p-4 mb-2 text-red-700 flex items-center justify-between"
+                        severity="error"
+                        onClose={() =>
+                          setDismissedErrorKeys((keys) => [
+                            ...keys,
+                            `${log.timestamp}-${log.message}`,
+                          ])
+                        }
+                        sx={{ mb: 1 }}
                         data-testid="error-banner"
                       >
-                        <span>{log.message.replace(/<[^>]+>/g, '')}</span>
-                        <button
-                          type="button"
-                          aria-label="Close error banner"
-                          className="ml-4 text-red-700 hover:text-red-900 focus:outline-none"
-                          onClick={() =>
-                            setDismissedErrorKeys((keys) => [
-                              ...keys,
-                              `${log.timestamp}-${log.message}`,
-                            ])
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className="w-5 h-5"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      </div>
+                        {log.message.replace(/<[^>]+>/g, '')}
+                      </Alert>
                     ))}
                 {/* Always render the current error state as a persistent error banner for test visibility */}
                 {error && (
                   <>
-                    <div
-                      className="bg-red-50 border-l-4 border-red-400 p-4 mb-2 text-red-700 flex items-center justify-between"
+                    <Alert
+                      severity="error"
+                      onClose={() => setError(null)}
+                      sx={{ mb: 1 }}
                       data-testid="error-banner"
                     >
-                      <span>{error}</span>
-                      <button
-                        type="button"
-                        aria-label="Close error banner"
-                        className="ml-4 text-red-700 hover:text-red-900 focus:outline-none"
-                        onClick={() => setError(null)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                          stroke="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                      {error}
+                    </Alert>
                     {/* Always render error text in a visible span for test assertions */}
-                    <span
+                    <Typography
+                      component="span"
                       data-testid="error-text"
-                      style={{
+                      sx={{
                         display: 'block',
-                        color: '#b91c1c',
+                        color: 'error.main',
                         fontWeight: 'bold',
                       }}
                     >
                       {error}
-                    </span>
+                    </Typography>
                   </>
                 )}
                 {warningLogs.length > 0 &&
                   warningLogs.map((log) => (
-                    <div
+                    <Alert
                       key={`${log.timestamp}-${log.message}`}
-                      className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-2 text-yellow-700"
+                      severity="warning"
+                      sx={{ mb: 1 }}
                       data-testid="warning-banner"
                     >
                       {log.message.replace(/<[^>]+>/g, '')}
-                    </div>
+                    </Alert>
                   ))}
 
                 {/* DEBUG: Render all log messages for test visibility */}
                 {process.env.NODE_ENV === 'test' && logs.length > 0 && (
-                  <div
+                  <Paper
                     data-testid="debug-log-banner"
-                    className="bg-gray-100 border-l-4 border-gray-400 p-2 mb-2"
+                    sx={{
+                      backgroundColor: 'grey.100',
+                      borderLeft: '4px solid',
+                      borderColor: 'grey.400',
+                      p: 1,
+                      mb: 1
+                    }}
                   >
-                    <div className="text-xs text-gray-700">
+                    <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                       {logs.map((log) => (
-                        <div key={log.timestamp}>
+                        <Box key={log.timestamp}>
                           {log.message.replace(/<[^>]+>/g, '')}
-                        </div>
+                        </Box>
                       ))}
-                    </div>
-                  </div>
+                    </Box>
+                  </Paper>
                 )}
 
                 {/* Manual Mode: Splitter layout for risk scores and steps */}
                 {!autonomousMode && (
-                  <div
-                    style={{
+                  <Box
+                    sx={{
                       display: 'flex',
                       flexDirection: 'column',
                       minHeight: 0,
                       height: '100%',
+                      flex: 1
                     }}
-                    className="flex flex-col flex-1 min-h-0"
                   >
                     {(isLoading || isInvestigationClosed) && (
-                      <div
-                        style={{
-                          height: riskScoreHeight,
-                          minHeight: 20,
-                          maxHeight: 300,
-                          overflow: 'hidden',
+                      <Box
+                        sx={{
+                          height: `${riskScoreHeight}px`,
+                          minHeight: '20px',
+                          maxHeight: '300px',
+                          overflow: 'hidden'
                         }}
                       >
                         <RiskScoreDisplay steps={stepStates} />
-                      </div>
+                      </Box>
                     )}
                     {/* Splitter bar between risk scores and steps */}
-                    <div
+                    <Box
                       ref={splitterRef}
-                      style={{
-                        height: 8,
+                      sx={{
+                        height: '8px',
                         cursor: 'row-resize',
-                        background: '#e5e7eb',
+                        backgroundColor: 'divider',
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        zIndex: 10,
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        }
                       }}
-                      className="w-full flex items-center justify-center relative z-10"
                       tabIndex={0}
                       role="separator"
                       aria-orientation="horizontal"
@@ -1802,12 +1807,20 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                           setRiskScoreHeight((h) => Math.min(300, h + 10));
                       }}
                     >
-                      <div className="h-2 w-24 bg-gray-400 rounded" />
-                    </div>
+                      <Box sx={{ 
+                        height: '8px', 
+                        width: '96px', 
+                        backgroundColor: 'text.disabled', 
+                        borderRadius: 1 
+                      }} />
+                    </Box>
                     {/* Steps section */}
-                    <div
-                      style={{ flex: 1, minHeight: 0, overflow: 'auto' }}
-                      className="flex-1 min-h-0"
+                    <Box
+                      sx={{ 
+                        flex: 1, 
+                        minHeight: 0, 
+                        overflow: 'auto' 
+                      }}
                     >
                       {stepStates.length > 0 && (
                         <InvestigationSteps
@@ -1823,20 +1836,20 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                           stepEndTimes={stepEndTimes}
                         />
                       )}
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
                 {/* Autonomous Mode: Show risk scores if investigation completed */}
                 {autonomousMode &&
                   (isLoading || isInvestigationClosed) &&
                   stepStates.length > 0 && (
-                    <div className="mb-6">
+                    <Box sx={{ mb: 3 }}>
                       <RiskScoreDisplay steps={stepStates} />
-                    </div>
+                    </Box>
                   )}
-              </div>
-            </div>
+              </Paper>
+            </Box>
             <AgentLogSidebar
               isOpen={isSidebarOpen}
               onClose={() => setIsSidebarOpen(false)}
@@ -1845,9 +1858,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
               cancelledRef={cancelledRef}
               onLogDisplayed={handleLogDisplayed}
             />
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
       {/* ... other overlays/modals ... */}
       <EditStepsModal
         isOpen={isEditModalOpen}
@@ -1878,7 +1891,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           setCurrentStep(InvestigationStepId.INIT);
         }}
       />
-    </div>
+    </Box>
   );
 };
 

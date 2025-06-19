@@ -32,9 +32,9 @@ function btoaUnicode(str: string) {
 const InvestigationStepComponent: React.FC<Props> = ({
   step,
   isActive,
-  startTime,
-  endTime,
-  onShowDetailsModal,
+  startTime = null,
+  endTime = null,
+  onShowDetailsModal = undefined,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -238,12 +238,6 @@ const InvestigationStepComponent: React.FC<Props> = ({
       {canShowDetails && renderDetails()}
     </div>
   );
-};
-
-InvestigationStepComponent.defaultProps = {
-  startTime: null,
-  endTime: null,
-  onShowDetailsModal: undefined,
 };
 
 export default InvestigationStepComponent;

@@ -155,22 +155,20 @@ start_mcp() {
     
     cd "$BACKEND_DIR"
     
-    # Start MCP server with console output
+    # Start MCP server in a new terminal window
     local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
-    print_status "MCP server output (log level: $log_level_upper):"
-    LOG_LEVEL=$log_level_upper poetry run python -m app.mcp_server.cli 2>&1 | sed "s/^/$(printf '\033[0;32m')[MCP] /" | sed "s/$/$(printf '\033[0m')/" &
-    local mcp_pid=$!
-    echo $mcp_pid > "$MCP_PID_FILE"
+    print_status "Opening new terminal window for MCP server (log level: $log_level_upper)..."
     
-    # Wait a moment and check if the process is still running
-    sleep 3
-    if kill -0 $mcp_pid 2>/dev/null; then
-        print_success "MCP server started (PID: $mcp_pid)"
-        return 0
-    else
-        print_error "MCP server failed to start."
-        return 1
-    fi
+    # Use osascript to create a new terminal window with the MCP command
+    osascript << EOF
+tell application "Terminal"
+    do script "cd '$BACKEND_DIR' && echo 'Starting MCP server in new terminal...' && echo 'Log level: $log_level_upper' && echo 'Press Ctrl+C to stop MCP server' && echo '' && poetry run python -m app.mcp_server.cli --log-level $log_level_upper"
+end tell
+EOF
+    
+    print_success "MCP server terminal window opened"
+    print_status "MCP server is running in a separate terminal window"
+    return 0
 }
 
 # Function to start frontend
@@ -212,20 +210,29 @@ start_frontend() {
     print_status "Frontend output (log level: $log_level_upper):"
     # Filter frontend output based on log level
     case $LOG_LEVEL in
-        debug|info)
-            # Show all output for debug and info levels
+        debug)
+            # Show all output for debug level
+            print_status "Frontend: Showing all output (DEBUG level)"
+            npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
+            ;;
+        info)
+            # Show all output for info level
+            print_status "Frontend: Showing all output (INFO level)"
             npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
             ;;
         warning)
             # Show warnings and errors only
+            print_status "Frontend: Filtering to warnings and errors only (WARNING level)"
             npm start 2>&1 | grep -E "(WARNING|WARN|Warning|warning|ERROR|Error|error|Failed)" | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
             ;;
         error)
             # Show errors only
+            print_status "Frontend: Filtering to errors only (ERROR level)"
             npm start 2>&1 | grep -E "(ERROR|Error|error|Failed|FAIL)" | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
             ;;
         *)
             # Default to showing all output
+            print_status "Frontend: Showing all output (default level)"
             npm start 2>&1 | sed "s/^/$(printf '\033[0;36m')[FRONTEND] /" | sed "s/$/$(printf '\033[0m')/" &
             ;;
     esac
@@ -256,7 +263,17 @@ check_status() {
             print_error "Backend not running"
         fi
     else
-        print_error "Backend not started"
+        # Check if backend is running on port
+        if check_port $BACKEND_PORT; then
+            local backend_pid=$(lsof -ti :$BACKEND_PORT | head -1)
+            if [ -n "$backend_pid" ]; then
+                print_success "Backend running (PID: $backend_pid, Port: $BACKEND_PORT) - No PID file"
+            else
+                print_error "Backend not started"
+            fi
+        else
+            print_error "Backend not started"
+        fi
     fi
     
     # Check MCP
@@ -268,7 +285,9 @@ check_status() {
             print_error "MCP server not running"
         fi
     else
-        print_error "MCP server not started"
+        # MCP runs in a separate terminal window, so we can't easily detect if it's running
+        # Just show that it should be running in a separate terminal
+        print_status "MCP server running in separate terminal window (stdio transport)"
     fi
     
     # Check frontend
@@ -280,7 +299,17 @@ check_status() {
             print_error "Frontend not running"
         fi
     else
-        print_error "Frontend not started"
+        # Check if frontend is running on port
+        if check_port $FRONTEND_PORT; then
+            local frontend_pid=$(lsof -ti :$FRONTEND_PORT | head -1)
+            if [ -n "$frontend_pid" ]; then
+                print_success "Frontend running (PID: $frontend_pid, Port: $FRONTEND_PORT) - No PID file"
+            else
+                print_error "Frontend not started"
+            fi
+        else
+            print_error "Frontend not started"
+        fi
     fi
 }
 
@@ -319,7 +348,7 @@ show_logs() {
     local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
     print_status "Current log level: $log_level_upper (change with --log-level option)"
     echo -e "  - ${BLUE}Backend server${NC} (uvicorn) with --log-level $LOG_LEVEL"
-    echo -e "  - ${GREEN}MCP server${NC} with LOG_LEVEL=$log_level_upper"
+    echo -e "  - ${GREEN}MCP server${NC} with --log-level $log_level_upper"
     echo -e "  - ${CYAN}Frontend server${NC} filtered based on log level"
 }
 
@@ -360,11 +389,28 @@ main() {
             ;;
     esac
     
+    # Kill any existing FastAPI backend, MCP server, and Frontend server processes
+    print_status "Checking for existing Olorin services to kill..."
+
+    # Kill FastAPI backend (uvicorn or python running app.main)
+    pkill -f "uvicorn app.main:app" 2>/dev/null || true
+    pkill -f "python.*app.main" 2>/dev/null || true
+
+    # Kill MCP server
+    pkill -f "app.mcp_server.cli" 2>/dev/null || true
+
+    # Kill Frontend server (npm/react)
+    pkill -f "react-scripts start" 2>/dev/null || true
+    pkill -f "npm run start" 2>/dev/null || true
+
+    print_success "Any existing Olorin services have been stopped (if running)"
+
     case $command in
         start)
             print_status "Starting Olorin services..."
             local log_level_upper=$(echo "$LOG_LEVEL" | tr '[:lower:]' '[:upper:]')
             print_status "Console output will show $log_level_upper level logs from all services"
+            print_status "DEBUG: Using log level '$LOG_LEVEL' (uppercase: '$log_level_upper')"
             echo -e "  ${BLUE}■ Backend${NC} (Blue) - ${GREEN}■ MCP${NC} (Green) - ${CYAN}■ Frontend${NC} (Cyan)"
             echo ""
             

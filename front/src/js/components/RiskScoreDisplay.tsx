@@ -358,8 +358,4 @@ const RiskScoreDisplay: React.FC<{
   );
 };
 
-RiskScoreDisplay.defaultProps = {
-  useMock: false,
-};
-
 export default RiskScoreDisplay;

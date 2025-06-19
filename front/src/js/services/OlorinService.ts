@@ -485,11 +485,11 @@ export class OlorinService {
     entityType: string,
   ): Promise<RestResponse> {
     const options = generateRequestOptions();
-    const apiPath = `api/investigation/${encodeURIComponent(
+    const apiPath = `investigation/${encodeURIComponent(
       investigationId,
     )}?entity_id=${encodeURIComponent(entityId)}&entity_type=${entityType}`;
     const config = {
-      version: '',
+      version: 'api',
       apiPath,
     };
     try {

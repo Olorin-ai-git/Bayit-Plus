@@ -30,26 +30,54 @@ export type StaticRestClientConfig = Omit<RestClientConfig, 'sandbox'>;
  */
 type Service = 'olorin';
 
-type Environment = 'e2e' | 'qal' | 'prod';
+type Environment = 'e2e' | 'qal' | 'prod' | 'local';
 
 interface ServiceConfig {
   baseUrl: string;
 }
 
+// Check if running locally
+const isLocalDevelopment = () => {
+  // Check for environment variable override first
+  if (typeof process !== 'undefined' && process.env?.REACT_APP_API_URL) {
+    return false; // Use the environment variable instead
+  }
+  
+  // Check if we're running on localhost
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+  }
+  return false;
+};
+
+// Get the base URL from environment variable or default config
+const getBaseUrl = (defaultUrl: string): string => {
+  if (typeof process !== 'undefined' && process.env?.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  return defaultUrl;
+};
+
 const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
+  local: {
+    olorin: {
+      baseUrl: getBaseUrl('http://localhost:8000'),
+    },
+  },
   e2e: {
     olorin: {
-      baseUrl: 'https://olorin-e2e.api.intuit.com',
+      baseUrl: getBaseUrl('https://olorin-e2e.api.intuit.com'),
     },
   },
   qal: {
     olorin: {
-      baseUrl: 'https://olorin-qal.api.intuit.com',
+      baseUrl: getBaseUrl('https://olorin-qal.api.intuit.com'),
     },
   },
   prod: {
     olorin: {
-      baseUrl: 'https://olorin-e2e.api.intuit.com',
+      baseUrl: getBaseUrl('https://olorin-e2e.api.intuit.com'),
     },
   },
 };
@@ -61,6 +89,11 @@ const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
  * @returns {ServiceConfig} The service configuration.
  */
 export const getEnvConfig = (sandbox: Sandbox, service: Service): ServiceConfig => {
+  // If running locally, always use local config
+  if (isLocalDevelopment()) {
+    return ENV_CONFIG.local[service];
+  }
+  
   const env = sandbox.env || 'e2e';
   return ENV_CONFIG[env as Environment]?.[service] || ENV_CONFIG.e2e[service];
 };
@@ -72,6 +105,12 @@ export const getEnvConfig = (sandbox: Sandbox, service: Service): ServiceConfig 
  */
 const getEnvConfigData = (
   environment: string,
-): Record<Service, StaticRestClientConfig> => ENV_CONFIG[environment as Environment];
+): Record<Service, StaticRestClientConfig> => {
+  // If running locally, always return local config
+  if (isLocalDevelopment() && environment !== 'local') {
+    return ENV_CONFIG.local;
+  }
+  return ENV_CONFIG[environment as Environment];
+};
 
 export { getEnvConfigData };
