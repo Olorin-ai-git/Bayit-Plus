@@ -111,7 +111,27 @@ generate_commit_message() {
 
 # Git operations (skip if docker-only mode)
 if [ "$DOCKER_ONLY" = false ]; then
+    # Get current branch first
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    echo "📡 Current branch: $CURRENT_BRANCH"
+    
+    # Pull latest changes with rebase
+    echo "🔄 Pulling latest changes with rebase..."
+    if git remote get-url origin > /dev/null 2>&1; then
+        if git pull --rebase origin "$CURRENT_BRANCH"; then
+            echo "✅ Successfully pulled and rebased latest changes"
+        else
+            echo "❌ Failed to pull changes. Please resolve conflicts manually."
+            echo "   Run 'git rebase --abort' to cancel the rebase"
+            echo "   or resolve conflicts and run 'git rebase --continue'"
+            exit 1
+        fi
+    else
+        echo "⚠️  No remote 'origin' configured. Skipping pull."
+    fi
+    
     # Show current status
+    echo ""
     echo "📊 Current git status:"
     git status --short | head -20
     if [ $(git status --porcelain | wc -l) -gt 20 ]; then
@@ -140,10 +160,6 @@ if [ "$DOCKER_ONLY" = false ]; then
         echo "💾 Committing changes..."
         git commit -m "$COMMIT_MESSAGE"
     fi
-
-    # Get current branch
-    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    echo "📡 Current branch: $CURRENT_BRANCH"
 
     # Check if remote exists
     if git remote get-url origin > /dev/null 2>&1; then

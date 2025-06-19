@@ -130,4 +130,7 @@ front/reports/
 *test_report*
 *.pdf
 investigation_*.pdf
-comprehensive_*.pdf 
+comprehensive_*.pdf
+
+# olorin-ui directory
+olorin-ui/ 
