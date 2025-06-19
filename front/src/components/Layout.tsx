@@ -92,15 +92,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           gap: 1
         }}>
           <img 
-            src="/assets/images/Olorin-Logo-Wizard-Only-transparent.png" 
-            alt="Olorin.ai Wizard Logo" 
-            style={{ height: 32, width: 'auto' }}
+            src="/assets/images/Olorin-Logo-With-Text-transparent.png" 
+            alt="Olorin.ai" 
+            style={{ height: 40, width: 'auto' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/logo.png';
             }}
           />
-          Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
         </Typography>
       </Box>
       <List>
@@ -178,15 +177,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               }}
             >
               <img 
-                src="/assets/images/Olorin-Logo-Wizard-Only-transparent.png" 
-                alt="Olorin.ai Wizard Logo" 
-                style={{ height: 32, width: 'auto' }}
+                src="/assets/images/Olorin-Logo-With-Text-transparent.png" 
+                alt="Olorin.ai" 
+                style={{ height: 40, width: 'auto' }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = '/logo.png';
                 }}
               />
-              Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
             </Typography>
           </Box>
 
