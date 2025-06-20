@@ -1,0 +1,19 @@
+{
+  "extends": "./front/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./front/src",
+    "paths": {
+      "src/*": ["*"]
+    }
+  },
+  "include": [
+    "front/src/**/*"
+  ],
+  "exclude": [
+    "front/node_modules",
+    "front/build",
+    "front/dist",
+    "back",
+    "test"
+  ]
+} 
