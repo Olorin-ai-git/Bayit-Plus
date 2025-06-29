@@ -7,9 +7,9 @@ docker build --build-arg WATCHFILES_FORCE_POLLING=true -t "olorin" .
 docker run \
   --rm \
   -v ~/.aws:/tmp/aws \
-  docker.olorin.com/docker-rmt/busybox \
-  echo "verified podman volume mount" \
-  || (echo "ERROR: failed to verify volume mount is working for Podman... maybe restart VM?" && exit 1)
+  busybox \
+  echo "verified docker volume mount" \
+  || (echo "ERROR: failed to verify volume mount is working for Docker... maybe restart service?" && exit 1)
 
 # 8443 is the TLS port
 # 8490 is the metrics port

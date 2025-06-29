@@ -5,7 +5,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'docker.olorin.com'
+        DOCKER_REGISTRY = 'localhost:5000'
         IMAGE_NAME = 'cas-hri/olorin/service'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
     }

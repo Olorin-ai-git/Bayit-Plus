@@ -1,5 +1,5 @@
 {
-    "image": "docker.olorin.com/cloud-workspaces/cloud-workspace-images/service/python:latest-debian",
+    "image": "python:3.11-slim-bullseye",
     "onCreateCommand": "sh -x .devcontainer/init.sh",
     "postStartCommand": "sh -x .devcontainer/start.sh",
     "customizations": {

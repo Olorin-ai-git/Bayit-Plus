@@ -39,7 +39,7 @@
             {
                 "name": "pre_processing_component",
                 "component_config": {
-                    "image": "docker.olorin.com/intlgntsys-mlservices/ageval-preprocessor/service/ageval-preprocessor:latest"
+                    "image": "python:3.11-slim"
                 }
             }
         ],

@@ -18,13 +18,13 @@ agents:
     prompt_id: ""
     environments:
       qal:
-        agent_url: "https://olorin-qal.api.olorin.com"
+        agent_url: "http://localhost:8000"
         path: "/v1/agent/invoke"
       e2e:
-        agent_url: "https://olorin-e2e.api.olorin.com"
+        agent_url: "http://localhost:8000"
         path: "/v1/agent/invoke"
       prd:
-        agent_url: "https://olorin-prd.api.olorin.com"
+        agent_url: "http://localhost:8000"
         path: "/v1/agent/invoke"
 tools:
   - name: "qbo_knowledgebase_retriever"
@@ -36,11 +36,11 @@ tools:
     description: "This tool can read from QBO RAG Knowledge Base to answer questions related to QuickBooks Online"
     environments:
       qal:
-        tool_url: "https://olorin-qal.api.olorin.com"
+        tool_url: "http://localhost:8000"
       e2e:
-        tool_url: "https://olorin-e2e.api.olorin.com"
+        tool_url: "http://localhost:8000"
       prd:
-        tool_url: "https://olorin-prd.api.olorin.com"
+        tool_url: "http://localhost:8000"
     tags:
       - "A2D"
       - "QBO"
@@ -60,11 +60,11 @@ tools:
     description: "This tool can read from TTO RAG Knowledge Base to answer questions related to TurboTax Online"
     environments:
       qal:
-        tool_url: "https://olorin-qal.api.olorin.com"
+        tool_url: "http://localhost:8000"
       e2e:
-        tool_url: "https://olorin-e2e.api.olorin.com"
+        tool_url: "http://localhost:8000"
       prd:
-        tool_url: "https://olorin-prd.api.olorin.com"
+        tool_url: "http://localhost:8000"
     tags:
       - "A2D"
       - "TTO"
@@ -84,11 +84,11 @@ tools:
     description: "This tool can read from CDC to answer questions related to user attributes"
     environments:
       qal:
-        tool_url: "https://olorin-qal.api.olorin.com"
+        tool_url: "http://localhost:8000"
       e2e:
-        tool_url: "https://olorin-e2e.api.olorin.com"
+        tool_url: "http://localhost:8000"
       prd:
-        tool_url: "https://olorin-prd.api.olorin.com"
+        tool_url: "http://localhost:8000"
     tags:
       - "A2D"
       - "CDC"
@@ -107,11 +107,11 @@ tools:
     description: "This tool can read from CDC to answer questions related to company attributes"
     environments:
       qal:
-        tool_url: "https://olorin-qal.api.olorin.com"
+        tool_url: "http://localhost:8000"
       e2e:
-        tool_url: "https://olorin-e2e.api.olorin.com"
+        tool_url: "http://localhost:8000"
       prd:
-        tool_url: "https://olorin-prd.api.olorin.com"
+        tool_url: "http://localhost:8000"
     tags:
       - "A2D"
       - "TTO"
@@ -130,11 +130,11 @@ tools:
     description: "This tool can read from QBO Service to answer questions related to QuickBooks Online customers"
     environments:
       qal:
-        tool_url: "https://olorin-qal.api.olorin.com"
+        tool_url: "http://localhost:8000"
       e2e:
-        tool_url: "https://olorin-e2e.api.olorin.com"
+        tool_url: "http://localhost:8000"
       prd:
-        tool_url: "https://olorin-prd.api.olorin.com"
+        tool_url: "http://localhost:8000"
     tags:
       - "A2D"
       - "QBO"

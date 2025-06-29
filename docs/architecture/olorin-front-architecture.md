@@ -73,7 +73,7 @@ olorin-front/
 │   │   │   └── Settings.tsx
 │   │   ├── services/         # API and external services
 │   │   │   ├── ChatService.ts
-│   │   │   ├── GAIAService.ts (OlorinService)
+│   │   │   ├── OlorinService.ts
 │   │   │   └── restService/
 │   │   ├── hooks/            # Custom React hooks
 │   │   │   ├── useConfig.tsx
@@ -131,7 +131,7 @@ olorin-front/
 
 ### Service Layer Architecture
 
-#### 1. **OlorinService (GAIAService.ts)**
+#### 1. **OlorinService**
 **Purpose**: Main API communication with olorin-server
 **Features**:
 ```typescript
