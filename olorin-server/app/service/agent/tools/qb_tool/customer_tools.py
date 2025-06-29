@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from app.service.config import get_settings_for_env
 
-from .qbo_service import QBOService
+from .qbo_service import FinancialService
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +21,10 @@ class _NoArgsModel(BaseModel):
 
 class ListCustomersTool(BaseTool):
     name: str = Field(
-        "list_customers", description="Get a list of all customers from QBO"
+        "list_customers", description="Get a list of all customers from financial service"
     )
     description: str = Field(
-        "This tool retrieves a list of all customers with their basic information from QBO"
+        "This tool retrieves a list of all customers with their basic information from financial service"
     )
     args_schema: type[BaseModel] = _NoArgsModel
 
@@ -43,8 +43,8 @@ class ListCustomersTool(BaseTool):
         agent_context: AgentContext = config["configurable"]["agent_context"]
         olorin_header = agent_context.get_header()
 
-        qbo_service = QBOService()
-        resp = qbo_service.get_customers_sync(olorin_header)
+        financial_service = FinancialService()
+        resp = financial_service.get_customers_sync(olorin_header)
         customers = resp["data"]["contacts"]["data"]
         keys_to_select = ["id", "firstName", "lastName", "displayName", "companyName"]
         customers = [
@@ -69,11 +69,11 @@ class ListCustomersTool(BaseTool):
             agent_context: AgentContext = config["configurable"]["agent_context"]
             olorin_header = agent_context.get_header()
 
-            qbo_service_instance = QBOService()
-            resp = await qbo_service_instance.get_customers(olorin_header)
+            financial_service_instance = FinancialService()
+            resp = await financial_service_instance.get_customers(olorin_header)
 
             if not resp or "data" not in resp:
-                raise ValueError("Invalid response from QBO service")
+                raise ValueError("Invalid response from financial service")
 
             customers = resp.get("data", {}).get("contacts", {}).get("data", [])
             logger.debug(f"[LIST_CUSTOMERS] Received Customers: {customers}")

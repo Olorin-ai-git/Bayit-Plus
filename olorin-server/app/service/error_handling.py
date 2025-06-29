@@ -28,7 +28,7 @@ class AuthorizationError(Exception):
     pass
 
 
-class QBOApiError(Exception):
+class FinancialApiError(Exception):
     pass
 
 

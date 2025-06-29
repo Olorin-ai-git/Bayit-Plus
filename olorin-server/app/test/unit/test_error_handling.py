@@ -17,7 +17,7 @@ def test_custom_exceptions():
     # All custom exceptions can be raised and caught
     for exc in [
         error_handling.AuthorizationError,
-        error_handling.QBOApiError,
+        error_handling.FinancialApiError,
         error_handling.UPIServiceException,
         error_handling.AgentInvokeException,
     ]:

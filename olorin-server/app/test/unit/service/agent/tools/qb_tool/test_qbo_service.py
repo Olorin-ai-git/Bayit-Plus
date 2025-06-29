@@ -5,12 +5,12 @@ import httpx
 import pytest
 
 from app.service.agent.tools.qb_tool.qbo_service import (
-    QBOService,
+    FinancialService,
     _execute_post_request,
     _execute_post_request_sync,
     get_ceres_url,
 )
-from app.service.error_handling import QBOApiError
+from app.service.error_handling import FinancialApiError
 
 
 @pytest.fixture
@@ -151,14 +151,14 @@ def test_execute_post_request_sync_error(mock_client, mock_headers, mock_payload
         _execute_post_request_sync(url, mock_headers, mock_payload)
 
 
-class TestQBOService:
+class TestFinancialService:
     @patch("app.service.agent.tools.qb_tool.qbo_service._execute_post_request_sync")
     def test_get_customers_sync_success(
         self, mock_execute_post, mock_headers, mock_response_data
     ):
         # Arrange
         mock_execute_post.return_value = mock_response_data
-        service = QBOService()
+        service = FinancialService()
 
         # Act
         result = service.get_customers_sync(mock_headers)
@@ -174,7 +174,7 @@ class TestQBOService:
     def test_get_customers_sync_error(self, mock_execute_post, mock_headers):
         # Arrange
         mock_execute_post.side_effect = Exception("API error")
-        service = QBOService()
+        service = FinancialService()
 
         # Act
         result = service.get_customers_sync(mock_headers)
@@ -190,7 +190,7 @@ class TestQBOService:
     ):
         # Arrange
         mock_execute_post.return_value = mock_response_data
-        service = QBOService()
+        service = FinancialService()
 
         # Act
         result = await service.get_customers(mock_headers)
@@ -207,7 +207,7 @@ class TestQBOService:
     async def test_get_customers_error(self, mock_execute_post, mock_headers):
         # Arrange
         mock_execute_post.side_effect = Exception("API error")
-        service = QBOService()
+        service = FinancialService()
 
         # Act
         result = await service.get_customers(mock_headers)
@@ -218,10 +218,10 @@ class TestQBOService:
 
     def test_raise_exception_on_error_with_error(self, error_response_data):
         # Act & Assert
-        with pytest.raises(QBOApiError):
-            QBOService.raise_exception_on_error("Test message", error_response_data)
+        with pytest.raises(FinancialApiError):
+            FinancialService.raise_exception_on_error("Test message", error_response_data)
 
     def test_raise_exception_on_error_without_error(self, mock_response_data):
         # Act - Should not raise exception
-        QBOService.raise_exception_on_error("Test message", mock_response_data)
+        FinancialService.raise_exception_on_error("Test message", mock_response_data)
         # No assertion needed - test passes if no exception is raised
