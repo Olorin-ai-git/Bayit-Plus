@@ -599,7 +599,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       ],
       [InvestigationStepId.LOCATION]: [
         'Checking customer location from OII, SF, Ekata, and Devices Panel',
-        'Verifying business location from SF, QBO Admin, and Google',
+                        'Verifying business location from SF, Business Admin, and Google',
         'Validating phone registration location via Ekata and LexisNexis',
         'Analyzing historical RSS login locations from Devices Panel',
       ],

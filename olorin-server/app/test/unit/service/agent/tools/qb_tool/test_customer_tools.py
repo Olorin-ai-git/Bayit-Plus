@@ -75,18 +75,18 @@ def expected_filtered_customers():
 
 
 class TestListCustomersTool:
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
     def test_run(
         self,
-        mock_qbo_service_class,
+        mock_financial_service_class,
         mock_config,
         mock_customers_data,
         expected_filtered_customers,
     ):
         # Arrange
-        mock_qbo_service_instance = MagicMock()
-        mock_qbo_service_instance.get_customers_sync.return_value = mock_customers_data
-        mock_qbo_service_class.return_value = mock_qbo_service_instance
+        mock_financial_service_instance = MagicMock()
+        mock_financial_service_instance.get_customers_sync.return_value = mock_customers_data
+        mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
 
@@ -94,7 +94,7 @@ class TestListCustomersTool:
         result = tool._run(tool_input="", config=mock_config)
 
         # Assert
-        mock_qbo_service_instance.get_customers_sync.assert_called_once_with(
+        mock_financial_service_instance.get_customers_sync.assert_called_once_with(
             mock_config["configurable"]["agent_context"].get_header()
         )
         assert result == expected_filtered_customers
@@ -103,20 +103,20 @@ class TestListCustomersTool:
         assert "extraField" not in result[1]
 
     @pytest.mark.asyncio
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
     async def test_arun_success(
         self,
-        mock_qbo_service_class,
+        mock_financial_service_class,
         mock_config,
         mock_customers_data,
         expected_filtered_customers,
     ):
         # Arrange
-        mock_qbo_service_instance = MagicMock()
-        mock_qbo_service_instance.get_customers = AsyncMock(
+        mock_financial_service_instance = MagicMock()
+        mock_financial_service_instance.get_customers = AsyncMock(
             return_value=mock_customers_data
         )
-        mock_qbo_service_class.return_value = mock_qbo_service_instance
+        mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
 
@@ -124,7 +124,7 @@ class TestListCustomersTool:
         result = await tool._arun(config=mock_config)
 
         # Assert
-        mock_qbo_service_instance.get_customers.assert_called_once_with(
+        mock_financial_service_instance.get_customers.assert_called_once_with(
             mock_config["configurable"]["agent_context"].get_header()
         )
         assert result == expected_filtered_customers
@@ -133,8 +133,8 @@ class TestListCustomersTool:
         assert "extraField" not in result[1]
 
     @pytest.mark.asyncio
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
-    async def test_arun_without_config(self, mock_qbo_service_class):
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
+    async def test_arun_without_config(self, mock_financial_service_class):
         # Arrange
         tool = ListCustomersTool()
 
@@ -143,28 +143,28 @@ class TestListCustomersTool:
             await tool._arun(config=None)
 
     @pytest.mark.asyncio
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
-    async def test_arun_invalid_response(self, mock_qbo_service_class, mock_config):
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
+    async def test_arun_invalid_response(self, mock_financial_service_class, mock_config):
         # Arrange
-        mock_qbo_service_instance = MagicMock()
-        mock_qbo_service_instance.get_customers = AsyncMock(return_value=None)
-        mock_qbo_service_class.return_value = mock_qbo_service_instance
+        mock_financial_service_instance = MagicMock()
+        mock_financial_service_instance.get_customers = AsyncMock(return_value=None)
+        mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
 
         # Act & Assert
-        with pytest.raises(ValueError, match="Invalid response from QBO service"):
+        with pytest.raises(ValueError, match="Invalid response from financial service"):
             await tool._arun(config=mock_config)
 
     @pytest.mark.asyncio
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
-    async def test_arun_empty_customers(self, mock_qbo_service_class, mock_config):
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
+    async def test_arun_empty_customers(self, mock_financial_service_class, mock_config):
         # Arrange
-        mock_qbo_service_instance = MagicMock()
-        mock_qbo_service_instance.get_customers = AsyncMock(
+        mock_financial_service_instance = MagicMock()
+        mock_financial_service_instance.get_customers = AsyncMock(
             return_value={"data": {"contacts": {"data": []}}}
         )
-        mock_qbo_service_class.return_value = mock_qbo_service_instance
+        mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
 
@@ -175,14 +175,14 @@ class TestListCustomersTool:
         assert result == []
 
     @pytest.mark.asyncio
-    @patch("app.service.agent.tools.qb_tool.customer_tools.QBOService")
-    async def test_arun_exception(self, mock_qbo_service_class, mock_config):
+    @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
+    async def test_arun_exception(self, mock_financial_service_class, mock_config):
         # Arrange
-        mock_qbo_service_instance = MagicMock()
-        mock_qbo_service_instance.get_customers = AsyncMock(
+        mock_financial_service_instance = MagicMock()
+        mock_financial_service_instance.get_customers = AsyncMock(
             side_effect=Exception("Test error")
         )
-        mock_qbo_service_class.return_value = mock_qbo_service_instance
+        mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
 

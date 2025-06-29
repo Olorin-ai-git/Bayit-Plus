@@ -98,7 +98,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
         """Get business location data."""
         self._validate_user_id(user_id)
         try:
-            # TODO: Implement calls to SF, QBO Admin, Google, IOP CSR, CSRs, IBOSS, etc.
+            # TODO: Implement calls to SF, Business Admin, Google, IOP CSR, CSRs, IBOSS, etc.
             return {
                 # "sf_business_location": ...,
                 # "qbo_admin_location": ...,

@@ -66,7 +66,7 @@ def get_auth_token():
                         "password": password,
                         "tenantId": "50000003",
                         "intent": {
-                            "appGroup": "QBO",
+                            "appGroup": "FINANCIAL",
                             "assetAlias": "Olorin.fraudprevention.accountrequests",
                         },
                     }

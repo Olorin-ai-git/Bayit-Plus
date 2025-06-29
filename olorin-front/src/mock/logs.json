@@ -24,7 +24,7 @@
     {
       "email_address": "user@example.com",
       "username": "testuser",
-      "offering_ids": "QBO",
+      "offering_ids": "FINANCIAL",
       "transactions": "login",
       "originating_ips": "192.168.1.10",
       "isp": "Comcast",
@@ -36,7 +36,7 @@
     {
       "email_address": "user@example.com",
       "username": "testuser",
-      "offering_ids": "QBO",
+      "offering_ids": "FINANCIAL",
       "transactions": "failed_login",
       "originating_ips": "203.0.113.5",
       "isp": "Vodafone India",

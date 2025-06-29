@@ -563,10 +563,10 @@ class LocationDataClient:
 
     # Salesforce and Ekata methods removed
 
-    async def _get_qbo_business_location(self, user_id: str) -> Optional[LocationInfo]:
-        """Get business location from QBO Admin."""
+    async def _get_business_admin_location(self, user_id: str) -> Optional[LocationInfo]:
+        """Get business location from Business Admin."""
         return LocationInfo(
-            source="QBO Business",
+            source="Business Admin",
             location=None,
             confidence=0.0,
             timestamp=datetime.now(timezone.utc).isoformat(),

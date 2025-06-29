@@ -73,7 +73,7 @@ logs_splunk_data = [
     {
         "email_address": "user@example.com",
         "olorin_username": "testuser",
-        "olorin_offeringId": "QBO",
+        "olorin_offeringId": "FINANCIAL",
         "transaction": "login",
         "olorin_originatingip": "192.168.1.10",
         "input_ip_isp": "Comcast",
@@ -86,7 +86,7 @@ logs_splunk_data = [
     {
         "email_address": "user@example.com",
         "olorin_username": "testuser",
-        "olorin_offeringId": "QBO",
+        "olorin_offeringId": "FINANCIAL",
         "transaction": "failed_login",
         "olorin_originatingip": "203.0.113.5",
         "input_ip_isp": "Vodafone India",
