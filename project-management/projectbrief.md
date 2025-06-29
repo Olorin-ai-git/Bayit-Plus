@@ -8,7 +8,7 @@
 
 ## RECENT TRANSFORMATION
 The project underwent major refactoring:
-1. **Independence**: Converted from Intuit plugin to standalone application
+1. **Independence**: Converted from olorin plugin to standalone application
 2. **Simplification**: Removed IDP dependencies and complex auth systems  
 3. **Rebranding**: Renamed from "Gaia" to "Olorin" throughout
 4. **Modernization**: Updated to standard React app structure

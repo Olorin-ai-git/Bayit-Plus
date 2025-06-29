@@ -78,11 +78,11 @@ DEFAULT_HEADERS = {
     "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
     "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
 =======
-    "Authorization": "Olorin_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
+    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
-    "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Olorin.cas.hri.olorin",
+    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
 >>>>>>> restructure-projects:olorin-server/app/router/api_router.py
 }
 
@@ -327,19 +327,19 @@ async def analyze_logs(
             additional_metadata={"userId": user_id},
         )
         agent_name = "Olorin.cas.hri.olorin:fpl-splunk"
-        intuit_userid, intuit_token, intuit_realmid = get_auth_token()
+        olorin_userid, olorin_token, olorin_realmid = get_auth_token()
         agent_context = AgentContext(
             input=llm_input_prompt,
             agent_name=agent_name,
             metadata=metadata,
-            intuit_header=OlorinHeader(
-                intuit_tid="test",
-                intuit_originating_assetalias="Olorin.cas.hri.olorin",
-                intuit_experience_id=settings.intuit_experience_id,
+            olorin_header=OlorinHeader(
+                olorin_tid="test",
+                olorin_originating_assetalias="Olorin.cas.hri.olorin",
+                olorin_experience_id=settings.olorin_experience_id,
                 auth_context=AuthContext(
-                    intuit_user_id=intuit_userid,
-                    intuit_user_token=intuit_token,
-                    intuit_realmid=intuit_realmid,
+                    olorin_user_id=olorin_userid,
+                    olorin_user_token=olorin_token,
+                    olorin_realmid=olorin_realmid,
                 ),
             ),
         )
@@ -644,9 +644,9 @@ Ensure all fields are populated. The input data is as follows:
                     olorin_tid=request.headers.get(
                         "olorin-tid", f"olorin-loc-risk-analysis-{user_id}"
 =======
-                intuit_header=OlorinHeader(
-                    intuit_tid=request.headers.get(
-                        "intuit-tid", f"olorin-loc-risk-analysis-{user_id}"
+                olorin_header=OlorinHeader(
+                    olorin_tid=request.headers.get(
+                        "olorin-tid", f"olorin-loc-risk-analysis-{user_id}"
 >>>>>>> restructure-projects:olorin-server/app/router/api_router.py
                     ),
                     olorin_originating_assetalias=request.headers.get(

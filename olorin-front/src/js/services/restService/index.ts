@@ -181,7 +181,7 @@ export class RestService extends WithRUMInteractionName {
   ): Promise<RestResponse<T>> {
     try {
       const response = await request;
-      const tid = response.headers && response.headers.get('intuit_tid');
+      const tid = response.headers && response.headers.get('olorin_tid');
       const status = response && response.status;
       if (response.ok) {
         if (isJsonResponse) {
@@ -204,7 +204,7 @@ export class RestService extends WithRUMInteractionName {
       return resp;
     } catch (err: any) {
       /* istanbul ignore next */
-      const tid = err.headers && err.headers.get('intuit_tid');
+      const tid = err.headers && err.headers.get('olorin_tid');
       /* istanbul ignore next */
       const status = err && err.status;
       /* istanbul ignore next */

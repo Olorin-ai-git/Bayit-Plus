@@ -65,17 +65,17 @@ const headers = {
 // Correct configuration for all non-local environments
 const ENVIRONMENTS = {
   e2e: {  // Testing Environment
-    olorin: { baseUrl: 'https://olorin-e2e.api.intuit.com/' },
+    olorin: { baseUrl: 'https://olorin-e2e.api.olorin.com/' },
     mcp: { 
-      baseUrl: 'https://olorin-e2e.api.intuit.com:3000',
-      wsUrl: 'wss://olorin-e2e.api.intuit.com:3000/ws'
+      baseUrl: 'https://olorin-e2e.api.olorin.com:3000',
+      wsUrl: 'wss://olorin-e2e.api.olorin.com:3000/ws'
     }
   },
   prf: {  // Production Environment
-    olorin: { baseUrl: 'https://olorin-prf.api.intuit.com/' },
+    olorin: { baseUrl: 'https://olorin-prf.api.olorin.com/' },
     mcp: { 
-      baseUrl: 'https://olorin-prf.api.intuit.com:3000',
-      wsUrl: 'wss://olorin-prf.api.intuit.com:3000/ws'
+      baseUrl: 'https://olorin-prf.api.olorin.com:3000',
+      wsUrl: 'wss://olorin-prf.api.olorin.com:3000/ws'
     }
   }
 };

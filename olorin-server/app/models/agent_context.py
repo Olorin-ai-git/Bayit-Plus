@@ -24,7 +24,7 @@ class BaseContextModel(BaseModel):
 <<<<<<< HEAD:back/app/models/agent_context.py
     olorin_header: OlorinHeader
 =======
-    intuit_header: OlorinHeader
+    olorin_header: OlorinHeader
 >>>>>>> restructure-projects:olorin-server/app/models/agent_context.py
     query_params: dict = Field(default_factory=dict)
     start_time: float = Field(default_factory=lambda: time.time())
@@ -76,11 +76,11 @@ class AgentContext(BaseContextModel):
             f"olorin_userid={olorin_user_id},"
             f"olorin_token={olorin_user_token}"
 =======
-            f"intuit_appid='{app_id}',"
-            f"intuit_app_secret={app_secret},"
-            "intuit_token_type='IAM-Ticket',"
-            f"intuit_userid={intuit_user_id},"
-            f"intuit_token={intuit_user_token}"
+            f"olorin_appid='{app_id}',"
+            f"olorin_app_secret={app_secret},"
+            "olorin_token_type='IAM-Ticket',"
+            f"olorin_userid={olorin_user_id},"
+            f"olorin_token={olorin_user_token}"
 >>>>>>> restructure-projects:olorin-server/app/models/agent_context.py
         )
 

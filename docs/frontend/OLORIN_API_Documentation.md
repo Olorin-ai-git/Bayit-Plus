@@ -918,7 +918,7 @@ const ws = new WebSocket(
         "ip_address": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
-        "isp": "intuit inc."
+        "isp": "olorin inc."
       }
     ],
     "network_risk_assessment": {
@@ -950,8 +950,8 @@ Invoke AI agent for analysis
 
 **Required Headers:**
 
-- `intuit_experience_id`: Experience identifier
-- `intuit_originating_assetalias`: Originating asset alias
+- `olorin_experience_id`: Experience identifier
+- `olorin_originating_assetalias`: Originating asset alias
 
 **Request:**
 
@@ -1167,7 +1167,7 @@ investigation agents:
         "ip_address": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
-        "isp": "intuit inc."
+        "isp": "olorin inc."
       }
     ],
     "network_risk_assessment": {
@@ -1853,7 +1853,7 @@ async function startInvestigation(entityId, entityType = 'user_id') {
       headers: {
         Authorization: 'Bearer your-jwt-token',
         'Content-Type': 'application/json',
-        intuit_tid: 'your-transaction-id',
+        olorin_tid: 'your-transaction-id',
       },
     },
   );
@@ -2139,7 +2139,7 @@ class AutonomousInvestigationClient {
         headers: {
           Authorization: 'Bearer your-jwt-token',
           'Content-Type': 'application/json',
-          intuit_tid: 'your-transaction-id',
+          olorin_tid: 'your-transaction-id',
         },
       },
     );
@@ -2550,14 +2550,14 @@ All API requests require these headers:
 ```bash
 Authorization: Bearer <your-jwt-token>
 Content-Type: application/json
-intuit_tid: <transaction-id>
-intuit_originating_assetalias: <your-asset-alias>
+olorin_tid: <transaction-id>
+olorin_originating_assetalias: <your-asset-alias>
 ```
 
 **Optional Headers:**
 
 ```bash
-intuit_experience_id: <experience-identifier>
+olorin_experience_id: <experience-identifier>
 accept: application/json
 user-agent: <your-application-name>
 ```
@@ -2682,7 +2682,7 @@ user-agent: <your-application-name>
 1. **Create Investigation:**
 
 ```bash
-curl -X POST "https://olorin-api.intuit.com/api/investigation" \
+curl -X POST "https://olorin-api.olorin.com/api/investigation" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2696,33 +2696,33 @@ curl -X POST "https://olorin-api.intuit.com/api/investigation" \
 
 ```bash
 # Device Analysis
-curl -X GET "https://olorin-api.intuit.com/api/device/user123456?investigation_id=INV-12345&entity_type=user_id" \
+curl -X GET "https://olorin-api.olorin.com/api/device/user123456?investigation_id=INV-12345&entity_type=user_id" \
   -H "Authorization: Bearer $TOKEN"
 
 # Network Analysis
-curl -X GET "https://olorin-api.intuit.com/api/network/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/network/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 
 # Location Analysis
-curl -X GET "https://olorin-api.intuit.com/api/location/user123456?investigation_id=INV-12345&entity_type=user_id" \
+curl -X GET "https://olorin-api.olorin.com/api/location/user123456?investigation_id=INV-12345&entity_type=user_id" \
   -H "Authorization: Bearer $TOKEN"
 
 # Logs Analysis
-curl -X GET "https://olorin-api.intuit.com/api/logs/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/logs/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 3. **Get Overall Risk Assessment:**
 
 ```bash
-curl -X GET "https://olorin-api.intuit.com/api/risk-assessment/user123456?investigation_id=INV-12345" \
+curl -X GET "https://olorin-api.olorin.com/api/risk-assessment/user123456?investigation_id=INV-12345" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
 4. **Add Investigation Comments:**
 
 ```bash
-curl -X POST "https://olorin-api.intuit.com/api/investigation/INV-12345/comment" \
+curl -X POST "https://olorin-api.olorin.com/api/investigation/INV-12345/comment" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2737,7 +2737,7 @@ curl -X POST "https://olorin-api.intuit.com/api/investigation/INV-12345/comment"
 5. **Update Investigation Status:**
 
 ```bash
-curl -X PUT "https://olorin-api.intuit.com/api/investigation/INV-12345" \
+curl -X PUT "https://olorin-api.olorin.com/api/investigation/INV-12345" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2793,7 +2793,7 @@ Current API version: **v1**
 
 For API support and questions:
 
-- **Documentation**: [Internal Wiki](https://wiki.intuit.com/olorin-api)
+- **Documentation**: [Internal Wiki](https://wiki.olorin.com/olorin-api)
 - **Support Channel**: #olorin-api-support
 - **On-call**: Page OLORIN-API team for production issues
 

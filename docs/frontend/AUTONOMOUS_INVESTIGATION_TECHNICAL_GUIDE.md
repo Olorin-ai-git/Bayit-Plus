@@ -541,12 +541,12 @@ const config = {
     heartbeatInterval: 30000,
   },
   staging: {
-    websocketUrl: 'wss://staging-api.olorin.intuit.com',
+    websocketUrl: 'wss://staging-api.olorin.olorin.com',
     reconnectionAttempts: 5,
     heartbeatInterval: 60000,
   },
   production: {
-    websocketUrl: 'wss://api.olorin.intuit.com',
+    websocketUrl: 'wss://api.olorin.olorin.com',
     reconnectionAttempts: 10,
     heartbeatInterval: 60000,
   },

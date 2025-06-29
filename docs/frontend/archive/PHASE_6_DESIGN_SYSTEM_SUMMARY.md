@@ -2,14 +2,14 @@
 
 ## Overview
 
-Successfully implemented the Intuit Design System foundation with blue color
+Successfully implemented the olorin Design System foundation with blue color
 palette and component styling system.
 
 ## Files Created/Modified
 
 ### 1. **src/sass/design-system.css** (NEW)
 
-- Complete design system with Intuit blue color palette
+- Complete design system with olorin blue color palette
 - CSS custom properties for consistent theming
 - Pre-built component classes for buttons, cards, navigation, forms, etc.
 - Status indicators and risk score styling
@@ -17,7 +17,7 @@ palette and component styling system.
 
 ### 2. **tailwind.config.js** (UPDATED)
 
-- Extended with Intuit blue color palette
+- Extended with olorin blue color palette
 - Added primary, success, warning, error color mappings
 - Enhanced with Inter font family
 - Added custom keyframes and animations
@@ -33,18 +33,18 @@ palette and component styling system.
 
 ## Color Palette Implemented
 
-### Primary Colors (Intuit Blue)
+### Primary Colors (olorin Blue)
 
-- `--intuit-blue-50`: #eff6ff (lightest)
-- `--intuit-blue-100`: #dbeafe
-- `--intuit-blue-200`: #bfdbfe
-- `--intuit-blue-300`: #93c5fd
-- `--intuit-blue-400`: #60a5fa
-- `--intuit-blue-500`: #3b82f6
-- `--intuit-blue-600`: #2563eb (primary)
-- `--intuit-blue-700`: #1d4ed8 (primary-hover)
-- `--intuit-blue-800`: #1e40af (primary-dark)
-- `--intuit-blue-900`: #1e3a8a (darkest)
+- `--olorin-blue-50`: #eff6ff (lightest)
+- `--olorin-blue-100`: #dbeafe
+- `--olorin-blue-200`: #bfdbfe
+- `--olorin-blue-300`: #93c5fd
+- `--olorin-blue-400`: #60a5fa
+- `--olorin-blue-500`: #3b82f6
+- `--olorin-blue-600`: #2563eb (primary)
+- `--olorin-blue-700`: #1d4ed8 (primary-hover)
+- `--olorin-blue-800`: #1e40af (primary-dark)
+- `--olorin-blue-900`: #1e3a8a (darkest)
 
 ### Status Colors
 
@@ -58,7 +58,7 @@ palette and component styling system.
 ### Buttons
 
 - `.btn` - Base button styling
-- `.btn-primary` - Primary Intuit blue button
+- `.btn-primary` - Primary olorin blue button
 - `.btn-secondary` - Secondary white button
 - `.btn-outline` - Outline button
 - `.btn-ghost` - Ghost button
@@ -116,7 +116,7 @@ palette and component styling system.
 
 - Update `NavigationBar.tsx` to use new design system classes
 - Convert from vertical sidebar to horizontal top navigation
-- Apply Intuit blue styling
+- Apply olorin blue styling
 
 ### Phase 2: Investigation Page Redesign (READY)
 
@@ -149,7 +149,7 @@ palette and component styling system.
 3. **Performance**: CSS custom properties enable efficient theming
 4. **Accessibility**: Built-in focus states and color contrast
 5. **Scalability**: Utility classes allow for rapid development
-6. **Brand Alignment**: Consistent Intuit blue color palette
+6. **Brand Alignment**: Consistent olorin blue color palette
 
 ## Usage Examples
 

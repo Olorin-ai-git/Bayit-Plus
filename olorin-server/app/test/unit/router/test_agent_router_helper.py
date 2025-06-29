@@ -61,9 +61,9 @@ def test_construct_agent_context(mock_request, agent_request):
     assert agent_context.olorin_header.olorin_tid == "sample_tid"
     assert agent_context.olorin_header.olorin_experience_id == "sample_experience_id"
 =======
-    assert isinstance(agent_context.intuit_header, OlorinHeader)
-    assert agent_context.intuit_header.intuit_tid == "sample_tid"
-    assert agent_context.intuit_header.intuit_experience_id == "sample_experience_id"
+    assert isinstance(agent_context.olorin_header, OlorinHeader)
+    assert agent_context.olorin_header.olorin_tid == "sample_tid"
+    assert agent_context.olorin_header.olorin_experience_id == "sample_experience_id"
 >>>>>>> restructure-projects:olorin-server/app/test/unit/router/test_agent_router_helper.py
     assert (
         agent_context.olorin_header.olorin_originating_assetalias == "sample_assetalias"

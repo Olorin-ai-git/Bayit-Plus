@@ -317,10 +317,10 @@ agent_context_for_risk = AgentContext(
         olorin_originating_assetalias=olorin_originating_assetalias_header,
         olorin_experience_id=olorin_experience_id_header,
 =======
-    intuit_header=OlorinHeader(
-        intuit_tid=intuit_tid_header,
-        intuit_originating_assetalias=intuit_originating_assetalias_header,
-        intuit_experience_id=intuit_experience_id_header,
+    olorin_header=OlorinHeader(
+        olorin_tid=olorin_tid_header,
+        olorin_originating_assetalias=olorin_originating_assetalias_header,
+        olorin_experience_id=olorin_experience_id_header,
 >>>>>>> restructure-projects:olorin-server/docs/LOCATION_DOMAIN_RISK_ANALYSIS_MASTER.md
         auth_context=AuthContext(
             olorin_user_id=app_olorin_userid,

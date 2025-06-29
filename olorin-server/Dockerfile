@@ -1,5 +1,5 @@
-# https://github.intuit.com/dev-security/debian11-python3-11/blob/master/CHANGELOG.md
-FROM docker.intuit.com/dev-security/debian11-python3-11/service/debian11-python3-11:1.26.0 as base
+# https://github.olorin.com/dev-security/debian11-python3-11/blob/master/CHANGELOG.md
+FROM docker.olorin.com/dev-security/debian11-python3-11/service/debian11-python3-11:1.26.0 as base
 # USER root needed for build, since CPD does not allow root user for gold images.
 # Intermediate containers will be discarded at final stage, runtime image will be executed with non root user.
 USER root
@@ -49,11 +49,11 @@ ARG GIT_COMMIT
 ARG DOCKER_TAGS=latest
 ARG WATCHFILES_FORCE_POLLING=false
 ENV WATCHFILES_FORCE_POLLING=$WATCHFILES_FORCE_POLLING
-# ARG JIRA_PROJECT=https://jira.intuit.com/projects/<CHANGE_ME>
-ARG DOCKER_IMAGE_NAME=docker.intuit.com/cas-hri/gaia/service/gaia:${DOCKER_TAGS}
-ARG SERVICE_LINK=https://devportal.intuit.com/app/dp/resource/3825825476777495228
+# ARG JIRA_PROJECT=https://jira.olorin.com/projects/<CHANGE_ME>
+ARG DOCKER_IMAGE_NAME=docker.olorin.com/cas-hri/gaia/service/gaia:${DOCKER_TAGS}
+ARG SERVICE_LINK=https://devportal.olorin.com/app/dp/resource/3825825476777495228
 
-LABEL maintainer=some_email@intuit.com \
+LABEL maintainer=some_email@olorin.com \
       app=gaia \
       app-scope=runtime \
       build=${build}

@@ -244,10 +244,10 @@ agent_context = AgentContext(
         olorin_originating_assetalias="Olorin.cas.hri.olorin",
         olorin_experience_id=settings.olorin_experience_id,
 =======
-    intuit_header=OlorinHeader(
-        intuit_tid="test",
-        intuit_originating_assetalias="Olorin.cas.hri.olorin",
-        intuit_experience_id=settings.intuit_experience_id,
+    olorin_header=OlorinHeader(
+        olorin_tid="test",
+        olorin_originating_assetalias="Olorin.cas.hri.olorin",
+        olorin_experience_id=settings.olorin_experience_id,
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_ANALYSIS.md
         auth_context=AuthContext(
             olorin_user_id=olorin_userid,

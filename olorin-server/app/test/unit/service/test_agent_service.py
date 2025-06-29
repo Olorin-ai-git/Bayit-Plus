@@ -32,7 +32,7 @@ def mock_agent_context():
 <<<<<<< HEAD:back/app/test/unit/service/test_agent_service.py
     # Setup olorin header
 =======
-    # Setup intuit header
+    # Setup olorin header
 >>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
     header = MagicMock(spec=OlorinHeader)
     auth = MagicMock(spec=AuthContext)
@@ -333,7 +333,7 @@ def test_agent_response_str():
 <<<<<<< HEAD:back/app/test/unit/service/test_agent_service.py
 def test_olorin_header_str():
 =======
-def test_intuit_header_str():
+def test_olorin_header_str():
 >>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
     from app.models.agent_headers import AuthContext, OlorinHeader
 
@@ -346,9 +346,9 @@ def test_intuit_header_str():
         olorin_experience_id="expid1",
         olorin_originating_assetalias="alias1",
 =======
-        intuit_tid="tid1",
-        intuit_experience_id="expid1",
-        intuit_originating_assetalias="alias1",
+        olorin_tid="tid1",
+        olorin_experience_id="expid1",
+        olorin_originating_assetalias="alias1",
 >>>>>>> restructure-projects:olorin-server/app/test/unit/service/test_agent_service.py
         auth_context=auth_ctx,
     )

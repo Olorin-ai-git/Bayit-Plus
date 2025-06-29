@@ -148,7 +148,7 @@ export const generateRequestOptions = (originatingIp?: string): any => ({
     'X-Requested-With': 'XMLHttpRequest', // ✅ Safe - allowed by server CORS policy
     'Cache-Control': 'no-cache', // ✅ Safe - allowed by server CORS policy
     Pragma: 'no-cache', // ✅ Safe - allowed by server CORS policy
-    intuit_originatingip: originatingIp, // ✅ Safe - conditional header
+    olorin_originatingip: originatingIp, // ✅ Safe - conditional header
   },
   mode: 'cors',
   credentials: 'include', // Include cookies for authentication
@@ -760,8 +760,8 @@ export class OlorinService {
             },
             {
               ip_address: '207.207.181.8',
-              isp: 'intuit inc.',
-              organization: 'intuit inc.',
+              isp: 'olorin inc.',
+              organization: 'olorin inc.',
               tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
               _time: '2025-05-15T06:31:46.027-07:00',
               countries: [],
@@ -771,10 +771,10 @@ export class OlorinService {
             risk_level: 0.85,
             risk_factors: [
               'Geographic inconsistency / possible impossible travel',
-              'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Intuit in the US)',
+              'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and olorin in the US)',
             ],
             anomaly_details: [
-              'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Intuit) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
+              'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (olorin) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
             ],
             confidence: 0.9,
             summary:
@@ -805,7 +805,7 @@ export class OlorinService {
               smartId: null,
               tm_smartid: null,
               tm_sessionid: null,
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: null,
               true_ip_city: null,
               true_ip_country: null,
@@ -820,7 +820,7 @@ export class OlorinService {
               smartId: '6c0998a4c9f0437abbc59706471aaedb',
               tm_smartid: '6c0998a4c9f0437abbc59706471aaedb',
               tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -860,7 +860,7 @@ export class OlorinService {
               _time: '2025-05-27T10:56:06.965-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -872,7 +872,7 @@ export class OlorinService {
               _time: '2025-05-15T07:08:39.584-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',
@@ -912,7 +912,7 @@ export class OlorinService {
               _time: '2025-05-27T10:56:06.965-07:00',
               event_type: 'login',
               event_subtype: 'success',
-              intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+              olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
               true_ip: '207.207.181.8',
               true_ip_city: 'Mountain View',
               true_ip_country: 'US',

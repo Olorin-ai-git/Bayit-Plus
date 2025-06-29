@@ -28,11 +28,11 @@ graph TB
 | Environment | FastAPI Server | MCP Server | WebSocket |
 |-------------|----------------|------------|-----------|
 | Local       | localhost:8000 | localhost:3000 | ws://localhost:8000/ws |
-| QAL         | olorin-qal.api.intuit.com | olorin-qal.api.intuit.com:3000 | wss://olorin-qal.api.intuit.com/ws |
-| E2E         | olorin-e2e.api.intuit.com | olorin-e2e.api.intuit.com:3000 | wss://olorin-e2e.api.intuit.com/ws |
-| PRF         | olorin-prf.api.intuit.com | olorin-prf.api.intuit.com:3000 | wss://olorin-prf.api.intuit.com/ws |
-| STG         | olorin-stg.api.intuit.com | olorin-stg.api.intuit.com:3000 | wss://olorin-stg.api.intuit.com/ws |
-| PRD         | olorin.api.intuit.com | olorin.api.intuit.com:3000 | wss://olorin.api.intuit.com/ws |
+| QAL         | olorin-qal.api.olorin.com | olorin-qal.api.olorin.com:3000 | wss://olorin-qal.api.olorin.com/ws |
+| E2E         | olorin-e2e.api.olorin.com | olorin-e2e.api.olorin.com:3000 | wss://olorin-e2e.api.olorin.com/ws |
+| PRF         | olorin-prf.api.olorin.com | olorin-prf.api.olorin.com:3000 | wss://olorin-prf.api.olorin.com/ws |
+| STG         | olorin-stg.api.olorin.com | olorin-stg.api.olorin.com:3000 | wss://olorin-stg.api.olorin.com/ws |
+| PRD         | olorin.api.olorin.com | olorin.api.olorin.com:3000 | wss://olorin.api.olorin.com/ws |
 
 ## 2. Security Requirements
 
@@ -49,8 +49,8 @@ graph TB
 ```typescript
 // VULNERABLE - Non-local environments using HTTP
 mcp: {
-  baseUrl: 'http://olorin-e2e.api.intuit.com:3000',  // E2E Testing Environment
-  wsUrl: 'ws://olorin-e2e.api.intuit.com:3000/ws',
+  baseUrl: 'http://olorin-e2e.api.olorin.com:3000',  // E2E Testing Environment
+  wsUrl: 'ws://olorin-e2e.api.olorin.com:3000/ws',
 }
 ```
 
@@ -58,8 +58,8 @@ mcp: {
 ```typescript
 // SECURE - Use HTTPS/WSS for all non-local environments
 mcp: {
-  baseUrl: 'https://olorin-e2e.api.intuit.com:3000',  // E2E Testing Environment
-  wsUrl: 'wss://olorin-e2e.api.intuit.com:3000/ws',
+  baseUrl: 'https://olorin-e2e.api.olorin.com:3000',  // E2E Testing Environment
+  wsUrl: 'wss://olorin-e2e.api.olorin.com:3000/ws',
 }
 ```
 
@@ -118,9 +118,9 @@ This is a summary guide. Refer to the full VAN Security Analysis Report for comp
 const ENVIRONMENTS: Record<string, Record<Service, ServiceConfig>> = {
   e2e: {
     mcp: {
-      baseUrl: 'https://olorin-e2e.api.intuit.com:3000',
-      httpUrl: 'https://olorin-e2e.api.intuit.com:3000', 
-      wsUrl: 'wss://olorin-e2e.api.intuit.com:3000/ws',
+      baseUrl: 'https://olorin-e2e.api.olorin.com:3000',
+      httpUrl: 'https://olorin-e2e.api.olorin.com:3000', 
+      wsUrl: 'wss://olorin-e2e.api.olorin.com:3000/ws',
     },
   },
   // ... other environments
@@ -130,7 +130,7 @@ const ENVIRONMENTS: Record<string, Record<Service, ServiceConfig>> = {
 ### 6.2 MCP Endpoint Structure
 
 #### FastAPI Router Endpoints (Port 8000)
-Base URL: `https://olorin-{env}.api.intuit.com/mcp`
+Base URL: `https://olorin-{env}.api.olorin.com/mcp`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -143,7 +143,7 @@ Base URL: `https://olorin-{env}.api.intuit.com/mcp`
 | POST | `/mcp/prompts/{name}/execute` | Execute specific prompt |
 
 #### Direct MCP Server Endpoints (Port 3000)
-Base URL: `https://olorin-{env}.api.intuit.com:3000`
+Base URL: `https://olorin-{env}.api.olorin.com:3000`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -510,9 +510,9 @@ export class ConfigManager {
       enableCSRF: false,
     },
     e2e: {
-      apiBaseUrl: 'https://olorin-e2e.api.intuit.com',
-      mcpBaseUrl: 'https://olorin-e2e.api.intuit.com:3000',
-      wsUrl: 'wss://olorin-e2e.api.intuit.com/ws',
+      apiBaseUrl: 'https://olorin-e2e.api.olorin.com',
+      mcpBaseUrl: 'https://olorin-e2e.api.olorin.com:3000',
+      wsUrl: 'wss://olorin-e2e.api.olorin.com/ws',
       useHTTPS: true,
       enableCSRF: true,
     },
@@ -651,7 +651,7 @@ export class RequestDebouncer {
 **Before (Insecure):**
 ```typescript
 // Old insecure implementation
-const client = new MCPWebClient('http://olorin-e2e.api.intuit.com:3000');
+const client = new MCPWebClient('http://olorin-e2e.api.olorin.com:3000');
 localStorage.setItem('token', authToken);
 ```
 

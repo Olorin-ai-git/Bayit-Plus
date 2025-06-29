@@ -7,9 +7,9 @@
 The following WebSocket URL patterns are **INVALID** and will result in 404 errors:
 
 ```
-❌ wss://olorin-e2e.api.intuit.com/mcp/ws
+❌ wss://olorin-e2e.api.olorin.com/mcp/ws
 ❌ ws://localhost:3000/ws
-❌ wss://olorin-e2e.api.intuit.com/mcp/websocket
+❌ wss://olorin-e2e.api.olorin.com/mcp/websocket
 ```
 
 **Why these don't work:**
@@ -25,7 +25,7 @@ The following WebSocket URL patterns are **INVALID** and will result in 404 erro
 
 #### **Basic Investigation WebSocket:**
 ```
-wss://olorin-e2e.api.intuit.com/ws/{investigation_id}
+wss://olorin-e2e.api.olorin.com/ws/{investigation_id}
 ```
 
 **Parameters (Query String):**
@@ -35,12 +35,12 @@ wss://olorin-e2e.api.intuit.com/ws/{investigation_id}
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.intuit.com/ws/INVESTIGATION_123?user_id=user123&role=investigator&parallel=true`;
+const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/INVESTIGATION_123?user_id=user123&role=investigator&parallel=true`;
 ```
 
 #### **Enhanced Investigation WebSocket:**
 ```
-wss://olorin-e2e.api.intuit.com/ws/enhanced/{investigation_id}
+wss://olorin-e2e.api.olorin.com/ws/enhanced/{investigation_id}
 ```
 
 **Parameters (Query String):**
@@ -50,26 +50,26 @@ wss://olorin-e2e.api.intuit.com/ws/enhanced/{investigation_id}
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.intuit.com/ws/enhanced/INVESTIGATION_123?user_id=user123&role=owner&parallel=false`;
+const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/enhanced/INVESTIGATION_123?user_id=user123&role=owner&parallel=false`;
 ```
 
 ### **2. Admin Log Streaming WebSocket**
 
 ```
-wss://olorin-e2e.api.intuit.com/api/admin/logs/stream/{client_id}
+wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/{client_id}
 ```
 
 **Authentication Required:** Admin-level access with proper authorization headers
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.intuit.com/api/admin/logs/stream/admin_client_123`;
+const wsUrl = `wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/admin_client_123`;
 ```
 
 ### **3. Test WebSocket**
 
 ```
-wss://olorin-e2e.api.intuit.com/ws/test
+wss://olorin-e2e.api.olorin.com/ws/test
 ```
 
 **Purpose:** Basic connectivity testing - connects and immediately closes
@@ -94,7 +94,7 @@ class OlorinWebSocketClient {
     }
 
     connect() {
-        const wsUrl = `wss://olorin-e2e.api.intuit.com/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}&parallel=${this.parallel}`;
+        const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}&parallel=${this.parallel}`;
         
         try {
             this.ws = new WebSocket(wsUrl);
@@ -190,7 +190,7 @@ class AdminLogStreamer {
     }
 
     connect() {
-        const wsUrl = `wss://olorin-e2e.api.intuit.com/api/admin/logs/stream/${this.clientId}`;
+        const wsUrl = `wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/${this.clientId}`;
         
         this.ws = new WebSocket(wsUrl);
         
@@ -243,19 +243,19 @@ class AdminLogStreamer {
 
 1. **Verify Server Status:**
    ```bash
-   curl -s https://olorin-e2e.api.intuit.com/health
+   curl -s https://olorin-e2e.api.olorin.com/health
    ```
 
 2. **Test WebSocket Connectivity:**
    ```bash
    # Use wscat for testing
-   wscat -c "wss://olorin-e2e.api.intuit.com/ws/test"
+   wscat -c "wss://olorin-e2e.api.olorin.com/ws/test"
    ```
 
 3. **Check Investigation Endpoint:**
    ```javascript
    // Browser console test
-   const ws = new WebSocket('wss://olorin-e2e.api.intuit.com/ws/TEST_INV?user_id=test&role=observer');
+   const ws = new WebSocket('wss://olorin-e2e.api.olorin.com/ws/TEST_INV?user_id=test&role=observer');
    ws.onopen = () => console.log('✅ Connected');
    ws.onerror = (e) => console.error('❌ Error:', e);
    ```

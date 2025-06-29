@@ -145,15 +145,15 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 olorin_originating_assetalias=olorin_originating_assetalias,
                 olorin_experience_id=olorin_experience_id,
 =======
-            intuit_header=OlorinHeader(
-                intuit_tid=request.headers.get("intuit-tid", default_tid),
-                intuit_originating_assetalias=request.headers.get(
-                    "intuit_originating_assetalias",
-                    self.settings.intuit_originating_assetalias,
+            olorin_header=OlorinHeader(
+                olorin_tid=request.headers.get("olorin-tid", default_tid),
+                olorin_originating_assetalias=request.headers.get(
+                    "olorin_originating_assetalias",
+                    self.settings.olorin_originating_assetalias,
                 ),
-                intuit_experience_id=request.headers.get(
-                    "intuit_experience_id",
-                    getattr(self.settings, "intuit_experience_id", None),
+                olorin_experience_id=request.headers.get(
+                    "olorin_experience_id",
+                    getattr(self.settings, "olorin_experience_id", None),
                 ),
 >>>>>>> restructure-projects:olorin-server/app/service/base_llm_risk_service.py
                 auth_context=AuthContext(

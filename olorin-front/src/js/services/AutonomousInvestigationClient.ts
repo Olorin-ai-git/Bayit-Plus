@@ -124,7 +124,7 @@ export class AutonomousInvestigationClient {
         headers: {
           Authorization: 'Bearer your-jwt-token',
           'Content-Type': 'application/json',
-          intuit_tid: 'your-transaction-id',
+          olorin_tid: 'your-transaction-id',
         },
       },
     );

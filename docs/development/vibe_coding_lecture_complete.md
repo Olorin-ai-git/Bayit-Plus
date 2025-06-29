@@ -17,7 +17,7 @@ Your complete lecture on "Vibe Coding with Cursor & VAN" is now prepared! Here's
 ### **Opening Hook** (5 minutes)
 "What if coding felt like conducting an orchestra?"
 - Traditional vs Vibe Coding comparison
-- Promise of transformation from mechanical typing to intuitive creation
+- Promise of transformation from mechanical typing to olorinive creation
 
 ### **Foundation** (20 minutes)
 - **What is Vibe Coding?** - Philosophy and core principles

@@ -109,7 +109,7 @@ curl http://localhost:8000/api/mcp-proxy/health
 ### **Post-Deployment Testing:**
 ```bash
 # 1. Test basic connectivity (no auth)
-curl "https://olorin-e2e.api.intuit.com/api/mcp-proxy/health"
+curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
 
 # 2. Run comprehensive auth test
 python scripts/test_e2e_mcp_auth.py
@@ -159,17 +159,17 @@ python scripts/test_local_mcp_auth_removal.py
 python scripts/test_e2e_mcp_auth.py
 
 # Quick health check
-curl "https://olorin-e2e.api.intuit.com/api/mcp-proxy/health"
+curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
 ```
 
 ### **Troubleshooting Commands:**
 ```bash
 # Check if changes are deployed
-curl "https://olorin-e2e.api.intuit.com/api/mcp-proxy/health" -v
+curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health" -v
 
 # Compare local vs deployed
 diff <(curl -s http://localhost:8000/api/mcp-proxy/health) \
-     <(curl -s https://olorin-e2e.api.intuit.com/api/mcp-proxy/health)
+     <(curl -s https://olorin-e2e.api.olorin.com/api/mcp-proxy/health)
 ```
 
 ---

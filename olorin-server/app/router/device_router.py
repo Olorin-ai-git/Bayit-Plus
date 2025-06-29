@@ -49,9 +49,9 @@ async def get_identity_authorization_header(
         "olorin_assetalias": "Olorin.shared.fraudlistclient",
         "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
 =======
-        "intuit_tid": intuit_tid,
-        "intuit_assetalias": "Olorin.shared.fraudlistclient",
-        "Authorization": "Olorin_IAM_Authentication intuit_appid=Olorin.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+        "olorin_tid": olorin_tid,
+        "olorin_assetalias": "Olorin.shared.fraudlistclient",
+        "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
 >>>>>>> restructure-projects:olorin-server/app/router/device_router.py
         "Content-Type": "application/json",
     }

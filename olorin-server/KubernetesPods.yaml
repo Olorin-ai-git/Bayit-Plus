@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: podman
-    image: docker.intuit.com/oicp/standard/podman:latest
+    image: docker.olorin.com/oicp/standard/podman:latest
     tty: true
     command: ["cat"]
     imagePullPolicy: Always
@@ -23,12 +23,12 @@ spec:
       capabilities:
         add: ["SYS_ADMIN", "SYS_RESOURCE"]
   - name: cpd2
-    image: docker.intuit.com/oicp/standard/cpd2:1
+    image: docker.olorin.com/oicp/standard/cpd2:1
     tty: true
     command: ["cat"]
     imagePullPolicy: Always
   - name: cdtools
-    image: docker.intuit.com/dev/deploy/cd/argocd-utils:stable
+    image: docker.olorin.com/dev/deploy/cd/argocd-utils:stable
     tty: true
     command: ["cat"]
     imagePullPolicy: Always
@@ -36,12 +36,12 @@ spec:
       runAsUser: 1000
       runAsGroup: 1000
   - name: servicenow
-    image: docker.intuit.com/coe/servicenow-cr-agent/service/servicenow-cr-agent:latest
+    image: docker.olorin.com/coe/servicenow-cr-agent/service/servicenow-cr-agent:latest
     tty: true
     command: ["cat"]
     imagePullPolicy: Always
   - name: api-tools-container
-    image: docker.intuit.com/dev/build/ibp/api-tools-container:latest
+    image: docker.olorin.com/dev/build/ibp/api-tools-container:latest
     tty: true
     command:
     - cat

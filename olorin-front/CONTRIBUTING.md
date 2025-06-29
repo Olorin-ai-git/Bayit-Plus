@@ -20,9 +20,9 @@ Top reasons to contribute:
 The contributor is expected to practice the following:
 
 - Have an understanding of the AppFabric Plugin
-  [architecture](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-applications/concepts/architecture.md)
+  [architecture](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-applications/concepts/architecture.md)
   and
-  [development mechanics](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md)
+  [development mechanics](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md)
 - Submit a new JIRA ticket for the contribution feature request and give as much
   detail as possible
 - Follow the
@@ -59,16 +59,16 @@ The team that owns this web plugin is expected to practice the following:
 
    ```sh
 <<<<<<< HEAD:front/CONTRIBUTING.md
-   git remote add upstream https://github.intuit.com/cas-hri/olorin-webplugin.git
+   git remote add upstream https://github.olorin.com/cas-hri/olorin-webplugin.git
 =======
-   git remote add upstream https://github.intuit.com/cas-hri/olorin-front.git
+   git remote add upstream https://github.olorin.com/cas-hri/olorin-front.git
 >>>>>>> restructure-projects:olorin-front/CONTRIBUTING.md
    ```
 
 1. In your terminal window, navigate into this repo using `cd`
 1. Run `yarn` to install dependencies to your repo
 1. After installing dependencies run `yarn start` to start a
-   [local development server](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
+   [local development server](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
 1. Make your changes including related tests and documentation
 
 1. Make sure you build and test your changes
@@ -106,5 +106,5 @@ project [code owners](./.github/CODEOWNERS).
 Reach out to the team's corresponding Slack channel for more information.
 
 Optionally, reach out to an
-[owner](https://github.intuit.com/orgs/cas-hri/people?utf8=%E2%9C%93&query=+role%3Aowner)
+[owner](https://github.olorin.com/orgs/cas-hri/people?utf8=%E2%9C%93&query=+role%3Aowner)
 of this organization for assistance.

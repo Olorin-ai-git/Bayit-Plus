@@ -326,7 +326,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 <<<<<<< HEAD:back/app/persistence/async_ips_redis.py
         olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 =======
-        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 >>>>>>> restructure-projects:olorin-server/app/persistence/async_ips_redis.py
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = checkpoint["id"]
@@ -396,7 +396,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 <<<<<<< HEAD:back/app/persistence/async_ips_redis.py
         olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 =======
-        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 >>>>>>> restructure-projects:olorin-server/app/persistence/async_ips_redis.py
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = config["configurable"]["checkpoint_id"]
@@ -452,7 +452,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 <<<<<<< HEAD:back/app/persistence/async_ips_redis.py
         olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 =======
-        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
+        olorin_header: Optional[OlorinHeader] = agent_context.get_header()
 >>>>>>> restructure-projects:olorin-server/app/persistence/async_ips_redis.py
         checkpoint_id = get_checkpoint_id(config)
         checkpoint_ns = config["configurable"].get("checkpoint_ns", "")

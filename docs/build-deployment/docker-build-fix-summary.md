@@ -125,7 +125,7 @@ docker build --target test -t olorin:test .
 **Method 3: Checkout olorin-tools (Optimal)**
 ```bash
 # If Jenkins workspace can checkout multiple repos
-git clone https://github.intuit.com/cas-hri/olorin-tools.git
+git clone https://github.olorin.com/cas-hri/olorin-tools.git
 ./scripts/prepare-docker-build.sh
 docker build --target test -t olorin:test .
 ```

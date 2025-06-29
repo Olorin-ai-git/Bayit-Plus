@@ -97,12 +97,12 @@ mv back olorin-server
 **REMOVE:**
 - `mcp/` - Not relevant to Olorin
 - `legacy-archive/` - Historical artifacts
-- Any Intuit-specific documentation
+- Any olorin-specific documentation
 
 ### 3.2 Documentation Update Process
 1. Copy entire `/Users/gklainert/Documents/Gaia/docs` to `/docs`
 2. Systematic rename: "Gaia" → "Olorin" in all files
-3. Remove irrelevant sections (IDP, Intuit references)
+3. Remove irrelevant sections (IDP, olorin references)
 4. Update architecture diagrams and references
 5. Validate all internal links and references
 

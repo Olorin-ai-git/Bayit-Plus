@@ -1,7 +1,7 @@
 # OLORIN Fraud Investigation System - User Manual
 
 **Version 1.0 | January 2024**  
-**Intuit Trust & Safety - Fraud Prevention NYC**
+**olorin Trust & Safety - Fraud Prevention NYC**
 
 ---
 
@@ -25,7 +25,7 @@
 
 ### What is OLORIN?
 
-OLORIN (General Artificial Intelligence Assistant) is Intuit's advanced fraud investigation system that helps Trust & Safety teams identify and analyze potentially fraudulent activities. It combines automated analysis with AI-powered insights to provide comprehensive fraud assessments.
+OLORIN (General Artificial Intelligence Assistant) is olorin's advanced fraud investigation system that helps Trust & Safety teams identify and analyze potentially fraudulent activities. It combines automated analysis with AI-powered insights to provide comprehensive fraud assessments.
 
 ### Who Should Use This Manual?
 
@@ -57,7 +57,7 @@ OLORIN (General Artificial Intelligence Assistant) is Intuit's advanced fraud in
 
 1. Open your web browser
 2. Navigate to the OLORIN system URL
-3. Log in with your Intuit credentials
+3. Log in with your olorin credentials
 4. You'll see the main OLORIN dashboard
 
 ### First Time Setup
@@ -711,7 +711,7 @@ Be specific in your questions:
 
 **OLORIN Development Team**  
 Trust & Safety - Fraud Prevention NYC  
-📧 olorin-support@intuit.com
+📧 olorin-support@olorin.com
 
 **System Administrator**  
 [Your local admin contact]
@@ -726,4 +726,4 @@ Trust & Safety - Fraud Prevention NYC
 📅 **Last Updated**: January 2024  
 📅 **Next Review**: April 2024  
 
-© 2024 Intuit Inc. All rights reserved. 
+© 2024 olorin Inc. All rights reserved. 

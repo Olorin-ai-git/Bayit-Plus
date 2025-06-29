@@ -102,7 +102,7 @@ export interface RawSplunkDeviceResult {
   smartId: string | null;
   tm_smartid: string | null;
   tm_sessionid: string | null;
-  intuit_tid: string;
+  olorin_tid: string;
   true_ip: string | null;
   true_ip_city: string | null;
   true_ip_country: string | null;
@@ -118,7 +118,7 @@ export interface ExtractedDeviceSignal {
   true_ip_region?: string;
   tm_smartid?: string;
   tm_sessionid?: string;
-  intuit_tid: string;
+  olorin_tid: string;
   _time: string;
   countries: string[];
 }

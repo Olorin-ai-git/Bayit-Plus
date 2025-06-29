@@ -61,7 +61,7 @@ def get_current_user(request: Request) -> Optional[User]:
 from app.utils.auth_utils import get_offline_auth_token
 
 # AFTER (local import inside function)  
-def _query_identity_api(self, user_id: str, headers: Optional[IntuitHeader] = None):
+def _query_identity_api(self, user_id: str, headers: Optional[olorinHeader] = None):
     try:
         # Local import to avoid circular dependency
         from app.utils.auth_utils import get_offline_auth_token

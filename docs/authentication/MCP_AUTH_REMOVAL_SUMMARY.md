@@ -75,7 +75,7 @@ The consistent **XML error responses** across ALL endpoints (including the newly
 **Evidence:**
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Errors xmlns="http://schema.intuit.com/platform/common/error/v1">
+<Errors xmlns="http://schema.olorin.com/platform/common/error/v1">
     <error>
         <code>AuthenticationFailed</code>
         <type>INPUT</type>
@@ -153,7 +153,7 @@ kubectl get virtualservice,destinationrule | grep olorin
 Once infrastructure issues are resolved, we should see:
 
 ```bash
-curl "https://olorin-e2e.api.intuit.com/api/mcp-proxy/health"
+curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
 # Expected response:
 {
   "status": "healthy",

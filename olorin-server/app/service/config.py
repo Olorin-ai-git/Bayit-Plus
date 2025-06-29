@@ -25,7 +25,7 @@ class SvcSettings(BaseSettings):
 <<<<<<< HEAD:back/app/service/config.py
     olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 =======
-    intuit_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
+    olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 >>>>>>> restructure-projects:olorin-server/app/service/config.py
 
     # Cache settings
@@ -119,8 +119,8 @@ class PreProdSettings(SvcSettings):
     langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
 =======
-    langfuse_host: str = "https://langfuse-e2e.api.intuit.com"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
+    langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
+    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
 >>>>>>> restructure-projects:olorin-server/app/service/config.py
     cdc_env: str = "preprod"
 

@@ -19,11 +19,11 @@ class OlorinHeader(BaseModel):
     def __str__(self) -> str:
         return f"OlorinHeader: {self.olorin_tid} {self.olorin_experience_id} {self.olorin_originating_assetalias})"
 =======
-    intuit_tid: Optional[str] = None
-    intuit_experience_id: Optional[str] = None
-    intuit_originating_assetalias: Optional[str] = None
+    olorin_tid: Optional[str] = None
+    olorin_experience_id: Optional[str] = None
+    olorin_originating_assetalias: Optional[str] = None
     auth_context: Optional[AuthContext] = Field(exclude=True)
 
     def __str__(self) -> str:
-        return f"OlorinHeader: {self.intuit_tid} {self.intuit_experience_id} {self.intuit_originating_assetalias})"
+        return f"OlorinHeader: {self.olorin_tid} {self.olorin_experience_id} {self.olorin_originating_assetalias})"
 >>>>>>> restructure-projects:olorin-server/app/models/agent_headers.py

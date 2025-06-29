@@ -13,13 +13,13 @@
 |----------------|---------|-------------------|---------|
 | `gaia-server/` | Backend API server | `back/` → `olorin-server/` | ✅ Rename existing |
 | `gaia-webplugin/` | Frontend React app | `front/` → `olorin-front/` | ✅ Rename existing |
-| `gaia-tools/` | Python utilities package | Not needed | ❌ Skip (Intuit-specific) |
+| `gaia-tools/` | Python utilities package | Not needed | ❌ Skip (olorin-specific) |
 | `gaia-mcp/` | MCP integration | Not needed | ❌ Skip (not relevant) |
 | `docs/` | Comprehensive documentation | Create `/docs` | ✅ Copy & update |
 | `scripts/` | Build automation | Minimal | 🔍 Evaluate |
 
 ### Key Findings
-- **gaia-tools**: Intuit-specific Python package for internal tooling - not needed for standalone Olorin
+- **gaia-tools**: olorin-specific Python package for internal tooling - not needed for standalone Olorin
 - **scripts**: Contains only `fullflows/` - likely integration testing scripts
 - **docs**: Comprehensive documentation structure that we should replicate
 
@@ -69,13 +69,13 @@ cp -r /Users/gklainert/Documents/Gaia/docs ./docs
 
 **EVALUATE & FILTER** (Priority 2):
 - `docs/authentication/` - Remove IDP, keep basic auth patterns
-- `docs/security/` - Keep general security, remove Intuit-specific
+- `docs/security/` - Keep general security, remove olorin-specific
 - `docs/deployment/` - Update for standalone deployment
 
 **REMOVE** (Priority 3):
 - `docs/mcp/` - Not relevant to Olorin
 - `docs/legacy-archive/` - Historical artifacts
-- Any Intuit-specific integration docs
+- Any olorin-specific integration docs
 
 ### PHASE 3: COMPREHENSIVE PATH FIXING
 

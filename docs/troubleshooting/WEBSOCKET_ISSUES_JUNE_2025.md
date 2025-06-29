@@ -5,7 +5,7 @@
 ### **Problem Statement**
 Frontend application attempting to connect to invalid WebSocket URL:
 ```
-❌ wss://olorin-e2e.api.intuit.com/mcp/ws
+❌ wss://olorin-e2e.api.olorin.com/mcp/ws
 ```
 
 **Result:** `404 Not Found` error
@@ -15,7 +15,7 @@ Frontend application attempting to connect to invalid WebSocket URL:
 ## 🔍 **ROOT CAUSE ANALYSIS**
 
 ### **1. Invalid URL Pattern**
-- **Attempted URL:** `wss://olorin-e2e.api.intuit.com/mcp/ws`
+- **Attempted URL:** `wss://olorin-e2e.api.olorin.com/mcp/ws`
 - **Issue:** No WebSocket endpoint exists at `/mcp/ws`
 - **Verification:** OpenAPI spec shows no WebSocket routes under `/mcp/*`
 
@@ -41,15 +41,15 @@ Frontend application attempting to connect to invalid WebSocket URL:
 ### **For MCP Communication (HTTP):**
 ```javascript
 // Correct MCP endpoint usage
-const mcpHealth = await fetch('https://olorin-e2e.api.intuit.com/api/mcp-proxy/health');
-const mcpTools = await fetch('https://olorin-e2e.api.intuit.com/api/mcp-proxy/tools');
-const mcpStatus = await fetch('https://olorin-e2e.api.intuit.com/api/mcp-proxy/status');
+const mcpHealth = await fetch('https://olorin-e2e.api.olorin.com/api/mcp-proxy/health');
+const mcpTools = await fetch('https://olorin-e2e.api.olorin.com/api/mcp-proxy/tools');
+const mcpStatus = await fetch('https://olorin-e2e.api.olorin.com/api/mcp-proxy/status');
 ```
 
 ### **For Real-time Investigation Updates (WebSocket):**
 ```javascript
 // Correct WebSocket endpoint usage
-const wsUrl = `wss://olorin-e2e.api.intuit.com/ws/${investigationId}?user_id=${userId}&role=${role}`;
+const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/${investigationId}?user_id=${userId}&role=${role}`;
 const ws = new WebSocket(wsUrl);
 ```
 
@@ -60,12 +60,12 @@ const ws = new WebSocket(wsUrl);
 ### **1. Frontend Code Update**
 **Change this:**
 ```javascript
-❌ wsUrl: 'wss://olorin-e2e.api.intuit.com/mcp/ws'
+❌ wsUrl: 'wss://olorin-e2e.api.olorin.com/mcp/ws'
 ```
 
 **To this:**
 ```javascript
-✅ wsUrl: `wss://olorin-e2e.api.intuit.com/ws/${investigationId}?user_id=${userId}&role=${role}`
+✅ wsUrl: `wss://olorin-e2e.api.olorin.com/ws/${investigationId}?user_id=${userId}&role=${role}`
 ```
 
 ### **2. Configuration Validation**
@@ -124,24 +124,24 @@ Based on server logs and routing analysis:
 ### **Test WebSocket Connectivity:**
 ```bash
 # Test basic WebSocket
-wscat -c "wss://olorin-e2e.api.intuit.com/ws/test"
+wscat -c "wss://olorin-e2e.api.olorin.com/ws/test"
 
 # Test investigation WebSocket
-wscat -c "wss://olorin-e2e.api.intuit.com/ws/TEST_INV?user_id=test&role=observer"
+wscat -c "wss://olorin-e2e.api.olorin.com/ws/TEST_INV?user_id=test&role=observer"
 ```
 
 ### **Test MCP HTTP Endpoints:**
 ```bash
 # Test MCP proxy endpoints
-curl -s "https://olorin-e2e.api.intuit.com/api/mcp-proxy/health"
-curl -s "https://olorin-e2e.api.intuit.com/api/mcp-proxy/tools"
-curl -s "https://olorin-e2e.api.intuit.com/api/mcp-proxy/status"
+curl -s "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
+curl -s "https://olorin-e2e.api.olorin.com/api/mcp-proxy/tools"
+curl -s "https://olorin-e2e.api.olorin.com/api/mcp-proxy/status"
 ```
 
 ### **Verify OpenAPI Specification:**
 ```bash
 # Check available endpoints
-curl -s "https://olorin-e2e.api.intuit.com/openapi.json" | jq '.paths | keys | map(select(contains("ws") or contains("mcp")))'
+curl -s "https://olorin-e2e.api.olorin.com/openapi.json" | jq '.paths | keys | map(select(contains("ws") or contains("mcp")))'
 ```
 
 ---

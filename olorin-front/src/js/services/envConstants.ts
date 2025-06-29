@@ -67,17 +67,17 @@ const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
   },
   e2e: {
     olorin: {
-      baseUrl: getBaseUrl('https://olorin-e2e.api.intuit.com'),
+      baseUrl: getBaseUrl('https://olorin-e2e.api.olorin.com'),
     },
   },
   qal: {
     olorin: {
-      baseUrl: getBaseUrl('https://olorin-qal.api.intuit.com'),
+      baseUrl: getBaseUrl('https://olorin-qal.api.olorin.com'),
     },
   },
   prod: {
     olorin: {
-      baseUrl: getBaseUrl('https://olorin-e2e.api.intuit.com'),
+      baseUrl: getBaseUrl('https://olorin-e2e.api.olorin.com'),
     },
   },
 };

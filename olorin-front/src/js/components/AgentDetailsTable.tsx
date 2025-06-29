@@ -475,8 +475,8 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                         {result.tm_sessionid || 'N/A'}
                       </div>
                       <div>
-                        <span className="font-medium">Intuit TID:</span>{' '}
-                        {result.intuit_tid}
+                        <span className="font-medium">olorin TID:</span>{' '}
+                        {result.olorin_tid}
                       </div>
                     </div>
                   </div>
@@ -505,7 +505,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                     className="pl-4 border-l-2 border-gray-200"
                   >
                     <div className="font-medium text-gray-700 mb-1">
-                      {signal.fuzzy_device_id || signal.intuit_tid}
+                      {signal.fuzzy_device_id || signal.olorin_tid}
                     </div>
                     <div className="space-y-1 text-sm">
                       {signal.true_ip && (

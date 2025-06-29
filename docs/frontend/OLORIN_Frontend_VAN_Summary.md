@@ -18,8 +18,8 @@
 ```typescript
 // VULNERABLE - All non-local environments
 mcp: {
-  baseUrl: 'http://olorin-e2e.api.intuit.com:3000',  // E2E Testing Environment
-  wsUrl: 'ws://olorin-e2e.api.intuit.com:3000/ws',
+  baseUrl: 'http://olorin-e2e.api.olorin.com:3000',  // E2E Testing Environment
+  wsUrl: 'ws://olorin-e2e.api.olorin.com:3000/ws',
 }
 ```
 
@@ -27,8 +27,8 @@ mcp: {
 ```typescript
 // SECURE - Update all non-local environments
 mcp: {
-  baseUrl: 'https://olorin-e2e.api.intuit.com:3000',  // E2E Testing Environment
-  wsUrl: 'wss://olorin-e2e.api.intuit.com:3000/ws',
+  baseUrl: 'https://olorin-e2e.api.olorin.com:3000',  // E2E Testing Environment
+  wsUrl: 'wss://olorin-e2e.api.olorin.com:3000/ws',
 }
 ```
 
@@ -168,7 +168,7 @@ src/js/services/
 ## 📞 ESCALATION CONTACTS
 
 ### Immediate Security Issues
-- **Security Team:** security-incident@intuit.com
+- **Security Team:** security-incident@olorin.com
 - **On-Call:** [REDACTED - Use internal emergency contacts]
 
 ### Implementation Support

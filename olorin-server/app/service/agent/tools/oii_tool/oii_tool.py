@@ -87,8 +87,8 @@ class OIITool(BaseTool):
                 "olorin_assetalias": "Olorin.cas.hri.olorin",
                 "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={get_app_secret(settings_for_env.app_secret)},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
 =======
-                "intuit_assetalias": "Olorin.cas.hri.olorin",
-                "Authorization": f"Olorin_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Olorin_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
+                "olorin_assetalias": "Olorin.cas.hri.olorin",
+                "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={settings_for_env.app_secret},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
 >>>>>>> restructure-projects:olorin-server/app/service/agent/tools/oii_tool/oii_tool.py
             }
 

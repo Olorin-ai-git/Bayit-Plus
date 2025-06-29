@@ -121,12 +121,12 @@ search index=rss-e2eidx olorin_userid={user_id}
     "Olorin.dev.test.testeasy", 
     "Olorin.fraudprevention.arrtestclient"
 =======
-  "intuit_userid": "4621097846089147992",
-  "values(intuit_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
-  "values(intuit_offeringId)": [
-    "Intuit.cto.iam.ius",
-    "Intuit.dev.test.testeasy", 
-    "Intuit.fraudprevention.arrtestclient"
+  "olorin_userid": "4621097846089147992",
+  "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
+  "values(olorin_offeringId)": [
+    "olorin.cto.iam.ius",
+    "olorin.dev.test.testeasy", 
+    "olorin.fraudprevention.arrtestclient"
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_SPLUNK_ANALYSIS.md
   ],
   "values(transaction)": [

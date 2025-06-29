@@ -295,10 +295,10 @@ const mockRestService = {
 
 ```typescript
 // ✅ ESTABLISHED PATTERN: Flexible text matching for HTML entities
-expect(screen.getByText(/Intuit.*Stack Overflow/)).toBeInTheDocument();
+expect(screen.getByText(/olorin.*Stack Overflow/)).toBeInTheDocument();
 
 // ❌ AVOID: Exact string matching with apostrophes
-expect(screen.getByText("Intuit's Stack Overflow")).toBeInTheDocument();
+expect(screen.getByText("olorin's Stack Overflow")).toBeInTheDocument();
 ```
 
 ### **Development Workflow Improvements**

@@ -64,8 +64,8 @@ describe('AgentDetailsTable', () => {
       },
       {
         ip_address: '207.207.181.8',
-        isp: 'intuit inc.',
-        organization: 'intuit inc.',
+        isp: 'olorin inc.',
+        organization: 'olorin inc.',
         tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
         _time: '2025-05-15T06:31:46.027-07:00',
         countries: [],
@@ -75,10 +75,10 @@ describe('AgentDetailsTable', () => {
       risk_level: 0.85,
       risk_factors: [
         'Geographic inconsistency / possible impossible travel',
-        'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and Intuit in the US)',
+        'Multiple distinct ISPs in short timeframe (Bharti Airtel in India and olorin in the US)',
       ],
       anomaly_details: [
-        'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (Intuit) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
+        'Logged from IP 223.185.128.58 (Bharti Airtel) at 2025-05-15T06:24:23.466-07:00 and then from IP 207.207.181.8 (olorin) at 2025-05-15T06:31:40.056-07:00, indicating potential impossible travel.',
       ],
       confidence: 0.9,
       summary:
@@ -101,7 +101,7 @@ describe('AgentDetailsTable', () => {
         smartId: null,
         tm_smartid: null,
         tm_sessionid: null,
-        intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+        olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
         true_ip: null,
         true_ip_city: null,
         true_ip_country: null,
@@ -116,7 +116,7 @@ describe('AgentDetailsTable', () => {
         smartId: null,
         tm_smartid: 'f394742f39214c908476c01623bf4bcd',
         tm_sessionid: '5b2cd1da38f4403d99c2b6fea53604d9',
-        intuit_tid: '1-6825f567-6e4aa4180e0bd5f663d02d62',
+        olorin_tid: '1-6825f567-6e4aa4180e0bd5f663d02d62',
         true_ip: '223.185.128.58',
         true_ip_city: 'bengaluru',
         true_ip_country: null,
@@ -127,7 +127,7 @@ describe('AgentDetailsTable', () => {
     ],
     extracted_device_signals: [
       {
-        intuit_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
+        olorin_tid: 'cfe50512-1885-4f45-bc74-8d5a556a8d23',
         _time: '2025-05-27T10:56:06.965-07:00',
         countries: [],
       },
@@ -138,7 +138,7 @@ describe('AgentDetailsTable', () => {
         true_ip_region: 'karnataka',
         tm_smartid: 'f394742f39214c908476c01623bf4bcd',
         tm_sessionid: '5b2cd1da38f4403d99c2b6fea53604d9',
-        intuit_tid: '1-6825f567-6e4aa4180e0bd5f663d02d62',
+        olorin_tid: '1-6825f567-6e4aa4180e0bd5f663d02d62',
         _time: '2025-05-15T07:08:39.584-07:00',
         countries: [],
       },
@@ -279,7 +279,7 @@ describe('AgentDetailsTable', () => {
       );
       expect(screen.getByText('Extracted Network Signals')).toBeInTheDocument();
       expect(screen.getByText('bharti airtel ltd.')).toBeInTheDocument();
-      expect(screen.getAllByText('intuit inc.').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('olorin inc.').length).toBeGreaterThan(0);
     });
     it('renders network risk assessment', () => {
       render(

@@ -230,8 +230,8 @@ Dynamic header extraction with fallback to configuration:
 olorin_tid_header = request.headers.get(
     "olorin-tid", f"olorin-overall-risk-{user_id}"
 =======
-intuit_tid_header = request.headers.get(
-    "intuit-tid", f"olorin-overall-risk-{user_id}"
+olorin_tid_header = request.headers.get(
+    "olorin-tid", f"olorin-overall-risk-{user_id}"
 >>>>>>> restructure-projects:olorin-server/docs/RISK_ASSESSMENT_DOMAIN_LLM_ANALYSIS.md
 )
 olorin_experience_id_header = request.headers.get(
@@ -260,10 +260,10 @@ agent_context = AgentContext(
         olorin_originating_assetalias=olorin_originating_assetalias_header,
         olorin_experience_id=olorin_experience_id_header,
 =======
-    intuit_header=OlorinHeader(
-        intuit_tid=intuit_tid_header,
-        intuit_originating_assetalias=intuit_originating_assetalias_header,
-        intuit_experience_id=intuit_experience_id_header,
+    olorin_header=OlorinHeader(
+        olorin_tid=olorin_tid_header,
+        olorin_originating_assetalias=olorin_originating_assetalias_header,
+        olorin_experience_id=olorin_experience_id_header,
 >>>>>>> restructure-projects:olorin-server/docs/RISK_ASSESSMENT_DOMAIN_LLM_ANALYSIS.md
         auth_context=AuthContext(
             olorin_user_id=app_olorin_userid,

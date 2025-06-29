@@ -22,9 +22,9 @@ Top reasons to contribute:
 The contributor is expected to practice the following:
 
 - Have an understanding of the AppFabric Plugin
-  [architecture](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-applications/concepts/architecture.md)
+  [architecture](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-applications/concepts/architecture.md)
   and
-  [development mechanics](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md)
+  [development mechanics](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md)
 - Submit a new JIRA ticket for the contribution feature request and give as much
   detail as possible
 - Follow the
@@ -163,18 +163,18 @@ When working with autonomous investigations, you'll primarily interact with:
 1. Add an upstream to this main repository
 
    ```sh
-   git remote add upstream https://github.intuit.com/cas-hri/olorin-webplugin.git
+   git remote add upstream https://github.olorin.com/cas-hri/olorin-webplugin.git
    ```
 
 1. In your terminal window, navigate into this repo using `cd`
 1. Run `yarn` to install dependencies to your repo
 1. Once you have Plugin-CLI installed, you can proceed to run
-   [`yarn serve`](https://github.intuit.com/pages/UX-Infra/plugin-cli/docs/commands-overview/#plugin-cli-serve)
+   [`yarn serve`](https://github.olorin.com/pages/UX-Infra/plugin-cli/docs/commands-overview/#plugin-cli-serve)
    to start a
-   [local development server](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
+   [local development server](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-plugin-using-the-local-development-server).
    For local development within an AppFabric Shell, you can proceed to run
    `yarn serve` and follow this
-   [guide](https://devportal.intuit.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-local-plugin-in-a-remote-application-with-the-remote-dev-server).
+   [guide](https://devportal.olorin.com/app/dp/capability/2611/capabilityDocs/main/docs/web-plugins-widgets/getting-started/setup-plugin-for-development.md#run-your-local-plugin-in-a-remote-application-with-the-remote-dev-server).
 1. Make your changes including related tests and documentation
 
 1. Make sure you build and test your changes
@@ -212,5 +212,5 @@ project [code owners](./.github/CODEOWNERS).
 Reach out to the team's corresponding Slack channel for more information.
 
 Optionally, reach out to an
-[owner](https://github.intuit.com/orgs/cas-hri/people?utf8=%E2%9C%93&query=+role%3Aowner)
+[owner](https://github.olorin.com/orgs/cas-hri/people?utf8=%E2%9C%93&query=+role%3Aowner)
 of this organization for assistance.

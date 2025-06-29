@@ -35,7 +35,7 @@ async def analyze_logs(user_id: str, request: Request, ...):
 <<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
         olorin_header=OlorinHeader(...)
 =======
-        intuit_header=OlorinHeader(...)
+        olorin_header=OlorinHeader(...)
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
     )
     
@@ -152,10 +152,10 @@ agent_context = AgentContext(
         olorin_originating_assetalias="Olorin.cas.hri.olorin",
         olorin_experience_id=settings.olorin_experience_id,
 =======
-    intuit_header=OlorinHeader(
-        intuit_tid="test",
-        intuit_originating_assetalias="Olorin.cas.hri.olorin",
-        intuit_experience_id=settings.intuit_experience_id,
+    olorin_header=OlorinHeader(
+        olorin_tid="test",
+        olorin_originating_assetalias="Olorin.cas.hri.olorin",
+        olorin_experience_id=settings.olorin_experience_id,
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
         auth_context=AuthContext(
             olorin_user_id=olorin_userid,
@@ -178,7 +178,7 @@ def get_agent_name(self) -> str:
 <<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
 # - olorin_originating_assetalias: "Olorin.cas.hri.olorin"
 =======
-# - intuit_originating_assetalias: "Olorin.cas.hri.olorin"
+# - olorin_originating_assetalias: "Olorin.cas.hri.olorin"
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
 # - Authentication context with tokens
 ```
@@ -449,7 +449,7 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
 <<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
       "values(olorin_username)": [
 =======
-      "values(intuit_username)": [
+      "values(olorin_username)": [
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
         "olorin_test_20250515",
         "iamtestpass_15171910655948"

@@ -89,7 +89,7 @@ Removed redundant and superseded documents:
 - **Clear Ownership**: Each category has clear scope and purpose
 
 ### Enhanced Discoverability
-- **Category-based Navigation**: Intuitive folder structure
+- **Category-based Navigation**: intuitive folder structure
 - **Comprehensive Index**: README.md provides complete overview
 - **Quick Start Paths**: User-type specific navigation guides
 

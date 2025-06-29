@@ -283,9 +283,9 @@ agent_context_for_device_risk = AgentContext(
         olorin_tid=request.headers.get(
             "olorin-tid", f"olorin-device-risk-{user_id}"
 =======
-    intuit_header=OlorinHeader(
-        intuit_tid=request.headers.get(
-            "intuit-tid", f"olorin-device-risk-{user_id}"
+    olorin_header=OlorinHeader(
+        olorin_tid=request.headers.get(
+            "olorin-tid", f"olorin-device-risk-{user_id}"
 >>>>>>> restructure-projects:olorin-server/docs/DEVICE_DOMAIN_LLM_ANALYSIS.md
         ),
         olorin_originating_assetalias=request.headers.get(

@@ -177,7 +177,7 @@ graph TB
 1. **AI-Powered Analysis**: Advanced LLM integration for intelligent risk assessment
 2. **Multi-Domain Approach**: Comprehensive analysis across device, location, network, and logs
 3. **Real-Time Processing**: Immediate investigation results with detailed explanations  
-4. **User-Friendly Interface**: Intuitive dashboard design for both technical and non-technical users
+4. **User-Friendly Interface**: olorinive dashboard design for both technical and non-technical users
 5. **Production Ready**: Comprehensive testing, monitoring, and deployment capabilities
 
 ## 📋 System Requirements

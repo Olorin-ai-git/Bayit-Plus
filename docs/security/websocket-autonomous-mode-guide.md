@@ -13,10 +13,10 @@ This guide explains how to integrate with the OLORIN investigation platform's au
 const response = await fetch('/v1/agent/start/{entity_id}', {
   method: 'POST',
   headers: {
-    'Authorization': 'Olorin_APIKey intuit_apikey=your_api_key,intuit_apikey_version=1.0',
+    'Authorization': 'Olorin_APIKey olorin_apikey=your_api_key,olorin_apikey_version=1.0',
     'Content-Type': 'application/json',
-    'intuit_experience_id': 'your_experience_id',
-    'intuit_originating_assetalias': 'your_asset_alias'
+    'olorin_experience_id': 'your_experience_id',
+    'olorin_originating_assetalias': 'your_asset_alias'
   },
   body: new URLSearchParams({
     entity_type: 'user_id', // or 'device_id'
