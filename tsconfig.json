@@ -1,19 +1,19 @@
 {
-  "extends": "./front/tsconfig.json",
+  "extends": "./olorin-front/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./front/src",
+    "baseUrl": "./olorin-front/src",
     "paths": {
       "src/*": ["*"]
     }
   },
   "include": [
-    "front/src/**/*"
+    "olorin-front/src/**/*"
   ],
   "exclude": [
-    "front/node_modules",
-    "front/build",
-    "front/dist",
-    "back",
+    "olorin-front/node_modules",
+    "olorin-front/build",
+    "olorin-front/dist",
+    "olorin-server",
     "test"
   ]
 } 
