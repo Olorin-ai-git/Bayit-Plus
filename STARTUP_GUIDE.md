@@ -2,6 +2,13 @@
 
 This guide explains how to use the startup scripts to launch all Olorin services (frontend, backend, and MCP server) with a single command.
 
+## 🚀 Quick Start Guide
+
+**⚠️ Important: After restructure, commands must be run from specific directories:**
+- **Backend (Python/Poetry)**: `cd olorin-server/` then run `poetry install` and `poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload`
+- **Frontend (React/Node)**: `cd olorin-front/` then run `npm install` and `npm start`
+- **Web Portal**: `cd olorin-web-portal/` then run `npm install` and `npm start`
+
 ## Available Scripts
 
 ### 1. Shell Script (start_olorin.sh)
