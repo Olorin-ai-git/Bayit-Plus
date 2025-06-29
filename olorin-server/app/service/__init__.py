@@ -53,7 +53,7 @@ lifespan_function = None
 
 
 async def inject_transaction_id(request: Request, call_next: Callable) -> Response:
-    """Middleware that Injects Intuit TID into the request & response
+    """Middleware that Injects Olorin TID into the request & response
 
     Something to note is that Gateway automatically injects a tid if there isn't one,
     but it doesn't use UUIDs, it seems to use Amazons Trace ID, which looks like
@@ -201,7 +201,7 @@ class OlorinApplication:
         app.include_router(agent_router.router)
         app.include_router(api_router.router)
 
-        # Add Intuit TID middleware
+        # Add Olorin TID middleware
         from starlette.middleware.base import BaseHTTPMiddleware
 
         app.add_middleware(BaseHTTPMiddleware, dispatch=inject_transaction_id)

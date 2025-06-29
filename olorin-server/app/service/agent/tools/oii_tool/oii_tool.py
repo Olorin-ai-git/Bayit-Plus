@@ -28,11 +28,11 @@ class OIIInput(BaseModel):
 
 
 class OIITool(BaseTool):
-    """Tool for retrieving Online Identity Information (OII) from Intuit Identity API."""
+    """Tool for retrieving Online Identity Information (OII) from Olorin Identity API."""
 
     name: str = "identity_info_tool"
     description: str = """Use this tool to retrieve online identity information about a user 
-    from the Intuit Identity API using GraphQL.
+    from the Olorin Identity API using GraphQL.
     You'll need to provide a user_id.
     """
     args_schema: Type[BaseModel] = OIIInput
@@ -56,7 +56,7 @@ class OIITool(BaseTool):
     def _query_identity_api(
         self, user_id: str, headers: Optional[OlorinHeader] = None
     ) -> Dict[str, Any]:
-        """Query the Intuit Identity API for information about the user."""
+        """Query the Olorin Identity API for information about the user."""
         try:
             intuit_userid, intuit_token, intuit_realmid = get_offline_auth_token()
             conn = http.client.HTTPSConnection("identity-e2e.api.intuit.com")
@@ -83,7 +83,7 @@ class OIITool(BaseTool):
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
                 "intuit_assetalias": "Olorin.cas.hri.olorin",
-                "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
+                "Authorization": f"Olorin_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Olorin_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
             }
 
             conn.request("POST", "/v2/graphql", payload, request_headers)
