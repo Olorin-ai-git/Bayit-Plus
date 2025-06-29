@@ -244,12 +244,12 @@ The Risk Assessment domain creates a specialized agent context for meta-analysis
 ```python
 agent_context = AgentContext(
     input=system_prompt,
-    agent_name="Intuit.cas.hri.olorin:overall-risk-aggregator",
+    agent_name="Olorin.cas.hri.olorin:overall-risk-aggregator",
     metadata=Metadata(
         interaction_group_id=f"overall-risk-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
+    intuit_header=OlorinHeader(
         intuit_tid=intuit_tid_header,
         intuit_originating_assetalias=intuit_originating_assetalias_header,
         intuit_experience_id=intuit_experience_id_header,
@@ -264,7 +264,7 @@ agent_context = AgentContext(
 
 ### 4.4 Agent Naming Convention
 
-**Agent Name**: `"Intuit.cas.hri.olorin:overall-risk-aggregator"`
+**Agent Name**: `"Olorin.cas.hri.olorin:overall-risk-aggregator"`
 
 This naming convention clearly identifies the agent's role as the final risk aggregation component within the Olorin fraud detection system.
 

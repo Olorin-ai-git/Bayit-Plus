@@ -3,7 +3,7 @@
 **Project:** OLORIN - Generative AI Investigation Agents
 
 **Author:** Gil Klainert | Senior Manager, Fraud Prevention NYC, Trust & Safety,
-Intuit
+Olorin
 
 ## AgentLogSidebar
 

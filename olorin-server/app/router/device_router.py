@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 import aiohttp
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.api_models import InvestigationCreate
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
@@ -47,8 +47,8 @@ async def get_identity_authorization_header(
     url = "https://identityinternal-e2e.api.intuit.com/v1/graphql"
     headers = {
         "intuit_tid": intuit_tid,
-        "intuit_assetalias": "Intuit.shared.fraudlistclient",
-        "Authorization": "Intuit_IAM_Authentication intuit_appid=Intuit.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+        "intuit_assetalias": "Olorin.shared.fraudlistclient",
+        "Authorization": "Olorin_IAM_Authentication intuit_appid=Olorin.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
         "Content-Type": "application/json",
     }
     body = {

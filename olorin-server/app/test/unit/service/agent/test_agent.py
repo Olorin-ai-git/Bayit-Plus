@@ -26,10 +26,10 @@ from app.service.agent.agent import (
 @pytest.fixture
 def mock_agent_context():
     from app.models.agent_context import AgentContext
-    from app.models.agent_headers import IntuitHeader
+    from app.models.agent_headers import OlorinHeader
 
     context = MagicMock(spec=AgentContext)
-    header = MagicMock(spec=IntuitHeader)
+    header = MagicMock(spec=OlorinHeader)
     context.get_header.return_value = {
         "Authorization": "Bearer sample_token",
         "intuit-tid": "sample_tid",

@@ -27,7 +27,7 @@ from langgraph.checkpoint.base import (
 from langgraph.checkpoint.serde.base import SerializerProtocol
 
 from app.adapters.ips_cache_client import IPSCacheClient
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 
 logger = logging.getLogger(__name__)
@@ -323,7 +323,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = checkpoint["id"]
         parent_checkpoint_id = config["configurable"].get("checkpoint_id")
@@ -389,7 +389,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_ns = config["configurable"]["checkpoint_ns"]
         checkpoint_id = config["configurable"]["checkpoint_id"]
 
@@ -441,7 +441,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
 
         agent_context: AgentContext = config["configurable"]["agent_context"]
         thread_id = self.get_thread_id(config)
-        intuit_header: Optional[IntuitHeader] = agent_context.get_header()
+        intuit_header: Optional[OlorinHeader] = agent_context.get_header()
         checkpoint_id = get_checkpoint_id(config)
         checkpoint_ns = config["configurable"].get("checkpoint_ns", "")
 

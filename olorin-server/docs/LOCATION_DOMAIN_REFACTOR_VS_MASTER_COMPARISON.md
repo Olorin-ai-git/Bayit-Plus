@@ -283,7 +283,7 @@ async def analyze_location(...):
 # Dedicated LLMLocationRiskService with base class inheritance
 class LLMLocationRiskService(BaseLLMRiskService[LocationRiskAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.olorin:location-risk-analyzer"
+        return "Olorin.cas.hri.olorin:location-risk-analyzer"
     
     def prepare_prompt_data(self, user_id: str, extracted_signals: List[Dict[str, Any]], **kwargs) -> Dict[str, Any]:
         # Structured prompt preparation

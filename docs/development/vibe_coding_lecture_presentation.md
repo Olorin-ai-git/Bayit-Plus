@@ -91,7 +91,7 @@ Together: Unstoppable development flow
 
 **Problem**: 401 errors in E2E environment
 ```
-Frontend: Intuit_APIKey format
+Frontend: Olorin_APIKey format
 Backend: Expected different format  
 Users: Auto-creation needed
 ```

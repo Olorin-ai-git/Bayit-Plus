@@ -9,7 +9,7 @@ from openai import (
     RateLimitError,
 )
 
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.service.error_handling import (
@@ -30,7 +30,7 @@ def mock_agent_context():
     context.thread_id = "sample_thread_id"
 
     # Setup intuit header
-    header = MagicMock(spec=IntuitHeader)
+    header = MagicMock(spec=OlorinHeader)
     auth = MagicMock(spec=AuthContext)
     auth.intuit_user_id = "sample_user_id"
     auth.intuit_user_token = "sample_token"
@@ -319,12 +319,12 @@ def test_agent_response_str():
 
 
 def test_intuit_header_str():
-    from app.models.agent_headers import AuthContext, IntuitHeader
+    from app.models.agent_headers import AuthContext, OlorinHeader
 
     auth_ctx = AuthContext(
         intuit_user_id="u", intuit_user_token="t", intuit_realmid="r"
     )
-    header = IntuitHeader(
+    header = OlorinHeader(
         intuit_tid="tid1",
         intuit_experience_id="expid1",
         intuit_originating_assetalias="alias1",

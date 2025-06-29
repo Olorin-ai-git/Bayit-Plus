@@ -13,7 +13,7 @@ from starlette.requests import Request
 
 from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
 from app.models.agent_response import AgentResponse
 from app.models.api_models import (
@@ -70,11 +70,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
 DEFAULT_HEADERS = {
-    "Authorization": "Intuit_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
+    "Authorization": "Olorin_APIKey intuit_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,intuit_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
     "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Intuit.cas.hri.olorin",
+    "intuit_originating_assetalias": "Olorin.cas.hri.olorin",
 }
 
 location_data_client = LocationDataClient()
@@ -317,7 +317,7 @@ async def analyze_logs(
             input=llm_input_prompt,
             agent_name=agent_name,
             metadata=metadata,
-            intuit_header=IntuitHeader(
+            intuit_header=OlorinHeader(
                 intuit_tid="test",
                 intuit_originating_assetalias="Intuit.cas.hri.olorin",
                 intuit_experience_id=settings.intuit_experience_id,
@@ -623,7 +623,7 @@ Ensure all fields are populated. The input data is as follows:
                     interaction_group_id=f"loc-risk-analysis-{user_id}",
                     additional_metadata={"userId": user_id},
                 ),
-                intuit_header=IntuitHeader(
+                intuit_header=OlorinHeader(
                     intuit_tid=request.headers.get(
                         "intuit-tid", f"olorin-loc-risk-analysis-{user_id}"
                     ),

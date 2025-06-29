@@ -217,7 +217,7 @@ curl -X POST https://olorin.api.intuit.com:3000/tools/call \
 - **Required Headers**:
   - `Authorization: Bearer {token}`
   - `intuit_experience_id: {experience_id}`
-  - `intuit_originating_assetalias: Intuit.cas.hri.olorin`
+  - `intuit_originating_assetalias: Olorin.cas.hri.olorin`
 - **Rate Limiting**: Applied
 - **Token Source**: Identity service authentication
 
@@ -226,7 +226,7 @@ curl -X POST https://olorin.api.intuit.com:3000/tools/call \
 - **Required Headers**:
   - `Authorization: Bearer {production_token}`
   - `intuit_experience_id: {production_experience_id}`
-  - `intuit_originating_assetalias: Intuit.cas.hri.olorin`
+  - `intuit_originating_assetalias: Olorin.cas.hri.olorin`
 - **Rate Limiting**: Strict limits applied
 - **Token Source**: Production identity service
 

@@ -204,7 +204,7 @@ You can invoke the curl command:
 
 ```bash
 curl -X POST \
-  -H 'Authorization: Intuit_IAM_Authentication intuit_appid=<YOUR_APP_ID>, intuit_app_secret=<YOUR_APP_SECRET>, intuit_token_type=IAM-Ticket, intuit_token=<YOUR_IAM_TICKET>, intuit_userid=<YOUR_USER_ID>, intuit_realmid=<YOUR_REALM_ID>' \
+  -H 'Authorization: Olorin_IAM_Authentication intuit_appid=<YOUR_APP_ID>, intuit_app_secret=<YOUR_APP_SECRET>, intuit_token_type=IAM-Ticket, intuit_token=<YOUR_IAM_TICKET>, intuit_userid=<YOUR_USER_ID>, intuit_realmid=<YOUR_REALM_ID>' \
   -H 'Content-Type: application/json' \
   -H 'X-Forwarded-Port: 8090' \
   -H 'intuit_experience_id: <YOUR_EXPERIENCE_ID>' \

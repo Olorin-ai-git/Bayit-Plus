@@ -15,7 +15,7 @@ app.state.graph = AsyncMock()
 
 
 def get_mock_settings():
-    """Helper function to create properly configured mock settings for tests that use IntuitHeader."""
+    """Helper function to create properly configured mock settings for tests that use OlorinHeader."""
     return MagicMock(
         splunk_host="dummy_host",
         intuit_experience_id="test_experience_id",

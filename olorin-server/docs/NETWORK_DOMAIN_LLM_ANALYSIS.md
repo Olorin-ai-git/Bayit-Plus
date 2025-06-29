@@ -228,12 +228,12 @@ A comprehensive agent context is created for LLM invocation:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.olorin:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
+    intuit_header=OlorinHeader(
         intuit_tid=request.headers.get(
             "intuit-tid", f"olorin-network-risk-{user_id}"
         ),
@@ -255,9 +255,9 @@ agent_context_for_network_risk = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.olorin:network-risk-analyzer"`
+The agent uses a hierarchical naming scheme: `"Olorin.cas.hri.olorin:network-risk-analyzer"`
 
-- **Domain**: `Intuit.cas.hri.olorin`
+- **Domain**: `Olorin.cas.hri.olorin`
 - **Function**: `network-risk-analyzer`
 - **Purpose**: Clear identification in logging and monitoring
 

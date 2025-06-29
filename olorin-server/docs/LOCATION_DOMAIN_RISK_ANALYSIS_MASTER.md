@@ -306,12 +306,12 @@ prompt_data, llm_input_prompt, was_trimmed = trim_prompt_to_token_limit(
 ```python
 agent_context_for_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.olorin:location-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:location-risk-analyzer",
     metadata=Metadata(
         interaction_group_id="location-risk-assessment",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
+    intuit_header=OlorinHeader(
         intuit_tid=intuit_tid_header,
         intuit_originating_assetalias=intuit_originating_assetalias_header,
         intuit_experience_id=intuit_experience_id_header,

@@ -1,7 +1,7 @@
 # test_agent_router_helper.py
 import pytest
 
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import (
     Agent,
     AgentInput,
@@ -56,7 +56,7 @@ def test_construct_agent_context(mock_request, agent_request):
         supportedOutputFormats=[],
         additionalMetadata={},
     )
-    assert isinstance(agent_context.intuit_header, IntuitHeader)
+    assert isinstance(agent_context.intuit_header, OlorinHeader)
     assert agent_context.intuit_header.intuit_tid == "sample_tid"
     assert agent_context.intuit_header.intuit_experience_id == "sample_experience_id"
     assert (

@@ -11,7 +11,7 @@ from starlette.requests import Request
 
 from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.api_models import InvestigationCreate
 from app.models.upi_response import Metadata
 from app.persistence import (

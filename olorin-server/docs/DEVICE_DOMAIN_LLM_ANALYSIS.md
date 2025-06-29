@@ -273,12 +273,12 @@ A specialized agent context is created for device risk analysis:
 ```python
 agent_context_for_device_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.olorin:device-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:device-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"device-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
+    intuit_header=OlorinHeader(
         intuit_tid=request.headers.get(
             "intuit-tid", f"olorin-device-risk-{user_id}"
         ),
@@ -300,9 +300,9 @@ agent_context_for_device_risk = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a device-specific naming scheme: `"Intuit.cas.hri.olorin:device-risk-analyzer"`
+The agent uses a device-specific naming scheme: `"Olorin.cas.hri.olorin:device-risk-analyzer"`
 
-- **Domain**: `Intuit.cas.hri.olorin`
+- **Domain**: `Olorin.cas.hri.olorin`
 - **Function**: `device-risk-analyzer`
 - **Purpose**: Device fingerprinting and geographic risk analysis
 

@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient

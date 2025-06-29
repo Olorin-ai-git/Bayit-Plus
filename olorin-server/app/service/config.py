@@ -22,7 +22,7 @@ class SvcSettings(BaseSettings):
     expose_metrics: bool = True
     mesh_port: int = Field(8090, validation_alias="MESH_TRAFFIC_PORT")
     asset_id: str = "3825825476777495228"
-    intuit_originating_assetalias: Optional[str] = "Intuit.cas.hri.olorin"
+    intuit_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 
     # Cache settings
     use_ips_cache: bool = (
@@ -36,7 +36,7 @@ class SvcSettings(BaseSettings):
 
 
     # App settings
-    app_id: str = "Intuit.cas.hri.olorin"
+    app_id: str = "Olorin.cas.hri.olorin"
     # Store app secret in IDPS and provide the secret name path here
     app_secret: str = "olorin/app_secret"
 
@@ -83,7 +83,7 @@ class PreProdSettings(SvcSettings):
     Settings shared by pre-prod environments
     """
 
-    app_id: str = "Intuit.cas.hri.olorin"
+    app_id: str = "Olorin.cas.hri.olorin"
     app_secret: str = "olorin/app_secret"
     rag_search_url: str = (
         "https://aimqasvc-e2e.api.intuit.com/v1/genosplugins/AIMSearchPlugin/generate"

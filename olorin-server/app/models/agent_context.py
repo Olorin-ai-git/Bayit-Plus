@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 
 settings_for_env = get_settings_for_env()
@@ -20,7 +20,7 @@ class BaseContextModel(BaseModel):
     """
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    intuit_header: IntuitHeader
+    intuit_header: OlorinHeader
     query_params: dict = Field(default_factory=dict)
     start_time: float = Field(default_factory=lambda: time.time())
 
@@ -61,9 +61,9 @@ class AgentContext(BaseContextModel):
         intuit_experience_id: str = None,
         intuit_originating_assetalias: str = None,
     ):
-        # Intuit PrivateAuth+ headers
+        # Olorin PrivateAuth+ headers
         AUTHN_STRING = (
-            "Intuit_IAM_Authentication "
+            "Olorin_IAM_Authentication "
             f"intuit_appid='{app_id}',"
             f"intuit_app_secret={app_secret},"
             "intuit_token_type='IAM-Ticket',"

@@ -306,12 +306,12 @@ Specialized agent context for network analysis:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.olorin:network-risk-analyzer",
+    agent_name="Olorin.cas.hri.olorin:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-    intuit_header=IntuitHeader(
+    intuit_header=OlorinHeader(
         intuit_tid=request.headers.get("intuit-tid", f"olorin-network-risk-{user_id}"),
         intuit_originating_assetalias=request.headers.get(
             "intuit_originating_assetalias", settings.intuit_originating_assetalias

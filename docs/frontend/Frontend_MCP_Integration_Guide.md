@@ -360,7 +360,7 @@ function getApiBaseUrl() {
   "environment": {
     "log_level": "DEBUG",
     "asset_id": "3825825476777495228",
-    "app_id": "Intuit.cas.hri.olorin"
+    "app_id": "Olorin.cas.hri.olorin"
   },
   "features": {
     "enabled_tools": ["OIITool", "TavilySearchTool"],

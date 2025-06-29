@@ -112,7 +112,7 @@ flowchart TD
 ### Problem: Authentication Issues in E2E Environment
 ```
 Initial Issue: 401 Unauthorized errors
-Frontend: Intuit_APIKey format
+Frontend: Olorin_APIKey format
 Backend: Expected different format
 ```
 

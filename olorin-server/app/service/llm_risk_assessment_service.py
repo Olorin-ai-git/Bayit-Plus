@@ -7,7 +7,7 @@ from fastapi import Request
 from pydantic import BaseModel
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.base_llm_risk_service import BaseLLMRiskService
@@ -29,7 +29,7 @@ class LLMRiskAssessmentService(BaseLLMRiskService[OverallRiskAssessment]):
     """Service for LLM-based overall risk assessment across all domains."""
 
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.olorin:overall-risk-aggregator"
+        return "Olorin.cas.hri.olorin:overall-risk-aggregator"
 
     def get_assessment_model_class(self) -> type[OverallRiskAssessment]:
         return OverallRiskAssessment

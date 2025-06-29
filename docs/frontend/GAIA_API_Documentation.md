@@ -958,7 +958,7 @@ Invoke AI agent for analysis
 ```json
 {
   "agent": {
-    "name": "Intuit.cas.hri.olorin:fpl-splunk"
+    "name": "Olorin.cas.hri.olorin:fpl-splunk"
   },
   "agentInput": {
     "content": [
@@ -1009,10 +1009,10 @@ Invoke AI agent for analysis
 
 **Available Agent Names:**
 
-- `Intuit.cas.hri.olorin:fpl-splunk` - Splunk-based fraud prevention analysis
-- `Intuit.cas.hri.olorin:device-analysis` - Device fingerprinting analysis
-- `Intuit.cas.hri.olorin:location-analysis` - Location-based risk analysis
-- `Intuit.cas.hri.olorin:network-analysis` - Network behavior analysis
+- `Olorin.cas.hri.olorin:fpl-splunk` - Splunk-based fraud prevention analysis
+- `Olorin.cas.hri.olorin:device-analysis` - Device fingerprinting analysis
+- `Olorin.cas.hri.olorin:location-analysis` - Location-based risk analysis
+- `Olorin.cas.hri.olorin:network-analysis` - Network behavior analysis
 
 ### **POST /api/agent/stop/{investigation_id}**
 

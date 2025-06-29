@@ -90,7 +90,7 @@ Problem Statement → VISUAL Analysis → ANALYSIS Phase → NETWORK Mapping →
 ### The Problem:
 ```
 Initial Issue: 401 Unauthorized errors in E2E environment
-Frontend: Sending Intuit_APIKey format
+Frontend: Sending Olorin_APIKey format
 Backend: Expected different authentication format
 Result: Frontend couldn't access investigation endpoints
 ```

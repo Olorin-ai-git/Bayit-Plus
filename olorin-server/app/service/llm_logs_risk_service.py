@@ -8,7 +8,7 @@ from fastapi import Request
 from pydantic import BaseModel
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.base_llm_risk_service import BaseLLMRiskService
@@ -35,7 +35,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     """Service for LLM-based logs risk assessment."""
 
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.olorin:fpl-splunk"
+        return "Olorin.cas.hri.olorin:fpl-splunk"
 
     def get_assessment_model_class(self) -> type[LogsRiskAssessment]:
         return LogsRiskAssessment

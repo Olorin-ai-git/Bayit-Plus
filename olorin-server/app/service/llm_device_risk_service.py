@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.device_risk import DeviceSignalRiskLLMAssessment
 from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
@@ -24,7 +24,7 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for device risk assessment."""
-        return "Intuit.cas.hri.olorin:device-risk-analyzer"
+        return "Olorin.cas.hri.olorin:device-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the Pydantic model class for device risk assessment."""

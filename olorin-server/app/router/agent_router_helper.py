@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Request
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
 from app.utils.auth_utils import get_userid_and_token_from_authn_header
 
@@ -28,7 +28,7 @@ def construct_agent_context(
     intuit_originating_assetalias: str = req.headers.get(
         "intuit_originating_assetalias", ""
     )
-    intuit_header = IntuitHeader(
+    intuit_header = OlorinHeader(
         intuit_tid=intuit_tid,
         intuit_originating_assetalias=intuit_originating_assetalias,
         intuit_experience_id=intuit_experience_id,

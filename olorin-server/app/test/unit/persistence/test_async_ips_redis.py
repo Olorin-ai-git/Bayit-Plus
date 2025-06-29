@@ -5,7 +5,7 @@ import pytest
 
 from app.adapters.ips_cache_client import IPSCacheClient
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.persistence.async_ips_redis import (
     AsyncRedisSaver,
     _create_chunks_commands,

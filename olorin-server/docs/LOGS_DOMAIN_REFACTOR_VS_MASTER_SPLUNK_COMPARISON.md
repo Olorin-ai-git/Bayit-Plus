@@ -241,7 +241,7 @@ Your response MUST be a JSON object with the following structure:
 ```python
 class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.olorin:fpl-splunk"
+        return "Olorin.cas.hri.olorin:fpl-splunk"
     
     def get_system_prompt_template(self) -> str:
         return SYSTEM_PROMPT_FOR_LOG_RISK  # Same prompt as master
@@ -294,7 +294,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
 
 | Feature | Master Branch | Refactor Branch |
 |---------|---------------|-----------------|
-| **Agent Name** | Basic implementation | **"Intuit.cas.hri.olorin:fpl-splunk"** |
+| **Agent Name** | Basic implementation | **"Olorin.cas.hri.olorin:fpl-splunk"** |
 | **Risk Score** | 0.6 (Medium Risk) | **0.6 (Identical assessment)** |
 | **Confidence** | 0.7 | **0.7 (Same confidence level)** |
 | **Service Architecture** | Monolithic processing | **Inherited BaseLLMRiskService** |

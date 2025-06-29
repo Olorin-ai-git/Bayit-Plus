@@ -7,7 +7,7 @@ from fastapi import Request
 from pydantic import BaseModel
 
 from app.models.agent_context import AgentContext
-from app.models.agent_headers import AuthContext, IntuitHeader
+from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
@@ -99,7 +99,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 interactionGroupId=self.get_interaction_group_id(user_id),
                 additionalMetadata={"userId": user_id},
             ),
-            intuit_header=IntuitHeader(
+            intuit_header=OlorinHeader(
                 intuit_tid=request.headers.get("intuit-tid", default_tid),
                 intuit_originating_assetalias=request.headers.get(
                     "intuit_originating_assetalias",

@@ -7,7 +7,7 @@ from langchain_core.callbacks import Callbacks
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
 
@@ -54,7 +54,7 @@ class OIITool(BaseTool):
         return json.dumps(identity_data, indent=2)
 
     def _query_identity_api(
-        self, user_id: str, headers: Optional[IntuitHeader] = None
+        self, user_id: str, headers: Optional[OlorinHeader] = None
     ) -> Dict[str, Any]:
         """Query the Intuit Identity API for information about the user."""
         try:
@@ -82,7 +82,7 @@ class OIITool(BaseTool):
                 "intuit_country": "US",
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.olorin",
+                "intuit_assetalias": "Olorin.cas.hri.olorin",
                 "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
             }
 

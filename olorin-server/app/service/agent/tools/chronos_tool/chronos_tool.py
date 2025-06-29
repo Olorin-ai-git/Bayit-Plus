@@ -9,7 +9,7 @@ from langchain_core.callbacks import Callbacks
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
-from app.models.agent_headers import IntuitHeader
+from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
 
@@ -74,7 +74,7 @@ class ChronosTool(BaseTool):
         self,
         user_id: str,
         select: list[str],
-        headers: Optional[IntuitHeader] = None,
+        headers: Optional[OlorinHeader] = None,
         extra_headers: Optional[dict] = None,
         range_override: Optional[dict] = None,
     ) -> Dict[str, Any]:
@@ -127,10 +127,10 @@ class ChronosTool(BaseTool):
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.olorin",
-                "intuit_offeringid": "Intuit.cto.iam.ius",  # Add missing header from working curl
+                "intuit_assetalias": "Olorin.cas.hri.olorin",
+                "intuit_offeringid": "Olorin.cto.iam.ius",  # Add missing header from working curl
                 "intuit_tid": "480e8643-d4fb-4546-bda8-555c67c14432",  # Use working intuit_tid
-                "Authorization": f"Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid},intuit_appid=Intuit.secfraud.shared.ghost,intuit_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",
+                "Authorization": f"Olorin_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid},intuit_appid=Olorin.secfraud.shared.ghost,intuit_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",
             }
             # Merge/override with extra_headers if provided
             if extra_headers:
@@ -189,8 +189,8 @@ class ChronosTool(BaseTool):
 
             headers = {
                 "intuit_tid": "480e8643-d4fb-4546-bda8-555c67c14432",
-                "intuit_assetalias": "Intuit.shared.fraudlistclient",
-                "Authorization": "Intuit_IAM_Authentication intuit_appid=Intuit.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+                "intuit_assetalias": "Olorin.shared.fraudlistclient",
+                "Authorization": "Olorin_IAM_Authentication intuit_appid=Olorin.shared.fraudlistclient, intuit_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
                 "Content-Type": "application/json",
             }
 

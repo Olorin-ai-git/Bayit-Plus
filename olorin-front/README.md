@@ -49,7 +49,7 @@ for this Web Plugin include: _fill this in (screenshots recommended)_
 
 ### Next Steps
 
-1. 📚 Learn more about [Intuit's UX Fabric](http://in/uxfabric)
+1. �� Learn more about [Olorin's UX Fabric](http://in/uxfabric)
 1. Optionally enable
    [Renovate](https://github.intuit.com/github-apps/renovate-pro/) on your
    organization for Automated Dependency Updates. Reach out to an
@@ -81,7 +81,7 @@ about the Plugin-CLI's technologies!
 Eager to contribute to olorin-webplugin? Check out our
 [Contribution Guidelines](./CONTRIBUTING.md)!
 
-Learn more about Intuit's contribution policies -
+Learn more about Olorin's contribution policies -
 [InnerSource](http://in/innersource).
 
 ## 🛠️ Builds, Environments, and Deployments

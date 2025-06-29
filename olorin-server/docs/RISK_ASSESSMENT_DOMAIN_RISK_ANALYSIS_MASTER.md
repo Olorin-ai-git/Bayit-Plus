@@ -650,7 +650,7 @@ async def generate_llm_meta_analysis(
         )
         
         # Generate LLM meta-analysis
-        agent_context = "Intuit.cas.hri.olorin:risk-assessment-meta-analyzer"
+        agent_context = "Olorin.cas.hri.olorin:risk-assessment-meta-analyzer"
         
         llm_response = await invoke_agent_for_risk_assessment(
             agent_context=agent_context,
