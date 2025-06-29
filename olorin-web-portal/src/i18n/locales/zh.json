@@ -1,0 +1,128 @@
+{
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "services": "服务",
+    "contact": "联系我们",
+    "getStarted": "开始使用"
+  },
+  "hero": {
+    "title": "下一代",
+    "titleHighlight": "AI 欺诈防护",
+    "subtitle": "利用自主AI代理的力量保护您的企业免受欺诈。我们的生成式AI解决方案提供实时调查和预防功能，能够适应并从每一个威胁中学习。",
+    "ctaStart": "开始使用",
+    "ctaLearn": "了解更多"
+  },
+  "stats": {
+    "accuracy": "95%",
+    "accuracyLabel": "欺诈检测准确率",
+    "reduction": "80%",
+    "reductionLabel": "误报减少率",
+    "monitoring": "24/7",
+    "monitoringLabel": "自主监控",
+    "response": "< 1秒",
+    "responseLabel": "响应时间"
+  },
+  "features": {
+    "title": "由先进AI技术驱动",
+    "subtitle": "我们的自主AI代理全天候工作，使用尖端的生成式AI技术保护您的业务免受不断演变的欺诈威胁。",
+    "agent": {
+      "title": "自主AI代理",
+      "description": "先进的AI代理独立工作，以人类级别的智能检测和调查欺诈模式。"
+    },
+    "realtime": {
+      "title": "实时调查",
+      "description": "即时分析可疑活动，在几秒内生成全面的调查报告。"
+    },
+    "proactive": {
+      "title": "主动威胁检测",
+      "description": "通过预测分析和行为模式识别，在欺诈发生之前识别潜在威胁。"
+    },
+    "intelligence": {
+      "title": "多源情报",
+      "description": "整合来自多个来源的数据，构建全面的欺诈防护策略。"
+    }
+  },
+  "benefits": {
+    "title": "为什么选择 Olorin.ai？",
+    "subtitle": "我们由AI驱动的欺诈防护平台提供可衡量的结果，保护您的业务并提高运营效率。",
+    "items": [
+      "将欺诈损失减少高达95%",
+      "将误报减少80%",
+      "自动化90%的常规调查",
+      "实时警报和响应",
+      "与现有系统无缝集成",
+      "24/7自主监控"
+    ],
+    "cta": {
+      "title": "AI驱动的保护",
+      "description": "体验下一代欺诈防护，我们的自主AI代理学习、适应并24/7保护您的业务。",
+      "button": "预约演示"
+    }
+  },
+  "cta": {
+    "title": "准备好转变您的欺诈防护了吗？",
+    "subtitle": "加入信任Olorin.ai的行业领导者，用先进的AI驱动欺诈防护解决方案保护他们的业务。",
+    "startJourney": "开始您的旅程",
+    "learnAbout": "了解我们"
+  },
+  "about": {
+    "title": "关于 Olorin.ai",
+    "subtitle": "我们正在开创企业安全的未来，用自主AI代理革命性地改变欺诈防护和调查流程。",
+    "mission": {
+      "title": "我们的使命",
+      "description1": "在Olorin.ai，我们相信每个企业都应该受到保护，免受不断演变的欺诈威胁。我们的使命是使尖端AI技术的获取民主化，这种技术能够以前所未有的准确性自主检测、调查和预防欺诈。",
+      "description2": "以托尔金世界中的智慧守护者命名，Olorin代表我们承诺成为您数字资产的守护者，用智慧、警觉和坚定不移的奉献精神守护您的业务。",
+      "recognition": "行业认可",
+      "recognitionDesc": "被认为是AI驱动欺诈防护解决方案的领导者"
+    },
+    "impact": {
+      "title": "我们的影响",
+      "subtitle": "展示我们对卓越承诺的数字",
+      "founded": "2025",
+      "foundedLabel": "成立年份",
+      "clients": "50+",
+      "clientsLabel": "企业客户",
+      "uptime": "99.9%",
+      "uptimeLabel": "系统正常运行时间",
+      "prevented": "$20亿+",
+      "preventedLabel": "预防的欺诈"
+    }
+  },
+  "services": {
+    "title": "AI驱动的欺诈防护服务",
+    "subtitle": "由自主AI代理驱动的全面欺诈防护解决方案，以无与伦比的准确性和速度24/7保护您的业务。",
+    "getStartedToday": "今天开始"
+  },
+  "contact": {
+    "title": "联系我们",
+    "subtitle": "准备用AI转变您的欺诈防护？联系我们的专家预约演示，了解Olorin.ai如何保护您的业务。",
+    "form": {
+      "title": "给我们发消息",
+      "subtitle": "填写下面的表格，我们的团队将在24小时内回复您。",
+      "firstName": "名字",
+      "lastName": "姓氏",
+      "email": "电子邮件地址",
+      "company": "公司",
+      "phone": "电话号码",
+      "subject": "主题",
+      "message": "消息",
+      "messagePlaceholder": "告诉我们您的欺诈防护需求...",
+      "send": "发送消息",
+      "success": "消息发送成功！",
+      "successDesc": "感谢您联系我们。我们将在24小时内回复。"
+    },
+    "info": {
+      "title": "联系信息",
+      "subtitle": "与我们的欺诈防护专家团队联系。我们在这里帮助您用尖端AI技术保护您的业务。"
+    }
+  },
+  "footer": {
+    "description": "引领企业安全的未来，提供生成式AI代理解决方案。我们的自主AI代理革命性地改变欺诈防护和调查流程。",
+    "quickLinks": "快速链接",
+    "contactInfo": "联系信息",
+    "copyright": "© 2025 Olorin.ai. 版权所有。",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
+  }
+} 

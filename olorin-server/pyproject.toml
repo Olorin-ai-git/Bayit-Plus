@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "olorin-service"
+version = "1.0.0"
+description = "Olorin Service"
+authors = ["Your Name <your.email@olorin.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.68.0"
+uvicorn = "^0.15.0"
+pydantic = "^1.8.2"
+requests = "^2.26.0"
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+python-multipart = "^0.0.5"
+aiohttp = "^3.8.1"
+pytest = "^6.2.5"
+pytest-asyncio = "^0.16.0"
+pytest-cov = "^2.12.1"
+black = "^21.9b0"
+isort = "^5.9.3"
+mypy = "^0.910"
+flake8 = "^3.9.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+python_classes = ["Test*"]

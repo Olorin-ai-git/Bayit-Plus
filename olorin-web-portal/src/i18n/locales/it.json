@@ -1,0 +1,128 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "Chi siamo",
+    "services": "Servizi",
+    "contact": "Contatti",
+    "getStarted": "Inizia"
+  },
+  "hero": {
+    "title": "Prevenzione frodi IA",
+    "titleHighlight": "di nuova generazione",
+    "subtitle": "Sfrutta il potere degli Agenti IA Autonomi per proteggere la tua azienda dalle frodi. Le nostre soluzioni di IA Generativa forniscono capacità di investigazione e prevenzione in tempo reale che si adattano e imparano da ogni minaccia.",
+    "ctaStart": "Inizia",
+    "ctaLearn": "Scopri di più"
+  },
+  "stats": {
+    "accuracy": "95%",
+    "accuracyLabel": "Precisione rilevamento frodi",
+    "reduction": "80%",
+    "reductionLabel": "Riduzione falsi positivi",
+    "monitoring": "24/7",
+    "monitoringLabel": "Monitoraggio autonomo",
+    "response": "< 1s",
+    "responseLabel": "Tempo di risposta"
+  },
+  "features": {
+    "title": "Alimentato da tecnologia IA avanzata",
+    "subtitle": "I nostri agenti IA autonomi lavorano 24 ore su 24 per proteggere la tua azienda dalle minacce di frode in evoluzione utilizzando tecnologia IA generativa all'avanguardia.",
+    "agent": {
+      "title": "Agenti IA autonomi",
+      "description": "Agenti IA avanzati che lavorano indipendentemente per rilevare e investigare modelli di frode con intelligenza di livello umano."
+    },
+    "realtime": {
+      "title": "Investigazione in tempo reale",
+      "description": "Analisi istantanea di attività sospette con rapporti di investigazione completi generati in secondi."
+    },
+    "proactive": {
+      "title": "Rilevamento proattivo minacce",
+      "description": "Identifica le frodi potenziali prima che accadano con analisi predittiva e riconoscimento di pattern comportamentali."
+    },
+    "intelligence": {
+      "title": "Intelligenza multi-sorgente",
+      "description": "Integra dati da più fonti per costruire strategie complete di prevenzione frodi."
+    }
+  },
+  "benefits": {
+    "title": "Perché scegliere Olorin.ai?",
+    "subtitle": "La nostra piattaforma di prevenzione frodi alimentata da IA offre risultati misurabili che proteggono la tua azienda e migliorano l'efficienza operativa.",
+    "items": [
+      "Ridurre le perdite da frode fino al 95%",
+      "Diminuire i falsi positivi dell'80%",
+      "Automatizzare il 90% delle investigazioni di routine",
+      "Avvisi e risposte in tempo reale",
+      "Integrazione perfetta con sistemi esistenti",
+      "Monitoraggio autonomo 24/7"
+    ],
+    "cta": {
+      "title": "Protezione alimentata da IA",
+      "description": "Sperimenta la nuova generazione di prevenzione frodi con i nostri agenti IA autonomi che imparano, si adattano e proteggono la tua azienda 24/7.",
+      "button": "Prenota demo"
+    }
+  },
+  "cta": {
+    "title": "Pronto a trasformare la tua prevenzione frodi?",
+    "subtitle": "Unisciti ai leader del settore che si fidano di Olorin.ai per proteggere le loro aziende con soluzioni avanzate di prevenzione frodi alimentate da IA.",
+    "startJourney": "Inizia il tuo viaggio",
+    "learnAbout": "Scopri di più su di noi"
+  },
+  "about": {
+    "title": "Chi siamo - Olorin.ai",
+    "subtitle": "Stiamo aprendo la strada al futuro della sicurezza aziendale con agenti IA autonomi che rivoluzionano i processi di prevenzione e investigazione frodi.",
+    "mission": {
+      "title": "La nostra missione",
+      "description1": "In Olorin.ai, crediamo che ogni azienda meriti protezione dalle minacce di frode in evoluzione. La nostra missione è democratizzare l'accesso alla tecnologia IA all'avanguardia che può rilevare, investigare e prevenire frodi autonomamente con precisione senza precedenti.",
+      "description2": "Chiamato così dal saggio protettore del mondo di Tolkien, Olorin rappresenta il nostro impegno ad essere il guardiano dei tuoi asset digitali, vegliando sulla tua azienda con intelligenza, vigilanza e dedizione incrollabile.",
+      "recognition": "Riconoscimento del settore",
+      "recognitionDesc": "Riconosciuto come leader nelle soluzioni di prevenzione frodi alimentate da IA"
+    },
+    "impact": {
+      "title": "Il nostro impatto",
+      "subtitle": "Numeri che dimostrano il nostro impegno per l'eccellenza",
+      "founded": "2025",
+      "foundedLabel": "Fondato",
+      "clients": "50+",
+      "clientsLabel": "Clienti aziendali",
+      "uptime": "99.9%",
+      "uptimeLabel": "Uptime del sistema",
+      "prevented": "$2B+",
+      "preventedLabel": "Frodi prevenute"
+    }
+  },
+  "services": {
+    "title": "Servizi di prevenzione frodi alimentati da IA",
+    "subtitle": "Soluzioni complete di prevenzione frodi alimentate da agenti IA autonomi che proteggono la tua azienda 24/7 con precisione e velocità impareggiabili.",
+    "getStartedToday": "Inizia oggi"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Pronto a trasformare la tua prevenzione frodi con l'IA? Contatta i nostri esperti per programmare una demo e vedere come Olorin.ai può proteggere la tua azienda.",
+    "form": {
+      "title": "Inviaci un messaggio",
+      "subtitle": "Compila il modulo qui sotto e il nostro team ti risponderà entro 24 ore.",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Indirizzo email",
+      "company": "Azienda",
+      "phone": "Numero di telefono",
+      "subject": "Oggetto",
+      "message": "Messaggio",
+      "messagePlaceholder": "Raccontaci delle tue esigenze di prevenzione frodi...",
+      "send": "Invia messaggio",
+      "success": "Messaggio inviato con successo!",
+      "successDesc": "Grazie per averci contattato. Risponderemo entro 24 ore."
+    },
+    "info": {
+      "title": "Informazioni di contatto",
+      "subtitle": "Mettiti in contatto con il nostro team di esperti di prevenzione frodi. Siamo qui per aiutarti a proteggere la tua azienda con tecnologia IA all'avanguardia."
+    }
+  },
+  "footer": {
+    "description": "Guidando il futuro della sicurezza aziendale con soluzioni agentiche di IA Generativa. I nostri agenti IA autonomi rivoluzionano i processi di prevenzione e investigazione frodi.",
+    "quickLinks": "Link rapidi",
+    "contactInfo": "Info contatti",
+    "copyright": "© 2025 Olorin.ai. Tutti i diritti riservati.",
+    "privacy": "Privacy Policy",
+    "terms": "Termini di servizio"
+  }
+} 
