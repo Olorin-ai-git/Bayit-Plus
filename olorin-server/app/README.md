@@ -1,4 +1,4 @@
-# Gaia Fraud Detection System
+# Olorin Fraud Detection System
 
 A comprehensive, multi-agent fraud detection system designed to analyze and detect suspicious activities in real-time. The system uses multiple data sources and sophisticated analysis techniques to provide accurate risk assessments.
 
@@ -15,7 +15,7 @@ A comprehensive, multi-agent fraud detection system designed to analyze and dete
 
 ## Overview
 
-The Gaia Fraud Detection System is a distributed, agent-based solution that combines multiple analysis techniques to detect potential fraud:
+The Olorin Fraud Detection System is a distributed, agent-based solution that combines multiple analysis techniques to detect potential fraud:
 
 - Location-based analysis
 - Network pattern analysis
@@ -37,14 +37,14 @@ The Gaia Fraud Detection System is a distributed, agent-based solution that comb
 ### Components
 
 1. **Core System**
-   - `GaiaApplication`: Central coordination and risk assessment
+   - `OlorinApplication`: Central coordination and risk assessment
    - `ConfigurationManager`: YAML-based configuration management
    - `RiskAssessment`: Risk scoring and decision making
 
 2. **Agent System**
 
    **a. Chat Agent (LangGraph)**  
-   - Orchestrated via a LangGraph `StateGraph` and exposed on the FastAPI `/v1/agent/invoke` endpoint.
+   - Orchestrated via a LangGraph `StateGraph` and exposed on the FastAPI `/v1/agent/invoke` endpoint.
    - **assistant** node (LLM) for free-form user Q&A and reasoning.
    - **tools** node for function-calling to external tools (Splunk, Chronos, CDC, OII, etc.).
 
@@ -85,15 +85,15 @@ graph TD
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/gaia.git
-cd gaia
+git clone https://github.com/your-org/olorin.git
+cd olorin
 
 # Copy environment template
 cp .env.example .env
 
 # Build the project
 ```
-cd gaia
+cd olorin
 python3 -m venv .venv && source .venv/bin/activate
 pip install poetry
 poetry lock
@@ -150,7 +150,7 @@ agents:
 
 ```bash
 # Run with specific user ID
-java -jar target/gaia-1.0-SNAPSHOT-jar-with-dependencies.jar <user_id>
+java -jar target/olorin-1.0-SNAPSHOT-jar-with-dependencies.jar <user_id>
 ```
 
 ### Example Usage
@@ -159,7 +159,7 @@ java -jar target/gaia-1.0-SNAPSHOT-jar-with-dependencies.jar <user_id>
 public class Example {
     public static void main(String[] args) {
         String userId = "test_user_123";
-        GaiaApplication app = new GaiaApplication();
+        OlorinApplication app = new OlorinApplication();
         app.initialize();
         app.startFraudDetection(userId);
     }
@@ -175,7 +175,7 @@ public class Example {
 mvn test
 
 # Run with specific test
-mvn test -Dtest=GaiaApplicationTest
+mvn test -Dtest=OlorinApplicationTest
 
 # Run with coverage
 mvn verify

@@ -30,7 +30,7 @@ const getInvestigations = async () => {
   if (DEMO_MODE) {
     return [...MOCK_INVESTIGATIONS];
   }
-  // This function should be re-implemented or imported from GAIAService or another appropriate location
+  // This function should be re-implemented or imported from OlorinService or another appropriate location
   return [];
 };
 
@@ -64,7 +64,7 @@ const createInvestigation = async (
   // Use a default entityId if not provided (for demo/test)
   const eid = entityId || 'test-entity';
   const etype = entityType || 'user_id';
-  // This function should be re-implemented or imported from GAIAService or another appropriate location
+  // This function should be re-implemented or imported from OlorinService or another appropriate location
   return { id, entityId: eid, entityType: etype };
 };
 
@@ -95,7 +95,7 @@ const editInvestigations = async (
     );
     return true;
   }
-  // This function should be re-implemented or imported from GAIAService or another appropriate location
+  // This function should be re-implemented or imported from OlorinService or another appropriate location
   return true;
 };
 
@@ -115,7 +115,7 @@ const deleteInvestigations = async (
     setMockData((prev: any[]) => prev.filter((inv) => !ids.includes(inv.id)));
     return true;
   }
-  // This function should be re-implemented or imported from GAIAService or another appropriate location
+  // This function should be re-implemented or imported from OlorinService or another appropriate location
   return true;
 };
 

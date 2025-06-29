@@ -115,7 +115,7 @@ class ChronosTool(BaseTool):
                     "auth_id": [user_id]
                 },  # Use array format like the working curl
                 "select": select,
-                "queryId": "GAIA",
+                "queryId": "OLORIN",
                 "routingLabel": "elc",
             }
 
@@ -127,7 +127,7 @@ class ChronosTool(BaseTool):
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.gaia",
+                "intuit_assetalias": "Intuit.cas.hri.olorin",
                 "intuit_offeringid": "Intuit.cto.iam.ius",  # Add missing header from working curl
                 "intuit_tid": "480e8643-d4fb-4546-bda8-555c67c14432",  # Use working intuit_tid
                 "Authorization": f"Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid},intuit_appid=Intuit.secfraud.shared.ghost,intuit_app_secret=preprdbVmhuQWzwYkuILZ1PJAnSPYrOhUMPJiSru",

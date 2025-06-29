@@ -9,7 +9,7 @@
 
 uxPluginCLI {
   assetId = '6347841268104977808'
-  assetAlias = 'Intuit.cas.hri.gaiawebplugin'
+  assetAlias = 'Intuit.cas.hri.olorinwebplugin'
   tag = '4'
   testUIRemote = true
   testUI = false

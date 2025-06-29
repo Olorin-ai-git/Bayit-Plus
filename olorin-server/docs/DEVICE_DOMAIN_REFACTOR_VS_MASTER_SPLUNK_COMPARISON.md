@@ -391,7 +391,7 @@ class DeviceAnalysisService:
 ```python
 class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:device-risk-analyzer"
+        return "Intuit.cas.hri.olorin:device-risk-analyzer"
     
     def prepare_prompt_data(self, user_id: str, extracted_signals: List[Dict], **kwargs):
         # Device signal grouping and prompt construction

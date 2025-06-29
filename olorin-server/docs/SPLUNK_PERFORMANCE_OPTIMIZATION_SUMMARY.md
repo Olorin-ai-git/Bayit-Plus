@@ -1,7 +1,7 @@
 # Splunk Performance Optimization Summary
 
 ## Problem Overview
-The Gaia fraud detection system was experiencing severe Splunk performance issues:
+The Olorin fraud detection system was experiencing severe Splunk performance issues:
 - Network queries taking several minutes to complete
 - Hundreds of repeated polling requests (every 0.5 seconds)
 - No timeout protection causing indefinite waits
@@ -74,7 +74,7 @@ The Gaia fraud detection system was experiencing severe Splunk performance issue
 - Enhanced error handling and standardized fallback logic
 
 ### ✅ **IDPS Credential Management**
-- Fixed credential retrieval using `get_app_secret("gaia/splunk_password")`
+- Fixed credential retrieval using `get_app_secret("olorin/splunk_password")`
 - Proper async handling with `await` for Splunk operations
 - Added connection management with try/finally blocks
 

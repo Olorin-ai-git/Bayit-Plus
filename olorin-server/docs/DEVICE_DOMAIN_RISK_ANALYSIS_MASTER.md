@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Device Domain Risk Assessment System** within the Gaia fraud detection platform. The Device domain represents one of the most critical fraud detection vectors, focusing on device fingerprinting, geographic correlation, and behavioral pattern analysis to identify compromised accounts, shared credentials, and impossible travel scenarios.
+This document provides a comprehensive analysis of the **Device Domain Risk Assessment System** within the Olorin fraud detection platform. The Device domain represents one of the most critical fraud detection vectors, focusing on device fingerprinting, geographic correlation, and behavioral pattern analysis to identify compromised accounts, shared credentials, and impossible travel scenarios.
 
 ## Table of Contents
 

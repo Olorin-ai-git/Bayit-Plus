@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
+This document provides a comprehensive technical analysis of the **Logs Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for authentication log-based risk assessment using Large Language Models.
 
 ## 1. LLM Architecture Overview
 
@@ -233,14 +233,14 @@ A specialized agent context is created for logs analysis:
 ```python
 agent_context = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:fpl-splunk",
+    agent_name="Intuit.cas.hri.olorin:fpl-splunk",
     metadata=Metadata(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
     intuit_header=IntuitHeader(
         intuit_tid="test",
-        intuit_originating_assetalias="Intuit.cas.hri.gaia",
+        intuit_originating_assetalias="Intuit.cas.hri.olorin",
         intuit_experience_id=settings.intuit_experience_id,
         auth_context=AuthContext(
             intuit_user_id=intuit_userid,
@@ -253,9 +253,9 @@ agent_context = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a specialized naming scheme: `"Intuit.cas.hri.gaia:fpl-splunk"`
+The agent uses a specialized naming scheme: `"Intuit.cas.hri.olorin:fpl-splunk"`
 
-- **Domain**: `Intuit.cas.hri.gaia`
+- **Domain**: `Intuit.cas.hri.olorin`
 - **Function**: `fpl-splunk` (Fraud Prevention Layer - Splunk)
 - **Purpose**: Authentication-focused fraud analysis
 

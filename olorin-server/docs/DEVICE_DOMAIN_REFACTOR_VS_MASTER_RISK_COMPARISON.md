@@ -317,7 +317,7 @@ CRITICAL ANALYSIS REQUIREMENTS:
 ```python
 class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:device-risk-analyzer"
+        return "Intuit.cas.hri.olorin:device-risk-analyzer"
 
     def get_system_prompt_template(self) -> str:
         return SYSTEM_PROMPT_FOR_DEVICE_RISK  # Same prompt

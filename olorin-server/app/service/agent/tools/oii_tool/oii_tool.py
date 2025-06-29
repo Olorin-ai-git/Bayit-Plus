@@ -82,7 +82,7 @@ class OIITool(BaseTool):
                 "intuit_country": "US",
                 "intuit_locale": "en-US",
                 "Content-Type": "application/json",
-                "intuit_assetalias": "Intuit.cas.hri.gaia",
+                "intuit_assetalias": "Intuit.cas.hri.olorin",
                 "Authorization": f"Intuit_IAM_Authentication intuit_appid={settings_for_env.app_id}, intuit_app_secret={settings_for_env.app_secret},intuit_token_type=Intuit_IAM_Authentication intuit_realmid={intuit_realmid},intuit_token={intuit_token},intuit_token_type=IAM-Ticket,intuit_userid={intuit_userid}",
             }
 

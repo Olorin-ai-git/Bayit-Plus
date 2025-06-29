@@ -98,7 +98,7 @@ MOCK_SPLUNK_DATA = [
 ]
 
 pytestmark = pytest.mark.skipif(
-    "GAIA_RUN_INTEGRATION" not in os.environ,
+    "OLORIN_RUN_INTEGRATION" not in os.environ,
     reason="Integration test, requires running API server",
 )
 

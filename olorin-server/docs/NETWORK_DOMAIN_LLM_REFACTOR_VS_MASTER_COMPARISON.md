@@ -185,7 +185,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
 ### 4.1 Agent Naming - **IDENTICAL**
 
 Both branches use the same agent identification:
-- **Agent Name**: `"Intuit.cas.hri.gaia:network-risk-analyzer"`
+- **Agent Name**: `"Intuit.cas.hri.olorin:network-risk-analyzer"`
 - **Hierarchical Structure**: Domain + function identification
 - **Consistency**: Maintained across both implementations
 
@@ -196,7 +196,7 @@ Both branches use the same agent identification:
 # Monolithic context creation in router
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Intuit.cas.hri.olorin:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},

@@ -50,7 +50,7 @@ class LLMLocationRiskService(BaseLLMRiskService[LocationRiskAssessment]):
 
     def get_agent_name(self) -> str:
         """Return the agent name for location risk assessment."""
-        return "Intuit.cas.hri.gaia:location-risk-analyzer"
+        return "Intuit.cas.hri.olorin:location-risk-analyzer"
 
     def get_assessment_model_class(self):
         """Return the assessment class for location risk assessment."""

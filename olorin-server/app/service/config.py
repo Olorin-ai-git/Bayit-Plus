@@ -22,7 +22,7 @@ class SvcSettings(BaseSettings):
     expose_metrics: bool = True
     mesh_port: int = Field(8090, validation_alias="MESH_TRAFFIC_PORT")
     asset_id: str = "3825825476777495228"
-    intuit_originating_assetalias: Optional[str] = "Intuit.cas.hri.gaia"
+    intuit_originating_assetalias: Optional[str] = "Intuit.cas.hri.olorin"
 
     # Cache settings
     use_ips_cache: bool = (
@@ -36,9 +36,9 @@ class SvcSettings(BaseSettings):
 
 
     # App settings
-    app_id: str = "Intuit.cas.hri.gaia"
+    app_id: str = "Intuit.cas.hri.olorin"
     # Store app secret in IDPS and provide the secret name path here
-    app_secret: str = "gaia/app_secret"
+    app_secret: str = "olorin/app_secret"
 
     # QB Tool settings
     ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
@@ -83,15 +83,15 @@ class PreProdSettings(SvcSettings):
     Settings shared by pre-prod environments
     """
 
-    app_id: str = "Intuit.cas.hri.gaia"
-    app_secret: str = "gaia/app_secret"
+    app_id: str = "Intuit.cas.hri.olorin"
+    app_secret: str = "olorin/app_secret"
     rag_search_url: str = (
         "https://aimqasvc-e2e.api.intuit.com/v1/genosplugins/AIMSearchPlugin/generate"
     )
     enable_langfuse: bool = True  # Set to True to enable langfuse tracing;
     # and set the langfuse_public_key and langfuse_secret_key to the values in IDPS below
-    langfuse_public_key: str = "gaia/langfuse/public_key"
-    langfuse_secret_key: str = "gaia/langfuse/secret_key"
+    langfuse_public_key: str = "olorin/langfuse/public_key"
+    langfuse_secret_key: str = "olorin/langfuse/secret_key"
     langfuse_host: str = "https://langfuse-e2e.api.intuit.com"
     ceres_endpoint: str = "https://ceres-das-e2e.api.intuit.com"
     cdc_env: str = "preprod"

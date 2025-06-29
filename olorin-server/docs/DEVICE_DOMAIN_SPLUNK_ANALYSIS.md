@@ -398,7 +398,7 @@ except json.JSONDecodeError as json_err:
 ### 8.1 Data Security Framework
 
 #### Credential Management
-- **Secure Storage**: `get_app_secret("gaia/splunk_password")` 
+- **Secure Storage**: `get_app_secret("olorin/splunk_password")` 
 - **Connection Security**: TLS-encrypted Splunk connections
 - **Authentication**: Multi-layer authentication with token validation
 - **Access Control**: User-specific query filtering

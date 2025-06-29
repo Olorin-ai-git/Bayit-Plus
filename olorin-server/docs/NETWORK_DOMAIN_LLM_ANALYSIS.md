@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive technical analysis of the **Network Domain's LLM Implementation** within the Gaia fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for network-based risk assessment using Large Language Models.
+This document provides a comprehensive technical analysis of the **Network Domain's LLM Implementation** within the Olorin fraud detection system. It focuses specifically on prompt construction, agent invocation, response processing, and error handling for network-based risk assessment using Large Language Models.
 
 ## Table of Contents
 
@@ -228,14 +228,14 @@ A comprehensive agent context is created for LLM invocation:
 ```python
 agent_context_for_network_risk = AgentContext(
     input=llm_input_prompt,
-    agent_name="Intuit.cas.hri.gaia:network-risk-analyzer",
+    agent_name="Intuit.cas.hri.olorin:network-risk-analyzer",
     metadata=Metadata(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
     intuit_header=IntuitHeader(
         intuit_tid=request.headers.get(
-            "intuit-tid", f"gaia-network-risk-{user_id}"
+            "intuit-tid", f"olorin-network-risk-{user_id}"
         ),
         intuit_originating_assetalias=request.headers.get(
             "intuit_originating_assetalias",
@@ -255,9 +255,9 @@ agent_context_for_network_risk = AgentContext(
 
 ### 4.3 Agent Naming Convention
 
-The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.gaia:network-risk-analyzer"`
+The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.olorin:network-risk-analyzer"`
 
-- **Domain**: `Intuit.cas.hri.gaia`
+- **Domain**: `Intuit.cas.hri.olorin`
 - **Function**: `network-risk-analyzer`
 - **Purpose**: Clear identification in logging and monitoring
 
@@ -266,7 +266,7 @@ The agent uses a hierarchical naming scheme: `"Intuit.cas.hri.gaia:network-risk-
 The system intelligently handles HTTP headers:
 
 ```python
-intuit_tid=request.headers.get("intuit-tid", f"gaia-network-risk-{user_id}")
+intuit_tid=request.headers.get("intuit-tid", f"olorin-network-risk-{user_id}")
 ```
 
 **Header Priority**:

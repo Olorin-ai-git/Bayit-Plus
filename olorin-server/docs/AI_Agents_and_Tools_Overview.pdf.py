@@ -4,7 +4,7 @@ pdf = FPDF()
 pdf.add_page()
 pdf.set_font("Arial", size=12)
 
-pdf.set_title("GAIA AI Agents and Tools Overview")
+pdf.set_title("OLORIN AI Agents and Tools Overview")
 pdf.cell(0, 10, "AI Agents and Tools Overview", ln=True, align="C")
 pdf.set_font("Arial", style="I", size=10)
 pdf.cell(0, 8, "Created by Gil Klainert, May 2025", ln=True, align="C")

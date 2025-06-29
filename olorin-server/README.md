@@ -131,9 +131,9 @@ After running `poetry install` for the first time, [commit your poetry.lock file
 
   Once you've obtained your Experience ID, update the following locations
 
-  - [agents_and_tools.yaml](https://github.intuit.com/cas-hri/gaia/blob/master/agents_and_tools.yaml)
-  - [eval_config.json](https://github.intuit.com/cas-hri/gaia/blob/master/evaluation/eval_config.json)
-  - [config.py](https://github.intuit.com/cas-hri/gaia/blob/master/app/service/config.py)
+  - [agents_and_tools.yaml](https://github.intuit.com/cas-hri/olorin/blob/master/agents_and_tools.yaml)
+  - [eval_config.json](https://github.intuit.com/cas-hri/olorin/blob/master/evaluation/eval_config.json)
+  - [config.py](https://github.intuit.com/cas-hri/olorin/blob/master/app/service/config.py)
 
     **Important Note:** The Experience ID must belong to the same project where the Agent asset codebase is located.
 
@@ -322,7 +322,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct
 <<<<<<< HEAD
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 =======
-## GAIA Backend
+## OLORIN Backend
 
 
 ### Development Setup

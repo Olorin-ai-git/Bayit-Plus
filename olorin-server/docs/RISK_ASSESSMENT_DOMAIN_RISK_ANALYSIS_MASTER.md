@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Risk Assessment Domain's Meta-Analytical Framework** within the Gaia fraud detection platform. The Risk Assessment domain represents the **final aggregation layer** that synthesizes risk scores, LLM thoughts, and insights from all individual domains (Device, Location, Network, and Logs) to produce unified overall risk assessments for comprehensive fraud detection and investigation management.
+This document provides a comprehensive analysis of the **Risk Assessment Domain's Meta-Analytical Framework** within the Olorin fraud detection platform. The Risk Assessment domain represents the **final aggregation layer** that synthesizes risk scores, LLM thoughts, and insights from all individual domains (Device, Location, Network, and Logs) to produce unified overall risk assessments for comprehensive fraud detection and investigation management.
 
 ## Table of Contents
 
@@ -650,7 +650,7 @@ async def generate_llm_meta_analysis(
         )
         
         # Generate LLM meta-analysis
-        agent_context = "Intuit.cas.hri.gaia:risk-assessment-meta-analyzer"
+        agent_context = "Intuit.cas.hri.olorin:risk-assessment-meta-analyzer"
         
         llm_response = await invoke_agent_for_risk_assessment(
             agent_context=agent_context,
@@ -1086,7 +1086,7 @@ def risk_assessment_health_check():
 
 ## Conclusion
 
-The Risk Assessment Domain Risk Analysis system represents the pinnacle of sophisticated, production-ready fraud detection through comprehensive meta-analytical risk assessment. As the final aggregation layer of the Gaia platform, it successfully synthesizes complex risk indicators across all fraud detection domains to deliver unified, actionable intelligence for enterprise fraud prevention.
+The Risk Assessment Domain Risk Analysis system represents the pinnacle of sophisticated, production-ready fraud detection through comprehensive meta-analytical risk assessment. As the final aggregation layer of the Olorin platform, it successfully synthesizes complex risk indicators across all fraud detection domains to deliver unified, actionable intelligence for enterprise fraud prevention.
 
 **Meta-Analytical Excellence:**
 

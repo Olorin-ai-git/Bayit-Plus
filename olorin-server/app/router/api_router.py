@@ -74,7 +74,7 @@ DEFAULT_HEADERS = {
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
     "intuit_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "intuit_originating_assetalias": "Intuit.cas.hri.gaia",
+    "intuit_originating_assetalias": "Intuit.cas.hri.olorin",
 }
 
 location_data_client = LocationDataClient()
@@ -277,7 +277,7 @@ async def analyze_logs(
             "range": get_chronos_range(time_range),
             "filter": {"auth_id": user_id},
             "select": chronos_fields,
-            "queryId": "GAIA",
+            "queryId": "OLORIN",
             "routingLabel": "elc",
         }
         from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
@@ -311,7 +311,7 @@ async def analyze_logs(
             interaction_group_id="fraud_flow",
             additional_metadata={"userId": user_id},
         )
-        agent_name = "Intuit.cas.hri.gaia:fpl-splunk"
+        agent_name = "Intuit.cas.hri.olorin:fpl-splunk"
         intuit_userid, intuit_token, intuit_realmid = get_auth_token()
         agent_context = AgentContext(
             input=llm_input_prompt,
@@ -319,7 +319,7 @@ async def analyze_logs(
             metadata=metadata,
             intuit_header=IntuitHeader(
                 intuit_tid="test",
-                intuit_originating_assetalias="Intuit.cas.hri.gaia",
+                intuit_originating_assetalias="Intuit.cas.hri.olorin",
                 intuit_experience_id=settings.intuit_experience_id,
                 auth_context=AuthContext(
                     intuit_user_id=intuit_userid,
@@ -618,14 +618,14 @@ Ensure all fields are populated. The input data is as follows:
             app_intuit_userid, app_intuit_token, app_intuit_realmid = get_auth_token()
             agent_context_for_risk = AgentContext(
                 input=llm_input_prompt,
-                agent_name="Intuit.cas.hri.gaia:location-risk-analyzer",  # Dedicated agent name
+                agent_name="Intuit.cas.hri.olorin:location-risk-analyzer",  # Dedicated agent name
                 metadata=Metadata(
                     interaction_group_id=f"loc-risk-analysis-{user_id}",
                     additional_metadata={"userId": user_id},
                 ),
                 intuit_header=IntuitHeader(
                     intuit_tid=request.headers.get(
-                        "intuit-tid", f"gaia-loc-risk-analysis-{user_id}"
+                        "intuit-tid", f"olorin-loc-risk-analysis-{user_id}"
                     ),
                     intuit_originating_assetalias=request.headers.get(
                         "intuit_originating_assetalias",

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Gaia fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
+This document provides a comprehensive analysis of the **Logs Domain Risk Assessment System** within the Olorin fraud detection platform. The Logs domain specializes in authentication log analysis, focusing on failed login detection, geographic authentication patterns, and behavioral anomaly identification to detect account takeover attempts, credential stuffing attacks, and suspicious authentication behaviors.
 
 ## Table of Contents
 
@@ -668,7 +668,7 @@ def prioritize_auth_records(auth_records: List[Dict]) -> List[Dict]:
   "splunk_data": [
     {
       "intuit_userid": "4621097846089147992",
-      "values(intuit_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+      "values(intuit_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
       "values(transaction)": [
         "account_creation_passed",
         "auth_passed", 

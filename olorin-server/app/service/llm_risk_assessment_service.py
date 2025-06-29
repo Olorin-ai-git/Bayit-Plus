@@ -29,7 +29,7 @@ class LLMRiskAssessmentService(BaseLLMRiskService[OverallRiskAssessment]):
     """Service for LLM-based overall risk assessment across all domains."""
 
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:overall-risk-aggregator"
+        return "Intuit.cas.hri.olorin:overall-risk-aggregator"
 
     def get_assessment_model_class(self) -> type[OverallRiskAssessment]:
         return OverallRiskAssessment

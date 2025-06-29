@@ -45,8 +45,8 @@ from .logging_helper import RequestFormatter, logging_context
 
 
 logger = logging.getLogger(__name__)
-module_name = "gaia"
-service_name = "gaia"
+module_name = "olorin"
+service_name = "olorin"
 
 # Dummy lifespan_function for test patching
 lifespan_function = None
@@ -148,9 +148,9 @@ async def on_shutdown(app: FastAPI):
     pass
 
 
-class GaiaApplication:
+class OlorinApplication:
     """
-    Central application orchestrator for Gaia Fraud Detection System.
+    Central application orchestrator for Olorin Fraud Detection System.
     Encapsulates agent coordination, risk assessment, and exposes the FastAPI app.
     """
 
@@ -227,29 +227,15 @@ class GaiaApplication:
         @app.get("/version")
         async def version():
             return {
-                "version": os.environ.get("GAIA_VERSION", "unknown"),
-                "git_sha": os.environ.get("GAIA_GIT_SHA", "unknown"),
+                "version": os.environ.get("OLORIN_VERSION", "unknown"),
+                "git_sha": os.environ.get("OLORIN_GIT_SHA", "unknown"),
             }
 
 
-def create_app(config: ServiceConfig = default_config) -> FastAPI:
-    """Create and configure the FastAPI application."""
-    app = FastAPI(
-        title=config.app_name,
-        version=config.version,
-        debug=config.debug
-    )
-
-    # Configure CORS
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=config.cors_origins,
-        allow_credentials=True,
-        allow_methods=config.cors_methods,
-        allow_headers=config.cors_headers,
-    )
-
-    return app
+def create_app(config: Optional[SvcSettings] = None) -> FastAPI:
+    """Create and configure the Olorin FastAPI application."""
+    olorin_app = OlorinApplication(test_config=config)
+    return olorin_app.app
 
 
 # Dummy implementations for test patching

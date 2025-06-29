@@ -35,7 +35,7 @@ class LLMLogsRiskService(BaseLLMRiskService[LogsRiskAssessment]):
     """Service for LLM-based logs risk assessment."""
 
     def get_agent_name(self) -> str:
-        return "Intuit.cas.hri.gaia:fpl-splunk"
+        return "Intuit.cas.hri.olorin:fpl-splunk"
 
     def get_assessment_model_class(self) -> type[LogsRiskAssessment]:
         return LogsRiskAssessment

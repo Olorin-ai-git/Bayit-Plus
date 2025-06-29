@@ -114,7 +114,7 @@ search index=rss-e2eidx intuit_userid={user_id}
 ```json
 {
   "intuit_userid": "4621097846089147992",
-  "values(intuit_username)": ["gaia_test_20250515", "iamtestpass_15171910655948"],
+  "values(intuit_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
   "values(intuit_offeringId)": [
     "Intuit.cto.iam.ius",
     "Intuit.dev.test.testeasy", 
