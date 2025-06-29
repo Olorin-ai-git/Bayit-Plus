@@ -5,11 +5,11 @@ FROM node:18-alpine AS frontend-build
 WORKDIR /app/frontend
 
 # Copy frontend package files
-COPY front/package*.json ./
+COPY olorin-front/package*.json ./
 RUN npm install
 
 # Copy frontend source and build
-COPY front/ ./
+COPY olorin-front/ ./
 RUN npm run build
 
 # Python backend stage
@@ -28,12 +28,12 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 WORKDIR /app
 
 # Copy backend requirements
-COPY back/requirements.txt ./
+COPY olorin-server/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source
-COPY back/ ./
-COPY back/agents.py ./
+COPY olorin-server/ ./
+COPY olorin-server/agents.py ./
 
 # Create necessary directories
 RUN mkdir -p /app/static /var/log/nginx /var/lib/nginx/body /var/lib/nginx/proxy \

@@ -49,8 +49,8 @@ services:
       - WATCHFILES_FORCE_POLLING=true
     volumes:
       # Mount source code for development
-      - ./back:/app:rw
-      - ./front:/app/frontend:rw
+      - ./olorin-server:/app:rw
+      - ./olorin-front:/app/frontend:rw
     profiles:
       - dev
     command: >

@@ -409,9 +409,8 @@ if [ "$SKIP_DOCKER" = false ]; then
     # Store original directory
     original_dir=$(pwd)
     
-    # Change to main project directory
-    olorin_path=$(get_project_path "olorin-server")
-    cd "$olorin_path"
+    # Docker build happens from root directory for multi-stage build
+    # (The root Dockerfile builds both frontend and backend)
     
     # Check if Docker is available
     if ! command -v docker &> /dev/null; then
