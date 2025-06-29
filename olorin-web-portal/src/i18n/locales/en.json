@@ -1,0 +1,384 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "Next-Generation",
+    "titleHighlight": "AI Fraud Prevention",
+    "subtitle": "Harness the power of Autonomous AI Agents to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
+    "ctaStart": "Get Started",
+    "ctaLearn": "Learn More"
+  },
+  "stats": {
+    "accuracy": "95%",
+    "accuracyLabel": "Fraud Detection Accuracy",
+    "reduction": "80%",
+    "reductionLabel": "Reduction in False Positives",
+    "monitoring": "24/7",
+    "monitoringLabel": "Autonomous Monitoring",
+    "response": "< 1s",
+    "responseLabel": "Response Time"
+  },
+  "features": {
+    "title": "Powered by Advanced AI Technology",
+    "subtitle": "Our autonomous AI agents work around the clock to protect your business from evolving fraud threats using cutting-edge generative AI technology.",
+    "agent": {
+      "title": "Autonomous AI Agents",
+      "description": "Advanced AI agents that work independently to detect and investigate fraud patterns with human-level intelligence."
+    },
+    "realtime": {
+      "title": "Real-time Investigation",
+      "description": "Instant analysis of suspicious activities with comprehensive investigation reports generated in seconds."
+    },
+    "proactive": {
+      "title": "Proactive Threat Detection",
+      "description": "Identify potential fraud before it happens with predictive analytics and behavioral pattern recognition."
+    },
+    "intelligence": {
+      "title": "Multi-source Intelligence",
+      "description": "Integrate data from multiple sources to build comprehensive fraud prevention strategies."
+    }
+  },
+  "benefits": {
+    "title": "Why Choose Olorin.ai?",
+    "subtitle": "Our AI-powered fraud prevention platform delivers measurable results that protect your business and improve operational efficiency.",
+    "items": [
+      "Reduce fraud losses by up to 95%",
+      "Decrease false positives by 80%",
+      "Automate 90% of routine investigations",
+      "Real-time alerts and responses",
+      "Seamless integration with existing systems",
+      "24/7 autonomous monitoring"
+    ],
+    "cta": {
+      "title": "AI-Powered Protection",
+      "description": "Experience the next generation of fraud prevention with our autonomous AI agents that learn, adapt, and protect your business 24/7.",
+      "button": "Schedule Demo"
+    }
+  },
+  "cta": {
+    "title": "Ready to Transform Your Fraud Prevention?",
+    "subtitle": "Join industry leaders who trust Olorin.ai to protect their businesses with advanced AI-powered fraud prevention solutions.",
+    "startJourney": "Start Your Journey",
+    "learnAbout": "Learn About Us"
+  },
+  "about": {
+    "title": "About Olorin.ai",
+    "subtitle": "We're pioneering the future of enterprise security with autonomous AI agents that revolutionize fraud prevention and investigation processes.",
+    "mission": {
+      "title": "Our Mission",
+      "description1": "At Olorin.ai, we believe that every enterprise deserves protection from evolving fraud threats. Our mission is to democratize access to cutting-edge AI technology that can autonomously detect, investigate, and prevent fraud with unprecedented accuracy.",
+      "description2": "Named after the wise protector from Tolkien's world, Olorin represents our commitment to being the guardian of your digital assets, watching over your business with intelligence, vigilance, and unwavering dedication.",
+      "recognition": "Industry Recognition",
+      "recognitionDesc": "Recognized as a leader in AI-powered fraud prevention solutions"
+    },
+    "impact": {
+      "title": "Our Impact",
+      "subtitle": "Numbers that demonstrate our commitment to excellence",
+      "founded": "2025",
+      "foundedLabel": "Founded",
+      "clients": "50+",
+      "clientsLabel": "Enterprise Clients",
+      "uptime": "99.9%",
+      "uptimeLabel": "System Uptime",
+      "prevented": "$2B+",
+      "preventedLabel": "Fraud Prevented"
+    },
+    "values": {
+      "title": "Our Core Values",
+      "subtitle": "The principles that guide everything we do and shape how we serve our clients",
+      "security": {
+        "title": "Security First",
+        "description": "We prioritize the highest levels of security and privacy in everything we build."
+      },
+      "innovation": {
+        "title": "AI Innovation",
+        "description": "Pushing the boundaries of what's possible with artificial intelligence and machine learning."
+      },
+      "precision": {
+        "title": "Precision",
+        "description": "Delivering accurate, reliable solutions that minimize false positives and maximize effectiveness."
+      },
+      "partnership": {
+        "title": "Partnership",
+        "description": "Building long-term relationships with our clients as trusted security partners."
+      }
+    },
+    "technology": {
+      "title": "Cutting-Edge Technology",
+      "description": "Our platform leverages the latest advances in artificial intelligence, machine learning, and generative AI to create autonomous agents that think and act like expert fraud investigators.",
+      "features": [
+        "Advanced Machine Learning Algorithms",
+        "Natural Language Processing",
+        "Behavioral Pattern Recognition",
+        "Real-time Data Processing"
+      ],
+      "ctaTitle": "AI-First Approach",
+      "ctaDescription": "Every solution we build starts with AI at its core, ensuring maximum effectiveness and continuous learning capabilities."
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "Our diverse team of AI researchers, security experts, and industry veterans is dedicated to building the future of fraud prevention.",
+      "expertise": "World-Class Expertise",
+      "expertiseDesc": "Our team combines decades of experience in cybersecurity, artificial intelligence, and enterprise software to deliver solutions that truly make a difference."
+    }
+  },
+  "services": {
+    "title": "AI-Powered Fraud Prevention Services",
+    "subtitle": "Comprehensive fraud prevention solutions powered by autonomous AI agents that protect your business 24/7 with unmatched accuracy and speed.",
+    "getStartedToday": "Get Started Today",
+    "benefitStats": {
+      "detection": "95% Fraud Detection Rate",
+      "detectionDesc": "Industry-leading accuracy with minimal false positives",
+      "realtime": "Real-time Processing",
+      "realtimeDesc": "Sub-second response times for immediate threat detection",
+      "automated": "Automated Investigation",
+      "automatedDesc": "90% reduction in manual investigation time",
+      "security": "Enterprise Security",
+      "securityDesc": "Bank-grade security with compliance certifications"
+    },
+    "ourServices": {
+      "title": "Our AI Fraud Prevention Services",
+      "subtitle": "Comprehensive solutions that leverage cutting-edge AI technology to protect your business from evolving fraud threats.",
+      "autonomous": {
+        "title": "Autonomous AI Agents",
+        "description": "Deploy intelligent agents that work 24/7 to monitor, detect, and investigate fraud attempts with human-level reasoning capabilities.",
+        "features": [
+          "Self-learning fraud detection",
+          "Behavioral pattern analysis",
+          "Contextual threat assessment",
+          "Automated case prioritization"
+        ]
+      },
+      "investigation": {
+        "title": "Real-time Investigation",
+        "description": "Get instant, comprehensive investigation reports with detailed evidence trails and recommended actions for every fraud alert.",
+        "features": [
+          "Sub-second response times",
+          "Multi-source data correlation",
+          "Evidence chain documentation",
+          "Automated compliance reporting"
+        ]
+      },
+      "predictive": {
+        "title": "Predictive Threat Detection",
+        "description": "Stay ahead of fraudsters with AI-powered prediction models that identify potential threats before they materialize.",
+        "features": [
+          "Anomaly prediction algorithms",
+          "Risk scoring models",
+          "Early warning systems",
+          "Trend analysis and forecasting"
+        ]
+      },
+      "multiSource": {
+        "title": "Multi-source Intelligence",
+        "description": "Aggregate and analyze data from multiple sources to create a comprehensive fraud prevention ecosystem.",
+        "features": [
+          "API integrations",
+          "Real-time data streaming",
+          "Cross-platform correlation",
+          "Historical data analysis"
+        ]
+      },
+      "custom": {
+        "title": "Custom AI Solutions",
+        "description": "Tailored AI fraud prevention solutions designed specifically for your industry and business requirements.",
+        "features": [
+          "Industry-specific models",
+          "Custom rule engines",
+          "Personalized dashboards",
+          "Scalable architecture"
+        ]
+      },
+      "compliance": {
+        "title": "Compliance & Security",
+        "description": "Ensure regulatory compliance while maintaining the highest security standards for your fraud prevention operations.",
+        "features": [
+          "GDPR & CCPA compliance",
+          "SOC 2 Type II certified",
+          "End-to-end encryption",
+          "Audit trail management"
+        ]
+      }
+    },
+    "industries": {
+      "title": "Industries We Serve",
+      "subtitle": "Specialized fraud prevention solutions tailored for your industry's unique challenges and requirements.",
+      "financial": {
+        "name": "Financial Services",
+        "description": "Banks, credit unions, and financial institutions",
+        "useCases": [
+          "Payment fraud detection",
+          "Account takeover prevention",
+          "Money laundering detection"
+        ]
+      },
+      "ecommerce": {
+        "name": "E-commerce",
+        "description": "Online retailers and marketplaces",
+        "useCases": [
+          "Transaction fraud prevention",
+          "Account abuse detection",
+          "Chargeback reduction"
+        ]
+      },
+      "insurance": {
+        "name": "Insurance",
+        "description": "Insurance companies and brokers",
+        "useCases": [
+          "Claims fraud detection",
+          "Application fraud prevention",
+          "Premium fraud identification"
+        ]
+      },
+      "healthcare": {
+        "name": "Healthcare",
+        "description": "Healthcare providers and insurers",
+        "useCases": [
+          "Medical billing fraud",
+          "Identity verification",
+          "Prescription fraud detection"
+        ]
+      }
+    },
+    "process": {
+      "title": "How Our AI Agents Work",
+      "subtitle": "Our autonomous AI agents follow a sophisticated process to detect, investigate, and prevent fraud in real-time.",
+      "detect": {
+        "title": "Detect",
+        "description": "AI agents continuously monitor transactions and activities, identifying suspicious patterns in real-time."
+      },
+      "investigate": {
+        "title": "Investigate",
+        "description": "Automated investigation processes gather evidence, analyze context, and build comprehensive case files."
+      },
+      "prevent": {
+        "title": "Prevent",
+        "description": "Take immediate action to block fraudulent activities and provide detailed reports for compliance."
+      }
+    },
+    "cta": {
+      "title": "Ready to Deploy AI Fraud Prevention?",
+      "subtitle": "Join the future of fraud prevention with our autonomous AI agents. Get started with a personalized demo today.",
+      "demo": "Schedule Demo",
+      "learn": "Learn More"
+    }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Ready to transform your fraud prevention with AI? Contact our experts to schedule a demo and see how Olorin.ai can protect your business.",
+    "form": {
+      "title": "Send Us a Message",
+      "subtitle": "Fill out the form below and our team will get back to you within 24 hours.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "company": "Company",
+      "phone": "Phone Number",
+      "subject": "Subject",
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your fraud prevention needs...",
+      "send": "Send Message",
+      "success": "Message Sent Successfully!",
+      "successDesc": "Thank you for contacting us. We'll respond within 24 hours.",
+      "subjects": {
+        "general": "General Inquiry",
+        "demo": "Product Demo",
+        "support": "Technical Support",
+        "partnership": "Partnership Opportunities",
+        "media": "Media & Press",
+        "other": "Other"
+      }
+    },
+    "info": {
+      "title": "Contact Information",
+      "subtitle": "Get in touch with our team of fraud prevention experts. We're here to help you secure your business with cutting-edge AI technology.",
+      "email": {
+        "title": "Email Us",
+        "details": "contact@olorin.ai",
+        "description": "Send us an email and we'll respond within 24 hours"
+      },
+      "phone": {
+        "title": "Call Us",
+        "details": "+1 (555) 123-4567",
+        "description": "Speak with our fraud prevention experts"
+      },
+      "address": {
+        "title": "Visit Us",
+        "details": "123 AI Innovation Drive, San Francisco, CA 94105",
+        "description": "Schedule an in-person meeting at our headquarters"
+      },
+      "hours": {
+        "title": "Business Hours",
+        "details": "Monday - Friday, 9:00 AM - 6:00 PM PST",
+        "description": "We're here to help during business hours"
+      },
+      "guarantee": {
+        "title": "Quick Response Guarantee",
+        "description": "We understand that fraud prevention is time-sensitive. Our team commits to responding to all inquiries within 24 hours, with urgent security matters addressed within 4 hours."
+      }
+    },
+    "callCta": {
+      "title": "Prefer to Schedule a Call?",
+      "subtitle": "Book a personalized demo with our fraud prevention experts to see how Olorin.ai can protect your specific business needs.",
+      "button": "Call Now: +1 (555) 123-4567"
+    }
+  },
+  "footer": {
+    "description": "Leading the future of enterprise security with Generative AI agentic solutions. Our autonomous AI agents revolutionize fraud prevention and investigation processes.",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "copyright": "© 2025 Olorin.ai. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "errors": {
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      "suggestions": {
+        "title": "What can you do?",
+        "check": "Check the URL for any typos or errors",
+        "back": "Go back to the previous page",
+        "home": "Return to our homepage"
+      },
+      "actions": {
+        "back": "Go Back",
+        "home": "Go Home"
+      },
+      "help": "Need help? Contact our support team at"
+    },
+    "500": {
+      "title": "Internal Server Error",
+      "description": "Something went wrong on our end. Our AI wizards are working to fix this issue as quickly as possible.",
+      "details": {
+        "title": "What happened?",
+        "server": "Our server encountered an unexpected condition",
+        "temporary": "This is usually a temporary issue",
+        "team": "Our technical team has been automatically notified"
+      },
+      "actions": {
+        "title": "What can you try?",
+        "refresh": "Refresh the page in a few minutes",
+        "clear": "Clear your browser cache and cookies",
+        "try": "Try accessing the page from a different browser",
+        "contact": "Contact our support team if the issue persists"
+      },
+      "buttons": {
+        "refresh": "Try Again",
+        "home": "Go Home"
+      },
+      "support": {
+        "title": "Need Immediate Help?",
+        "description": "Contact our technical support team:",
+        "response": "We typically respond within 24 hours"
+      },
+      "errorId": "Error ID",
+      "timestamp": "Timestamp"
+    }
+  }
+} 

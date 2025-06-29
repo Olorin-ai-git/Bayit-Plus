@@ -1,0 +1,7 @@
+# Ultra-minimal .htaccess for GoDaddy
+# Use this if other versions cause 500 errors
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L] 

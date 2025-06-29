@@ -1,0 +1,110 @@
+[tool.poetry]
+<<<<<<< HEAD:back/pyproject.toml
+name = "olorin"
+version = "0.1.0"
+description = ""
+authors = ["Maintainers <admin@olorin.com>"]
+=======
+name = "olorin-service"
+version = "1.0.0"
+description = "Olorin Service"
+authors = ["Your Name <your.email@olorin.com>"]
+>>>>>>> restructure-projects:olorin-server/pyproject.toml
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+pydantic = ">=1.10.7"
+pydantic-settings = ">=2.2.1"
+fastapi = ">=0.95.0"
+uvicorn = ">=0.21.0"
+# services-python-pskbom-pskbom = {version = ">=1.7.0", extras = ["service", "telemetry"]}
+# services-python-pskgenos-pskgenos = ">=0.1.0"
+langgraph = "^0.2.70"
+langchain-openai = "^0.3.4"
+langchain-core = "^0.3.34"
+langgraph-sdk = "^0.1.51"
+jupyter = "^1.1.1"
+langchain = "^0.3.18"
+langfuse = "^2.59.2"
+httpcore = "^1.0.7"
+redis = "^5.2.1"
+# idps-sdk = "^3.9936.0"
+# identity-c360-cdcdatalib-cdcdatalib = "^4.0.3"
+grandalf = "^0.8"
+aiohttp = ">=3.8.0"
+pyyaml = ">=6.0"
+python-dateutil = ">=2.8.2"
+typing-extensions = ">=4.0.0"
+pytest = ">=7.0.0"
+pytest-asyncio = ">=0.18.0"
+prometheus-client = ">=0.16.0"
+python-json-logger = ">=2.0.7"
+structlog = ">=23.1.0"
+python-dotenv = ">=1.0.0"
+aioredis = ">=2.0.1"
+cryptography = ">=40.0.0"
+requests = ">=2.28.2"
+tenacity = ">=8.2.2"
+splunk-sdk = "^2.1.0"
+openai = "^1.75.0"
+openai-agents = "^0.0.12"
+pycryptodome = "^3.10"
+fpdf = "^1.7.2"
+numpy = "*"
+reportlab = "^4.4.1"
+markdown2 = "^2.5.3"
+websockets = "^12.0"
+sqlalchemy = "^2.0.0"
+beautifulsoup4 = "^4.12.0"
+html2text = "^2020.1.16"
+mcp = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+mypy = ">=1.15.0"
+pytest-asyncio = "^1.0.0"
+tox = "^4.26.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = ">=8.3.5"
+pytest-mock = "*"
+pytest-cov = ">=6.0.0"
+pytest-xdist = ">=3.6.1"
+tox = "^4.24.2"
+# Needed by FastAPI TestClient
+httpx = "*"
+pandas = "^2.2.3"
+numpy = "<2"
+sentence-transformers = "^3.4.1"
+torch = "2.2.2"
+transformers = "^4.49.0"
+pytest-asyncio = ">=0.14.0"
+
+# Removed custom repository - using default PyPI
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+skip_glob = ["venv/*", ".venv/*", ".tox/*", "**/venv/*", "**/.venv/*", "**/.tox/*"]
+
+[tool.pytest.ini_options]
+log_level = "DEBUG"
+addopts = "--cov --cov-report html --cov-report term --cov-report xml:coverage/coverage.xml --cov-fail-under=0 --color=yes"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["integration: mark a test as a integration test.",
+          "unit: mark a test as a unit test.",]
+pythonpath = [
+    "app",
+]
+ testpaths = [
+     "test/unit",
+ ]
+asyncio_mode = "auto"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,339 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "services": "Services",
+    "contact": "Contact",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "title": "Prévention de fraude IA",
+    "titleHighlight": "de nouvelle génération",
+    "subtitle": "Exploitez la puissance des agents IA autonomes pour protéger votre entreprise contre la fraude. Nos solutions d'IA générative offrent des capacités d'investigation et de prévention en temps réel qui s'adaptent et apprennent de chaque menace.",
+    "ctaStart": "Commencer",
+    "ctaLearn": "En savoir plus"
+  },
+  "stats": {
+    "accuracy": "95%",
+    "accuracyLabel": "Précision de détection de fraude",
+    "reduction": "80%",
+    "reductionLabel": "Réduction des faux positifs",
+    "monitoring": "24/7",
+    "monitoringLabel": "Surveillance autonome",
+    "response": "< 1s",
+    "responseLabel": "Temps de réponse"
+  },
+  "features": {
+    "title": "Alimenté par une technologie IA avancée",
+    "subtitle": "Nos agents IA autonomes travaillent 24h/24 pour protéger votre entreprise contre les menaces de fraude évolutives en utilisant une technologie d'IA générative de pointe.",
+    "agent": {
+      "title": "Agents IA autonomes",
+      "description": "Agents IA avancés qui travaillent de manière indépendante pour détecter et enquêter sur les modèles de fraude avec une intelligence de niveau humain."
+    },
+    "realtime": {
+      "title": "Investigation en temps réel",
+      "description": "Analyse instantanée des activités suspectes avec des rapports d'enquête complets générés en quelques secondes."
+    },
+    "proactive": {
+      "title": "Détection proactive des menaces",
+      "description": "Identifiez la fraude potentielle avant qu'elle ne se produise avec l'analyse prédictive et la reconnaissance des modèles comportementaux."
+    },
+    "intelligence": {
+      "title": "Intelligence multi-sources",
+      "description": "Intégrez des données de sources multiples pour construire des stratégies complètes de prévention de fraude."
+    }
+  },
+  "benefits": {
+    "title": "Pourquoi choisir Olorin.ai ?",
+    "subtitle": "Notre plateforme de prévention de fraude alimentée par l'IA offre des résultats mesurables qui protègent votre entreprise et améliorent l'efficacité opérationnelle.",
+    "items": [
+      "Réduire les pertes de fraude jusqu'à 95%",
+      "Diminuer les faux positifs de 80%",
+      "Automatiser 90% des enquêtes de routine",
+      "Alertes et réponses en temps réel",
+      "Intégration transparente avec les systèmes existants",
+      "Surveillance autonome 24/7"
+    ],
+    "cta": {
+      "title": "Protection alimentée par l'IA",
+      "description": "Découvrez la nouvelle génération de prévention de fraude avec nos agents IA autonomes qui apprennent, s'adaptent et protègent votre entreprise 24/7.",
+      "button": "Planifier une démo"
+    }
+  },
+  "cta": {
+    "title": "Prêt à transformer votre prévention de fraude ?",
+    "subtitle": "Rejoignez les leaders de l'industrie qui font confiance à Olorin.ai pour protéger leurs entreprises avec des solutions avancées de prévention de fraude alimentées par l'IA.",
+    "startJourney": "Commencer votre parcours",
+    "learnAbout": "En savoir plus sur nous"
+  },
+  "about": {
+    "title": "À propos d'Olorin.ai",
+    "subtitle": "Nous sommes pionniers de l'avenir de la sécurité d'entreprise avec des agents IA autonomes qui révolutionnent les processus de prévention et d'investigation de fraude.",
+    "mission": {
+      "title": "Notre mission",
+      "description1": "Chez Olorin.ai, nous croyons que chaque entreprise mérite une protection contre les menaces de fraude évolutives. Notre mission est de démocratiser l'accès à la technologie IA de pointe qui peut détecter, enquêter et prévenir la fraude de manière autonome avec une précision sans précédent.",
+      "description2": "Nommé d'après le sage protecteur du monde de Tolkien, Olorin représente notre engagement à être le gardien de vos actifs numériques, veillant sur votre entreprise avec intelligence, vigilance et dévouement inébranlable.",
+      "recognition": "Reconnaissance de l'industrie",
+      "recognitionDesc": "Reconnu comme leader dans les solutions de prévention de fraude alimentées par l'IA"
+    },
+    "impact": {
+      "title": "Notre impact",
+      "subtitle": "Des chiffres qui démontrent notre engagement envers l'excellence",
+      "founded": "2025",
+      "foundedLabel": "Fondé",
+      "clients": "50+",
+      "clientsLabel": "Clients d'entreprise",
+      "uptime": "99,9%",
+      "uptimeLabel": "Temps de fonctionnement du système",
+      "prevented": "2B$+",
+      "preventedLabel": "Fraude prévenue"
+    },
+    "values": {
+      "title": "Nos valeurs fondamentales",
+      "subtitle": "Les principes qui guident tout ce que nous faisons et façonnent la façon dont nous servons nos clients",
+      "security": {
+        "title": "Sécurité d'abord",
+        "description": "Nous priorisons les plus hauts niveaux de sécurité et de confidentialité dans tout ce que nous construisons."
+      },
+      "innovation": {
+        "title": "Innovation IA",
+        "description": "Repousser les limites de ce qui est possible avec l'intelligence artificielle et l'apprentissage automatique."
+      },
+      "precision": {
+        "title": "Précision",
+        "description": "Livrer des solutions précises et fiables qui minimisent les faux positifs et maximisent l'efficacité."
+      },
+      "partnership": {
+        "title": "Partenariat",
+        "description": "Construire des relations à long terme avec nos clients en tant que partenaires de sécurité de confiance."
+      }
+    },
+    "technology": {
+      "title": "Technologie de pointe",
+      "description": "Notre plateforme exploite les dernières avancées en intelligence artificielle, apprentissage automatique et IA générative pour créer des agents autonomes qui pensent et agissent comme des enquêteurs experts en fraude.",
+      "features": [
+        "Algorithmes d'apprentissage automatique avancés",
+        "Traitement du langage naturel",
+        "Reconnaissance de modèles comportementaux",
+        "Traitement de données en temps réel"
+      ],
+      "ctaTitle": "Approche IA d'abord",
+      "ctaDescription": "Chaque solution que nous construisons commence par l'IA en son cœur, garantissant une efficacité maximale et des capacités d'apprentissage continu."
+    },
+    "team": {
+      "title": "Rencontrez notre équipe",
+      "subtitle": "Notre équipe diversifiée de chercheurs en IA, d'experts en sécurité et de vétérans de l'industrie se consacre à construire l'avenir de la prévention de fraude.",
+      "expertise": "Expertise de classe mondiale",
+      "expertiseDesc": "Notre équipe combine des décennies d'expérience en cybersécurité, intelligence artificielle et logiciels d'entreprise pour livrer des solutions qui font vraiment la différence."
+    }
+  },
+  "services": {
+    "title": "Services de prévention de fraude alimentés par l'IA",
+    "subtitle": "Solutions complètes de prévention de fraude alimentées par des agents IA autonomes qui protègent votre entreprise 24/7 avec une précision et une vitesse inégalées.",
+    "getStartedToday": "Commencer aujourd'hui",
+    "benefitStats": {
+      "detection": "Taux de détection de fraude de 95%",
+      "detectionDesc": "Précision leader de l'industrie avec un minimum de faux positifs",
+      "realtime": "Traitement en temps réel",
+      "realtimeDesc": "Temps de réponse inférieurs à la seconde pour une détection immédiate des menaces",
+      "automated": "Investigation automatisée",
+      "automatedDesc": "Réduction de 90% du temps d'investigation manuelle",
+      "security": "Sécurité d'entreprise",
+      "securityDesc": "Sécurité de niveau bancaire avec certifications de conformité"
+    },
+    "ourServices": {
+      "title": "Nos services de prévention de fraude IA",
+      "subtitle": "Solutions complètes qui exploitent la technologie IA de pointe pour protéger votre entreprise contre les menaces de fraude évolutives.",
+      "autonomous": {
+        "title": "Agents IA autonomes",
+        "description": "Déployez des agents intelligents qui travaillent 24/7 pour surveiller, détecter et enquêter sur les tentatives de fraude avec des capacités de raisonnement de niveau humain.",
+        "features": [
+          "Détection de fraude auto-apprenante",
+          "Analyse de modèles comportementaux",
+          "Évaluation contextuelle des menaces",
+          "Priorisation automatisée des cas"
+        ]
+      },
+      "investigation": {
+        "title": "Investigation en temps réel",
+        "description": "Obtenez des rapports d'enquête instantanés et complets avec des traces de preuves détaillées et des actions recommandées pour chaque alerte de fraude.",
+        "features": [
+          "Temps de réponse inférieurs à la seconde",
+          "Corrélation de données multi-sources",
+          "Documentation de la chaîne de preuves",
+          "Rapports de conformité automatisés"
+        ]
+      },
+      "predictive": {
+        "title": "Détection prédictive des menaces",
+        "description": "Gardez une longueur d'avance sur les fraudeurs avec des modèles de prédiction alimentés par l'IA qui identifient les menaces potentielles avant qu'elles ne se matérialisent.",
+        "features": [
+          "Algorithmes de prédiction d'anomalies",
+          "Modèles de notation des risques",
+          "Systèmes d'alerte précoce",
+          "Analyse et prévision des tendances"
+        ]
+      },
+      "multiSource": {
+        "title": "Intelligence multi-sources",
+        "description": "Agrégez et analysez des données de sources multiples pour créer un écosystème complet de prévention de fraude.",
+        "features": [
+          "Intégrations API",
+          "Streaming de données en temps réel",
+          "Corrélation inter-plateformes",
+          "Analyse de données historiques"
+        ]
+      },
+      "custom": {
+        "title": "Solutions IA personnalisées",
+        "description": "Solutions de prévention de fraude IA sur mesure conçues spécifiquement pour votre industrie et vos exigences commerciales.",
+        "features": [
+          "Modèles spécifiques à l'industrie",
+          "Moteurs de règles personnalisés",
+          "Tableaux de bord personnalisés",
+          "Architecture évolutive"
+        ]
+      },
+      "compliance": {
+        "title": "Conformité et sécurité",
+        "description": "Assurez la conformité réglementaire tout en maintenant les plus hauts standards de sécurité pour vos opérations de prévention de fraude.",
+        "features": [
+          "Conformité RGPD et CCPA",
+          "Certifié SOC 2 Type II",
+          "Chiffrement de bout en bout",
+          "Gestion des pistes d'audit"
+        ]
+      }
+    },
+    "industries": {
+      "title": "Industries que nous servons",
+      "subtitle": "Solutions de prévention de fraude spécialisées adaptées aux défis et exigences uniques de votre industrie.",
+      "financial": {
+        "name": "Services financiers",
+        "description": "Banques, coopératives de crédit et institutions financières",
+        "useCases": [
+          "Détection de fraude de paiement",
+          "Prévention de prise de contrôle de compte",
+          "Détection de blanchiment d'argent"
+        ]
+      },
+      "ecommerce": {
+        "name": "Commerce électronique",
+        "description": "Détaillants en ligne et places de marché",
+        "useCases": [
+          "Prévention de fraude de transaction",
+          "Détection d'abus de compte",
+          "Réduction des rétrofacturations"
+        ]
+      },
+      "insurance": {
+        "name": "Assurance",
+        "description": "Compagnies d'assurance et courtiers",
+        "useCases": [
+          "Détection de fraude aux réclamations",
+          "Prévention de fraude d'application",
+          "Identification de fraude de prime"
+        ]
+      },
+      "healthcare": {
+        "name": "Soins de santé",
+        "description": "Fournisseurs de soins de santé et assureurs",
+        "useCases": [
+          "Fraude de facturation médicale",
+          "Vérification d'identité",
+          "Détection de fraude d'ordonnance"
+        ]
+      }
+    },
+    "process": {
+      "title": "Comment fonctionnent nos agents IA",
+      "subtitle": "Nos agents IA autonomes suivent un processus sophistiqué pour détecter, enquêter et prévenir la fraude en temps réel.",
+      "detect": {
+        "title": "Détecter",
+        "description": "Les agents IA surveillent continuellement les transactions et activités, identifiant les modèles suspects en temps réel."
+      },
+      "investigate": {
+        "title": "Enquêter",
+        "description": "Les processus d'enquête automatisés rassemblent des preuves, analysent le contexte et construisent des dossiers de cas complets."
+      },
+      "prevent": {
+        "title": "Prévenir",
+        "description": "Prendre des mesures immédiates pour bloquer les activités frauduleuses et fournir des rapports détaillés pour la conformité."
+      }
+    },
+    "cta": {
+      "title": "Prêt à déployer la prévention de fraude IA ?",
+      "subtitle": "Rejoignez l'avenir de la prévention de fraude avec nos agents IA autonomes. Commencez avec une démo personnalisée aujourd'hui.",
+      "demo": "Planifier une démo",
+      "learn": "En savoir plus"
+    }
+  },
+  "contact": {
+    "title": "Entrer en contact",
+    "subtitle": "Prêt à transformer votre prévention de fraude avec l'IA ? Contactez nos experts pour planifier une démo et voir comment Olorin.ai peut protéger votre entreprise.",
+    "form": {
+      "title": "Envoyez-nous un message",
+      "subtitle": "Remplissez le formulaire ci-dessous et notre équipe vous répondra dans les 24 heures.",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Adresse e-mail",
+      "company": "Entreprise",
+      "phone": "Numéro de téléphone",
+      "subject": "Sujet",
+      "message": "Message",
+      "messagePlaceholder": "Parlez-nous de vos besoins en prévention de fraude...",
+      "send": "Envoyer le message",
+      "success": "Message envoyé avec succès !",
+      "successDesc": "Merci de nous avoir contactés. Nous répondrons dans les 24 heures.",
+      "subjects": {
+        "general": "Demande générale",
+        "demo": "Démo produit",
+        "support": "Support technique",
+        "partnership": "Opportunités de partenariat",
+        "media": "Médias et presse",
+        "other": "Autre"
+      }
+    },
+    "info": {
+      "title": "Informations de contact",
+      "subtitle": "Entrez en contact avec notre équipe d'experts en prévention de fraude. Nous sommes là pour vous aider à sécuriser votre entreprise avec une technologie IA de pointe.",
+      "email": {
+        "title": "Envoyez-nous un e-mail",
+        "details": "contact@olorin.ai",
+        "description": "Envoyez-nous un e-mail et nous répondrons dans les 24 heures"
+      },
+      "phone": {
+        "title": "Appelez-nous",
+        "details": "+1 (555) 123-4567",
+        "description": "Parlez avec nos experts en prévention de fraude"
+      },
+      "address": {
+        "title": "Visitez-nous",
+        "details": "123 AI Innovation Drive, San Francisco, CA 94105",
+        "description": "Planifiez une réunion en personne à notre siège social"
+      },
+      "hours": {
+        "title": "Heures d'ouverture",
+        "details": "Lundi - Vendredi, 9h00 - 18h00 PST",
+        "description": "Nous sommes là pour vous aider pendant les heures d'ouverture"
+      },
+      "guarantee": {
+        "title": "Garantie de réponse rapide",
+        "description": "Nous comprenons que la prévention de fraude est sensible au temps. Notre équipe s'engage à répondre à toutes les demandes dans les 24 heures, avec les questions de sécurité urgentes traitées dans les 4 heures."
+      }
+    },
+    "callCta": {
+      "title": "Préférez planifier un appel ?",
+      "subtitle": "Réservez une démo personnalisée avec nos experts en prévention de fraude pour voir comment Olorin.ai peut protéger vos besoins commerciaux spécifiques.",
+      "button": "Appelez maintenant : +1 (555) 123-4567"
+    }
+  },
+  "footer": {
+    "description": "Leader de l'avenir de la sécurité d'entreprise avec des solutions agentiques d'IA générative. Nos agents IA autonomes révolutionnent les processus de prévention et d'investigation de fraude.",
+    "quickLinks": "Liens rapides",
+    "contactInfo": "Informations de contact",
+    "copyright": "© 2025 Olorin.ai. Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions de service"
+  }
+} 
