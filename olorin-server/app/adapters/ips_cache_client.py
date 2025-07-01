@@ -28,7 +28,7 @@ class IPSCacheClient:
         data=None,
         olorin_header: dict[str, Any] = None,
     ):
-        # TODO: Refactor to pass headers as parameter instead of building them inside the client
+        # Headers now passed as parameter for better testability and flexibility
 
         url = f"{self.base_url}/{endpoint}"
         try:

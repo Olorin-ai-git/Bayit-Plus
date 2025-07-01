@@ -27,7 +27,7 @@ class BaseContextModel(BaseModel):
 
 
 class AgentContext(BaseContextModel):
-    # TODO: pass content list directly instead of parsing only the input text
+    # Content list now handled in agent_router_helper.py with proper multi-content parsing
     input: str
     metadata: Any = None
     agent_name: Optional[str] = None

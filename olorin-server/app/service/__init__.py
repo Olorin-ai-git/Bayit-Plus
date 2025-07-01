@@ -172,9 +172,21 @@ class OlorinApplication:
 
         app = FastAPI(
             title=service_name,
-            description="""TODO: Add description here
-            The description SHOULD include a summary of the API, and the key use cases that the API solves.
-            Example: https://github.olorin.com/services-java/jsk-v4-service-initializr/blob/8c1d88f60e6fcafea0bc1dc01ba6995462332960/initializr-generator/src/main/resources/templates/spring-mvc-starter/api/openapi/openapi.yaml#L11
+            description="""
+            Olorin Fraud Investigation Platform API
+            
+            A comprehensive fraud detection and investigation system that provides:
+            • Multi-agent fraud analysis across device, location, network, and log domains
+            • Real-time investigation orchestration with AI-powered risk assessment
+            • Integration with external data sources and security tools
+            • WebSocket-based autonomous investigation capabilities
+            • RESTful API endpoints for fraud detection workflows
+            
+            Key use cases:
+            - Automated fraud investigation coordination
+            - Risk assessment and scoring across multiple domains
+            - Real-time threat detection and response
+            - Investigation workflow management and reporting
             """,
             docs_url="/apidoc/swagger",
             redoc_url="/apidoc/redoc",

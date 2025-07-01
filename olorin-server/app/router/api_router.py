@@ -162,17 +162,7 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def get_chronos_range(time_range: str):
-    now = datetime.now(timezone.utc)
-    if time_range.endswith("d"):
-        days = int(time_range[:-1])
-        start = now - timedelta(days=days)
-    elif time_range.endswith("m"):
-        months = int(time_range[:-1])
-        start = now - timedelta(days=30 * months)
-    else:
-        start = now - timedelta(days=1)
-    return {"from": start.isoformat(), "to": now.isoformat()}
+
 
 
 @router.get("/logs/{user_id}")
@@ -257,48 +247,11 @@ async def analyze_logs(
                 splunk_data = []
 
         sanitized_data = sanitize_splunk_data(splunk_data)
-        # --- CHRONOS DATA ---
-        chronos_fields = [
-            "os",
-            "osVersion",
-            "trueIpCity",
-            "trueIpGeo",
-            "ts",
-            "kdid",
-            "smartId",
-            "offeringId",
-            "trueIpFirstSeen",
-            "trueIpRegion",
-            "trueIpLatitude",
-            "trueIpLongitude",
-            "agentType",
-            "browserString",
-            "fuzzyDeviceFirstSeen",
-            "timezone",
-            "tmResponse.tmxReasonCodes",
-        ]
-        chronos_request = {
-            "metadata": {"limit": 300},
-            "range": get_chronos_range(time_range),
-            "filter": {"auth_id": user_id},
-            "select": chronos_fields,
-            "queryId": "OLORIN",
-            "routingLabel": "elc",
-        }
-        from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool
-
-        chronos_tool = ChronosTool()
-        chronos_response_str = await chronos_tool._arun(
-            user_id=user_id, select=chronos_fields
-        )
-        chronos_response = json.loads(chronos_response_str)
-        chronos_entities = chronos_response.get("entities", [])
-
+        
         # --- LLM Prompt Construction ---
         prompt_data = {
             "user_id": user_id,
             "splunk_data": sanitized_data,
-            "chronosEntities": chronos_entities,
         }
         chat_history_for_prompt = []
         system_prompt_for_log_risk = SYSTEM_PROMPT_FOR_LOG_RISK
@@ -360,13 +313,11 @@ async def analyze_logs(
                 return {
                     "risk_assessment": risk_assessment_data,
                     "splunk_data": sanitized_data,
-                    "chronosEntities": chronos_entities,
                     "warning": "The LLM prompt was trimmed to fit the token limit. The result may not be fully accurate.",
                 }
             return {
                 "risk_assessment": risk_assessment_data,
                 "splunk_data": sanitized_data,
-                "chronosEntities": chronos_entities,
             }
         except json.JSONDecodeError as json_err:
             logger.error(
@@ -381,7 +332,6 @@ async def analyze_logs(
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "splunk_data": sanitized_data,
-                "chronosEntities": [],
             }
     except Exception as e:
         logger.error(
@@ -396,7 +346,6 @@ async def analyze_logs(
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             },
             "splunk_data": [],
-            "chronosEntities": [],
         }
 
 

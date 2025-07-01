@@ -139,7 +139,6 @@ export interface DeviceAgentResponse {
   extracted_device_signals?: ExtractedDeviceSignal[];
   device_signal_risk_assessment?: DeviceSignalRiskAssessment;
   timestamp?: string;
-  chronos_warning?: string;
   di_tool_warning?: string;
   llm_thoughts?: string;
   // API documented format fields
@@ -246,4 +245,14 @@ export interface InvestigationStep {
   timestamp?: string;
   /** Tools selected for this agent */
   tools: string[];
+}
+
+export interface DeviceDetails {
+  risk_assessment?: RiskAssessment;
+  extracted_device_signals?: any[];
+  device_signal_risk_assessment?: any;
+  di_tool_warning?: string;
+  llm_thoughts?: string;
+  splunk_data?: any[];
+  di_bb?: any;
 }

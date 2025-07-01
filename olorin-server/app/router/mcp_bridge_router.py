@@ -58,7 +58,7 @@ def get_tool_display_names() -> Dict[str, str]:
         "vector_search_tool": "Semantic Search",
         
         # Legacy/Fallback names
-        "chronos_tool": "Chronos Analytics",
+
         "kk_dashboard": "KK Dashboard",
         "cdc_tool": "Customer Data",
         "qb_tool": "QuickBooks Data"
@@ -168,7 +168,7 @@ async def list_tools(category: Optional[str] = None):
 
 @router.get("/tools/olorin", response_model=List[ToolInfo])
 async def list_olorin_tools():
-    """List Olorin-specific tools (Splunk, OII, Chronos, DI)."""
+    """List Olorin-specific tools (Splunk, OII, DI)."""
     try:
         if not tool_registry.is_initialized():
             initialize_tools()
@@ -321,7 +321,7 @@ async def get_tools_by_categories():
             
             # Categorize into Olorin vs MCP
             if tool_category == "olorin" or any(keyword in tool.name.lower() for keyword in 
-                ['splunk', 'oii', 'identity', 'chronos', 'di_tool', 'fraud', 'investigation']):
+                ['splunk', 'oii', 'identity', 'di_tool', 'fraud', 'investigation']):
                 olorin_tools.append(tool_info)
             else:
                 mcp_tools.append(tool_info)

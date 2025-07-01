@@ -160,10 +160,8 @@ describe('AgentDetailsTable', () => {
       timestamp: '2025-05-28T12:00:00Z',
     },
     timestamp: '2025-05-28T11:39:45.050936+00:00',
-    chronos_warning: 'ChronosTool did not return a valid response object',
-    di_tool_warning: 'DITool failed: unexpected keyword argument',
-    llm_thoughts:
-      'The user signals indicate concurrent usage from India and the US across multiple device IDs',
+    di_tool_warning: 'DI tool warning message',
+    llm_thoughts: 'Device shows high risk patterns',
     // Legacy fields for backward compatibility testing
     current_device: {
       device_id: 'DEV123',
@@ -371,10 +369,7 @@ describe('AgentDetailsTable', () => {
       );
       expect(screen.getByText('Warnings')).toBeInTheDocument();
       expect(
-        screen.getByText('ChronosTool did not return a valid response object'),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('DITool failed: unexpected keyword argument'),
+        screen.getByText('DI tool warning message'),
       ).toBeInTheDocument();
     });
 
@@ -388,7 +383,7 @@ describe('AgentDetailsTable', () => {
       expect(screen.getByText('LLM Thoughts')).toBeInTheDocument();
       expect(
         screen.getByText(
-          'The user signals indicate concurrent usage from India and the US across multiple device IDs',
+          'Device shows high risk patterns',
         ),
       ).toBeInTheDocument();
     });
@@ -672,38 +667,6 @@ describe('AgentDetailsTable', () => {
         screen.getByText('Device Intelligence (DI BB)'),
       ).toBeInTheDocument();
       expect(screen.getByText('raw string data')).toBeInTheDocument();
-    });
-
-    it.skip('renders Chronos Results with metadata and events', () => {
-      const details = {
-        chronos_data: {
-          metadata: {
-            totalCount: 2,
-            limit: 10,
-            entitiesCount: 1,
-            anchor: 'foo',
-          },
-        },
-        parsed_chronos: [
-          {
-            eventType: 'login',
-            eventTimestamp: '2024-01-01',
-            origin: 'web',
-            extra: 'data',
-          },
-        ],
-      };
-      render(<AgentDetailsTable details={details} agentType="Device Agent" />);
-      expect(screen.getByText('Chronos Events')).toBeInTheDocument();
-      expect(screen.getByText('login')).toBeInTheDocument();
-      expect(screen.getByText('data')).toBeInTheDocument();
-      expect(screen.getByText('Total Events:')).toBeInTheDocument();
-    });
-
-    it('renders Chronos Results with empty parsed_chronos', () => {
-      const details = { parsed_chronos: [] };
-      render(<AgentDetailsTable details={details} agentType="Device Agent" />);
-      expect(screen.getByText('No Chronos events found.')).toBeInTheDocument();
     });
 
     it('renders Additional Information for rest fields in device agent', () => {

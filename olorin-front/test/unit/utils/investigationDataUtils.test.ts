@@ -117,22 +117,11 @@ describe('investigationDataUtils', () => {
         },
         current_network: { timestamp: '2020-01-01T00:00:00Z' },
         network_history: [{ timestamp: '2020-01-01T00:00:00Z' }],
-        chronos_data: {
-          entities: [
-            {
-              eventType: 'foo',
-              eventTimestamp: '2020-01-01T00:00:00Z',
-              origin: 'bar',
-              data: { x: 1 },
-            },
-          ],
-        },
       };
       const result = processNetworkData(response);
       expect(result.risk_assessment).toBeDefined();
       expect(result.current_network.timestamp).toBeDefined();
       expect(result.network_history[0].timestamp).toBeDefined();
-      expect(result.parsed_chronos[0].eventType).toBe('foo');
     });
   });
 
@@ -143,23 +132,12 @@ describe('investigationDataUtils', () => {
         di_bb: { data: '{"foo":1}' },
         current_device: { timestamp: '2020-01-01T00:00:00Z' },
         device_history: [{ timestamp: '2020-01-01T00:00:00Z' }],
-        chronos_data: {
-          entities: [
-            {
-              eventType: 'foo',
-              eventTimestamp: '2020-01-01T00:00:00Z',
-              origin: 'bar',
-              data: { x: 1 },
-            },
-          ],
-        },
       };
       const result = processDeviceData(response);
       expect(result.risk_assessment).toBeDefined();
       expect(result.di_bb.parsedData.foo).toBe(1);
       expect(result.current_device.timestamp).toBeDefined();
       expect(result.device_history[0].timestamp).toBeDefined();
-      expect(result.parsed_chronos[0].eventType).toBe('foo');
     });
   });
 
@@ -169,22 +147,11 @@ describe('investigationDataUtils', () => {
         risk_assessment: { timestamp: '2020-01-01T00:00:00Z' },
         behavior_patterns: { login_times: ['2020-01-01T00:00:00Z'] },
         anomalies: [{ timestamp: '2020-01-01T00:00:00Z' }],
-        chronos_data: {
-          entities: [
-            {
-              eventType: 'foo',
-              eventTimestamp: '2020-01-01T00:00:00Z',
-              origin: 'bar',
-              data: { x: 1 },
-            },
-          ],
-        },
       };
       const result = processLogData(response);
       expect(result.risk_assessment).toBeDefined();
       expect(result.behavior_patterns.login_times[0]).toBeDefined();
       expect(result.anomalies[0].timestamp).toBeDefined();
-      expect(result.parsed_chronos[0].eventType).toBe('foo');
     });
   });
 

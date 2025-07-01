@@ -16,7 +16,7 @@ from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor impo
     _build_auth_id_query,
     build_base_search,
 )
-# from app.service.agent.tools.chronos_tool.chronos_tool import ChronosTool  # Chronos removed
+
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.config import get_settings_for_env
 from app.service.llm_logs_risk_service import LLMLogsRiskService, LogsRiskAssessment
@@ -78,8 +78,8 @@ class LogsAnalysisService:
             # Parse logs for analysis
             parsed_logs = self._parse_logs(splunk_data)
 
-            # Fetch Chronos data
-            chronos_entities = await self._fetch_chronos_data(user_id, time_range)
+            # Chronos integration removed
+            chronos_entities = []
 
             # Early fallback when there are no authentication logs
             if not parsed_logs:
@@ -269,34 +269,7 @@ class LogsAnalysisService:
             )
         return parsed_logs
 
-    async def _fetch_chronos_data(
-        self, user_id: str, time_range: str
-    ) -> List[Dict[str, Any]]:
-        """Fetch Chronos data for logs analysis."""
-        chronos_fields = [
-            "os",
-            "osVersion",
-            "trueIpCity",
-            "trueIpGeo",
-            "ts",
-            "kdid",
-            "smartId",
-            "offeringId",
-            "trueIpFirstSeen",
-            "trueIpRegion",
-            "trueIpLatitude",
-            "trueIpLongitude",
-            "agentType",
-            "browserString",
-            "fuzzyDeviceFirstSeen",
-            "timezone",
-            "tmResponse.tmxReasonCodes",
-        ]
 
-        # chronos_tool = ChronosTool()  # Chronos removed
-        # Chronos functionality has been removed - return empty entities
-        logger.warning("Chronos functionality has been removed")
-        return []
 
     async def _process_llm_assessment(
         self,

@@ -19,7 +19,7 @@ type OlorinApi =
   | 'investigation'
   | 'investigations'
   | 'locationRiskAnalysis'
-  | 'deviceChronos'
+
   | 'oiiLocationSource'
   | 'businessLocationSource'
   | 'phoneLocationSource'
@@ -83,12 +83,6 @@ const OLORIN_CONFIG: Record<OlorinApi, ApiMethod> = {
   locationRiskAnalysis: {
     version: 'api',
     apiPath: 'location/risk-analysis',
-    noRetry: false,
-    isJsonResponse: true,
-  },
-  deviceChronos: {
-    version: 'api',
-    apiPath: 'device/chronos',
     noRetry: false,
     isJsonResponse: true,
   },
@@ -619,45 +613,6 @@ export class OlorinService {
       params.splunk_host = splunkHost;
     }
     return this.get(entityId, 'locationRiskAnalysis', entityType, params);
-  }
-
-  /**
-   * Call device Chronos API directly.
-   * @param {string} entityId - The entity ID (user ID).
-   * @param {string[]} [fields] - Fields to retrieve from Chronos.
-   * @param {string} [timeRange='30d'] - The time range for data retrieval.
-   * @param {string} [profileId='9341450868951246'] - Profile ID for authentication.
-   * @returns {Promise<RestResponse>} Device Chronos response.
-   */
-  async getDeviceChronos(
-    entityId: string,
-    fields?: string[],
-    timeRange: string = '30d',
-    profileId: string = '9341450868951246',
-  ): Promise<RestResponse> {
-    const body = fields
-      ? { user_id: entityId, fields, time_range: timeRange }
-      : { user_id: entityId, time_range: timeRange };
-
-    const config = getApiConfig('deviceChronos');
-
-    try {
-      return await this.restService.post({
-        ...config,
-        body,
-        options: {
-          headers: generateRequestOptions().headers,
-        },
-        isJsonResponse: true,
-      });
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error(
-          'Unauthorized: Please check your authentication credentials and try again.',
-        );
-      }
-      throw error;
-    }
   }
 
   /**

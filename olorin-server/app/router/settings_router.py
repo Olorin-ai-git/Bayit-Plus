@@ -112,7 +112,7 @@ def get_tool_display_names() -> Dict[str, str]:
         "vector_search_tool": "Semantic Search",
         
         # Legacy/Fallback names
-        "chronos_tool": "Chronos Analytics",
+
         "kk_dashboard": "KK Dashboard",
         "cdc_tool": "Customer Data",
         "qb_tool": "QuickBooks Data"
@@ -441,7 +441,7 @@ async def get_tools_by_category():
             
             # Classify as Olorin tool if it contains investigation-related keywords
             if any(keyword in tool_name for keyword in 
-                ['splunk', 'oii', 'identity', 'chronos', 'di_tool', 'fraud', 'investigation']):
+                ['splunk', 'oii', 'identity', 'di_tool', 'fraud', 'investigation']):
                 olorin_tools.append(tool_info)
             else:
                 mcp_tools.append(tool_info)

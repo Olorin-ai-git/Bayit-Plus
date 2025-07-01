@@ -8,10 +8,11 @@ import {
   LogsAnalysisResponse,
   RiskAssessmentResponse,
   OiiResponse,
-  DeviceChronosResponse,
   LocationRiskAnalysisResponse,
   InvestigationResponse,
   CommentResponse,
+  DeviceApiResponse,
+  LogsApiResponse,
 } from '../types/ApiResponses';
 import { CommentMessage } from '../components/CommentWindow';
 
@@ -153,14 +154,6 @@ export function processNetworkData(
       timestamp: formatTimestamp(ra.timestamp),
     };
   }
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
 
   return {
     ...response,
@@ -196,10 +189,6 @@ export function processNetworkData(
       })) || [],
     risk_assessment: riskAssessment,
     // Common fields
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
-    llm_thoughts: response?.llm_thoughts,
-    // Add new optional fields if they exist
     ...(response.investigationId && {
       investigationId: response.investigationId,
     }),
@@ -274,15 +263,6 @@ export function processDeviceData(
       _time: signal._time ? formatTimestamp(signal._time) : signal._time,
     })) || [];
 
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
-
   // DI BB integration
   let diBB = null;
   if (response?.di_bb) {
@@ -338,13 +318,10 @@ export function processDeviceData(
       })) || [],
     risk_assessment: riskAssessment,
     // Common fields
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
     di_bb: diBB,
     // Additional fields from new format
     user_id: response?.user_id,
     timestamp: response?.timestamp ? formatTimestamp(response.timestamp) : null,
-    chronos_warning: response?.chronos_warning,
     di_tool_warning: response?.di_tool_warning,
     llm_thoughts: response?.llm_thoughts,
   };
@@ -394,14 +371,7 @@ export function processLogData(response: any): Partial<LogsAnalysisResponse> {
       timestamp: formatTimestamp(response.risk_assessment.timestamp),
     };
   }
-  const parsedChronos = response?.chronos_data?.entities
-    ? response.chronos_data.entities.map((entity: any) => ({
-        eventType: entity.eventType,
-        eventTimestamp: entity.eventTimestamp,
-        origin: entity.origin,
-        ...(entity.data || {}),
-      }))
-    : null;
+
   return {
     ...response,
     // Process extracted log signals from API documented format
@@ -439,9 +409,6 @@ export function processLogData(response: any): Partial<LogsAnalysisResponse> {
       : null,
     log_risk_assessment: logRiskAssessment,
     // Other fields
-    chronos_entities: response?.chronos_entities || [],
-    chronos_data: response?.chronos_data || null,
-    parsed_chronos: parsedChronos,
     entity_id: response?.entity_id,
     entity_type: response?.entity_type,
     raw_splunk_results_count: response?.raw_splunk_results_count,
@@ -617,26 +584,6 @@ export function processRiskAssessmentData(
     recommendation: response?.recommendation,
     thoughts: response?.thoughts,
     timestamp: response?.timestamp ? formatTimestamp(response.timestamp) : null,
-  };
-}
-
-/**
- * Processes Device Chronos API response data.
- * @param {any} response - The device chronos response object
- * @returns {Partial<DeviceChronosResponse>} Processed device chronos details
- */
-export function processDeviceChronosData(
-  response: any,
-): Partial<DeviceChronosResponse> {
-  return {
-    ...response,
-    results:
-      response?.results?.map((result: any) => ({
-        ...result,
-        ts: result.ts ? formatTimestamp(result.ts) : result.ts,
-      })) || [],
-    total_count: response?.total_count,
-    query_metadata: response?.query_metadata || {},
   };
 }
 

@@ -32,7 +32,6 @@ export interface DeviceAnalysisResponse {
   raw_splunk_results_count: number;
   extracted_device_signals: DeviceSignal[];
   device_risk_assessment: DeviceRiskAssessment;
-  chronos_entities: ChronosEntity[];
 }
 
 export interface DeviceSignal {
@@ -58,13 +57,6 @@ export interface DeviceRiskAssessment {
   confidence: number;
   summary: string;
   thoughts: string;
-}
-
-export interface ChronosEntity {
-  sessionId: string;
-  smartId: string;
-  kdid: string;
-  offeringId: string;
 }
 
 export interface LocationAnalysisResponse {
@@ -128,7 +120,6 @@ export interface LogsAnalysisResponse {
   entity_type: 'user_id' | 'device_id';
   raw_splunk_results_count: number;
   extracted_log_signals: LogSignal[];
-  chronos_entities: ChronosEntity[];
   logs_risk_assessment: LogsRiskAssessment;
 }
 
@@ -210,57 +201,30 @@ export interface RiskIndicators {
   synthetic_identity_risk: number;
 }
 
-export interface DeviceChronosResponse {
-  results: ChronosResult[];
-  total_count: number;
-  query_metadata: QueryMetadata;
+export interface LogsApiResponse {
+  risk_assessment: {
+    risk_level: number;
+    risk_factors: string[];
+    confidence: number;
+    summary: string;
+    timestamp: string;
+  };
+  splunk_data: any[];
+  parsed_logs: any[];
+  investigationId: string;
 }
 
-export interface ChronosResult {
-  sessionId: string;
-  os: string;
-  osVersion: string;
-  trueIpCity: string;
-  trueIpGeo?: string;
-  ts: string;
-  kdid?: string;
-  smartId?: string;
-  offeringId?: string;
-  trueIpFirstSeen?: string;
-  trueIpRegion?: string;
-  trueIpLatitude?: number;
-  trueIpLongitude?: number;
-  agentType?: string;
-  browserString?: string;
-  fuzzyDeviceFirstSeen?: string;
-  timezone?: string;
-  'tmResponse.tmxReasonCodes'?: string;
-}
-
-export interface QueryMetadata {
-  time_range: string;
-  fields_requested: number;
-}
-
-export interface InvestigationResponse {
-  id: string;
-  entity_id: string;
-  entity_type: 'user_id' | 'device_id';
-  user_id?: string;
-  status: 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  policy_comments: string;
-  investigator_comments: string;
-  overall_risk_score: number;
-  device_llm_thoughts: string;
-  location_llm_thoughts: string;
-  network_llm_thoughts: string;
-  logs_llm_thoughts: string;
-  device_risk_score: number;
-  location_risk_score: number;
-  network_risk_score: number;
-  logs_risk_score: number;
-  created_at?: string;
-  updated_at?: string;
+export interface DeviceApiResponse {
+  risk_assessment: {
+    risk_level: number;
+    risk_factors: string[];
+    confidence: number;
+    summary: string;
+    timestamp: string;
+  };
+  splunk_data: any[];
+  di_bb?: any;
+  investigationId: string;
 }
 
 export interface CommentResponse {

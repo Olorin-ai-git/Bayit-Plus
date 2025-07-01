@@ -39,9 +39,19 @@ def construct_agent_context(
         ),
     )
     logger.info(f"Successfully parsed olorin_header from request headers")
-    # TODO: first element of content is expected to be text, need to handle multiple content items
+    
+    # Handle multiple content items by concatenating text content
+    input_text = ""
+    if agent_input_request.agent_input.content:
+        text_contents = []
+        for content_item in agent_input_request.agent_input.content:
+            if hasattr(content_item, 'text') and content_item.text:
+                text_contents.append(content_item.text)
+        input_text = " ".join(text_contents) if text_contents else ""
+        logger.debug(f"Processed {len(agent_input_request.agent_input.content)} content items, extracted {len(text_contents)} text items")
+    
     agent_context: AgentContext = AgentContext(
-        input=agent_input_request.agent_input.content[0].text,
+        input=input_text,
         agent_name=agent_input_request.agent.name,
         metadata=agent_input_request.metadata,
         olorin_header=olorin_header,

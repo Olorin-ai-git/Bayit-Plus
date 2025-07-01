@@ -11,19 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/logs")
 
 
-def get_chronos_range(time_range: str):
-    from datetime import datetime, timedelta, timezone
 
-    now = datetime.now(timezone.utc)
-    if time_range.endswith("d"):
-        days = int(time_range[:-1])
-        start = now - timedelta(days=days)
-    elif time_range.endswith("m"):
-        months = int(time_range[:-1])
-        start = now - timedelta(days=30 * months)
-    else:
-        start = now - timedelta(days=1)
-    return {"from": start.isoformat(), "to": now.isoformat()}
 
 
 @router.get("/{entity_id}")

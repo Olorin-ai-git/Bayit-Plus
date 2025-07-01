@@ -852,26 +852,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                   );
                 }
               }
-              // Log Chronos data if present (for Log Agent only)
-              if (
-                stepId === InvestigationStepId.LOG &&
-                newSteps.find((s) => s.id === stepId)?.details?.chronos_data
-                  ?.entities?.length
-              ) {
-                const entities = newSteps.find((s) => s.id === stepId)?.details
-                  ?.chronos_data.entities;
-                await addLog(
-                  `${agentName} Agent: <strong>Chronos Data:</strong> ${entities.length} login events found.`,
-                  LogLevel.INFO,
-                );
-                const first = entities[0];
-                if (first) {
-                  await addLog(
-                    `${agentName} Agent: First Chronos event: [${first.eventTimestamp}] Type: ${first.eventType}, Origin: ${first.origin}`,
-                    LogLevel.INFO,
-                  );
-                }
-              }
               // 5. Always log from the normalized details in the updated step state
               const stepDetails = newSteps.find(
                 (s) => s.id === stepId,
@@ -929,24 +909,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                     ...ra,
                     thoughts: llmThoughts,
                   };
-                }
-              }
-              // Log Chronos data if present (for Log Agent only)
-              if (
-                stepId === InvestigationStepId.LOG &&
-                stepDetails?.chronos_data?.entities?.length
-              ) {
-                const { entities } = stepDetails.chronos_data;
-                await addLog(
-                  `${agentName} Agent: <strong>Chronos Data:</strong> ${entities.length} login events found.`,
-                  LogLevel.INFO,
-                );
-                const first = entities[0];
-                if (first) {
-                  await addLog(
-                    `${agentName} Agent: First Chronos event: [${first.eventTimestamp}] Type: ${first.eventType}, Origin: ${first.origin}`,
-                    LogLevel.INFO,
-                  );
                 }
               }
 

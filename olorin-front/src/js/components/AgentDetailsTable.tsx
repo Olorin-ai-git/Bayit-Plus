@@ -396,7 +396,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       raw_splunk_results = [],
       extracted_device_signals = [],
       device_signal_risk_assessment,
-      chronos_warning,
+  
       di_tool_warning,
       llm_thoughts,
       // Legacy fields for backward compatibility
@@ -404,8 +404,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       device_history,
       risk_assessment,
       di_bb,
-      chronos_data,
-      parsed_chronos,
+      
       ...rest
     } = details;
 
@@ -421,8 +420,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       ? device_history
       : [];
     const di_bb_object = typeof di_bb === 'object' ? di_bb : {};
-    const chronos_data_object =
-      typeof chronos_data === 'object' ? chronos_data : {};
+    
     const anomalies_array = Array.isArray(details.anomalies)
       ? details.anomalies
       : [];
@@ -580,28 +578,13 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
         )}
 
         {/* Warnings */}
-        {(chronos_warning || di_tool_warning) && (
+        {di_tool_warning && (
           <div className="bg-yellow-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Warnings</div>
-            <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-              {chronos_warning && di_tool_warning ? (
-                <>
-                  <div className="text-yellow-800 font-medium">
-                    Chronos Warning: {chronos_warning}
-                  </div>
-                  <div className="text-yellow-800 font-medium">
-                    DI Tool Warning: {di_tool_warning}
-                  </div>
-                </>
-              ) : chronos_warning ? (
-                <div className="text-yellow-800 font-medium">
-                  Chronos Warning: {chronos_warning}
-                </div>
-              ) : di_tool_warning ? (
-                <div className="text-yellow-800 font-medium">
-                  DI Tool Warning: {di_tool_warning}
-                </div>
-              ) : null}
+            <div className="pl-4 border-l-2 border-yellow-300">
+              <div className="text-yellow-800 font-medium">
+                DI Tool Warning: {di_tool_warning}
+              </div>
             </div>
           </div>
         )}
@@ -705,14 +688,6 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             <div className="pl-4 border-l-2 border-gray-200 space-y-1">
               {renderDiBbResults(di_bb)}
             </div>
-          </div>
-        )}
-
-        {/* Chronos Results */}
-        {(chronos_data_object || parsed_chronos) && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="font-medium text-gray-900 mb-2">Chronos Events</div>
-            {renderChronosData(chronos_data)}
           </div>
         )}
 
@@ -993,32 +968,6 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                 ? JSON.stringify(parsedData, null, 2)
                 : String(parsedData)}
             </pre>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderChronosData = (chronos_data: DetailValue) => {
-    if (!chronos_data || typeof chronos_data !== 'object') {
-      return null;
-    }
-
-    const chronos_data_object = chronos_data as { [key: string]: DetailValue };
-    const metadata = chronos_data_object.metadata as
-      | { [key: string]: DetailValue }
-      | undefined;
-
-    return (
-      <div className="space-y-4">
-        {metadata && (
-          <div>
-            <span className="font-medium">Metadata:</span>
-            <div className="ml-4">
-              {renderValue(metadata.totalCount)} | {renderValue(metadata.limit)}{' '}
-              | {renderValue(metadata.entitiesCount)} |{' '}
-              {renderValue(metadata.anchor)}
-            </div>
           </div>
         )}
       </div>
