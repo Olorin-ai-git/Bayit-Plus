@@ -584,18 +584,24 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
           <div className="bg-yellow-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Warnings</div>
             <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-              {chronos_warning && (
-                <div className="text-yellow-800">
-                  <span className="font-medium">Chronos Warning:</span>{' '}
-                  {chronos_warning}
+              {chronos_warning && di_tool_warning ? (
+                <>
+                  <div className="text-yellow-800 font-medium">
+                    Chronos Warning: {chronos_warning}
+                  </div>
+                  <div className="text-yellow-800 font-medium">
+                    DI Tool Warning: {di_tool_warning}
+                  </div>
+                </>
+              ) : chronos_warning ? (
+                <div className="text-yellow-800 font-medium">
+                  Chronos Warning: {chronos_warning}
                 </div>
-              )}
-              {di_tool_warning && (
-                <div className="text-yellow-800">
-                  <span className="font-medium">DI Tool Warning:</span>{' '}
-                  {di_tool_warning}
+              ) : di_tool_warning ? (
+                <div className="text-yellow-800 font-medium">
+                  DI Tool Warning: {di_tool_warning}
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         )}
