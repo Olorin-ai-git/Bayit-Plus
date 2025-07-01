@@ -71,19 +71,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
 DEFAULT_HEADERS = {
-<<<<<<< HEAD:back/app/router/api_router.py
     "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",
     "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
     "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
-=======
-    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
-    "Content-Type": "application/json",
-    "X-Forwarded-Port": "8090",
-    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
->>>>>>> restructure-projects:olorin-server/app/router/api_router.py
 }
 
 location_data_client = LocationDataClient()
@@ -183,8 +175,6 @@ def get_chronos_range(time_range: str):
     return {"from": start.isoformat(), "to": now.isoformat()}
 
 
-<<<<<<< HEAD:back/app/router/api_router.py
-=======
 @router.get("/logs/{user_id}")
 async def analyze_logs(
     user_id: str,
@@ -639,15 +629,9 @@ Ensure all fields are populated. The input data is as follows:
                     interaction_group_id=f"loc-risk-analysis-{user_id}",
                     additional_metadata={"userId": user_id},
                 ),
-<<<<<<< HEAD:back/app/router/api_router.py
                 olorin_header=OlorinHeader(
                     olorin_tid=request.headers.get(
                         "olorin-tid", f"olorin-loc-risk-analysis-{user_id}"
-=======
-                olorin_header=OlorinHeader(
-                    olorin_tid=request.headers.get(
-                        "olorin-tid", f"olorin-loc-risk-analysis-{user_id}"
->>>>>>> restructure-projects:olorin-server/app/router/api_router.py
                     ),
                     olorin_originating_assetalias=request.headers.get(
                         "olorin_originating_assetalias",

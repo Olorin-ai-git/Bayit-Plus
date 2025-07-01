@@ -44,11 +44,6 @@ module.exports = {
         ecmaVersion: 2018,
         project: ['tsconfig.json', './cypress/tsconfig.json'],
       },
-<<<<<<< HEAD:front/.eslintrc.js
-=======
-      files: ['**/*.{ts,tsx}'],
-      extends: ['react-app', 'react-app/jest'],
->>>>>>> restructure-projects:olorin-front/.eslintrc.js
     },
   ],
 };

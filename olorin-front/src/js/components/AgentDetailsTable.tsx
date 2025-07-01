@@ -580,32 +580,16 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
         )}
 
         {/* Warnings */}
-<<<<<<< HEAD:front/src/js/components/AgentDetailsTable.tsx
-        <div className="bg-yellow-50 rounded-lg p-4">
-          <div className="font-medium text-gray-900 mb-2">Warnings</div>
-          <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-            {(chronos_warning || di_tool_warning) && (
-              <div className="text-yellow-800">
-                <span>
-                  {chronos_warning && `Chronos Warning: ${chronos_warning}`}
-                  {chronos_warning && di_tool_warning && ' | '}
-                  {di_tool_warning && `DI Tool Warning: ${di_tool_warning}`}
-                </span>
-              </div>
-            )}
-=======
         {(chronos_warning || di_tool_warning) && (
           <div className="bg-yellow-50 rounded-lg p-4">
             <div className="font-medium text-gray-900 mb-2">Warnings</div>
             <div className="pl-4 border-l-2 border-yellow-300 space-y-1">
-              {/* @ts-ignore */}
               {chronos_warning && (
                 <div className="text-yellow-800">
                   <span className="font-medium">Chronos Warning:</span>{' '}
                   {chronos_warning}
                 </div>
               )}
-              {/* @ts-ignore */}
               {di_tool_warning && (
                 <div className="text-yellow-800">
                   <span className="font-medium">DI Tool Warning:</span>{' '}
@@ -613,9 +597,8 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
                 </div>
               )}
             </div>
->>>>>>> restructure-projects:olorin-front/src/js/components/AgentDetailsTable.tsx
           </div>
-        </div>
+        )}
 
         {/* LLM Thoughts */}
         {llm_thoughts && (

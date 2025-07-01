@@ -91,7 +91,6 @@ class BaseLLMRiskService(ABC, Generic[T]):
             .replace("service", "")
         )
         default_tid = f"olorin-{assessment_type}-risk-{user_id}"
-<<<<<<< HEAD:back/app/service/base_llm_risk_service.py
 
         # Create metadata with required fields for LangGraph workflow
         additional_metadata = {
@@ -129,8 +128,6 @@ class BaseLLMRiskService(ABC, Generic[T]):
             olorin_tid = default_tid
             olorin_originating_assetalias = self.settings.olorin_originating_assetalias
             olorin_experience_id = getattr(self.settings, "olorin_experience_id", None)
-=======
->>>>>>> restructure-projects:olorin-server/app/service/base_llm_risk_service.py
 
         return AgentContext(
             input=llm_input_prompt,
@@ -139,23 +136,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 interactionGroupId=self.get_interaction_group_id(user_id),
                 additionalMetadata=additional_metadata,
             ),
-<<<<<<< HEAD:back/app/service/base_llm_risk_service.py
             olorin_header=OlorinHeader(
                 olorin_tid=olorin_tid,
                 olorin_originating_assetalias=olorin_originating_assetalias,
                 olorin_experience_id=olorin_experience_id,
-=======
-            olorin_header=OlorinHeader(
-                olorin_tid=request.headers.get("olorin-tid", default_tid),
-                olorin_originating_assetalias=request.headers.get(
-                    "olorin_originating_assetalias",
-                    self.settings.olorin_originating_assetalias,
-                ),
-                olorin_experience_id=request.headers.get(
-                    "olorin_experience_id",
-                    getattr(self.settings, "olorin_experience_id", None),
-                ),
->>>>>>> restructure-projects:olorin-server/app/service/base_llm_risk_service.py
                 auth_context=AuthContext(
                     olorin_user_id=app_olorin_userid,
                     olorin_user_token=app_olorin_token,
