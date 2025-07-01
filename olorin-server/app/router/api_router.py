@@ -400,7 +400,6 @@ async def analyze_logs(
         }
 
 
->>>>>>> restructure-projects:olorin-server/app/router/api_router.py
 # --- Individual Location Source Endpoints ---
 @router.get("/location/source/oii/{user_id}", response_model=Optional[LocationInfo])
 async def get_oii_source_location(user_id: str) -> Optional[LocationInfo]:
