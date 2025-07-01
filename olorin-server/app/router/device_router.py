@@ -44,15 +44,9 @@ async def get_identity_authorization_header(
 ):
     url = "https://identityinternal-e2e.api.olorin.com/v1/graphql"
     headers = {
-<<<<<<< HEAD:back/app/router/device_router.py
         "olorin_tid": olorin_tid,
         "olorin_assetalias": "Olorin.shared.fraudlistclient",
         "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
-=======
-        "olorin_tid": olorin_tid,
-        "olorin_assetalias": "Olorin.shared.fraudlistclient",
-        "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
->>>>>>> restructure-projects:olorin-server/app/router/device_router.py
         "Content-Type": "application/json",
     }
     body = {
