@@ -1,6 +1,6 @@
 {
   "short_name": "Olorin",
-  "name": "Olorin Investigation Platform",
+  "name": "Olorin Web Application",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#9333ea",
+  "theme_color": "#000000",
   "background_color": "#ffffff"
 } 

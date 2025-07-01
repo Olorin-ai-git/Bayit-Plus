@@ -22,11 +22,7 @@ class SvcSettings(BaseSettings):
     expose_metrics: bool = True
     mesh_port: int = Field(8090, validation_alias="MESH_TRAFFIC_PORT")
     asset_id: str = "3825825476777495228"
-<<<<<<< HEAD:back/app/service/config.py
     olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
-=======
-    olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
->>>>>>> restructure-projects:olorin-server/app/service/config.py
 
     # Cache settings
     use_ips_cache: bool = (
@@ -101,11 +97,8 @@ class PreProdSettings(SvcSettings):
     Settings shared by pre-prod environments
     """
 
-<<<<<<< HEAD:back/app/service/config.py
     idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
     idps_policy_id: str = "p-2abqgwqm8n5i"
-=======
->>>>>>> restructure-projects:olorin-server/app/service/config.py
     app_id: str = "Olorin.cas.hri.olorin"
     app_secret: str = "olorin/app_secret"
     rag_search_url: str = (
@@ -115,13 +108,8 @@ class PreProdSettings(SvcSettings):
     # and set the langfuse_public_key and langfuse_secret_key to the values in IDPS below
     langfuse_public_key: str = "olorin/langfuse/public_key"
     langfuse_secret_key: str = "olorin/langfuse/secret_key"
-<<<<<<< HEAD:back/app/service/config.py
     langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
-=======
-    langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
->>>>>>> restructure-projects:olorin-server/app/service/config.py
     cdc_env: str = "preprod"
 
     # Test settings

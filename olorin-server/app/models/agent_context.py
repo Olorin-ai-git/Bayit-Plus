@@ -21,11 +21,7 @@ class BaseContextModel(BaseModel):
     """
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-<<<<<<< HEAD:back/app/models/agent_context.py
     olorin_header: OlorinHeader
-=======
-    olorin_header: OlorinHeader
->>>>>>> restructure-projects:olorin-server/app/models/agent_context.py
     query_params: dict = Field(default_factory=dict)
     start_time: float = Field(default_factory=lambda: time.time())
 
@@ -69,19 +65,11 @@ class AgentContext(BaseContextModel):
         # Olorin PrivateAuth+ headers
         AUTHN_STRING = (
             "Olorin_IAM_Authentication "
-<<<<<<< HEAD:back/app/models/agent_context.py
             f"olorin_appid='{app_id}',"
             f"olorin_app_secret={app_secret},"
             "olorin_token_type='IAM-Ticket',"
             f"olorin_userid={olorin_user_id},"
             f"olorin_token={olorin_user_token}"
-=======
-            f"olorin_appid='{app_id}',"
-            f"olorin_app_secret={app_secret},"
-            "olorin_token_type='IAM-Ticket',"
-            f"olorin_userid={olorin_user_id},"
-            f"olorin_token={olorin_user_token}"
->>>>>>> restructure-projects:olorin-server/app/models/agent_context.py
         )
 
         if olorin_realmid:

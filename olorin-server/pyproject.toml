@@ -1,15 +1,8 @@
 [tool.poetry]
-<<<<<<< HEAD:back/pyproject.toml
-name = "olorin"
-version = "0.1.0"
-description = ""
-authors = ["Maintainers <admin@olorin.com>"]
-=======
 name = "olorin-service"
 version = "1.0.0"
-description = "Olorin Service"
-authors = ["Your Name <your.email@olorin.com>"]
->>>>>>> restructure-projects:olorin-server/pyproject.toml
+description = "Olorin Fraud Investigation Service"
+authors = ["Olorin Team <admin@olorin.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]

@@ -249,21 +249,13 @@ class OlorinApplication:
             gif_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
             return Response(content=gif_data, media_type="image/gif")
 
-<<<<<<< HEAD:back/app/service/__init__.py
-
 def create_app(
     test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None
-):
+) -> FastAPI:
     """
     Factory function to create the FastAPI app via OlorinApplication.
     """
     return OlorinApplication(test_config=test_config, lifespan=lifespan).app
-=======
-def create_app(config: Optional[SvcSettings] = None) -> FastAPI:
-    """Create and configure the Olorin FastAPI application."""
-    olorin_app = OlorinApplication(test_config=config)
-    return olorin_app.app
->>>>>>> restructure-projects:olorin-server/app/service/__init__.py
 
 
 # Dummy implementations for test patching

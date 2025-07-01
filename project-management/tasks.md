@@ -1,5 +1,110 @@
 # OLORIN PROJECT TASKS - CURRENT STATUS
 
+## 🚨 ACTIVE CRITICAL TASK: SYSTEM RESTORATION AFTER VAN ASSESSMENT
+
+### 🎯 OBJECTIVE: RESOLVE CRITICAL ISSUES BLOCKING SYSTEM OPERATION
+**Status**: **🔴 CRITICAL - IMMEDIATE ACTION REQUIRED**  
+**Complexity**: Level 3 - System Restoration (Orange Status)  
+**VAN Assessment**: COMPLETED January 31, 2025  
+**Estimated Time**: 4-8 hours critical path, 1-2 weeks full restoration
+
+#### 📊 VAN ASSESSMENT RESULTS - LEVEL 3 ORANGE
+
+**Overall System Status:** 🟠 **LEVEL 3 - ORANGE (Action Required)**
+
+| Component | Status | Risk Level | Priority Action |
+|-----------|--------|------------|-----------------|
+| 🔧 olorin-server | 🔴 BLOCKED | CRITICAL | Fix merge conflict |
+| 🌐 olorin-front | 🟡 DEGRADED | MEDIUM | Fix test config |
+| 📱 olorin-web-portal | 🟢 HEALTHY | LOW | Monitor |
+| 📚 Documentation | 🟢 EXCELLENT | LOW | Maintain |
+
+#### 🔴 CRITICAL ISSUE #1: OLORIN-SERVER MERGE CONFLICT
+
+**Problem**: Git merge conflict in `pyproject.toml` blocking all backend operations
+**Impact**: Backend completely inoperable, no testing possible, fraud detection non-functional
+**Timeline**: ⚡ **URGENT - Within 2 hours**
+
+**Required Actions:**
+- [ ] **Resolve merge conflict** in `olorin-server/pyproject.toml`
+- [ ] **Choose configuration**: `name = "olorin-service"`, `version = "1.0.0"`
+- [ ] **Test backend startup** and verify core API endpoints
+- [ ] **Run test suite** to verify 1,050+ tests pass
+
+#### 🟡 CRITICAL ISSUE #2: OLORIN-FRONT TEST INFRASTRUCTURE
+
+**Problem**: Jest configuration not finding test files (0/83 matches)
+**Impact**: Cannot verify frontend quality, potential regressions undetected
+**Timeline**: ⏰ **1-2 days**
+
+**Required Actions:**
+- [ ] **Fix Jest configuration** in `package.json` or create `jest.config.js`
+- [ ] **Update testMatch patterns** to include `/test/unit/` directory
+- [ ] **Run test suite** and verify all tests pass
+- [ ] **Generate coverage reports** for quality assessment
+
+#### 🚀 THREE-PHASE IMPLEMENTATION PLAN
+
+**⚡ PHASE 1: CRITICAL RESOLUTION (0-4 hours)**
+- Restore basic system operability
+- Fix merge conflict and validate system baseline
+
+**🔧 PHASE 2: QUALITY RESTORATION (1-3 days)**  
+- Restore full testing and quality assurance
+- Fix frontend testing infrastructure
+
+**📊 PHASE 3: OPTIMIZATION & MONITORING (1 week)**
+- Enhance system reliability and monitoring
+- Implement previous VAN security recommendations
+
+#### ✅ SUCCESS CRITERIA
+- [ ] olorin-server starts without errors
+- [ ] Backend test suite passes (target: 1,000+ tests)
+- [ ] Frontend test suite runs and reports coverage
+- [ ] End-to-end investigation workflow functional
+- [ ] All three components deployable to staging environment
+
+---
+
+## 📊 PLANNED TASK: OLORIN ECOSYSTEM DIAGRAMS GENERATION
+
+### 🎯 OBJECTIVE: COMPREHENSIVE MERMAID DIAGRAM COLLECTION
+**Status**: **🟡 PLANNED - AWAITING SYSTEM RESTORATION**  
+**Complexity**: Level 3 - Comprehensive System Documentation  
+**Plan Created**: January 31, 2025  
+**Estimated Time**: 8-12 hours (2-3 days)  
+
+#### 📋 PLAN OVERVIEW
+Generate complete collection of Mermaid diagrams documenting the **Olorin Ecosystem** covering system architecture, component details, process flows, and all technical diagrams required for comprehensive system understanding.
+
+#### 🗂️ TARGET DELIVERABLES
+**25+ Comprehensive Diagrams Planned:**
+- **System-Level Diagrams** (4): Ecosystem overview, deployment, data flow, integrations
+- **Component Diagrams** (9): Detailed architecture for each major component
+- **Process Flow Diagrams** (4): Investigation workflow, risk assessment, auth flows
+- **Domain Diagrams** (4): Device, location, network, logs analysis domains
+- **Technical Diagrams** (4): API, database, security, monitoring architecture
+
+#### 📊 PLANNED STRUCTURE
+```
+docs/diagrams/
+├── system/           # System-level architecture diagrams
+├── components/       # Component-specific detailed diagrams  
+├── flows/           # Process and workflow diagrams
+├── domains/         # Analysis domain diagrams
+└── technical/       # Technical implementation diagrams
+```
+
+#### ⚠️ DEPENDENCY NOTICE
+**Cannot proceed until critical system issues resolved:**
+- Requires functional olorin-server for accurate API documentation
+- Needs working test suites for validation of diagram accuracy
+- System must be operational for comprehensive architecture analysis
+
+**Estimated Start Date**: After Phase 1 system restoration complete
+
+---
+
 ## ✅ COMPLETED TASK: DOCUMENTATION REVIEW & CLEANUP
 
 ### 🎯 OBJECTIVE: COMPREHENSIVE DOCUMENTATION OVERHAUL
@@ -59,11 +164,6 @@ docs/
 4. **User Experience Enhancement**: Clear navigation and updated getting-started guides
 5. **Technical Accuracy**: All APIs, endpoints, and technical details verified and updated
 
-## 🚀 READY FOR NEXT PHASE
-**Documentation Quality**: Enterprise-ready  
-**Status**: Production-ready documentation suite  
-**Next Phase**: System development and enhancement
-
 ---
 
 ## 📋 HISTORICAL PROJECT STATUS (COMPLETED TRANSFORMATIONS)
@@ -100,4 +200,4 @@ docs/
 - **Components**: 3 major applications, 15+ specialized investigation agents
 - **APIs**: 25+ RESTful endpoints with comprehensive OpenAPI documentation
 
-**STATUS**: Olorin fraud investigation platform is **PRODUCTION READY** with enterprise-grade capabilities. 
+**STATUS**: Olorin fraud investigation platform has strong foundation but **REQUIRES IMMEDIATE CRITICAL FIXES** to restore operational status. 
