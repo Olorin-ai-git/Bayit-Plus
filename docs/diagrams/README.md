@@ -76,8 +76,8 @@ Implementation details and technical infrastructure
 | Components | 9 | ✅ 9 | 🔄 0 | ⏳ 0 |
 | Flows | 4 | ✅ 4 | 🔄 0 | ⏳ 0 |
 | Domains | 4 | ✅ 4 | 🔄 0 | ⏳ 0 |
-| Technical | 4 | 🔄 0 | 🔄 0 | ⏳ 4 |
-| **Total** | **25** | **21** | **0** | **4** |
+| Technical | 4 | ✅ 4 | 🔄 0 | ⏳ 0 |
+| **Total** | **25** | **25** | **0** | **0** |
 
 ---
 
