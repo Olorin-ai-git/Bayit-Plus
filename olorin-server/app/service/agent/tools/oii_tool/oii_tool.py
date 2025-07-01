@@ -83,13 +83,8 @@ class OIITool(BaseTool):
                 "olorin_country": "US",
                 "olorin_locale": "en-US",
                 "Content-Type": "application/json",
-<<<<<<< HEAD:back/app/service/agent/tools/oii_tool/oii_tool.py
-                "olorin_assetalias": "Olorin.cas.hri.olorin",
-                "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={get_app_secret(settings_for_env.app_secret)},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
-=======
                 "olorin_assetalias": "Olorin.cas.hri.olorin",
                 "Authorization": f"Olorin_IAM_Authentication olorin_appid={settings_for_env.app_id}, olorin_app_secret={settings_for_env.app_secret},olorin_token_type=Olorin_IAM_Authentication olorin_realmid={olorin_realmid},olorin_token={olorin_token},olorin_token_type=IAM-Ticket,olorin_userid={olorin_userid}",
->>>>>>> restructure-projects:olorin-server/app/service/agent/tools/oii_tool/oii_tool.py
             }
 
             conn.request("POST", "/v2/graphql", payload, request_headers)

@@ -28,17 +28,10 @@ def construct_agent_context(
     olorin_originating_assetalias: str = req.headers.get(
         "olorin_originating_assetalias", ""
     )
-<<<<<<< HEAD:back/app/router/agent_router_helper.py
     olorin_header = OlorinHeader(
         olorin_tid=olorin_tid,
         olorin_originating_assetalias=olorin_originating_assetalias,
         olorin_experience_id=olorin_experience_id,
-=======
-    olorin_header = OlorinHeader(
-        olorin_tid=olorin_tid,
-        olorin_originating_assetalias=olorin_originating_assetalias,
-        olorin_experience_id=olorin_experience_id,
->>>>>>> restructure-projects:olorin-server/app/router/agent_router_helper.py
         auth_context=AuthContext(
             olorin_user_id=olorin_userid,
             olorin_user_token=olorin_token,
