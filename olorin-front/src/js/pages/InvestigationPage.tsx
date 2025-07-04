@@ -83,8 +83,8 @@ interface InvestigationPageProps {
   investigationId?: string | null;
 }
 
-// TEMP: useMock flag for demo/test mode (fixes linter error)
-const useMock = false;
+// Dynamic demo mode detection - checks URL parameter for demo mode
+const useMock = isDemoModeActive();
 
 interface ErrorResponse {
   error?: {
