@@ -1,0 +1,56 @@
+{
+  "olorin_tools": [
+    {
+      "name": "network_analysis",
+      "display_name": "Network Analysis",
+      "description": "Analyzes network traffic patterns and identifies anomalies"
+    },
+    {
+      "name": "ip_reputation",
+      "display_name": "IP Reputation Check",
+      "description": "Checks IP addresses against threat intelligence databases"
+    },
+    {
+      "name": "geolocation",
+      "display_name": "Geolocation Tracking",
+      "description": "Tracks user location patterns and identifies suspicious travel"
+    },
+    {
+      "name": "device_fingerprint",
+      "display_name": "Device Fingerprinting",
+      "description": "Identifies unique device characteristics and tracks device usage"
+    },
+    {
+      "name": "log_analysis",
+      "display_name": "Security Log Analysis",
+      "description": "Analyzes security logs for suspicious activities and patterns"
+    },
+    {
+      "name": "event_correlation",
+      "display_name": "Event Correlation",
+      "description": "Correlates security events across multiple data sources"
+    }
+  ],
+  "mcp_tools": [
+    {
+      "name": "splunk_search",
+      "display_name": "Splunk Search",
+      "description": "Searches and analyzes data in Splunk SIEM platform"
+    },
+    {
+      "name": "threat_intelligence",
+      "display_name": "Threat Intelligence",
+      "description": "Queries threat intelligence feeds for IOCs and TTPs"
+    },
+    {
+      "name": "osint_lookup",
+      "display_name": "OSINT Lookup",
+      "description": "Performs open source intelligence gathering on entities"
+    },
+    {
+      "name": "malware_analysis",
+      "display_name": "Malware Analysis",
+      "description": "Analyzes suspicious files for malware indicators"
+    }
+  ]
+} 

@@ -2,6 +2,8 @@
  * Service for fetching available tools from the server
  */
 
+import { isDemoModeActive } from '../utils/urlParams';
+
 export interface ToolInfo {
   name: string;
   description: string;
@@ -13,6 +15,14 @@ export interface ToolInfo {
  * Fetch available tools from the MCP API
  */
 export async function fetchAvailableTools(): Promise<string[]> {
+  // Check for demo mode - use default tools without API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - using default tools');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return getDefaultTools();
+  }
+
   try {
     const response = await fetch('/api/mcp/tools');
     if (!response.ok) {
@@ -47,7 +57,7 @@ export async function fetchAvailableTools(): Promise<string[]> {
     console.error('Error fetching tools:', err);
     
     // Fallback to hardcoded tools if API fails
-    return ['Splunk', 'OII', 'DI BB', 'DATA LAKE'];
+    return getDefaultTools();
   }
 }
 

@@ -1,3 +1,9 @@
+import { isDemoModeActive } from '../utils/urlParams';
+
+// Import mock data for demo mode
+import mockSettings from '../../mock/settings.json';
+import mockToolsCategory from '../../mock/tools-by-category.json';
+
 /**
  * Service for managing user settings with server-side persistence and session storage overrides.
  */
@@ -94,6 +100,14 @@ export function getDefaultSettings(): Settings {
  * Load settings from server
  */
 export async function loadSettingsFromServer(): Promise<Settings> {
+  // Check for demo mode - use mock data instead of API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - using mock settings data');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return fromApiFormat(mockSettings.settings);
+  }
+
   try {
     const baseUrl = getApiBaseUrl();
     const response = await fetch(`${baseUrl}/api/settings/`, {
@@ -125,6 +139,15 @@ export async function loadSettingsFromServer(): Promise<Settings> {
  * Save settings to server
  */
 export async function saveSettingsToServer(settings: Settings): Promise<void> {
+  // Check for demo mode - simulate save without API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - simulating settings save');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 200));
+    console.log('Settings saved to server successfully (Demo Mode)');
+    return;
+  }
+
   try {
     const baseUrl = getApiBaseUrl();
     const response = await fetch(`${baseUrl}/api/settings/`, {
@@ -251,6 +274,14 @@ export async function commitSessionOverridesToServer(): Promise<void> {
  * Get categorized tools (Olorin vs MCP)
  */
 export async function getCategorizedTools(): Promise<CategorizedToolsResponse> {
+  // Check for demo mode - use mock data instead of API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - using mock categorized tools data');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return mockToolsCategory as CategorizedToolsResponse;
+  }
+
   try {
     const response = await fetch(`${getApiBaseUrl()}/api/settings/tools-by-category`);
     if (!response.ok) {

@@ -1,6 +1,7 @@
 import { CommentMessage } from '../components/CommentWindow';
 import { processCommentData } from '../utils/investigationDataUtils';
 import { CommentResponse } from '../types/ApiResponses';
+import { isDemoModeActive } from '../utils/urlParams';
 
 /**
  * Saves a comment for a given investigation and user.
@@ -16,6 +17,19 @@ export async function saveComment(
   entityType: string,
   message: Omit<CommentMessage, 'investigationId' | 'entityId' | 'entityType'>,
 ): Promise<CommentMessage> {
+  // Check for demo mode - simulate save without API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - simulating comment save');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return {
+      ...message,
+      investigationId,
+      entityId,
+      entityType,
+    };
+  }
+
   const res = await fetch(`/api/investigation/${investigationId}/comment`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -42,6 +56,14 @@ export async function fetchCommentMessages(
   investigationId: string,
   entityType: string = 'user_id',
 ): Promise<CommentMessage[]> {
+  // Check for demo mode - use mock data instead of API calls
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - using mock comment messages');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return getMockMessages('Investigator', entityType);
+  }
+
   const res = await fetch(
     `/api/investigation/${investigationId}/comment?entity_type=${encodeURIComponent(
       entityType,
@@ -67,62 +89,11 @@ export async function fetchCommentLog(
   sender: 'Investigator' | 'Policy Team',
   entityType: string = 'user_id',
 ): Promise<CommentMessage[]> {
-  if (investigationId === 'mock') {
-    const now = Date.now();
-    if (sender === 'Investigator') {
-      return [
-        {
-          entityId: 'user1',
-          entityType,
-          sender: 'Investigator',
-          text: 'Started investigation.',
-          timestamp: now - 60000,
-          investigationId: 'INV-123',
-        },
-        {
-          entityId: 'user1',
-          entityType,
-          sender: 'Investigator',
-          text: 'Reviewed login history.',
-          timestamp: now - 40000,
-          investigationId: 'INV-123',
-        },
-        {
-          entityId: 'user1',
-          entityType,
-          sender: 'Investigator',
-          text: 'No anomalies found in device signals.',
-          timestamp: now - 20000,
-          investigationId: 'INV-123',
-        },
-      ];
-    }
-    return [
-      {
-        entityId: 'user1',
-        entityType,
-        sender: 'Policy Team',
-        text: "Please check the user's recent location changes.",
-        timestamp: now - 55000,
-        investigationId: 'INV-123',
-      },
-      {
-        entityId: 'user1',
-        entityType,
-        sender: 'Policy Team',
-        text: 'Policy review in progress.',
-        timestamp: now - 30000,
-        investigationId: 'INV-123',
-      },
-      {
-        entityId: 'user1',
-        entityType,
-        sender: 'Policy Team',
-        text: 'Escalate if risk score is high.',
-        timestamp: now - 10000,
-        investigationId: 'INV-123',
-      },
-    ];
+  if (isDemoModeActive()) {
+    console.log('Demo mode active - using mock comment log');
+    // Simulate network delay for realistic demo experience
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return getMockMessages(sender, entityType);
   }
   const res = await fetch(
     `/api/investigation/${investigationId}/comment?sender=${encodeURIComponent(
