@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { preserveUrlParams, isDemoModeActive } from '../utils/urlParams';
 import {
   Box,
   Typography,
@@ -32,13 +33,8 @@ import {
   Computer as ComputerIcon
 } from '@mui/icons-material';
 
-// Check for demo mode from URL parameters
-const getIsDemoMode = () => {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('demo') === 'true';
-};
-
-const DEMO_MODE = getIsDemoMode(); // Dynamic demo mode based on URL parameter
+// Use centralized demo mode detection
+const DEMO_MODE = isDemoModeActive(); // Dynamic demo mode based on URL parameter
 
 // Mock data for demo mode
 const MOCK_INVESTIGATIONS = [
@@ -180,11 +176,11 @@ const Investigations: React.FC<InvestigationsProps> = ({
   const theme = useTheme();
   
   // Dynamic demo mode detection from URL
-  const [isDemoMode, setIsDemoMode] = useState(getIsDemoMode());
+  const [isDemoMode, setIsDemoMode] = useState(isDemoModeActive());
   
   useEffect(() => {
     const handleLocationChange = () => {
-      setIsDemoMode(getIsDemoMode());
+      setIsDemoMode(isDemoModeActive());
     };
     
     // Listen for URL changes
@@ -324,14 +320,16 @@ const Investigations: React.FC<InvestigationsProps> = ({
    * @param {string} id - The investigation ID.
    */
   const handleViewInvestigation = (id: string) => {
-    navigate(`/investigation/${id}`);
+    const pathWithParams = preserveUrlParams(`/investigation/${id}`);
+    navigate(pathWithParams);
   };
 
   /**
    * Navigates to create a new investigation.
    */
   const handleNewInvestigation = () => {
-    navigate('/investigation');
+    const pathWithParams = preserveUrlParams('/investigation');
+    navigate(pathWithParams);
   };
 
   const getRiskScoreColor = (score: number) => {

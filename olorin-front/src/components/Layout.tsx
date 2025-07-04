@@ -1,33 +1,34 @@
 import React, { ReactNode, useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Container, 
-  Button, 
+import {
+  AppBar,
   Box,
-  IconButton,
+  Button,
+  Container,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Toolbar,
+  Typography,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
-import { 
-  useNavigate, 
-  useLocation 
-} from 'react-router-dom';
 import {
   Menu as MenuIcon,
-  Search as SearchIcon,
+  Close as CloseIcon,
+  Assignment as InvestigationsIcon,
+  Search as InvestigationIcon,
   Settings as SettingsIcon,
-  BugReport as BugReportIcon,
-  Chat as ChatIcon,
-  Close as CloseIcon
+  Code as MCPIcon,
 } from '@mui/icons-material';
+import {
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+import { preserveUrlParams } from '../js/utils/urlParams';
 
 interface LayoutProps {
   children: ReactNode;
@@ -51,17 +52,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       path: '/investigations',
       label: 'Investigations',
-      icon: <SearchIcon />
+      icon: <InvestigationsIcon />
     },
     {
       path: '/investigation',
       label: 'New Investigation',
-      icon: <BugReportIcon />
+      icon: <InvestigationIcon />
     },
     {
       path: '/mcp',
       label: 'Investigate with AI',
-      icon: <ChatIcon />
+      icon: <MCPIcon />
     },
     {
       path: '/settings',
@@ -75,7 +76,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleNavigation = (path: string) => {
-    navigate(path);
+    const pathWithParams = preserveUrlParams(path);
+    navigate(pathWithParams);
     if (isMobile) {
       setMobileOpen(false);
     }

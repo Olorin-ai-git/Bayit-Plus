@@ -583,7 +583,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             <div className="font-medium text-gray-900 mb-2">Warnings</div>
             <div className="pl-4 border-l-2 border-yellow-300">
               <div className="text-yellow-800 font-medium">
-                DI Tool Warning: {di_tool_warning}
+                DI Tool Warning: {String(di_tool_warning)}
               </div>
             </div>
           </div>

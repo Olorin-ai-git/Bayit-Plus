@@ -368,3 +368,14 @@ export interface SingleDeleteResponse {
   deleted: boolean;
   id: string;
 }
+
+export interface InvestigationResponse {
+  id: string;
+  user_id: string;
+  investigation_id: string;
+  entity_type: 'user_id' | 'device_id';
+  status: string;
+  created_at: string;
+  updated_at: string;
+  metadata?: Record<string, any>;
+}

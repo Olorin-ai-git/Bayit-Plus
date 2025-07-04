@@ -1,7 +1,9 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { analytics } from './firebase';
+import { preserveUrlParams } from './js/utils/urlParams';
 
 // Import your components here
 import Layout from './components/Layout';
@@ -12,6 +14,13 @@ import InvestigationPage from './js/pages/InvestigationPage';
 import Investigations from './js/pages/Investigations';
 import Settings from './js/pages/Settings';
 import { SandboxProvider } from './js/hooks/useSandboxContext';
+
+// Custom redirect component that preserves URL parameters
+const ParameterPreservingRedirect: React.FC<{ to: string }> = ({ to }) => {
+  const location = useLocation();
+  const redirectPath = preserveUrlParams(to);
+  return <Navigate to={redirectPath} replace />;
+};
 
 // Create theme with Olorin colors
 const theme = createTheme({
@@ -125,6 +134,13 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    // Initialize Firebase Analytics
+    if (analytics) {
+      console.log('Firebase Analytics initialized successfully');
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -132,7 +148,7 @@ function App() {
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Layout>
             <Routes>
-              <Route path="/" element={<Navigate to="/investigations" replace />} />
+              <Route path="/" element={<ParameterPreservingRedirect to="/investigations" />} />
               <Route path="/investigations" element={<Investigations />} />
               <Route path="/investigation" element={<InvestigationPage />} />
               <Route path="/investigation/:id" element={<InvestigationPage />} />

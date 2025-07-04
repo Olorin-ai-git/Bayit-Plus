@@ -45,6 +45,8 @@ import AutonomousInvestigationPanel from '../components/AutonomousInvestigationP
 import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
+import { useParams, useLocation } from 'react-router-dom';
+import { getCurrentUrlParams, isDemoModeActive, getCurrentAuthId } from '../utils/urlParams';
 
 /**
  * Represents a single log entry in the investigation.
@@ -1286,9 +1288,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlAuthId = params.get('authid');
-    const isDemo = params.get('demo') === 'true';
+    const params = getCurrentUrlParams();
+    const urlAuthId = getCurrentAuthId();
+    const isDemo = isDemoModeActive();
     const isDemoOff = params.get('demo') === 'false';
     if (urlAuthId) {
       setUserId(urlAuthId);

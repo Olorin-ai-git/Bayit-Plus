@@ -1,3 +1,5 @@
+import { apiBaseUrl } from '../../config/environment';
+
 export interface Sandbox {
   env?: string;
   logger?: {
@@ -38,11 +40,6 @@ interface ServiceConfig {
 
 // Check if running locally
 const isLocalDevelopment = () => {
-  // Check for environment variable override first
-  if (typeof process !== 'undefined' && process.env?.REACT_APP_API_URL) {
-    return false; // Use the environment variable instead
-  }
-  
   // Check if we're running on localhost
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
@@ -51,12 +48,9 @@ const isLocalDevelopment = () => {
   return false;
 };
 
-// Get the base URL from environment variable or default config
+// Get the base URL from environment configuration
 const getBaseUrl = (defaultUrl: string): string => {
-  if (typeof process !== 'undefined' && process.env?.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL;
-  }
-  return defaultUrl;
+  return apiBaseUrl || defaultUrl;
 };
 
 const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
