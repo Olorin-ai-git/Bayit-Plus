@@ -1,4 +1,13 @@
 import { BaseApiService } from './BaseApiService';
+import { isDemoModeActive } from '../utils/urlParams';
+import { 
+  mockRAGResponses, 
+  mockFieldMappings, 
+  mockRexPatterns, 
+  mockEvalCommands, 
+  mockPreparedPrompts,
+  getRandomDemoResponse 
+} from '../../mock/rag';
 
 /**
  * Service for RAG (Retrieval-Augmented Generation) API operations
@@ -17,6 +26,25 @@ export class RAGApiService extends BaseApiService {
     user_id: string;
     auto_index?: boolean;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+      
+      const demoResponse = getRandomDemoResponse(params.natural_query);
+      return {
+        response: demoResponse.response,
+        translated_query: demoResponse.translated_query,
+        execution_time: demoResponse.execution_time,
+        result_count: demoResponse.result_count,
+        sources: demoResponse.sources,
+        confidence: demoResponse.confidence,
+        additional_data: {
+          sources: demoResponse.sources,
+          structured_data: demoResponse.structured_data
+        }
+      };
+    }
+    
     return this.makePost('api/rag/natural-query', params);
   }
 
@@ -30,6 +58,18 @@ export class RAGApiService extends BaseApiService {
     natural_query?: string;
     max_documents?: number;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+      
+      return {
+        status: 'success',
+        indexed_documents: params.max_documents || 100,
+        execution_time: 0.8 + Math.random() * 0.4,
+        message: 'Data successfully indexed for querying'
+      };
+    }
+    
     return this.makePost('api/rag/index', {
       user_id: params.user_id,
       splunk_query: params.splunk_query,
@@ -49,6 +89,19 @@ export class RAGApiService extends BaseApiService {
     max_documents?: number;
     investigation_id?: string;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 700 + Math.random() * 300));
+      
+      return {
+        status: 'success',
+        indexed_documents: params.max_documents || 100,
+        execution_time: 1.2 + Math.random() * 0.8,
+        investigation_id: params.investigation_id || `demo-investigation-${Date.now()}`,
+        message: 'Query executed and data indexed successfully'
+      };
+    }
+    
     return this.makePost('api/rag/index', {
       user_id: params.user_id,
       splunk_query: params.splunk_query,
@@ -69,6 +122,24 @@ export class RAGApiService extends BaseApiService {
     max_results?: number;
     include_sources?: boolean;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 900 + Math.random() * 600));
+      
+      const demoResponse = getRandomDemoResponse(params.query);
+      return {
+        response: demoResponse.response,
+        execution_time: demoResponse.execution_time,
+        result_count: demoResponse.result_count,
+        sources: demoResponse.sources,
+        confidence: demoResponse.confidence,
+        additional_data: {
+          sources: demoResponse.sources,
+          structured_data: demoResponse.structured_data
+        }
+      };
+    }
+    
     return this.makePost('api/rag/query', {
       query: params.query,
       user_id: params.user_id,
@@ -82,6 +153,17 @@ export class RAGApiService extends BaseApiService {
    * Load field mappings for RAG configuration
    */
   async getFieldMappings(): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
+      
+      return {
+        field_mappings: mockFieldMappings,
+        rex_patterns: mockRexPatterns,
+        eval_commands: mockEvalCommands
+      };
+    }
+    
     return this.makeGet('api/rag/mappings');
   }
 
@@ -94,6 +176,18 @@ export class RAGApiService extends BaseApiService {
     user_id: string;
     overwrite: boolean;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 200));
+      
+      return {
+        status: 'success',
+        message: `Field mapping for category '${params.category}' added successfully`,
+        category: params.category,
+        fields: params.fields
+      };
+    }
+    
     return this.makePost('api/rag/mappings/fields', params);
   }
 
@@ -106,6 +200,18 @@ export class RAGApiService extends BaseApiService {
     user_id: string;
     overwrite: boolean;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 250 + Math.random() * 200));
+      
+      return {
+        status: 'success',
+        message: `Rex pattern for field '${params.field_name}' added successfully`,
+        field_name: params.field_name,
+        pattern: params.pattern
+      };
+    }
+    
     return this.makePost('api/rag/mappings/rex', params);
   }
 
@@ -116,6 +222,17 @@ export class RAGApiService extends BaseApiService {
     command: string;
     user_id: string;
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 150));
+      
+      return {
+        status: 'success',
+        message: 'Eval command added successfully',
+        command: params.command
+      };
+    }
+    
     return this.makePost('api/rag/mappings/eval', params);
   }
 
@@ -123,6 +240,15 @@ export class RAGApiService extends BaseApiService {
    * Get prepared prompts for RAG system
    */
   async getPreparedPrompts(): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 300 + Math.random() * 200));
+      
+      return {
+        prompts: mockPreparedPrompts
+      };
+    }
+    
     return this.makeGet('api/rag/prompts');
   }
 
@@ -130,6 +256,14 @@ export class RAGApiService extends BaseApiService {
    * Get a specific prompt by ID
    */
   async getPromptById(promptId: string): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 100));
+      
+      const prompt = mockPreparedPrompts.find(p => p.id === promptId);
+      return prompt || { error: 'Prompt not found' };
+    }
+    
     return this.makeGet(`api/rag/prompts/${promptId}`);
   }
 
@@ -143,6 +277,24 @@ export class RAGApiService extends BaseApiService {
     category: string;
     variables?: string[];
   }): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 400 + Math.random() * 300));
+      
+      const newPrompt = {
+        id: `demo-prompt-${Date.now()}`,
+        ...params,
+        variables: params.variables || [],
+        created_at: new Date().toISOString()
+      };
+      
+      return {
+        status: 'success',
+        message: 'Prompt created successfully',
+        prompt: newPrompt
+      };
+    }
+    
     return this.makePost('api/rag/prompts', params);
   }
 
@@ -159,6 +311,18 @@ export class RAGApiService extends BaseApiService {
       variables?: string[];
     },
   ): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 350 + Math.random() * 250));
+      
+      return {
+        status: 'success',
+        message: 'Prompt updated successfully',
+        prompt_id: promptId,
+        updated_fields: Object.keys(params)
+      };
+    }
+    
     return this.makePut(`api/rag/prompts/${promptId}`, params);
   }
 
@@ -166,6 +330,17 @@ export class RAGApiService extends BaseApiService {
    * Delete a prompt
    */
   async deletePrompt(promptId: string): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 150));
+      
+      return {
+        status: 'success',
+        message: 'Prompt deleted successfully',
+        prompt_id: promptId
+      };
+    }
+    
     return this.makeDelete(`api/rag/prompts/${promptId}`);
   }
 
@@ -176,6 +351,17 @@ export class RAGApiService extends BaseApiService {
     category: string,
     userId: string = 'demo-user',
   ): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 250 + Math.random() * 150));
+      
+      return {
+        status: 'success',
+        message: `Field mapping for category '${category}' deleted successfully`,
+        category: category
+      };
+    }
+    
     return this.makeDelete(
       `api/rag/mappings/fields/${category}?user_id=${userId}`,
     );
@@ -188,6 +374,17 @@ export class RAGApiService extends BaseApiService {
     fieldName: string,
     userId: string = 'demo-user',
   ): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 150));
+      
+      return {
+        status: 'success',
+        message: `Rex pattern for field '${fieldName}' deleted successfully`,
+        field_name: fieldName
+      };
+    }
+    
     return this.makeDelete(
       `api/rag/mappings/rex/${fieldName}?user_id=${userId}`,
     );
@@ -200,6 +397,17 @@ export class RAGApiService extends BaseApiService {
     commandId: string,
     userId: string = 'demo-user',
   ): Promise<any> {
+    if (isDemoModeActive()) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 180 + Math.random() * 120));
+      
+      return {
+        status: 'success',
+        message: 'Eval command deleted successfully',
+        command_id: commandId
+      };
+    }
+    
     return this.makeDelete(
       `api/rag/mappings/eval/${commandId}?user_id=${userId}`,
     );

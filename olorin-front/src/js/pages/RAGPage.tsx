@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { isDemoModeActive } from '../utils/urlParams';
 import {
   Box,
   Typography,
@@ -118,7 +119,7 @@ const RAGPage: React.FC = () => {
 
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
-  const [promptsPanelOpen, setPromptsPanelOpen] = useState(false);
+  const [promptsPanelOpen, setPromptsPanelOpen] = useState(true);
   const [globalSearchTerm, setGlobalSearchTerm] = useState(''); // Add global search for table view
 
   // Sidebar resize states
@@ -159,6 +160,16 @@ const RAGPage: React.FC = () => {
   useEffect(() => {
     loadFieldMappings();
     loadPreparedPrompts();
+  }, []);
+
+  // Initialize demo mode with elaborate prompt
+  useEffect(() => {
+    if (isDemoModeActive()) {
+      const elaboratePrompt = `Analyze multi-vector fraud patterns for high-risk user accounts showing the following investigation criteria: users with risk scores above 0.7, multiple device fingerprints from different geographical locations within 24 hours, transaction amounts exceeding $5,000, and failed identity verification attempts. Include detailed breakdown by user demographics, transaction patterns, device characteristics, geographical distribution, and risk mitigation recommendations with confidence scores and data sources.`;
+      
+      setCurrentMessage(elaboratePrompt);
+      console.log('Demo mode: Pre-populated elaborate investigation prompt');
+    }
   }, []);
 
   // Prevent auto-scroll on mount
@@ -257,12 +268,17 @@ const RAGPage: React.FC = () => {
       const data = await ragService.getPreparedPrompts();
 
       // Handle case where API doesn't exist or returns undefined
-      if (!data || !Array.isArray(data)) {
+      if (!data) {
         console.warn('RAG API not available - prepared prompts disabled');
+        setPreparedPrompts([]);
         return;
       }
 
-      setPreparedPrompts(data);
+      // Handle both array format and object with prompts property
+      const prompts = Array.isArray(data) ? data : (data.prompts || []);
+      setPreparedPrompts(prompts);
+      
+      console.log('Loaded prepared prompts:', prompts.length);
     } catch (error) {
       console.error('Failed to load prepared prompts:', error);
       // Set empty array as fallback when API is not available
@@ -339,28 +355,53 @@ const RAGPage: React.FC = () => {
         },
       };
 
-      // Analyze the response for structured data
-      const analysisResult = ResponseAnalyzer.analyzeResponse(
-        assistantMessage.content,
-      );
-
-      // If structured data is detected, enhance the message
-      if (analysisResult.hasStructuredData) {
-        const enhancedMessage = ResponseAnalyzer.enhanceMessage(
-          assistantMessage,
-          analysisResult,
-        );
+      // Check if structured data is available from API response first
+      const apiStructuredData = naturalQueryResponse.additional_data?.structured_data || naturalQueryResponse.structured_data;
+      
+      if (apiStructuredData && apiStructuredData.data && Array.isArray(apiStructuredData.data) && apiStructuredData.data.length > 0) {
+        // Use structured data from API response
+        assistantMessage.structured_data = {
+          data: apiStructuredData.data,
+          columns: apiStructuredData.columns || [],
+          metadata: {
+            confidence: naturalQueryResponse.confidence || 0.8,
+            total_count: apiStructuredData.data.length,
+            field_mapping: apiStructuredData.field_mapping || {},
+            source_info: apiStructuredData.source_info || {}
+          }
+        };
 
         // Set default view mode to table for structured data
         setMessageViewModes((prev) => ({
           ...prev,
-          [enhancedMessage.id]: 'table',
+          [assistantMessage.id]: 'table',
         }));
 
-        setChatMessages((prev) => [...prev, enhancedMessage]);
-      } else {
-        // No structured data, add as regular message
         setChatMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        // Fallback: Analyze the response for structured data
+        const analysisResult = ResponseAnalyzer.analyzeResponse(
+          assistantMessage.content,
+        );
+
+        // If structured data is detected, enhance the message
+        if (analysisResult.hasStructuredData) {
+          const enhancedMessage = ResponseAnalyzer.enhanceMessage(
+            assistantMessage,
+            analysisResult,
+          );
+
+          // Set default view mode to table for structured data
+          setMessageViewModes((prev) => ({
+            ...prev,
+            [enhancedMessage.id]: 'table',
+          }));
+
+          setChatMessages((prev) => [...prev, enhancedMessage]);
+        } else {
+          // No structured data, add as regular message
+          setChatMessages((prev) => [...prev, assistantMessage]);
+        }
       }
     } catch (error) {
       const errorMessage: EnhancedChatMessage = {
@@ -677,102 +718,7 @@ const RAGPage: React.FC = () => {
     return messageViewModes[messageId] || 'chat';
   };
 
-  // Demo function to test structured data detection
-  const addDemoStructuredData = () => {
-    const demoResponses = [
-      {
-        content: `Here are the recent login attempts:
 
-| User ID | Login Time | IP Address | Location | Status |
-|---------|------------|------------|----------|--------|
-| user123 | 2024-01-15 10:30:00 | 192.168.1.100 | San Francisco, CA | Success |
-| user456 | 2024-01-15 10:35:00 | 10.0.0.50 | New York, NY | Failed |
-| user789 | 2024-01-15 10:40:00 | 172.16.0.25 | Austin, TX | Success |
-| user123 | 2024-01-15 11:00:00 | 192.168.1.100 | San Francisco, CA | Success |
-
-All login attempts have been analyzed for suspicious activity.`,
-        title: 'User Login Analysis (Table Format)',
-      },
-      {
-        content: `Transaction analysis results:
-
-[
-  {
-    "transaction_id": "txn_001",
-    "user_id": "user123",
-    "amount": 250.00,
-    "currency": "USD",
-    "method": "credit_card",
-    "status": "completed",
-    "risk_score": 0.2,
-    "timestamp": "2024-01-15T10:30:00Z"
-  },
-  {
-    "transaction_id": "txn_002", 
-    "user_id": "user456",
-    "amount": 1500.00,
-    "currency": "USD",
-    "method": "bank_transfer",
-    "status": "pending",
-    "risk_score": 0.8,
-    "timestamp": "2024-01-15T10:45:00Z"
-  },
-  {
-    "transaction_id": "txn_003",
-    "user_id": "user789",
-    "amount": 75.50,
-    "currency": "USD", 
-    "method": "paypal",
-    "status": "completed",
-    "risk_score": 0.1,
-    "timestamp": "2024-01-15T11:00:00Z"
-  }
-]
-
-High-risk transactions have been flagged for review.`,
-        title: 'Transaction Investigation (JSON Format)',
-      },
-    ];
-
-    const selectedDemo =
-      demoResponses[Math.floor(Math.random() * demoResponses.length)];
-
-    const demoMessage: EnhancedChatMessage = {
-      id: `demo_${Date.now()}`,
-      sender: 'assistant',
-      content: selectedDemo.content,
-      timestamp: new Date(),
-    };
-
-    // Analyze the demo response for structured data
-    const analysisResult = ResponseAnalyzer.analyzeResponse(
-      demoMessage.content,
-    );
-
-    if (analysisResult.hasStructuredData) {
-      const enhancedMessage = ResponseAnalyzer.enhanceMessage(
-        demoMessage,
-        analysisResult,
-      );
-
-      // Set default view mode to table for demo
-      setMessageViewModes((prev) => ({
-        ...prev,
-        [enhancedMessage.id]: 'table',
-      }));
-
-      setChatMessages((prev) => [...prev, enhancedMessage]);
-
-      // Add a system message explaining the demo
-      const explanationMessage: EnhancedChatMessage = {
-        id: `demo_explanation_${Date.now()}`,
-        sender: 'system',
-        content: `🎉 Demo: Added ${selectedDemo.title} - Notice the view mode switcher and export options above!`,
-        timestamp: new Date(),
-      };
-      setChatMessages((prev) => [...prev, explanationMessage]);
-    }
-  };
 
   const handleExport = (format: string, messageId?: string, data?: any) => {
     let exportData = data;
@@ -1099,16 +1045,7 @@ High-risk transactions have been flagged for review.`,
                   Show Prompts
                 </Button>
               )}
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<TableIcon />}
-                onClick={addDemoStructuredData}
-                className="!bg-transparent !border-white !text-white hover:!bg-white/20 !border-2"
-                title="Add demo structured data to test table view"
-              >
-                Demo Data
-              </Button>
+
             </div>
           </div>
         </div>
@@ -1154,9 +1091,9 @@ High-risk transactions have been flagged for review.`,
                   Start a Conversation
                 </h3>
                 <p className="text-gray-500 max-w-md mx-auto">
-                  Ask questions about your data in natural language. Try the
-                  Demo Data button to see structured data visualization in
-                  action.
+                  Ask questions about your data in natural language. Your
+                  queries will be processed using advanced AI to provide
+                  structured insights.
                 </p>
               </div>
             )}
@@ -1632,25 +1569,68 @@ High-risk transactions have been flagged for review.`,
   );
 
   // Enhanced Data Analysis Tab with Table and Prompts functionality
-  const renderDataAnalysisTab = () => (
-    <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <TableIcon className="text-2xl" />
-          <div>
-            <h2 className="text-xl font-bold">Data Analysis & Visualization</h2>
-            <p className="text-blue-100 text-sm">
-              Interactive tables, charts, and data exploration tools
-            </p>
+  const renderDataAnalysisTab = () => {
+    // Aggregate all structured data from chat messages for header controls
+    const allStructuredData = chatMessages
+      .filter((msg) => msg.structured_data?.data && msg.sender === 'assistant')
+      .map((msg, index) => ({
+        messageId: msg.id,
+        timestamp: msg.timestamp,
+        data: msg.structured_data!.data!,
+        source: msg.content.substring(0, 100) + '...',
+        confidence: msg.structured_data!.metadata?.confidence || 0,
+        format: 'structured_data',
+        index: index + 1,
+      }));
+
+    return (
+      <div className="h-full flex flex-col">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <TableIcon className="text-2xl" />
+              <div>
+                <h2 className="text-xl font-bold">Data Analysis & Visualization</h2>
+                <p className="text-blue-100 text-sm">
+                  Interactive tables, charts, and data exploration tools
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <TextField
+                placeholder="Search across all data..."
+                value={globalSearchTerm}
+                onChange={(e) => setGlobalSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: <SearchIcon className="w-4 h-4" />,
+                }}
+                className="!bg-white/20 !text-white placeholder:!text-blue-200 !border-white/30"
+                size="small"
+              />
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                onClick={() =>
+                  handleExport(
+                    'csv',
+                    undefined,
+                    allStructuredData.flatMap((item) => item.data),
+                  )
+                }
+                className="!bg-white !text-blue-600 hover:!bg-blue-50 !font-semibold"
+              >
+                Export All
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-hidden">{renderTablePanel()}</div>
-    </div>
-  );
+        {/* Content */}
+        <div className="flex-1 overflow-hidden">{renderTablePanel()}</div>
+      </div>
+    );
+  };
 
   // Global Table View Panel
   const renderTablePanel = () => {
@@ -1677,48 +1657,6 @@ High-risk transactions have been flagged for review.`,
 
     return (
       <div className="space-y-6 p-6">
-        {/* Header with controls */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <TableIcon className="text-2xl" />
-              <div>
-                <h2 className="text-xl font-bold">Enhanced Table Analysis</h2>
-                <p className="text-indigo-100 text-sm">
-                  Global view of all structured data with advanced analysis
-                  capabilities
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <TextField
-                placeholder="Search across all data..."
-                value={globalSearchTerm}
-                onChange={(e) => setGlobalSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon className="w-4 h-4" />,
-                }}
-                className="!bg-white/20 !text-white placeholder:!text-indigo-200 !border-white/30"
-                size="small"
-              />
-              <Button
-                variant="contained"
-                startIcon={<DownloadIcon />}
-                onClick={() =>
-                  handleExport(
-                    'csv',
-                    undefined,
-                    allStructuredData.flatMap((item) => item.data),
-                  )
-                }
-                className="!bg-white !text-indigo-600 hover:!bg-indigo-50 !font-semibold"
-              >
-                Export All
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Data Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
@@ -1799,14 +1737,7 @@ High-risk transactions have been flagged for review.`,
                 Send queries that return structured data to see enhanced table
                 analysis here
               </Typography>
-              <Button
-                variant="contained"
-                startIcon={<PlayArrowIcon />}
-                onClick={addDemoStructuredData}
-                className="!bg-indigo-600 hover:!bg-indigo-700"
-              >
-                Add Demo Data
-              </Button>
+
             </CardContent>
           </Card>
         ) : (
@@ -1899,9 +1830,6 @@ High-risk transactions have been flagged for review.`,
       <div className="bg-white shadow-sm border-b flex-shrink-0">
         <div className="px-4 py-4">
           <div className="flex items-center gap-4">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-lg">
-              <PsychologyIcon className="text-white text-2xl" />
-            </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 Investigate with AI - The Natural Language way

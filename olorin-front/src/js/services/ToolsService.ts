@@ -51,13 +51,16 @@ export async function fetchAvailableTools(): Promise<string[]> {
     
     // Remove duplicates and sort
     const uniqueTools = Array.from(new Set(toolNames)).sort();
+    console.log('Successfully fetched tools from MCP API:', uniqueTools);
     return uniqueTools;
     
   } catch (err) {
-    console.error('Error fetching tools:', err);
+    console.warn('MCP backend unavailable, using default tools. Error:', err);
     
-    // Fallback to hardcoded tools if API fails
-    return getDefaultTools();
+    // Fallback to hardcoded tools if API fails - this prevents proxy errors
+    const defaultTools = getDefaultTools();
+    console.log('Using fallback tools:', defaultTools);
+    return defaultTools;
   }
 }
 
@@ -65,5 +68,5 @@ export async function fetchAvailableTools(): Promise<string[]> {
  * Get the default tools list (fallback when server is unavailable)
  */
 export function getDefaultTools(): string[] {
-  return ['Splunk', 'OII', 'DI BB', 'DATA LAKE'];
+  return ['Splunk', 'OII', 'DI BB', 'DATA LAKE', 'Vector Search', 'Web Search'];
 } 
