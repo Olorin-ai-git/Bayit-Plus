@@ -4,7 +4,7 @@ import InvestigationPage from '../../pages/InvestigationPage';
 import Investigations from '../../pages/Investigations';
 import NavigationBar from '../../components/NavigationBar';
 import SettingsPage from '../../pages/Settings';
-import MCPPage from '../../pages/MCPPage';
+import RAGPage from '../../pages/RAGPage';
 
 interface OlorinWidgetProps {
   sandbox: Sandbox;
@@ -15,7 +15,7 @@ interface OlorinWidgetState {
   investigationId: string | null;
   userId: string;
   entityType: string;
-  activeTab: 'investigation' | 'investigations' | 'settings' | 'mcp';
+  activeTab: 'investigation' | 'investigations' | 'settings' | 'rag';
 }
 
 /**
@@ -135,7 +135,7 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
     }
   };
 
-  handleTabChange = (tab: 'investigation' | 'investigations' | 'settings' | 'mcp') => {
+  handleTabChange = (tab: 'investigation' | 'investigations' | 'settings' | 'rag') => {
     this.setState({ activeTab: tab });
   };
 
@@ -167,7 +167,7 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
             />
           )}
           {activeTab === 'settings' && <SettingsPage />}
-          {activeTab === 'mcp' && <MCPPage />}
+          {activeTab === 'rag' && <RAGPage />}
         </div>
         <NavigationBar
           activeTab={activeTab}

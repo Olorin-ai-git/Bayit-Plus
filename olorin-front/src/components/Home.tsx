@@ -32,7 +32,7 @@ const Home: React.FC = () => {
       icon: <ChatIcon sx={{ fontSize: 40, color: 'success.main' }} />,
       title: 'Investigate with AI',
       description: 'Interact with AI agents to get insights and assistance with your investigations.',
-      action: () => navigate('/mcp'),
+      action: () => navigate('/rag'),
       color: 'success'
     },
     {

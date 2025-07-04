@@ -9,7 +9,7 @@ import { preserveUrlParams } from './js/utils/urlParams';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import Investigation from './components/Investigation';
-import MCPPage from './js/pages/MCPPage';
+import RAGPage from './js/pages/RAGPage';
 import InvestigationPage from './js/pages/InvestigationPage';
 import Investigations from './js/pages/Investigations';
 import Settings from './js/pages/Settings';
@@ -153,7 +153,7 @@ function App() {
               <Route path="/investigation" element={<InvestigationPage />} />
               <Route path="/investigation/:id" element={<InvestigationPage />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/mcp" element={<MCPPage />} />
+              <Route path="/rag" element={<RAGPage />} />
               {/* Legacy routes for backward compatibility */}
               <Route path="/home" element={<Home />} />
               <Route path="/legacy-investigation" element={<Investigation />} />

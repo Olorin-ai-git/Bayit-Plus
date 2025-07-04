@@ -60,7 +60,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       icon: <InvestigationIcon />
     },
     {
-      path: '/mcp',
+      path: '/rag',
       label: 'Investigate with AI',
       icon: <MCPIcon />
     },
