@@ -4,6 +4,11 @@ import RestService, {
 } from './restService';
 import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
+import networkMock from '../../mock/network.json';
+import deviceMock from '../../mock/device.json';
+import logsMock from '../../mock/logs.json';
+import riskMock from '../../mock/risk.json';
+import { isDemoModeActive } from '../utils/urlParams';
 import type { Sandbox } from './envConstants';
 
 /**
@@ -377,8 +382,15 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
-      return OlorinService.getMockResponse('network'); // or mock risk
+    if (this.useMock || isDemoModeActive()) {
+      console.log('Demo mode active - using mock risk assessment data');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return {
+        status: 200,
+        tid: 'demo-risk-assessment',
+        data: riskMock
+      };
     }
     return this.get(entityId, 'assessRisk', entityType, {
       investigation_id: investigationId,
@@ -413,7 +425,10 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
+      console.log('Demo mode active - using mock network data');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 1500));
       return OlorinService.getMockResponse('network');
     }
     return this.get(entityId, 'analyzeNetwork', entityType, {
@@ -436,7 +451,10 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
+      console.log('Demo mode active - using mock location data');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 1800));
       return OlorinService.getMockResponse('location');
     }
     return this.get(entityId, 'analyzeLocation', entityType, {
@@ -459,7 +477,10 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
+      console.log('Demo mode active - using mock device data');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 2000));
       return OlorinService.getMockResponse('device');
     }
     return this.get(entityId, 'analyzeDevice', entityType, {
@@ -482,7 +503,10 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
+      console.log('Demo mode active - using mock logs data');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 1200));
       return OlorinService.getMockResponse('logs');
     }
     return this.get(entityId, 'analyzeLogs', entityType, {
@@ -503,6 +527,25 @@ export class OlorinService {
     entityId: string,
     entityType: string,
   ): Promise<RestResponse> {
+    // Check for demo mode - return mock response without API calls
+    if (isDemoModeActive()) {
+      console.log('Demo mode active - simulating getInvestigationWithHeaders');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 200));
+      return {
+        status: 200,
+        tid: 'demo-get-investigation',
+        data: {
+          id: investigationId,
+          entity_id: entityId,
+          entity_type: entityType,
+          status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      };
+    }
+
     const options = generateRequestOptions();
     const apiPath = `investigation/${encodeURIComponent(
       investigationId,
@@ -539,6 +582,24 @@ export class OlorinService {
     entityId: string,
     entityType: string,
   ): Promise<RestResponse> {
+    // Check for demo mode - simulate creation without API calls
+    if (isDemoModeActive()) {
+      console.log('Demo mode active - simulating createInvestigation');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return {
+        status: 201,
+        tid: 'demo-create-investigation',
+        data: {
+          id: investigationId,
+          entity_id: entityId,
+          entity_type: entityType,
+          status: 'created',
+          created_at: new Date().toISOString(),
+        }
+      };
+    }
+
     const config = getApiConfig('investigation');
     const options = generateRequestOptions();
     const body = {
@@ -569,6 +630,18 @@ export class OlorinService {
    * @returns {Promise<RestResponse>} The REST response.
    */
   async getInvestigations(): Promise<RestResponse> {
+    // Check for demo mode - return mock investigations list without API calls
+    if (isDemoModeActive()) {
+      console.log('Demo mode active - using mock investigations list');
+      // Simulate network delay for realistic demo experience
+      await new Promise(resolve => setTimeout(resolve, 250));
+      return {
+        status: 200,
+        tid: 'demo-get-investigations',
+        data: [] // Empty list for demo mode - investigations will be handled by Investigations component mock data
+      };
+    }
+
     const config = getApiConfig('investigations');
     const options = generateRequestOptions();
 
