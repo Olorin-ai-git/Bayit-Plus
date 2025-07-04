@@ -477,7 +477,7 @@ const AgentLogSidebar: React.FC<AgentLogSidebarProps> = ({
               <div
                 className={`text-xs ${getLogTypeColor(
                   log.type,
-                )} flex items-baseline break-all`}
+                )} flex items-baseline break-words`}
               >
                 <AnimatedText
                   text={formatMessage(log.message)}
