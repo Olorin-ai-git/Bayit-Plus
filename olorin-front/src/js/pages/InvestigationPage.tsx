@@ -44,6 +44,7 @@ import { saveComment, fetchCommentLog } from '../services/ChatService';
 import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
 import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
+import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
 
 /**
  * Represents a single log entry in the investigation.
@@ -102,8 +103,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const sandbox = useSandboxContext();
   const api = useMemo(() => new OlorinService(sandbox, false), [sandbox]);
   const [getToolsForStep] = useStepTools();
+  const analytics = useFirebaseAnalytics();
   const [userId, setUserId] = useState(DEFAULT_USER_ID);
-  const [hasDemoOffCalled, setHasDemoOffCalled] = useState(false);
+  const [hasDemoApiCalled, setHasDemoApiCalled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stepStates, setStepStates] = useState<InvestigationStep[]>([]);
@@ -182,6 +184,11 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       window.history.replaceState({}, '', newUrl);
     }
   }, []);
+
+  // Track page view on component mount
+  useEffect(() => {
+    analytics.trackPageView('Investigation Page', 'Fraud Investigation Dashboard');
+  }, [analytics]);
 
   /**
    * Adds a log entry to the logs state.
@@ -679,6 +686,16 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 
     setIsLoading(true);
     cancelledRef.current = false;
+    
+    // Track investigation start event
+    analytics.trackInvestigationEvent('investigation_started', newInvestigationId, {
+      user_id: userId,
+      input_type: selectedInputType,
+      time_range: timeRange,
+      selected_steps: selectedInvestigationSteps.map(step => step.id),
+      autonomous_mode: autonomousMode,
+    });
+    
     addLog(
       `Investigation started at: ${now.toLocaleTimeString()}`,
       LogLevel.INFO,
@@ -1092,6 +1109,17 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
 
     setIsInvestigationClosed(true);
+    
+    // Track manual investigation completion
+    analytics.trackInvestigationEvent('manual_investigation_completed', investigationIdState, {
+      user_id: userId,
+      input_type: selectedInputType,
+      time_range: timeRange,
+      selected_steps: selectedInvestigationSteps.map(step => step.id),
+      autonomous_mode: false,
+      investigation_duration: investigationStartTime ? Date.now() - investigationStartTime.getTime() : null,
+    });
+    
     const updatedSteps = await updateStepStatus(
       stepStates,
       InvestigationStepId.RISK,
@@ -1260,12 +1288,12 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlAuthId = params.get('authid');
-    // const isDemo = params.get('demo') === 'true';
+    const isDemo = params.get('demo') === 'true';
     const isDemoOff = params.get('demo') === 'false';
     if (urlAuthId) {
       setUserId(urlAuthId);
     }
-    if (isDemoOff && urlAuthId && !hasDemoOffCalled) {
+    if (isDemoOff && urlAuthId && !hasDemoApiCalled) {
       // Call /demo/{authid}/off once
       fetch(`/demo/${encodeURIComponent(urlAuthId)}/off`)
         .then(async (res) => {
@@ -1280,9 +1308,27 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           // eslint-disable-next-line no-console
           console.error('Demo OFF API error:', err);
         });
-      setHasDemoOffCalled(true);
+      setHasDemoApiCalled(true);
     }
-  }, [hasDemoOffCalled]);
+    
+    if (isDemo && urlAuthId && !hasDemoApiCalled) {
+      // Call /demo/{authid} to enable demo mode
+      fetch(`/demo/${encodeURIComponent(urlAuthId)}`)
+        .then(async (res) => {
+          if (!res.ok) throw new Error(await res.text());
+          return res.json();
+        })
+        .then((data) => {
+          // eslint-disable-next-line no-console
+          console.log('Demo ON API result:', data);
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error('Demo ON API error:', err);
+        });
+      setHasDemoApiCalled(true);
+    }
+  }, [hasDemoApiCalled]);
 
   const [investigatorComments, setInvestigatorComments] = useState<
     CommentMessage[]
@@ -1602,6 +1648,16 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                     );
                     setIsInvestigationClosed(true);
                     setInvestigationEndTime(new Date());
+
+                    // Track autonomous investigation completion
+                    analytics.trackInvestigationEvent('autonomous_investigation_completed', investigationIdState, {
+                      user_id: userId,
+                      input_type: selectedInputType,
+                      time_range: timeRange,
+                      selected_steps: selectedInvestigationSteps.map(step => step.id),
+                      autonomous_mode: true,
+                      investigation_duration: investigationStartTime ? Date.now() - investigationStartTime.getTime() : null,
+                    });
 
                     // Mark all steps as completed
                     const updatedSteps = selectedInvestigationSteps.map(

@@ -32,7 +32,13 @@ import {
   Computer as ComputerIcon
 } from '@mui/icons-material';
 
-const DEMO_MODE = true; // Set to true for demo mode (mock data)
+// Check for demo mode from URL parameters
+const getIsDemoMode = () => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('demo') === 'true';
+};
+
+const DEMO_MODE = getIsDemoMode(); // Dynamic demo mode based on URL parameter
 
 // Mock data for demo mode
 const MOCK_INVESTIGATIONS = [
@@ -56,10 +62,11 @@ const MOCK_INVESTIGATIONS = [
 
 /**
  * Fetches the list of investigations from the backend or mock data.
+ * @param {boolean} isDemoMode - Whether demo mode is active
  * @returns {Promise<any[]>} The list of investigations.
  */
-const getInvestigations = async () => {
-  if (DEMO_MODE) {
+const getInvestigations = async (isDemoMode: boolean = false) => {
+  if (isDemoMode) {
     return [...MOCK_INVESTIGATIONS];
   }
   // This function should be re-implemented or imported from OlorinService or another appropriate location
@@ -68,6 +75,7 @@ const getInvestigations = async () => {
 
 /**
  * Creates a new investigation (mock or real).
+ * @param {boolean} isDemoMode - Whether demo mode is active
  * @param {any[]} [mockData] - Mock data array.
  * @param {Function} [setMockData] - Setter for mock data.
  * @param {string} [entityId] - Entity ID for the investigation.
@@ -75,12 +83,13 @@ const getInvestigations = async () => {
  * @returns {Promise<any>} The created investigation.
  */
 const createInvestigation = async (
+  isDemoMode: boolean = false,
   mockData?: any[],
   setMockData?: any,
   entityId?: string,
   entityType?: string,
 ) => {
-  if (DEMO_MODE) {
+  if (isDemoMode) {
     const newInv = {
       id: `INV-${Math.floor(Math.random() * 1000)}`,
       policy_comments: 'Demo created policy.',
@@ -102,17 +111,19 @@ const createInvestigation = async (
 
 /**
  * Edits investigations by ID (mock or real).
+ * @param {boolean} isDemoMode - Whether demo mode is active
  * @param {string[]} ids - Investigation IDs to edit.
  * @param {any[]} [mockData] - Mock data array.
  * @param {Function} [setMockData] - Setter for mock data.
  * @returns {Promise<boolean>} True if successful.
  */
 const editInvestigations = async (
+  isDemoMode: boolean = false,
   ids: string[],
   mockData?: any[],
   setMockData?: any,
 ) => {
-  if (DEMO_MODE) {
+  if (isDemoMode) {
     setMockData((prev: any[]) =>
       prev.map((inv) =>
         ids.includes(inv.id)
@@ -133,17 +144,19 @@ const editInvestigations = async (
 
 /**
  * Deletes investigations by ID (mock or real).
+ * @param {boolean} isDemoMode - Whether demo mode is active
  * @param {string[]} ids - Investigation IDs to delete.
  * @param {any[]} [mockData] - Mock data array.
  * @param {Function} [setMockData] - Setter for mock data.
  * @returns {Promise<any>} The response from the backend.
  */
 const deleteInvestigations = async (
+  isDemoMode: boolean = false,
   ids: string[],
   mockData?: any[],
   setMockData?: any,
 ) => {
-  if (DEMO_MODE) {
+  if (isDemoMode) {
     setMockData((prev: any[]) => prev.filter((inv) => !ids.includes(inv.id)));
     return true;
   }
@@ -165,8 +178,25 @@ const Investigations: React.FC<InvestigationsProps> = ({
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
+  
+  // Dynamic demo mode detection from URL
+  const [isDemoMode, setIsDemoMode] = useState(getIsDemoMode());
+  
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setIsDemoMode(getIsDemoMode());
+    };
+    
+    // Listen for URL changes
+    window.addEventListener('popstate', handleLocationChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
+  
   const [investigations, setInvestigations] = useState<any[]>(
-    DEMO_MODE ? MOCK_INVESTIGATIONS : [],
+    isDemoMode ? MOCK_INVESTIGATIONS : [],
   );
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -179,10 +209,10 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setLoading(true);
     setError(null);
     try {
-      if (DEMO_MODE) {
+      if (isDemoMode) {
         setInvestigations([...MOCK_INVESTIGATIONS]);
       } else {
-        const data = await getInvestigations();
+        const data = await getInvestigations(isDemoMode);
         setInvestigations(data);
       }
       setSelected([]);
@@ -194,7 +224,7 @@ const Investigations: React.FC<InvestigationsProps> = ({
 
   useEffect(() => {
     fetchInvestigations();
-  }, []);
+  }, [isDemoMode]);
 
   /**
    * Handles select all checkbox.
@@ -226,14 +256,15 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setError(null);
     try {
       let newId = `INV-${Math.floor(Math.random() * 10000000000000000)}`;
-      if (DEMO_MODE) {
+      if (isDemoMode) {
         const newInv = await createInvestigation(
+          isDemoMode,
           investigations,
           setInvestigations,
         );
         newId = newInv.id;
       } else {
-        const newInv = await createInvestigation();
+        const newInv = await createInvestigation(isDemoMode);
         newId = newInv.id;
       }
       if (onCreateInvestigation) {
@@ -252,10 +283,10 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setLoading(true);
     setError(null);
     try {
-      if (DEMO_MODE) {
-        await editInvestigations(selected, investigations, setInvestigations);
+      if (isDemoMode) {
+        await editInvestigations(isDemoMode, selected, investigations, setInvestigations);
       } else {
-        await editInvestigations(selected);
+        await editInvestigations(isDemoMode, selected);
       }
       setSelected([]);
     } catch (err: any) {
@@ -271,10 +302,10 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setLoading(true);
     setError(null);
     try {
-      if (DEMO_MODE) {
-        await deleteInvestigations(selected, investigations, setInvestigations);
+      if (isDemoMode) {
+        await deleteInvestigations(isDemoMode, selected, investigations, setInvestigations);
       } else {
-        await deleteInvestigations(selected);
+        await deleteInvestigations(isDemoMode, selected);
         setInvestigations((prev) =>
           prev.filter((inv) => !selected.includes(inv.id)),
         );
