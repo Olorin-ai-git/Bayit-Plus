@@ -42,6 +42,8 @@ import {
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
+import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
+import EnhancedAutonomousInvestigationPanel from '../components/EnhancedAutonomousInvestigationPanel';
 import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel, Collapse, Fade } from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
@@ -1563,40 +1565,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
   };
 
-  // Splitter logic for risk score and steps
-  const [riskScoreHeight, setRiskScoreHeight] = useState(180); // initial height in px
-  const splitterRef = useRef<HTMLDivElement>(null);
-  const draggingRef = useRef(false);
-  useEffect(() => {
-    /**
-     * Handles mouse movement for resizing the risk score section.
-     * @param {MouseEvent} e - The mouse event.
-     */
-    function onMouseMove(e: MouseEvent) {
-      if (draggingRef.current && splitterRef.current) {
-        const container = splitterRef.current.parentElement;
-        if (container) {
-          const containerRect = container.getBoundingClientRect();
-          const containerTop = containerRect.top;
-          const containerHeight = containerRect.height;
-          const newHeight = Math.max(60, Math.min(containerHeight - 100, e.clientY - containerTop));
-          setRiskScoreHeight(newHeight);
-        }
-      }
-    }
-    /**
-     * Handles mouse up event to stop resizing.
-     */
-    function onMouseUp() {
-      draggingRef.current = false;
-    }
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    return function cleanup() {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
-  }, []);
+
 
   // Compute warning and error logs for banners
   const warningLogs = logs.filter((log) => log.type === LogLevel.WARNING);
@@ -1711,62 +1680,24 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 
 
 
-              {/* Conditional rendering based on investigation mode */}
-              <Collapse in={autonomousMode} timeout={400}>
-                <Box sx={{ display: autonomousMode ? 'block' : 'none' }}>
-                  <AutonomousInvestigationPanel
-                  entityId={userId}
-                  entityType={
-                    selectedInputType === 'userId' ? 'user_id' : 'device_id'
-                  }
-                  investigationId={investigationId || ''}
-                  isInvestigating={isLoading && autonomousMode}
-                  onLog={(logEntry) => {
-                    console.log('onLog wrapper called with:', logEntry);
-                    if (logEntry && logEntry.message) {
-                      addLog(logEntry.message, logEntry.type);
-                    } else {
-                      console.warn('onLog called with invalid logEntry:', logEntry);
-                    }
-                  }}
-                  closeInvestigation={closeInvestigation}
-                  onInvestigationComplete={() => {
-                    addLog(
-                      'Autonomous investigation completed successfully',
-                      LogLevel.SUCCESS,
-                    );
-                    setIsInvestigationClosed(true);
-                    setInvestigationEndTime(new Date());
-
-                    // Track autonomous investigation completion
-                    analytics.trackInvestigationEvent('autonomous_investigation_completed', investigationIdState, {
-                      user_id: userId,
-                      input_type: selectedInputType,
-                      time_range: timeRange,
-                      selected_steps: selectedInvestigationSteps.map(step => step.id),
-                      autonomous_mode: true,
-                      investigation_duration: investigationStartTime ? Date.now() - investigationStartTime.getTime() : null,
-                    });
-
-                    // Mark all steps as completed
-                    const updatedSteps = selectedInvestigationSteps.map(
-                      (step) => ({
-                        ...step,
-                        status: StepStatus.COMPLETED,
-                        timestamp: new Date().toISOString(),
-                      }),
-                    );
-                    setStepStates(updatedSteps);
-                  }}
-                  onInvestigationStart={() => {
-                    addLog(
-                      'Starting autonomous investigation...',
-                      LogLevel.INFO,
-                    );
-                  }}
-                />
-                </Box>
-              </Collapse>
+              {/* Enhanced Autonomous Investigation Panel */}
+              <EnhancedAutonomousInvestigationPanel
+                autonomousMode={autonomousMode}
+                stepStates={stepStates}
+                userId={userId}
+                selectedInputType={selectedInputType}
+                investigationId={investigationId || ''}
+                isLoading={isLoading}
+                timeRange={timeRange}
+                selectedInvestigationSteps={selectedInvestigationSteps}
+                investigationIdState={investigationIdState}
+                investigationStartTime={investigationStartTime}
+                addLog={addLog}
+                closeInvestigation={closeInvestigation}
+                setIsInvestigationClosed={setIsInvestigationClosed}
+                setInvestigationEndTime={setInvestigationEndTime}
+                setStepStates={setStepStates}
+              />
 
               {/* Error and warning banners */}
               {errorLogs.length > 0 &&
@@ -1852,105 +1783,18 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                 </Paper>
               )}
 
-              {/* Manual Mode: Splitter layout for risk scores and steps */}
-              <Collapse in={!autonomousMode} timeout={400}>
-                <Box
-                  sx={{
-                    display: !autonomousMode ? 'flex' : 'none',
-                    flexDirection: 'column',
-                    minHeight: 0,
-                    height: 'calc(100vh - 300px)', // Set explicit height for the container
-                    flex: 1,
-                    overflow: 'hidden',
-                    transition: 'opacity 0.3s ease-in-out'
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: `${riskScoreHeight}px`,
-                      minHeight: '60px',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <RiskScoreDisplay steps={stepStates} />
-                  </Box>
-                  {/* Splitter bar between risk scores and steps */}
-                  <Box
-                    ref={splitterRef}
-                    sx={{
-                      height: '8px',
-                      cursor: 'row-resize',
-                      backgroundColor: 'divider',
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      zIndex: 10,
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      }
-                    }}
-                    tabIndex={0}
-                    role="separator"
-                    aria-orientation="horizontal"
-                    aria-label="Resize risk scores and steps"
-                    onMouseDown={() => {
-                      draggingRef.current = true;
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'ArrowUp')
-                        setRiskScoreHeight((h) => Math.max(60, h - 10));
-                      if (e.key === 'ArrowDown')
-                        setRiskScoreHeight((h) => Math.min(window.innerHeight - 200, h + 10));
-                    }}
-                  >
-                    <Box sx={{ 
-                      height: '8px', 
-                      width: '96px', 
-                      backgroundColor: 'text.disabled', 
-                      borderRadius: 1 
-                    }} />
-                  </Box>
-                  {/* Steps section */}
-                  <Box
-                    sx={{ 
-                      flex: 1, 
-                      minHeight: 0,
-                      height: '100%', // Take remaining height from parent
-                      overflowY: 'auto',
-                      overflowX: 'hidden'
-                    }}
-                  >
-                    {stepStates.length > 0 && (
-                      <InvestigationSteps
-                        stepStates={stepStates}
-                        selectedInvestigationSteps={
-                          selectedInvestigationSteps
-                        }
-                        currentStep={currentStep}
-                        currentStepIndex={currentStepIndex}
-                        isLoading={isLoading}
-                        isInvestigationClosed={isInvestigationClosed}
-                        stepStartTimes={stepStartTimes}
-                        stepEndTimes={stepEndTimes}
-                      />
-                    )}
-                  </Box>
-                </Box>
-              </Collapse>
-
-              {/* Autonomous Mode: Show risk scores */}
-              <Fade in={autonomousMode && stepStates.length > 0} timeout={600}>
-                <Box sx={{ 
-                  mb: 3,
-                  display: (autonomousMode && stepStates.length > 0) ? 'block' : 'none'
-                }}>
-                  {autonomousMode && stepStates.length > 0 && (
-                    <RiskScoreDisplay steps={stepStates} />
-                  )}
-                </Box>
-              </Fade>
+              {/* Manual Investigation Panel */}
+              <ManualInvestigationPanel
+                autonomousMode={autonomousMode}
+                stepStates={stepStates}
+                selectedInvestigationSteps={selectedInvestigationSteps}
+                currentStep={currentStep}
+                currentStepIndex={currentStepIndex}
+                isLoading={isLoading}
+                isInvestigationClosed={isInvestigationClosed}
+                stepStartTimes={stepStartTimes}
+                stepEndTimes={stepEndTimes}
+              />
             </Box>
             <AgentLogSidebar
               isOpen={isSidebarOpen}
