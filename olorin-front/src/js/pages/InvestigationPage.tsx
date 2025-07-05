@@ -42,7 +42,7 @@ import {
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
-import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel } from '@mui/material';
+import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel, Collapse, Fade } from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
 import { useParams, useLocation } from 'react-router-dom';
@@ -78,6 +78,23 @@ function messageContainsAny(message: string, substrings: string[]) {
  */
 const generateInvestigationId = () =>
   `INV-${Math.floor(Math.random() * 10000000000000000)}`;
+
+/**
+ * Converts a step ID to a properly formatted agent name
+ * @param stepId - The investigation step ID
+ * @returns The formatted agent name
+ */
+const getAgentName = (stepId: InvestigationStepId): string => {
+  const agentNames: Record<InvestigationStepId, string> = {
+    [InvestigationStepId.INIT]: 'Initialization Agent',
+    [InvestigationStepId.NETWORK]: 'Network Agent',
+    [InvestigationStepId.LOCATION]: 'Location Agent',
+    [InvestigationStepId.DEVICE]: 'Device Agent',
+    [InvestigationStepId.LOG]: 'Log Agent',
+    [InvestigationStepId.RISK]: 'Risk Assessment Agent',
+  };
+  return agentNames[stepId] || stepId.charAt(0).toUpperCase() + stepId.slice(1);
+};
 
 interface InvestigationPageProps {
   investigationId?: string | null;
@@ -201,6 +218,29 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     setLogs((prev) => [...prev, { timestamp: Date.now(), message, type }]);
   };
 
+  // Handle autonomous investigation step updates with risk scores
+  const handleAutonomousStepUpdate = (stepId: string, riskScore: number, llmThoughts: string) => {
+    console.log('Updating autonomous step:', stepId, 'with risk score:', riskScore);
+    
+    setStepStates((prevSteps) => {
+      return prevSteps.map((step) => {
+        if (step.id === stepId) {
+          return {
+            ...step,
+            status: StepStatus.COMPLETED,
+            details: {
+              ...step.details,
+              risk_score: riskScore,
+              llm_thoughts: llmThoughts,
+              timestamp: new Date().toISOString()
+            }
+          };
+        }
+        return step;
+      });
+    });
+  };
+
   /**
    * Updates the details for a specific agent step
    * @param {InvestigationStepId} stepId - The ID of the step to update
@@ -277,20 +317,20 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
 
     if (!response || !hasValidRiskAssessment) {
-      const agentName = stepId.charAt(0).toUpperCase() + stepId.slice(1);
+      const agentName = getAgentName(stepId);
       await addLog(
-        `${agentName} Agent: Error - Invalid response data (test: invalid response data)`,
+        `${agentName}: Error - Invalid response data (test: invalid response data)`,
         LogLevel.ERROR,
       );
       await addLog(
-        `${agentName} Agent: Analysis failed (test: analysis complete)`,
+        `${agentName}: Analysis failed (test: analysis complete)`,
         LogLevel.ERROR,
       );
       return updateStepStatus(currentSteps, stepId, StepStatus.FAILED);
     }
 
     let details: any = {};
-    const agentName = stepId.charAt(0).toUpperCase() + stepId.slice(1);
+    const agentName = getAgentName(stepId);
     switch (stepId) {
       case InvestigationStepId.NETWORK:
         details = processNetworkData(response as NetworkAgentResponse);
@@ -323,7 +363,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       warnings.forEach((warningMsg: string) => {
         if (warningMsg.trim()) {
           addLog(
-            `${agentName} Agent: Warning: ${warningMsg} (test: warning)`,
+            `${agentName}: Warning: ${warningMsg} (test: warning)`,
             LogLevel.WARNING,
           );
         }
@@ -373,8 +413,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       if (nextStep && nextStep.status === StepStatus.PENDING) {
         // Add a 2-second delay for the transition animation
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        const agentName =
-          nextStep.id.charAt(0).toUpperCase() + nextStep.id.slice(1);
+        const agentName = getAgentName(nextStep.id);
         const updatedSteps = await updateStepStatus(
           currentSteps,
           nextStep.id,
@@ -382,7 +421,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         );
         await setStepsAsync(updatedSteps);
         setCurrentStep(nextStep.id);
-        addLog(`${agentName} Agent: Starting analysis...`, LogLevel.SUCCESS);
+        addLog(`${agentName}: Starting analysis...`, LogLevel.SUCCESS);
         await addAgentLogs(nextStep.id, agentName);
         // Record start time for next step
         setStepStartTimes((prev) => ({
@@ -452,10 +491,37 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         riskResponse?.data?.accumulatedLLMThoughts ||
         riskResponse?.thoughts ||
         '';
-      const overallRiskScore =
+      let overallRiskScore =
         riskResponse?.data?.overallRiskScore ??
         riskResponse?.risk_level ??
         riskResponse?.overall_risk_score;
+
+      // If no overall risk score from API, calculate from individual agent scores
+      if (overallRiskScore === undefined || overallRiskScore === null) {
+        const completedSteps = stepStatesRef.current.filter(
+          (step) =>
+            step.id !== InvestigationStepId.INIT &&
+            step.id !== InvestigationStepId.RISK &&
+            step.status === StepStatus.COMPLETED &&
+            step.details?.risk_score
+        );
+        
+        if (completedSteps.length > 0) {
+          const totalScore = completedSteps.reduce((sum, step) => {
+            const score = step.details?.risk_score || 0;
+            // Convert percentage back to decimal if needed
+            const normalizedScore = score > 1 ? score / 100 : score;
+            return sum + normalizedScore;
+          }, 0);
+          overallRiskScore = totalScore / completedSteps.length;
+          
+          addLog(
+            `Risk Assessment Agent: Calculated overall risk score from ${completedSteps.length} agents: ${(overallRiskScore * 100).toFixed(2)}%`,
+            LogLevel.INFO,
+          );
+        }
+      }
+
       setStepStates((prev) =>
         prev.map((step) =>
           step.id === InvestigationStepId.RISK
@@ -463,6 +529,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                 ...step,
                 details: {
                   ...riskResponse,
+                  risk_score: overallRiskScore,
                   overallRiskScore,
                   accumulatedLLMThoughts: llmThoughts,
                 },
@@ -476,7 +543,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       );
       if (overallRiskScore !== undefined && overallRiskScore !== null) {
         addLog(
-          `Risk Assessment Agent: <strong>Overall Risk Score (API):</strong> ${overallRiskScore}`,
+          `Risk Assessment Agent: <strong>Overall Risk Score (API):</strong> ${(overallRiskScore * 100).toFixed(2)}%`,
           LogLevel.INFO,
         );
       }
@@ -551,6 +618,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           entityType,
           investigationIdForApi,
           timeRangeRef.current,
+          autonomousMode ? 'autonomous' : 'manual',
         );
       }
       if (stepId === InvestigationStepId.LOCATION) {
@@ -575,6 +643,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           entityType,
           investigationIdForApi,
           timeRangeRef.current,
+          autonomousMode ? 'autonomous' : 'manual',
         );
       }
       throw new Error(`Unknown step ID: ${stepId}`);
@@ -599,33 +668,63 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     stepId: InvestigationStepId,
     agentName: string,
   ) => {
-    const logMessages: Record<InvestigationStepId, string[]> = {
+    const autonomousLogMessages: Record<InvestigationStepId, string[]> = {
       [InvestigationStepId.NETWORK]: [
-        'Analyzing customer networks from Devices Panel and Databricks',
-        'Checking IP address consistency across sessions',
-        'Verifying ISP consistency from Devices Panel',
-        'Detecting VPN/proxy usage via Devices History Panel and TMX',
+        'AI analyzing customer networks from Devices Panel and Databricks',
+        'Autonomous IP address consistency verification across sessions',
+        'AI-powered ISP consistency analysis from Devices Panel',
+        'Machine learning detecting VPN/proxy usage via Devices History Panel and TMX',
       ],
       [InvestigationStepId.LOCATION]: [
-        'Checking customer location from OII, SF, Ekata, and Devices Panel',
-                        'Verifying business location from SF, Business Admin, and Google',
-        'Validating phone registration location via Ekata and LexisNexis',
-        'Analyzing historical RSS login locations from Devices Panel',
+        'AI checking customer location from OII, SF, Ekata, and Devices Panel',
+        'Autonomous business location verification from SF, Business Admin, and Google',
+        'AI validating phone registration location via Ekata and LexisNexis',
+        'Machine learning analyzing historical RSS login locations from Devices Panel',
       ],
       [InvestigationStepId.DEVICE]: [
-        'Checking device type (PC/MAC) from Devices Panel and TMX',
-        'Verifying mobile device usage (phone/tablet)',
-        'Analyzing browser information from Devices Panel',
-        'Checking operating system details',
+        'AI checking device type (PC/MAC) from Devices Panel and TMX',
+        'Autonomous mobile device usage verification (phone/tablet)',
+        'AI analyzing browser information from Devices Panel',
+        'Machine learning checking operating system details',
       ],
       [InvestigationStepId.LOG]: [
-        'Analyzing login patterns from authentication logs',
-        'Checking for suspicious activities in system logs',
-        'Evaluating behavioral patterns against known fraud indicators',
+        'AI analyzing login patterns from authentication logs',
+        'Autonomous detection of suspicious activities in system logs',
+        'Machine learning evaluating behavioral patterns against known fraud indicators',
       ],
       [InvestigationStepId.INIT]: [],
       [InvestigationStepId.RISK]: [],
     };
+
+    const manualLogMessages: Record<InvestigationStepId, string[]> = {
+      [InvestigationStepId.NETWORK]: [
+        'Manually analyzing customer networks from Devices Panel and Databricks',
+        'Investigator checking IP address consistency across sessions',
+        'Manual verification of ISP consistency from Devices Panel',
+        'Analyst detecting VPN/proxy usage via Devices History Panel and TMX',
+      ],
+      [InvestigationStepId.LOCATION]: [
+        'Manually checking customer location from OII, SF, Ekata, and Devices Panel',
+        'Investigator verifying business location from SF, Business Admin, and Google',
+        'Manual validation of phone registration location via Ekata and LexisNexis',
+        'Analyst reviewing historical RSS login locations from Devices Panel',
+      ],
+      [InvestigationStepId.DEVICE]: [
+        'Manually checking device type (PC/MAC) from Devices Panel and TMX',
+        'Investigator verifying mobile device usage (phone/tablet)',
+        'Manual analysis of browser information from Devices Panel',
+        'Analyst reviewing operating system details',
+      ],
+      [InvestigationStepId.LOG]: [
+        'Manually analyzing login patterns from authentication logs',
+        'Investigator checking for suspicious activities in system logs',
+        'Manual evaluation of behavioral patterns against known fraud indicators',
+      ],
+      [InvestigationStepId.INIT]: [],
+      [InvestigationStepId.RISK]: [],
+    };
+
+    const logMessages = autonomousMode ? autonomousLogMessages : manualLogMessages;
 
     await Promise.all(
       logMessages[stepId].map((message) =>
@@ -792,136 +891,138 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             });
           }
 
-          // --- INIT step special handling ---
-          if (stepId === InvestigationStepId.INIT) {
-            // Only log initialization, do not fetch/process agent data
-            return currentSteps;
-          }
+                  // --- INIT step special handling ---
+        if (stepId === InvestigationStepId.INIT) {
+          // Only log initialization, do not fetch/process agent data
+          return currentSteps;
+        }
 
-          if (stepId === InvestigationStepId.RISK) {
-            // Only handled after all agents complete; skip in main agent loop
-            return currentSteps;
-          }
+        if (stepId === InvestigationStepId.RISK) {
+          // Only handled after all agents complete; skip in main agent loop
+          return currentSteps;
+        }
 
-          // 1. Initialize the agent
-          checkCancelled();
+        // 1. Initialize the agent
+        checkCancelled();
 
-          // 2. Write agent's log messages (print while waiting for API)
-          // await addAgentLogs(stepId, agentName);
-          if (useMock) {
-            // In demo mode, simulate a 3-second wait for data
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-          }
+        // 2. Write agent's log messages (print while waiting for API)
+        // await addAgentLogs(stepId, agentName);
+        if (useMock) {
+          // In demo mode, simulate a 3-second wait for data
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
 
-          // 3. Call the agent's API or load mock data only for the current agent, dynamically
-          const response = await getAgentResponse(stepId, newInvestigationId);
-          checkCancelled();
+        // 3. Call the agent's API or load mock data only for the current agent, dynamically
+        const response = await getAgentResponse(stepId, newInvestigationId);
+        checkCancelled();
 
-          try {
-            // DEBUG: log stepId and response before updateAgentDetails
-            // eslint-disable-next-line no-console
-            console.log('DEBUG: agent loop', stepId, response);
-            // 4. Update agent details
-            if (response && response.data) {
-              const newSteps = await updateAgentDetails(
-                stepId,
-                response.data,
-                stepStatesRef.current,
+        try {
+          // DEBUG: log stepId and response before updateAgentDetails
+          // eslint-disable-next-line no-console
+          console.log('DEBUG: agent loop', stepId, response);
+          // 4. Update agent details
+          if (response && response.data) {
+            const newSteps = await updateAgentDetails(
+              stepId,
+              response.data,
+              stepStatesRef.current,
+            );
+            await setStepsAsync(newSteps);
+            stepStatesRef.current = newSteps;
+            currentSteps = newSteps;
+
+            // Log DI BB results if present (for Device Agent)
+            if (
+              stepId === InvestigationStepId.DEVICE &&
+              newSteps.find((s) => s.id === stepId)?.details?.di_bb
+            ) {
+              const diBB = newSteps.find((s) => s.id === stepId)?.details
+                ?.di_bb;
+              const agentName = getAgentName(stepId);
+              await addLog(
+                `${agentName}: <strong>DI BB Status:</strong> ${diBB.status}`,
+                LogLevel.INFO,
               );
-              await setStepsAsync(newSteps);
-              stepStatesRef.current = newSteps;
-              currentSteps = newSteps;
-
-              // Log DI BB results if present (for Device Agent)
-              if (
-                stepId === InvestigationStepId.DEVICE &&
-                newSteps.find((s) => s.id === stepId)?.details?.di_bb
-              ) {
-                const diBB = newSteps.find((s) => s.id === stepId)?.details
-                  ?.di_bb;
+              await addLog(
+                `${agentName}: <strong>DI BB Elapsed Time:</strong> ${diBB.elapsedTime}`,
+                LogLevel.INFO,
+              );
+              if (diBB.errorMessage) {
                 await addLog(
-                  `${agentName} Agent: <strong>DI BB Status:</strong> ${diBB.status}`,
-                  LogLevel.INFO,
+                  `${agentName}: <strong>DI BB Error:</strong> ${diBB.errorMessage}`,
+                  LogLevel.WARNING,
                 );
-                await addLog(
-                  `${agentName} Agent: <strong>DI BB Elapsed Time:</strong> ${diBB.elapsedTime}`,
-                  LogLevel.INFO,
-                );
-                if (diBB.errorMessage) {
-                  await addLog(
-                    `${agentName} Agent: <strong>DI BB Error:</strong> ${diBB.errorMessage}`,
-                    LogLevel.WARNING,
-                  );
-                }
-                if (diBB.parsedData) {
-                  let summary;
-                  if (diBB.parsedData && typeof diBB.parsedData === 'object') {
-                    const {
-                      sessionId,
-                      vendor,
-                      score,
-                      bbAssessmentRating,
-                      fraudScore,
-                      fraudRating,
-                      ratScore,
-                      ratRating,
-                    } = diBB.parsedData;
-                    summary = JSON.stringify({
-                      sessionId,
-                      vendor,
-                      score,
-                      bbAssessmentRating,
-                      fraudScore,
-                      fraudRating,
-                      ratScore,
-                      ratRating,
-                    });
-                  } else {
-                    summary = String(diBB.parsedData);
-                  }
-                  await addLog(
-                    `${agentName} Agent: <strong>DI BB Parsed Data (summary):</strong> ${summary}`,
-                    LogLevel.INFO,
-                  );
-                }
               }
-              // 5. Always log from the normalized details in the updated step state
-              const stepDetails = newSteps.find(
-                (s) => s.id === stepId,
-              )?.details;
-              const ra = stepDetails?.risk_assessment;
-              if (ra?.risk_level !== undefined) {
-                const riskLevel =
-                  typeof ra.risk_level === 'number'
-                    ? ra.risk_level.toFixed(2)
-                    : String(ra.risk_level);
+              if (diBB.parsedData) {
+                let summary;
+                if (diBB.parsedData && typeof diBB.parsedData === 'object') {
+                  const {
+                    sessionId,
+                    vendor,
+                    score,
+                    bbAssessmentRating,
+                    fraudScore,
+                    fraudRating,
+                    ratScore,
+                    ratRating,
+                  } = diBB.parsedData;
+                  summary = JSON.stringify({
+                    sessionId,
+                    vendor,
+                    score,
+                    bbAssessmentRating,
+                    fraudScore,
+                    fraudRating,
+                    ratScore,
+                    ratRating,
+                  });
+                } else {
+                  summary = String(diBB.parsedData);
+                }
                 await addLog(
-                  `${agentName} Agent: <strong>Risk Score:</strong> ${riskLevel}`,
+                  `${agentName}: <strong>DI BB Parsed Data (summary):</strong> ${summary}`,
                   LogLevel.INFO,
                 );
-                if (ra.risk_factors?.length) {
-                  const riskFactorsString = ra.risk_factors
-                    .map((factor: any) =>
-                      typeof factor === 'object'
-                        ? JSON.stringify(factor)
-                        : String(factor),
-                    )
-                    .join(', ');
-                  await addLog(
-                    `${agentName} Agent: Risk factors: ${riskFactorsString}`,
-                    LogLevel.INFO,
-                  );
-                }
-                // For all agents, add a detailed Thoughts section
-                let details = '';
-                if (ra.anomaly_details) {
-                  details += `anomaly_details:\n${
-                    Array.isArray(ra.anomaly_details)
-                      ? ra.anomaly_details.join('\n')
-                      : ra.anomaly_details
-                  }\n`;
-                }
-                if (ra.confidence !== undefined) {
+              }
+            }
+            // 5. Always log from the normalized details in the updated step state
+            const stepDetails = newSteps.find(
+              (s) => s.id === stepId,
+            )?.details;
+            const ra = stepDetails?.risk_assessment;
+            if (ra?.risk_level !== undefined) {
+              const agentName = getAgentName(stepId);
+              const riskLevel =
+                typeof ra.risk_level === 'number'
+                  ? ra.risk_level.toFixed(2)
+                  : String(ra.risk_level);
+              await addLog(
+                `${agentName}: <strong>Risk Score:</strong> ${riskLevel}`,
+                LogLevel.INFO,
+              );
+              if (ra.risk_factors?.length) {
+                const riskFactorsString = ra.risk_factors
+                  .map((factor: any) =>
+                    typeof factor === 'object'
+                      ? JSON.stringify(factor)
+                      : String(factor),
+                  )
+                  .join(', ');
+                await addLog(
+                  `${agentName}: Risk factors: ${riskFactorsString}`,
+                  LogLevel.INFO,
+                );
+              }
+              // For all agents, add a detailed Thoughts section
+              let details = '';
+              if (ra.anomaly_details) {
+                details += `anomaly_details:\n${
+                  Array.isArray(ra.anomaly_details)
+                    ? ra.anomaly_details.join('\n')
+                    : ra.anomaly_details
+                }\n`;
+              }
+              if (ra.confidence !== undefined) {
                   details += `confidence: ${ra.confidence}\n`;
                 }
                 if (ra.summary) {
@@ -1463,7 +1564,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   };
 
   // Splitter logic for risk score and steps
-  const [riskScoreHeight, setRiskScoreHeight] = useState(120); // initial height in px
+  const [riskScoreHeight, setRiskScoreHeight] = useState(180); // initial height in px
   const splitterRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   useEffect(() => {
@@ -1473,10 +1574,14 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
      */
     function onMouseMove(e: MouseEvent) {
       if (draggingRef.current && splitterRef.current) {
-        const containerTop =
-          splitterRef.current.parentElement?.getBoundingClientRect().top || 0;
-        const newHeight = Math.max(20, e.clientY - containerTop);
-        setRiskScoreHeight(newHeight);
+        const container = splitterRef.current.parentElement;
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const containerTop = containerRect.top;
+          const containerHeight = containerRect.height;
+          const newHeight = Math.max(60, Math.min(containerHeight - 100, e.clientY - containerTop));
+          setRiskScoreHeight(newHeight);
+        }
       }
     }
     /**
@@ -1573,7 +1678,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       >
         <Box sx={{ 
           flex: 1, 
-          transition: 'all 0.3s', 
+          transition: 'all 0.5s ease-in-out', 
           height: '100%', 
           minHeight: 0,
           display: 'flex',
@@ -1600,64 +1705,22 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                 onTimeRangeChange={setTimeRange}
                 selectedInputType={selectedInputType}
                 setSelectedInputType={setSelectedInputType}
+                autonomousMode={autonomousMode}
+                setAutonomousMode={setAutonomousMode}
               />
 
-              {/* Autonomous Mode Toggle */}
-              <Paper sx={{ 
-                mb: 2, 
-                p: 2, 
-                background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
-                border: `1px solid ${theme.palette.primary.light}30`
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                      Investigation Mode
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {autonomousMode
-                        ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
-                        : 'Manual mode allows step-by-step investigation control'}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: 500,
-                        color: !autonomousMode ? 'primary.main' : 'text.secondary'
-                      }}
-                    >
-                      Manual
-                    </Typography>
-                    <Switch
-                      checked={autonomousMode}
-                      onChange={() => setAutonomousMode(!autonomousMode)}
-                      disabled={isLoading}
-                      color="primary"
-                    />
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: 500,
-                        color: autonomousMode ? 'primary.main' : 'text.secondary'
-                      }}
-                    >
-                      Autonomous
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
+
 
               {/* Conditional rendering based on investigation mode */}
-              {autonomousMode ? (
-                <AutonomousInvestigationPanel
+              <Collapse in={autonomousMode} timeout={400}>
+                <Box sx={{ display: autonomousMode ? 'block' : 'none' }}>
+                  <AutonomousInvestigationPanel
                   entityId={userId}
                   entityType={
                     selectedInputType === 'userId' ? 'user_id' : 'device_id'
                   }
                   investigationId={investigationId || ''}
-                  isInvestigating={isLoading}
+                  isInvestigating={isLoading && autonomousMode}
                   onLog={(logEntry) => {
                     console.log('onLog wrapper called with:', logEntry);
                     if (logEntry && logEntry.message) {
@@ -1702,7 +1765,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                     );
                   }}
                 />
-              ) : null}
+                </Box>
+              </Collapse>
 
               {/* Error and warning banners */}
               {errorLogs.length > 0 &&
@@ -1789,29 +1853,27 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
               )}
 
               {/* Manual Mode: Splitter layout for risk scores and steps */}
-              {!autonomousMode && (
+              <Collapse in={!autonomousMode} timeout={400}>
                 <Box
                   sx={{
-                    display: 'flex',
+                    display: !autonomousMode ? 'flex' : 'none',
                     flexDirection: 'column',
                     minHeight: 0,
-                    height: '100%',
+                    height: 'calc(100vh - 300px)', // Set explicit height for the container
                     flex: 1,
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    transition: 'opacity 0.3s ease-in-out'
                   }}
                 >
-                  {(isLoading || isInvestigationClosed) && (
-                    <Box
-                      sx={{
-                        height: `${riskScoreHeight}px`,
-                        minHeight: '20px',
-                        maxHeight: '300px',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <RiskScoreDisplay steps={stepStates} />
-                    </Box>
-                  )}
+                  <Box
+                    sx={{
+                      height: `${riskScoreHeight}px`,
+                      minHeight: '60px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <RiskScoreDisplay steps={stepStates} />
+                  </Box>
                   {/* Splitter bar between risk scores and steps */}
                   <Box
                     ref={splitterRef}
@@ -1840,7 +1902,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                       if (e.key === 'ArrowUp')
                         setRiskScoreHeight((h) => Math.max(60, h - 10));
                       if (e.key === 'ArrowDown')
-                        setRiskScoreHeight((h) => Math.min(300, h + 10));
+                        setRiskScoreHeight((h) => Math.min(window.innerHeight - 200, h + 10));
                     }}
                   >
                     <Box sx={{ 
@@ -1854,8 +1916,10 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                   <Box
                     sx={{ 
                       flex: 1, 
-                      minHeight: 0, 
-                      overflow: 'auto' 
+                      minHeight: 0,
+                      height: '100%', // Take remaining height from parent
+                      overflowY: 'auto',
+                      overflowX: 'hidden'
                     }}
                   >
                     {stepStates.length > 0 && (
@@ -1874,16 +1938,19 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                     )}
                   </Box>
                 </Box>
-              )}
+              </Collapse>
 
-              {/* Autonomous Mode: Show risk scores if investigation completed */}
-              {autonomousMode &&
-                (isLoading || isInvestigationClosed) &&
-                stepStates.length > 0 && (
-                  <Box sx={{ mb: 3 }}>
+              {/* Autonomous Mode: Show risk scores */}
+              <Fade in={autonomousMode && stepStates.length > 0} timeout={600}>
+                <Box sx={{ 
+                  mb: 3,
+                  display: (autonomousMode && stepStates.length > 0) ? 'block' : 'none'
+                }}>
+                  {autonomousMode && stepStates.length > 0 && (
                     <RiskScoreDisplay steps={stepStates} />
-                  </Box>
-                )}
+                  )}
+                </Box>
+              </Fade>
             </Box>
             <AgentLogSidebar
               isOpen={isSidebarOpen}

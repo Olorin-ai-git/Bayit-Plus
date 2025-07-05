@@ -10,14 +10,14 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormLabel,
   Paper,
   IconButton,
   Tooltip,
   useTheme,
+  Collapse,
+  Fade,
+  Switch,
+  Divider,
 } from '@mui/material';
 import Stopwatch from './Stopwatch';
 
@@ -41,6 +41,8 @@ interface Props {
   onTimeRangeChange: (value: string) => void;
   selectedInputType: 'userId' | 'deviceId';
   setSelectedInputType: (type: 'userId' | 'deviceId') => void;
+  autonomousMode: boolean;
+  setAutonomousMode: (mode: boolean) => void;
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
@@ -68,6 +70,8 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
   onTimeRangeChange,
   selectedInputType,
   setSelectedInputType,
+  autonomousMode,
+  setAutonomousMode,
 }) => {
   const theme = useTheme();
   const timeRangeOptions = [
@@ -141,6 +145,20 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
             </Select>
           </FormControl>
           
+          <Fade in={!!startTime} timeout={400}>
+            <Box sx={{ display: startTime ? 'block' : 'none' }}>
+              {startTime && (
+                <Stopwatch
+                  startTime={startTime}
+                  endTime={endTime}
+                  label="Investigation Time"
+                  className="text-sm"
+                  data-testid="stopwatch"
+                />
+              )}
+            </Box>
+          </Fade>
+          
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="Edit Steps">
               <IconButton
@@ -193,48 +211,131 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {/* Radio button group for input type selection */}
-        <FormControl component="fieldset">
-          <RadioGroup
-            row
-            value={selectedInputType}
-            onChange={(e) => setSelectedInputType(e.target.value as 'userId' | 'deviceId')}
-          >
-            <FormControlLabel 
-              value="userId" 
-              control={<Radio />} 
-              label="User ID"
-              sx={{ mr: 4 }}
-            />
-            <FormControlLabel 
-              value="deviceId" 
-              control={<Radio />} 
-              label="Device ID"
-            />
-          </RadioGroup>
-        </FormControl>
+      <Collapse in={!isLoading} timeout={500}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Investigation Mode Toggle */}
+          <Box sx={{ 
+            p: 2, 
+            background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
+            border: `1px solid ${theme.palette.primary.light}30`,
+            borderRadius: 1,
+            transition: 'all 0.3s ease-in-out'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                  Investigation Mode
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {autonomousMode
+                    ? 'Autonomous mode uses AI to run investigations automatically via WebSocket'
+                    : 'Manual mode allows step-by-step investigation control'}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: !autonomousMode ? 'primary.main' : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out'
+                  }}
+                >
+                  Manual
+                </Typography>
+                <Switch
+                  checked={autonomousMode}
+                  onChange={() => setAutonomousMode(!autonomousMode)}
+                  disabled={isLoading}
+                  color="secondary"
+                  sx={{
+                    '& .MuiSwitch-thumb': {
+                      transition: 'all 0.2s ease-in-out'
+                    }
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: autonomousMode ? 'primary.main' : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out'
+                  }}
+                >
+                  Autonomous
+                </Typography>
+              </Box>
+            </Box>
+            
+            {/* Entity Type Toggle */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                  Entity Type
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {selectedInputType === 'userId'
+                    ? 'Investigate by User ID for user-based analysis'
+                    : 'Investigate by Device ID for device-based analysis'}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: selectedInputType === 'userId' ? 'primary.main' : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out'
+                  }}
+                >
+                  User ID
+                </Typography>
+                <Switch
+                  checked={selectedInputType === 'deviceId'}
+                  onChange={() => setSelectedInputType(selectedInputType === 'userId' ? 'deviceId' : 'userId')}
+                  disabled={isLoading}
+                  color="primary"
+                  sx={{
+                    '& .MuiSwitch-thumb': {
+                      transition: 'all 0.2s ease-in-out'
+                    }
+                  }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    color: selectedInputType === 'deviceId' ? 'primary.main' : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out'
+                  }}
+                >
+                  Device ID
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-          <TextField
-            fullWidth
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isLoading && userId.trim() !== '') {
-                handleSubmit(e as React.FormEvent);
+          <Divider sx={{ my: 1 }} />
+
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+            <TextField
+              fullWidth
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isLoading && userId.trim() !== '') {
+                  handleSubmit(e as React.FormEvent);
+                }
+              }}
+              placeholder={
+                selectedInputType === 'userId'
+                  ? 'Enter User ID'
+                  : 'Enter Device ID'
               }
-            }}
-            placeholder={
-              selectedInputType === 'userId'
-                ? 'Enter User ID'
-                : 'Enter Device ID'
-            }
-            variant="outlined"
-            size="medium"
-          />
-          
-          {!isLoading ? (
+              variant="outlined"
+              size="medium"
+            />
+            
             <Button
               variant="contained"
               color="primary"
@@ -245,32 +346,97 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
             >
               Start investigation
             </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleStopInvestigation}
-              disabled={!isLoading}
-              size="large"
-              sx={{ px: 4, whiteSpace: 'nowrap' }}
-            >
-              Stop investigation
-            </Button>
-          )}
-        </Box>
-        
-        {startTime && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Stopwatch
-              startTime={startTime}
-              endTime={endTime}
-              label="Investigation Time"
-              className="text-lg"
-              data-testid="stopwatch"
-            />
           </Box>
-        )}
-      </Box>
+        </Box>
+      </Collapse>
+
+      <Fade in={isLoading} timeout={300}>
+        <Box sx={{ 
+          display: isLoading ? 'flex' : 'none',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 3,
+          py: 1.5,
+          minHeight: 56 // Maintain some height to prevent layout shift
+        }}>
+          {/* Entity Type Label when collapsed */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1.5, 
+            px: 2,
+            py: 0.5,
+            backgroundColor: 'action.hover',
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'divider'
+          }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: 'text.secondary',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: 0.3,
+                fontSize: 'inherit'
+              }}
+            >
+              Entity
+            </Typography>
+            <Box sx={{
+              px: 1,
+              py: 0.25,
+              backgroundColor: 'primary.main',
+              borderRadius: 0.5,
+              color: 'primary.contrastText'
+            }}>
+              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: 'inherit' }}>
+                {selectedInputType === 'userId' ? 'User ID' : 'Device ID'}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ 
+              width: '1px', 
+              height: '16px', 
+              backgroundColor: 'divider' 
+            }} />
+            
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: 'text.secondary',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: 0.3,
+                fontSize: 'inherit'
+              }}
+            >
+              Mode
+            </Typography>
+            <Box sx={{
+              px: 1,
+              py: 0.25,
+              backgroundColor: 'primary.main',
+              borderRadius: 0.5,
+              color: 'primary.contrastText'
+            }}>
+              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: 'inherit' }}>
+                {autonomousMode ? 'Autonomous' : 'Manual'}
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleStopInvestigation}
+            size="medium"
+            sx={{ px: 3, whiteSpace: 'nowrap' }}
+          >
+            Stop investigation
+          </Button>
+        </Box>
+      </Fade>
     </Paper>
   );
 };

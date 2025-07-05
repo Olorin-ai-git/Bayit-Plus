@@ -1,6 +1,6 @@
 {
   "short_name": "Olorin",
-  "name": "Olorin Web Application",
+  "name": "Olorin - AI-Powered Fraud Investigation Platform",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#9333ea",
+  "background_color": "#faf5ff"
 } 

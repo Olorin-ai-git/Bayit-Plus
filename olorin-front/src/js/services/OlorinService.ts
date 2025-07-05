@@ -424,12 +424,13 @@ export class OlorinService {
     entityType: string,
     investigationId: string,
     timeRange: string = '30d',
+    investigationMode?: 'autonomous' | 'manual',
   ): Promise<RestResponse> {
     if (this.useMock || isDemoModeActive()) {
-      console.log('Demo mode active - using mock network data');
+      console.log('Demo mode active - using mock network data', investigationMode ? `(${investigationMode} mode)` : '');
       // Simulate network delay for realistic demo experience
       await new Promise(resolve => setTimeout(resolve, 1500));
-      return OlorinService.getMockResponse('network');
+      return OlorinService.getMockResponse('network', investigationMode);
     }
     return this.get(entityId, 'analyzeNetwork', entityType, {
       investigation_id: investigationId,
@@ -502,12 +503,13 @@ export class OlorinService {
     entityType: string,
     investigationId: string,
     timeRange: string = '30d',
+    investigationMode?: 'autonomous' | 'manual',
   ): Promise<RestResponse> {
     if (this.useMock || isDemoModeActive()) {
-      console.log('Demo mode active - using mock logs data');
+      console.log('Demo mode active - using mock logs data', investigationMode ? `(${investigationMode} mode)` : '');
       // Simulate network delay for realistic demo experience
       await new Promise(resolve => setTimeout(resolve, 1200));
-      return OlorinService.getMockResponse('logs');
+      return OlorinService.getMockResponse('logs', investigationMode);
     }
     return this.get(entityId, 'analyzeLogs', entityType, {
       investigation_id: investigationId,
@@ -764,7 +766,23 @@ export class OlorinService {
    */
   public static getMockResponse(
     type: 'oii' | 'network' | 'location' | 'device' | 'logs',
+    investigationMode?: 'autonomous' | 'manual',
   ): RestResponse {
+    // For logs and network, use mode-specific mock files if available
+    if (investigationMode && (type === 'logs' || type === 'network')) {
+      try {
+        const mockFileName = `${type}-${investigationMode}.json`;
+        const mockData = require(`../../mock/${mockFileName}`);
+        return {
+          status: 200,
+          tid: 'mock-tid',
+          data: mockData,
+        };
+      } catch (error) {
+        console.warn(`Mode-specific mock file not found for ${type}-${investigationMode}, falling back to default`);
+      }
+    }
+
     const mockData: Record<string, RestResponse> = {
       network: {
         status: 200,

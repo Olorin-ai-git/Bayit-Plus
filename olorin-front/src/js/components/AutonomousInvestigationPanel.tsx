@@ -19,6 +19,7 @@ interface AutonomousInvestigationPanelProps {
   onInvestigationStart?: () => void;
   isInvestigating?: boolean;
   onLog?: (logEntry: LogEntry) => void;
+  onStepUpdate?: (stepId: string, riskScore: number, llmThoughts: string) => void;
   closeInvestigation?: () => void;
 }
 
@@ -30,6 +31,7 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
   onInvestigationStart,
   isInvestigating = false,
   onLog,
+  onStepUpdate,
   closeInvestigation,
 }) => {
   const theme = useTheme();

@@ -265,6 +265,8 @@ interface InvestigationPhase {
   llmResponse: string;
   progressStart: number;
   progressEnd: number;
+  riskScore: number; // Individual risk score for this phase
+  stepId?: string; // Corresponding step ID for updating step state
 }
 
 const INVESTIGATION_PHASES: InvestigationPhase[] = [
@@ -281,7 +283,9 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
     ],
     llmResponse: 'Investigation framework initialized successfully. Entity validation complete. Multi-agent system ready for coordinated analysis.',
     progressStart: 0,
-    progressEnd: 15
+    progressEnd: 15,
+    riskScore: 0,
+    stepId: 'initialization'
   },
   {
     name: 'network_analysis',
@@ -297,7 +301,9 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
     ],
     llmResponse: 'Network analysis reveals moderate risk indicators. IP geolocation suggests potential geographic inconsistencies. VPN usage detected with medium confidence. Threat intelligence shows no direct matches but flagged suspicious patterns.',
     progressStart: 15,
-    progressEnd: 35
+    progressEnd: 35,
+    riskScore: 65,
+    stepId: 'network'
   },
   {
     name: 'device_analysis',
@@ -313,7 +319,9 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
     ],
     llmResponse: 'Device analysis indicates potential device spoofing. Browser fingerprint shows inconsistencies with claimed device type. Hardware profile suggests emulation environment. Risk score elevated due to device anomalies.',
     progressStart: 35,
-    progressEnd: 55
+    progressEnd: 55,
+    riskScore: 78,
+    stepId: 'device'
   },
   {
     name: 'location_analysis',
@@ -329,7 +337,9 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
     ],
     llmResponse: 'Location analysis reveals concerning patterns. GPS coordinates show impossible travel velocities between sessions. Timezone inconsistencies detected. Multiple geofence violations in high-risk areas. Location-based risk score significantly elevated.',
     progressStart: 55,
-    progressEnd: 75
+    progressEnd: 75,
+    riskScore: 82,
+    stepId: 'location'
   },
   {
     name: 'log_analysis',
@@ -345,7 +355,9 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
     ],
     llmResponse: 'Log analysis reveals significant behavioral anomalies. Authentication patterns show unusual timing and frequency. Session data indicates automated or scripted behavior. Event correlation suggests coordinated fraud activity. High-confidence fraud indicators detected.',
     progressStart: 75,
-    progressEnd: 90
+    progressEnd: 90,
+    riskScore: 89,
+    stepId: 'log'
   },
   {
     name: 'risk_assessment',
@@ -359,9 +371,11 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Generating final risk assessment and recommendations...',
       'Preparing investigation summary and action items...'
     ],
-    llmResponse: 'Final risk assessment complete. ML models indicate HIGH FRAUD RISK (score: 8.7/10). Multiple risk factors detected across network, device, location, and behavioral patterns. Recommended actions: Account suspension, enhanced monitoring, and manual review required.',
+    llmResponse: 'Final risk assessment complete. ML models indicate HIGH FRAUD RISK (score: 87/100). Multiple risk factors detected across network, device, location, and behavioral patterns. Recommended actions: Account suspension, enhanced monitoring, and manual review required.',
     progressStart: 90,
-    progressEnd: 100
+    progressEnd: 100,
+    riskScore: 87,
+    stepId: 'risk-assessment'
   }
 ];
 
@@ -372,6 +386,7 @@ export const useSimpleAutonomousInvestigation = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const onLogCallbackRef = useRef<((logEntry: LogEntry) => void) | null>(null);
+  const onStepUpdateCallbackRef = useRef<((stepId: string, riskScore: number, llmThoughts: string) => void) | null>(null);
   
   // Use refs for simulation state to avoid stale closures
   const simulationStateRef = useRef({
@@ -566,6 +581,12 @@ export const useSimpleAutonomousInvestigation = () => {
         }
         updateProgress();
         
+        // Update step with risk data if callback provided and phase has stepId
+        if (currentPhase.stepId && onStepUpdateCallbackRef.current) {
+          console.log('Updating step with risk data:', currentPhase.stepId, currentPhase.riskScore);
+          onStepUpdateCallbackRef.current(currentPhase.stepId, currentPhase.riskScore, currentPhase.llmResponse);
+        }
+        
         // Move to next phase
         state.currentPhaseIndex++;
         state.currentLogIndex = 0;
@@ -606,7 +627,8 @@ export const useSimpleAutonomousInvestigation = () => {
     entityId: string,
     entityType: string,
     investigationId: string,
-    onLog?: (logEntry: LogEntry) => void
+    onLog?: (logEntry: LogEntry) => void,
+    onStepUpdate?: (stepId: string, riskScore: number, llmThoughts: string) => void
   ) => {
     console.log('Starting investigation with demo mode check...');
     
@@ -638,6 +660,7 @@ export const useSimpleAutonomousInvestigation = () => {
     setProgress(0);
     console.log('Setting onLogCallback:', onLog);
     onLogCallbackRef.current = onLog || null;
+    onStepUpdateCallbackRef.current = onStepUpdate || null;
     
     // Reset simulation state
     simulationStateRef.current = {

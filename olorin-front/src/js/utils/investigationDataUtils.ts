@@ -188,6 +188,9 @@ export function processNetworkData(
         timestamp: formatTimestamp(history.timestamp),
       })) || [],
     risk_assessment: riskAssessment,
+    // Extract risk_score for RiskScoreDisplay component
+    risk_score: riskAssessment?.risk_level || response?.analysis?.risk_score || 0,
+    llm_thoughts: riskAssessment?.thoughts || response?.llm_thoughts || '',
     // Common fields
     ...(response.investigationId && {
       investigationId: response.investigationId,
@@ -317,13 +320,15 @@ export function processDeviceData(
         timestamp: formatTimestamp(history.timestamp),
       })) || [],
     risk_assessment: riskAssessment,
+    // Extract risk_score for RiskScoreDisplay component
+    risk_score: riskAssessment?.risk_level || 0,
+    llm_thoughts: riskAssessment?.thoughts || response?.llm_thoughts || '',
     // Common fields
     di_bb: diBB,
     // Additional fields from new format
     user_id: response?.user_id,
     timestamp: response?.timestamp ? formatTimestamp(response.timestamp) : null,
     di_tool_warning: response?.di_tool_warning,
-    llm_thoughts: response?.llm_thoughts,
   };
 }
 
@@ -408,6 +413,9 @@ export function processLogData(response: any): Partial<LogsAnalysisResponse> {
         }
       : null,
     log_risk_assessment: logRiskAssessment,
+    // Extract risk_score for RiskScoreDisplay component
+    risk_score: riskAssessment?.risk_level || 0,
+    llm_thoughts: riskAssessment?.thoughts || response?.llm_thoughts || '',
     // Other fields
     entity_id: response?.entity_id,
     entity_type: response?.entity_type,
@@ -459,6 +467,9 @@ export async function processLocationData(response: any) {
   return {
     ...response,
     risk_assessment: riskAssessment,
+    // Extract risk_score for RiskScoreDisplay component
+    risk_score: riskAssessment?.risk_level || 0,
+    llm_thoughts: riskAssessment?.thoughts || response?.llm_thoughts || '',
     // Handle different location data formats
     splunk_locations: response?.splunk_locations || [],
     locations: response?.locations || [],

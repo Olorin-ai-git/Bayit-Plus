@@ -1,0 +1,111 @@
+{
+  "behavior_patterns": {
+    "login_times": ["2024-05-31T08:00:00Z", "2024-06-01T09:00:00Z"],
+    "usual_locations": ["San Francisco", "Oakland"],
+    "common_devices": ["PC", "Phone"]
+  },
+  "anomalies": [
+    {
+      "type": "failed_login",
+      "timestamp": "2024-06-01T10:00:00Z",
+      "description": "AI detected multiple failed login attempts from suspicious IP."
+    },
+    {
+      "type": "autonomous_alert",
+      "timestamp": "2024-06-01T10:05:00Z",
+      "description": "Autonomous investigation triggered due to anomalous behavior pattern."
+    }
+  ],
+  "risk_assessment": {
+    "risk_level": 0.8,
+    "risk_factors": [
+      "AI-detected failed login from new device in different region/country",
+      "Autonomous pattern recognition flagged unusual access sequence"
+    ],
+    "confidence": 0.85,
+    "summary": "Autonomous AI analysis detected high-risk activity: User had successful login from US followed by immediate failed login from India on new device. AI recommends immediate investigation.",
+    "timestamp": "2025-05-18T00:49:12.558564+00:00"
+  },
+  "splunk_data": [
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "login",
+      "originating_ips": "192.168.1.10",
+      "isp": "Comcast",
+      "cities": "San Francisco",
+      "region": "CA",
+      "device_ids": "dev-001",
+      "device_first_seen": "2024-04-01T09:00:00Z",
+      "ai_analysis": "Normal baseline behavior established"
+    },
+    {
+      "email_address": "user@example.com",
+      "username": "testuser",
+      "offering_ids": "FINANCIAL",
+      "transactions": "failed_login",
+      "originating_ips": "203.0.113.5",
+      "isp": "Vodafone India",
+      "cities": "Mumbai",
+      "region": "MH",
+      "device_ids": "dev-002",
+      "device_first_seen": "2024-04-01T09:05:00Z",
+      "ai_analysis": "Autonomous detection: Geographic anomaly detected - impossible travel scenario"
+    }
+  ],
+  "chronos_data": {
+    "metadata": {
+      "limit": 300,
+      "anchor": "2025-05-22T07:50:48.081Z",
+      "entitiesCount": 300,
+      "totalCount": 1372,
+      "ai_processed": true
+    },
+    "entities": [
+      {
+        "id": "8288fde5-f6e8-3479-9f7d-54b54fdb8981",
+        "origin": "olorin.money.risk.atmos",
+        "eventType": "ASSERTION",
+        "eventTimestamp": "2025-05-22T18:24:29.497Z",
+        "data": {
+          "inputIpGeo": "US",
+          "trueIpGeo": "US",
+          "ai_confidence": 0.95
+        }
+      },
+      {
+        "id": "c4b4b86e-79b9-3154-925b-dff12a9c678d",
+        "origin": "olorin.money.risk.atmos",
+        "eventType": "AUTONOMOUS_ALERT",
+        "eventTimestamp": "2025-05-22T18:24:29.459Z",
+        "data": {
+          "trueIpGeo": "IN",
+          "ai_confidence": 0.88,
+          "autonomous_trigger": "geographic_anomaly"
+        }
+      },
+      {
+        "id": "7a596511-a0ee-3bae-86cf-4d878d33c16a",
+        "origin": "olorin.money.risk.atmos",
+        "eventType": "LOGIN",
+        "eventTimestamp": "2025-05-22T18:24:29.227Z",
+        "data": {
+          "inputIpGeo": "US",
+          "trueIpGeo": "US",
+          "ai_processed": true
+        }
+      }
+    ]
+  },
+  "autonomous_insights": {
+    "pattern_analysis": "AI detected impossible travel scenario between US and India within 5 minutes",
+    "risk_escalation": "Autonomous system escalated to high priority due to geographic anomaly",
+    "ml_confidence": 0.92,
+    "recommended_actions": [
+      "Immediate account lockdown",
+      "Contact user for verification",
+      "Review recent transaction history"
+    ]
+  }
+} 
