@@ -113,7 +113,7 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
-            ATO Fraud Investigation System
+            Fraud Investigation System
           </Typography>
           <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
             Investigation ID:{' '}

@@ -34,6 +34,7 @@ import {
   Grid,
   Divider,
   Badge,
+  useTheme,
 } from '@mui/material';
 import {
   Send as SendIcon,
@@ -93,6 +94,7 @@ interface PreparedPrompt {
 }
 
 const RAGPage: React.FC = () => {
+  const theme = useTheme();
   // State management
   const [activeTab, setActiveTab] = useState(0);
   const [subTab, setSubTab] = useState<'table' | 'prompts'>('table'); // Add sub-tab state for Data Analysis tab
@@ -829,13 +831,13 @@ const RAGPage: React.FC = () => {
           style={{ width: `${sidebarWidth}px` }}
         >
           {/* Prompts Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 flex-shrink-0">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex-shrink-0">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <StorageIcon className="text-xl" />
                 <div>
                   <h3 className="text-lg font-bold">AI Prompts Manager</h3>
-                  <p className="text-purple-100 text-xs">
+                  <p className="text-blue-100 text-xs">
                     {preparedPrompts.length > 0
                       ? `${preparedPrompts.length} prompts available`
                       : 'RAG API not configured'}
@@ -846,6 +848,7 @@ const RAGPage: React.FC = () => {
                 size="small"
                 onClick={() => setPromptsPanelOpen(false)}
                 className="text-white hover:bg-white/20"
+                sx={{ color: 'white' }}
               >
                 <CloseIcon />
               </IconButton>
@@ -895,7 +898,7 @@ const RAGPage: React.FC = () => {
               {filteredPrompts.map((prompt) => (
                 <div
                   key={prompt.id}
-                  className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-200 hover:border-purple-200"
+                  className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-200 hover:border-blue-200"
                   onClick={() => usePrompt(prompt)}
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -906,7 +909,7 @@ const RAGPage: React.FC = () => {
                       <Chip
                         label={prompt.category}
                         size="small"
-                        className="bg-purple-100 text-purple-800 text-xs"
+                        className="bg-blue-100 text-blue-800 text-xs"
                       />
                     </div>
                     <Button
@@ -917,7 +920,7 @@ const RAGPage: React.FC = () => {
                         e.stopPropagation();
                         usePrompt(prompt);
                       }}
-                      className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1"
+                      className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1"
                     >
                       Use
                     </Button>
@@ -929,7 +932,7 @@ const RAGPage: React.FC = () => {
 
                   <div className="bg-gray-50 p-3 rounded-lg border text-xs">
                     <div
-                      className="font-mono text-purple-700 leading-relaxed"
+                      className="font-mono text-blue-700 leading-relaxed"
                       title={prompt.template}
                     >
                       {prompt.template}
@@ -944,7 +947,7 @@ const RAGPage: React.FC = () => {
                         copyToClipboard(prompt.template);
                       }}
                       title="Copy template"
-                      className="text-gray-500 hover:text-purple-600 hover:bg-purple-50"
+                      className="text-gray-500 hover:text-blue-600 hover:bg-blue-50"
                     >
                       <CopyIcon className="w-3 h-3" />
                     </IconButton>
@@ -1006,8 +1009,8 @@ const RAGPage: React.FC = () => {
           <div
             className={`
               absolute right-0 top-0 w-1 h-full cursor-col-resize 
-              hover:bg-purple-400 transition-colors duration-200
-              ${isResizing ? 'bg-purple-500' : 'bg-gray-300'}
+              hover:bg-blue-400 transition-colors duration-200
+              ${isResizing ? 'bg-blue-500' : 'bg-gray-300'}
             `}
             onMouseDown={handleResizeStart}
             title="Drag to resize sidebar"
@@ -1022,7 +1025,7 @@ const RAGPage: React.FC = () => {
       {/* Chat Interface - Right Side */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Chat Header - Fixed */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex-shrink-0">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <PsychologyIcon className="text-2xl" />
@@ -1067,6 +1070,17 @@ const RAGPage: React.FC = () => {
                 }
               }}
               className="flex-1"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#e5e7eb',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#e5e7eb',
+                    boxShadow: 'none',
+                  },
+                },
+              }}
             />
             <Button
               variant="contained"
@@ -1084,8 +1098,8 @@ const RAGPage: React.FC = () => {
           <div className="p-6 space-y-6">
             {chatMessages.length === 0 && (
               <div className="text-center py-16">
-                <div className="bg-white rounded-full p-6 w-24 h-24 mx-auto mb-6 shadow-sm">
-                  <PsychologyIcon className="w-12 h-12 text-blue-500 mx-auto" />
+                <div className="bg-white rounded-full p-4 w-24 h-24 mx-auto mb-6 shadow-sm">
+                  <PsychologyIcon className="text-blue-500 mx-auto" style={{ fontSize: '3.5rem' }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 mb-3">
                   Start a Conversation
@@ -1127,7 +1141,7 @@ const RAGPage: React.FC = () => {
                       <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
                         <div className="flex items-center gap-3">
                           <div className="bg-blue-100 p-2 rounded-full">
-                            <PsychologyIcon className="w-4 h-4 text-blue-600" />
+                            <PsychologyIcon className="w-6 h-6 text-blue-600" />
                           </div>
                           <div>
                             <span className="text-sm font-semibold text-gray-800">
@@ -1190,6 +1204,25 @@ const RAGPage: React.FC = () => {
                           {getCurrentViewMode(message.id) === 'table' &&
                           message.structured_data ? (
                             <div className="space-y-4">
+                              {/* Copy Button for Table View */}
+                              <div className="flex items-center justify-between">
+                                <div className="text-sm font-medium text-gray-700">
+                                  Table Data ({message.structured_data.data.length} records)
+                                </div>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<CopyIcon />}
+                                  onClick={() => {
+                                    const csvData = convertToCSV(message.structured_data!.data);
+                                    copyToClipboard(csvData);
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Copy Table Data
+                                </Button>
+                              </div>
+                              
                               {/* Table View */}
                               <TableView
                                 message={message}
@@ -1249,6 +1282,22 @@ const RAGPage: React.FC = () => {
                             </div>
                           ) : (
                             <div className="space-y-4">
+                              {/* Copy Button for Chat View */}
+                              <div className="flex items-center justify-between">
+                                <div className="text-sm font-medium text-gray-700">
+                                  Response Content
+                                </div>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  startIcon={<CopyIcon />}
+                                  onClick={() => copyToClipboard(message.content)}
+                                  className="text-xs"
+                                >
+                                  Copy Response
+                                </Button>
+                              </div>
+                              
                               {/* Enhanced Chat View - Better formatting for structured data */}
                               {message.structured_data ? (
                                 <div className="space-y-4">
@@ -1586,7 +1635,7 @@ const RAGPage: React.FC = () => {
     return (
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 flex-shrink-0">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <TableIcon className="text-2xl" />
@@ -1603,10 +1652,21 @@ const RAGPage: React.FC = () => {
                 value={globalSearchTerm}
                 onChange={(e) => setGlobalSearchTerm(e.target.value)}
                 InputProps={{
-                  startAdornment: <SearchIcon className="w-4 h-4" />,
+                  startAdornment: <SearchIcon className="w-4 h-4 ml-1" />,
                 }}
                 className="!bg-white/20 !text-white placeholder:!text-blue-200 !border-white/30"
                 size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      boxShadow: 'none',
+                    },
+                  },
+                }}
               />
               <Button
                 variant="contained"
@@ -1701,8 +1761,8 @@ const RAGPage: React.FC = () => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-purple-100 p-2 rounded-lg">
-                  <ViewIcon className="text-purple-600 w-5 h-5" />
+                <div className="bg-blue-100 p-2 rounded-lg">
+                  <ViewIcon className="text-blue-600 w-5 h-5" />
                 </div>
                 <div>
                   <Typography variant="h6" className="font-bold">
@@ -1825,59 +1885,126 @@ const RAGPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col">
-      {/* Page Header - Fixed */}
-      <div className="bg-white shadow-sm border-b flex-shrink-0">
-        <div className="px-4 py-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Investigate with AI - The Natural Language way
-              </h1>
-              <p className="text-gray-600">
-                Natural Language Query Interface with AI-powered investigation
-                prompts
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs - Fixed */}
-      <div className="bg-white border-b flex-shrink-0">
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          className="px-4"
-        >
-          <Tab
-            label="Chat Interface"
-            icon={<PsychologyIcon />}
-            className="!text-gray-700 !font-semibold hover:!text-blue-600 !normal-case !min-h-16 !text-sm"
-          />
-          <Tab
-            label="Field Mappings"
-            icon={<SettingsIcon />}
-            className="!text-gray-700 !font-semibold hover:!text-blue-600 !normal-case !min-h-16 !text-sm"
-          />
-          <Tab
-            label="Data Analysis"
-            icon={<TableIcon />}
-            className="!text-gray-700 !font-semibold hover:!text-blue-600 !normal-case !min-h-16 !text-sm"
-          />
-        </Tabs>
-      </div>
-
-      {/* Main Content - Scrollable */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full p-6">
-          <Paper elevation={1} className="h-full rounded-lg overflow-hidden">
-            {activeTab === 0 && renderChatTab()}
-            {activeTab === 1 && renderMappingsTab()}
-            {activeTab === 2 && renderDataAnalysisTab()}
+    <Box sx={{ 
+      height: 'calc(100vh - 16px)', // Full viewport height minus padding
+      backgroundColor: 'background.default',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
+      overflow: 'hidden',
+      p: 1 // Small padding around the entire layout
+    }}>
+      {/* Main content area */}
+      <Paper 
+        elevation={3}
+        sx={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column',
+          height: '100%', 
+          minHeight: 0,
+          overflow: 'hidden',
+          backgroundColor: 'background.paper'
+        }}
+      >
+        <Box sx={{ 
+          flex: 1,
+          height: '100%', 
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}>
+          {/* Page Header - Fixed */}
+          <Paper sx={{ 
+            p: 2, 
+            mb: 1,
+            backgroundColor: 'background.paper',
+            borderBottom: 1,
+            borderColor: 'divider'
+          }} elevation={0}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box>
+                <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                  Investigate with AI - The Natural Language way
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
+                  Natural Language Query Interface with AI-powered investigation prompts
+                </Typography>
+              </Box>
+            </Box>
           </Paper>
-        </div>
-      </div>
+
+          {/* Tabs - Fixed */}
+          <Paper sx={{ 
+            borderBottom: 1,
+            borderColor: 'divider',
+            backgroundColor: 'background.paper'
+          }} elevation={0}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              sx={{ px: 2 }}
+            >
+              <Tab
+                label="Chat Interface"
+                icon={<PsychologyIcon />}
+                sx={{ 
+                  color: 'text.primary',
+                  fontWeight: 600,
+                  '&:hover': { color: 'primary.main' },
+                  textTransform: 'none',
+                  minHeight: 64,
+                  fontSize: '0.875rem'
+                }}
+              />
+              <Tab
+                label="Field Mappings"
+                icon={<SettingsIcon />}
+                sx={{ 
+                  color: 'text.primary',
+                  fontWeight: 600,
+                  '&:hover': { color: 'primary.main' },
+                  textTransform: 'none',
+                  minHeight: 64,
+                  fontSize: '0.875rem'
+                }}
+              />
+              <Tab
+                label="Data Analysis"
+                icon={<TableIcon />}
+                sx={{ 
+                  color: 'text.primary',
+                  fontWeight: 600,
+                  '&:hover': { color: 'primary.main' },
+                  textTransform: 'none',
+                  minHeight: 64,
+                  fontSize: '0.875rem'
+                }}
+              />
+            </Tabs>
+          </Paper>
+
+          {/* Main Content - Scrollable */}
+          <Box sx={{ 
+            flex: 1,
+            overflow: 'hidden',
+            p: 2
+          }}>
+            <Box sx={{ 
+              height: '100%',
+              overflow: 'hidden',
+              borderRadius: 1,
+              backgroundColor: 'background.paper'
+            }}>
+              {activeTab === 0 && renderChatTab()}
+              {activeTab === 1 && renderMappingsTab()}
+              {activeTab === 2 && renderDataAnalysisTab()}
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
 
       {/* Add Field Mapping Dialog */}
       <Dialog
@@ -2108,7 +2235,7 @@ const RAGPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 };
 

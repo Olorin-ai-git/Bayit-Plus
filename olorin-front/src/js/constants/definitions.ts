@@ -7,6 +7,7 @@ export const AGENT_COLORS: { [agent: string]: string } = {
   'Device Agent': 'text-pink-600',
   'Log Agent': 'text-orange-600',
   'Risk Assessment Agent': 'text-red-600',
+  'Initialization Agent': 'text-blue-600',
   Initialization: 'text-gray-500',
 };
 

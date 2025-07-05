@@ -702,6 +702,20 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       `Investigation started at: ${now.toLocaleTimeString()}`,
       LogLevel.INFO,
     );
+    
+    // Handle autonomous mode vs manual mode
+    if (autonomousMode) {
+      addLog(
+        'Autonomous Agent: Starting autonomous investigation...',
+        LogLevel.INFO,
+      );
+      addLog(`Autonomous Agent: Analyzing ${selectedInputType}: ${userId}`, LogLevel.INFO);
+      
+      // Autonomous investigation will be handled by the AutonomousInvestigationPanel
+      // The actual start is triggered by the panel when it detects isLoading=true
+      return;
+    }
+    
     addLog(
       'Initialization Agent: Starting a new investigation...',
       LogLevel.INFO,
@@ -1643,6 +1657,16 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                     selectedInputType === 'userId' ? 'user_id' : 'device_id'
                   }
                   investigationId={investigationId || ''}
+                  isInvestigating={isLoading}
+                  onLog={(logEntry) => {
+                    console.log('onLog wrapper called with:', logEntry);
+                    if (logEntry && logEntry.message) {
+                      addLog(logEntry.message, logEntry.type);
+                    } else {
+                      console.warn('onLog called with invalid logEntry:', logEntry);
+                    }
+                  }}
+                  closeInvestigation={closeInvestigation}
                   onInvestigationComplete={() => {
                     addLog(
                       'Autonomous investigation completed successfully',

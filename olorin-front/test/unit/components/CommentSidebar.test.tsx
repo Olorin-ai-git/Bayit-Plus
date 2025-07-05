@@ -35,9 +35,6 @@ describe('CommentSidebar', () => {
     expect(screen.getByLabelText('Investigator')).toBeInTheDocument();
     expect(screen.getByLabelText('Policy Team')).toBeInTheDocument();
     expect(screen.getByLabelText('Close chat sidebar')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Comment Log for Investigation ID/i),
-    ).toBeInTheDocument();
     expect(screen.getByText(/Investigator Comments/i)).toBeInTheDocument();
   });
 
@@ -138,9 +135,7 @@ describe('CommentSidebar', () => {
       entityType: 'user_id',
     };
     render(<CommentSidebar {...baseProps} commentLog={[comment]} />);
-    expect(
-      screen.getByText(/Comment Log for Investigation ID/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Comment Log/i)).toBeInTheDocument();
   });
 
   it('renders nothing when isOpen is false', () => {

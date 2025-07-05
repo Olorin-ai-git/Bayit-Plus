@@ -218,16 +218,27 @@ export const TableView: React.FC<BaseViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Search */}
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <TextField
-                placeholder="Search all columns..."
-                size="small"
-                value={state.searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 min-w-64"
-              />
-            </div>
+            <TextField
+              placeholder="Search all columns..."
+              size="small"
+              value={state.searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="min-w-64"
+              InputProps={{
+                startAdornment: <SearchIcon className="w-4 h-4 text-gray-400 mr-2" />,
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#e5e7eb',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#e5e7eb',
+                    boxShadow: 'none',
+                  },
+                },
+              }}
+            />
 
             {/* Results info */}
             <div className="text-sm text-gray-600">

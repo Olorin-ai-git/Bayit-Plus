@@ -258,12 +258,7 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
             flexDirection: 'column',
           }}
         >
-          <Typography variant="caption" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-            Comment Log for Investigation ID:{' '}
-            <Box component="span" sx={{ fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}>
-              {investigationId}
-            </Box>
-          </Typography>
+
           <Typography variant="caption" sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.secondary }}>
             {selectedRole} Comment Log
           </Typography>
