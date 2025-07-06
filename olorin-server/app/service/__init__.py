@@ -190,7 +190,7 @@ class OlorinApplication:
             """,
             docs_url="/apidoc/swagger",
             redoc_url="/apidoc/redoc",
-            dependencies=[Depends(check_route_allowed)],
+            # Authentication now handled per-route basis
             contact={"url": "https://api.contact.info.olorin.com"},
             openapi_tags=[{"name": "example", "description": "Example API endpoints"}],
             lifespan=self.lifespan or default_lifespan,
@@ -203,20 +203,39 @@ class OlorinApplication:
         configure_logger(app)
         logger.info(f"config: {self.config}")
 
-        # Add CORS middleware to allow cross-origin requests
+        # Add security middleware
+        from app.middleware.rate_limiter import RateLimitMiddleware
+        from app.security.auth import SecurityHeaders
+        
+        # Add rate limiting middleware
+        app.add_middleware(RateLimitMiddleware, calls=60, period=60)
+        
+        # Add security headers middleware
+        @app.middleware("http")
+        async def add_security_headers(request: Request, call_next):
+            response = await call_next(request)
+            headers = SecurityHeaders.get_headers()
+            for key, value in headers.items():
+                response.headers[key] = value
+            return response
+        
+        # Add CORS middleware with restricted origins
+        allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://localhost:3000").split(",")
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],  # In production, replace with specific origins
+            allow_origins=allowed_origins,  # Restrict to specific origins
             allow_credentials=True,
             allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allow_headers=["*"],
+            allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
         )
 
         from app.router import agent_router, api_router, websocket_router
         from app.router.mcp_bridge_router import router as mcp_bridge_router
+        from app.router.auth_router import router as auth_router
 
         from . import example
 
+        app.include_router(auth_router)  # Authentication routes (no auth required)
         app.include_router(example.router)
         app.include_router(agent_router.router)
         app.include_router(api_router.router)

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
@@ -45,7 +46,7 @@ async def get_identity_authorization_header(
     headers = {
         "olorin_tid": olorin_tid,
         "olorin_assetalias": "Olorin.shared.fraudlistclient",
-        "Authorization": "Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret=preprdf5KZ20app3oib0XW4TugiHhk6id1mCKmUp",
+        "Authorization": f"Olorin_IAM_Authentication olorin_appid=Olorin.shared.fraudlistclient, olorin_app_secret={os.getenv('OLORIN_APP_SECRET', '')}",
         "Content-Type": "application/json",
     }
     body = {

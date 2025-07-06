@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 import re
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
@@ -64,19 +65,28 @@ from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
 from .device_router import analyze_device
 from .device_router import router as device_router
 from .investigations_router import investigations_router
+from app.security.auth import require_read, require_write, User
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
 
-DEFAULT_HEADERS = {
-    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
-    "Content-Type": "application/json",
-    "X-Forwarded-Port": "8090",
-    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
-}
+# Load API key from environment variable
+OLORIN_API_KEY = os.getenv("OLORIN_API_KEY", "")
+
+def get_default_headers():
+    """Get default headers with API key from environment."""
+    if not OLORIN_API_KEY:
+        logger.warning("OLORIN_API_KEY not set in environment variables")
+    
+    return {
+        "Authorization": f"Olorin_APIKey olorin_apikey={OLORIN_API_KEY},olorin_apikey_version=1.0",
+        "Content-Type": "application/json",
+        "X-Forwarded-Port": "8090",
+        "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
+        "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
+    }
 
 location_data_client = LocationDataClient()
 

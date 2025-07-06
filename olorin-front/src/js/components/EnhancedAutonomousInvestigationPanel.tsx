@@ -2,9 +2,7 @@ import React from 'react';
 import { Box, Collapse, Fade } from '@mui/material';
 import AutonomousInvestigationPanel from './AutonomousInvestigationPanel';
 import RiskScoreDisplay from './RiskScoreDisplay';
-import { InvestigationStep } from '../types/RiskAssessment';
-import { InvestigationStepId } from '../constants/definitions';
-import { LogLevel } from '../types/RiskAssessment';
+import { InvestigationStep, LogLevel } from '../types/RiskAssessment';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
 
 interface EnhancedAutonomousInvestigationPanelProps {

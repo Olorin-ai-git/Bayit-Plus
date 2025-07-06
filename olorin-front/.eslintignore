@@ -28,6 +28,5 @@ cypress/videos
 coverage_table.html
 coverage.txt
 
-# Skip application code & tests for now
-src
+# Skip tests for now
 test

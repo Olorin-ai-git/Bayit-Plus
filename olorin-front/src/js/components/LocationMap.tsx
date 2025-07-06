@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import useConfig from '../hooks/useConfig';
 
@@ -108,7 +108,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // Define marker colors and icons for different location types
-  const locationStyles = {
+  const locationStyles = useMemo(() => ({
     customer: {
       color: '#4CAF50', // Green
       icon: '📍',
@@ -129,7 +129,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
       color: '#F44336', // Red
       icon: '💻',
     },
-  };
+  }), []);
 
   useEffect(() => {
     /**
@@ -251,7 +251,7 @@ const LocationMap: React.FC<LocationMapProps> = ({
     };
 
     initMap();
-  }, [locations, center, zoom, config.googleMapsApiKey]);
+  }, [locations, center, zoom, config.googleMapsApiKey, locationStyles]);
 
   if (error) {
     return (

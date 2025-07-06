@@ -421,9 +421,9 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       : [];
     const di_bb_object = typeof di_bb === 'object' ? di_bb : {};
     
-    const anomalies_array = Array.isArray(details.anomalies)
-      ? details.anomalies
-      : [];
+    // const anomalies_array = Array.isArray(details.anomalies)
+    //   ? details.anomalies
+    //   : [];
 
     return (
       <div className="space-y-4">

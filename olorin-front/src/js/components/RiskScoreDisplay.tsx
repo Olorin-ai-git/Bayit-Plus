@@ -192,7 +192,7 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
         {domainScores.length > 0 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, position: 'relative' }}>
             {domainScores.map((domain, index) => {
-              const risk = getRiskLevel(domain.score);
+              // const risk = getRiskLevel(domain.score);
               const agentColor = getAgentColor(domain.name);
               return (
                 <Fade

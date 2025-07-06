@@ -3,7 +3,7 @@ import { Box, Collapse } from '@mui/material';
 import RiskScoreDisplay from './RiskScoreDisplay';
 import InvestigationSteps from './InvestigationSteps';
 import { InvestigationStep } from '../types/RiskAssessment';
-import { InvestigationStepId, StepStatus } from '../constants/definitions';
+import { InvestigationStepId } from '../constants/definitions';
 
 interface ManualInvestigationPanelProps {
   autonomousMode: boolean;
@@ -13,8 +13,8 @@ interface ManualInvestigationPanelProps {
   currentStepIndex: number;
   isLoading: boolean;
   isInvestigationClosed: boolean;
-  stepStartTimes: Record<string, Date>;
-  stepEndTimes: Record<string, Date>;
+  stepStartTimes: Record<InvestigationStepId, Date | null>;
+  stepEndTimes: Record<InvestigationStepId, Date | null>;
 }
 
 const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({

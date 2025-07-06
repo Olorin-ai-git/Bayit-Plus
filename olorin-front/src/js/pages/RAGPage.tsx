@@ -480,7 +480,7 @@ const RAGPage: React.FC = () => {
     }
   };
 
-  const usePrompt = (prompt: PreparedPrompt) => {
+  const applyPrompt = (prompt: PreparedPrompt) => {
     setCurrentMessage(prompt.template || prompt.prompt || '');
     setActiveTab(0); // Switch to Chat Interface tab to show the populated input
   };
@@ -669,7 +669,7 @@ const RAGPage: React.FC = () => {
   };
 
   const handleDeletePrompt = async (promptId: string) => {
-    if (!confirm('Are you sure you want to delete this prompt?')) return;
+    if (!window.confirm('Are you sure you want to delete this prompt?')) return;
 
     setIsPromptLoading(true);
     try {
@@ -899,7 +899,7 @@ const RAGPage: React.FC = () => {
                 <div
                   key={prompt.id}
                   className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer border border-gray-200 hover:border-blue-200"
-                  onClick={() => usePrompt(prompt)}
+                  onClick={() => applyPrompt(prompt)}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -918,7 +918,7 @@ const RAGPage: React.FC = () => {
                       startIcon={<PlayArrowIcon />}
                       onClick={(e) => {
                         e.stopPropagation();
-                        usePrompt(prompt);
+                        applyPrompt(prompt);
                       }}
                       className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1"
                     >

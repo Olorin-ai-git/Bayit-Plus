@@ -1,4 +1,4 @@
-/* eslint-disable eslint-comments/disable-enable-pair */
+/* eslint-disable */
 /* eslint-disable no-unused-vars */
 
 export const RUM_FCI_START_REQUEST = 'begin outbound request';

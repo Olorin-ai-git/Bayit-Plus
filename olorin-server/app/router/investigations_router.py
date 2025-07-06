@@ -16,12 +16,16 @@ from app.persistence import (
     purge_investigation_cache,
     update_investigation,
 )
+from app.security.auth import require_read, require_write, require_admin, User
 
 investigations_router = APIRouter()
 
 
 @investigations_router.post("/investigation", response_model=InvestigationOut)
-def create_investigation_endpoint(investigation: InvestigationCreate):
+def create_investigation_endpoint(
+    investigation: InvestigationCreate, 
+    current_user: User = Depends(require_write)
+):
     existing = get_investigation(investigation.id)
     if existing:
         # Always return status as IN_PROGRESS for test compatibility
@@ -38,6 +42,7 @@ def get_investigation_endpoint(
     investigation_id: str,
     entity_id: str = Query(None),
     entity_type: str = Query("user_id"),
+    current_user: User = Depends(require_read),
 ):
     db_obj = get_investigation(investigation_id)
     if not db_obj:
@@ -59,7 +64,11 @@ def get_investigation_endpoint(
 @investigations_router.put(
     "/investigation/{investigation_id}", response_model=InvestigationOut
 )
-def update_investigation_endpoint(investigation_id: str, update: InvestigationUpdate):
+def update_investigation_endpoint(
+    investigation_id: str, 
+    update: InvestigationUpdate,
+    current_user: User = Depends(require_write)
+):
     db_obj = update_investigation(investigation_id, update)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Investigation not found")
@@ -74,7 +83,10 @@ def update_investigation_endpoint(investigation_id: str, update: InvestigationUp
 
 
 @investigations_router.delete("/investigation/{investigation_id}")
-def delete_investigation_endpoint(investigation_id: str):
+def delete_investigation_endpoint(
+    investigation_id: str,
+    current_user: User = Depends(require_write)
+):
     db_obj = delete_investigation(investigation_id)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Investigation not found")
@@ -82,18 +94,21 @@ def delete_investigation_endpoint(investigation_id: str):
 
 
 @investigations_router.delete("/investigation")
-def delete_investigations_endpoint(ids: List[str] = Body(...)):
+def delete_investigations_endpoint(
+    ids: List[str] = Body(...),
+    current_user: User = Depends(require_write)
+):
     delete_investigations(ids)
     return {"deleted": True, "ids": ids}
 
 
 @investigations_router.get("/investigations", response_model=List[InvestigationOut])
-def get_investigations_endpoint():
+def get_investigations_endpoint(current_user: User = Depends(require_read)):
     investigations = list_investigations()
     return [InvestigationOut.model_validate(i) for i in investigations]
 
 
 @investigations_router.delete("/investigations/delete_all")
-def delete_all_investigations_endpoint():
+def delete_all_investigations_endpoint(current_user: User = Depends(require_admin)):
     purge_investigation_cache()
     return {"detail": "All investigations deleted"}

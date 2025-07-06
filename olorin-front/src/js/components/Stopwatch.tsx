@@ -20,7 +20,7 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   className = '',
 }) => {
   const [elapsedTime, setElapsedTime] = useState<string>('0m 0s');
-  const theme = useTheme();
+  // const theme = useTheme();
 
   useEffect(() => {
     if (!startTime) return;

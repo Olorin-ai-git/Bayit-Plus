@@ -1,4 +1,3 @@
-// eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint-disable require-jsdoc */
 import React, { useState } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';

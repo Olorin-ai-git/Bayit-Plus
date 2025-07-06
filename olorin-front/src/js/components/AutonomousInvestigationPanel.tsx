@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import {
   Paper,
   Typography,
-  Button,
   Box,
   LinearProgress,
   useTheme,
 } from '@mui/material';
 import { useSimpleAutonomousInvestigation } from '../hooks/useAutonomousInvestigation';
 import { AutonomousInvestigationStatus } from '../types/AnalyzeResponse';
-import { LogLevel, LogEntry } from '../types/RiskAssessment';
+import { LogEntry } from '../types/RiskAssessment';
 
 interface AutonomousInvestigationPanelProps {
   entityId: string;
@@ -38,10 +37,10 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
   const {
     startInvestigation,
     status,
-    isLoading,
     error,
     progress,
-    debugState,
+    // isLoading,
+    // debugState,
   } = useSimpleAutonomousInvestigation();
 
   const [hasStarted, setHasStarted] = useState(false);

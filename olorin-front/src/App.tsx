@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { analytics } from './firebase';
@@ -17,7 +17,6 @@ import { SandboxProvider } from './js/hooks/useSandboxContext';
 
 // Custom redirect component that preserves URL parameters
 const ParameterPreservingRedirect: React.FC<{ to: string }> = ({ to }) => {
-  const location = useLocation();
   const redirectPath = preserveUrlParams(to);
   return <Navigate to={redirectPath} replace />;
 };

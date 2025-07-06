@@ -48,7 +48,7 @@ const EditStepsModal: React.FC<EditStepsModalProps> = ({
   const [localSelectedSteps, setLocalSelectedSteps] = useState<InvestigationStep[]>(selectedSteps);
   const [selectedStepForTools, setSelectedStepForTools] = useState<InvestigationStep | null>(null);
   const [toolsUpdateTrigger, setToolsUpdateTrigger] = useState(0);
-  const [getToolsForStep, setToolsForStep, availableTools, isLoading, error, hasStepOverrides] = useStepTools();
+  const [getToolsForStep, setToolsForStep, availableTools, isLoading, error, /* hasStepOverrides */] = useStepTools();
 
   const availableSteps = allSteps.filter(
     (step) => !localSelectedSteps.some((s) => s.id === step.id)
