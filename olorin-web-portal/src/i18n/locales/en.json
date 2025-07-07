@@ -4,6 +4,7 @@
     "about": "About",
     "services": "Services",
     "contact": "Contact",
+    "demo": "Demo",
     "getStarted": "Get Started"
   },
   "hero": {
@@ -11,7 +12,8 @@
     "titleHighlight": "AI Fraud Prevention",
     "subtitle": "Harness the power of Autonomous AI Agents to protect your enterprise from fraud. Our Generative AI solutions provide real-time investigation and prevention capabilities that adapt and learn from every threat.",
     "ctaStart": "Get Started",
-    "ctaLearn": "Learn More"
+    "ctaLearn": "Learn More",
+    "ctaDemo": "Try Live Demo"
   },
   "stats": {
     "accuracy": "95%",

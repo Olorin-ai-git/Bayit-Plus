@@ -4,6 +4,7 @@
     "about": "关于我们",
     "services": "服务",
     "contact": "联系我们",
+    "demo": "演示",
     "getStarted": "开始使用"
   },
   "hero": {
@@ -11,7 +12,8 @@
     "titleHighlight": "AI 欺诈防护",
     "subtitle": "利用自主AI代理的力量保护您的企业免受欺诈。我们的生成式AI解决方案提供实时调查和预防功能，能够适应并从每一个威胁中学习。",
     "ctaStart": "开始使用",
-    "ctaLearn": "了解更多"
+    "ctaLearn": "了解更多",
+    "ctaDemo": "试用实时演示"
   },
   "stats": {
     "accuracy": "95%",

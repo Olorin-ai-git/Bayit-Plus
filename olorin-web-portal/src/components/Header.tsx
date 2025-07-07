@@ -16,6 +16,12 @@ const Header: React.FC = () => {
     { name: t('nav.contact'), href: '/contact' },
   ];
 
+  const demoLink = {
+    name: t('nav.demo'),
+    href: 'https://olorin-ai.web.app/investigation?demo=true',
+    isExternal: true
+  };
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -53,6 +59,14 @@ const Header: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+            <a
+              href={demoLink.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-secondary-600 hover:text-primary-600 transition-colors duration-200"
+            >
+              {demoLink.name}
+            </a>
           </nav>
 
           {/* CTA Button */}
@@ -93,6 +107,15 @@ const Header: React.FC = () => {
                   {item.name}
                 </Link>
               ))}
+              <a
+                href={demoLink.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base font-medium text-secondary-600 hover:text-primary-600 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {demoLink.name}
+              </a>
               <div className="pt-2 border-t border-gray-200">
                 <LanguageSelector />
               </div>

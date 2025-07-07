@@ -372,10 +372,104 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Preparing investigation summary and action items...'
     ],
     llmResponse: 'Final risk assessment complete. ML models indicate HIGH FRAUD RISK (score: 87/100). Multiple risk factors detected across network, device, location, and behavioral patterns. Recommended actions: Account suspension, enhanced monitoring, and manual review required.',
-    progressStart: 90,
-    progressEnd: 100,
+    progressStart: 55,
+    progressEnd: 60,
     riskScore: 87,
     stepId: 'risk-assessment'
+  },
+  {
+    name: 'transaction_analysis',
+    agent: 'Transaction Analysis Agent',
+    tools: ['transaction_analysis', 'payment_intelligence', 'merchant_intelligence', 'temporal_analysis'],
+    duration: 5,
+    logs: [
+      'Initializing transaction pattern analysis engine...',
+      'Analyzing payment velocity: 47 transactions in last 24 hours detected...',
+      'Unusual amount patterns identified: $999.99, $1000.00, $2500.00...',
+      'Merchant risk profiling: 3 high-risk merchants flagged...',
+      'Transaction timing analysis: Activity spike at 3-4 AM detected...',
+      'Cross-referencing with known fraud patterns in database...'
+    ],
+    llmResponse: 'Transaction analysis reveals critical fraud indicators. Velocity exceeded normal threshold by 340%. Multiple round-amount transactions suggest testing behavior. High-risk merchant categories (cryptocurrency, gift cards) comprise 65% of recent activity. Pattern matches known card-not-present fraud schemes.',
+    progressStart: 60,
+    progressEnd: 68,
+    riskScore: 91,
+    stepId: 'transaction-analysis'
+  },
+  {
+    name: 'account_behavior_analysis',
+    agent: 'Account Behavior Agent',
+    tools: ['account_behavior', 'ato_detection', 'digital_footprint', 'communication_analysis'],
+    duration: 4,
+    logs: [
+      'Retrieving account activity history for behavioral analysis...',
+      'Anomaly detected: Login from Russia at 3:45 AM (user typically in US)...',
+      'Password changed 3 times in last 48 hours...',
+      'Email and phone number updated after suspicious login...',
+      '2FA disabled 1 hour before high-value transactions...',
+      'Communication pattern shows phishing email interaction...'
+    ],
+    llmResponse: 'Account takeover confirmed with 94% confidence. Behavioral analysis shows classic ATO pattern: credentials compromised via phishing, security settings modified, followed by rapid fund extraction. Account shows signs of being sold on dark web markets based on access patterns.',
+    progressStart: 68,
+    progressEnd: 76,
+    riskScore: 94,
+    stepId: 'account-behavior'
+  },
+  {
+    name: 'fraud_ring_detection',
+    agent: 'Graph Analysis Agent',
+    tools: ['graph_analysis', 'identity_verification', 'fraud_scoring'],
+    duration: 5,
+    logs: [
+      'Building entity relationship graph from transaction data...',
+      'Graph analysis: Entity connected to 23 other accounts...',
+      'Shared attributes detected: 5 devices, 12 IP addresses, 3 payment methods...',
+      'Centrality score 0.78 indicates key position in network...',
+      'Coordinated activity patterns detected across connected accounts...',
+      'ML fraud scoring: Network shows 89% probability of organized fraud ring...'
+    ],
+    llmResponse: 'Sophisticated fraud ring detected involving 23+ accounts. Network analysis reveals hierarchical structure with current entity as mid-level operator. Pattern indicates Eastern European cybercrime syndicate specializing in account takeovers and money mule operations. $2.3M in suspicious transfers traced through network.',
+    progressStart: 76,
+    progressEnd: 84,
+    riskScore: 96,
+    stepId: 'fraud-ring'
+  },
+  {
+    name: 'compliance_screening',
+    agent: 'Compliance Agent',
+    tools: ['sanctions_screening', 'regulatory_reporting', 'case_management'],
+    duration: 4,
+    logs: [
+      'Screening entity against OFAC sanctions list...',
+      'Checking EU consolidated sanctions database...',
+      'PEP (Politically Exposed Person) database scan in progress...',
+      'AML transaction monitoring triggered: Structuring pattern detected...',
+      'SAR (Suspicious Activity Report) generation initiated...',
+      'Regulatory reporting requirements: FinCEN notification required...'
+    ],
+    llmResponse: 'Compliance screening reveals critical issues requiring immediate action. Entity shows 87% name match with sanctioned individual (fuzzy matching). Transaction patterns indicate deliberate structuring to avoid CTR thresholds. Mandatory SAR filing required within 24 hours. Case escalated to compliance team.',
+    progressStart: 84,
+    progressEnd: 92,
+    riskScore: 98,
+    stepId: 'compliance-screening'
+  },
+  {
+    name: 'final_assessment',
+    agent: 'Investigation Orchestrator',
+    tools: ['ml_risk_model', 'fraud_scoring_engine', 'decision_tree_analyzer'],
+    duration: 3,
+    logs: [
+      'Aggregating all investigation findings and risk scores...',
+      'Calculating weighted fraud risk score across all vectors...',
+      'Generating investigation summary and evidence package...',
+      'Preparing recommended actions and next steps...',
+      'Investigation complete. Final risk score: 95/100'
+    ],
+    llmResponse: 'CRITICAL FRAUD ALERT: Investigation confirms organized fraud with 95% confidence. Evidence indicates: 1) Account takeover via phishing, 2) Part of larger fraud ring (23+ accounts), 3) $125K in fraudulent transactions, 4) AML violations requiring regulatory filing. IMMEDIATE ACTIONS: Freeze account, file SAR, initiate recovery procedures, refer to law enforcement.',
+    progressStart: 92,
+    progressEnd: 100,
+    riskScore: 95,
+    stepId: 'final-assessment'
   }
 ];
 

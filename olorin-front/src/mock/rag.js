@@ -328,6 +328,98 @@ export const mockPreparedPrompts = [
     template: "Find instances where PII might have been logged or exposed in system logs or error messages",
     variables: [],
     created_at: "2024-02-08T12:30:00Z"
+  },
+
+  // Advanced Fraud Investigation Prompts
+  {
+    id: "prompt_025",
+    title: "Transaction Velocity Analysis",
+    description: "Analyze transaction patterns for velocity-based fraud",
+    category: "fraud",
+    template: "Analyze transaction velocity for {user_id} - check for rapid transactions, escalating amounts, and card testing patterns",
+    variables: ["user_id"],
+    created_at: "2024-02-10T10:30:00Z"
+  },
+  {
+    id: "prompt_026",
+    title: "Money Laundering Detection",
+    description: "Detect potential money laundering activities",
+    category: "aml",
+    template: "Find accounts with structured deposits under $10,000, rapid transfers between accounts, and circular money movement patterns",
+    variables: [],
+    created_at: "2024-02-11T11:45:00Z"
+  },
+  {
+    id: "prompt_027",
+    title: "Account Takeover Investigation",
+    description: "Comprehensive ATO detection across multiple signals",
+    category: "fraud",
+    template: "Investigate potential account takeover for {user_id} - check login anomalies, device changes, security setting modifications, and transaction patterns",
+    variables: ["user_id"],
+    created_at: "2024-02-12T09:15:00Z"
+  },
+  {
+    id: "prompt_028",
+    title: "Fraud Ring Network Analysis",
+    description: "Identify connected fraudulent accounts",
+    category: "fraud",
+    template: "Map fraud ring connections - find accounts sharing devices, IP addresses, payment methods, or addresses with known fraudulent account {account_id}",
+    variables: ["account_id"],
+    created_at: "2024-02-13T14:20:00Z"
+  },
+  {
+    id: "prompt_029",
+    title: "Sanctions Screening Alert",
+    description: "Check entities against sanctions lists",
+    category: "compliance",
+    template: "Screen {entity_name} against OFAC, EU, UN sanctions lists and PEP databases - include fuzzy matching and known aliases",
+    variables: ["entity_name"],
+    created_at: "2024-02-14T16:00:00Z"
+  },
+  {
+    id: "prompt_030",
+    title: "Merchant Category Risk Analysis",
+    description: "Analyze high-risk merchant transactions",
+    category: "fraud",
+    template: "Find all transactions to high-risk merchant categories (cryptocurrency, gambling, money transfer services) for accounts created in last {days} days",
+    variables: ["days"],
+    created_at: "2024-02-15T11:30:00Z"
+  },
+  {
+    id: "prompt_031",
+    title: "Digital Footprint Verification",
+    description: "Verify user's digital presence and authenticity",
+    category: "fraud",
+    template: "Analyze digital footprint for {email} - check email age, social media presence, data breach involvement, and online reputation",
+    variables: ["email"],
+    created_at: "2024-02-16T13:45:00Z"
+  },
+  {
+    id: "prompt_032",
+    title: "Synthetic Identity Detection",
+    description: "Identify potential synthetic identities",
+    category: "fraud",
+    template: "Find accounts with SSN issued after 2011, minimal credit history, rapid credit building, and multiple applications with slight variations",
+    variables: [],
+    created_at: "2024-02-17T10:00:00Z"
+  },
+  {
+    id: "prompt_033",
+    title: "Real-time Fraud Score",
+    description: "Calculate comprehensive fraud risk score",
+    category: "fraud",
+    template: "Calculate real-time fraud risk score for transaction {transaction_id} - include ML model predictions, rule-based checks, and historical patterns",
+    variables: ["transaction_id"],
+    created_at: "2024-02-18T15:30:00Z"
+  },
+  {
+    id: "prompt_034",
+    title: "Cryptocurrency Fraud Detection",
+    description: "Detect cryptocurrency-related fraud patterns",
+    category: "fraud",
+    template: "Analyze crypto transactions for wallet {wallet_address} - check for mixing services, known scam addresses, and unusual transaction patterns",
+    variables: ["wallet_address"],
+    created_at: "2024-02-19T12:15:00Z"
   }
 ];
 

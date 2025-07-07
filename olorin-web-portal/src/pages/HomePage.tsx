@@ -81,6 +81,15 @@ const HomePage: React.FC = () => {
                 <span>{t('hero.ctaStart')}</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
+              <a
+                href="https://olorin-ai.web.app/investigation?demo=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-purple-600 to-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-primary-700 transition-all duration-200 flex items-center justify-center space-x-2"
+              >
+                <span>{t('hero.ctaDemo')}</span>
+                <Zap className="h-5 w-5" />
+              </a>
               <Link
                 to="/services"
                 className="border-2 border-primary-600 text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-50 transition-all duration-200"

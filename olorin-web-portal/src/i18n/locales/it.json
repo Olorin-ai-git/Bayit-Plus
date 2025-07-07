@@ -4,6 +4,7 @@
     "about": "Chi siamo",
     "services": "Servizi",
     "contact": "Contatti",
+    "demo": "Demo",
     "getStarted": "Inizia"
   },
   "hero": {
@@ -11,7 +12,8 @@
     "titleHighlight": "di nuova generazione",
     "subtitle": "Sfrutta il potere degli Agenti IA Autonomi per proteggere la tua azienda dalle frodi. Le nostre soluzioni di IA Generativa forniscono capacità di investigazione e prevenzione in tempo reale che si adattano e imparano da ogni minaccia.",
     "ctaStart": "Inizia",
-    "ctaLearn": "Scopri di più"
+    "ctaLearn": "Scopri di più",
+    "ctaDemo": "Prova la Demo dal Vivo"
   },
   "stats": {
     "accuracy": "95%",
