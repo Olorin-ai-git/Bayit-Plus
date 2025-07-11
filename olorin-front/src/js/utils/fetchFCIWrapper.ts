@@ -22,8 +22,8 @@ interface RUMWrapperFn {
  *
  * @returns {function} returns a wrapper function to wrap fetch calls
  */
-const fetchFCIWrapper = (): RUMWrapperFn =>
-  async (fetchRequest, interactionMetadata) => {
+const fetchFCIWrapper =
+  (): RUMWrapperFn => async (fetchRequest, interactionMetadata) => {
     console.log(`[RUM] Starting: ${interactionMetadata.name}`);
     let resp: Response;
     let error: unknown;
@@ -35,15 +35,24 @@ const fetchFCIWrapper = (): RUMWrapperFn =>
       if (success) {
         console.log(`[RUM] Success: ${interactionMetadata.name}`);
       } else {
-        console.log(`[RUM] Failed: ${interactionMetadata.name} - ${interactionMetadata.failureMessage || RUM_FCI_DEFAULT_FAILURE_MESSAGE}`);
+        console.log(
+          `[RUM] Failed: ${interactionMetadata.name} - ${
+            interactionMetadata.failureMessage ||
+            RUM_FCI_DEFAULT_FAILURE_MESSAGE
+          }`,
+        );
       }
       return resp;
     } catch (err) {
       error = err;
       success = false;
-      console.log(`[RUM] Failed: ${interactionMetadata.name} - ${interactionMetadata.failureMessage || RUM_FCI_DEFAULT_FAILURE_MESSAGE}`);
+      console.log(
+        `[RUM] Failed: ${interactionMetadata.name} - ${
+          interactionMetadata.failureMessage || RUM_FCI_DEFAULT_FAILURE_MESSAGE
+        }`,
+      );
       throw error;
     }
   };
 
-export default fetchFCIWrapper; 
+export default fetchFCIWrapper;

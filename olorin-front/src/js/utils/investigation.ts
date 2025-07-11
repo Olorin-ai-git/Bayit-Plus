@@ -1,6 +1,4 @@
-import {
-  InvestigationStep,
-} from '../types/RiskAssessment';
+import { InvestigationStep } from '../types/RiskAssessment';
 import { InvestigationStepId, StepStatus } from '../constants/definitions';
 
 /**

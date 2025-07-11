@@ -1,7 +1,11 @@
 import React, { ChangeEvent, useState, useEffect } from 'react';
 import { allPossibleSteps } from '../utils/investigationStepsConfig';
 import { useSettings } from '../hooks/useSettings';
-import { getCategorizedTools, CategorizedToolsResponse, ToolDisplayInfo } from '../services/SettingsService';
+import {
+  getCategorizedTools,
+  CategorizedToolsResponse,
+  ToolDisplayInfo,
+} from '../services/SettingsService';
 import {
   Box,
   Typography,
@@ -25,7 +29,7 @@ import {
   Chip,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
 } from '@mui/material';
 import {
   Settings as SettingsIcon,
@@ -39,20 +43,29 @@ import {
   Warning as WarningIcon,
   ExpandMore as ExpandMoreIcon,
   Security as SecurityIcon,
-  Extension as ExtensionIcon
+  Extension as ExtensionIcon,
 } from '@mui/icons-material';
 
 /** Settings page for default investigation preferences */
 const SettingsPage: React.FC = () => {
-  const [settings, setSettings, isLoadingSettings, settingsError, hasSessionOverrides, commitToServer, resetToServer] = useSettings();
+  const [
+    settings,
+    setSettings,
+    isLoadingSettings,
+    settingsError,
+    hasSessionOverrides,
+    commitToServer,
+    resetToServer,
+  ] = useSettings();
   const theme = useTheme();
-  const [categorizedTools, setCategorizedTools] = useState<CategorizedToolsResponse>({ 
-    olorin_tools: [], 
-    mcp_tools: [] 
-  });
+  const [categorizedTools, setCategorizedTools] =
+    useState<CategorizedToolsResponse>({
+      olorin_tools: [],
+      mcp_tools: [],
+    });
   const [toolsLoading, setToolsLoading] = useState(true);
   const [toolsError, setToolsError] = useState<string | null>(null);
-  
+
   const {
     defaultEntityType,
     selectedAgents,
@@ -67,13 +80,14 @@ const SettingsPage: React.FC = () => {
       try {
         setToolsLoading(true);
         setToolsError(null);
-        
+
         const tools = await getCategorizedTools();
         setCategorizedTools(tools);
-        
       } catch (err) {
         console.error('Error loading tools:', err);
-        setToolsError(err instanceof Error ? err.message : 'Failed to load tools');
+        setToolsError(
+          err instanceof Error ? err.message : 'Failed to load tools',
+        );
       } finally {
         setToolsLoading(false);
       }
@@ -135,7 +149,11 @@ const SettingsPage: React.FC = () => {
 
     if (toolsError) {
       return (
-        <Typography variant="body2" color="error.main" sx={{ fontStyle: 'italic', py: 2 }}>
+        <Typography
+          variant="body2"
+          color="error.main"
+          sx={{ fontStyle: 'italic', py: 2 }}
+        >
           Error loading tools: {toolsError}
         </Typography>
       );
@@ -148,7 +166,10 @@ const SettingsPage: React.FC = () => {
           <Box sx={{ mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <SecurityIcon sx={{ color: 'primary.main', fontSize: '1rem' }} />
-              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'primary.main' }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: 600, color: 'primary.main' }}
+              >
                 🔍 Investigation Tools ({categorizedTools.olorin_tools.length})
               </Typography>
             </Box>
@@ -158,7 +179,9 @@ const SettingsPage: React.FC = () => {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={agentToolsMapping[agent]?.includes(tool.name) || false}
+                        checked={
+                          agentToolsMapping[agent]?.includes(tool.name) || false
+                        }
                         onChange={() => toggleTool(agent, tool.name)}
                         size="small"
                         sx={{ color: 'primary.main' }}
@@ -166,7 +189,14 @@ const SettingsPage: React.FC = () => {
                     }
                     label={
                       <Box>
-                        <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'primary.main' }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                            color: 'primary.main',
+                          }}
+                        >
                           {tool.display_name}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -186,7 +216,9 @@ const SettingsPage: React.FC = () => {
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ExtensionIcon sx={{ color: 'text.secondary', fontSize: '1rem' }} />
+                <ExtensionIcon
+                  sx={{ color: 'text.secondary', fontSize: '1rem' }}
+                />
                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                   🛠️ Standard Tools ({categorizedTools.mcp_tools.length})
                 </Typography>
@@ -199,7 +231,10 @@ const SettingsPage: React.FC = () => {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={agentToolsMapping[agent]?.includes(tool.name) || false}
+                          checked={
+                            agentToolsMapping[agent]?.includes(tool.name) ||
+                            false
+                          }
                           onChange={() => toggleTool(agent, tool.name)}
                           size="small"
                           sx={{ color: 'primary.main' }}
@@ -207,7 +242,10 @@ const SettingsPage: React.FC = () => {
                       }
                       label={
                         <Box>
-                          <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontSize: '0.875rem' }}
+                          >
                             {tool.display_name}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -232,7 +270,11 @@ const SettingsPage: React.FC = () => {
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <SettingsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ fontWeight: 700, color: 'text.primary' }}
+          >
             Settings
           </Typography>
           {hasSessionOverrides && (
@@ -248,12 +290,13 @@ const SettingsPage: React.FC = () => {
         <Typography variant="body1" color="text.secondary">
           Configure default preferences for new investigations
         </Typography>
-        
+
         {/* Session Override Controls */}
         {hasSessionOverrides && (
           <Box sx={{ mt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
             <Alert severity="info" sx={{ flex: 1 }}>
-              You have unsaved changes in this session. These changes will be lost when you close the browser.
+              You have unsaved changes in this session. These changes will be
+              lost when you close the browser.
             </Alert>
             <Button
               variant="contained"
@@ -273,7 +316,7 @@ const SettingsPage: React.FC = () => {
             </Button>
           </Box>
         )}
-        
+
         {/* Loading State */}
         {isLoadingSettings && (
           <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -283,7 +326,7 @@ const SettingsPage: React.FC = () => {
             </Typography>
           </Box>
         )}
-        
+
         {/* Error State */}
         {settingsError && (
           <Alert severity="error" sx={{ mt: 2 }}>
@@ -295,18 +338,25 @@ const SettingsPage: React.FC = () => {
       <Grid container spacing={4}>
         {/* Default Entity Type */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            height: '100%',
-            '&:hover': { 
-              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
-              transform: 'translateY(-2px)'
-            },
-            transition: 'all 0.2s ease-in-out'
-          }}>
+          <Card
+            sx={{
+              height: '100%',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
+              >
                 <PersonIcon sx={{ color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   Default Entity Type
                 </Typography>
               </Box>
@@ -337,16 +387,21 @@ const SettingsPage: React.FC = () => {
 
         {/* Comment Prefix */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ 
-            height: '100%',
-            '&:hover': { 
-              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
-              transform: 'translateY(-2px)'
-            },
-            transition: 'all 0.2s ease-in-out'
-          }}>
+          <Card
+            sx={{
+              height: '100%',
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
             <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 3 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 600, color: 'text.primary', mb: 3 }}
+              >
                 Comment Prefix
               </Typography>
               <TextField
@@ -365,17 +420,24 @@ const SettingsPage: React.FC = () => {
 
         {/* Default Agents */}
         <Grid item xs={12}>
-          <Card sx={{ 
-            '&:hover': { 
-              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
-              transform: 'translateY(-2px)'
-            },
-            transition: 'all 0.2s ease-in-out'
-          }}>
+          <Card
+            sx={{
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
+              >
                 <BugReportIcon sx={{ color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   Default Olorin AI Agents
                 </Typography>
               </Box>
@@ -391,7 +453,9 @@ const SettingsPage: React.FC = () => {
                         />
                       }
                       label={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                        >
                           {getAgentIcon(agent)}
                           <Typography variant="body2">{agent}</Typography>
                         </Box>
@@ -406,32 +470,54 @@ const SettingsPage: React.FC = () => {
 
         {/* Tools per Agent */}
         <Grid item xs={12}>
-          <Card sx={{ 
-            '&:hover': { 
-              boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
-              transform: 'translateY(-2px)'
-            },
-            transition: 'all 0.2s ease-in-out'
-          }}>
+          <Card
+            sx={{
+              '&:hover': {
+                boxShadow: '0 4px 12px rgba(147, 51, 234, 0.15)',
+                transform: 'translateY(-2px)',
+              },
+              transition: 'all 0.2s ease-in-out',
+            }}
+          >
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
+              >
                 <BuildIcon sx={{ color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   Tools per Agent
                 </Typography>
               </Box>
-              <Alert severity="info" sx={{ mb: 3, backgroundColor: 'primary.50', borderColor: 'primary.200' }}>
+              <Alert
+                severity="info"
+                sx={{
+                  mb: 3,
+                  backgroundColor: 'primary.50',
+                  borderColor: 'primary.200',
+                }}
+              >
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Investigation Tools</strong> are specialized for fraud detection and security analysis. 
-                  <strong>Standard Tools</strong> provide general functionality like web search and file operations.
+                  <strong>Investigation Tools</strong> are specialized for fraud
+                  detection and security analysis.
+                  <strong>Standard Tools</strong> provide general functionality
+                  like web search and file operations.
                 </Typography>
               </Alert>
               <Grid container spacing={3}>
                 {selectedAgents.map((agent) => (
                   <Grid item xs={12} md={6} key={agent}>
-                    <Card variant="outlined" sx={{ backgroundColor: 'grey.50' }}>
+                    <Card
+                      variant="outlined"
+                      sx={{ backgroundColor: 'grey.50' }}
+                    >
                       <CardContent>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}
+                        >
                           {agent}
                         </Typography>
                         {renderToolsForAgent(agent)}
@@ -446,26 +532,28 @@ const SettingsPage: React.FC = () => {
 
         {/* Information Alert */}
         <Grid item xs={12}>
-          <Alert 
-            severity="info" 
+          <Alert
+            severity="info"
             icon={<InfoIcon />}
-            sx={{ 
+            sx={{
               backgroundColor: 'primary.50',
               border: '1px solid',
               borderColor: 'primary.200',
               '& .MuiAlert-icon': {
-                color: 'primary.main'
-              }
+                color: 'primary.main',
+              },
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}
+            >
               Settings Information
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {hasSessionOverrides 
+              {hasSessionOverrides
                 ? "These settings will be applied to new investigations. Changes are stored in your session and will be lost when you close the browser. Use 'Save to Server' to make them permanent."
-                : "These settings will be applied to new investigations. Changes are loaded from the server and can be saved permanently."
-              }
+                : 'These settings will be applied to new investigations. Changes are loaded from the server and can be saved permanently.'}
             </Typography>
           </Alert>
         </Grid>

@@ -13,17 +13,20 @@ export class BaseApiService {
   /**
    * Make a GET request
    */
-  protected async makeGet(endpoint: string, options?: RequestInit): Promise<any> {
+  protected async makeGet(
+    endpoint: string,
+    options?: RequestInit,
+  ): Promise<any> {
     const url = `${this.baseUrl}/${endpoint}`;
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
+        Pragma: 'no-cache',
         ...options?.headers,
       },
       mode: 'cors',
@@ -41,17 +44,21 @@ export class BaseApiService {
   /**
    * Make a POST request
    */
-  protected async makePost(endpoint: string, data?: any, options?: RequestInit): Promise<any> {
+  protected async makePost(
+    endpoint: string,
+    data?: any,
+    options?: RequestInit,
+  ): Promise<any> {
     const url = `${this.baseUrl}/${endpoint}`;
-    
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
+        Pragma: 'no-cache',
         ...options?.headers,
       },
       mode: 'cors',
@@ -70,17 +77,21 @@ export class BaseApiService {
   /**
    * Make a PUT request
    */
-  protected async makePut(endpoint: string, data?: any, options?: RequestInit): Promise<any> {
+  protected async makePut(
+    endpoint: string,
+    data?: any,
+    options?: RequestInit,
+  ): Promise<any> {
     const url = `${this.baseUrl}/${endpoint}`;
-    
+
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
+        Pragma: 'no-cache',
         ...options?.headers,
       },
       mode: 'cors',
@@ -99,17 +110,20 @@ export class BaseApiService {
   /**
    * Make a DELETE request
    */
-  protected async makeDelete(endpoint: string, options?: RequestInit): Promise<any> {
+  protected async makeDelete(
+    endpoint: string,
+    options?: RequestInit,
+  ): Promise<any> {
     const url = `${this.baseUrl}/${endpoint}`;
-    
+
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
+        Pragma: 'no-cache',
         ...options?.headers,
       },
       mode: 'cors',
@@ -123,4 +137,4 @@ export class BaseApiService {
 
     return response.json();
   }
-} 
+}

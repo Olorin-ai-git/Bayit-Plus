@@ -19,7 +19,7 @@ export async function fetchAvailableTools(): Promise<string[]> {
   if (isDemoModeActive()) {
     console.log('Demo mode active - using default tools');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return getDefaultTools();
   }
 
@@ -28,21 +28,23 @@ export async function fetchAvailableTools(): Promise<string[]> {
     if (!response.ok) {
       throw new Error(`Failed to fetch tools: ${response.status}`);
     }
-    
+
     const tools: ToolInfo[] = await response.json();
-    
+
     // Extract tool names and format them for display
-    const toolNames = tools.map(tool => {
+    const toolNames = tools.map((tool) => {
       // Convert tool names to display format
       const name = tool.name;
       if (name.includes('splunk')) return 'Splunk';
-      if (name.includes('oii') || name === 'identity_verification') return 'OII';
+      if (name.includes('oii') || name === 'identity_verification')
+        return 'OII';
       if (name.includes('di_tool') || name.includes('di_bb')) return 'DI BB';
-      if (name.includes('data_lake') || name.includes('datalake')) return 'DATA LAKE';
+      if (name.includes('data_lake') || name.includes('datalake'))
+        return 'DATA LAKE';
       if (name.includes('vector_search')) return 'Vector Search';
       if (name.includes('web_search')) return 'Web Search';
       if (name.includes('database')) return 'Database';
-      
+
       // Fraud investigation tools mapping
       if (name === 'transaction_analysis') return 'Transaction Analysis';
       if (name === 'account_behavior') return 'Account Behavior';
@@ -56,7 +58,7 @@ export async function fetchAvailableTools(): Promise<string[]> {
       if (name === 'communication_analysis') return 'Communication Analysis';
       if (name === 'temporal_analysis') return 'Temporal Analysis';
       if (name === 'merchant_intelligence') return 'Merchant Intelligence';
-      
+
       // Additional MCP tools
       if (name === 'data_lake_query') return 'Data Lake Query';
       if (name === 'case_management') return 'Case Management';
@@ -64,21 +66,21 @@ export async function fetchAvailableTools(): Promise<string[]> {
       if (name === 'external_api_enrichment') return 'External API Enrichment';
       if (name === 'blockchain_explorer') return 'Blockchain Explorer';
       if (name === 'dark_web_monitoring') return 'Dark Web Monitoring';
-      
+
       // Default: capitalize first letter and replace underscores
-      return name.split('_').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
+      return name
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
     });
-    
+
     // Remove duplicates and sort
     const uniqueTools = Array.from(new Set(toolNames)).sort();
     console.log('Successfully fetched tools from MCP API:', uniqueTools);
     return uniqueTools;
-    
   } catch (err) {
     console.warn('MCP backend unavailable, using default tools. Error:', err);
-    
+
     // Fallback to hardcoded tools if API fails - this prevents proxy errors
     const defaultTools = getDefaultTools();
     console.log('Using fallback tools:', defaultTools);
@@ -92,14 +94,31 @@ export async function fetchAvailableTools(): Promise<string[]> {
 export function getDefaultTools(): string[] {
   return [
     // Original tools
-    'Splunk', 'OII', 'DI BB', 'DATA LAKE', 'Vector Search', 'Web Search',
+    'Splunk',
+    'OII',
+    'DI BB',
+    'DATA LAKE',
+    'Vector Search',
+    'Web Search',
     // Fraud investigation tools
-    'Transaction Analysis', 'Account Behavior', 'Identity Verification',
-    'Payment Intelligence', 'ATO Detection', 'Fraud Scoring',
-    'Graph Analysis', 'Sanctions Screening', 'Digital Footprint',
-    'Communication Analysis', 'Temporal Analysis', 'Merchant Intelligence',
+    'Transaction Analysis',
+    'Account Behavior',
+    'Identity Verification',
+    'Payment Intelligence',
+    'ATO Detection',
+    'Fraud Scoring',
+    'Graph Analysis',
+    'Sanctions Screening',
+    'Digital Footprint',
+    'Communication Analysis',
+    'Temporal Analysis',
+    'Merchant Intelligence',
     // Additional MCP tools
-    'Data Lake Query', 'Case Management', 'Regulatory Reporting',
-    'External API Enrichment', 'Blockchain Explorer', 'Dark Web Monitoring'
+    'Data Lake Query',
+    'Case Management',
+    'Regulatory Reporting',
+    'External API Enrichment',
+    'Blockchain Explorer',
+    'Dark Web Monitoring',
   ];
-} 
+}

@@ -1,22 +1,20 @@
 import { useState, useEffect } from 'react';
-import { 
+import {
   Settings,
   getEffectiveSettings,
   saveSettingsToServer,
   updateSettingWithOverride,
   getDefaultSettings,
   getSessionOverrides,
-  setSessionOverrides
+  setSessionOverrides,
 } from '../services/SettingsService';
-
-
 
 /**
  * Hook to get and set user settings with server-side persistence and session overrides.
- * 
+ *
  * Settings are loaded from the server on initialization and saved to the server when changed.
  * Session-specific overrides are stored in sessionStorage and take precedence over server settings.
- * 
+ *
  * @returns [settings, setSettings, isLoading, error, hasSessionOverrides, commitToServer, resetToServer]
  */
 export function useSettings(): [
@@ -26,7 +24,7 @@ export function useSettings(): [
   string | null,
   boolean,
   () => Promise<void>,
-  () => void
+  () => void,
 ] {
   const [settings, setSettingsState] = useState<Settings>(getDefaultSettings);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,17 +37,20 @@ export function useSettings(): [
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const effectiveSettings = await getEffectiveSettings();
         setSettingsState(effectiveSettings);
-        
+
         // Check if there are session overrides
         const sessionOverrides = getSessionOverrides();
-        setHasSessionOverrides(sessionOverrides !== null && Object.keys(sessionOverrides).length > 0);
-        
+        setHasSessionOverrides(
+          sessionOverrides !== null && Object.keys(sessionOverrides).length > 0,
+        );
       } catch (err) {
         console.error('Failed to load settings:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load settings');
+        setError(
+          err instanceof Error ? err.message : 'Failed to load settings',
+        );
         setSettingsState(getDefaultSettings());
       } finally {
         setIsLoading(false);
@@ -61,19 +62,21 @@ export function useSettings(): [
 
   // Custom setter that handles session overrides
   const setSettings = (updater: React.SetStateAction<Settings>) => {
-    setSettingsState(prevSettings => {
-      const newSettings = typeof updater === 'function' ? updater(prevSettings) : updater;
-      
+    setSettingsState((prevSettings) => {
+      const newSettings =
+        typeof updater === 'function' ? updater(prevSettings) : updater;
+
       // Update session overrides for any changes
       const sessionOverrides = getSessionOverrides() || {};
-      const hasChanges = JSON.stringify(newSettings) !== JSON.stringify(prevSettings);
-      
+      const hasChanges =
+        JSON.stringify(newSettings) !== JSON.stringify(prevSettings);
+
       if (hasChanges) {
         // Store the entire new settings as session override
         setSessionOverrides(newSettings);
         setHasSessionOverrides(true);
       }
-      
+
       return newSettings;
     });
   };
@@ -83,11 +86,13 @@ export function useSettings(): [
     try {
       setError(null);
       await saveSettingsToServer(settings);
-      
+
       // Clear session overrides after successful save
-      const { commitSessionOverridesToServer } = await import('../services/SettingsService');
+      const { commitSessionOverridesToServer } = await import(
+        '../services/SettingsService'
+      );
       await commitSessionOverridesToServer();
-      
+
       setHasSessionOverrides(false);
       console.log('Settings committed to server successfully');
     } catch (err) {
@@ -102,23 +107,27 @@ export function useSettings(): [
     const { resetToServerSettings } = require('../services/SettingsService');
     resetToServerSettings();
     setHasSessionOverrides(false);
-    
+
     // Reload settings from server
-    getEffectiveSettings().then(effectiveSettings => {
-      setSettingsState(effectiveSettings);
-    }).catch(err => {
-      console.error('Failed to reload settings after reset:', err);
-      setError(err instanceof Error ? err.message : 'Failed to reload settings');
-    });
+    getEffectiveSettings()
+      .then((effectiveSettings) => {
+        setSettingsState(effectiveSettings);
+      })
+      .catch((err) => {
+        console.error('Failed to reload settings after reset:', err);
+        setError(
+          err instanceof Error ? err.message : 'Failed to reload settings',
+        );
+      });
   };
 
   return [
-    settings, 
-    setSettings, 
-    isLoading, 
-    error, 
-    hasSessionOverrides, 
-    commitToServer, 
-    resetToServer
+    settings,
+    setSettings,
+    isLoading,
+    error,
+    hasSessionOverrides,
+    commitToServer,
+    resetToServer,
   ];
 }

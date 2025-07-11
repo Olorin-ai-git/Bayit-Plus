@@ -18,11 +18,17 @@ interface AutonomousInvestigationPanelProps {
   onInvestigationStart?: () => void;
   isInvestigating?: boolean;
   onLog?: (logEntry: LogEntry) => void;
-  onStepUpdate?: (stepId: string, riskScore: number, llmThoughts: string) => void;
+  onStepUpdate?: (
+    stepId: string,
+    riskScore: number,
+    llmThoughts: string,
+  ) => void;
   closeInvestigation?: () => void;
 }
 
-const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> = ({
+const AutonomousInvestigationPanel: React.FC<
+  AutonomousInvestigationPanelProps
+> = ({
   entityId,
   entityType,
   investigationId,
@@ -47,10 +53,13 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
   const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
-    if (status === AutonomousInvestigationStatus.COMPLETED || (status === 'COMPLETED' && progress >= 100)) {
+    if (
+      status === AutonomousInvestigationStatus.COMPLETED ||
+      (status === 'COMPLETED' && progress >= 100)
+    ) {
       setIsCompleted(true);
       onInvestigationComplete?.();
-      
+
       // Call closeInvestigation after a short delay to allow progress bar to show 100%
       setTimeout(() => {
         closeInvestigation?.();
@@ -66,16 +75,31 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
         try {
           setHasStarted(true);
           onInvestigationStart?.();
-          await startInvestigation(entityId, entityType, investigationId, onLog);
+          await startInvestigation(
+            entityId,
+            entityType,
+            investigationId,
+            onLog,
+          );
         } catch (err) {
           console.error('Failed to start autonomous investigation:', err);
           setHasStarted(false); // Reset if failed
         }
       };
-      
+
       handleStartInvestigation();
     }
-  }, [isInvestigating, hasStarted, isCompleted, investigationId, startInvestigation, entityId, entityType, onInvestigationStart, onLog]);
+  }, [
+    isInvestigating,
+    hasStarted,
+    isCompleted,
+    investigationId,
+    startInvestigation,
+    entityId,
+    entityType,
+    onInvestigationStart,
+    onLog,
+  ]);
 
   // Reset states when investigation ID changes (new investigation)
   useEffect(() => {
@@ -94,11 +118,19 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
       }}
     >
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" sx={{ color: theme.palette.text.primary, mb: 1 }}>
+        <Typography
+          variant="h6"
+          sx={{ color: theme.palette.text.primary, mb: 1 }}
+        >
           Autonomous Investigation
         </Typography>
-        {(isCompleted || status === 'COMPLETED' || status === AutonomousInvestigationStatus.COMPLETED) && (
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+        {(isCompleted ||
+          status === 'COMPLETED' ||
+          status === AutonomousInvestigationStatus.COMPLETED) && (
+          <Typography
+            variant="body2"
+            sx={{ color: theme.palette.text.secondary }}
+          >
             Investigation completed successfully
           </Typography>
         )}
@@ -107,11 +139,24 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
       {/* Show progress bar when investigation is active OR completed (to show 100%) */}
       {(isInvestigating && hasStarted) || (isCompleted && progress >= 100) ? (
         <>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2" sx={{ fontWeight: 500, color: theme.palette.text.secondary }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 1,
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 500, color: theme.palette.text.secondary }}
+            >
               Investigation Progress
             </Typography>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 600 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: theme.palette.text.secondary, fontWeight: 600 }}
+            >
               {progress}%
             </Typography>
           </Box>
@@ -125,9 +170,10 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
               mb: 2,
               '& .MuiLinearProgress-bar': {
                 borderRadius: 2,
-                backgroundColor: isCompleted && progress >= 100 
-                  ? theme.palette.success.main 
-                  : theme.palette.primary.main,
+                backgroundColor:
+                  isCompleted && progress >= 100
+                    ? theme.palette.success.main
+                    : theme.palette.primary.main,
               },
             }}
           />
@@ -161,4 +207,4 @@ const AutonomousInvestigationPanel: React.FC<AutonomousInvestigationPanelProps> 
   );
 };
 
-export default AutonomousInvestigationPanel; 
+export default AutonomousInvestigationPanel;

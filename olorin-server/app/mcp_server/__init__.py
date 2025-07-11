@@ -1,6 +1,6 @@
 """MCP Server for LangGraph agents integration."""
 
-from .server import OlorinMCPServer
 from .config import MCPConfig
+from .server import OlorinMCPServer
 
-__all__ = ["OlorinMCPServer", "MCPConfig"] 
+__all__ = ["OlorinMCPServer", "MCPConfig"]

@@ -58,19 +58,22 @@ export function getToolsForStep(
   stepId: string,
   agentName: string,
   settings: Settings,
-  availableTools: string[]
+  availableTools: string[],
 ): string[] {
   // Check if user has made step-specific tool selections in this session
   const sessionStepTools = getStepToolsFromSession();
   if (sessionStepTools[stepId]) {
     return sessionStepTools[stepId];
   }
-  
+
   // Fall back to global agent settings
-  if (settings.agentToolsMapping[agentName] && settings.agentToolsMapping[agentName].length > 0) {
+  if (
+    settings.agentToolsMapping[agentName] &&
+    settings.agentToolsMapping[agentName].length > 0
+  ) {
     return settings.agentToolsMapping[agentName];
   }
-  
+
   // Default to all available tools if no settings exist
   return availableTools;
 }
@@ -117,4 +120,4 @@ export function getStepsWithToolOverrides(): string[] {
  */
 export function clearAllStepToolOverrides(): void {
   clearStepToolsFromSession();
-} 
+}

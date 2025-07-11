@@ -16,7 +16,6 @@ from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor impo
     _build_auth_id_query,
     build_base_search,
 )
-
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.config import get_settings_for_env
 from app.service.llm_logs_risk_service import LLMLogsRiskService, LogsRiskAssessment
@@ -268,8 +267,6 @@ class LogsAnalysisService:
                 }
             )
         return parsed_logs
-
-
 
     async def _process_llm_assessment(
         self,

@@ -8,5 +8,15 @@
     "Logs: Failed login from new device in a different region/country (risk: 0.7)"
   ],
   "thoughts": "The overall risk assessment for user 4621097846089147992 is HIGH. The device and network agents both detected rapid geographic switching between the US and India within a very short time window, which is highly anomalous and indicative of possible account compromise or credential sharing. The logs agent also flagged a failed login from a new device in a different country immediately after a successful US login, further supporting the possibility of suspicious activity. While all provided physical addresses are within the US and show no direct conflicts, the device and network signals outweigh the low location risk. Given the high risk scores from device (0.9), network (0.8), and logs (0.7), the overall risk score is calculated as 0.65, and the case should be escalated for further investigation.",
+  "remediationActions": [
+    "Immediately suspend account pending investigation",
+    "Force password reset and require strong authentication on next login",
+    "Enable multi-factor authentication (MFA) for this account",
+    "Block access from suspicious IP ranges (India-based IPs)",
+    "Review all recent transactions for potential fraudulent activity",
+    "Contact account holder through verified channel to confirm activity",
+    "Implement geo-fencing restrictions to limit access from high-risk regions",
+    "Monitor account activity closely for next 30 days"
+  ],
   "timestamp": "2025-05-18T01:00:00Z"
 }

@@ -1,9 +1,9 @@
 """CLI for running the Olorin MCP Server."""
 
-import asyncio
 import argparse
-import sys
+import asyncio
 import os
+import sys
 from pathlib import Path
 
 from .config import MCPConfig
@@ -22,93 +22,82 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Olorin MCP Server - Provides LangGraph agents and LangChain tools via MCP"
     )
-    
+
     # Configuration options
     parser.add_argument(
         "--config-from-env",
         action="store_true",
-        help="Load configuration from environment variables"
+        help="Load configuration from environment variables",
     )
-    
+
     # Server options
     parser.add_argument(
-        "--server-name",
-        default="olorin-mcp-server",
-        help="Name of the MCP server"
+        "--server-name", default="olorin-mcp-server", help="Name of the MCP server"
     )
-    
+
     parser.add_argument(
-        "--server-version",
-        default="1.0.0",
-        help="Version of the MCP server"
+        "--server-version", default="1.0.0", help="Version of the MCP server"
     )
-    
+
     # Tool options
     parser.add_argument(
-        "--enable-database-tools",
-        action="store_true",
-        help="Enable database tools"
+        "--enable-database-tools", action="store_true", help="Enable database tools"
     )
-    
+
     parser.add_argument(
-        "--database-connection-string",
-        help="Database connection string"
+        "--database-connection-string", help="Database connection string"
     )
-    
+
     parser.add_argument(
         "--disable-web-tools",
         action="store_true",
-        help="Disable web search and scraping tools"
+        help="Disable web search and scraping tools",
     )
-    
+
     parser.add_argument(
         "--disable-file-system-tools",
         action="store_true",
-        help="Disable file system tools"
+        help="Disable file system tools",
     )
-    
+
     parser.add_argument(
         "--file-system-base-path",
-        help="Base path for file system operations (restricts access)"
+        help="Base path for file system operations (restricts access)",
     )
-    
+
     parser.add_argument(
-        "--disable-api-tools",
-        action="store_true",
-        help="Disable API tools"
+        "--disable-api-tools", action="store_true", help="Disable API tools"
     )
-    
+
     # Agent options
     parser.add_argument(
         "--disable-agents",
         action="store_true",
-        help="Disable LangGraph agent resources"
+        help="Disable LangGraph agent resources",
     )
-    
+
     # Logging options
     parser.add_argument(
         "--log-level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default="INFO",
-        help="Logging level"
+        help="Logging level",
     )
-    
+
     parser.add_argument(
-        "--transport",
-        default="stdio://",
-        help="Transport URI (default: stdio://)"
+        "--transport", default="stdio://", help="Transport URI (default: stdio://)"
     )
-    
+
     return parser
 
 
 def main():
     """Main entry point."""
     setup_environment()
-    
+
     parser = create_parser()
     args = parser.parse_args()
-    
+
     try:
         # Create configuration
         if args.config_from_env:
@@ -124,23 +113,26 @@ def main():
                 file_system_base_path=args.file_system_base_path,
                 enable_api_tools=not args.disable_api_tools,
                 enable_agents=not args.disable_agents,
-                log_level=args.log_level
+                log_level=args.log_level,
             )
-        
+
         # Create and run server
         server = OlorinMCPServer(config)
-        
+
         # Print server info
         info = server.get_server_info()
         print(f"Starting {info['name']} v{info['version']}", file=sys.stderr)
         print(f"Description: {info['description']}", file=sys.stderr)
-        print(f"Enabled categories: {', '.join(info['enabled_categories'])}", file=sys.stderr)
+        print(
+            f"Enabled categories: {', '.join(info['enabled_categories'])}",
+            file=sys.stderr,
+        )
         print(f"Transport: {args.transport}", file=sys.stderr)
         print("", file=sys.stderr)
-        
+
         # Run the server
         asyncio.run(server.run(args.transport))
-        
+
     except KeyboardInterrupt:
         print("\nShutting down server...", file=sys.stderr)
         sys.exit(0)
@@ -150,4 +142,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -17,11 +17,11 @@ export const getCurrentUrlParams = (): URLSearchParams => {
  * @returns The new path with preserved parameters
  */
 export const preserveUrlParams = (
-  newPath: string, 
-  additionalParams?: Record<string, string>
+  newPath: string,
+  additionalParams?: Record<string, string>,
 ): string => {
   const currentParams = getCurrentUrlParams();
-  
+
   // Add any additional parameters
   if (additionalParams) {
     Object.entries(additionalParams).forEach(([key, value]) => {
@@ -32,14 +32,14 @@ export const preserveUrlParams = (
       }
     });
   }
-  
+
   // Return path with parameters if any exist
   const paramString = currentParams.toString();
   if (paramString) {
     const separator = newPath.includes('?') ? '&' : '?';
     return `${newPath}${separator}${paramString}`;
   }
-  
+
   return newPath;
 };
 
@@ -59,4 +59,4 @@ export const isDemoModeActive = (): boolean => {
 export const getCurrentAuthId = (): string | null => {
   const params = getCurrentUrlParams();
   return params.get('authid');
-}; 
+};

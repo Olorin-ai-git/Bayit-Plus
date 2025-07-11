@@ -16,4 +16,4 @@ export enum InvestigationType {
   ATO = 'ATO',
   DEVICE = 'DEVICE',
   NETWORK = 'NETWORK',
-} 
+}

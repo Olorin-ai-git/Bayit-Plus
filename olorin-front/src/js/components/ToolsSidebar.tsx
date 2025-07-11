@@ -43,16 +43,17 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
   const [width, setWidth] = useState(initialWidth);
   const [isDragging, setIsDragging] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
-  const [animationState, setAnimationState] = useState<'entering' | 'entered' | 'exiting' | 'exited'>(
-    isOpen ? 'entered' : 'exited'
-  );
-  
+  const [animationState, setAnimationState] = useState<
+    'entering' | 'entered' | 'exiting' | 'exited'
+  >(isOpen ? 'entered' : 'exited');
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const dragHandleRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef<number>(0);
   const startWidthRef = useRef<number>(width);
 
-  const [getToolsForStep, setToolsForStep, availableTools, isLoading, error] = useStepTools();
+  const [getToolsForStep, setToolsForStep, availableTools, isLoading, error] =
+    useStepTools();
 
   // Handle resizing
   useEffect(() => {
@@ -115,12 +116,12 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
 
   const handleToolToggle = (tool: string) => {
     if (!selectedStep) return;
-    
+
     const currentTools = getSelectedTools();
     const newTools = currentTools.includes(tool)
-      ? currentTools.filter(t => t !== tool)
+      ? currentTools.filter((t) => t !== tool)
       : [...currentTools, tool];
-    
+
     setToolsForStep(selectedStep.id, newTools);
   };
 
@@ -140,13 +141,14 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: theme.palette.background.paper,
-        transition: isDragging ? 'none' : 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
+        transition: isDragging
+          ? 'none'
+          : 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
         height: '100%',
         position: 'relative',
-        transform: 
+        transform:
           animationState === 'entered' ? 'translateX(0)' : 'translateX(100%)',
-        opacity: 
-          animationState === 'entered' ? 1 : 0,
+        opacity: animationState === 'entered' ? 1 : 0,
       }}
     >
       {/* Drag handle */}
@@ -202,25 +204,36 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
           <Fade in={true} timeout={300}>
             <Box>
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}
+                >
                   {selectedStep.title}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                   Agent: {selectedStep.agent}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 1 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', display: 'block', mt: 1 }}
+                >
                   {selectedStep.description}
                 </Typography>
               </Box>
-              
+
               <Divider sx={{ mb: 3 }} />
-              
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>
+
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}
+              >
                 Available Tools
               </Typography>
-              
+
               {isLoading ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 2 }}>
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 2 }}
+                >
                   <CircularProgress size={16} />
                   <Typography variant="body2" color="text.secondary">
                     Loading tools...
@@ -242,7 +255,7 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
                               checked={isSelected}
                               onChange={() => handleToolToggle(tool)}
                               size="small"
-                              sx={{ 
+                              sx={{
                                 color: 'primary.main',
                                 '&.Mui-checked': {
                                   color: 'primary.main',
@@ -251,7 +264,10 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
                             />
                           }
                           label={
-                            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontSize: '0.875rem' }}
+                            >
                               {tool}
                             </Typography>
                           }
@@ -270,18 +286,39 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
                   })}
                 </Grid>
               )}
-              
+
               {!isLoading && !error && availableTools.length === 0 && (
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic', textAlign: 'center', py: 4 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    py: 4,
+                  }}
+                >
                   No tools available for this agent
                 </Typography>
               )}
             </Box>
           </Fade>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50%' }}>
-            <SettingsIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '50%',
+            }}
+          >
+            <SettingsIcon
+              sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }}
+            />
+            <Typography
+              variant="body1"
+              sx={{ color: 'text.secondary', textAlign: 'center' }}
+            >
               Select an investigation step to configure its tools
             </Typography>
           </Box>
@@ -291,4 +328,4 @@ const ToolsSidebar: React.FC<ToolsSidebarProps> = ({
   );
 };
 
-export default ToolsSidebar; 
+export default ToolsSidebar;

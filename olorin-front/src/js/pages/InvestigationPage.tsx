@@ -44,11 +44,25 @@ import { saveComment, fetchCommentLog } from '../services/ChatService';
 import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
 import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
 import EnhancedAutonomousInvestigationPanel from '../components/EnhancedAutonomousInvestigationPanel';
-import { useTheme, Box, Typography, Paper, Alert, Switch, FormControlLabel, Collapse, Fade } from '@mui/material';
+import {
+  useTheme,
+  Box,
+  Typography,
+  Paper,
+  Alert,
+  Switch,
+  FormControlLabel,
+  Collapse,
+  Fade,
+} from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
 import { useParams, useLocation } from 'react-router-dom';
-import { getCurrentUrlParams, isDemoModeActive, getCurrentAuthId } from '../utils/urlParams';
+import {
+  getCurrentUrlParams,
+  isDemoModeActive,
+  getCurrentAuthId,
+} from '../utils/urlParams';
 
 /**
  * Represents a single log entry in the investigation.
@@ -208,7 +222,10 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 
   // Track page view on component mount
   useEffect(() => {
-    analytics.trackPageView('Investigation Page', 'Fraud Investigation Dashboard');
+    analytics.trackPageView(
+      'Investigation Page',
+      'Fraud Investigation Dashboard',
+    );
   }, [analytics]);
 
   /**
@@ -221,9 +238,18 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   };
 
   // Handle autonomous investigation step updates with risk scores
-  const handleAutonomousStepUpdate = (stepId: string, riskScore: number, llmThoughts: string) => {
-    console.log('Updating autonomous step:', stepId, 'with risk score:', riskScore);
-    
+  const handleAutonomousStepUpdate = (
+    stepId: string,
+    riskScore: number,
+    llmThoughts: string,
+  ) => {
+    console.log(
+      'Updating autonomous step:',
+      stepId,
+      'with risk score:',
+      riskScore,
+    );
+
     setStepStates((prevSteps) => {
       return prevSteps.map((step) => {
         if (step.id === stepId) {
@@ -234,8 +260,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
               ...step.details,
               risk_score: riskScore,
               llm_thoughts: llmThoughts,
-              timestamp: new Date().toISOString()
-            }
+              timestamp: new Date().toISOString(),
+            },
           };
         }
         return step;
@@ -493,6 +519,10 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         riskResponse?.data?.accumulatedLLMThoughts ||
         riskResponse?.thoughts ||
         '';
+      const remediationActions =
+        riskResponse?.data?.remediationActions ||
+        riskResponse?.remediationActions ||
+        [];
       let overallRiskScore =
         riskResponse?.data?.overallRiskScore ??
         riskResponse?.risk_level ??
@@ -505,9 +535,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             step.id !== InvestigationStepId.INIT &&
             step.id !== InvestigationStepId.RISK &&
             step.status === StepStatus.COMPLETED &&
-            step.details?.risk_score
+            step.details?.risk_score,
         );
-        
+
         if (completedSteps.length > 0) {
           const totalScore = completedSteps.reduce((sum, step) => {
             const score = step.details?.risk_score || 0;
@@ -516,9 +546,11 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             return sum + normalizedScore;
           }, 0);
           overallRiskScore = totalScore / completedSteps.length;
-          
+
           addLog(
-            `Risk Assessment Agent: Calculated overall risk score from ${completedSteps.length} agents: ${(overallRiskScore * 100).toFixed(2)}%`,
+            `Risk Assessment Agent: Calculated overall risk score from ${
+              completedSteps.length
+            } agents: ${(overallRiskScore * 100).toFixed(2)}%`,
             LogLevel.INFO,
           );
         }
@@ -534,6 +566,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
                   risk_score: overallRiskScore,
                   overallRiskScore,
                   accumulatedLLMThoughts: llmThoughts,
+                  llm_thoughts: llmThoughts, // For compatibility with RiskScoreDisplay
+                  remediationActions: remediationActions,
                 },
               }
             : step,
@@ -545,7 +579,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       );
       if (overallRiskScore !== undefined && overallRiskScore !== null) {
         addLog(
-          `Risk Assessment Agent: <strong>Overall Risk Score (API):</strong> ${(overallRiskScore * 100).toFixed(2)}%`,
+          `Risk Assessment Agent: <strong>Overall Risk Score (API):</strong> ${(
+            overallRiskScore * 100
+          ).toFixed(2)}%`,
           LogLevel.INFO,
         );
       }
@@ -554,6 +590,15 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           `Risk Assessment Agent: <strong>LLM Final Thoughts: </strong> ${llmThoughts}`,
           LogLevel.INFO,
         );
+      }
+      if (remediationActions && remediationActions.length > 0) {
+        addLog(
+          `Risk Assessment Agent: <strong>Recommended Remediation Actions:</strong>`,
+          LogLevel.INFO,
+        );
+        remediationActions.forEach((action: string, index: number) => {
+          addLog(`  ${index + 1}. ${action}`, LogLevel.INFO);
+        });
       }
       addRiskAssessment();
       closeInvestigation();
@@ -726,7 +771,9 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       [InvestigationStepId.RISK]: [],
     };
 
-    const logMessages = autonomousMode ? autonomousLogMessages : manualLogMessages;
+    const logMessages = autonomousMode
+      ? autonomousLogMessages
+      : manualLogMessages;
 
     await Promise.all(
       logMessages[stepId].map((message) =>
@@ -789,34 +836,41 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 
     setIsLoading(true);
     cancelledRef.current = false;
-    
+
     // Track investigation start event
-    analytics.trackInvestigationEvent('investigation_started', newInvestigationId, {
-      user_id: userId,
-      input_type: selectedInputType,
-      time_range: timeRange,
-      selected_steps: selectedInvestigationSteps.map(step => step.id),
-      autonomous_mode: autonomousMode,
-    });
-    
+    analytics.trackInvestigationEvent(
+      'investigation_started',
+      newInvestigationId,
+      {
+        user_id: userId,
+        input_type: selectedInputType,
+        time_range: timeRange,
+        selected_steps: selectedInvestigationSteps.map((step) => step.id),
+        autonomous_mode: autonomousMode,
+      },
+    );
+
     addLog(
       `Investigation started at: ${now.toLocaleTimeString()}`,
       LogLevel.INFO,
     );
-    
+
     // Handle autonomous mode vs manual mode
     if (autonomousMode) {
       addLog(
         'Autonomous Agent: Starting autonomous investigation...',
         LogLevel.INFO,
       );
-      addLog(`Autonomous Agent: Analyzing ${selectedInputType}: ${userId}`, LogLevel.INFO);
-      
+      addLog(
+        `Autonomous Agent: Analyzing ${selectedInputType}: ${userId}`,
+        LogLevel.INFO,
+      );
+
       // Autonomous investigation will be handled by the AutonomousInvestigationPanel
       // The actual start is triggered by the panel when it detects isLoading=true
       return;
     }
-    
+
     addLog(
       'Initialization Agent: Starting a new investigation...',
       LogLevel.INFO,
@@ -893,138 +947,138 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             });
           }
 
-                  // --- INIT step special handling ---
-        if (stepId === InvestigationStepId.INIT) {
-          // Only log initialization, do not fetch/process agent data
-          return currentSteps;
-        }
+          // --- INIT step special handling ---
+          if (stepId === InvestigationStepId.INIT) {
+            // Only log initialization, do not fetch/process agent data
+            return currentSteps;
+          }
 
-        if (stepId === InvestigationStepId.RISK) {
-          // Only handled after all agents complete; skip in main agent loop
-          return currentSteps;
-        }
+          if (stepId === InvestigationStepId.RISK) {
+            // Only handled after all agents complete; skip in main agent loop
+            return currentSteps;
+          }
 
-        // 1. Initialize the agent
-        checkCancelled();
+          // 1. Initialize the agent
+          checkCancelled();
 
-        // 2. Write agent's log messages (print while waiting for API)
-        // await addAgentLogs(stepId, agentName);
-        if (useMock) {
-          // In demo mode, simulate a 3-second wait for data
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-        }
+          // 2. Write agent's log messages (print while waiting for API)
+          // await addAgentLogs(stepId, agentName);
+          if (useMock) {
+            // In demo mode, simulate a 3-second wait for data
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+          }
 
-        // 3. Call the agent's API or load mock data only for the current agent, dynamically
-        const response = await getAgentResponse(stepId, newInvestigationId);
-        checkCancelled();
+          // 3. Call the agent's API or load mock data only for the current agent, dynamically
+          const response = await getAgentResponse(stepId, newInvestigationId);
+          checkCancelled();
 
-        try {
-          // DEBUG: log stepId and response before updateAgentDetails
-          // eslint-disable-next-line no-console
-          console.log('DEBUG: agent loop', stepId, response);
-          // 4. Update agent details
-          if (response && response.data) {
-            const newSteps = await updateAgentDetails(
-              stepId,
-              response.data,
-              stepStatesRef.current,
-            );
-            await setStepsAsync(newSteps);
-            stepStatesRef.current = newSteps;
-            currentSteps = newSteps;
-
-            // Log DI BB results if present (for Device Agent)
-            if (
-              stepId === InvestigationStepId.DEVICE &&
-              newSteps.find((s) => s.id === stepId)?.details?.di_bb
-            ) {
-              const diBB = newSteps.find((s) => s.id === stepId)?.details
-                ?.di_bb;
-              const agentName = getAgentName(stepId);
-              await addLog(
-                `${agentName}: <strong>DI BB Status:</strong> ${diBB.status}`,
-                LogLevel.INFO,
+          try {
+            // DEBUG: log stepId and response before updateAgentDetails
+            // eslint-disable-next-line no-console
+            console.log('DEBUG: agent loop', stepId, response);
+            // 4. Update agent details
+            if (response && response.data) {
+              const newSteps = await updateAgentDetails(
+                stepId,
+                response.data,
+                stepStatesRef.current,
               );
-              await addLog(
-                `${agentName}: <strong>DI BB Elapsed Time:</strong> ${diBB.elapsedTime}`,
-                LogLevel.INFO,
-              );
-              if (diBB.errorMessage) {
+              await setStepsAsync(newSteps);
+              stepStatesRef.current = newSteps;
+              currentSteps = newSteps;
+
+              // Log DI BB results if present (for Device Agent)
+              if (
+                stepId === InvestigationStepId.DEVICE &&
+                newSteps.find((s) => s.id === stepId)?.details?.di_bb
+              ) {
+                const diBB = newSteps.find((s) => s.id === stepId)?.details
+                  ?.di_bb;
+                const agentName = getAgentName(stepId);
                 await addLog(
-                  `${agentName}: <strong>DI BB Error:</strong> ${diBB.errorMessage}`,
-                  LogLevel.WARNING,
+                  `${agentName}: <strong>DI BB Status:</strong> ${diBB.status}`,
+                  LogLevel.INFO,
                 );
-              }
-              if (diBB.parsedData) {
-                let summary;
-                if (diBB.parsedData && typeof diBB.parsedData === 'object') {
-                  const {
-                    sessionId,
-                    vendor,
-                    score,
-                    bbAssessmentRating,
-                    fraudScore,
-                    fraudRating,
-                    ratScore,
-                    ratRating,
-                  } = diBB.parsedData;
-                  summary = JSON.stringify({
-                    sessionId,
-                    vendor,
-                    score,
-                    bbAssessmentRating,
-                    fraudScore,
-                    fraudRating,
-                    ratScore,
-                    ratRating,
-                  });
-                } else {
-                  summary = String(diBB.parsedData);
+                await addLog(
+                  `${agentName}: <strong>DI BB Elapsed Time:</strong> ${diBB.elapsedTime}`,
+                  LogLevel.INFO,
+                );
+                if (diBB.errorMessage) {
+                  await addLog(
+                    `${agentName}: <strong>DI BB Error:</strong> ${diBB.errorMessage}`,
+                    LogLevel.WARNING,
+                  );
                 }
+                if (diBB.parsedData) {
+                  let summary;
+                  if (diBB.parsedData && typeof diBB.parsedData === 'object') {
+                    const {
+                      sessionId,
+                      vendor,
+                      score,
+                      bbAssessmentRating,
+                      fraudScore,
+                      fraudRating,
+                      ratScore,
+                      ratRating,
+                    } = diBB.parsedData;
+                    summary = JSON.stringify({
+                      sessionId,
+                      vendor,
+                      score,
+                      bbAssessmentRating,
+                      fraudScore,
+                      fraudRating,
+                      ratScore,
+                      ratRating,
+                    });
+                  } else {
+                    summary = String(diBB.parsedData);
+                  }
+                  await addLog(
+                    `${agentName}: <strong>DI BB Parsed Data (summary):</strong> ${summary}`,
+                    LogLevel.INFO,
+                  );
+                }
+              }
+              // 5. Always log from the normalized details in the updated step state
+              const stepDetails = newSteps.find(
+                (s) => s.id === stepId,
+              )?.details;
+              const ra = stepDetails?.risk_assessment;
+              if (ra?.risk_level !== undefined) {
+                const agentName = getAgentName(stepId);
+                const riskLevel =
+                  typeof ra.risk_level === 'number'
+                    ? ra.risk_level.toFixed(2)
+                    : String(ra.risk_level);
                 await addLog(
-                  `${agentName}: <strong>DI BB Parsed Data (summary):</strong> ${summary}`,
+                  `${agentName}: <strong>Risk Score:</strong> ${riskLevel}`,
                   LogLevel.INFO,
                 );
-              }
-            }
-            // 5. Always log from the normalized details in the updated step state
-            const stepDetails = newSteps.find(
-              (s) => s.id === stepId,
-            )?.details;
-            const ra = stepDetails?.risk_assessment;
-            if (ra?.risk_level !== undefined) {
-              const agentName = getAgentName(stepId);
-              const riskLevel =
-                typeof ra.risk_level === 'number'
-                  ? ra.risk_level.toFixed(2)
-                  : String(ra.risk_level);
-              await addLog(
-                `${agentName}: <strong>Risk Score:</strong> ${riskLevel}`,
-                LogLevel.INFO,
-              );
-              if (ra.risk_factors?.length) {
-                const riskFactorsString = ra.risk_factors
-                  .map((factor: any) =>
-                    typeof factor === 'object'
-                      ? JSON.stringify(factor)
-                      : String(factor),
-                  )
-                  .join(', ');
-                await addLog(
-                  `${agentName}: Risk factors: ${riskFactorsString}`,
-                  LogLevel.INFO,
-                );
-              }
-              // For all agents, add a detailed Thoughts section
-              let details = '';
-              if (ra.anomaly_details) {
-                details += `anomaly_details:\n${
-                  Array.isArray(ra.anomaly_details)
-                    ? ra.anomaly_details.join('\n')
-                    : ra.anomaly_details
-                }\n`;
-              }
-              if (ra.confidence !== undefined) {
+                if (ra.risk_factors?.length) {
+                  const riskFactorsString = ra.risk_factors
+                    .map((factor: any) =>
+                      typeof factor === 'object'
+                        ? JSON.stringify(factor)
+                        : String(factor),
+                    )
+                    .join(', ');
+                  await addLog(
+                    `${agentName}: Risk factors: ${riskFactorsString}`,
+                    LogLevel.INFO,
+                  );
+                }
+                // For all agents, add a detailed Thoughts section
+                let details = '';
+                if (ra.anomaly_details) {
+                  details += `anomaly_details:\n${
+                    Array.isArray(ra.anomaly_details)
+                      ? ra.anomaly_details.join('\n')
+                      : ra.anomaly_details
+                  }\n`;
+                }
+                if (ra.confidence !== undefined) {
                   details += `confidence: ${ra.confidence}\n`;
                 }
                 if (ra.summary) {
@@ -1228,17 +1282,23 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
 
     setIsInvestigationClosed(true);
-    
+
     // Track manual investigation completion
-    analytics.trackInvestigationEvent('manual_investigation_completed', investigationIdState, {
-      user_id: userId,
-      input_type: selectedInputType,
-      time_range: timeRange,
-      selected_steps: selectedInvestigationSteps.map(step => step.id),
-      autonomous_mode: false,
-      investigation_duration: investigationStartTime ? Date.now() - investigationStartTime.getTime() : null,
-    });
-    
+    analytics.trackInvestigationEvent(
+      'manual_investigation_completed',
+      investigationIdState,
+      {
+        user_id: userId,
+        input_type: selectedInputType,
+        time_range: timeRange,
+        selected_steps: selectedInvestigationSteps.map((step) => step.id),
+        autonomous_mode: false,
+        investigation_duration: investigationStartTime
+          ? Date.now() - investigationStartTime.getTime()
+          : null,
+      },
+    );
+
     const updatedSteps = await updateStepStatus(
       stepStates,
       InvestigationStepId.RISK,
@@ -1429,7 +1489,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         });
       setHasDemoApiCalled(true);
     }
-    
+
     if (isDemo && urlAuthId && !hasDemoApiCalled) {
       // Call /demo/{authid} to enable demo mode
       fetch(`/demo/${encodeURIComponent(urlAuthId)}`)
@@ -1449,19 +1509,16 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
   }, [hasDemoApiCalled]);
 
-  const [investigatorComments, setInvestigatorComments] = useState<
+  const [systemPromptComments, setSystemPromptComments] = useState<
     CommentMessage[]
   >([]);
-  const [policyComments, setPolicyComments] = useState<CommentMessage[]>([]);
   const [commentSidebarOpen, setCommentSidebarOpen] = useState(false);
   const [commentLog, setCommentLog] = useState<CommentMessage[]>([]);
-  const [selectedCommentRole, setSelectedCommentRole] = useState<
-    'Investigator' | 'Policy Team'
-  >('Investigator');
 
   // Tools sidebar state
   const [toolsSidebarOpen, setToolsSidebarOpen] = useState(false);
-  const [selectedStepForTools, setSelectedStepForTools] = useState<InvestigationStep | null>(null);
+  const [selectedStepForTools, setSelectedStepForTools] =
+    useState<InvestigationStep | null>(null);
 
   /**
    * Handler for opening the tools sidebar with a specific step
@@ -1481,18 +1538,18 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   };
 
   /**
-   * Handler for sending investigator chat messages
+   * Handler for sending system prompt instructions messages
    * @param {string} text - The message text
    */
-  const handleInvestigatorSend = async (text: string) => {
+  const handleSystemPromptSend = async (text: string) => {
     const entityId = userId;
     const entityType = selectedInputType === 'userId' ? 'user_id' : 'device_id';
     const message = {
-      sender: 'Investigator',
+      sender: 'System Prompt Instructions',
       text,
       timestamp: Date.now(),
     };
-    setInvestigatorComments((prev) => [
+    setSystemPromptComments((prev) => [
       ...prev,
       {
         ...message,
@@ -1503,59 +1560,24 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     ]);
     try {
       await saveComment(investigationIdState, entityId, entityType, message);
-      await handleCommentLogUpdateRequest('Investigator');
+      await handleCommentLogUpdateRequest();
     } catch (err) {
-      setInvestigatorComments((prev) =>
+      setSystemPromptComments((prev) =>
         prev.filter((m) => m.timestamp !== message.timestamp),
       );
     }
   };
 
   /**
-   * Handler for sending policy team chat messages
-   * @param {string} text - The message text
+   * Updates the comment log for system prompt instructions
    */
-  const handlePolicySend = async (text: string) => {
-    const entityId = userId;
-    const entityType = selectedInputType === 'userId' ? 'user_id' : 'device_id';
-    const message = {
-      sender: 'Policy Team',
-      text,
-      timestamp: Date.now(),
-    };
-    setPolicyComments((prev) => [
-      ...prev,
-      {
-        ...message,
-        investigationId: investigationIdState,
-        entityId,
-        entityType,
-      },
-    ]);
-    try {
-      await saveComment(investigationIdState, entityId, entityType, message);
-      await handleCommentLogUpdateRequest('Policy Team');
-    } catch (err) {
-      setPolicyComments((prev) =>
-        prev.filter((m) => m.timestamp !== message.timestamp),
-      );
-    }
-  };
-
-  /**
-   * Updates the comment log for the selected role
-   * @param {('Investigator' | 'Policy Team')} role - The role to fetch comments for
-   */
-  const handleCommentLogUpdateRequest = async (
-    role: 'Investigator' | 'Policy Team',
-  ) => {
-    setSelectedCommentRole(role);
+  const handleCommentLogUpdateRequest = async () => {
     const id = investigationIdState;
     if (commentSidebarOpen && id) {
       try {
         const log = await fetchCommentLog(
           id,
-          role,
+          'System Prompt Instructions' as any,
           selectedInputType === 'userId' ? 'user_id' : 'device_id',
         );
         setCommentLog(log);
@@ -1564,8 +1586,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       }
     }
   };
-
-
 
   // Compute warning and error logs for banners
   const warningLogs = logs.filter((log) => log.type === LogLevel.WARNING);
@@ -1592,220 +1612,211 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   }, [errorLogs, dismissedErrorKeys]);
 
   return (
-    <Box sx={{ 
-      height: 'calc(100vh - 16px)', // Full viewport height minus padding
-      backgroundColor: 'background.default',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'row',
-      minHeight: 0,
-      overflow: 'hidden',
-      gap: 1, // Small gap between panels
-      p: 1 // Small padding around the entire layout
-    }}>
+    <Box
+      sx={{
+        height: 'calc(100vh - 16px)', // Full viewport height minus padding
+        backgroundColor: 'background.default',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'row',
+        minHeight: 0,
+        overflow: 'hidden',
+        gap: 1, // Small gap between panels
+        p: 1, // Small padding around the entire layout
+      }}
+    >
       {/* Comment Sidebar */}
       <CommentSidebar
         isOpen={commentSidebarOpen}
         width={320}
-        investigatorComments={investigatorComments}
-        policyComments={policyComments}
-        onInvestigatorSend={handleInvestigatorSend}
-        onPolicySend={handlePolicySend}
+        systemPromptComments={systemPromptComments}
+        onSystemPromptSend={handleSystemPromptSend}
         investigationId={investigationIdState}
         entityId={userId}
         entityType={selectedInputType === 'userId' ? 'user_id' : 'device_id'}
         onClose={() => setCommentSidebarOpen(false)}
         onCommentLogUpdateRequest={handleCommentLogUpdateRequest}
         commentLog={commentLog}
-        selectedRole={selectedCommentRole}
-        messages={
-          selectedCommentRole === 'Investigator'
-            ? investigatorComments
-            : policyComments
-        }
-        onSend={
-          selectedCommentRole === 'Investigator'
-            ? handleInvestigatorSend
-            : handlePolicySend
-        }
+        messages={systemPromptComments}
+        onSend={handleSystemPromptSend}
         onLogUpdateRequest={handleCommentLogUpdateRequest}
         isLoading={isLoading}
         currentInvestigationId={investigationIdState}
       />
       {/* Main content area */}
-      <Paper 
+      <Paper
         elevation={3}
-        sx={{ 
-          flex: 1, 
-          display: 'flex', 
+        sx={{
+          flex: 1,
+          display: 'flex',
           flexDirection: 'row',
-          height: '100%', 
+          height: '100%',
           minHeight: 0,
           overflow: 'hidden',
-          backgroundColor: 'background.paper'
+          backgroundColor: 'background.paper',
         }}
       >
-        <Box sx={{ 
-          flex: 1, 
-          transition: 'all 0.5s ease-in-out', 
-          height: '100%', 
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          p: 2 // Add padding inside the main content
-        }}>
-              <InvestigationHeader
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                setIsEditModalOpen={setIsEditModalOpen}
-                isLoading={isLoading}
-                userId={userId}
-                setUserId={setUserId}
-                handleSubmit={handleSubmit}
-                cancelledRef={cancelledRef}
-                closeInvestigation={closeInvestigation}
-                startTime={investigationStartTime}
-                endTime={investigationEndTime}
-                isChatSidebarOpen={commentSidebarOpen}
-                setIsChatSidebarOpen={setCommentSidebarOpen}
-                currentInvestigationId={investigationIdState}
-                timeRange={timeRange}
-                onTimeRangeChange={setTimeRange}
-                selectedInputType={selectedInputType}
-                setSelectedInputType={setSelectedInputType}
-                autonomousMode={autonomousMode}
-                setAutonomousMode={setAutonomousMode}
-              />
+        <Box
+          sx={{
+            flex: 1,
+            transition: 'all 0.5s ease-in-out',
+            height: '100%',
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            p: 2, // Add padding inside the main content
+          }}
+        >
+          <InvestigationHeader
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+            setIsEditModalOpen={setIsEditModalOpen}
+            isLoading={isLoading}
+            userId={userId}
+            setUserId={setUserId}
+            handleSubmit={handleSubmit}
+            cancelledRef={cancelledRef}
+            closeInvestigation={closeInvestigation}
+            startTime={investigationStartTime}
+            endTime={investigationEndTime}
+            isChatSidebarOpen={commentSidebarOpen}
+            setIsChatSidebarOpen={setCommentSidebarOpen}
+            currentInvestigationId={investigationIdState}
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+            selectedInputType={selectedInputType}
+            setSelectedInputType={setSelectedInputType}
+            autonomousMode={autonomousMode}
+            setAutonomousMode={setAutonomousMode}
+          />
 
+          {/* Enhanced Autonomous Investigation Panel */}
+          <EnhancedAutonomousInvestigationPanel
+            autonomousMode={autonomousMode}
+            stepStates={stepStates}
+            userId={userId}
+            selectedInputType={selectedInputType}
+            investigationId={investigationId || ''}
+            isLoading={isLoading}
+            timeRange={timeRange}
+            selectedInvestigationSteps={selectedInvestigationSteps}
+            investigationIdState={investigationIdState}
+            investigationStartTime={investigationStartTime}
+            addLog={addLog}
+            closeInvestigation={closeInvestigation}
+            setIsInvestigationClosed={setIsInvestigationClosed}
+            setInvestigationEndTime={setInvestigationEndTime}
+            setStepStates={setStepStates}
+          />
 
-
-              {/* Enhanced Autonomous Investigation Panel */}
-              <EnhancedAutonomousInvestigationPanel
-                autonomousMode={autonomousMode}
-                stepStates={stepStates}
-                userId={userId}
-                selectedInputType={selectedInputType}
-                investigationId={investigationId || ''}
-                isLoading={isLoading}
-                timeRange={timeRange}
-                selectedInvestigationSteps={selectedInvestigationSteps}
-                investigationIdState={investigationIdState}
-                investigationStartTime={investigationStartTime}
-                addLog={addLog}
-                closeInvestigation={closeInvestigation}
-                setIsInvestigationClosed={setIsInvestigationClosed}
-                setInvestigationEndTime={setInvestigationEndTime}
-                setStepStates={setStepStates}
-              />
-
-              {/* Error and warning banners */}
-              {errorLogs.length > 0 &&
-                errorLogs
-                  .filter(
-                    (log) =>
-                      !dismissedErrorKeys.includes(
-                        `${log.timestamp}-${log.message}`,
-                      ),
-                  )
-                  .map((log) => (
-                    <Alert
-                      key={`${log.timestamp}-${log.message}`}
-                      severity="error"
-                      onClose={() =>
-                        setDismissedErrorKeys((keys) => [
-                          ...keys,
-                          `${log.timestamp}-${log.message}`,
-                        ])
-                      }
-                      sx={{ mb: 1 }}
-                      data-testid="error-banner"
-                    >
-                      {log.message.replace(/<[^>]+>/g, '')}
-                    </Alert>
-                  ))}
-              {/* Always render the current error state as a persistent error banner for test visibility */}
-              {error && (
-                <>
-                  <Alert
-                    severity="error"
-                    onClose={() => setError(null)}
-                    sx={{ mb: 1 }}
-                    data-testid="error-banner"
-                  >
-                    {error}
-                  </Alert>
-                  {/* Always render error text in a visible span for test assertions */}
-                  <Typography
-                    component="span"
-                    data-testid="error-text"
-                    sx={{
-                      display: 'block',
-                      color: 'error.main',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {error}
-                  </Typography>
-                </>
-              )}
-              {warningLogs.length > 0 &&
-                warningLogs.map((log) => (
-                  <Alert
-                    key={`${log.timestamp}-${log.message}`}
-                    severity="warning"
-                    sx={{ mb: 1 }}
-                    data-testid="warning-banner"
-                  >
-                    {log.message.replace(/<[^>]+>/g, '')}
-                  </Alert>
-                ))}
-
-              {/* DEBUG: Render all log messages for test visibility */}
-              {process.env.NODE_ENV === 'test' && logs.length > 0 && (
-                <Paper
-                  data-testid="debug-log-banner"
-                  sx={{
-                    backgroundColor: 'grey.100',
-                    borderLeft: '4px solid',
-                    borderColor: 'grey.400',
-                    p: 1,
-                    mb: 1
-                  }}
+          {/* Error and warning banners */}
+          {errorLogs.length > 0 &&
+            errorLogs
+              .filter(
+                (log) =>
+                  !dismissedErrorKeys.includes(
+                    `${log.timestamp}-${log.message}`,
+                  ),
+              )
+              .map((log) => (
+                <Alert
+                  key={`${log.timestamp}-${log.message}`}
+                  severity="error"
+                  onClose={() =>
+                    setDismissedErrorKeys((keys) => [
+                      ...keys,
+                      `${log.timestamp}-${log.message}`,
+                    ])
+                  }
+                  sx={{ mb: 1 }}
+                  data-testid="error-banner"
                 >
-                  <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
-                    {logs.map((log) => (
-                      <Box key={log.timestamp}>
-                        {log.message.replace(/<[^>]+>/g, '')}
-                      </Box>
-                    ))}
-                  </Box>
-                </Paper>
-              )}
+                  {log.message.replace(/<[^>]+>/g, '')}
+                </Alert>
+              ))}
+          {/* Always render the current error state as a persistent error banner for test visibility */}
+          {error && (
+            <>
+              <Alert
+                severity="error"
+                onClose={() => setError(null)}
+                sx={{ mb: 1 }}
+                data-testid="error-banner"
+              >
+                {error}
+              </Alert>
+              {/* Always render error text in a visible span for test assertions */}
+              <Typography
+                component="span"
+                data-testid="error-text"
+                sx={{
+                  display: 'block',
+                  color: 'error.main',
+                  fontWeight: 'bold',
+                }}
+              >
+                {error}
+              </Typography>
+            </>
+          )}
+          {warningLogs.length > 0 &&
+            warningLogs.map((log) => (
+              <Alert
+                key={`${log.timestamp}-${log.message}`}
+                severity="warning"
+                sx={{ mb: 1 }}
+                data-testid="warning-banner"
+              >
+                {log.message.replace(/<[^>]+>/g, '')}
+              </Alert>
+            ))}
 
-              {/* Manual Investigation Panel */}
-              <ManualInvestigationPanel
-                autonomousMode={autonomousMode}
-                stepStates={stepStates}
-                selectedInvestigationSteps={selectedInvestigationSteps}
-                currentStep={currentStep}
-                currentStepIndex={currentStepIndex}
-                isLoading={isLoading}
-                isInvestigationClosed={isInvestigationClosed}
-                stepStartTimes={stepStartTimes}
-                stepEndTimes={stepEndTimes}
-              />
-            </Box>
-            <AgentLogSidebar
-              isOpen={isSidebarOpen}
-              onClose={() => setIsSidebarOpen(false)}
-              logs={logs}
-              onClearLogs={handleClearLogs}
-              cancelledRef={cancelledRef}
-              onLogDisplayed={handleLogDisplayed}
-            />
+          {/* DEBUG: Render all log messages for test visibility */}
+          {process.env.NODE_ENV === 'test' && logs.length > 0 && (
+            <Paper
+              data-testid="debug-log-banner"
+              sx={{
+                backgroundColor: 'grey.100',
+                borderLeft: '4px solid',
+                borderColor: 'grey.400',
+                p: 1,
+                mb: 1,
+              }}
+            >
+              <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                {logs.map((log) => (
+                  <Box key={log.timestamp}>
+                    {log.message.replace(/<[^>]+>/g, '')}
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
+          )}
+
+          {/* Manual Investigation Panel */}
+          <ManualInvestigationPanel
+            autonomousMode={autonomousMode}
+            stepStates={stepStates}
+            selectedInvestigationSteps={selectedInvestigationSteps}
+            currentStep={currentStep}
+            currentStepIndex={currentStepIndex}
+            isLoading={isLoading}
+            isInvestigationClosed={isInvestigationClosed}
+            stepStartTimes={stepStartTimes}
+            stepEndTimes={stepEndTimes}
+          />
+        </Box>
+        <AgentLogSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          logs={logs}
+          onClearLogs={handleClearLogs}
+          cancelledRef={cancelledRef}
+          onLogDisplayed={handleLogDisplayed}
+        />
       </Paper>
-      
+
       {/* Tools Sidebar */}
       <ToolsSidebar
         isOpen={toolsSidebarOpen}
@@ -1813,7 +1824,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         selectedStep={selectedStepForTools}
         width={320}
       />
-      
+
       {/* ... other overlays/modals ... */}
       <EditStepsModal
         isOpen={isEditModalOpen}
@@ -1822,11 +1833,11 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         selectedSteps={selectedInvestigationSteps}
         onSave={(selected) => {
           // Update each step with its selected tools
-          const stepsWithTools = selected.map(step => ({
+          const stepsWithTools = selected.map((step) => ({
             ...step,
-            tools: getToolsForStep(step.id, step.agent)
+            tools: getToolsForStep(step.id, step.agent),
           }));
-          
+
           // Always include Risk Assessment step
           const riskStep = {
             id: InvestigationStepId.RISK,
@@ -1837,9 +1848,12 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             status: StepStatus.PENDING,
             details: {},
             timestamp: new Date().toISOString(),
-            tools: getToolsForStep(InvestigationStepId.RISK, 'Risk Assessment Agent'),
+            tools: getToolsForStep(
+              InvestigationStepId.RISK,
+              'Risk Assessment Agent',
+            ),
           };
-          
+
           // Ensure Risk Assessment is always the last step
           const updatedSteps = [...stepsWithTools].filter(
             (step) => step.id !== InvestigationStepId.RISK,

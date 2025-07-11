@@ -1,6 +1,13 @@
 import React, { useState, ChangeEvent } from 'react';
 import styled from 'styled-components';
-import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 
 const FormContainer = styled.div`
   display: flex;
@@ -28,7 +35,9 @@ const InvestigationForm: React.FC<InvestigationFormProps> = ({ onSubmit }) => {
         <TextField
           label="User ID"
           value={userId}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setUserId(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setUserId(e.target.value)
+          }
           required
           fullWidth
           margin="normal"
@@ -52,4 +61,4 @@ const InvestigationForm: React.FC<InvestigationFormProps> = ({ onSubmit }) => {
   );
 };
 
-export default InvestigationForm; 
+export default InvestigationForm;

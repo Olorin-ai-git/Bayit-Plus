@@ -206,10 +206,10 @@ class OlorinApplication:
         # Add security middleware
         from app.middleware.rate_limiter import RateLimitMiddleware
         from app.security.auth import SecurityHeaders
-        
+
         # Add rate limiting middleware
         app.add_middleware(RateLimitMiddleware, calls=60, period=60)
-        
+
         # Add security headers middleware
         @app.middleware("http")
         async def add_security_headers(request: Request, call_next):
@@ -218,9 +218,11 @@ class OlorinApplication:
             for key, value in headers.items():
                 response.headers[key] = value
             return response
-        
+
         # Add CORS middleware with restricted origins
-        allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://localhost:3000").split(",")
+        allowed_origins = os.getenv(
+            "ALLOWED_ORIGINS", "http://localhost:3000,https://localhost:3000"
+        ).split(",")
         app.add_middleware(
             CORSMiddleware,
             allow_origins=allowed_origins,  # Restrict to specific origins
@@ -230,8 +232,8 @@ class OlorinApplication:
         )
 
         from app.router import agent_router, api_router, websocket_router
-        from app.router.mcp_bridge_router import router as mcp_bridge_router
         from app.router.auth_router import router as auth_router
+        from app.router.mcp_bridge_router import router as mcp_bridge_router
 
         from . import example
 
@@ -276,9 +278,11 @@ class OlorinApplication:
         async def favicon():
             """Return a simple favicon response to prevent 404 errors."""
             from fastapi.responses import Response
+
             # Return a 1x1 transparent GIF as a minimal favicon
-            gif_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
+            gif_data = b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b"
             return Response(content=gif_data, media_type="image/gif")
+
 
 def create_app(
     test_config: Optional[SvcSettings] = None, lifespan: Optional[Callable] = None

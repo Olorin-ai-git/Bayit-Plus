@@ -563,7 +563,9 @@ class LocationDataClient:
 
     # Salesforce and Ekata methods removed
 
-    async def _get_business_admin_location(self, user_id: str) -> Optional[LocationInfo]:
+    async def _get_business_admin_location(
+        self, user_id: str
+    ) -> Optional[LocationInfo]:
         """Get business location from Business Admin."""
         return LocationInfo(
             source="Business Admin",

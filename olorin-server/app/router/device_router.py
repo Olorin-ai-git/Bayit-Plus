@@ -94,6 +94,3 @@ async def analyze_device(
         raw_splunk_override=raw_splunk_override,
         request=request,
     )
-
-
-

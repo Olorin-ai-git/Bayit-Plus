@@ -58,7 +58,11 @@ class RestClient {
     });
   }
 
-  async post(endpoint: string, data: any, options: FetchOptions = {}): Promise<Response> {
+  async post(
+    endpoint: string,
+    data: any,
+    options: FetchOptions = {},
+  ): Promise<Response> {
     const url = `${this.config.baseUrl}/${endpoint}`;
     return fetch(url, {
       method: 'POST',
@@ -90,7 +94,8 @@ export class RestService extends WithRUMInteractionName {
   constructor(config: RestClientConfig, name: string) {
     super(name);
     this.config = config;
-    this.config.authType = this.config.authType || RestClient.AuthConstants.BROWSER_AUTH;
+    this.config.authType =
+      this.config.authType || RestClient.AuthConstants.BROWSER_AUTH;
 
     if (!this.config.onRequestStart) {
       this.config.onRequestStart = onRequestStart().bind(this);

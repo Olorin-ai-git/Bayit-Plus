@@ -148,7 +148,8 @@ def test_internal_get_methods(client):
     assert asyncio.run(client._get_oii_location("user1")).source == "OII"
 
     assert (
-        asyncio.run(client._get_business_admin_location("user1")).source == "Business Admin"
+        asyncio.run(client._get_business_admin_location("user1")).source
+        == "Business Admin"
     )
 
 

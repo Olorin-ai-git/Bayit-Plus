@@ -1,7 +1,4 @@
-import RestService, {
-  ApiMethod,
-  RestResponse,
-} from './restService';
+import RestService, { ApiMethod, RestResponse } from './restService';
 import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
 import type { Sandbox } from './envConstants';
@@ -19,7 +16,6 @@ type OlorinApi =
   | 'investigation'
   | 'investigations'
   | 'locationRiskAnalysis'
-
   | 'oiiLocationSource'
   | 'businessLocationSource'
   | 'phoneLocationSource'
@@ -272,22 +268,22 @@ export class OlorinService {
     options?: any,
   ): Promise<RestResponse> {
     const config = getApiConfig(action);
-    
+
     // For certain endpoints, entity_id is part of the path
     const pathBasedEndpoints = [
-      'analyzeNetwork', 
-      'analyzeLocation', 
-      'analyzeDevice', 
+      'analyzeNetwork',
+      'analyzeLocation',
+      'analyzeDevice',
       'analyzeLogs',
       'getOii',
       'oiiLocationSource',
       'businessLocationSource',
       'phoneLocationSource',
       'locationRiskAnalysis',
-      'assessRisk'
+      'assessRisk',
     ];
     let url: string;
-    
+
     if (pathBasedEndpoints.includes(action)) {
       // Entity ID is part of the path for these endpoints
       const params = new URLSearchParams({
@@ -298,12 +294,14 @@ export class OlorinService {
     } else {
       // Entity ID is a query parameter for other endpoints
       const params = new URLSearchParams({
-        ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
+        ...(entityType === 'user_id'
+          ? { user_id: entityId }
+          : { device_id: entityId }),
         ...queryParams,
       });
       url = `${config.apiPath}?${params.toString()}`;
     }
-    
+
     const requestOptions = {
       ...generateRequestOptions(),
       ...options,
@@ -341,7 +339,9 @@ export class OlorinService {
   ): Promise<RestResponse> {
     const config = getApiConfig(action);
     const params = new URLSearchParams({
-      ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
+      ...(entityType === 'user_id'
+        ? { user_id: entityId }
+        : { device_id: entityId }),
       ...queryParams,
     });
 

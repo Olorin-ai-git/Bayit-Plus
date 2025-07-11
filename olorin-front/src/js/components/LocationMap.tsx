@@ -108,28 +108,31 @@ const LocationMap: React.FC<LocationMapProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   // Define marker colors and icons for different location types
-  const locationStyles = useMemo(() => ({
-    customer: {
-      color: '#4CAF50', // Green
-      icon: '📍',
-    },
-    business: {
-      color: '#2196F3', // Blue
-      icon: '🏢',
-    },
-    phone: {
-      color: '#9C27B0', // Purple
-      icon: '📱',
-    },
-    rss: {
-      color: '#FF9800', // Orange
-      icon: '💻',
-    },
-    device: {
-      color: '#F44336', // Red
-      icon: '💻',
-    },
-  }), []);
+  const locationStyles = useMemo(
+    () => ({
+      customer: {
+        color: '#4CAF50', // Green
+        icon: '📍',
+      },
+      business: {
+        color: '#2196F3', // Blue
+        icon: '🏢',
+      },
+      phone: {
+        color: '#9C27B0', // Purple
+        icon: '📱',
+      },
+      rss: {
+        color: '#FF9800', // Orange
+        icon: '💻',
+      },
+      device: {
+        color: '#F44336', // Red
+        icon: '💻',
+      },
+    }),
+    [],
+  );
 
   useEffect(() => {
     /**

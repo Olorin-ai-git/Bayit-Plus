@@ -11,9 +11,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/logs")
 
 
-
-
-
 @router.get("/{entity_id}")
 async def analyze_logs(
     entity_id: str,

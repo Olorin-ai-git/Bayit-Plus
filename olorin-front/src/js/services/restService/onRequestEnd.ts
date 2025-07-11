@@ -11,13 +11,21 @@ import {
  * @returns {function} The expected onRequestEnd function
  */
 const onRequestEnd = (): NonNullable<RestClientConfig['onRequestEnd']> =>
-  function onRequestEndFn(this: WithRUMInteractionName, action: string, metadata: { x: string; ert?: string }) {
+  function onRequestEndFn(
+    this: WithRUMInteractionName,
+    action: string,
+    metadata: { x: string; ert?: string },
+  ) {
     // Simplified version without performance tracking
     const interactionName = this.getRUMInteractionName(action);
     if (metadata.x === 'p') {
       console.log(`[RUM] Request succeeded: ${interactionName}`);
     } else {
-      console.log(`[RUM] Request failed: ${interactionName} - ${metadata.ert || RUM_FCI_DEFAULT_FAILURE_MESSAGE}`);
+      console.log(
+        `[RUM] Request failed: ${interactionName} - ${
+          metadata.ert || RUM_FCI_DEFAULT_FAILURE_MESSAGE
+        }`,
+      );
     }
   };
 

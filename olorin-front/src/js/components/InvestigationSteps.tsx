@@ -61,7 +61,14 @@ const InvestigationSteps: React.FC<Props> = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: 0,
+      }}
+    >
       {/* Details Modal */}
       <Dialog
         open={modalOpen}
@@ -71,8 +78,8 @@ const InvestigationSteps: React.FC<Props> = ({
         PaperProps={{
           sx: {
             height: '650px',
-            maxHeight: '95vh'
-          }
+            maxHeight: '95vh',
+          },
         }}
       >
         {modalStep && (
@@ -104,14 +111,14 @@ const InvestigationSteps: React.FC<Props> = ({
           Investigation Steps
         </Typography>
       </Box>
-      
+
       <Box sx={{ mb: 3 }}>
         <ProgressBar
           currentStep={currentStepIndex}
           steps={selectedInvestigationSteps.map((s) => ({ title: s.title }))}
         />
       </Box>
-      
+
       <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         {stepStates.map((step, index) => (
           <Fade
@@ -119,7 +126,7 @@ const InvestigationSteps: React.FC<Props> = ({
             in={true}
             timeout={700}
             style={{
-              transitionDelay: `${index * 150}ms`
+              transitionDelay: `${index * 150}ms`,
             }}
           >
             <Box sx={{ mb: 2 }}>

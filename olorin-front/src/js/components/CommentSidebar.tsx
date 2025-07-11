@@ -3,9 +3,6 @@ import {
   Box,
   Paper,
   Typography,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
   IconButton,
   Divider,
   useTheme,
@@ -21,20 +18,17 @@ import ChatLogAnimated from './ChatLogAnimated';
 interface CommentSidebarProps {
   isOpen: boolean;
   width: number;
-  investigatorComments: CommentMessage[];
-  policyComments: CommentMessage[];
-  onInvestigatorSend: (text: string) => void;
-  onPolicySend: (text: string) => void;
+  systemPromptComments: CommentMessage[];
+  onSystemPromptSend: (text: string) => void;
   investigationId: string;
   entityId?: string;
   entityType?: string;
   onClose: () => void;
-  onCommentLogUpdateRequest: (role: 'Investigator' | 'Policy Team') => void;
+  onCommentLogUpdateRequest: () => void;
   commentLog: CommentMessage[];
-  selectedRole: 'Investigator' | 'Policy Team';
   messages?: CommentMessage[];
   onSend?: (text: string) => void;
-  onLogUpdateRequest?: (role: 'Investigator' | 'Policy Team') => void;
+  onLogUpdateRequest?: () => void;
   isLoading?: boolean;
   currentInvestigationId?: string;
 }
@@ -45,24 +39,21 @@ const DEFAULT_WIDTH = 368; // 23rem, matches w-92
 const commentPrefix = 'Investigation Comment: ';
 
 /**
- * CommentSidebar component displays a sidebar for investigator and policy team comments with role selection and animated chat log.
+ * CommentSidebar component displays a sidebar for system prompt instructions and animated chat log.
  * @param {CommentSidebarProps} props - The sidebar props
  * @returns {JSX.Element|null} The rendered sidebar component or null if not open
  */
 const CommentSidebar: React.FC<CommentSidebarProps> = ({
   isOpen = false,
   width: initialWidth,
-  investigatorComments,
-  policyComments,
-  onInvestigatorSend,
-  onPolicySend,
+  systemPromptComments,
+  onSystemPromptSend,
   investigationId,
   entityId = '',
   entityType = 'user_id',
   onClose = () => {},
   onCommentLogUpdateRequest,
   commentLog,
-  selectedRole,
   messages = [],
   onSend = () => {},
   onLogUpdateRequest = () => {},
@@ -77,9 +68,9 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
   const [shouldRender, setShouldRender] = useState(isOpen);
-  const [animationState, setAnimationState] = useState<'entering' | 'entered' | 'exiting' | 'exited'>(
-    isOpen ? 'entered' : 'exited'
-  );
+  const [animationState, setAnimationState] = useState<
+    'entering' | 'entered' | 'exiting' | 'exited'
+  >(isOpen ? 'entered' : 'exited');
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -147,13 +138,14 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: theme.palette.background.paper,
-        transition: isDragging ? 'none' : 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
+        transition: isDragging
+          ? 'none'
+          : 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
         height: '100%',
         position: 'relative',
-        transform: 
+        transform:
           animationState === 'entered' ? 'translateX(0)' : 'translateX(-100%)',
-        opacity: 
-          animationState === 'entered' ? 1 : 0,
+        opacity: animationState === 'entered' ? 1 : 0,
       }}
     >
       {/* Drag handle */}
@@ -190,23 +182,9 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
           backgroundColor: theme.palette.background.default,
         }}
       >
-        <RadioGroup
-          row
-          value={selectedRole}
-          onChange={(e) => onCommentLogUpdateRequest(e.target.value as 'Investigator' | 'Policy Team')}
-        >
-          <FormControlLabel
-            value="Investigator"
-            control={<Radio size="small" />}
-            label="Investigator"
-            sx={{ mr: 2 }}
-          />
-          <FormControlLabel
-            value="Policy Team"
-            control={<Radio size="small" />}
-            label="Policy Team"
-          />
-        </RadioGroup>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          System Prompt Instructions
+        </Typography>
         <IconButton
           onClick={onClose}
           size="small"
@@ -217,32 +195,26 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
       </Box>
 
       {/* Content */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          overflow: 'hidden',
+        }}
+      >
         {/* Comment Window */}
         <Box sx={{ p: 2 }}>
-          {selectedRole === 'Investigator' ? (
-            <CommentWindow
-              title="Investigator Comments"
-              messages={investigatorComments}
-              onSend={async (text) => {
-                await onInvestigatorSend(text);
-                onCommentLogUpdateRequest('Investigator');
-              }}
-              sender="Investigator"
-              prefix={commentPrefix}
-            />
-          ) : (
-            <CommentWindow
-              title="Policy Team Comments"
-              messages={policyComments}
-              onSend={async (text) => {
-                await onPolicySend(text);
-                onCommentLogUpdateRequest('Policy Team');
-              }}
-              sender="Policy Team"
-              prefix={commentPrefix}
-            />
-          )}
+          <CommentWindow
+            title="System Prompt Instructions"
+            messages={systemPromptComments}
+            onSend={async (text) => {
+              await onSystemPromptSend(text);
+              onCommentLogUpdateRequest();
+            }}
+            sender="System Prompt Instructions"
+            prefix={commentPrefix}
+          />
         </Box>
 
         <Divider />
@@ -258,9 +230,11 @@ const CommentSidebar: React.FC<CommentSidebarProps> = ({
             flexDirection: 'column',
           }}
         >
-
-          <Typography variant="caption" sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.secondary }}>
-            {selectedRole} Comment Log
+          <Typography
+            variant="caption"
+            sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.secondary }}
+          >
+            System Prompt Instructions Log
           </Typography>
           <Box sx={{ flex: 1, overflow: 'hidden' }}>
             <ChatLogAnimated messages={commentLog} />

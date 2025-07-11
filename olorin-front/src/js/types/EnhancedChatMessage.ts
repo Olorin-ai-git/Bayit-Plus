@@ -26,7 +26,13 @@ export interface StructuredData {
 
 export interface FilterCriteria {
   column: string;
-  operator: 'equals' | 'contains' | 'startsWith' | 'endsWith' | 'greaterThan' | 'lessThan';
+  operator:
+    | 'equals'
+    | 'contains'
+    | 'startsWith'
+    | 'endsWith'
+    | 'greaterThan'
+    | 'lessThan';
   value: any;
 }
 
@@ -49,7 +55,7 @@ export interface EnhancedChatMessage {
   isLoading?: boolean;
   hasError?: boolean;
   errorMessage?: string;
-  
+
   // RAG-specific properties
   natural_query?: string;
   translated_query?: string;
@@ -59,15 +65,15 @@ export interface EnhancedChatMessage {
     sources?: string[];
     confidence?: number;
   };
-  
+
   // Structured data support
   structured_data?: StructuredData;
-  
+
   // View configuration
   available_views?: ViewMode[];
   default_view?: ViewMode;
-  
+
   // Export capabilities
   exportable?: boolean;
   export_formats?: ('csv' | 'json' | 'xlsx')[];
-} 
+}

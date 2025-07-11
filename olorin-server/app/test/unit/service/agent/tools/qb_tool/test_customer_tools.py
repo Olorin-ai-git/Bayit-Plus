@@ -85,7 +85,9 @@ class TestListCustomersTool:
     ):
         # Arrange
         mock_financial_service_instance = MagicMock()
-        mock_financial_service_instance.get_customers_sync.return_value = mock_customers_data
+        mock_financial_service_instance.get_customers_sync.return_value = (
+            mock_customers_data
+        )
         mock_financial_service_class.return_value = mock_financial_service_instance
 
         tool = ListCustomersTool()
@@ -144,7 +146,9 @@ class TestListCustomersTool:
 
     @pytest.mark.asyncio
     @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
-    async def test_arun_invalid_response(self, mock_financial_service_class, mock_config):
+    async def test_arun_invalid_response(
+        self, mock_financial_service_class, mock_config
+    ):
         # Arrange
         mock_financial_service_instance = MagicMock()
         mock_financial_service_instance.get_customers = AsyncMock(return_value=None)
@@ -158,7 +162,9 @@ class TestListCustomersTool:
 
     @pytest.mark.asyncio
     @patch("app.service.agent.tools.qb_tool.customer_tools.FinancialService")
-    async def test_arun_empty_customers(self, mock_financial_service_class, mock_config):
+    async def test_arun_empty_customers(
+        self, mock_financial_service_class, mock_config
+    ):
         # Arrange
         mock_financial_service_instance = MagicMock()
         mock_financial_service_instance.get_customers = AsyncMock(

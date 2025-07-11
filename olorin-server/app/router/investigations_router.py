@@ -16,15 +16,14 @@ from app.persistence import (
     purge_investigation_cache,
     update_investigation,
 )
-from app.security.auth import require_read, require_write, require_admin, User
+from app.security.auth import User, require_admin, require_read, require_write
 
 investigations_router = APIRouter()
 
 
 @investigations_router.post("/investigation", response_model=InvestigationOut)
 def create_investigation_endpoint(
-    investigation: InvestigationCreate, 
-    current_user: User = Depends(require_write)
+    investigation: InvestigationCreate, current_user: User = Depends(require_write)
 ):
     existing = get_investigation(investigation.id)
     if existing:
@@ -65,9 +64,9 @@ def get_investigation_endpoint(
     "/investigation/{investigation_id}", response_model=InvestigationOut
 )
 def update_investigation_endpoint(
-    investigation_id: str, 
+    investigation_id: str,
     update: InvestigationUpdate,
-    current_user: User = Depends(require_write)
+    current_user: User = Depends(require_write),
 ):
     db_obj = update_investigation(investigation_id, update)
     if not db_obj:
@@ -84,8 +83,7 @@ def update_investigation_endpoint(
 
 @investigations_router.delete("/investigation/{investigation_id}")
 def delete_investigation_endpoint(
-    investigation_id: str,
-    current_user: User = Depends(require_write)
+    investigation_id: str, current_user: User = Depends(require_write)
 ):
     db_obj = delete_investigation(investigation_id)
     if not db_obj:
@@ -95,8 +93,7 @@ def delete_investigation_endpoint(
 
 @investigations_router.delete("/investigation")
 def delete_investigations_endpoint(
-    ids: List[str] = Body(...),
-    current_user: User = Depends(require_write)
+    ids: List[str] = Body(...), current_user: User = Depends(require_write)
 ):
     delete_investigations(ids)
     return {"deleted": True, "ids": ids}

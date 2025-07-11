@@ -20,73 +20,99 @@ export const useFirebaseAnalytics = () => {
   }, []);
 
   // Track investigation events
-  const trackInvestigationEvent = useCallback((eventName: string, investigationId?: string, additionalData?: Record<string, any>) => {
-    if (analytics) {
-      try {
-        logEvent(analytics, eventName, {
-          investigation_id: investigationId,
+  const trackInvestigationEvent = useCallback(
+    (
+      eventName: string,
+      investigationId?: string,
+      additionalData?: Record<string, any>,
+    ) => {
+      if (analytics) {
+        try {
+          logEvent(analytics, eventName, {
+            investigation_id: investigationId,
+            timestamp: new Date().toISOString(),
+            ...additionalData,
+          });
+        } catch (error) {
+          console.warn('Failed to track investigation event:', error);
+        }
+      }
+    },
+    [],
+  );
+
+  // Track user interactions
+  const trackUserInteraction = useCallback(
+    (action: string, category: string, label?: string) => {
+      if (analytics) {
+        logEvent(analytics, 'user_interaction', {
+          action,
+          category,
+          label,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    },
+    [],
+  );
+
+  // Track agent activities
+  const trackAgentActivity = useCallback(
+    (
+      agentName: string,
+      action: string,
+      additionalData?: Record<string, any>,
+    ) => {
+      if (analytics) {
+        logEvent(analytics, 'agent_activity', {
+          agent_name: agentName,
+          action,
           timestamp: new Date().toISOString(),
           ...additionalData,
         });
-      } catch (error) {
-        console.warn('Failed to track investigation event:', error);
       }
-    }
-  }, []);
-
-  // Track user interactions
-  const trackUserInteraction = useCallback((action: string, category: string, label?: string) => {
-    if (analytics) {
-      logEvent(analytics, 'user_interaction', {
-        action,
-        category,
-        label,
-        timestamp: new Date().toISOString(),
-      });
-    }
-  }, []);
-
-  // Track agent activities
-  const trackAgentActivity = useCallback((agentName: string, action: string, additionalData?: Record<string, any>) => {
-    if (analytics) {
-      logEvent(analytics, 'agent_activity', {
-        agent_name: agentName,
-        action,
-        timestamp: new Date().toISOString(),
-        ...additionalData,
-      });
-    }
-  }, []);
+    },
+    [],
+  );
 
   // Track search and filter events
-  const trackSearchEvent = useCallback((searchTerm: string, searchType: string, resultsCount?: number) => {
-    if (analytics) {
-      logEvent(analytics, 'search', {
-        search_term: searchTerm,
-        search_type: searchType,
-        results_count: resultsCount,
-        timestamp: new Date().toISOString(),
-      });
-    }
-  }, []);
+  const trackSearchEvent = useCallback(
+    (searchTerm: string, searchType: string, resultsCount?: number) => {
+      if (analytics) {
+        logEvent(analytics, 'search', {
+          search_term: searchTerm,
+          search_type: searchType,
+          results_count: resultsCount,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    },
+    [],
+  );
 
   // Track feature usage
-  const trackFeatureUsage = useCallback((featureName: string, additionalData?: Record<string, any>) => {
-    if (analytics) {
-      logEvent(analytics, 'feature_usage', {
-        feature_name: featureName,
-        timestamp: new Date().toISOString(),
-        ...additionalData,
-      });
-    }
-  }, []);
+  const trackFeatureUsage = useCallback(
+    (featureName: string, additionalData?: Record<string, any>) => {
+      if (analytics) {
+        logEvent(analytics, 'feature_usage', {
+          feature_name: featureName,
+          timestamp: new Date().toISOString(),
+          ...additionalData,
+        });
+      }
+    },
+    [],
+  );
 
   // Set user properties
-  const setUserAnalyticsProperties = useCallback((properties: Record<string, any>) => {
-    if (analytics) {
-      setUserProperties(analytics, properties);
-    }
-  }, []);
+  const setUserAnalyticsProperties = useCallback(
+    (properties: Record<string, any>) => {
+      if (analytics) {
+        setUserProperties(analytics, properties);
+      }
+    },
+    [],
+  );
 
   // Set user ID
   const setAnalyticsUserId = useCallback((userId: string) => {
@@ -96,22 +122,25 @@ export const useFirebaseAnalytics = () => {
   }, []);
 
   // Track errors
-  const trackError = useCallback((error: Error, errorInfo?: Record<string, any>) => {
-    if (analytics) {
-      try {
-        logEvent(analytics, 'exception', {
-          description: error.message,
-          error_name: error.name,
-          error_stack: error.stack,
-          fatal: false,
-          timestamp: new Date().toISOString(),
-          ...errorInfo,
-        });
-      } catch (analyticsError) {
-        console.warn('Failed to track error to analytics:', analyticsError);
+  const trackError = useCallback(
+    (error: Error, errorInfo?: Record<string, any>) => {
+      if (analytics) {
+        try {
+          logEvent(analytics, 'exception', {
+            description: error.message,
+            error_name: error.name,
+            error_stack: error.stack,
+            fatal: false,
+            timestamp: new Date().toISOString(),
+            ...errorInfo,
+          });
+        } catch (analyticsError) {
+          console.warn('Failed to track error to analytics:', analyticsError);
+        }
       }
-    }
-  }, []);
+    },
+    [],
+  );
 
   return {
     trackPageView,
@@ -124,4 +153,4 @@ export const useFirebaseAnalytics = () => {
     setAnalyticsUserId,
     trackError,
   };
-}; 
+};

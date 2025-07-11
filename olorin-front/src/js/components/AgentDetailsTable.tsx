@@ -396,7 +396,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       raw_splunk_results = [],
       extracted_device_signals = [],
       device_signal_risk_assessment,
-  
+
       di_tool_warning,
       llm_thoughts,
       // Legacy fields for backward compatibility
@@ -404,7 +404,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       device_history,
       risk_assessment,
       di_bb,
-      
+
       ...rest
     } = details;
 
@@ -420,7 +420,7 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
       ? device_history
       : [];
     const di_bb_object = typeof di_bb === 'object' ? di_bb : {};
-    
+
     // const anomalies_array = Array.isArray(details.anomalies)
     //   ? details.anomalies
     //   : [];
@@ -595,7 +595,9 @@ const AgentDetailsTable: React.FC<AgentDetailsTableProps> = ({
             <div className="font-medium text-gray-900 mb-2">LLM Thoughts</div>
             <div className="pl-4 border-l-2 border-blue-300">
               <div className="text-blue-800">
-                {typeof llm_thoughts === 'string' ? llm_thoughts : JSON.stringify(llm_thoughts)}
+                {typeof llm_thoughts === 'string'
+                  ? llm_thoughts
+                  : JSON.stringify(llm_thoughts)}
               </div>
             </div>
           </div>

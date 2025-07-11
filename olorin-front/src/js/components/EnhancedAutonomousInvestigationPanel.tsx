@@ -23,7 +23,9 @@ interface EnhancedAutonomousInvestigationPanelProps {
   setStepStates: (steps: InvestigationStep[]) => void;
 }
 
-const EnhancedAutonomousInvestigationPanel: React.FC<EnhancedAutonomousInvestigationPanelProps> = ({
+const EnhancedAutonomousInvestigationPanel: React.FC<
+  EnhancedAutonomousInvestigationPanelProps
+> = ({
   autonomousMode,
   stepStates,
   userId,
@@ -42,39 +44,37 @@ const EnhancedAutonomousInvestigationPanel: React.FC<EnhancedAutonomousInvestiga
 }) => {
   const analytics = useFirebaseAnalytics();
   const handleInvestigationComplete = () => {
-    addLog(
-      'Autonomous investigation completed successfully',
-      LogLevel.SUCCESS,
-    );
+    addLog('Autonomous investigation completed successfully', LogLevel.SUCCESS);
     setIsInvestigationClosed(true);
     setInvestigationEndTime(new Date());
 
     // Track autonomous investigation completion
-    analytics.trackInvestigationEvent('autonomous_investigation_completed', investigationIdState, {
-      user_id: userId,
-      input_type: selectedInputType,
-      time_range: timeRange,
-      selected_steps: selectedInvestigationSteps.map(step => step.id),
-      autonomous_mode: true,
-      investigation_duration: investigationStartTime ? Date.now() - investigationStartTime.getTime() : null,
-    });
+    analytics.trackInvestigationEvent(
+      'autonomous_investigation_completed',
+      investigationIdState,
+      {
+        user_id: userId,
+        input_type: selectedInputType,
+        time_range: timeRange,
+        selected_steps: selectedInvestigationSteps.map((step) => step.id),
+        autonomous_mode: true,
+        investigation_duration: investigationStartTime
+          ? Date.now() - investigationStartTime.getTime()
+          : null,
+      },
+    );
 
     // Mark all steps as completed
-    const updatedSteps = selectedInvestigationSteps.map(
-      (step) => ({
-        ...step,
-        status: 'COMPLETED' as any,
-        timestamp: new Date().toISOString(),
-      }),
-    );
+    const updatedSteps = selectedInvestigationSteps.map((step) => ({
+      ...step,
+      status: 'COMPLETED' as any,
+      timestamp: new Date().toISOString(),
+    }));
     setStepStates(updatedSteps);
   };
 
   const handleInvestigationStart = () => {
-    addLog(
-      'Starting autonomous investigation...',
-      LogLevel.INFO,
-    );
+    addLog('Starting autonomous investigation...', LogLevel.INFO);
   };
 
   const handleLog = (logEntry: any) => {
@@ -93,7 +93,9 @@ const EnhancedAutonomousInvestigationPanel: React.FC<EnhancedAutonomousInvestiga
         <Box sx={{ display: autonomousMode ? 'block' : 'none' }}>
           <AutonomousInvestigationPanel
             entityId={userId}
-            entityType={selectedInputType === 'userId' ? 'user_id' : 'device_id'}
+            entityType={
+              selectedInputType === 'userId' ? 'user_id' : 'device_id'
+            }
             investigationId={investigationId || ''}
             isInvestigating={isLoading && autonomousMode}
             onLog={handleLog}
@@ -106,10 +108,12 @@ const EnhancedAutonomousInvestigationPanel: React.FC<EnhancedAutonomousInvestiga
 
       {/* Autonomous Mode: Show risk scores */}
       <Fade in={autonomousMode && stepStates.length > 0} timeout={600}>
-        <Box sx={{ 
-          mb: 3,
-          display: (autonomousMode && stepStates.length > 0) ? 'block' : 'none'
-        }}>
+        <Box
+          sx={{
+            mb: 3,
+            display: autonomousMode && stepStates.length > 0 ? 'block' : 'none',
+          }}
+        >
           {autonomousMode && stepStates.length > 0 && (
             <RiskScoreDisplay steps={stepStates} />
           )}
@@ -119,4 +123,4 @@ const EnhancedAutonomousInvestigationPanel: React.FC<EnhancedAutonomousInvestiga
   );
 };
 
-export default EnhancedAutonomousInvestigationPanel; 
+export default EnhancedAutonomousInvestigationPanel;

@@ -37,6 +37,7 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
   const riskStep = steps.find((step) => step.id === InvestigationStepId.RISK);
   const rawOverallRiskScore = riskStep?.details?.risk_score || 0;
   const llmThoughts = riskStep?.details?.llm_thoughts || '';
+  const remediationActions = riskStep?.details?.remediationActions || [];
 
   // Calculate individual domain scores from steps
   const domainScores = steps
@@ -44,17 +45,20 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
       (step) =>
         step.id !== InvestigationStepId.INIT &&
         step.id !== InvestigationStepId.RISK &&
-        step.status === StepStatus.COMPLETED
+        step.status === StepStatus.COMPLETED,
     )
     .map((step) => {
       const rawScore = step.details?.risk_score || 0;
       // Convert decimal risk scores (0.85) to percentage (85) with 2 decimal places
-      const score = rawScore <= 1 ? Math.round(rawScore * 10000) / 100 : Math.round(rawScore * 100) / 100;
-      
+      const score =
+        rawScore <= 1
+          ? Math.round(rawScore * 10000) / 100
+          : Math.round(rawScore * 100) / 100;
+
       return {
         name: step.agent || step.title,
         score: score,
-        llmThoughts: step.details?.llm_thoughts || ''
+        llmThoughts: step.details?.llm_thoughts || '',
       };
     });
 
@@ -62,17 +66,25 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
   let overallRiskScore = 0;
   if (rawOverallRiskScore > 0) {
     // Use Risk Assessment Agent's score
-    overallRiskScore = rawOverallRiskScore <= 1 ? Math.round(rawOverallRiskScore * 10000) / 100 : Math.round(rawOverallRiskScore * 100) / 100;
+    overallRiskScore =
+      rawOverallRiskScore <= 1
+        ? Math.round(rawOverallRiskScore * 10000) / 100
+        : Math.round(rawOverallRiskScore * 100) / 100;
   } else if (domainScores.length > 0) {
     // Calculate average from completed individual agents
-    const totalScore = domainScores.reduce((sum, domain) => sum + domain.score, 0);
-    overallRiskScore = Math.round((totalScore / domainScores.length) * 100) / 100;
+    const totalScore = domainScores.reduce(
+      (sum, domain) => sum + domain.score,
+      0,
+    );
+    overallRiskScore =
+      Math.round((totalScore / domainScores.length) * 100) / 100;
   }
 
   // Determine risk level based on score
   const getRiskLevel = (score: number) => {
     if (score >= 70) return { label: 'HIGH', color: theme.palette.error.main };
-    if (score >= 40) return { label: 'MEDIUM', color: theme.palette.warning.main };
+    if (score >= 40)
+      return { label: 'MEDIUM', color: theme.palette.warning.main };
     return { label: 'LOW', color: theme.palette.success.main };
   };
 
@@ -81,13 +93,20 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
     const tailwindColor = AGENT_COLORS[agentName] || DEFAULT_AGENT_COLOR;
     // Convert Tailwind colors to Material-UI theme colors
     switch (tailwindColor) {
-      case 'text-purple-600': return theme.palette.primary.main;
-      case 'text-indigo-600': return '#3f51b5'; // indigo
-      case 'text-pink-600': return '#e91e63'; // pink
-      case 'text-orange-600': return '#ff9800'; // orange
-      case 'text-red-600': return theme.palette.error.main;
-      case 'text-blue-600': return theme.palette.info.main;
-      default: return theme.palette.text.primary;
+      case 'text-purple-600':
+        return theme.palette.primary.main;
+      case 'text-indigo-600':
+        return '#3f51b5'; // indigo
+      case 'text-pink-600':
+        return '#e91e63'; // pink
+      case 'text-orange-600':
+        return '#ff9800'; // orange
+      case 'text-red-600':
+        return theme.palette.error.main;
+      case 'text-blue-600':
+        return theme.palette.info.main;
+      default:
+        return theme.palette.text.primary;
     }
   };
 
@@ -106,19 +125,24 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
   // If there are no domain scores and no overall risk assessment, show loading/placeholder
   if (domainScores.length === 0 && !riskStep) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        mb: 4,
-        p: 3,
-        backgroundColor: 'background.paper',
-        borderRadius: 2
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          mb: 4,
+          p: 3,
+          backgroundColor: 'background.paper',
+          borderRadius: 2,
+        }}
+      >
         <Typography variant="h6" sx={{ color: 'text.secondary', mb: 2 }}>
           Risk Assessment Pending...
         </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+        <Typography
+          variant="body2"
+          sx={{ color: 'text.secondary', textAlign: 'center' }}
+        >
           Scorecards will appear as each agent completes their analysis
         </Typography>
       </Box>
@@ -127,13 +151,15 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
 
   return (
     <>
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        mb: 4,
-        mx: 'auto'
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          mb: 4,
+          mx: 'auto',
+        }}
+      >
         {/* Overall Risk Score Card - show if we have domain scores or a risk step */}
         {(domainScores.length > 0 || riskStep) && overallRiskScore >= 0 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
@@ -142,42 +168,67 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
                 sx={{
                   width: 192,
                   textAlign: 'center',
-                  cursor: llmThoughts ? 'pointer' : 'default',
+                  cursor:
+                    llmThoughts || remediationActions.length > 0
+                      ? 'pointer'
+                      : 'default',
                   transition: 'all 0.3s ease',
                   border: `2px solid ${getAgentColor('Risk Assessment Agent')}`,
                   boxShadow: 2,
-                  '&:hover': llmThoughts ? {
-                    transform: 'translateY(-2px)',
-                    boxShadow: 4,
-                    borderWidth: '3px'
-                  } : {}
+                  '&:hover':
+                    llmThoughts || remediationActions.length > 0
+                      ? {
+                          transform: 'translateY(-2px)',
+                          boxShadow: 4,
+                          borderWidth: '3px',
+                        }
+                      : {},
                 }}
                 onClick={() => {
-                  if (llmThoughts) {
-                    openDetailsModal('AI Risk Assessment Analysis', llmThoughts);
+                  if (llmThoughts || remediationActions.length > 0) {
+                    let content = '';
+                    if (llmThoughts) {
+                      content += llmThoughts;
+                    }
+                    if (remediationActions.length > 0) {
+                      content += '\n\nRecommended Remediation Actions:\n';
+                      remediationActions.forEach(
+                        (action: string, index: number) => {
+                          content += `${index + 1}. ${action}\n`;
+                        },
+                      );
+                    }
+                    openDetailsModal('AI Risk Assessment Analysis', content);
                   }
                 }}
               >
                 <CardContent sx={{ p: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, mb: 1, color: getAgentColor('Risk Assessment Agent') }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 1,
+                      color: getAgentColor('Risk Assessment Agent'),
+                    }}
+                  >
                     Overall Risk Assessment
                   </Typography>
-                  <Typography 
-                    variant="h4" 
-                    sx={{ 
-                      fontWeight: 700, 
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
                       color: getAgentColor('Risk Assessment Agent'),
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     {overallRiskScore}
                   </Typography>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
+                  <Typography
+                    variant="caption"
+                    sx={{
                       color: getAgentColor('Risk Assessment Agent'),
                       fontWeight: 600,
-                      letterSpacing: 0.5
+                      letterSpacing: 0.5,
                     }}
                   >
                     {overallRisk.label} RISK
@@ -190,7 +241,14 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
 
         {/* Domain Scores - show if we have any domain scores */}
         {domainScores.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, position: 'relative' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 3,
+              position: 'relative',
+            }}
+          >
             {domainScores.map((domain, index) => {
               // const risk = getRiskLevel(domain.score);
               const agentColor = getAgentColor(domain.name);
@@ -209,11 +267,13 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
                       border: `2px solid ${agentColor}`,
                       cursor: domain.llmThoughts ? 'pointer' : 'default',
                       transition: 'all 0.3s ease',
-                      '&:hover': domain.llmThoughts ? {
-                        transform: 'translateY(-4px)',
-                        boxShadow: 4,
-                        borderWidth: '3px'
-                      } : {}
+                      '&:hover': domain.llmThoughts
+                        ? {
+                            transform: 'translateY(-4px)',
+                            boxShadow: 4,
+                            borderWidth: '3px',
+                          }
+                        : {},
                     }}
                     onClick={() => {
                       if (domain.llmThoughts) {
@@ -225,22 +285,28 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
                     }}
                   >
                     <CardContent sx={{ p: 2 }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
-                            fontWeight: 600, 
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
                             mb: 1,
-                            color: agentColor
+                            color: agentColor,
                           }}
                         >
                           {domain.name}
                         </Typography>
-                        <Typography 
-                          variant="h4" 
-                          sx={{ 
+                        <Typography
+                          variant="h4"
+                          sx={{
                             fontWeight: 700,
-                            color: agentColor
+                            color: agentColor,
                           }}
                         >
                           {domain.score}
@@ -268,7 +334,9 @@ const RiskScoreDisplay: React.FC<RiskScoreDisplayProps> = ({ steps }) => {
               {selectedDetails.title}
             </DialogTitle>
             <DialogContent>
-              <Typography sx={{ whiteSpace: 'pre-line', color: 'text.primary' }}>
+              <Typography
+                sx={{ whiteSpace: 'pre-line', color: 'text.primary' }}
+              >
                 {selectedDetails.content}
               </Typography>
             </DialogContent>

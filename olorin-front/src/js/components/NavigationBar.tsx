@@ -8,7 +8,9 @@ interface NavigationBarProps {
   activeTab: 'investigation' | 'investigations' | 'settings' | 'rag';
   className?: string;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onTabChange: (tab: 'investigation' | 'investigations' | 'settings' | 'rag') => void;
+  onTabChange: (
+    tab: 'investigation' | 'investigations' | 'settings' | 'rag',
+  ) => void;
 }
 
 /**

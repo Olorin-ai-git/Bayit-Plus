@@ -219,7 +219,9 @@ class TestFinancialService:
     def test_raise_exception_on_error_with_error(self, error_response_data):
         # Act & Assert
         with pytest.raises(FinancialApiError):
-            FinancialService.raise_exception_on_error("Test message", error_response_data)
+            FinancialService.raise_exception_on_error(
+                "Test message", error_response_data
+            )
 
     def test_raise_exception_on_error_without_error(self, mock_response_data):
         # Act - Should not raise exception

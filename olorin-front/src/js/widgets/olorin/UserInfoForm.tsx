@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Typography, Box, Alert } from '@mui/material';
+import {
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Typography,
+  Box,
+  Alert,
+} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 // Simplified interfaces
@@ -46,14 +56,14 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ sandbox, onSubmit }) => {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       sandbox?.logger?.log(`User info submitted: ${userId} (${entityType})`);
-      
+
       if (onSubmit) {
         onSubmit({ userId, entityType });
       }
-      
+
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (error) {
@@ -97,11 +107,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ sandbox, onSubmit }) => {
         {isSubmitting ? 'Submitting...' : 'Submit'}
       </Button>
       {isSuccess && (
-        <Alert 
-          severity="success" 
-          icon={<CheckCircleIcon />}
-          sx={{ mt: 1 }}
-        >
+        <Alert severity="success" icon={<CheckCircleIcon />} sx={{ mt: 1 }}>
           Successfully submitted!
         </Alert>
       )}

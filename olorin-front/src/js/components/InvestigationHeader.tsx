@@ -113,20 +113,37 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
   };
 
   return (
-    <Paper sx={{ p: 3, mb: 3, backgroundColor: 'background.paper' }} elevation={1}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+    <Paper
+      sx={{ p: 3, mb: 3, backgroundColor: 'background.paper' }}
+      elevation={1}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          mb: 3,
+        }}
+      >
         <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ fontWeight: 700, color: 'text.primary' }}
+          >
             Fraud Investigation System
           </Typography>
           <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
             Investigation ID:{' '}
-            <Typography component="span" sx={{ color: 'primary.main', fontWeight: 500 }}>
+            <Typography
+              component="span"
+              sx={{ color: 'primary.main', fontWeight: 500 }}
+            >
               {currentInvestigationId}
             </Typography>
           </Typography>
         </Box>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel id="time-range-label">Time Range</InputLabel>
@@ -144,7 +161,7 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
               ))}
             </Select>
           </FormControl>
-          
+
           <Fade in={!!startTime} timeout={400}>
             <Box sx={{ display: startTime ? 'block' : 'none' }}>
               {startTime && (
@@ -158,30 +175,30 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
               )}
             </Box>
           </Fade>
-          
+
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="Edit Steps">
               <IconButton
                 onClick={() => setIsEditModalOpen(true)}
                 color="default"
                 disabled={isLoading}
-                sx={{ 
+                sx={{
                   backgroundColor: 'action.hover',
-                  '&:hover': { backgroundColor: 'action.selected' }
+                  '&:hover': { backgroundColor: 'action.selected' },
                 }}
                 data-testid="edit-steps-btn"
               >
                 <PencilSquareIcon style={{ width: 20, height: 20 }} />
               </IconButton>
             </Tooltip>
-            
+
             <Tooltip title="Toggle Chat Sidebar">
               <IconButton
                 onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}
                 color="default"
-                sx={{ 
+                sx={{
                   backgroundColor: 'action.hover',
-                  '&:hover': { backgroundColor: 'action.selected' }
+                  '&:hover': { backgroundColor: 'action.selected' },
                 }}
                 data-testid="toggle-chat-btn"
               >
@@ -191,14 +208,14 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
                 )}
               </IconButton>
             </Tooltip>
-            
+
             <Tooltip title="Toggle Logs Sidebar">
               <IconButton
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 color="default"
-                sx={{ 
+                sx={{
                   backgroundColor: 'action.hover',
-                  '&:hover': { backgroundColor: 'action.selected' }
+                  '&:hover': { backgroundColor: 'action.selected' },
                 }}
                 data-testid="toggle-logs-btn"
               >
@@ -214,16 +231,28 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
       <Collapse in={!isLoading} timeout={500}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Investigation Mode Toggle */}
-          <Box sx={{ 
-            p: 2, 
-            background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
-            border: `1px solid ${theme.palette.primary.light}30`,
-            borderRadius: 1,
-            transition: 'all 0.3s ease-in-out'
-          }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              background: `linear-gradient(135deg, ${theme.palette.primary.light}10 0%, ${theme.palette.primary.main}15 100%)`,
+              border: `1px solid ${theme.palette.primary.light}30`,
+              borderRadius: 1,
+              transition: 'all 0.3s ease-in-out',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 2,
+              }}
+            >
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: 'text.primary' }}
+                >
                   Investigation Mode
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -238,7 +267,7 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
                   sx={{
                     fontWeight: 500,
                     color: !autonomousMode ? 'primary.main' : 'text.secondary',
-                    transition: 'color 0.2s ease-in-out'
+                    transition: 'color 0.2s ease-in-out',
                   }}
                 >
                   Manual
@@ -250,8 +279,8 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
                   color="secondary"
                   sx={{
                     '& .MuiSwitch-thumb': {
-                      transition: 'all 0.2s ease-in-out'
-                    }
+                      transition: 'all 0.2s ease-in-out',
+                    },
                   }}
                 />
                 <Typography
@@ -259,18 +288,27 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
                   sx={{
                     fontWeight: 500,
                     color: autonomousMode ? 'primary.main' : 'text.secondary',
-                    transition: 'color 0.2s ease-in-out'
+                    transition: 'color 0.2s ease-in-out',
                   }}
                 >
                   Autonomous
                 </Typography>
               </Box>
             </Box>
-            
+
             {/* Entity Type Toggle */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
               <Box>
-                <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 500, color: 'text.primary' }}
+                >
                   Entity Type
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -284,29 +322,39 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
                   variant="body2"
                   sx={{
                     fontWeight: 500,
-                    color: selectedInputType === 'userId' ? 'primary.main' : 'text.secondary',
-                    transition: 'color 0.2s ease-in-out'
+                    color:
+                      selectedInputType === 'userId'
+                        ? 'primary.main'
+                        : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out',
                   }}
                 >
                   User ID
                 </Typography>
                 <Switch
                   checked={selectedInputType === 'deviceId'}
-                  onChange={() => setSelectedInputType(selectedInputType === 'userId' ? 'deviceId' : 'userId')}
+                  onChange={() =>
+                    setSelectedInputType(
+                      selectedInputType === 'userId' ? 'deviceId' : 'userId',
+                    )
+                  }
                   disabled={isLoading}
                   color="primary"
                   sx={{
                     '& .MuiSwitch-thumb': {
-                      transition: 'all 0.2s ease-in-out'
-                    }
+                      transition: 'all 0.2s ease-in-out',
+                    },
                   }}
                 />
                 <Typography
                   variant="body2"
                   sx={{
                     fontWeight: 500,
-                    color: selectedInputType === 'deviceId' ? 'primary.main' : 'text.secondary',
-                    transition: 'color 0.2s ease-in-out'
+                    color:
+                      selectedInputType === 'deviceId'
+                        ? 'primary.main'
+                        : 'text.secondary',
+                    transition: 'color 0.2s ease-in-out',
                   }}
                 >
                   Device ID
@@ -335,7 +383,7 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
               variant="outlined"
               size="medium"
             />
-            
+
             <Button
               variant="contained"
               color="primary"
@@ -351,81 +399,97 @@ const InvestigationHeader: React.FC<Omit<Props, 'useMock'>> = ({
       </Collapse>
 
       <Fade in={isLoading} timeout={300}>
-        <Box sx={{ 
-          display: isLoading ? 'flex' : 'none',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 3,
-          py: 1.5,
-          minHeight: 56 // Maintain some height to prevent layout shift
-        }}>
+        <Box
+          sx={{
+            display: isLoading ? 'flex' : 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 3,
+            py: 1.5,
+            minHeight: 56, // Maintain some height to prevent layout shift
+          }}
+        >
           {/* Entity Type Label when collapsed */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1.5, 
-            px: 2,
-            py: 0.5,
-            backgroundColor: 'action.hover',
-            borderRadius: 1,
-            border: '1px solid',
-            borderColor: 'divider'
-          }}>
-            <Typography 
-              variant="caption" 
-              sx={{ 
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              px: 2,
+              py: 0.5,
+              backgroundColor: 'action.hover',
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
                 color: 'text.secondary',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: 0.3,
-                fontSize: 'inherit'
+                fontSize: 'inherit',
               }}
             >
               Entity
             </Typography>
-            <Box sx={{
-              px: 1,
-              py: 0.25,
-              backgroundColor: 'primary.main',
-              borderRadius: 0.5,
-              color: 'primary.contrastText'
-            }}>
-              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: 'inherit' }}>
+            <Box
+              sx={{
+                px: 1,
+                py: 0.25,
+                backgroundColor: 'primary.main',
+                borderRadius: 0.5,
+                color: 'primary.contrastText',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 600, fontSize: 'inherit' }}
+              >
                 {selectedInputType === 'userId' ? 'User ID' : 'Device ID'}
               </Typography>
             </Box>
-            
-            <Box sx={{ 
-              width: '1px', 
-              height: '16px', 
-              backgroundColor: 'divider' 
-            }} />
-            
-            <Typography 
-              variant="caption" 
-              sx={{ 
+
+            <Box
+              sx={{
+                width: '1px',
+                height: '16px',
+                backgroundColor: 'divider',
+              }}
+            />
+
+            <Typography
+              variant="caption"
+              sx={{
                 color: 'text.secondary',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: 0.3,
-                fontSize: 'inherit'
+                fontSize: 'inherit',
               }}
             >
               Mode
             </Typography>
-            <Box sx={{
-              px: 1,
-              py: 0.25,
-              backgroundColor: 'primary.main',
-              borderRadius: 0.5,
-              color: 'primary.contrastText'
-            }}>
-              <Typography variant="caption" sx={{ fontWeight: 600, fontSize: 'inherit' }}>
+            <Box
+              sx={{
+                px: 1,
+                py: 0.25,
+                backgroundColor: 'primary.main',
+                borderRadius: 0.5,
+                color: 'primary.contrastText',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 600, fontSize: 'inherit' }}
+              >
                 {autonomousMode ? 'Autonomous' : 'Manual'}
               </Typography>
             </Box>
           </Box>
-          
+
           <Button
             variant="contained"
             color="error"

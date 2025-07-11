@@ -9,7 +9,9 @@ import { RUM_FCI_START_REQUEST } from './constants';
 const onRequestStart = (): NonNullable<RestClientConfig['onRequestStart']> =>
   function onRequestStartFn(this: WithRUMInteractionName, action: string) {
     // Simplified version without performance tracking
-    console.log(`[RUM] Starting request: ${this.getRUMInteractionName(action)}`);
+    console.log(
+      `[RUM] Starting request: ${this.getRUMInteractionName(action)}`,
+    );
   };
 
 export default onRequestStart;

@@ -224,7 +224,9 @@ export const TableView: React.FC<BaseViewProps> = ({
               onChange={(e) => handleSearch(e.target.value)}
               className="min-w-64"
               InputProps={{
-                startAdornment: <SearchIcon className="w-4 h-4 text-gray-400 mr-2" />,
+                startAdornment: (
+                  <SearchIcon className="w-4 h-4 text-gray-400 mr-2" />
+                ),
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {

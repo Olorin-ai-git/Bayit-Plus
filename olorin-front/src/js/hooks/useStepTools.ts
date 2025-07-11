@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from './useSettings';
 import { fetchAvailableTools } from '../services/ToolsService';
-import { 
+import {
   getToolsForStep as getToolsForStepService,
   updateStepTools,
   hasStepToolOverrides,
   getStepToolsFromSession,
-  StepToolsMapping
+  StepToolsMapping,
 } from '../services/StepToolsService';
 
 /**
  * Hook to manage step-specific tool selections with server settings integration.
  * This integrates with the global settings system and uses session storage for temporary overrides.
- * 
+ *
  * @returns [getToolsForStep, setToolsForStep, availableTools, isLoading, error, hasOverrides]
  */
 export function useStepTools(): [
@@ -21,7 +21,7 @@ export function useStepTools(): [
   string[],
   boolean,
   string | null,
-  (stepId: string) => boolean
+  (stepId: string) => boolean,
 ] {
   const [settings] = useSettings();
   const [availableTools, setAvailableTools] = useState<string[]>([]);
@@ -34,10 +34,9 @@ export function useStepTools(): [
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const tools = await fetchAvailableTools();
         setAvailableTools(tools);
-        
       } catch (err) {
         console.error('Error loading tools:', err);
         setError(err instanceof Error ? err.message : 'Failed to load tools');
@@ -79,6 +78,6 @@ export function useStepTools(): [
     availableTools,
     isLoading,
     error,
-    hasOverrides
+    hasOverrides,
   ];
-} 
+}

@@ -168,7 +168,7 @@ const RAGPage: React.FC = () => {
   useEffect(() => {
     if (isDemoModeActive()) {
       const elaboratePrompt = `Analyze multi-vector fraud patterns for high-risk user accounts showing the following investigation criteria: users with risk scores above 0.7, multiple device fingerprints from different geographical locations within 24 hours, transaction amounts exceeding $5,000, and failed identity verification attempts. Include detailed breakdown by user demographics, transaction patterns, device characteristics, geographical distribution, and risk mitigation recommendations with confidence scores and data sources.`;
-      
+
       setCurrentMessage(elaboratePrompt);
       console.log('Demo mode: Pre-populated elaborate investigation prompt');
     }
@@ -277,9 +277,9 @@ const RAGPage: React.FC = () => {
       }
 
       // Handle both array format and object with prompts property
-      const prompts = Array.isArray(data) ? data : (data.prompts || []);
+      const prompts = Array.isArray(data) ? data : data.prompts || [];
       setPreparedPrompts(prompts);
-      
+
       console.log('Loaded prepared prompts:', prompts.length);
     } catch (error) {
       console.error('Failed to load prepared prompts:', error);
@@ -348,19 +348,34 @@ const RAGPage: React.FC = () => {
         content: responseContent,
         timestamp: new Date(),
         natural_query: currentMessage,
-        translated_query: naturalQueryResponse.translated_query || naturalQueryResponse.translation,
+        translated_query:
+          naturalQueryResponse.translated_query ||
+          naturalQueryResponse.translation,
         query_metadata: {
           execution_time: naturalQueryResponse.execution_time,
-          result_count: naturalQueryResponse.result_count || (naturalQueryResponse.additional_data?.sources?.length || 0),
-          sources: naturalQueryResponse.additional_data?.sources || naturalQueryResponse.sources || [],
+          result_count:
+            naturalQueryResponse.result_count ||
+            naturalQueryResponse.additional_data?.sources?.length ||
+            0,
+          sources:
+            naturalQueryResponse.additional_data?.sources ||
+            naturalQueryResponse.sources ||
+            [],
           confidence: naturalQueryResponse.confidence,
         },
       };
 
       // Check if structured data is available from API response first
-      const apiStructuredData = naturalQueryResponse.additional_data?.structured_data || naturalQueryResponse.structured_data;
-      
-      if (apiStructuredData && apiStructuredData.data && Array.isArray(apiStructuredData.data) && apiStructuredData.data.length > 0) {
+      const apiStructuredData =
+        naturalQueryResponse.additional_data?.structured_data ||
+        naturalQueryResponse.structured_data;
+
+      if (
+        apiStructuredData &&
+        apiStructuredData.data &&
+        Array.isArray(apiStructuredData.data) &&
+        apiStructuredData.data.length > 0
+      ) {
         // Use structured data from API response
         assistantMessage.structured_data = {
           data: apiStructuredData.data,
@@ -369,8 +384,8 @@ const RAGPage: React.FC = () => {
             confidence: naturalQueryResponse.confidence || 0.8,
             total_count: apiStructuredData.data.length,
             field_mapping: apiStructuredData.field_mapping || {},
-            source_info: apiStructuredData.source_info || {}
-          }
+            source_info: apiStructuredData.source_info || {},
+          },
         };
 
         // Set default view mode to table for structured data
@@ -563,8 +578,14 @@ const RAGPage: React.FC = () => {
         translated_query: editedTranslatedQuery,
         query_metadata: {
           execution_time: queryResponse.execution_time,
-          result_count: queryResponse.result_count || (queryResponse.additional_data?.sources?.length || 0),
-          sources: queryResponse.additional_data?.sources || queryResponse.sources || [],
+          result_count:
+            queryResponse.result_count ||
+            queryResponse.additional_data?.sources?.length ||
+            0,
+          sources:
+            queryResponse.additional_data?.sources ||
+            queryResponse.sources ||
+            [],
           confidence: queryResponse.confidence,
         },
       };
@@ -719,8 +740,6 @@ const RAGPage: React.FC = () => {
   const getCurrentViewMode = (messageId: string): ViewMode => {
     return messageViewModes[messageId] || 'chat';
   };
-
-
 
   const handleExport = (format: string, messageId?: string, data?: any) => {
     let exportData = data;
@@ -1048,7 +1067,6 @@ const RAGPage: React.FC = () => {
                   Show Prompts
                 </Button>
               )}
-
             </div>
           </div>
         </div>
@@ -1099,7 +1117,10 @@ const RAGPage: React.FC = () => {
             {chatMessages.length === 0 && (
               <div className="text-center py-16">
                 <div className="bg-white rounded-full p-4 w-24 h-24 mx-auto mb-6 shadow-sm">
-                  <PsychologyIcon className="text-blue-500 mx-auto" style={{ fontSize: '3.5rem' }} />
+                  <PsychologyIcon
+                    className="text-blue-500 mx-auto"
+                    style={{ fontSize: '3.5rem' }}
+                  />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-700 mb-3">
                   Start a Conversation
@@ -1207,14 +1228,17 @@ const RAGPage: React.FC = () => {
                               {/* Copy Button for Table View */}
                               <div className="flex items-center justify-between">
                                 <div className="text-sm font-medium text-gray-700">
-                                  Table Data ({message.structured_data.data.length} records)
+                                  Table Data (
+                                  {message.structured_data.data.length} records)
                                 </div>
                                 <Button
                                   variant="outlined"
                                   size="small"
                                   startIcon={<CopyIcon />}
                                   onClick={() => {
-                                    const csvData = convertToCSV(message.structured_data!.data);
+                                    const csvData = convertToCSV(
+                                      message.structured_data!.data,
+                                    );
                                     copyToClipboard(csvData);
                                   }}
                                   className="text-xs"
@@ -1222,7 +1246,7 @@ const RAGPage: React.FC = () => {
                                   Copy Table Data
                                 </Button>
                               </div>
-                              
+
                               {/* Table View */}
                               <TableView
                                 message={message}
@@ -1270,7 +1294,11 @@ const RAGPage: React.FC = () => {
                                   variant="text"
                                   size="small"
                                   startIcon={<CopyIcon />}
-                                  onClick={() => copyToClipboard(JSON.stringify(message, null, 2))}
+                                  onClick={() =>
+                                    copyToClipboard(
+                                      JSON.stringify(message, null, 2),
+                                    )
+                                  }
                                   className="text-xs"
                                 >
                                   Copy
@@ -1291,13 +1319,15 @@ const RAGPage: React.FC = () => {
                                   variant="outlined"
                                   size="small"
                                   startIcon={<CopyIcon />}
-                                  onClick={() => copyToClipboard(message.content)}
+                                  onClick={() =>
+                                    copyToClipboard(message.content)
+                                  }
                                   className="text-xs"
                                 >
                                   Copy Response
                                 </Button>
                               </div>
-                              
+
                               {/* Enhanced Chat View - Better formatting for structured data */}
                               {message.structured_data ? (
                                 <div className="space-y-4">
@@ -1357,23 +1387,26 @@ const RAGPage: React.FC = () => {
                       )}
 
                       {/* Sources */}
-                      {message.query_metadata?.sources && message.query_metadata.sources.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <div className="text-sm font-medium mb-2">
-                            Sources:
+                      {message.query_metadata?.sources &&
+                        message.query_metadata.sources.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-gray-200">
+                            <div className="text-sm font-medium mb-2">
+                              Sources:
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {message.query_metadata.sources.map(
+                                (source, idx) => (
+                                  <Chip
+                                    key={idx}
+                                    label={source}
+                                    size="small"
+                                    className="text-xs bg-blue-100 text-blue-800"
+                                  />
+                                ),
+                              )}
+                            </div>
                           </div>
-                          <div className="flex flex-wrap gap-1">
-                            {message.query_metadata.sources.map((source, idx) => (
-                              <Chip
-                                key={idx}
-                                label={source}
-                                size="small"
-                                className="text-xs bg-blue-100 text-blue-800"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>
@@ -1504,7 +1537,10 @@ const RAGPage: React.FC = () => {
                       <h4 className="font-semibold text-lg capitalize">
                         {mapping.category}
                       </h4>
-                      <Chip size="small" label={mapping.fields.length.toString()} />
+                      <Chip
+                        size="small"
+                        label={mapping.fields.length.toString()}
+                      />
                     </div>
                     <div className="space-y-1">
                       {mapping.fields.map((field) => (
@@ -1640,7 +1676,9 @@ const RAGPage: React.FC = () => {
             <div className="flex items-center gap-3">
               <TableIcon className="text-2xl" />
               <div>
-                <h2 className="text-xl font-bold">Data Analysis & Visualization</h2>
+                <h2 className="text-xl font-bold">
+                  Data Analysis & Visualization
+                </h2>
                 <p className="text-blue-100 text-sm">
                   Interactive tables, charts, and data exploration tools
                 </p>
@@ -1797,7 +1835,6 @@ const RAGPage: React.FC = () => {
                 Send queries that return structured data to see enhanced table
                 analysis here
               </Typography>
-
             </CardContent>
           </Card>
         ) : (
@@ -1816,7 +1853,9 @@ const RAGPage: React.FC = () => {
                         {dataSet.data.length} Records
                       </Typography>
                       <Chip
-                        label={`${Math.round(dataSet.confidence * 100)}% Confidence`}
+                        label={`${Math.round(
+                          dataSet.confidence * 100,
+                        )}% Confidence`}
                         size="small"
                         className={`!font-medium ${
                           dataSet.confidence >= 0.8
@@ -1885,63 +1924,81 @@ const RAGPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ 
-      height: 'calc(100vh - 16px)', // Full viewport height minus padding
-      backgroundColor: 'background.default',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: 0,
-      overflow: 'hidden',
-      p: 1 // Small padding around the entire layout
-    }}>
+    <Box
+      sx={{
+        height: 'calc(100vh - 16px)', // Full viewport height minus padding
+        backgroundColor: 'background.default',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden',
+        p: 1, // Small padding around the entire layout
+      }}
+    >
       {/* Main content area */}
-      <Paper 
+      <Paper
         elevation={3}
-        sx={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column',
-          height: '100%', 
-          minHeight: 0,
-          overflow: 'hidden',
-          backgroundColor: 'background.paper'
-        }}
-      >
-        <Box sx={{ 
+        sx={{
           flex: 1,
-          height: '100%', 
-          minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden'
-        }}>
+          height: '100%',
+          minHeight: 0,
+          overflow: 'hidden',
+          backgroundColor: 'background.paper',
+        }}
+      >
+        <Box
+          sx={{
+            flex: 1,
+            height: '100%',
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
           {/* Page Header - Fixed */}
-          <Paper sx={{ 
-            p: 2, 
-            mb: 1,
-            backgroundColor: 'background.paper',
-            borderBottom: 1,
-            borderColor: 'divider'
-          }} elevation={0}>
+          <Paper
+            sx={{
+              p: 2,
+              mb: 1,
+              backgroundColor: 'background.paper',
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+            elevation={0}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                <Typography
+                  variant="h4"
+                  component="h1"
+                  sx={{ fontWeight: 700, color: 'text.primary' }}
+                >
                   Investigate with AI - The Natural Language way
                 </Typography>
-                <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1 }}>
-                  Natural Language Query Interface with AI-powered investigation prompts
+                <Typography
+                  variant="body1"
+                  sx={{ color: 'text.secondary', mt: 1 }}
+                >
+                  Natural Language Query Interface with AI-powered investigation
+                  prompts
                 </Typography>
               </Box>
             </Box>
           </Paper>
 
           {/* Tabs - Fixed */}
-          <Paper sx={{ 
-            borderBottom: 1,
-            borderColor: 'divider',
-            backgroundColor: 'background.paper'
-          }} elevation={0}>
+          <Paper
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+              backgroundColor: 'background.paper',
+            }}
+            elevation={0}
+          >
             <Tabs
               value={activeTab}
               onChange={(_, newValue) => setActiveTab(newValue)}
@@ -1950,54 +2007,58 @@ const RAGPage: React.FC = () => {
               <Tab
                 label="Chat Interface"
                 icon={<PsychologyIcon />}
-                sx={{ 
+                sx={{
                   color: 'text.primary',
                   fontWeight: 600,
                   '&:hover': { color: 'primary.main' },
                   textTransform: 'none',
                   minHeight: 64,
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 }}
               />
               <Tab
                 label="Field Mappings"
                 icon={<SettingsIcon />}
-                sx={{ 
+                sx={{
                   color: 'text.primary',
                   fontWeight: 600,
                   '&:hover': { color: 'primary.main' },
                   textTransform: 'none',
                   minHeight: 64,
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 }}
               />
               <Tab
                 label="Data Analysis"
                 icon={<TableIcon />}
-                sx={{ 
+                sx={{
                   color: 'text.primary',
                   fontWeight: 600,
                   '&:hover': { color: 'primary.main' },
                   textTransform: 'none',
                   minHeight: 64,
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 }}
               />
             </Tabs>
           </Paper>
 
           {/* Main Content - Scrollable */}
-          <Box sx={{ 
-            flex: 1,
-            overflow: 'hidden',
-            p: 2
-          }}>
-            <Box sx={{ 
-              height: '100%',
+          <Box
+            sx={{
+              flex: 1,
               overflow: 'hidden',
-              borderRadius: 1,
-              backgroundColor: 'background.paper'
-            }}>
+              p: 2,
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                overflow: 'hidden',
+                borderRadius: 1,
+                backgroundColor: 'background.paper',
+              }}
+            >
               {activeTab === 0 && renderChatTab()}
               {activeTab === 1 && renderMappingsTab()}
               {activeTab === 2 && renderDataAnalysisTab()}

@@ -45,7 +45,10 @@ const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({
           const containerRect = container.getBoundingClientRect();
           const containerTop = containerRect.top;
           const containerHeight = containerRect.height;
-          const newHeight = Math.max(60, Math.min(containerHeight - 100, e.clientY - containerTop));
+          const newHeight = Math.max(
+            60,
+            Math.min(containerHeight - 100, e.clientY - containerTop),
+          );
           setRiskScoreHeight(newHeight);
         }
       }
@@ -74,14 +77,14 @@ const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({
           height: 'calc(100vh - 300px)', // Set explicit height for the container
           flex: 1,
           overflow: 'hidden',
-          transition: 'opacity 0.3s ease-in-out'
+          transition: 'opacity 0.3s ease-in-out',
         }}
       >
         <Box
           sx={{
             height: `${riskScoreHeight}px`,
             minHeight: '60px',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           <RiskScoreDisplay steps={stepStates} />
@@ -100,8 +103,8 @@ const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({
             position: 'relative',
             zIndex: 10,
             '&:hover': {
-              backgroundColor: 'action.hover'
-            }
+              backgroundColor: 'action.hover',
+            },
           }}
           tabIndex={0}
           role="separator"
@@ -114,24 +117,28 @@ const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({
             if (e.key === 'ArrowUp')
               setRiskScoreHeight((h) => Math.max(60, h - 10));
             if (e.key === 'ArrowDown')
-              setRiskScoreHeight((h) => Math.min(window.innerHeight - 200, h + 10));
+              setRiskScoreHeight((h) =>
+                Math.min(window.innerHeight - 200, h + 10),
+              );
           }}
         >
-          <Box sx={{ 
-            height: '8px', 
-            width: '96px', 
-            backgroundColor: 'text.disabled', 
-            borderRadius: 1 
-          }} />
+          <Box
+            sx={{
+              height: '8px',
+              width: '96px',
+              backgroundColor: 'text.disabled',
+              borderRadius: 1,
+            }}
+          />
         </Box>
         {/* Steps section */}
         <Box
-          sx={{ 
-            flex: 1, 
+          sx={{
+            flex: 1,
             minHeight: 0,
             height: '100%', // Take remaining height from parent
             overflowY: 'auto',
-            overflowX: 'hidden'
+            overflowX: 'hidden',
           }}
         >
           {stepStates.length > 0 && (
@@ -152,4 +159,4 @@ const ManualInvestigationPanel: React.FC<ManualInvestigationPanelProps> = ({
   );
 };
 
-export default ManualInvestigationPanel; 
+export default ManualInvestigationPanel;

@@ -1,6 +1,6 @@
 import React, { ReactNode, useState } from 'react';
-import { 
-  AppBar, 
+import {
+  AppBar,
   Box,
   Button,
   Container,
@@ -24,10 +24,7 @@ import {
   Settings as SettingsIcon,
   Code as MCPIcon,
 } from '@mui/icons-material';
-import {
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { preserveUrlParams } from '../js/utils/urlParams';
 
 interface LayoutProps {
@@ -43,7 +40,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isActive = (path: string) => {
     if (path === '/investigation') {
-      return location.pathname === '/investigation' || location.pathname.startsWith('/investigation/');
+      return (
+        location.pathname === '/investigation' ||
+        location.pathname.startsWith('/investigation/')
+      );
     }
     return location.pathname === path;
   };
@@ -52,23 +52,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       path: '/investigations',
       label: 'Investigations',
-      icon: <InvestigationsIcon />
+      icon: <InvestigationsIcon />,
     },
     {
       path: '/investigation',
       label: 'New Investigation',
-      icon: <InvestigationIcon />
+      icon: <InvestigationIcon />,
     },
     {
       path: '/rag',
       label: 'Investigate with AI',
-      icon: <MCPIcon />
+      icon: <MCPIcon />,
     },
     {
       path: '/settings',
       label: 'Settings',
-      icon: <SettingsIcon />
-    }
+      icon: <SettingsIcon />,
+    },
   ];
 
   const handleDrawerToggle = () => {
@@ -86,23 +86,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const drawer = (
     <Box sx={{ width: 250 }}>
       <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" component="div" sx={{ 
-          fontWeight: 700,
-          color: 'primary.main',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1
-        }}>
-          <img 
-            src="/assets/images/Olorin-Logo-With-Text-transparent.png" 
-            alt="Olorin.ai" 
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{
+            fontWeight: 700,
+            color: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+          }}
+        >
+          <img
+            src="/assets/images/Olorin-Logo-With-Text-transparent.png"
+            alt="Olorin.ai"
             style={{ height: 40, width: 'auto' }}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/logo.png';
             }}
           />
-          <Box component="span" sx={{ color: 'text.primary', fontSize: '1.25rem' }}>
+          <Box
+            component="span"
+            sx={{ color: 'text.primary', fontSize: '1.25rem' }}
+          >
             Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
           </Box>
         </Typography>
@@ -125,16 +132,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 },
               }}
             >
-              <ListItemIcon sx={{ 
-                color: isActive(item.path) ? 'primary.main' : 'inherit',
-                minWidth: 40
-              }}>
+              <ListItemIcon
+                sx={{
+                  color: isActive(item.path) ? 'primary.main' : 'inherit',
+                  minWidth: 40,
+                }}
+              >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText 
-                primary={item.label} 
+              <ListItemText
+                primary={item.label}
                 primaryTypographyProps={{
-                  fontWeight: isActive(item.path) ? 600 : 400
+                  fontWeight: isActive(item.path) ? 600 : 400,
                 }}
               />
             </ListItemButton>
@@ -146,14 +155,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         elevation={0}
-        sx={{ 
+        sx={{
           backgroundColor: 'white',
           borderBottom: 1,
           borderColor: 'divider',
-          zIndex: theme.zIndex.drawer + 1
+          zIndex: theme.zIndex.drawer + 1,
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -169,21 +178,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <MenuIcon />
               </IconButton>
             )}
-            
-            <Typography 
-              variant="h6" 
-              component="div" 
-              sx={{ 
+
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
                 fontWeight: 700,
                 color: 'text.primary',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1
+                gap: 1,
               }}
             >
-              <img 
-                src="/assets/images/Olorin-Logo-With-Text-transparent.png" 
-                alt="Olorin.ai" 
+              <img
+                src="/assets/images/Olorin-Logo-With-Text-transparent.png"
+                alt="Olorin.ai"
                 style={{ height: 40, width: 'auto' }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -191,7 +200,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 }}
               />
               <Box component="span" sx={{ fontSize: '1.25rem' }}>
-                Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
+                Olorin
+                <span style={{ color: theme.palette.primary.main }}>.ai</span>
               </Box>
             </Typography>
           </Box>
@@ -242,10 +252,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
             width: 250,
-            backgroundColor: 'background.paper'
+            backgroundColor: 'background.paper',
           },
         }}
       >
@@ -257,7 +267,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {drawer}
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, backgroundColor: 'background.default' }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, backgroundColor: 'background.default' }}
+      >
         <Container maxWidth="xl" sx={{ py: 2, px: { xs: 2, sm: 3, md: 4 } }}>
           {children}
         </Container>
@@ -266,4 +279,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default Layout; 
+export default Layout;

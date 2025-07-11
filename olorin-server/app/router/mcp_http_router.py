@@ -10,10 +10,11 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from app.service.agent.tools.tool_registry import tool_registry, initialize_tools
+from app.service.agent.tools.tool_registry import initialize_tools, tool_registry
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/mcp", tags=["mcp"])
+
 
 # Request/Response models
 class MCPInitializeRequest(BaseModel):
@@ -21,16 +22,20 @@ class MCPInitializeRequest(BaseModel):
     capabilities: Dict[str, Any]
     clientInfo: Dict[str, str]
 
+
 class MCPToolCallRequest(BaseModel):
     name: str
     arguments: Dict[str, Any]
 
+
 class MCPResourceReadRequest(BaseModel):
     uri: str
+
 
 class MCPToolResponse(BaseModel):
     content: List[Dict[str, Any]]
     isError: Optional[bool] = False
+
 
 @router.post("/initialize")
 async def initialize_mcp(request: MCPInitializeRequest):
@@ -43,22 +48,23 @@ async def initialize_mcp(request: MCPInitializeRequest):
             "capabilities": {
                 "tools": {"listChanged": True},
                 "resources": {"subscribe": True, "listChanged": True},
-                "prompts": {"listChanged": True}
-            }
+                "prompts": {"listChanged": True},
+            },
         }
-        
+
         return {
             "protocolVersion": "2024-11-05",
             "capabilities": {
                 "tools": {"listChanged": True},
                 "resources": {"subscribe": True, "listChanged": True},
-                "prompts": {"listChanged": True}
+                "prompts": {"listChanged": True},
             },
-            "serverInfo": server_info
+            "serverInfo": server_info,
         }
     except Exception as e:
         logger.error(f"MCP initialization failed: {e}")
         raise HTTPException(status_code=500, detail=f"Initialization failed: {e}")
+
 
 @router.post("/tools/list")
 async def list_tools():
@@ -68,50 +74,49 @@ async def list_tools():
         if not tool_registry.is_initialized():
             initialize_tools()
         tools = []
-        
+
         # Get tools from registry
         all_tools = tool_registry.get_all_tools()
         for tool_instance in all_tools:
             try:
                 # Tool instance is already available
                 tool_name = tool_instance.name
-                
+
                 # Get tool schema
-                schema = getattr(tool_instance, 'args_schema', None)
+                schema = getattr(tool_instance, "args_schema", None)
                 if schema:
                     # Convert Pydantic schema to MCP format
-                    tool_schema = {
-                        "type": "object",
-                        "properties": {},
-                        "required": []
-                    }
-                    
-                    if hasattr(schema, 'model_fields'):
+                    tool_schema = {"type": "object", "properties": {}, "required": []}
+
+                    if hasattr(schema, "model_fields"):
                         for field_name, field_info in schema.model_fields.items():
                             tool_schema["properties"][field_name] = {
                                 "type": "string",  # Simplified for now
-                                "description": getattr(field_info, 'description', '')
+                                "description": getattr(field_info, "description", ""),
                             }
-                            if getattr(field_info, 'is_required', lambda: False)():
+                            if getattr(field_info, "is_required", lambda: False)():
                                 tool_schema["required"].append(field_name)
                 else:
-                    tool_schema = {
-                        "type": "object",
-                        "properties": {},
-                        "required": []
+                    tool_schema = {"type": "object", "properties": {}, "required": []}
+
+                tools.append(
+                    {
+                        "name": tool_name,
+                        "description": getattr(
+                            tool_instance,
+                            "description",
+                            f"{tool_name} - Investigation tool",
+                        ),
+                        "inputSchema": tool_schema,
                     }
-                
-                tools.append({
-                    "name": tool_name,
-                    "description": getattr(tool_instance, 'description', f"{tool_name} - Investigation tool"),
-                    "inputSchema": tool_schema
-                })
+                )
             except Exception as e:
                 logger.error(f"Error processing tool {tool_instance}: {e}")
         return {"tools": tools}
     except Exception as e:
         logger.error(f"Failed to list tools: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list tools: {e}")
+
 
 @router.post("/tools/call")
 async def call_tool(request: Dict[str, Any]):
@@ -122,7 +127,7 @@ async def call_tool(request: Dict[str, Any]):
             initialize_tools()
         tool_name = request["name"]
         arguments = request["arguments"]
-        
+
         # Find tool in registry
         tool_instance = None
         all_tools = tool_registry.get_all_tools()
@@ -130,19 +135,19 @@ async def call_tool(request: Dict[str, Any]):
             if tool.name == tool_name:
                 tool_instance = tool
                 break
-        
+
         if not tool_instance:
             raise HTTPException(status_code=404, detail=f"Tool '{tool_name}' not found")
-        
+
         try:
             # Execute tool
-            if hasattr(tool_instance, '_arun'):
+            if hasattr(tool_instance, "_arun"):
                 result = await tool_instance._arun(**arguments)
-            elif hasattr(tool_instance, '_run'):
+            elif hasattr(tool_instance, "_run"):
                 result = tool_instance._run(**arguments)
             else:
                 result = await tool_instance.ainvoke(arguments)
-            
+
             # Format result for MCP
             if isinstance(result, str):
                 content = [{"type": "text", "text": result}]
@@ -150,18 +155,27 @@ async def call_tool(request: Dict[str, Any]):
                 content = [{"type": "text", "text": json.dumps(result, indent=2)}]
             else:
                 content = [{"type": "text", "text": str(result)}]
-            
+
             return {"content": content, "isError": False}
-            
+
         except Exception as execution_error:
             logger.error(f"Tool execution failed for {tool_name}: {execution_error}")
-            return {"content": [{"type": "text", "text": f"Tool execution failed: {execution_error}"}], "isError": True}
-    
+            return {
+                "content": [
+                    {
+                        "type": "text",
+                        "text": f"Tool execution failed: {execution_error}",
+                    }
+                ],
+                "isError": True,
+            }
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Tool call failed: {e}")
         raise HTTPException(status_code=500, detail=f"Tool call failed: {e}")
+
 
 @router.post("/resources/list")
 async def list_resources():
@@ -173,33 +187,34 @@ async def list_resources():
                 "uri": "investigation://templates/fraud",
                 "name": "Fraud Investigation Template",
                 "description": "Template for fraud investigation workflow",
-                "mimeType": "application/json"
+                "mimeType": "application/json",
             },
             {
                 "uri": "investigation://guides/splunk",
                 "name": "Splunk Query Guide",
                 "description": "Guide for effective Splunk queries",
-                "mimeType": "text/markdown"
+                "mimeType": "text/markdown",
             },
             {
                 "uri": "investigation://schemas/user",
                 "name": "User Data Schema",
                 "description": "Schema for user investigation data",
-                "mimeType": "application/json"
-            }
+                "mimeType": "application/json",
+            },
         ]
-        
+
         return {"resources": resources}
     except Exception as e:
         logger.error(f"Failed to list resources: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list resources: {e}")
+
 
 @router.post("/resources/read")
 async def read_resource(request: MCPResourceReadRequest):
     """Read a specific resource"""
     try:
         uri = request.uri
-        
+
         # Mock resource content based on URI
         if uri == "investigation://templates/fraud":
             content = {
@@ -209,9 +224,9 @@ async def read_resource(request: MCPResourceReadRequest):
                     "3. Get user identity with OIITool",
                     "4. Analyze device patterns with DITool",
                     "5. Cross-reference with external sources",
-                    "6. Document findings"
+                    "6. Document findings",
                 ],
-                "tools": ["SplunkQueryTool", "OIITool", "DITool", "WebSearchTool"]
+                "tools": ["SplunkQueryTool", "OIITool", "DITool", "WebSearchTool"],
             }
         elif uri == "investigation://guides/splunk":
             content = """
@@ -239,23 +254,34 @@ index=device_logs
                 "email": "string",
                 "last_login": "datetime",
                 "device_count": "number",
-                "risk_score": "number"
+                "risk_score": "number",
             }
         else:
             raise HTTPException(status_code=404, detail=f"Resource not found: {uri}")
-        
+
         return {
-            "contents": [{
-                "uri": uri,
-                "mimeType": "application/json" if isinstance(content, dict) else "text/plain",
-                "text": json.dumps(content, indent=2) if isinstance(content, dict) else content
-            }]
+            "contents": [
+                {
+                    "uri": uri,
+                    "mimeType": (
+                        "application/json"
+                        if isinstance(content, dict)
+                        else "text/plain"
+                    ),
+                    "text": (
+                        json.dumps(content, indent=2)
+                        if isinstance(content, dict)
+                        else content
+                    ),
+                }
+            ]
         }
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to read resource: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to read resource: {e}")
+
 
 @router.post("/prompts/list")
 async def list_prompts():
@@ -271,26 +297,26 @@ async def list_prompts():
                     "properties": {
                         "user_id": {
                             "type": "string",
-                            "description": "User ID to investigate"
+                            "description": "User ID to investigate",
                         },
                         "investigation_type": {
                             "type": "string",
                             "enum": ["full", "quick", "deep"],
-                            "description": "Type of investigation to perform - full: comprehensive analysis, quick: rapid assessment, deep: detailed forensic analysis"
+                            "description": "Type of investigation to perform - full: comprehensive analysis, quick: rapid assessment, deep: detailed forensic analysis",
                         },
                         "time_range": {
                             "type": "string",
                             "description": "Time range for investigation (e.g., '24h', '7d', '30d')",
-                            "default": "7d"
+                            "default": "7d",
                         },
                         "include_historical": {
                             "type": "boolean",
                             "description": "Include historical data analysis",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["user_id"]
-                }
+                    "required": ["user_id"],
+                },
             },
             {
                 "name": "risk_assessment",
@@ -300,22 +326,22 @@ async def list_prompts():
                     "properties": {
                         "data": {
                             "type": "object",
-                            "description": "Investigation data to assess"
+                            "description": "Investigation data to assess",
                         },
                         "assessment_type": {
                             "type": "string",
                             "enum": ["comprehensive", "focused", "summary"],
                             "description": "Type of risk assessment to perform",
-                            "default": "comprehensive"
+                            "default": "comprehensive",
                         },
                         "include_recommendations": {
                             "type": "boolean",
                             "description": "Include actionable recommendations",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["data"]
-                }
+                    "required": ["data"],
+                },
             },
             {
                 "name": "device_analysis",
@@ -325,21 +351,21 @@ async def list_prompts():
                     "properties": {
                         "device_id": {
                             "type": "string",
-                            "description": "Device ID to analyze"
+                            "description": "Device ID to analyze",
                         },
                         "user_id": {
                             "type": "string",
-                            "description": "Associated user ID (optional)"
+                            "description": "Associated user ID (optional)",
                         },
                         "analysis_depth": {
                             "type": "string",
                             "enum": ["basic", "detailed", "forensic"],
                             "description": "Depth of device analysis",
-                            "default": "detailed"
-                        }
+                            "default": "detailed",
+                        },
                     },
-                    "required": ["device_id"]
-                }
+                    "required": ["device_id"],
+                },
             },
             {
                 "name": "location_analysis",
@@ -349,22 +375,22 @@ async def list_prompts():
                     "properties": {
                         "entity_id": {
                             "type": "string",
-                            "description": "User ID or device ID to analyze"
+                            "description": "User ID or device ID to analyze",
                         },
                         "entity_type": {
                             "type": "string",
                             "enum": ["user_id", "device_id"],
                             "description": "Type of entity being analyzed",
-                            "default": "user_id"
+                            "default": "user_id",
                         },
                         "include_vector_search": {
                             "type": "boolean",
                             "description": "Include vector search analysis for similar patterns",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["entity_id"]
-                }
+                    "required": ["entity_id"],
+                },
             },
             {
                 "name": "network_analysis",
@@ -374,22 +400,22 @@ async def list_prompts():
                     "properties": {
                         "entity_id": {
                             "type": "string",
-                            "description": "User ID or device ID to analyze"
+                            "description": "User ID or device ID to analyze",
                         },
                         "entity_type": {
                             "type": "string",
                             "enum": ["user_id", "device_id"],
                             "description": "Type of entity being analyzed",
-                            "default": "user_id"
+                            "default": "user_id",
                         },
                         "include_isp_analysis": {
                             "type": "boolean",
                             "description": "Include ISP and network provider analysis",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["entity_id"]
-                }
+                    "required": ["entity_id"],
+                },
             },
             {
                 "name": "authentication_analysis",
@@ -399,29 +425,30 @@ async def list_prompts():
                     "properties": {
                         "entity_id": {
                             "type": "string",
-                            "description": "User ID or device ID to analyze"
+                            "description": "User ID or device ID to analyze",
                         },
                         "entity_type": {
                             "type": "string",
                             "enum": ["user_id", "device_id"],
                             "description": "Type of entity being analyzed",
-                            "default": "user_id"
+                            "default": "user_id",
                         },
                         "include_failed_attempts": {
                             "type": "boolean",
                             "description": "Include analysis of failed authentication attempts",
-                            "default": True
-                        }
+                            "default": True,
+                        },
                     },
-                    "required": ["entity_id"]
-                }
-            }
+                    "required": ["entity_id"],
+                },
+            },
         ]
-        
+
         return {"prompts": prompts}
     except Exception as e:
         logger.error(f"Failed to list prompts: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list prompts: {e}")
+
 
 @router.post("/prompts/get")
 async def get_prompt(request: Dict[str, Any]):
@@ -429,13 +456,13 @@ async def get_prompt(request: Dict[str, Any]):
     try:
         prompt_name = request.get("name")
         arguments = request.get("arguments", {})
-        
+
         if prompt_name == "fraud_investigation":
             user_id = arguments.get("user_id", "unknown")
             investigation_type = arguments.get("investigation_type", "full")
             time_range = arguments.get("time_range", "7d")
             include_historical = arguments.get("include_historical", True)
-            
+
             prompt_text = f"""
 You are a senior fraud investigation analyst conducting a {investigation_type} investigation for user {user_id}.
 
@@ -491,16 +518,19 @@ Provide a detailed risk assessment with:
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are an expert fraud investigation analyst with 15+ years of experience in financial crime detection and cybersecurity."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are an expert fraud investigation analyst with 15+ years of experience in financial crime detection and cybersecurity.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-            
+
         elif prompt_name == "risk_assessment":
             data = arguments.get("data", {})
             assessment_type = arguments.get("assessment_type", "comprehensive")
             include_recommendations = arguments.get("include_recommendations", True)
-            
+
             # Build the recommendations section
             recommendations_section = ""
             if include_recommendations:
@@ -510,7 +540,7 @@ Provide a detailed risk assessment with:
    - Short-term measures
    - Long-term strategies
    - Monitoring recommendations"""
-            
+
             prompt_text = f"""
 You are a risk assessment expert analyzing investigation data for security threats.
 
@@ -557,16 +587,19 @@ Provide detailed reasoning for all assessments and ensure all scores are well-ju
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are a senior risk assessment specialist with expertise in cybersecurity, fraud detection, and threat analysis."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are a senior risk assessment specialist with expertise in cybersecurity, fraud detection, and threat analysis.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-            
+
         elif prompt_name == "device_analysis":
             device_id = arguments.get("device_id", "unknown")
             user_id = arguments.get("user_id", "unknown")
             analysis_depth = arguments.get("analysis_depth", "detailed")
-            
+
             prompt_text = f"""
 You are a device forensics expert conducting {analysis_depth} analysis of device {device_id}.
 
@@ -617,16 +650,19 @@ Provide detailed findings with risk scores and confidence levels.
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are a device forensics expert specializing in device fingerprinting, behavioral analysis, and security assessment."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are a device forensics expert specializing in device fingerprinting, behavioral analysis, and security assessment.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-            
+
         elif prompt_name == "location_analysis":
             entity_id = arguments.get("entity_id", "unknown")
             entity_type = arguments.get("entity_type", "user_id")
             include_vector_search = arguments.get("include_vector_search", True)
-            
+
             # Build the vector search section
             vector_search_section = ""
             if include_vector_search:
@@ -636,7 +672,7 @@ Provide detailed findings with risk scores and confidence levels.
    - Peer comparison
    - Pattern matching
    - Anomaly correlation"""
-            
+
             prompt_text = f"""
 You are a geographic intelligence analyst conducting location analysis for {entity_type} {entity_id}.
 
@@ -682,16 +718,19 @@ Provide detailed geographic risk assessment with confidence levels.
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are a geographic intelligence expert specializing in location-based security analysis and travel anomaly detection."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are a geographic intelligence expert specializing in location-based security analysis and travel anomaly detection.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-            
+
         elif prompt_name == "network_analysis":
             entity_id = arguments.get("entity_id", "unknown")
             entity_type = arguments.get("entity_type", "user_id")
             include_isp_analysis = arguments.get("include_isp_analysis", True)
-            
+
             # Build the ISP analysis section
             isp_analysis_section = ""
             if include_isp_analysis:
@@ -701,7 +740,7 @@ Provide detailed geographic risk assessment with confidence levels.
    - ISP changes
    - ISP risk assessment
    - ISP correlation analysis"""
-            
+
             prompt_text = f"""
 You are a network security analyst conducting network analysis for {entity_type} {entity_id}.
 
@@ -747,16 +786,19 @@ Provide detailed network security assessment with risk scores.
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are a network security expert specializing in IP analysis, connection pattern analysis, and network threat detection."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are a network security expert specializing in IP analysis, connection pattern analysis, and network threat detection.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-            
+
         elif prompt_name == "authentication_analysis":
             entity_id = arguments.get("entity_id", "unknown")
             entity_type = arguments.get("entity_type", "user_id")
             include_failed_attempts = arguments.get("include_failed_attempts", True)
-            
+
             # Build the failed authentication section
             failed_auth_section = ""
             if include_failed_attempts:
@@ -767,7 +809,7 @@ Provide detailed network security assessment with risk scores.
    - Credential stuffing
    - Account lockout patterns
 """
-            
+
             prompt_text = f"""
 You are an authentication security analyst conducting login analysis for {entity_type} {entity_id}.
 
@@ -812,51 +854,60 @@ Provide detailed authentication security assessment with risk scores.
 """
             return {
                 "messages": [
-                    {"role": "system", "content": "You are an authentication security expert specializing in login pattern analysis, session security, and authentication threat detection."},
-                    {"role": "user", "content": prompt_text}
+                    {
+                        "role": "system",
+                        "content": "You are an authentication security expert specializing in login pattern analysis, session security, and authentication threat detection.",
+                    },
+                    {"role": "user", "content": prompt_text},
                 ]
             }
-        
+
         else:
-            raise HTTPException(status_code=404, detail=f"Prompt '{prompt_name}' not found")
-            
+            raise HTTPException(
+                status_code=404, detail=f"Prompt '{prompt_name}' not found"
+            )
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to get prompt: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get prompt: {e}")
 
+
 @router.get("/resources/subscribe")
 async def subscribe_to_resources():
     """Subscribe to resource changes via Server-Sent Events"""
+
     async def event_stream():
         try:
             # Send initial connection event
             yield f"data: {json.dumps({'type': 'connected', 'message': 'Connected to resource updates'})}\n\n"
-            
+
             # In a real implementation, you would:
             # 1. Watch for file system changes
             # 2. Monitor database updates
             # 3. Listen for tool registry changes
             # For now, send periodic heartbeat
             import asyncio
+
             while True:
                 await asyncio.sleep(30)
                 yield f"data: {json.dumps({'type': 'heartbeat', 'timestamp': str(asyncio.get_event_loop().time())})}\n\n"
-                
+
         except Exception as e:
             logger.error(f"SSE stream error: {e}")
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
-    
+
     return StreamingResponse(
         event_stream(),
         media_type="text/plain",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "Content-Type": "text/event-stream"
-        }
+            "Content-Type": "text/event-stream",
+        },
     )
+
 
 @router.get("/status")
 async def get_status():
@@ -866,13 +917,13 @@ async def get_status():
         if not tool_registry.is_initialized():
             initialize_tools()
         tool_count = len(tool_registry.get_all_tools())
-        
+
         return {
             "status": "running",
             "version": "1.0.0",
             "tools_available": tool_count,
-            "capabilities": ["tools", "resources", "server-sent-events"]
+            "capabilities": ["tools", "resources", "server-sent-events"],
         }
     except Exception as e:
         logger.error(f"Failed to get status: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get status: {e}") 
+        raise HTTPException(status_code=500, detail=f"Failed to get status: {e}")

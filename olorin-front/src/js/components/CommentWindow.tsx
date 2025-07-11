@@ -76,7 +76,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
         {title}
       </Typography>
-      
+
       <Box
         sx={{
           flex: 1,
@@ -94,7 +94,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             key={`${msg.timestamp}-${msg.sender}-${msg.text}`}
             sx={{ mb: 1 }}
           >
-            <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ fontWeight: 600 }}
+            >
               {msg.sender}:
             </Typography>{' '}
             <Typography component="span" variant="body2">
@@ -110,7 +114,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </Box>
         ))}
       </Box>
-      
+
       <Box sx={{ display: 'flex', gap: 1 }}>
         <TextField
           size="small"

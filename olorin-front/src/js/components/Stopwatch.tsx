@@ -45,7 +45,10 @@ const Stopwatch: React.FC<StopwatchProps> = ({
   }, [startTime, endTime]);
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} className={className}>
+    <Box
+      sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+      className={className}
+    >
       {label && (
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {label}:
@@ -56,14 +59,15 @@ const Stopwatch: React.FC<StopwatchProps> = ({
         label={elapsedTime}
         size="small"
         sx={{
-          fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
+          fontFamily:
+            '"JetBrains Mono", "Fira Code", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
           backgroundColor: 'action.hover',
           '& .MuiChip-label': {
             fontWeight: 500,
           },
           '& .MuiChip-icon': {
-            fontSize: '1rem'
-          }
+            fontSize: '1rem',
+          },
         }}
       />
     </Box>

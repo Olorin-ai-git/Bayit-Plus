@@ -279,108 +279,144 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Starting autonomous investigation framework...',
       'Validating entity ID and investigation parameters...',
       'Initializing multi-agent coordination system...',
-      'Setting up investigation workspace and data pipelines...'
+      'Setting up investigation workspace and data pipelines...',
     ],
-    llmResponse: 'Investigation framework initialized successfully. Entity validation complete. Multi-agent system ready for coordinated analysis.',
+    llmResponse:
+      'Investigation framework initialized successfully. Entity validation complete. Multi-agent system ready for coordinated analysis.',
     progressStart: 0,
     progressEnd: 15,
     riskScore: 0,
-    stepId: 'initialization'
+    stepId: 'initialization',
   },
   {
     name: 'network_analysis',
     agent: 'Network Agent',
-    tools: ['ip_geolocation', 'network_topology_analyzer', 'vpn_detector', 'threat_intelligence_api'],
+    tools: [
+      'ip_geolocation',
+      'network_topology_analyzer',
+      'vpn_detector',
+      'threat_intelligence_api',
+    ],
     duration: 5,
     logs: [
       'Analyzing network patterns and IP geolocation data...',
       'Running VPN/Proxy detection algorithms...',
       'Cross-referencing with threat intelligence databases...',
       'Examining network topology and connection patterns...',
-      'Calculating network risk indicators and anomaly scores...'
+      'Calculating network risk indicators and anomaly scores...',
     ],
-    llmResponse: 'Network analysis reveals moderate risk indicators. IP geolocation suggests potential geographic inconsistencies. VPN usage detected with medium confidence. Threat intelligence shows no direct matches but flagged suspicious patterns.',
+    llmResponse:
+      'Network analysis reveals moderate risk indicators. IP geolocation suggests potential geographic inconsistencies. VPN usage detected with medium confidence. Threat intelligence shows no direct matches but flagged suspicious patterns.',
     progressStart: 15,
     progressEnd: 35,
     riskScore: 65,
-    stepId: 'network'
+    stepId: 'network',
   },
   {
     name: 'device_analysis',
     agent: 'Device Agent',
-    tools: ['device_fingerprinter', 'browser_analyzer', 'mobile_device_detector', 'hardware_profiler'],
+    tools: [
+      'device_fingerprinter',
+      'browser_analyzer',
+      'mobile_device_detector',
+      'hardware_profiler',
+    ],
     duration: 4,
     logs: [
       'Extracting device fingerprints and hardware signatures...',
       'Analyzing browser characteristics and user agent patterns...',
       'Detecting mobile vs desktop device indicators...',
       'Profiling hardware capabilities and screen configurations...',
-      'Cross-referencing device patterns with known fraud signatures...'
+      'Cross-referencing device patterns with known fraud signatures...',
     ],
-    llmResponse: 'Device analysis indicates potential device spoofing. Browser fingerprint shows inconsistencies with claimed device type. Hardware profile suggests emulation environment. Risk score elevated due to device anomalies.',
+    llmResponse:
+      'Device analysis indicates potential device spoofing. Browser fingerprint shows inconsistencies with claimed device type. Hardware profile suggests emulation environment. Risk score elevated due to device anomalies.',
     progressStart: 35,
     progressEnd: 55,
     riskScore: 78,
-    stepId: 'device'
+    stepId: 'device',
   },
   {
     name: 'location_analysis',
     agent: 'Location Agent',
-    tools: ['gps_analyzer', 'timezone_validator', 'location_velocity_calculator', 'geofence_checker'],
+    tools: [
+      'gps_analyzer',
+      'timezone_validator',
+      'location_velocity_calculator',
+      'geofence_checker',
+    ],
     duration: 4,
     logs: [
       'Processing GPS coordinates and location accuracy metrics...',
       'Validating timezone consistency with reported locations...',
       'Calculating travel velocity between location points...',
       'Checking geofence violations and restricted area access...',
-      'Analyzing location pattern anomalies and impossible travel scenarios...'
+      'Analyzing location pattern anomalies and impossible travel scenarios...',
     ],
-    llmResponse: 'Location analysis reveals concerning patterns. GPS coordinates show impossible travel velocities between sessions. Timezone inconsistencies detected. Multiple geofence violations in high-risk areas. Location-based risk score significantly elevated.',
+    llmResponse:
+      'Location analysis reveals concerning patterns. GPS coordinates show impossible travel velocities between sessions. Timezone inconsistencies detected. Multiple geofence violations in high-risk areas. Location-based risk score significantly elevated.',
     progressStart: 55,
     progressEnd: 75,
     riskScore: 82,
-    stepId: 'location'
+    stepId: 'location',
   },
   {
     name: 'log_analysis',
     agent: 'Log Agent',
-    tools: ['splunk_connector', 'log_pattern_analyzer', 'anomaly_detector', 'correlation_engine'],
+    tools: [
+      'splunk_connector',
+      'log_pattern_analyzer',
+      'anomaly_detector',
+      'correlation_engine',
+    ],
     duration: 4,
     logs: [
       'Querying Splunk for historical activity patterns...',
       'Running pattern recognition on authentication logs...',
       'Detecting behavioral anomalies in session data...',
       'Correlating events across multiple data sources...',
-      'Identifying suspicious activity clusters and outliers...'
+      'Identifying suspicious activity clusters and outliers...',
     ],
-    llmResponse: 'Log analysis reveals significant behavioral anomalies. Authentication patterns show unusual timing and frequency. Session data indicates automated or scripted behavior. Event correlation suggests coordinated fraud activity. High-confidence fraud indicators detected.',
+    llmResponse:
+      'Log analysis reveals significant behavioral anomalies. Authentication patterns show unusual timing and frequency. Session data indicates automated or scripted behavior. Event correlation suggests coordinated fraud activity. High-confidence fraud indicators detected.',
     progressStart: 75,
     progressEnd: 90,
     riskScore: 89,
-    stepId: 'log'
+    stepId: 'log',
   },
   {
     name: 'risk_assessment',
     agent: 'Risk Assessment Agent',
-    tools: ['ml_risk_model', 'fraud_scoring_engine', 'decision_tree_analyzer', 'ensemble_predictor'],
+    tools: [
+      'ml_risk_model',
+      'fraud_scoring_engine',
+      'decision_tree_analyzer',
+      'ensemble_predictor',
+    ],
     duration: 3,
     logs: [
       'Aggregating findings from all investigation agents...',
       'Running machine learning risk models on collected evidence...',
       'Calculating composite fraud scores and confidence intervals...',
       'Generating final risk assessment and recommendations...',
-      'Preparing investigation summary and action items...'
+      'Preparing investigation summary and action items...',
     ],
-    llmResponse: 'Final risk assessment complete. ML models indicate HIGH FRAUD RISK (score: 87/100). Multiple risk factors detected across network, device, location, and behavioral patterns. Recommended actions: Account suspension, enhanced monitoring, and manual review required.',
+    llmResponse:
+      'Final risk assessment complete. ML models indicate HIGH FRAUD RISK (score: 87/100). Multiple risk factors detected across network, device, location, and behavioral patterns. Recommended actions: Account suspension, enhanced monitoring, and manual review required.',
     progressStart: 55,
     progressEnd: 60,
     riskScore: 87,
-    stepId: 'risk-assessment'
+    stepId: 'risk-assessment',
   },
   {
     name: 'transaction_analysis',
     agent: 'Transaction Analysis Agent',
-    tools: ['transaction_analysis', 'payment_intelligence', 'merchant_intelligence', 'temporal_analysis'],
+    tools: [
+      'transaction_analysis',
+      'payment_intelligence',
+      'merchant_intelligence',
+      'temporal_analysis',
+    ],
     duration: 5,
     logs: [
       'Initializing transaction pattern analysis engine...',
@@ -388,18 +424,24 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Unusual amount patterns identified: $999.99, $1000.00, $2500.00...',
       'Merchant risk profiling: 3 high-risk merchants flagged...',
       'Transaction timing analysis: Activity spike at 3-4 AM detected...',
-      'Cross-referencing with known fraud patterns in database...'
+      'Cross-referencing with known fraud patterns in database...',
     ],
-    llmResponse: 'Transaction analysis reveals critical fraud indicators. Velocity exceeded normal threshold by 340%. Multiple round-amount transactions suggest testing behavior. High-risk merchant categories (cryptocurrency, gift cards) comprise 65% of recent activity. Pattern matches known card-not-present fraud schemes.',
+    llmResponse:
+      'Transaction analysis reveals critical fraud indicators. Velocity exceeded normal threshold by 340%. Multiple round-amount transactions suggest testing behavior. High-risk merchant categories (cryptocurrency, gift cards) comprise 65% of recent activity. Pattern matches known card-not-present fraud schemes.',
     progressStart: 60,
     progressEnd: 68,
     riskScore: 91,
-    stepId: 'transaction-analysis'
+    stepId: 'transaction-analysis',
   },
   {
     name: 'account_behavior_analysis',
     agent: 'Account Behavior Agent',
-    tools: ['account_behavior', 'ato_detection', 'digital_footprint', 'communication_analysis'],
+    tools: [
+      'account_behavior',
+      'ato_detection',
+      'digital_footprint',
+      'communication_analysis',
+    ],
     duration: 4,
     logs: [
       'Retrieving account activity history for behavioral analysis...',
@@ -407,13 +449,14 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Password changed 3 times in last 48 hours...',
       'Email and phone number updated after suspicious login...',
       '2FA disabled 1 hour before high-value transactions...',
-      'Communication pattern shows phishing email interaction...'
+      'Communication pattern shows phishing email interaction...',
     ],
-    llmResponse: 'Account takeover confirmed with 94% confidence. Behavioral analysis shows classic ATO pattern: credentials compromised via phishing, security settings modified, followed by rapid fund extraction. Account shows signs of being sold on dark web markets based on access patterns.',
+    llmResponse:
+      'Account takeover confirmed with 94% confidence. Behavioral analysis shows classic ATO pattern: credentials compromised via phishing, security settings modified, followed by rapid fund extraction. Account shows signs of being sold on dark web markets based on access patterns.',
     progressStart: 68,
     progressEnd: 76,
     riskScore: 94,
-    stepId: 'account-behavior'
+    stepId: 'account-behavior',
   },
   {
     name: 'fraud_ring_detection',
@@ -426,13 +469,14 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Shared attributes detected: 5 devices, 12 IP addresses, 3 payment methods...',
       'Centrality score 0.78 indicates key position in network...',
       'Coordinated activity patterns detected across connected accounts...',
-      'ML fraud scoring: Network shows 89% probability of organized fraud ring...'
+      'ML fraud scoring: Network shows 89% probability of organized fraud ring...',
     ],
-    llmResponse: 'Sophisticated fraud ring detected involving 23+ accounts. Network analysis reveals hierarchical structure with current entity as mid-level operator. Pattern indicates Eastern European cybercrime syndicate specializing in account takeovers and money mule operations. $2.3M in suspicious transfers traced through network.',
+    llmResponse:
+      'Sophisticated fraud ring detected involving 23+ accounts. Network analysis reveals hierarchical structure with current entity as mid-level operator. Pattern indicates Eastern European cybercrime syndicate specializing in account takeovers and money mule operations. $2.3M in suspicious transfers traced through network.',
     progressStart: 76,
     progressEnd: 84,
     riskScore: 96,
-    stepId: 'fraud-ring'
+    stepId: 'fraud-ring',
   },
   {
     name: 'compliance_screening',
@@ -445,13 +489,14 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'PEP (Politically Exposed Person) database scan in progress...',
       'AML transaction monitoring triggered: Structuring pattern detected...',
       'SAR (Suspicious Activity Report) generation initiated...',
-      'Regulatory reporting requirements: FinCEN notification required...'
+      'Regulatory reporting requirements: FinCEN notification required...',
     ],
-    llmResponse: 'Compliance screening reveals critical issues requiring immediate action. Entity shows 87% name match with sanctioned individual (fuzzy matching). Transaction patterns indicate deliberate structuring to avoid CTR thresholds. Mandatory SAR filing required within 24 hours. Case escalated to compliance team.',
+    llmResponse:
+      'Compliance screening reveals critical issues requiring immediate action. Entity shows 87% name match with sanctioned individual (fuzzy matching). Transaction patterns indicate deliberate structuring to avoid CTR thresholds. Mandatory SAR filing required within 24 hours. Case escalated to compliance team.',
     progressStart: 84,
     progressEnd: 92,
     riskScore: 98,
-    stepId: 'compliance-screening'
+    stepId: 'compliance-screening',
   },
   {
     name: 'final_assessment',
@@ -463,14 +508,15 @@ const INVESTIGATION_PHASES: InvestigationPhase[] = [
       'Calculating weighted fraud risk score across all vectors...',
       'Generating investigation summary and evidence package...',
       'Preparing recommended actions and next steps...',
-      'Investigation complete. Final risk score: 95/100'
+      'Investigation complete. Final risk score: 95/100',
     ],
-    llmResponse: 'CRITICAL FRAUD ALERT: Investigation confirms organized fraud with 95% confidence. Evidence indicates: 1) Account takeover via phishing, 2) Part of larger fraud ring (23+ accounts), 3) $125K in fraudulent transactions, 4) AML violations requiring regulatory filing. IMMEDIATE ACTIONS: Freeze account, file SAR, initiate recovery procedures, refer to law enforcement.',
+    llmResponse:
+      'CRITICAL FRAUD ALERT: Investigation confirms organized fraud with 95% confidence. Evidence indicates: 1) Account takeover via phishing, 2) Part of larger fraud ring (23+ accounts), 3) $125K in fraudulent transactions, 4) AML violations requiring regulatory filing. IMMEDIATE ACTIONS: Freeze account, file SAR, initiate recovery procedures, refer to law enforcement.',
     progressStart: 92,
     progressEnd: 100,
     riskScore: 95,
-    stepId: 'final-assessment'
-  }
+    stepId: 'final-assessment',
+  },
 ];
 
 // Simplified hook for the AutonomousInvestigationPanel component
@@ -480,8 +526,10 @@ export const useSimpleAutonomousInvestigation = () => {
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const onLogCallbackRef = useRef<((logEntry: LogEntry) => void) | null>(null);
-  const onStepUpdateCallbackRef = useRef<((stepId: string, riskScore: number, llmThoughts: string) => void) | null>(null);
-  
+  const onStepUpdateCallbackRef = useRef<
+    ((stepId: string, riskScore: number, llmThoughts: string) => void) | null
+  >(null);
+
   // Use refs for simulation state to avoid stale closures
   const simulationStateRef = useRef({
     currentPhaseIndex: 0,
@@ -489,12 +537,12 @@ export const useSimpleAutonomousInvestigation = () => {
     currentToolIndex: 0,
     llmResponseSent: false,
     logMessageCount: 0,
-    isActive: false
+    isActive: false,
   });
-  
+
   // Use ref for immediate access to total messages
   const totalLogMessagesRef = useRef(0);
-  
+
   // Add refs for proper cleanup and instance management
   const simulationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const investigationIdRef = useRef<string | null>(null);
@@ -527,7 +575,14 @@ export const useSimpleAutonomousInvestigation = () => {
   const updateProgress = useCallback(() => {
     simulationStateRef.current.logMessageCount++;
     if (totalLogMessagesRef.current > 0) {
-      const newProgress = Math.min(Math.floor((simulationStateRef.current.logMessageCount / totalLogMessagesRef.current) * 100), 100);
+      const newProgress = Math.min(
+        Math.floor(
+          (simulationStateRef.current.logMessageCount /
+            totalLogMessagesRef.current) *
+            100,
+        ),
+        100,
+      );
       setProgress(newProgress);
     }
   }, []);
@@ -536,12 +591,12 @@ export const useSimpleAutonomousInvestigation = () => {
     console.log('simulateNextStep function called');
     const state = simulationStateRef.current;
     console.log('Current state in simulateNextStep:', state);
-    
+
     if (!state.isActive) {
       console.log('simulateNextStep: not active, returning');
       return;
     }
-    
+
     if (!isRunningRef.current) {
       console.log('simulateNextStep: investigation not running, returning');
       return;
@@ -552,7 +607,7 @@ export const useSimpleAutonomousInvestigation = () => {
       phaseIndex: state.currentPhaseIndex,
       logIndex: state.currentLogIndex,
       toolIndex: state.currentToolIndex,
-      llmResponseSent: state.llmResponseSent
+      llmResponseSent: state.llmResponseSent,
     });
 
     // Check if investigation is complete
@@ -568,7 +623,7 @@ export const useSimpleAutonomousInvestigation = () => {
         onLogCallbackRef.current({
           timestamp: Date.now(),
           message: 'Autonomous investigation completed successfully',
-          type: LogLevel.SUCCESS
+          type: LogLevel.SUCCESS,
         });
       }
       return;
@@ -581,7 +636,7 @@ export const useSimpleAutonomousInvestigation = () => {
     if (state.currentLogIndex < currentPhase.logs.length) {
       const message = currentPhase.logs[state.currentLogIndex];
       console.log('Sending log message:', message);
-      
+
       simulationTimeoutRef.current = setTimeout(() => {
         if (!state.isActive) {
           console.log('Log timeout: state not active, returning');
@@ -593,11 +648,14 @@ export const useSimpleAutonomousInvestigation = () => {
         }
         console.log('Log timeout: about to call onLogCallback');
         if (onLogCallbackRef.current) {
-          console.log('Log timeout: calling onLogCallback with message:', message);
+          console.log(
+            'Log timeout: calling onLogCallback with message:',
+            message,
+          );
           onLogCallbackRef.current({
             timestamp: Date.now(),
             message: `${currentPhase.agent}: ${message}`,
-            type: LogLevel.INFO
+            type: LogLevel.INFO,
           });
         } else {
           console.error('Log timeout: onLogCallback is null/undefined!');
@@ -613,7 +671,7 @@ export const useSimpleAutonomousInvestigation = () => {
     if (state.currentToolIndex < currentPhase.tools.length) {
       const tool = currentPhase.tools[state.currentToolIndex];
       console.log('Sending tool message:', tool);
-      
+
       simulationTimeoutRef.current = setTimeout(() => {
         if (!state.isActive) {
           console.log('Tool timeout: state not active, returning');
@@ -629,7 +687,7 @@ export const useSimpleAutonomousInvestigation = () => {
           onLogCallbackRef.current({
             timestamp: Date.now(),
             message: `${currentPhase.agent}: Using tool: ${tool}`,
-            type: LogLevel.INFO
+            type: LogLevel.INFO,
           });
         } else {
           console.error('Tool timeout: onLogCallback is null/undefined!');
@@ -644,7 +702,7 @@ export const useSimpleAutonomousInvestigation = () => {
     // Phase 3: Send LLM response (only if not sent yet)
     if (!state.llmResponseSent) {
       console.log('Sending LLM response for phase:', currentPhase.name);
-      
+
       simulationTimeoutRef.current = setTimeout(() => {
         if (!state.isActive) {
           console.log('LLM timeout: state not active, returning');
@@ -654,13 +712,15 @@ export const useSimpleAutonomousInvestigation = () => {
           console.log('LLM timeout: investigation not running, returning');
           return;
         }
-        console.log('LLM timeout: about to call onLogCallback for LLM response');
+        console.log(
+          'LLM timeout: about to call onLogCallback for LLM response',
+        );
         if (onLogCallbackRef.current) {
           console.log('LLM timeout: calling onLogCallback with LLM response');
           onLogCallbackRef.current({
             timestamp: Date.now(),
             message: `${currentPhase.agent}: <strong>LLM Analysis:</strong> ${currentPhase.llmResponse}`,
-            type: LogLevel.INFO
+            type: LogLevel.INFO,
           });
         } else {
           console.error('LLM timeout: onLogCallback is null/undefined!');
@@ -670,23 +730,31 @@ export const useSimpleAutonomousInvestigation = () => {
           onLogCallbackRef.current({
             timestamp: Date.now(),
             message: `${currentPhase.agent}: Phase complete - Risk indicators identified`,
-            type: LogLevel.SUCCESS
+            type: LogLevel.SUCCESS,
           });
         }
         updateProgress();
-        
+
         // Update step with risk data if callback provided and phase has stepId
         if (currentPhase.stepId && onStepUpdateCallbackRef.current) {
-          console.log('Updating step with risk data:', currentPhase.stepId, currentPhase.riskScore);
-          onStepUpdateCallbackRef.current(currentPhase.stepId, currentPhase.riskScore, currentPhase.llmResponse);
+          console.log(
+            'Updating step with risk data:',
+            currentPhase.stepId,
+            currentPhase.riskScore,
+          );
+          onStepUpdateCallbackRef.current(
+            currentPhase.stepId,
+            currentPhase.riskScore,
+            currentPhase.llmResponse,
+          );
         }
-        
+
         // Move to next phase
         state.currentPhaseIndex++;
         state.currentLogIndex = 0;
         state.currentToolIndex = 0;
         state.llmResponseSent = false;
-        
+
         // Start next phase if available
         if (state.currentPhaseIndex < INVESTIGATION_PHASES.length) {
           const nextPhase = INVESTIGATION_PHASES[state.currentPhaseIndex];
@@ -694,26 +762,26 @@ export const useSimpleAutonomousInvestigation = () => {
             onLogCallbackRef.current({
               timestamp: Date.now(),
               message: `Starting ${nextPhase.name} phase...`,
-              type: LogLevel.INFO
+              type: LogLevel.INFO,
             });
           }
           updateProgress();
           console.log('Starting next phase:', nextPhase.name);
         }
-        
+
         simulateNextStep();
       }, 2500); // Increased from 1000ms to 2500ms to match animation delay
-      
+
       state.llmResponseSent = true;
       return;
     }
 
     console.error('Simulation reached unexpected state:', state);
-    console.log('Investigation flags:', { 
-      isActive: state.isActive, 
-      isRunning: isRunningRef.current, 
+    console.log('Investigation flags:', {
+      isActive: state.isActive,
+      isRunning: isRunningRef.current,
       investigationId: investigationIdRef.current,
-      onLogCallback: !!onLogCallbackRef.current 
+      onLogCallback: !!onLogCallbackRef.current,
     });
   }, [updateProgress]);
 
@@ -722,31 +790,35 @@ export const useSimpleAutonomousInvestigation = () => {
     entityType: string,
     investigationId: string,
     onLog?: (logEntry: LogEntry) => void,
-    onStepUpdate?: (stepId: string, riskScore: number, llmThoughts: string) => void
+    onStepUpdate?: (
+      stepId: string,
+      riskScore: number,
+      llmThoughts: string,
+    ) => void,
   ) => {
     console.log('Starting investigation with demo mode check...');
-    
+
     // Guard against multiple investigations
     if (isRunningRef.current) {
       console.log('Investigation already running, stopping current one first');
       stopCurrentInvestigation();
       // Wait a bit for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
-    
+
     // Guard against same investigation ID
     if (investigationIdRef.current === investigationId) {
       console.log('Investigation with same ID already running, ignoring');
       return;
     }
-    
+
     // Stop any previous investigation
     stopCurrentInvestigation();
-    
+
     // Set flags
     isRunningRef.current = true;
     investigationIdRef.current = investigationId;
-    
+
     // Reset all state
     setIsLoading(true);
     setError(null);
@@ -755,7 +827,7 @@ export const useSimpleAutonomousInvestigation = () => {
     console.log('Setting onLogCallback:', onLog);
     onLogCallbackRef.current = onLog || null;
     onStepUpdateCallbackRef.current = onStepUpdate || null;
-    
+
     // Reset simulation state
     simulationStateRef.current = {
       currentPhaseIndex: 0,
@@ -763,7 +835,7 @@ export const useSimpleAutonomousInvestigation = () => {
       currentToolIndex: 0,
       llmResponseSent: false,
       logMessageCount: 0,
-      isActive: false
+      isActive: false,
     };
 
     const isDemo = isDemoModeActive();
@@ -774,7 +846,7 @@ export const useSimpleAutonomousInvestigation = () => {
       const totalMessages = INVESTIGATION_PHASES.reduce((total, phase) => {
         return total + phase.logs.length + phase.tools.length + 2; // +2 for LLM response and phase complete
       }, 3); // +3 for initial logs
-      
+
       totalLogMessagesRef.current = totalMessages;
       console.log('Total messages calculated:', totalMessages);
 
@@ -783,7 +855,7 @@ export const useSimpleAutonomousInvestigation = () => {
         onLog({
           timestamp: Date.now(),
           message: 'Autonomous investigation framework initializing...',
-          type: LogLevel.INFO
+          type: LogLevel.INFO,
         });
       }
       updateProgress();
@@ -791,7 +863,7 @@ export const useSimpleAutonomousInvestigation = () => {
         onLog({
           timestamp: Date.now(),
           message: `Target entity: ${entityType} ${entityId}`,
-          type: LogLevel.INFO
+          type: LogLevel.INFO,
         });
       }
       updateProgress();
@@ -799,11 +871,11 @@ export const useSimpleAutonomousInvestigation = () => {
         onLog({
           timestamp: Date.now(),
           message: 'Multi-agent investigation system ready',
-          type: LogLevel.INFO
+          type: LogLevel.INFO,
         });
       }
       updateProgress();
-      
+
       // Start first phase
       if (INVESTIGATION_PHASES.length > 0) {
         const firstPhase = INVESTIGATION_PHASES[0];
@@ -811,20 +883,26 @@ export const useSimpleAutonomousInvestigation = () => {
           onLog({
             timestamp: Date.now(),
             message: `Starting ${firstPhase.name} phase...`,
-            type: LogLevel.INFO
+            type: LogLevel.INFO,
           });
         }
         updateProgress();
-        
+
         console.log('About to activate simulation in 3 seconds...');
-        console.log('Current simulation state before activation:', simulationStateRef.current);
+        console.log(
+          'Current simulation state before activation:',
+          simulationStateRef.current,
+        );
         // Start investigation after initial delay
         simulationTimeoutRef.current = setTimeout(() => {
           if (!isRunningRef.current) return; // Check if still running
           console.log('Activating simulation now!');
           console.log('Setting isActive to true');
           simulationStateRef.current.isActive = true;
-          console.log('Current simulation state after activation:', simulationStateRef.current);
+          console.log(
+            'Current simulation state after activation:',
+            simulationStateRef.current,
+          );
           console.log('About to call simulateNextStep');
           simulateNextStep();
         }, 3000); // Increased from 2000ms to 3000ms to match animation delay
@@ -835,17 +913,17 @@ export const useSimpleAutonomousInvestigation = () => {
         onLog({
           timestamp: Date.now(),
           message: 'Starting autonomous investigation...',
-          type: LogLevel.INFO
+          type: LogLevel.INFO,
         });
       }
       if (onLog) {
         onLog({
           timestamp: Date.now(),
           message: 'Investigation system initializing...',
-          type: LogLevel.INFO
+          type: LogLevel.INFO,
         });
       }
-      
+
       intervalIdRef.current = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
@@ -861,7 +939,7 @@ export const useSimpleAutonomousInvestigation = () => {
               onLog({
                 timestamp: Date.now(),
                 message: 'Autonomous investigation completed',
-                type: LogLevel.SUCCESS
+                type: LogLevel.SUCCESS,
               });
             }
             return 100;

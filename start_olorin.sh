@@ -16,8 +16,8 @@ NC='\033[0m' # No Color
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/back"
-FRONTEND_DIR="$SCRIPT_DIR/front"
+BACKEND_DIR="$SCRIPT_DIR/olorin-server"
+FRONTEND_DIR="$SCRIPT_DIR/olorin-front"
 LOG_DIR="$SCRIPT_DIR/logs"
 
 # Default ports

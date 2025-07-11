@@ -1,9 +1,17 @@
-from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect, HTTPException, status
-from jose import JWTError, jwt
 import logging
 
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
+from jose import JWTError, jwt
+
+from app.security.auth import ALGORITHM, SECRET_KEY
 from app.service.websocket_manager import websocket_manager
-from app.security.auth import SECRET_KEY, ALGORITHM
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +45,7 @@ async def websocket_endpoint(
     if not await verify_websocket_token(token):
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
-    
+
     await websocket_manager.connect(websocket, investigation_id, parallel=parallel)
     try:
         while True:

@@ -10,10 +10,10 @@ export interface Sandbox {
 const SandboxContext = createContext<Sandbox | null>(null);
 
 // Mock sandbox provider component
-export const SandboxProvider: React.FC<{ children: React.ReactNode; sandbox?: Sandbox }> = ({ 
-  children, 
-  sandbox = {} 
-}) => {
+export const SandboxProvider: React.FC<{
+  children: React.ReactNode;
+  sandbox?: Sandbox;
+}> = ({ children, sandbox = {} }) => {
   return (
     <SandboxContext.Provider value={sandbox}>
       {children}
@@ -31,4 +31,4 @@ export const useSandboxContext = (): Sandbox => {
     };
   }
   return context;
-}; 
+};

@@ -11,11 +11,15 @@ Olorin is an enterprise fraud detection and investigation platform with AI/ML ca
 
 ## Essential Commands
 
-### Starting All Services
+### Service Management
 ```bash
 npm run olorin                          # Start all services with default log level
 npm run olorin -- --log-level debug     # Start with debug logging
 ./start_olorin.sh --log-level error     # Start with error-only logging
+./start_olorin.sh stop                  # Stop all services
+./start_olorin.sh restart               # Restart all services
+./start_olorin.sh status                # Check service status
+./start_olorin.sh logs                  # Show logs info
 ```
 
 ### Backend Development (olorin-server)
@@ -25,10 +29,14 @@ poetry install                          # Install dependencies
 poetry run python -m app.local_server   # Run development server
 poetry run pytest                       # Run all tests
 poetry run pytest test/unit/test_specific.py::test_function  # Run single test
-poetry run pytest --cov                 # Run tests with coverage
+poetry run pytest -m unit               # Run unit tests only
+poetry run pytest -m integration        # Run integration tests only
+poetry run pytest --cov                 # Run tests with coverage (30% threshold)
 poetry run black .                      # Format code
 poetry run isort .                      # Sort imports
+poetry run mypy .                       # Type checking
 tox                                     # Run full test suite
+tox -e lint                             # Run linting only
 ```
 
 ### Frontend Development (olorin-front)
@@ -37,6 +45,7 @@ cd olorin-front
 npm install                             # Install dependencies
 npm start                               # Development server (port 3000)
 npm run build                           # Production build
+TSC_COMPILE_ON_ERROR=true npm run build # Production build ignoring TS warnings
 npm test                                # Run tests in watch mode
 npm test -- --coverage                  # Run with coverage report
 npm run lint                            # Lint code
@@ -47,16 +56,17 @@ npm run webhook                         # Run webhook server
 ### Web Portal Development (olorin-web-portal)
 ```bash
 cd olorin-web-portal
-npm install --legacy-peer-deps          # Install dependencies
+npm install --legacy-peer-deps          # Install dependencies (requires --legacy-peer-deps)
 npm start                               # Development server
 npm run build                           # Production build
 ```
 
 ### Git Operations
 ```bash
-npm run push                            # Git commit and push
+npm run push                            # Git commit and push with auto-generated message
 npm run push:with-docker                # Push with Docker build
 npm run push:docker-only                # Docker build only
+./git_commit_push.sh "Custom message"   # Push with custom commit message
 ```
 
 ## Architecture Overview
@@ -76,6 +86,7 @@ The backend uses a multi-agent system for fraud detection:
    - Model Context Protocol server for Claude integration
    - Runs separately via `poetry run python -m app.mcp_server.cli`
    - Provides tools and agents via stdio transport
+   - Opens in separate terminal window on macOS
 
 3. **API Structure**:
    - FastAPI-based REST API
@@ -87,6 +98,8 @@ The backend uses a multi-agent system for fraud detection:
    - Device fingerprinting service
    - Location validation service
    - Real-time investigation updates
+   - PDF report generation (fpdf, reportlab)
+   - Authentication (JWT with python-jose)
 
 ### Frontend Architecture (olorin-front)
 
@@ -115,6 +128,7 @@ React TypeScript application with:
 - Integration tests with pytest markers
 - Minimum 30% coverage requirement
 - Run specific test: `poetry run pytest test/unit/test_file.py::test_function`
+- Tox for comprehensive testing across environments
 
 **Frontend Testing**:
 - Jest with React Testing Library
@@ -129,6 +143,18 @@ React TypeScript application with:
 4. **Testing**: Run tests before committing changes
 5. **Linting**: Use lint/format commands to maintain code quality
 
+## Environment Configuration
+
+Create `.env` file in olorin-server directory based on `.env.example`:
+- JWT secrets and expiry
+- CORS configuration
+- Redis connection details
+- API keys (GAIA_API_KEY, OLORIN_API_KEY)
+- Database URL (SQLite by default)
+- Rate limiting settings
+- Splunk configuration
+- Firebase admin SDK credentials
+
 ## Key Files and Directories
 
 ```
@@ -139,7 +165,8 @@ olorin/
 │   │   ├── main.py            # FastAPI app entry
 │   │   ├── local_server.py    # Development server
 │   │   └── mcp_server/        # MCP server implementation
-│   └── test/                  # Backend tests
+│   ├── test/                  # Backend tests
+│   └── config/                # Configuration files
 ├── olorin-front/
 │   ├── src/
 │   │   ├── components/        # React components
@@ -152,13 +179,15 @@ olorin/
 ## Important Notes
 
 1. **Ports**:
-   - Backend: 8000
-   - Frontend: 3000
+   - Backend: 8000 (configurable via BACKEND_PORT)
+   - Frontend: 3000 (configurable via FRONTEND_PORT)
    - MCP Server: stdio (runs in separate terminal)
 
-2. **Environment Variables**:
-   - Backend uses `.env` files for configuration
-   - Set LOG_LEVEL for logging verbosity (debug, info, warning, error)
+2. **Console Output**:
+   - Backend logs: Blue prefix [Back]
+   - MCP logs: Green prefix [MCP]
+   - Frontend logs: Cyan prefix [Front]
+   - Log filtering based on --log-level parameter
 
 3. **Dependencies**:
    - Python 3.11+ with Poetry for backend
@@ -173,3 +202,8 @@ olorin/
    - Never commit API keys or secrets
    - Follow security guidelines in docs/security/
    - Use environment variables for sensitive data
+
+6. **Production Build Notes**:
+   - Frontend may have TypeScript warnings - use TSC_COMPILE_ON_ERROR=true
+   - Web portal requires --legacy-peer-deps for npm install
+   - Docker multi-stage build available for deployment

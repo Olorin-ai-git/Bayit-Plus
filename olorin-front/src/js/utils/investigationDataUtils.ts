@@ -189,7 +189,8 @@ export function processNetworkData(
       })) || [],
     risk_assessment: riskAssessment,
     // Extract risk_score for RiskScoreDisplay component
-    risk_score: riskAssessment?.risk_level || response?.analysis?.risk_score || 0,
+    risk_score:
+      riskAssessment?.risk_level || response?.analysis?.risk_score || 0,
     llm_thoughts: riskAssessment?.thoughts || response?.llm_thoughts || '',
     // Common fields
     ...(response.investigationId && {

@@ -21,7 +21,8 @@ class _NoArgsModel(BaseModel):
 
 class ListCustomersTool(BaseTool):
     name: str = Field(
-        "list_customers", description="Get a list of all customers from financial service"
+        "list_customers",
+        description="Get a list of all customers from financial service",
     )
     description: str = Field(
         "This tool retrieves a list of all customers with their basic information from financial service"

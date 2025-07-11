@@ -43,7 +43,11 @@ const isLocalDevelopment = () => {
   // Check if we're running on localhost
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0'
+    );
   }
   return false;
 };
@@ -82,12 +86,15 @@ const ENV_CONFIG: Record<Environment, Record<Service, ServiceConfig>> = {
  * @param {Service} service - The service name.
  * @returns {ServiceConfig} The service configuration.
  */
-export const getEnvConfig = (sandbox: Sandbox, service: Service): ServiceConfig => {
+export const getEnvConfig = (
+  sandbox: Sandbox,
+  service: Service,
+): ServiceConfig => {
   // If running locally, always use local config
   if (isLocalDevelopment()) {
     return ENV_CONFIG.local[service];
   }
-  
+
   const env = sandbox.env || 'e2e';
   return ENV_CONFIG[env as Environment]?.[service] || ENV_CONFIG.e2e[service];
 };

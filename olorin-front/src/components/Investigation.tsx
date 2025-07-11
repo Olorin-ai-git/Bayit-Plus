@@ -19,4 +19,4 @@ const Investigation: React.FC = () => {
   );
 };
 
-export default Investigation; 
+export default Investigation;

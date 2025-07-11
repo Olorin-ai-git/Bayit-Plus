@@ -67,7 +67,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
 const Caret: React.FC = () => {
   const theme = useTheme();
   const [isVisible, setIsVisible] = useState(true);
-  
+
   useEffect(() => {
     const timer = setTimeout(
       () => setIsVisible(false),
@@ -75,9 +75,9 @@ const Caret: React.FC = () => {
     );
     return () => clearTimeout(timer);
   }, []);
-  
+
   if (!isVisible) return null;
-  
+
   return (
     <Box
       component="span"

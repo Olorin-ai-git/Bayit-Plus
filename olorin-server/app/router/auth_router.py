@@ -3,18 +3,19 @@ Authentication router for login and token management
 """
 
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from app.security.auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    SecurityHeaders,
+    User,
     authenticate_user,
     create_access_token,
     fake_users_db,
     get_current_active_user,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    User,
-    SecurityHeaders,
 )
 
 
@@ -42,21 +43,21 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username, "scopes": user.scopes},
-        expires_delta=access_token_expires
+        expires_delta=access_token_expires,
     )
-    
+
     # Add security headers
     for key, value in SecurityHeaders.get_headers().items():
         response.headers[key] = value
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
-        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -70,21 +71,21 @@ async def login_json(response: Response, login_data: LoginRequest):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username, "scopes": user.scopes},
-        expires_delta=access_token_expires
+        expires_delta=access_token_expires,
     )
-    
+
     # Add security headers
     for key, value in SecurityHeaders.get_headers().items():
         response.headers[key] = value
-    
+
     return Token(
         access_token=access_token,
         token_type="bearer",
-        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -95,10 +96,12 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 
 
 @router.post("/logout")
-async def logout(response: Response, current_user: User = Depends(get_current_active_user)):
+async def logout(
+    response: Response, current_user: User = Depends(get_current_active_user)
+):
     """Logout current user (client should delete token)."""
     # Add security headers
     for key, value in SecurityHeaders.get_headers().items():
         response.headers[key] = value
-    
+
     return {"message": "Successfully logged out"}

@@ -45,13 +45,13 @@ function getApiBaseUrl(): string {
   // In development with proxy, use relative URLs
   // In production, this would be configured via environment variables
   const isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   // Check if we have a proxy configured (relative URLs work)
   if (isDevelopment) {
     // First try relative URLs (works with proxy)
     return '';
   }
-  
+
   // Fallback to explicit backend URL
   return process.env.REACT_APP_BACKEND_URL || 'http://localhost:8090';
 }
@@ -87,7 +87,7 @@ export function getDefaultSettings(): Settings {
   // Import available agents from investigation steps config
   const { allPossibleSteps } = require('../utils/investigationStepsConfig');
   const allAgents = allPossibleSteps.map((step: any) => step.agent);
-  
+
   return {
     defaultEntityType: 'user_id',
     selectedAgents: allAgents, // Select all agents by default
@@ -104,7 +104,7 @@ export async function loadSettingsFromServer(): Promise<Settings> {
   if (isDemoModeActive()) {
     console.log('Demo mode active - using mock settings data');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return fromApiFormat(mockSettings.settings);
   }
 
@@ -123,7 +123,7 @@ export async function loadSettingsFromServer(): Promise<Settings> {
     }
 
     const data: SettingsResponse = await response.json();
-    
+
     if (!data.success || !data.settings) {
       throw new Error(data.message || 'Failed to load settings');
     }
@@ -143,7 +143,7 @@ export async function saveSettingsToServer(settings: Settings): Promise<void> {
   if (isDemoModeActive()) {
     console.log('Demo mode active - simulating settings save');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     console.log('Settings saved to server successfully (Demo Mode)');
     return;
   }
@@ -164,7 +164,7 @@ export async function saveSettingsToServer(settings: Settings): Promise<void> {
     }
 
     const data: SettingsResponse = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.message || 'Failed to save settings');
     }
@@ -218,7 +218,7 @@ export function clearSessionOverrides(): void {
  */
 export function mergeSettingsWithOverrides(
   serverSettings: Settings,
-  sessionOverrides: Partial<Settings> | null
+  sessionOverrides: Partial<Settings> | null,
 ): Settings {
   if (!sessionOverrides) {
     return serverSettings;
@@ -244,7 +244,7 @@ export async function getEffectiveSettings(): Promise<Settings> {
  */
 export function updateSettingWithOverride<K extends keyof Settings>(
   key: K,
-  value: Settings[K]
+  value: Settings[K],
 ): void {
   const currentOverrides = getSessionOverrides() || {};
   const newOverrides = {
@@ -278,14 +278,18 @@ export async function getCategorizedTools(): Promise<CategorizedToolsResponse> {
   if (isDemoModeActive()) {
     console.log('Demo mode active - using mock categorized tools data');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     return mockToolsCategory as CategorizedToolsResponse;
   }
 
   try {
-    const response = await fetch(`${getApiBaseUrl()}/api/settings/tools-by-category`);
+    const response = await fetch(
+      `${getApiBaseUrl()}/api/settings/tools-by-category`,
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch categorized tools: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch categorized tools: ${response.statusText}`,
+      );
     }
     return await response.json();
   } catch (error) {
@@ -293,5 +297,3 @@ export async function getCategorizedTools(): Promise<CategorizedToolsResponse> {
     throw error;
   }
 }
-
- 

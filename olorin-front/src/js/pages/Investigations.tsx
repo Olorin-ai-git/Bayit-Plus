@@ -20,7 +20,7 @@ import {
   Card,
   CardContent,
   Grid,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -30,7 +30,7 @@ import {
   Visibility as ViewIcon,
   BugReport as BugReportIcon,
   Person as PersonIcon,
-  Computer as ComputerIcon
+  Computer as ComputerIcon,
 } from '@mui/icons-material';
 
 // Use centralized demo mode detection
@@ -174,23 +174,23 @@ const Investigations: React.FC<InvestigationsProps> = ({
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  
+
   // Dynamic demo mode detection from URL
   const [isDemoMode, setIsDemoMode] = useState(isDemoModeActive());
-  
+
   useEffect(() => {
     const handleLocationChange = () => {
       setIsDemoMode(isDemoModeActive());
     };
-    
+
     // Listen for URL changes
     window.addEventListener('popstate', handleLocationChange);
-    
+
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
     };
   }, []);
-  
+
   const [investigations, setInvestigations] = useState<any[]>(
     isDemoMode ? MOCK_INVESTIGATIONS : [],
   );
@@ -280,7 +280,12 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setError(null);
     try {
       if (isDemoMode) {
-        await editInvestigations(isDemoMode, selected, investigations, setInvestigations);
+        await editInvestigations(
+          isDemoMode,
+          selected,
+          investigations,
+          setInvestigations,
+        );
       } else {
         await editInvestigations(isDemoMode, selected);
       }
@@ -299,7 +304,12 @@ const Investigations: React.FC<InvestigationsProps> = ({
     setError(null);
     try {
       if (isDemoMode) {
-        await deleteInvestigations(isDemoMode, selected, investigations, setInvestigations);
+        await deleteInvestigations(
+          isDemoMode,
+          selected,
+          investigations,
+          setInvestigations,
+        );
       } else {
         await deleteInvestigations(isDemoMode, selected);
         setInvestigations((prev) =>
@@ -353,9 +363,20 @@ const Investigations: React.FC<InvestigationsProps> = ({
     <Box sx={{ p: 0 }}>
       {/* Header Section */}
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
+        >
           <Box>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}
+            >
               Investigations
             </Typography>
             <Typography variant="body1" color="text.secondary">
@@ -385,13 +406,19 @@ const Investigations: React.FC<InvestigationsProps> = ({
         {/* Stats Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ 
-              background: 'linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%)',
-              border: '1px solid',
-              borderColor: 'primary.200'
-            }}>
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%)',
+                border: '1px solid',
+                borderColor: 'primary.200',
+              }}
+            >
               <CardContent>
-                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}>
+                <Typography
+                  variant="h4"
+                  component="div"
+                  sx={{ fontWeight: 700, color: 'primary.main', mb: 1 }}
+                >
                   {investigations.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -401,14 +428,24 @@ const Investigations: React.FC<InvestigationsProps> = ({
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ 
-              background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
-              border: '1px solid',
-              borderColor: 'error.200'
-            }}>
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fecaca 100%)',
+                border: '1px solid',
+                borderColor: 'error.200',
+              }}
+            >
               <CardContent>
-                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'error.main', mb: 1 }}>
-                  {investigations.filter(inv => inv.overall_risk_score >= 0.7).length}
+                <Typography
+                  variant="h4"
+                  component="div"
+                  sx={{ fontWeight: 700, color: 'error.main', mb: 1 }}
+                >
+                  {
+                    investigations.filter(
+                      (inv) => inv.overall_risk_score >= 0.7,
+                    ).length
+                  }
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   High Risk Cases
@@ -417,14 +454,26 @@ const Investigations: React.FC<InvestigationsProps> = ({
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ 
-              background: 'linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%)',
-              border: '1px solid',
-              borderColor: 'warning.200'
-            }}>
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%)',
+                border: '1px solid',
+                borderColor: 'warning.200',
+              }}
+            >
               <CardContent>
-                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'warning.main', mb: 1 }}>
-                  {investigations.filter(inv => inv.overall_risk_score >= 0.4 && inv.overall_risk_score < 0.7).length}
+                <Typography
+                  variant="h4"
+                  component="div"
+                  sx={{ fontWeight: 700, color: 'warning.main', mb: 1 }}
+                >
+                  {
+                    investigations.filter(
+                      (inv) =>
+                        inv.overall_risk_score >= 0.4 &&
+                        inv.overall_risk_score < 0.7,
+                    ).length
+                  }
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Medium Risk Cases
@@ -433,14 +482,23 @@ const Investigations: React.FC<InvestigationsProps> = ({
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card sx={{ 
-              background: 'linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)',
-              border: '1px solid',
-              borderColor: 'success.200'
-            }}>
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)',
+                border: '1px solid',
+                borderColor: 'success.200',
+              }}
+            >
               <CardContent>
-                <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: 'success.main', mb: 1 }}>
-                  {investigations.filter(inv => inv.overall_risk_score < 0.4).length}
+                <Typography
+                  variant="h4"
+                  component="div"
+                  sx={{ fontWeight: 700, color: 'success.main', mb: 1 }}
+                >
+                  {
+                    investigations.filter((inv) => inv.overall_risk_score < 0.4)
+                      .length
+                  }
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Low Risk Cases
@@ -500,49 +558,70 @@ const Investigations: React.FC<InvestigationsProps> = ({
       )}
 
       {/* Loading Progress */}
-      {loading && (
-        <LinearProgress sx={{ mb: 3 }} />
-      )}
+      {loading && <LinearProgress sx={{ mb: 3 }} />}
 
       {/* Investigations Table */}
-      <Paper sx={{ 
-        borderRadius: 3,
-        overflow: 'hidden',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-      }}>
+      <Paper
+        sx={{
+          borderRadius: 3,
+          overflow: 'hidden',
+          boxShadow:
+            '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        }}
+      >
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: 'grey.50' }}>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={selected.length === investigations.length && investigations.length > 0}
-                    indeterminate={selected.length > 0 && selected.length < investigations.length}
+                    checked={
+                      selected.length === investigations.length &&
+                      investigations.length > 0
+                    }
+                    indeterminate={
+                      selected.length > 0 &&
+                      selected.length < investigations.length
+                    }
                     onChange={handleSelectAll}
                     sx={{ color: 'primary.main' }}
                   />
                 </TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Entity</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Type</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Policy Comments</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Investigator Comments</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Risk Score</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  ID
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Entity
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Type
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Policy Comments
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Investigator Comments
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Risk Score
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {investigations.map((inv) => (
-                <TableRow 
-                  key={inv.id} 
+                <TableRow
+                  key={inv.id}
                   hover
-                  sx={{ 
-                    '&:hover': { 
+                  sx={{
+                    '&:hover': {
                       backgroundColor: 'primary.50',
                       '& .MuiTableCell-root': {
-                        borderBottom: '1px solid ' + theme.palette.primary.main
-                      }
-                    }
+                        borderBottom: '1px solid ' + theme.palette.primary.main,
+                      },
+                    },
                   }}
                 >
                   <TableCell padding="checkbox">
@@ -553,7 +632,10 @@ const Investigations: React.FC<InvestigationsProps> = ({
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 600, color: 'text.primary' }}
+                    >
                       {inv.id}
                     </Typography>
                   </TableCell>
@@ -571,12 +653,20 @@ const Investigations: React.FC<InvestigationsProps> = ({
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 200 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ maxWidth: 200 }}
+                    >
                       {inv.policy_comments}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 200 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ maxWidth: 200 }}
+                    >
                       {inv.investigator_comments}
                     </Typography>
                   </TableCell>
@@ -592,12 +682,12 @@ const Investigations: React.FC<InvestigationsProps> = ({
                     <IconButton
                       onClick={() => handleViewInvestigation(inv.id)}
                       size="small"
-                      sx={{ 
+                      sx={{
                         color: 'primary.main',
-                        '&:hover': { 
+                        '&:hover': {
                           backgroundColor: 'primary.50',
-                          color: 'primary.dark'
-                        }
+                          color: 'primary.dark',
+                        },
                       }}
                     >
                       <ViewIcon />
@@ -612,14 +702,16 @@ const Investigations: React.FC<InvestigationsProps> = ({
 
       {/* Empty State */}
       {investigations.length === 0 && !loading && (
-        <Box sx={{ 
-          textAlign: 'center', 
-          py: 8,
-          backgroundColor: 'grey.50',
-          borderRadius: 3,
-          border: '2px dashed',
-          borderColor: 'grey.300'
-        }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            backgroundColor: 'grey.50',
+            borderRadius: 3,
+            border: '2px dashed',
+            borderColor: 'grey.300',
+          }}
+        >
           <BugReportIcon sx={{ fontSize: 64, color: 'grey.400', mb: 2 }} />
           <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
             No investigations found

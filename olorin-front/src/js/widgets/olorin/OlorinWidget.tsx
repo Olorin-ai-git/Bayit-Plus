@@ -21,10 +21,13 @@ interface OlorinWidgetState {
 /**
  * Olorin Widget - Main widget component for the Olorin investigation system
  */
-class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState> {
+class OlorinWidget extends React.Component<
+  OlorinWidgetProps,
+  OlorinWidgetState
+> {
   constructor(props: OlorinWidgetProps) {
     super(props);
-    
+
     this.state = {
       isVisible: true,
       investigationId: null,
@@ -37,7 +40,7 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
   componentDidMount() {
     const { sandbox } = this.props;
     sandbox.logger?.log('olorin widget mounted.');
-    
+
     // Listen for messages from the parent application
     if (sandbox.on) {
       sandbox.on('message', this.handleMessage);
@@ -56,7 +59,7 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
    */
   handleMessage = (message: any) => {
     const { sandbox } = this.props;
-    
+
     switch (message.type) {
       case 'START_INVESTIGATION':
         this.setState({
@@ -64,9 +67,11 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
           userId: message.userId || this.state.userId,
           entityType: message.entityType || this.state.entityType,
         });
-        sandbox.logger?.log(`Investigation started: ${JSON.stringify(message)}`);
+        sandbox.logger?.log(
+          `Investigation started: ${JSON.stringify(message)}`,
+        );
         break;
-        
+
       case 'UPDATE_USER':
         this.setState({
           userId: message.userId,
@@ -74,11 +79,11 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
         });
         sandbox.logger?.log(`Message received: ${JSON.stringify(message)}`);
         break;
-        
+
       case 'TOGGLE_VISIBILITY':
         this.setState({ isVisible: !this.state.isVisible });
         break;
-        
+
       default:
         sandbox.logger?.log(`Unknown message type: ${message.type}`);
     }
@@ -89,14 +94,16 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
    */
   initializeWidget = () => {
     const { sandbox } = this.props;
-    
+
     // Set up default configuration
     const config = {
       entityType: this.state.entityType,
       userId: this.state.userId,
     };
-    
-    sandbox.logger?.log(`Widget initialized with config: ${JSON.stringify(config)}`);
+
+    sandbox.logger?.log(
+      `Widget initialized with config: ${JSON.stringify(config)}`,
+    );
   };
 
   /**
@@ -104,9 +111,9 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
    */
   handleInvestigationComplete = (results: any) => {
     const { sandbox } = this.props;
-    
+
     sandbox.logger?.log(`Investigation completed: ${JSON.stringify(results)}`);
-    
+
     // Send results back to parent application
     if (sandbox.send) {
       sandbox.send('INVESTIGATION_COMPLETE', {
@@ -122,9 +129,13 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
    */
   handleInvestigationError = (error: any) => {
     const { sandbox } = this.props;
-    
-    sandbox.logger?.error(`Investigation error: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
-    
+
+    sandbox.logger?.error(
+      `Investigation error: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`,
+    );
+
     // Send error back to parent application
     if (sandbox.send) {
       sandbox.send('INVESTIGATION_ERROR', {
@@ -135,13 +146,16 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
     }
   };
 
-  handleTabChange = (tab: 'investigation' | 'investigations' | 'settings' | 'rag') => {
+  handleTabChange = (
+    tab: 'investigation' | 'investigations' | 'settings' | 'rag',
+  ) => {
     this.setState({ activeTab: tab });
   };
 
   render() {
-    const { isVisible, investigationId, userId, entityType, activeTab } = this.state;
-    
+    const { isVisible, investigationId, userId, entityType, activeTab } =
+      this.state;
+
     if (!isVisible) {
       return (
         <div style={{ padding: '1rem', textAlign: 'center' }}>
@@ -154,9 +168,7 @@ class OlorinWidget extends React.Component<OlorinWidgetProps, OlorinWidgetState>
       <div className="flex flex-row h-screen">
         <div className="flex-1" data-cy="olorin-webplugin-div">
           {activeTab === 'investigation' && (
-            <InvestigationPage
-              investigationId={investigationId}
-            />
+            <InvestigationPage investigationId={investigationId} />
           )}
           {activeTab === 'investigations' && (
             <Investigations

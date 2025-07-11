@@ -45,6 +45,7 @@ from app.persistence import (
     update_investigation,
 )
 from app.router.demo_router import demo_cache, demo_mode_users
+from app.security.auth import User, require_read, require_write
 from app.service.agent.ato_agents.location_data_agent.client import (
     LocationDataClient,
     LocationInfo,
@@ -65,7 +66,6 @@ from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
 from .device_router import analyze_device
 from .device_router import router as device_router
 from .investigations_router import investigations_router
-from app.security.auth import require_read, require_write, User
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -75,11 +75,12 @@ router = APIRouter(prefix="/api")
 # Load API key from environment variable
 OLORIN_API_KEY = os.getenv("OLORIN_API_KEY", "")
 
+
 def get_default_headers():
     """Get default headers with API key from environment."""
     if not OLORIN_API_KEY:
         logger.warning("OLORIN_API_KEY not set in environment variables")
-    
+
     return {
         "Authorization": f"Olorin_APIKey olorin_apikey={OLORIN_API_KEY},olorin_apikey_version=1.0",
         "Content-Type": "application/json",
@@ -87,6 +88,7 @@ def get_default_headers():
         "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
         "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
     }
+
 
 location_data_client = LocationDataClient()
 
@@ -121,11 +123,11 @@ from .demo_router import router as demo_router
 from .location_router import router as location_router
 from .logs_router import router as logs_router
 from .mcp_http_router import router as mcp_http_router
-from .settings_router import router as settings_router
 
 # --- IMPORT NEW ROUTERS ---
 from .network_router import router as network_router
 from .risk_assessment_router import risk_assessment_router
+from .settings_router import router as settings_router
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -170,9 +172,6 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
 
 
 @router.get("/logs/{user_id}")
@@ -257,7 +256,7 @@ async def analyze_logs(
                 splunk_data = []
 
         sanitized_data = sanitize_splunk_data(splunk_data)
-        
+
         # --- LLM Prompt Construction ---
         prompt_data = {
             "user_id": user_id,

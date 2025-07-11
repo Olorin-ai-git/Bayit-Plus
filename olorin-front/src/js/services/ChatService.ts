@@ -21,7 +21,7 @@ export async function saveComment(
   if (isDemoModeActive()) {
     console.log('Demo mode active - simulating comment save');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     return {
       ...message,
       investigationId,
@@ -60,7 +60,7 @@ export async function fetchCommentMessages(
   if (isDemoModeActive()) {
     console.log('Demo mode active - using mock comment messages');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     return getMockMessages('Investigator', entityType);
   }
 
@@ -86,13 +86,13 @@ export const fetchChatMessages = fetchCommentMessages;
  */
 export async function fetchCommentLog(
   investigationId: string,
-  sender: 'Investigator' | 'Policy Team',
+  sender: 'Investigator' | 'Policy Team' | 'System Prompt Instructions',
   entityType: string = 'user_id',
 ): Promise<CommentMessage[]> {
   if (isDemoModeActive()) {
     console.log('Demo mode active - using mock comment log');
     // Simulate network delay for realistic demo experience
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     return getMockMessages(sender, entityType);
   }
   const res = await fetch(
@@ -110,56 +110,41 @@ export const getMockMessages = (
   entityType: string = 'user_id',
 ): CommentMessage[] => {
   const now = Date.now();
-  if (sender === 'Investigator') {
+  if (sender === 'System Prompt Instructions') {
     return [
       {
         entityId: 'user1',
         entityType,
-        sender: 'Investigator',
-        text: 'Started investigation.',
+        sender: 'System Prompt Instructions',
+        text: 'Focus on device fingerprint anomalies and geographical location shifts.',
         timestamp: now - 60000,
         investigationId: 'INV-123',
       },
       {
         entityId: 'user1',
         entityType,
-        sender: 'Investigator',
-        text: 'Reviewed login history.',
+        sender: 'System Prompt Instructions',
+        text: 'Check for rapid IP changes between countries.',
         timestamp: now - 40000,
         investigationId: 'INV-123',
       },
       {
         entityId: 'user1',
         entityType,
-        sender: 'Investigator',
-        text: 'No anomalies found in device signals.',
+        sender: 'System Prompt Instructions',
+        text: 'Verify if MFA is enabled for this account.',
         timestamp: now - 20000,
         investigationId: 'INV-123',
       },
     ];
   }
+  // Default fallback for legacy code
   return [
     {
       entityId: 'user1',
       entityType,
-      sender: 'Policy Team',
-      text: "Please check the user's recent location changes.",
-      timestamp: now - 55000,
-      investigationId: 'INV-123',
-    },
-    {
-      entityId: 'user1',
-      entityType,
-      sender: 'Policy Team',
-      text: 'Policy review in progress.',
-      timestamp: now - 30000,
-      investigationId: 'INV-123',
-    },
-    {
-      entityId: 'user1',
-      entityType,
-      sender: 'Policy Team',
-      text: 'Escalate if risk score is high.',
+      sender: sender,
+      text: 'System prompt instruction placeholder.',
       timestamp: now - 10000,
       investigationId: 'INV-123',
     },

@@ -2,13 +2,14 @@
 JWT Authentication and Authorization for Olorin API
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict, Any
 import os
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import HTTPException, status, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 
@@ -87,7 +88,9 @@ def get_user(db: Dict[str, Any], username: str) -> Optional[UserInDB]:
     return None
 
 
-def authenticate_user(fake_db: Dict[str, Any], username: str, password: str) -> Optional[UserInDB]:
+def authenticate_user(
+    fake_db: Dict[str, Any], username: str, password: str
+) -> Optional[UserInDB]:
     """Authenticate a user."""
     user = get_user(fake_db, username)
     if not user:
@@ -109,14 +112,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> User:
     """Get the current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -126,11 +131,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         token_data = TokenData(username=username, scopes=payload.get("scopes", []))
     except JWTError:
         raise credentials_exception
-    
+
     user = get_user(fake_users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
-    
+
     return User(
         username=user.username,
         email=user.email,
@@ -140,7 +145,9 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     )
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
     """Get the current active user."""
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -149,14 +156,18 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 def require_scopes(required_scopes: list[str]):
     """Dependency to require specific scopes."""
-    async def check_scopes(current_user: User = Depends(get_current_active_user)) -> User:
+
+    async def check_scopes(
+        current_user: User = Depends(get_current_active_user),
+    ) -> User:
         for scope in required_scopes:
             if scope not in current_user.scopes:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail=f"Operation requires scope: {scope}"
+                    detail=f"Operation requires scope: {scope}",
                 )
         return current_user
+
     return check_scopes
 
 
@@ -168,7 +179,7 @@ require_admin = require_scopes(["admin"])
 
 class SecurityHeaders:
     """Security headers for responses."""
-    
+
     @staticmethod
     def get_headers() -> Dict[str, str]:
         return {

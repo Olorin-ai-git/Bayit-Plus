@@ -13,7 +13,7 @@ interface OverallRiskScoreProps {
 
 const OverallRiskScore: React.FC<OverallRiskScoreProps> = ({ score }) => {
   const theme = useTheme();
-  
+
   return (
     <Paper
       elevation={2}

@@ -58,57 +58,51 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   // Parse and render the text safely
   const renderFormattedText = () => {
     const visibleText = text.substring(0, displayedCharCount);
-    
+
     // Configure DOMPurify to only allow specific tags and attributes
     const cleanHTML = DOMPurify.sanitize(visibleText, {
       ALLOWED_TAGS: ['span', 'strong', 'em'],
       ALLOWED_ATTR: ['class'],
       KEEP_CONTENT: true,
     });
-    
+
     // Parse the sanitized HTML and convert to React elements
     const parser = new DOMParser();
     const doc = parser.parseFromString(cleanHTML, 'text/html');
-    
+
     const convertNodeToReact = (node: Node, index: number): React.ReactNode => {
       if (node.nodeType === Node.TEXT_NODE) {
         return node.textContent;
       }
-      
+
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element;
-        const children = Array.from(node.childNodes).map((child, i) => 
-          convertNodeToReact(child, i)
+        const children = Array.from(node.childNodes).map((child, i) =>
+          convertNodeToReact(child, i),
         );
-        
+
         const props: any = { key: index };
         if (element.className) {
           props.className = element.className;
         }
-        
+
         return React.createElement(
           element.tagName.toLowerCase(),
           props,
-          children
+          children,
         );
       }
-      
+
       return null;
     };
-    
-    return Array.from(doc.body.childNodes).map((node, index) => 
-      convertNodeToReact(node, index)
+
+    return Array.from(doc.body.childNodes).map((node, index) =>
+      convertNodeToReact(node, index),
     );
   };
 
-  return (
-    <span className={className}>
-      {renderFormattedText()}
-    </span>
-  );
+  return <span className={className}>{renderFormattedText()}</span>;
 };
-
-
 
 /**
  * A blinking caret component that appears after each log message for 3 seconds
@@ -349,7 +343,7 @@ const AgentLogSidebar: React.FC<AgentLogSidebarProps> = ({
     // Also format <strong> tags that might be in the original message
     formattedMessage = formattedMessage.replace(
       /&lt;strong&gt;(.*?)&lt;\/strong&gt;/g,
-      '<strong>$1</strong>'
+      '<strong>$1</strong>',
     );
 
     return formattedMessage;

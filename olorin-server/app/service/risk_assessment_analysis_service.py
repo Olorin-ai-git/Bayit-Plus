@@ -91,7 +91,11 @@ class RiskAssessmentAnalysisService:
             )
             # Return fallback assessment
             return self.llm_service.create_fallback_assessment(
-                user_id=user_id, error=e, **domain_data
+                user_id=user_id,
+                extracted_signals=[],
+                error_type="exception",
+                error_message=str(e),
+                **domain_data,
             )
 
     def _build_response(
@@ -106,6 +110,7 @@ class RiskAssessmentAnalysisService:
             "userId": user_id,
             "overallRiskScore": llm_assessment.overall_risk_score,
             "accumulatedLLMThoughts": llm_assessment.accumulated_llm_thoughts,
+            "remediationActions": llm_assessment.remediation_actions,
             "investigationId": investigation_id,
         }
 
@@ -120,6 +125,10 @@ class RiskAssessmentAnalysisService:
             "userId": user_id,
             "overallRiskScore": 0.0,
             "accumulatedLLMThoughts": f"Risk assessment error: {error_str}",
+            "remediationActions": [
+                "Review error logs",
+                "Contact support if issue persists",
+            ],
             "investigationId": investigation_id,
             "error": True,
             "llm_error_details": {

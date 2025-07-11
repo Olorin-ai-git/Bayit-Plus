@@ -1,7 +1,4 @@
-import RestService, {
-  ApiMethod,
-  RestResponse,
-} from './restService';
+import RestService, { ApiMethod, RestResponse } from './restService';
 import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
 import networkMock from '../../mock/network.json';
@@ -276,22 +273,22 @@ export class OlorinService {
     options?: any,
   ): Promise<RestResponse> {
     const config = getApiConfig(action);
-    
+
     // For certain endpoints, entity_id is part of the path
     const pathBasedEndpoints = [
-      'analyzeNetwork', 
-      'analyzeLocation', 
-      'analyzeDevice', 
+      'analyzeNetwork',
+      'analyzeLocation',
+      'analyzeDevice',
       'analyzeLogs',
       'getOii',
       'oiiLocationSource',
       'businessLocationSource',
       'phoneLocationSource',
       'locationRiskAnalysis',
-      'assessRisk'
+      'assessRisk',
     ];
     let url: string;
-    
+
     if (pathBasedEndpoints.includes(action)) {
       // Entity ID is part of the path for these endpoints
       const params = new URLSearchParams({
@@ -302,12 +299,14 @@ export class OlorinService {
     } else {
       // Entity ID is a query parameter for other endpoints
       const params = new URLSearchParams({
-        ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
+        ...(entityType === 'user_id'
+          ? { user_id: entityId }
+          : { device_id: entityId }),
         ...queryParams,
       });
       url = `${config.apiPath}?${params.toString()}`;
     }
-    
+
     const requestOptions = {
       ...generateRequestOptions(),
       ...options,
@@ -345,7 +344,9 @@ export class OlorinService {
   ): Promise<RestResponse> {
     const config = getApiConfig(action);
     const params = new URLSearchParams({
-      ...(entityType === 'user_id' ? { user_id: entityId } : { device_id: entityId }),
+      ...(entityType === 'user_id'
+        ? { user_id: entityId }
+        : { device_id: entityId }),
       ...queryParams,
     });
 
@@ -385,11 +386,11 @@ export class OlorinService {
     if (this.useMock || isDemoModeActive()) {
       console.log('Demo mode active - using mock risk assessment data');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return {
         status: 200,
         tid: 'demo-risk-assessment',
-        data: riskMock
+        data: riskMock,
       };
     }
     return this.get(entityId, 'assessRisk', entityType, {
@@ -427,9 +428,12 @@ export class OlorinService {
     investigationMode?: 'autonomous' | 'manual',
   ): Promise<RestResponse> {
     if (this.useMock || isDemoModeActive()) {
-      console.log('Demo mode active - using mock network data', investigationMode ? `(${investigationMode} mode)` : '');
+      console.log(
+        'Demo mode active - using mock network data',
+        investigationMode ? `(${investigationMode} mode)` : '',
+      );
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       return OlorinService.getMockResponse('network', investigationMode);
     }
     return this.get(entityId, 'analyzeNetwork', entityType, {
@@ -455,7 +459,7 @@ export class OlorinService {
     if (this.useMock || isDemoModeActive()) {
       console.log('Demo mode active - using mock location data');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 1800));
+      await new Promise((resolve) => setTimeout(resolve, 1800));
       return OlorinService.getMockResponse('location');
     }
     return this.get(entityId, 'analyzeLocation', entityType, {
@@ -481,7 +485,7 @@ export class OlorinService {
     if (this.useMock || isDemoModeActive()) {
       console.log('Demo mode active - using mock device data');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       return OlorinService.getMockResponse('device');
     }
     return this.get(entityId, 'analyzeDevice', entityType, {
@@ -506,9 +510,12 @@ export class OlorinService {
     investigationMode?: 'autonomous' | 'manual',
   ): Promise<RestResponse> {
     if (this.useMock || isDemoModeActive()) {
-      console.log('Demo mode active - using mock logs data', investigationMode ? `(${investigationMode} mode)` : '');
+      console.log(
+        'Demo mode active - using mock logs data',
+        investigationMode ? `(${investigationMode} mode)` : '',
+      );
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       return OlorinService.getMockResponse('logs', investigationMode);
     }
     return this.get(entityId, 'analyzeLogs', entityType, {
@@ -533,7 +540,7 @@ export class OlorinService {
     if (isDemoModeActive()) {
       console.log('Demo mode active - simulating getInvestigationWithHeaders');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
       return {
         status: 200,
         tid: 'demo-get-investigation',
@@ -544,7 +551,7 @@ export class OlorinService {
           status: 'active',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        }
+        },
       };
     }
 
@@ -588,7 +595,7 @@ export class OlorinService {
     if (isDemoModeActive()) {
       console.log('Demo mode active - simulating createInvestigation');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       return {
         status: 201,
         tid: 'demo-create-investigation',
@@ -598,7 +605,7 @@ export class OlorinService {
           entity_type: entityType,
           status: 'created',
           created_at: new Date().toISOString(),
-        }
+        },
       };
     }
 
@@ -636,11 +643,11 @@ export class OlorinService {
     if (isDemoModeActive()) {
       console.log('Demo mode active - using mock investigations list');
       // Simulate network delay for realistic demo experience
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       return {
         status: 200,
         tid: 'demo-get-investigations',
-        data: [] // Empty list for demo mode - investigations will be handled by Investigations component mock data
+        data: [], // Empty list for demo mode - investigations will be handled by Investigations component mock data
       };
     }
 
@@ -779,7 +786,9 @@ export class OlorinService {
           data: mockData,
         };
       } catch (error) {
-        console.warn(`Mode-specific mock file not found for ${type}-${investigationMode}, falling back to default`);
+        console.warn(
+          `Mode-specific mock file not found for ${type}-${investigationMode}, falling back to default`,
+        );
       }
     }
 
