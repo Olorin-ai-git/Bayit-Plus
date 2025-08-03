@@ -1,5 +1,5 @@
 import { BaseApiService } from './BaseApiService';
-import { isDemoModeActive } from '../utils/urlParams';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 import {
   mockRAGResponses,
   mockFieldMappings,

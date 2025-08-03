@@ -1,7 +1,7 @@
 import { CommentMessage } from '../components/CommentWindow';
 import { processCommentData } from '../utils/investigationDataUtils';
 import { CommentResponse } from '../types/ApiResponses';
-import { isDemoModeActive } from '../utils/urlParams';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 
 /**
  * Saves a comment for a given investigation and user.

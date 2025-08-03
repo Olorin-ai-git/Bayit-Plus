@@ -19,12 +19,10 @@ import InvestigationPage from './js/pages/InvestigationPage';
 import Investigations from './js/pages/Investigations';
 import Settings from './js/pages/Settings';
 import { SandboxProvider } from './js/hooks/useSandboxContext';
+import { DemoModeProvider } from './js/contexts/DemoModeContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import RootRedirect from './components/RootRedirect';
 
-// Custom redirect component that preserves URL parameters
-const ParameterPreservingRedirect: React.FC<{ to: string }> = ({ to }) => {
-  const redirectPath = preserveUrlParams(to);
-  return <Navigate to={redirectPath} replace />;
-};
 
 // Create theme with Olorin colors
 const theme = createTheme({
@@ -163,31 +161,51 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <SandboxProvider>
-        <Router
-          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-        >
-          <Layout>
+      <DemoModeProvider>
+        <SandboxProvider>
+          <Router
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
+            <Layout>
             <Routes>
               <Route
                 path="/"
-                element={<ParameterPreservingRedirect to="/investigations" />}
+                element={<RootRedirect />}
               />
-              <Route path="/investigations" element={<Investigations />} />
-              <Route path="/investigation" element={<InvestigationPage />} />
+              <Route 
+                path="/investigations" 
+                element={<ProtectedRoute element={<Investigations />} allowedInDemo={false} />} 
+              />
+              <Route 
+                path="/investigation" 
+                element={<ProtectedRoute element={<InvestigationPage />} allowedInDemo={true} />} 
+              />
               <Route
                 path="/investigation/:id"
-                element={<InvestigationPage />}
+                element={<ProtectedRoute element={<InvestigationPage />} allowedInDemo={true} />}
               />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/rag" element={<RAGPage />} />
+              <Route 
+                path="/settings" 
+                element={<ProtectedRoute element={<Settings />} allowedInDemo={false} />} 
+              />
+              <Route 
+                path="/rag" 
+                element={<ProtectedRoute element={<RAGPage />} allowedInDemo={true} />} 
+              />
               {/* Legacy routes for backward compatibility */}
-              <Route path="/home" element={<Home />} />
-              <Route path="/legacy-investigation" element={<Investigation />} />
+              <Route 
+                path="/home" 
+                element={<ProtectedRoute element={<Home />} allowedInDemo={false} />} 
+              />
+              <Route 
+                path="/legacy-investigation" 
+                element={<ProtectedRoute element={<Investigation />} allowedInDemo={false} />} 
+              />
             </Routes>
           </Layout>
-        </Router>
-      </SandboxProvider>
+          </Router>
+        </SandboxProvider>
+      </DemoModeProvider>
     </ThemeProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { LogLevel } from '../types/RiskAssessment';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 
 export interface AutonomousInvestigationOptions {
   apiBaseUrl?: string;
@@ -117,6 +118,12 @@ export class AutonomousInvestigationClient {
     entityId: string,
     entityType: string,
   ): Promise<string> {
+    // In demo mode, return a mock investigation ID
+    if (isDemoModeActive()) {
+      this.log('Demo mode active - returning mock investigation ID', LogLevel.INFO);
+      return `demo-investigation-${Date.now()}`;
+    }
+
     const response = await fetch(
       `${this.apiBaseUrl}/agent/start/${entityId}?entity_type=${entityType}`,
       {
@@ -156,6 +163,13 @@ export class AutonomousInvestigationClient {
   private async connectToWebSocket(): Promise<void> {
     if (!this.investigationId) {
       throw new Error('No investigation ID available for WebSocket connection');
+    }
+
+    // In demo mode, simulate WebSocket connection without actually connecting
+    if (isDemoModeActive()) {
+      this.log('Demo mode active - simulating WebSocket connection', LogLevel.INFO);
+      this.simulateDemoWebSocket();
+      return Promise.resolve();
     }
 
     const wsUrl = `${this.wsBaseUrl}/ws/${this.investigationId}?parallel=${this.parallel}`;
@@ -408,6 +422,16 @@ export class AutonomousInvestigationClient {
       throw new Error('No active investigation');
     }
 
+    // In demo mode, return mock status
+    if (isDemoModeActive()) {
+      return {
+        investigation_id: this.investigationId,
+        status: 'completed',
+        progress: 100,
+        message: 'Demo investigation completed',
+      };
+    }
+
     const response = await fetch(
       `${this.apiBaseUrl}/agent/status/${this.investigationId}`,
     );
@@ -448,5 +472,51 @@ export class AutonomousInvestigationClient {
   private log(message: string, level: LogLevel = LogLevel.INFO): void {
     console.log(`[AutonomousClient] ${message}`);
     this.eventHandlers.onLog?.(message, level);
+  }
+
+  /**
+   * Simulate WebSocket events in demo mode
+   */
+  private simulateDemoWebSocket(): void {
+    // Simulate investigation phases with delays
+    const phases = [
+      { phase: 'initialization', progress: 10, message: 'Starting investigation...' },
+      { phase: 'network_analysis', progress: 30, message: 'Analyzing network patterns...' },
+      { phase: 'location_analysis', progress: 50, message: 'Analyzing location data...' },
+      { phase: 'device_analysis', progress: 70, message: 'Analyzing device fingerprints...' },
+      { phase: 'logs_analysis', progress: 90, message: 'Analyzing activity logs...' },
+      { phase: 'risk_assessment', progress: 100, message: 'Calculating risk score...' },
+    ];
+
+    let phaseIndex = 0;
+    const simulatePhase = () => {
+      if (phaseIndex < phases.length) {
+        const phase = phases[phaseIndex];
+        const data: InvestigationPhaseData = {
+          ...phase,
+          timestamp: new Date().toISOString(),
+        };
+        
+        this.handlePhaseProgress(data);
+        phaseIndex++;
+        
+        // Schedule next phase
+        setTimeout(simulatePhase, 2000);
+      } else {
+        // Send completion status
+        const statusData: InvestigationStatusData = {
+          type: 'investigation_status',
+          investigation_id: this.investigationId || 'demo-id',
+          status: 'completed',
+          progress: 100,
+          message: 'Demo investigation completed successfully',
+          timestamp: new Date().toISOString(),
+        };
+        this.handleStatusUpdate(statusData);
+      }
+    };
+
+    // Start simulation after a short delay
+    setTimeout(simulatePhase, 1000);
   }
 }
