@@ -30,12 +30,16 @@ yarn-error.log*
 # Python
 __pycache__/
 */__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 *.pyc
 *.pyo
 *.pyd
+**/*.pyc
+**/*.pyo
+**/*.pyd
 
 # Python virtual environments
 venv/
@@ -102,8 +106,29 @@ ipython_config.py
 
 # Environments
 .env
+.env.*
 .env.test
 .env.production
+.env.local
+.env.secure
+.env.development
+.env.staging
+
+# Credentials and Secrets (NEVER COMMIT)
+ADMIN_CREDENTIALS.txt
+*credentials*
+*secrets*
+*.key
+*.pem
+*.p12
+*.jks
+api_keys.txt
+passwords.txt
+.secrets
+.secrets.*
+secrets/
+credentials/
+keys/
 
 # Logs
 logs
