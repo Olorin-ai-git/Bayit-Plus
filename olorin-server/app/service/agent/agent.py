@@ -7,6 +7,11 @@ from langchain_core.runnables.config import RunnableConfig
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 
+# Import new pattern-based agent system
+from app.service.agent.agent_factory import get_agent_factory, create_agent, execute_agent
+from app.service.agent.patterns import PatternType, PatternConfig
+from app.service.agent.websocket_streaming_service import WebSocketStreamingService
+
 # LangGraph imports may fail if dependencies (langchain_core.tracers) are missing
 try:
     from langgraph.graph import START, MessagesState, StateGraph
@@ -790,3 +795,217 @@ def create_and_get_agent_graph(parallel: bool = True):
     )
 
     return agent_graph
+
+
+# New Pattern-Based Investigation Function
+
+async def investigate_with_patterns(
+    entity_id: str,
+    entity_type: str,
+    investigation_type: str = "fraud_investigation",
+    use_pattern: str = "auto",
+    investigation_id: Optional[str] = None,
+    agent_context: Optional[AgentContext] = None,
+    request: Optional[Request] = None
+) -> dict:
+    """
+    Conduct investigation using new pattern-based agent system.
+    
+    Args:
+        entity_id: ID of entity to investigate
+        entity_type: Type of entity (user, device, transaction, etc.)
+        investigation_type: Type of investigation to conduct
+        use_pattern: Pattern to use ('auto', 'routing', 'chaining', 'orchestration', etc.)
+        investigation_id: Optional investigation ID
+        agent_context: Agent execution context
+        request: FastAPI request object
+        
+    Returns:
+        Investigation results from pattern-based execution
+    """
+    
+    logger.info(f"Starting pattern-based investigation: {investigation_type} for {entity_type} {entity_id}")
+    
+    # Generate investigation ID if not provided
+    if not investigation_id:
+        from uuid import uuid4
+        investigation_id = str(uuid4())
+    
+    # Create WebSocket streaming service
+    ws_streaming = WebSocketStreamingService(
+        investigation_id=investigation_id,
+        websocket_manager=websocket_manager,
+        entity_context={
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "investigation_type": investigation_type
+        }
+    )
+    
+    try:
+        # Send investigation start event
+        await ws_streaming.send_investigation_start(
+            investigation_type=investigation_type,
+            entity_details={
+                "entity_id": entity_id,
+                "entity_type": entity_type,
+                "priority": "high",
+                "estimated_completion": "3-5 minutes"
+            }
+        )
+        
+        # Prepare investigation context
+        context = {
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "investigation_id": investigation_id,
+            "investigation_type": investigation_type,
+            "agent_context": agent_context,
+            "request": request,
+            "use_enhanced_patterns": True,
+            "time_range": "24h"  # Default time range
+        }
+        
+        # Add pattern-specific configuration
+        if use_pattern == "auto":
+            # Use routing pattern to automatically select best approach
+            agent_type = "routing"
+        elif use_pattern == "comprehensive":
+            agent_type = "comprehensive"
+            context["chain_type"] = "fraud_investigation"
+        elif use_pattern == "parallel":
+            agent_type = "parallel_analysis"
+            context["parallel_strategy"] = "domain_based"
+        elif use_pattern == "orchestration":
+            agent_type = "orchestration"
+        elif use_pattern == "chaining":
+            agent_type = investigation_type
+            context["chain_type"] = investigation_type
+        elif use_pattern == "optimization":
+            agent_type = "quality_assurance"
+        else:
+            agent_type = use_pattern
+        
+        logger.info(f"Selected agent type: {agent_type} for pattern: {use_pattern}")
+        
+        # Create pattern-based agent
+        agent = create_agent(
+            agent_type=agent_type,
+            context=context,
+            ws_streaming=ws_streaming,
+            tools=tools  # Use existing tools from global scope
+        )
+        
+        # Create investigation message
+        investigation_message = HumanMessage(
+            content=f"""
+            Conduct a comprehensive fraud investigation for {entity_type} {entity_id}.
+            
+            Investigation Details:
+            - Entity ID: {entity_id}
+            - Entity Type: {entity_type}
+            - Investigation Type: {investigation_type}
+            - Investigation ID: {investigation_id}
+            
+            Please provide:
+            1. Comprehensive risk assessment
+            2. Detailed analysis of suspicious patterns
+            3. Evidence-based conclusions
+            4. Actionable recommendations
+            5. Confidence scores for findings
+            
+            Use all available tools to gather comprehensive evidence.
+            """
+        )
+        
+        # Execute pattern-based investigation
+        result = await execute_agent(
+            agent=agent,
+            messages=[investigation_message],
+            context=context
+        )
+        
+        # Format results for consistency with legacy system
+        if hasattr(result, 'success') and result.success:
+            # Pattern-based result
+            investigation_result = {
+                "investigation_id": investigation_id,
+                "entity_id": entity_id,
+                "entity_type": entity_type,
+                "pattern_used": use_pattern,
+                "agent_type": agent_type,
+                "success": True,
+                "results": result.result,
+                "confidence": result.confidence_score,
+                "reasoning": result.reasoning,
+                "execution_metadata": {
+                    "pattern_execution": True,
+                    "metrics": result.metrics.__dict__ if hasattr(result, 'metrics') and result.metrics else None,
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            }
+            
+            # Send completion event
+            await ws_streaming.send_investigation_complete(
+                success=True,
+                results=investigation_result,
+                execution_summary={
+                    "pattern_used": use_pattern,
+                    "agent_type": agent_type,
+                    "confidence": result.confidence_score
+                }
+            )
+            
+        else:
+            # Handle pattern execution failure
+            error_message = getattr(result, 'error_message', 'Pattern execution failed')
+            investigation_result = {
+                "investigation_id": investigation_id,
+                "entity_id": entity_id,
+                "entity_type": entity_type,
+                "pattern_used": use_pattern,
+                "agent_type": agent_type,
+                "success": False,
+                "error": error_message,
+                "execution_metadata": {
+                    "pattern_execution": True,
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            }
+            
+            # Send error event
+            await ws_streaming.send_error(error_message, {"pattern": use_pattern})
+        
+        return investigation_result
+        
+    except Exception as e:
+        logger.error(f"Pattern-based investigation failed: {str(e)}", exc_info=True)
+        
+        # Send error event
+        await ws_streaming.send_error(str(e), {"entity_id": entity_id, "pattern": use_pattern})
+        
+        return {
+            "investigation_id": investigation_id,
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "pattern_used": use_pattern,
+            "success": False,
+            "error": f"Investigation failed: {str(e)}",
+            "execution_metadata": {
+                "pattern_execution": True,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        }
+        
+    finally:
+        # Close streaming service
+        await ws_streaming.close()
+
+
+# Factory Statistics Endpoint Helper
+
+def get_agent_factory_stats() -> dict:
+    """Get statistics from the pattern-based agent factory"""
+    
+    factory = get_agent_factory()
+    return factory.get_factory_stats()

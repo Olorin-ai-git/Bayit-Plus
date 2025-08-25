@@ -181,3 +181,6 @@ backup/
 
 # Gaia project folder (reference only)
 /Gaia/
+
+# Ignore external Gaia sources
+Gaia/
