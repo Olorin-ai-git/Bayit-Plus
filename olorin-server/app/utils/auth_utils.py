@@ -9,7 +9,7 @@ from typing import Tuple
 import requests
 
 from app.service.config import get_settings_for_env
-from app.utils.idps_utils import get_app_secret
+from app.utils.firebase_secrets import get_app_secret
 
 logger = logging.getLogger(__name__)
 settings_for_env = get_settings_for_env()

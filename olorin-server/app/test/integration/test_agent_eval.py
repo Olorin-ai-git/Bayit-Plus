@@ -21,7 +21,7 @@ from app.router.agent_router import router
 from app.service import SvcSettings, create_app
 from app.service.agent.agent import create_and_get_agent_graph
 from app.service.config import get_settings_for_env
-from app.utils.idps_utils import get_app_secret
+from app.utils.firebase_secrets import get_app_secret
 
 pytest.skip("reason for skipping the entire file", allow_module_level=True)
 

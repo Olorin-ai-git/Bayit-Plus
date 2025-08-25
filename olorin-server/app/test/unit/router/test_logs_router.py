@@ -83,10 +83,10 @@ def test_api_logs_splunk_error(client):
     from app.service import agent_service, config
     from app.service.agent.tools.chronos_tool import chronos_tool
     from app.service.agent.tools.splunk_tool import splunk_tool
-    from app.utils import idps_utils, prompt_utils
+    from app.utils import firebase_secrets, prompt_utils
 
     with patch("app.service.config.get_settings_for_env") as mock_settings:
-        with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+        with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
             with patch(
                 "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
             ) as mock_splunk_tool:
@@ -123,7 +123,7 @@ def test_api_logs_splunk_error(client):
 def test_api_logs_chronos_error(client):
     # Simulate Chronos error fallback
     with patch("app.service.config.get_settings_for_env") as mock_settings:
-        with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+        with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
             with patch(
                 "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
             ) as mock_splunk_tool:
@@ -160,7 +160,7 @@ def test_api_logs_chronos_error(client):
 def test_api_logs_llm_json_decode_error(client):
     # Simulate LLM JSON decode error
     with patch("app.service.config.get_settings_for_env") as mock_settings:
-        with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+        with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
             with patch(
                 "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
             ) as mock_splunk_tool:
@@ -201,7 +201,7 @@ def test_api_logs_llm_json_decode_error(client):
 def test_api_logs_llm_missing_risk_assessment(client):
     # Simulate LLM missing risk_assessment key
     with patch("app.service.config.get_settings_for_env") as mock_settings:
-        with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+        with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
             with patch(
                 "app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool"
             ) as mock_splunk_tool:
@@ -252,7 +252,7 @@ def test_analyze_logs_missing_splunk_password(client):
         with patch(
             "app.service.logs_analysis_service.SplunkQueryTool"
         ) as mock_splunk_tool:
-            with patch("app.utils.idps_utils.get_app_secret", return_value=None):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value=None):
                 with patch(
                     "app.service.logs_analysis_service.sanitize_splunk_data",
                     return_value=[],
@@ -278,7 +278,7 @@ def test_analyze_logs_llm_error(client):
         with patch(
             "app.service.logs_analysis_service.SplunkQueryTool"
         ) as mock_splunk_tool:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.logs_analysis_service.sanitize_splunk_data",
                     return_value=[],
@@ -385,7 +385,7 @@ def test_analyze_logs_llm_json_error(client):
             "app.service.logs_analysis_service.SplunkQueryTool"
         ) as mock_splunk_tool:
             with patch(
-                "app.utils.idps_utils.get_app_secret", return_value="pw"
+                "app.utils.firebase_secrets.get_app_secret", return_value="pw"
             ) as mock_secret:
                 with patch(
                     "app.service.logs_analysis_service.sanitize_splunk_data",
@@ -419,7 +419,7 @@ def test_analyze_logs_llm_timeout_error(client):
             "app.service.logs_analysis_service.SplunkQueryTool"
         ) as mock_splunk_tool:
             with patch(
-                "app.utils.idps_utils.get_app_secret", return_value="pw"
+                "app.utils.firebase_secrets.get_app_secret", return_value="pw"
             ) as mock_secret:
                 with patch(
                     "app.service.logs_analysis_service.sanitize_splunk_data",

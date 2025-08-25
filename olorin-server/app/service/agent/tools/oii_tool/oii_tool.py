@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_offline_auth_token
-from app.utils.idps_utils import get_app_secret
+from app.utils.firebase_secrets import get_app_secret
 
 settings_for_env = get_settings_for_env()
 

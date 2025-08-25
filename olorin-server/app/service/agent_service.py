@@ -23,7 +23,7 @@ from app.service.error_handling import (
     AuthorizationError,
     ClientException,
 )
-from app.utils.idps_utils import get_app_secret
+from app.utils.firebase_secrets import get_app_secret
 
 logger = logging.getLogger(__name__)
 

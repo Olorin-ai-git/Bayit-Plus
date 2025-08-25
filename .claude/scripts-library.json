@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-scripts.json",
+  "description": "Centralized bash scripts library for all Claude Code projects",
+  "version": "1.0.0",
+  "scriptsPath": "~/.claude/scripts",
+  "scripts": {
+    "development": {
+      "file-compliance-checker": {
+        "description": "Checks that all production code files are under 200 lines",
+        "category": "quality",
+        "path": "development/check-file-compliance.sh",
+        "priority": "critical",
+        "usage": "./scripts/check-file-compliance.sh [directory]",
+        "parameters": [
+          {
+            "name": "directory",
+            "description": "Directory to check (defaults to current directory)",
+            "required": false,
+            "default": "."
+          }
+        ]
+      },
+      "setup-project": {
+        "description": "Initialize a new Claude Code project with standard structure",
+        "category": "setup",
+        "path": "development/setup-project.sh",
+        "priority": "high",
+        "usage": "./scripts/setup-project.sh <project-name> <project-type>",
+        "parameters": [
+          {
+            "name": "project-name",
+            "description": "Name of the new project",
+            "required": true
+          },
+          {
+            "name": "project-type",
+            "description": "Type of project (frontend, backend, fullstack)",
+            "required": true,
+            "options": ["frontend", "backend", "fullstack", "library"]
+          }
+        ]
+      },
+      "code-formatter": {
+        "description": "Formats code according to project standards",
+        "category": "quality",
+        "path": "development/format-code.sh",
+        "priority": "high",
+        "usage": "./scripts/format-code.sh [--fix] [directory]",
+        "parameters": [
+          {
+            "name": "--fix",
+            "description": "Automatically fix formatting issues",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "directory",
+            "description": "Directory to format (defaults to current directory)",
+            "required": false,
+            "default": "."
+          }
+        ]
+      }
+    },
+    "deployment": {
+      "deploy-functions": {
+        "description": "Deploy Firebase functions with error handling and rollback",
+        "category": "deployment",
+        "path": "deployment/deploy-functions.sh",
+        "priority": "critical",
+        "usage": "./scripts/deployment/deploy-functions.sh [--function-name] [--timeout]",
+        "parameters": [
+          {
+            "name": "--function-name",
+            "description": "Specific function to deploy (optional)",
+            "required": false
+          },
+          {
+            "name": "--timeout",
+            "description": "Deployment timeout in seconds",
+            "required": false,
+            "default": "300"
+          }
+        ]
+      },
+      "strategic-deploy": {
+        "description": "Strategic deployment with health checks and monitoring",
+        "category": "deployment",
+        "path": "deployment/strategic-deploy.sh",
+        "priority": "high",
+        "usage": "./scripts/deployment/strategic-deploy.sh <environment>",
+        "parameters": [
+          {
+            "name": "environment",
+            "description": "Target deployment environment",
+            "required": true,
+            "options": ["staging", "production"]
+          }
+        ]
+      },
+      "rollback-deployment": {
+        "description": "Rollback to previous deployment version",
+        "category": "deployment",
+        "path": "deployment/rollback-deployment.sh",
+        "priority": "critical",
+        "usage": "./scripts/deployment/rollback-deployment.sh <environment> [--version]",
+        "parameters": [
+          {
+            "name": "environment",
+            "description": "Environment to rollback",
+            "required": true,
+            "options": ["staging", "production"]
+          },
+          {
+            "name": "--version",
+            "description": "Specific version to rollback to (optional)",
+            "required": false
+          }
+        ]
+      }
+    },
+    "testing": {
+      "run-tests": {
+        "description": "Run comprehensive test suite with coverage reporting",
+        "category": "testing",
+        "path": "testing/run-tests.sh",
+        "priority": "critical",
+        "usage": "./scripts/testing/run-tests.sh [--coverage] [--watch] [test-pattern]",
+        "parameters": [
+          {
+            "name": "--coverage",
+            "description": "Generate coverage report",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--watch",
+            "description": "Run tests in watch mode",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "test-pattern",
+            "description": "Pattern to match test files",
+            "required": false
+          }
+        ]
+      },
+      "e2e-tests": {
+        "description": "Run end-to-end tests with browser automation",
+        "category": "testing",
+        "path": "testing/e2e-tests.sh",
+        "priority": "high",
+        "usage": "./scripts/testing/e2e-tests.sh [--browser] [--headless]",
+        "parameters": [
+          {
+            "name": "--browser",
+            "description": "Browser to use for testing",
+            "required": false,
+            "default": "chrome",
+            "options": ["chrome", "firefox", "safari"]
+          },
+          {
+            "name": "--headless",
+            "description": "Run tests in headless mode",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      },
+      "performance-tests": {
+        "description": "Run performance and load tests",
+        "category": "testing",
+        "path": "testing/performance-tests.sh",
+        "priority": "medium",
+        "usage": "./scripts/testing/performance-tests.sh [--duration] [--users]",
+        "parameters": [
+          {
+            "name": "--duration",
+            "description": "Test duration in seconds",
+            "required": false,
+            "default": "60"
+          },
+          {
+            "name": "--users",
+            "description": "Number of concurrent users",
+            "required": false,
+            "default": "10"
+          }
+        ]
+      }
+    },
+    "database": {
+      "migrate-database": {
+        "description": "Run database migrations with backup and verification",
+        "category": "database",
+        "path": "database/migrate-database.sh",
+        "priority": "critical",
+        "usage": "./scripts/database/migrate-database.sh <environment> [--backup] [--verify]",
+        "parameters": [
+          {
+            "name": "environment",
+            "description": "Target environment for migration",
+            "required": true,
+            "options": ["development", "staging", "production"]
+          },
+          {
+            "name": "--backup",
+            "description": "Create backup before migration",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--verify",
+            "description": "Verify migration success",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      },
+      "seed-database": {
+        "description": "Seed database with test or initial data",
+        "category": "database",
+        "path": "database/seed-database.sh",
+        "priority": "medium",
+        "usage": "./scripts/database/seed-database.sh <environment> [--seed-type]",
+        "parameters": [
+          {
+            "name": "environment",
+            "description": "Target environment",
+            "required": true,
+            "options": ["development", "staging"]
+          },
+          {
+            "name": "--seed-type",
+            "description": "Type of seed data to load",
+            "required": false,
+            "default": "basic",
+            "options": ["basic", "full", "test"]
+          }
+        ]
+      }
+    },
+    "security": {
+      "security-scan": {
+        "description": "Run comprehensive security scan on codebase",
+        "category": "security",
+        "path": "security/security-scan.sh",
+        "priority": "critical",
+        "usage": "./scripts/security/security-scan.sh [--fix] [--report]",
+        "parameters": [
+          {
+            "name": "--fix",
+            "description": "Automatically fix security issues where possible",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--report",
+            "description": "Generate detailed security report",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      },
+      "audit-dependencies": {
+        "description": "Audit project dependencies for vulnerabilities",
+        "category": "security",
+        "path": "security/audit-dependencies.sh",
+        "priority": "high",
+        "usage": "./scripts/security/audit-dependencies.sh [--fix] [--severity]",
+        "parameters": [
+          {
+            "name": "--fix",
+            "description": "Automatically fix vulnerabilities where possible",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--severity",
+            "description": "Minimum severity level to report",
+            "required": false,
+            "default": "moderate",
+            "options": ["low", "moderate", "high", "critical"]
+          }
+        ]
+      }
+    },
+    "utilities": {
+      "cleanup-project": {
+        "description": "Clean up temporary files, node_modules, build artifacts",
+        "category": "maintenance",
+        "path": "utilities/cleanup-project.sh",
+        "priority": "medium",
+        "usage": "./scripts/utilities/cleanup-project.sh [--deep] [--dry-run]",
+        "parameters": [
+          {
+            "name": "--deep",
+            "description": "Perform deep cleanup including caches",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--dry-run",
+            "description": "Show what would be deleted without actually deleting",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      },
+      "backup-project": {
+        "description": "Create comprehensive project backup",
+        "category": "backup",
+        "path": "utilities/backup-project.sh",
+        "priority": "medium",
+        "usage": "./scripts/utilities/backup-project.sh [--destination] [--compress]",
+        "parameters": [
+          {
+            "name": "--destination",
+            "description": "Backup destination directory",
+            "required": false,
+            "default": "./backups"
+          },
+          {
+            "name": "--compress",
+            "description": "Compress backup archive",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      }
+    },
+    "git": {
+      "git-hooks-setup": {
+        "description": "Set up Git hooks for code quality and consistency",
+        "category": "git",
+        "path": "git/setup-git-hooks.sh",
+        "priority": "high",
+        "usage": "./scripts/git/setup-git-hooks.sh [--force]",
+        "parameters": [
+          {
+            "name": "--force",
+            "description": "Force overwrite existing hooks",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      },
+      "branch-cleanup": {
+        "description": "Clean up merged and stale branches",
+        "category": "git",
+        "path": "git/branch-cleanup.sh",
+        "priority": "medium",
+        "usage": "./scripts/git/branch-cleanup.sh [--dry-run] [--force]",
+        "parameters": [
+          {
+            "name": "--dry-run",
+            "description": "Show branches that would be deleted",
+            "required": false,
+            "type": "flag"
+          },
+          {
+            "name": "--force",
+            "description": "Force delete branches even if not merged",
+            "required": false,
+            "type": "flag"
+          }
+        ]
+      }
+    }
+  },
+  "categories": {
+    "critical": {
+      "description": "Essential scripts that should be in every project",
+      "scripts": ["file-compliance-checker", "deploy-functions", "run-tests", "security-scan", "migrate-database", "rollback-deployment"]
+    },
+    "development": {
+      "description": "Development workflow and quality scripts",
+      "scripts": ["file-compliance-checker", "setup-project", "code-formatter", "run-tests", "git-hooks-setup"]
+    },
+    "deployment": {
+      "description": "Deployment and infrastructure scripts",
+      "scripts": ["deploy-functions", "strategic-deploy", "rollback-deployment"]
+    },
+    "testing": {
+      "description": "Testing and quality assurance scripts",
+      "scripts": ["run-tests", "e2e-tests", "performance-tests"]
+    },
+    "security": {
+      "description": "Security and compliance scripts",
+      "scripts": ["security-scan", "audit-dependencies"]
+    },
+    "database": {
+      "description": "Database management scripts",
+      "scripts": ["migrate-database", "seed-database"]
+    },
+    "maintenance": {
+      "description": "Project maintenance and cleanup scripts",
+      "scripts": ["cleanup-project", "backup-project", "branch-cleanup"]
+    }
+  },
+  "presets": {
+    "minimal": {
+      "description": "Essential scripts for basic project functionality",
+      "scripts": ["file-compliance-checker", "run-tests", "security-scan"]
+    },
+    "frontend-project": {
+      "description": "Scripts for frontend development projects",
+      "scripts": ["file-compliance-checker", "setup-project", "code-formatter", "run-tests", "e2e-tests", "deploy-functions", "security-scan", "git-hooks-setup"]
+    },
+    "backend-project": {
+      "description": "Scripts for backend development projects",
+      "scripts": ["file-compliance-checker", "setup-project", "code-formatter", "run-tests", "deploy-functions", "migrate-database", "seed-database", "security-scan", "audit-dependencies", "git-hooks-setup"]
+    },
+    "fullstack-project": {
+      "description": "Complete script set for full-stack projects",
+      "scripts": ["file-compliance-checker", "setup-project", "code-formatter", "run-tests", "e2e-tests", "performance-tests", "deploy-functions", "strategic-deploy", "migrate-database", "seed-database", "security-scan", "audit-dependencies", "git-hooks-setup", "cleanup-project"]
+    },
+    "enterprise": {
+      "description": "Enterprise-grade script set with all capabilities",
+      "scripts": ["file-compliance-checker", "setup-project", "code-formatter", "run-tests", "e2e-tests", "performance-tests", "deploy-functions", "strategic-deploy", "rollback-deployment", "migrate-database", "seed-database", "security-scan", "audit-dependencies", "git-hooks-setup", "cleanup-project", "backup-project", "branch-cleanup"]
+    },
+    "ci-cd": {
+      "description": "Scripts optimized for CI/CD pipelines",
+      "scripts": ["file-compliance-checker", "run-tests", "security-scan", "deploy-functions", "migrate-database", "rollback-deployment"]
+    }
+  },
+  "templates": {
+    "basic-script": {
+      "description": "Basic script template with error handling and logging",
+      "path": "templates/basic-script.sh"
+    },
+    "deployment-script": {
+      "description": "Deployment script template with rollback capability",
+      "path": "templates/deployment-script.sh"
+    },
+    "test-script": {
+      "description": "Test script template with reporting",
+      "path": "templates/test-script.sh"
+    }
+  }
+}

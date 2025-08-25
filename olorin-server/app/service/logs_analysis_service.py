@@ -17,6 +17,7 @@ from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor impo
     build_base_search,
 )
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
+from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
 from app.service.config import get_settings_for_env
 from app.service.llm_logs_risk_service import LLMLogsRiskService, LogsRiskAssessment
 from app.utils.prompt_utils import sanitize_splunk_data
@@ -29,6 +30,7 @@ class LogsAnalysisService:
 
     def __init__(self):
         self.llm_service = LLMLogsRiskService()
+        self.settings = get_settings_for_env()
 
     async def analyze_logs(
         self,
@@ -38,6 +40,8 @@ class LogsAnalysisService:
         entity_type: str = "user_id",
         time_range: str = "30d",
         raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
+        raw_sumologic_override: Optional[List[Dict[str, Any]]] = None,
+        log_sources: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Analyze logs risk for a user or device."""
         # Ensure investigation exists before proceeding
@@ -63,14 +67,22 @@ class LogsAnalysisService:
             ):
                 return demo_cache[entity_id]["logs"]
 
-            # Fetch Splunk data
-            splunk_data = await self._fetch_splunk_data(
+            # Determine log sources to use
+            sources_to_use = log_sources or self.settings.enabled_log_sources
+            
+            # Fetch data from multiple log sources
+            all_log_data = await self._fetch_multi_source_data(
                 entity_id,
                 entity_type,
                 time_range,
                 settings,
+                sources_to_use,
                 raw_splunk_override,
+                raw_sumologic_override,
             )
+            
+            # Legacy variable name for backward compatibility
+            splunk_data = all_log_data
 
             sanitized_data = sanitize_splunk_data(splunk_data)
 
@@ -183,6 +195,145 @@ class LogsAnalysisService:
             splunk_data = []
 
         return splunk_data
+
+    async def _fetch_multi_source_data(
+        self,
+        entity_id: str,
+        entity_type: str,
+        time_range: str,
+        settings: Any,
+        log_sources: List[str],
+        raw_splunk_override: Optional[List[Dict[str, Any]]],
+        raw_sumologic_override: Optional[List[Dict[str, Any]]],
+    ) -> List[Dict[str, Any]]:
+        """Fetch data from multiple log sources and harmonize."""
+        all_data = []
+        
+        # Fetch from each enabled source
+        for source in log_sources:
+            if source == "splunk":
+                splunk_data = await self._fetch_splunk_data(
+                    entity_id, entity_type, time_range, settings, raw_splunk_override
+                )
+                # Add source attribution
+                for record in splunk_data:
+                    record["_log_source"] = "splunk"
+                all_data.extend(splunk_data)
+                
+            elif source == "sumo_logic":
+                sumologic_data = await self._fetch_sumologic_data(
+                    entity_id, entity_type, time_range, settings, raw_sumologic_override
+                )
+                # Add source attribution
+                for record in sumologic_data:
+                    record["_log_source"] = "sumo_logic"
+                all_data.extend(sumologic_data)
+                
+        # Deduplicate and harmonize data
+        harmonized_data = self._harmonize_log_data(all_data)
+        
+        logger.info(f"Multi-source fetch returned {len(harmonized_data)} total records from {len(log_sources)} sources")
+        return harmonized_data
+
+    async def _fetch_sumologic_data(
+        self,
+        entity_id: str,
+        entity_type: str,
+        time_range: str,
+        settings: Any,
+        raw_sumologic_override: Optional[List[Dict[str, Any]]],
+    ) -> List[Dict[str, Any]]:
+        """Fetch SumoLogic data for logs analysis."""
+        if raw_sumologic_override is not None:
+            return raw_sumologic_override
+
+        sumologic_data = []
+        try:
+            # Use SumoLogicQueryTool for consistency
+            sumologic_tool = SumoLogicQueryTool()
+
+            # Build SumoLogic query - adapt from Splunk patterns
+            query = self._build_sumologic_query(entity_id, entity_type)
+            from_time = f"-{time_range}"
+            to_time = "now"
+
+            logger.info(f"=== SUMOLOGIC QUERY === {query}")
+            logger.info(f"=== TIME RANGE === {from_time} to {to_time}")
+
+            sumologic_result = await sumologic_tool._arun(query, from_time, to_time)
+            logger.info(f"=== SUMOLOGIC RESULT === {sumologic_result}")
+
+            if sumologic_result and isinstance(sumologic_result, dict):
+                if "results" in sumologic_result:
+                    sumologic_data = sumologic_result["results"]
+                elif isinstance(sumologic_result.get("records"), list):
+                    sumologic_data = sumologic_result["records"]
+            elif isinstance(sumologic_result, list):
+                sumologic_data = sumologic_result
+
+        except Exception as sumologic_err:
+            logger.error(
+                f"SumoLogic operation failed for logs analysis (user {entity_id}): {str(sumologic_err)}",
+                exc_info=True,
+            )
+            sumologic_data = []
+
+        return sumologic_data
+
+    def _build_sumologic_query(self, entity_id: str, entity_type: str) -> str:
+        """Build SumoLogic query for authentication logs."""
+        # Adapt from Splunk auth_id query patterns
+        if entity_type == "user_id":
+            query = f'_sourceCategory="authentication" AND (user_id="{entity_id}" OR email_address="{entity_id}")'
+        else:
+            query = f'_sourceCategory="authentication" AND device_id="{entity_id}"'
+        
+        return query
+
+    def _harmonize_log_data(self, all_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Harmonize data from different log sources."""
+        harmonized_data = []
+        seen_records = set()
+        
+        for record in all_data:
+            # Create a deduplication key
+            dedup_key = self._create_dedup_key(record)
+            
+            if dedup_key not in seen_records:
+                seen_records.add(dedup_key)
+                # Harmonize field names across sources
+                harmonized_record = self._harmonize_record_fields(record)
+                harmonized_data.append(harmonized_record)
+        
+        return harmonized_data
+
+    def _create_dedup_key(self, record: Dict[str, Any]) -> str:
+        """Create a deduplication key for log records."""
+        # Use timestamp and key identifiers for deduplication
+        time_val = record.get("_time") or record.get("timestamp") or ""
+        user_val = record.get("email_address") or record.get("user_id") or ""
+        ip_val = record.get("olorin_originatingip") or record.get("source_ip") or ""
+        
+        return f"{time_val}:{user_val}:{ip_val}"
+
+    def _harmonize_record_fields(self, record: Dict[str, Any]) -> Dict[str, Any]:
+        """Harmonize field names between different log sources."""
+        harmonized = record.copy()
+        
+        # Map common SumoLogic fields to Splunk equivalents for compatibility
+        field_mapping = {
+            "timestamp": "_time",
+            "source_ip": "olorin_originatingip",
+            "user_email": "email_address",
+            "session_id": "tm_sessionid",
+            "device_fingerprint": "fuzzy_device_id",
+        }
+        
+        for sumo_field, splunk_field in field_mapping.items():
+            if sumo_field in harmonized and splunk_field not in harmonized:
+                harmonized[splunk_field] = harmonized[sumo_field]
+        
+        return harmonized
 
     def _parse_logs(self, splunk_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parse logs for analysis."""
