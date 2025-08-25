@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import httpx
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.requests import Request
 
@@ -683,3 +684,27 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
                 }
     except Exception as e:
         return {"success": False, "message": f"Exception occurred: {str(e)}"}
+
+
+@router.get("/admin/verification/stats")
+async def verification_stats():
+    settings = get_settings_for_env()
+    from app.service.llm.verification.log_store import verification_log_store
+    snapshot = await verification_log_store.snapshot()
+    return JSONResponse(
+        content={
+            "enabled": bool(getattr(settings, "verification_enabled", False)),
+            "mode": getattr(settings, "verification_mode", "shadow"),
+            "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
+            "opus_model": getattr(settings, "verification_opus_model", "claude-opus-4.1"),
+            "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
+            "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
+            "task_policies": {
+                "risk_analysis": {
+                    "threshold": float(getattr(settings, "verification_task_policy_risk_analysis_threshold", 0.9)),
+                    "max_retries": int(getattr(settings, "verification_task_policy_risk_analysis_max_retries", 2)),
+                }
+            },
+            "metrics": snapshot,
+        }
+    )

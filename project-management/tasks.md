@@ -1,5 +1,85 @@
 # OLORIN PROJECT TASKS - CURRENT STATUS
 
+## 🆕 PLANNED TASK: Verification LLM Service (Opus-validated OpenAI)
+**Status**: Planned  
+**Owner**: Platform AI Team  
+**Plan Doc**: project-management/verification-llm-service-plan.md  
+**Goal**: Validate every OpenAI response with Claude Opus; iterate with feedback until acceptance.
+
+### Deliverables
+- Verified client wrapper around OpenAI calls with policy-driven acceptance
+- Opus verifier with rubric-based JSON output and retry suffix generation
+- Config (`verification.yaml`), redaction utility, and persistence of verification events
+- Telemetry endpoints/dashboards; admin stats
+- Unit/integration tests; rollout via feature flags (shadow → blocking)
+
+### Acceptance Criteria
+- ≥99% pass by ≤2 attempts; P95 latency overhead ≤2.5s (1 retry)
+- Strict JSON/schema and safety gates enforced per task type (`risk_analysis` first)
+- Complete audit trail of rubric scores, verdicts, and retries for 100% of requests
+
+### Checklist
+- [ ] Identify and abstract all OpenAI call sites behind `LLMProvider`
+- [ ] Implement `VerifiedOpenAIClient` and `OpusVerifier`
+- [ ] Add `ValidationPolicy` for `risk_analysis` (threshold 0.9, maxRetries 2)
+- [ ] Implement redactor and hard-gate JSON/schema checks
+- [ ] Add `verification.yaml` + feature flags (shadow/blocking, sampling)
+- [ ] Persist verification logs; expose `/admin/verification/stats`
+- [ ] Unit/integration/chaos tests and performance budget tests
+- [ ] Stage rollout: 25% shadow → 100% blocking for `risk_analysis`
+
+### Requirements Analysis
+- Validate OpenAI outputs for correctness, completeness, adherence, grounding, and safety
+- Support task types starting with `risk_analysis` (JSON schema enforced)
+- Maintain strict privacy: redact PII/secrets before Opus; hash identifiers in logs
+- Meet latency/cost budgets with configurable retries and sampling
+
+### Components Affected
+- Backend `olorin-server`: LLM provider layer, verification module, config, telemetry, storage
+- Agents using OpenAI: routed through verified client
+- Admin/observability: stats endpoint and dashboards
+
+### Architecture Considerations
+- Wrapper client orchestrates: OpenAI call → Opus verify → accept/retry
+- Policy-driven thresholds/retries per task type; budget guards (tokens/time)
+- Idempotent logging with requestId and attempt counters
+
+### Implementation Strategy
+- Introduce provider abstraction; implement `OpenAIProvider` and `VerifiedOpenAIClient`
+- Build `OpusVerifier` with strict JSON-only output and rubric weights
+- Add `ValidationPolicy` and `verification.yaml` for runtime control and sampling
+- Implement `Redactor` and JSON/schema validators; persist verification events
+
+### Detailed Steps
+1. Add provider interface and migrate OpenAI call sites behind it
+2. Implement `VerifiedOpenAIClient` orchestration with budget accounting
+3. Implement `OpusVerifier` prompt + parser producing rubric JSON
+4. Add `risk_analysis` schema and hard-gate validators
+5. Implement redaction utilities; add unit tests
+6. Add storage + `/admin/verification/stats`; basic dashboard queries
+7. Shadow rollout at 25%; monitor scores/latency; tune policies
+8. Enable blocking for `risk_analysis`; extend to other tasks
+
+### Dependencies
+- Access to Claude Opus 4.1 API credentials
+- JSON schema for `risk_analysis` responses
+- Config system for feature flags and thresholds
+
+### Challenges & Mitigations
+- Latency/cost: sampling, early-stop, strict budgets
+- Overstrict rubric: per-task thresholds and allowlisted guidance
+- Opus availability: soft-degrade mode + circuit breaker
+
+### Creative Phase Components
+- Opus validator prompt design and rubric weight tuning
+- Task-specific schema and validation edge-cases
+
+### Verification
+- Unit/integration/chaos/perf tests; acceptance gates enforced in CI
+- Dashboards confirm pass rates and latency budgets
+
+**Recommended Next Mode**: CREATIVE MODE (finalize Opus prompt, rubric weights, and `risk_analysis` schema)
+
 ## ✅ COMPLETED TASK: SYSTEM RESTORATION AFTER VAN ASSESSMENT
 
 ### 🎯 OBJECTIVE: RESOLVE CRITICAL ISSUES BLOCKING SYSTEM OPERATION

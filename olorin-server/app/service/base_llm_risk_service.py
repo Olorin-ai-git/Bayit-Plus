@@ -1,5 +1,7 @@
 import json
 import logging
+import asyncio
+import random
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
 
@@ -9,8 +11,11 @@ from pydantic import BaseModel
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
+from app.models.llm_verification import VerificationPolicy
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
+from app.service.llm.verified_client import VerifiedOpenAIClient
+from app.service.llm.verification.opus_verifier import OpusVerifier
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
@@ -203,7 +208,73 @@ class BaseLLMRiskService(ABC, Generic[T]):
             )
 
             # Use agent infrastructure for LLM calls (like refactor branch)
-            raw_llm_response_str, _ = await ainvoke_agent(request, agent_context)
+            async def _openai_caller(prompt: str) -> str:
+                # Delegate to existing agent infrastructure
+                agent_context_for_call = AgentContext(
+                    input=prompt,
+                    agent_name=agent_context.agent_name,
+                    metadata=agent_context.metadata,
+                    olorin_header=agent_context.olorin_header,
+                )
+                resp_str, _ = await ainvoke_agent(request, agent_context_for_call)
+                return resp_str
+
+            # Feature flag: verification with sampling and mode
+            raw_llm_response_str: str
+            verification_enabled = getattr(self.settings, "verification_enabled", False)
+            verification_sample = float(getattr(self.settings, "verification_sample_percent", 1.0) or 0.0)
+            verification_mode = getattr(self.settings, "verification_mode", "shadow")
+
+            should_verify = verification_enabled and (random.random() <= verification_sample)
+
+            if should_verify and verification_mode == "blocking":
+                policy = VerificationPolicy(
+                    threshold=getattr(self.settings, "verification_threshold_default", 0.85),
+                    max_retries=getattr(self.settings, "verification_max_retries_default", 1),
+                    min_adherence=0.8,
+                    min_safety=0.9,
+                )
+                verified_client = VerifiedOpenAIClient(openai_caller=_openai_caller)
+                # Inject verifier with configured API key
+                verified_client.verifier = OpusVerifier(
+                    model_name=getattr(self.settings, "verification_opus_model", "claude-opus-4.1"),
+                    api_key=getattr(self.settings, "anthropic_api_key", None),
+                )
+                raw_llm_response_str = await verified_client.complete_with_verification(
+                    request_id=agent_context.metadata.interaction_group_id,
+                    task_type="risk_analysis",
+                    prompt=agent_context.input,
+                )
+            else:
+                # Normal path; optionally run shadow verification
+                raw_llm_response_str, _ = await ainvoke_agent(request, agent_context)
+
+                if should_verify and verification_mode == "shadow":
+                    verifier = OpusVerifier(
+                        model_name=getattr(self.settings, "verification_opus_model", "claude-opus-4.1"),
+                        api_key=getattr(self.settings, "anthropic_api_key", None),
+                    )
+                    ctx_for_shadow = {
+                        "request_id": agent_context.metadata.interaction_group_id,
+                        "task_type": "risk_analysis",
+                        "original_prompt": agent_context.input,
+                        "original_response_text": raw_llm_response_str,
+                    }
+
+                    async def _run_shadow_verify():
+                        try:
+                            from app.models.llm_verification import VerificationContext
+
+                            report = await verifier.verify(VerificationContext(**ctx_for_shadow))
+                            logger.debug(
+                                f"Shadow verification report (request_id={ctx_for_shadow['request_id']}): {report.model_dump()}"
+                            )
+                        except Exception as shadow_err:
+                            logger.debug(
+                                f"Shadow verification failed (request_id={ctx_for_shadow['request_id']}): {shadow_err}"
+                            )
+
+                    asyncio.create_task(_run_shadow_verify())
 
             logger.debug(
                 f"Raw LLM response for {assessment_type} risk for {user_id}: {raw_llm_response_str}"

@@ -178,3 +178,6 @@ backup/
 
 # Gaia webplugin folder
 /olorin-front/gaia-webplugin
+
+# Gaia project folder (reference only)
+/Gaia/

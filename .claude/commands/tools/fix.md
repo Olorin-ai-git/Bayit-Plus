@@ -1,16 +1,22 @@
-# /fix - Automatic Error Resolution Command
+# /fix - Automatic Error Resolution Command (Enhanced for Olorin)
 
-**Description**: Automatically fix all TypeScript, lint errors, and failing tests in the current project using orchestrated subagents. Also provides codebase organization functionality to move loose documents and scripts to proper folders.
+**Description**: Automatically fix all TypeScript, Python, lint errors, and failing tests in the Olorin project using orchestrated subagents. Enhanced with Python/Poetry support and comprehensive multi-language error detection. Also provides codebase organization functionality to move loose documents and scripts to proper folders.
 
 **Usage**: 
-- `/fix` - Fix TypeScript, lint errors, and failing tests only
+- `/fix` - Fix TypeScript, Python, lint errors, and failing tests only
 - `/fix --organize` - Fix all errors/tests AND organize loose documents/scripts
 - `/fix --tests-only` - Fix only failing tests
+- `/fix --python-only` - Fix only Python/Poetry errors
+- `/fix --frontend-only` - Fix only frontend/TypeScript errors
 
 **What it does**:
-- Scans the project for TypeScript compilation errors
+- Scans the project for TypeScript compilation errors across all components
+- **[ENHANCED]** Scans for Python errors using Poetry in olorin-server
+- **[ENHANCED]** Identifies Python type checking errors with mypy
+- **[ENHANCED]** Detects Python formatting issues with black and isort
+- **[ENHANCED]** Checks Python test failures with pytest
 - Identifies ESLint and other linting issues
-- **[NEW]** Scans for and fixes failing tests across the codebase
+- **[NEW]** Scans for and fixes failing tests across all languages and frameworks
 - Uses orchestrator subagent to create a comprehensive fix plan
 - Executes the plan automatically using specialized subagents
 - Continues until all errors and tests are resolved
@@ -21,7 +27,9 @@
 - ✅ **Multi-Agent Execution**: Leverages specialized subagents (typescript-pro, error-detective, test-writer-fixer, etc.)
 - ✅ **Continuous Iteration**: Keeps fixing until no errors or test failures remain
 - ✅ **No Manual Approval**: Executes plan immediately for rapid development
-- ✅ **Comprehensive Coverage**: Handles TypeScript, ESLint, test failures, and other code quality issues
+- ✅ **Comprehensive Coverage**: Handles TypeScript, Python, ESLint, test failures, and other code quality issues
+- ✅ **[NEW] Python/Poetry Support**: Full integration with Poetry dependency management and Python tooling
+- ✅ **[NEW] Multi-Language Testing**: Supports pytest (Python), Jest/Vitest (JavaScript/TypeScript), and other test frameworks
 - ✅ **[NEW] Test Failure Resolution**: Automatically detects and fixes failing tests using test-writer-fixer subagent
 - ✅ **[NEW] Test Error Handling**: Fixes test compilation errors, runtime errors, and assertion failures
 - ✅ **[NEW] Document Organization**: Scans for loose .md files and moves them to appropriate /docs subfolders

@@ -24,6 +24,31 @@ class SvcSettings(BaseSettings):
     asset_id: str = "3825825476777495228"
     olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 
+    # Verification service flags
+    verification_enabled: bool = Field(
+        default=False, description="Enable Opus verification gating"
+    )
+    verification_mode: str = Field(
+        default="shadow", description="shadow|blocking"
+    )
+    verification_sample_percent: float = Field(
+        default=1.0, description="0.0-1.0 sampling rate for verification"
+    )
+    verification_opus_model: str = Field(
+        default="claude-opus-4.1", description="Opus model name"
+    )
+    verification_threshold_default: float = Field(default=0.85)
+    verification_max_retries_default: int = Field(default=1)
+    verification_task_policy_risk_analysis_threshold: float = Field(default=0.9)
+    verification_task_policy_risk_analysis_max_retries: int = Field(default=2)
+
+    # Anthropic API
+    anthropic_api_key: Optional[str] = Field(
+        default=None,
+        description="Anthropic API key for Opus verifier",
+        env="ANTHROPIC_API_KEY",
+    )
+
     # Cache settings
     use_ips_cache: bool = (
         False  # Changing this to True will use IPS cache implementation - AsyncRedisSaver instead of Langgraph's MemorySaver
