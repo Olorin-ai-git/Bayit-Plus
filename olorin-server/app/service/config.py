@@ -34,20 +34,32 @@ class SvcSettings(BaseSettings):
         UpiHistoryConversationApiConfig()
     )
 
-    # IDPS settings - create a new policy for your app in IDPS and use the policy ID here
-    # This is used to access secrets in IDPS (app secret, langfuse keys, etc.)
-    idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
-    idps_policy_id: str = "p-2abqgwqm8n5i"
+    # Firebase settings for secret management
+    firebase_project_id: Optional[str] = Field(
+        None,
+        description="Firebase project ID for secret management",
+        env="FIREBASE_PROJECT_ID"
+    )
+    firebase_private_key: Optional[str] = Field(
+        None,
+        description="Firebase service account private key",
+        env="FIREBASE_PRIVATE_KEY"
+    )
+    firebase_client_email: Optional[str] = Field(
+        None,
+        description="Firebase service account client email",
+        env="FIREBASE_CLIENT_EMAIL"
+    )
 
     # App settings
     app_id: str = "Olorin.cas.hri.olorin"
-    # Store app secret in IDPS and provide the secret name path here
+    # Store app secret in Firebase Secrets Manager
     app_secret: str = "olorin/app_secret"
 
     # QB Tool settings
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
 
-    # Splunk agent settings: host, index, port, and IDPS secret paths for credentials
+    # Splunk agent settings: host, index, port, and Firebase secret paths for credentials
     splunk_host: str = preprod_splunk_host
     splunk_index: str = preprod_splunk_index
     splunk_port: int = Field(
@@ -55,12 +67,12 @@ class SvcSettings(BaseSettings):
     )
     splunk_username_secret: str = Field(
         "olorin/splunk_username",
-        description="IDPS secret path for Splunk username",
+        description="Firebase secret path for Splunk username",
         env="SPLUNK_USERNAME_SECRET",
     )
     splunk_password_secret: str = Field(
         "olorin/splunk_password",
-        description="IDPS secret path for Splunk password",
+        description="Firebase secret path for Splunk password",
         env="SPLUNK_PASSWORD_SECRET",
     )
 

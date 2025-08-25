@@ -301,7 +301,7 @@ def test_get_location_risk_analysis_success(client):
         return_value=dummy_splunk_client,
         create=True,
     )
-    patch7 = patch("app.utils.idps_utils.get_app_secret", return_value="dummy")
+    patch7 = patch("app.utils.firebase_secrets.get_app_secret", return_value="dummy")
     patch8 = patch(
         "app.router.device_router.get_settings_for_env", return_value=dummy_settings
     )
@@ -340,7 +340,7 @@ def test_cancel_splunk_job_success(client):
             "app.service.config.get_settings_for_env",
             return_value=MagicMock(splunk_host="host"),
         ):
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 response = client.post("/api/splunk/job/cancel/123")
                 assert response.status_code == 200
                 assert response.json()["success"] is True
@@ -352,7 +352,7 @@ def test_cancel_splunk_job_error(client):
             "app.service.config.get_settings_for_env",
             return_value=MagicMock(splunk_host="host"),
         ):
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 response = client.post("/api/splunk/job/cancel/123")
                 assert response.status_code == 200
                 assert response.json()["success"] is False

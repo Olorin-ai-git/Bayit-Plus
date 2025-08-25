@@ -83,7 +83,7 @@ def test_api_logs_splunk_error(client):
     from app.service import agent_service, config
     from app.service.agent.tools.chronos_tool import chronos_tool
     from app.service.agent.tools.splunk_tool import splunk_tool
-    from app.utils import idps_utils, prompt_utils
+    from app.utils import firebase_secrets, prompt_utils
 
     with patch("app.service.config.get_settings_for_env") as mock_settings:
         with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
