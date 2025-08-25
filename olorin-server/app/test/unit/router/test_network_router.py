@@ -51,7 +51,7 @@ def test_analyze_network_success(client):
         patch(
             "app.service.network_analysis_service.SplunkQueryTool"
         ) as mock_splunk_tool,
-        patch("app.utils.idps_utils.get_app_secret", return_value="dummy"),
+        patch("app.utils.firebase_secrets.get_app_secret", return_value="dummy"),
     ):
         mock_get_inv.return_value = None
         mock_create_inv.return_value = MagicMock()
@@ -83,7 +83,7 @@ def test_analyze_network_missing_splunk_password(client):
                 return_value=MagicMock(splunk_host="dummy_host"),
             ) as mock_settings:
                 with patch(
-                    "app.utils.idps_utils.get_app_secret",
+                    "app.utils.firebase_secrets.get_app_secret",
                     return_value=None,
                 ) as mock_secret:
                     response = client.get("/network/testuser?investigation_id=test-inv")
@@ -117,7 +117,7 @@ def test_analyze_network_splunk_error(client):
             "app.service.network_analysis_service.get_settings_for_env",
             return_value=MagicMock(splunk_host="dummy_host"),
         ),
-        patch("app.utils.idps_utils.get_app_secret", return_value="pw"),
+        patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"),
         patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client,
@@ -140,7 +140,7 @@ def test_analyze_network_llm_error(client):
             "app.service.network_analysis_service.get_settings_for_env",
             return_value=MagicMock(splunk_host="dummy_host"),
         ),
-        patch("app.utils.idps_utils.get_app_secret", return_value="pw"),
+        patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"),
         patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client,
@@ -167,7 +167,7 @@ def test_analyze_network_missing_authorization_header(client):
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
             with patch(
-                "app.utils.idps_utils.get_app_secret", return_value="pw"
+                "app.utils.firebase_secrets.get_app_secret", return_value="pw"
             ) as mock_secret:
                 mock_client = MagicMock()
                 mock_client.is_connected.return_value = False
@@ -185,7 +185,7 @@ def test_analyze_network_splunk_failure(client):
                 return_value=MagicMock(splunk_host="dummy_host"),
             ) as mock_settings:
                 with patch(
-                    "app.utils.idps_utils.get_app_secret",
+                    "app.utils.firebase_secrets.get_app_secret",
                     return_value="pw",
                 ) as mock_secret:
                     with patch(
@@ -216,7 +216,7 @@ def test_analyze_network_llm_json_error(client):
                 return_value=MagicMock(splunk_host="dummy_host"),
             ) as mock_settings:
                 with patch(
-                    "app.utils.idps_utils.get_app_secret",
+                    "app.utils.firebase_secrets.get_app_secret",
                     return_value="pw",
                 ) as mock_secret:
                     with patch(
@@ -252,7 +252,7 @@ def test_analyze_network_llm_timeout_error(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -290,7 +290,7 @@ def test_analyze_network_llm_service_down(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -319,7 +319,7 @@ def test_analyze_network_llm_400_error(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -348,7 +348,7 @@ def test_analyze_network_llm_timeout_error(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -377,7 +377,7 @@ def test_analyze_network_llm_generic_error(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -407,7 +407,7 @@ def test_analyze_network_fallback_risk_scoring(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -437,7 +437,7 @@ def test_analyze_network_json_decode_error(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -467,7 +467,7 @@ def test_analyze_network_raw_splunk_override(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.ainvoke_agent",
                     new_callable=AsyncMock,
@@ -493,7 +493,7 @@ def test_analyze_network_prompt_trimming_warning(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.trim_prompt_to_token_limit",
                     return_value=({"data": "trimmed"}, "prompt", True),
@@ -523,7 +523,7 @@ def test_update_investigation_llm_thoughts_called(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.update_investigation_llm_thoughts"
                 ) as mock_update:
@@ -606,7 +606,7 @@ def test_analyze_network_malformed_splunk_results(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 mock_client = MagicMock()
                 mock_client.is_connected.return_value = False
                 mock_client.search.return_value = ["malformed", "data"]
@@ -623,7 +623,7 @@ def test_analyze_network_malformed_authorization_header(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 mock_client = MagicMock()
                 mock_client.is_connected.return_value = False
                 mock_client.search.return_value = []
@@ -645,7 +645,7 @@ def test_analyze_network_prompt_trimming_large_input(client):
         with patch(
             "app.service.network_analysis_service.SplunkClient"
         ) as mock_splunk_client:
-            with patch("app.utils.idps_utils.get_app_secret", return_value="pw"):
+            with patch("app.utils.firebase_secrets.get_app_secret", return_value="pw"):
                 with patch(
                     "app.service.network_analysis_service.trim_prompt_to_token_limit",
                     return_value=({"data": "trimmed"}, "prompt", True),

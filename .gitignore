@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-# Python virtual environments
-venv/
-back/venv/
-front/node_modules/
-.venv/
-env/
-ENV/
-
-# Python bytecode
-__pycache__/
-*/__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.pyc
-*.pyo
-*.pyd
-
-# Distribution / packaging
-=======
 # Olorin Project .gitignore
 
 # Operating System Files
@@ -46,13 +25,29 @@ yarn-debug.log*
 yarn-error.log*
 .npm
 .yarn-integrity
+.eslintcache
 
 # Python
 __pycache__/
+*/__pycache__/
 *.py[cod]
 *$py.class
 *.so
->>>>>>> restructure-projects
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environments
+venv/
+back/venv/
+front/node_modules/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -66,9 +61,11 @@ parts/
 sdist/
 var/
 wheels/
-<<<<<<< HEAD
 *.dist-info/
 *.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
 # PyInstaller
 *.manifest
@@ -90,6 +87,8 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+coverage/
+*.lcov
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -102,66 +101,15 @@ ipython_config.py
 .python-version
 
 # Environments
-=======
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environments
->>>>>>> restructure-projects
 .env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-<<<<<<< HEAD
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.npm
-.eslintcache
-
-# React build
-build/
-dist/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Logs
-*.log
-logs/
-log/
-=======
-# Build Outputs
-/build
-/dist
-*.tgz
-*.tar.gz
+.env.test
+.env.production
 
 # Logs
 logs
 *.log
->>>>>>> restructure-projects
+logs/
+log/
 
 # Runtime data
 pids
@@ -169,15 +117,12 @@ pids
 *.seed
 *.pid.lock
 
-<<<<<<< HEAD
 # Docker
 .dockerignore
 
 # Temporary files
 tmp/
 temp/
-*.tmp
-*.temp
 
 # Application specific
 back/coverage/
@@ -195,20 +140,19 @@ investigation_*.pdf
 comprehensive_*.pdf
 
 # olorin-ui directory
-olorin-ui/ 
-=======
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
+olorin-ui/
+
+# Build Outputs
+/build
+/dist
+*.tgz
+*.tar.gz
 
 # Dependency directories
 jspm_packages/
 
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
 
 # Microbundle cache
 .rpt2_cache/
@@ -222,17 +166,6 @@ jspm_packages/
 # Output of 'npm pack'
 *.tgz
 
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env.test
-.env.production
-
-# Temporary folders
-tmp/
-temp/
-
 # Cache files
 .cache/
 .parcel-cache/
@@ -241,5 +174,7 @@ temp/
 *.backup
 *.bak
 .backup/
-backup/ 
->>>>>>> restructure-projects
+backup/
+
+# Gaia webplugin folder
+/olorin-front/gaia-webplugin

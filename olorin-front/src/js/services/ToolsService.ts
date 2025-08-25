@@ -2,7 +2,7 @@
  * Service for fetching available tools from the server
  */
 
-import { isDemoModeActive } from '../utils/urlParams';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 
 export interface ToolInfo {
   name: string;

@@ -5,7 +5,7 @@ import networkMock from '../../mock/network.json';
 import deviceMock from '../../mock/device.json';
 import logsMock from '../../mock/logs.json';
 import riskMock from '../../mock/risk.json';
-import { isDemoModeActive } from '../utils/urlParams';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 import type { Sandbox } from './envConstants';
 
 /**

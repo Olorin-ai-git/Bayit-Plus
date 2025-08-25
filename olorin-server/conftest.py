@@ -1,9 +1,11 @@
 """
-Root level conftest.py that implements mocking for AWS authentication errors in tests
+Root level conftest.py that implements mocking for Firebase authentication and secrets in tests
 """
 
 import logging
+import os
 from unittest.mock import MagicMock, patch
+from typing import Optional
 
 import pytest
 
@@ -11,128 +13,216 @@ import pytest
 logger = logging.getLogger(__name__)
 
 
-class MockApiException(Exception):
-    """Mock for machina_swagger_client.rest.ApiException"""
-
-    def __init__(self, http_resp=None):
-        self.status = 401
-        self.body = '{"error":"AccountMismatch","message":"Mocked for testing"}'
-        super().__init__(self.body)
-
-
-class MockMachinaApiException(Exception):
-    """Mock for idps_client.machina_api_wrapper.MachinaApiException"""
-
-    def __init__(self):
-        self.status = 401
-        self.body = '{"error":"AccountMismatch","message":"Mocked for testing"}'
-        super().__init__(self.body)
-
-
-class MockSecret:
-    """Mock secret object returned by get_secret"""
-
-    def __init__(self, value="mock-secret-value"):
-        self.value = value
-
-    def get_string_value(self):
-        """Return the mock secret value as a string"""
-        return self.value
-
-
-class MockRestClient:
-    """
-    Mock implementation of the RestClient to avoid AWS authentication issues
-    """
-
+class MockFirebaseSecretClient:
+    """Mock Firebase Secrets Manager client for testing"""
+    
     def __init__(self, *args, **kwargs):
-        self.get_temporary_credentials = MagicMock()
-        self.get_secret = MagicMock(return_value=MockSecret())
-        self.is_e2e_secrecy_enabled = False
-        self.machina_client = MagicMock()
-        self.config = MagicMock()
-
-    def _get_temp_creds_with_presigned_url(
-        self, policy_id, get_caller_id_url, expiry_requested
-    ):
-        # Mock method that would otherwise cause AWS account mismatch errors
-        mock_creds = {
-            "AccessKeyId": "mock-access-key",
-            "SecretAccessKey": "mock-secret-key",
-            "SessionToken": "mock-session-token",
-            "Expiration": "2025-01-01T00:00:00Z",
+        self.secrets = {
+            # Default mock secrets for testing
+            "olorin/app_secret": "mock-app-secret-value",
+            "olorin/splunk_username": "mock-splunk-user",
+            "olorin/splunk_password": "mock-splunk-password",
+            "olorin/sumo_logic_access_id": "mock-sumo-access-id",
+            "olorin/sumo_logic_access_key": "mock-sumo-access-key",
+            "olorin/snowflake_account": "mock-snowflake-account",
+            "olorin/snowflake_user": "mock-snowflake-user",
+            "olorin/snowflake_password": "mock-snowflake-password",
+            "olorin/snowflake_private_key": "mock-snowflake-private-key",
+            "olorin/langfuse/public_key": "mock-langfuse-public-key",
+            "olorin/langfuse/secret_key": "mock-langfuse-secret-key",
+            "olorin/test_user_pwd": "mock-test-user-password",
+            "test/secret": "mock-test-secret",  # For basic testing
         }
-        return mock_creds
+    
+    def access_secret_version(self, request):
+        """Mock accessing a secret version from Firebase Secret Manager"""
+        name = request.get("name", "")
+        
+        # Extract secret name from the resource name
+        # projects/{project}/secrets/{secret}/versions/latest
+        parts = name.split("/")
+        if len(parts) >= 4:
+            secret_name = parts[3].replace("_", "/")
+            
+            if secret_name in self.secrets:
+                # Create mock response
+                mock_response = MagicMock()
+                mock_payload = MagicMock()
+                mock_payload.data.decode.return_value = self.secrets[secret_name]
+                mock_response.payload = mock_payload
+                return mock_response
+        
+        # Raise exception for unknown secrets
+        from google.api_core.exceptions import NotFound
+        raise NotFound(f"Secret not found: {name}")
 
 
-class MockIdpsClient:
-    """
-    Mock implementation of the IDPS client to avoid AWS authentication issues
-    """
-
+class MockFirebaseApp:
+    """Mock Firebase App for testing"""
+    
     def __init__(self, *args, **kwargs):
-        self.get_secret = MagicMock(return_value=MockSecret())
+        self.project_id = "mock-project-id"
+        self.options = kwargs
 
-    def get_stringified_app_secret(self, secret_id):
-        """Return a mock secret value"""
-        return "mock-secret-value"
+
+def mock_get_firebase_secret(secret_name: str) -> Optional[str]:
+    """Mock implementation of get_firebase_secret for testing"""
+    # Check if environment override exists first
+    env_var_name = secret_name.upper().replace('/', '_')
+    env_value = os.getenv(env_var_name)
+    if env_value:
+        return env_value
+    
+    # Return mock values for known secrets
+    mock_secrets = {
+        "olorin/app_secret": "mock-app-secret-value",
+        "olorin/splunk_username": "mock-splunk-user", 
+        "olorin/splunk_password": "mock-splunk-password",
+        "olorin/sumo_logic_access_id": "mock-sumo-access-id",
+        "olorin/sumo_logic_access_key": "mock-sumo-access-key",
+        "olorin/snowflake_account": "mock-snowflake-account",
+        "olorin/snowflake_user": "mock-snowflake-user",
+        "olorin/snowflake_password": "mock-snowflake-password",
+        "olorin/snowflake_private_key": "mock-snowflake-private-key",
+        "olorin/langfuse/public_key": "mock-langfuse-public-key",
+        "olorin/langfuse/secret_key": "mock-langfuse-secret-key",
+        "olorin/test_user_pwd": "mock-test-user-password",
+        "test/secret": "mock-test-secret",
+    }
+    
+    return mock_secrets.get(secret_name, f"mock-{secret_name.replace('/', '-')}")
+
+
+def mock_get_app_secret(secret_name: str) -> Optional[str]:
+    """Legacy compatibility mock for get_app_secret"""
+    return mock_get_firebase_secret(secret_name)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def mock_idps_authentication():
+def mock_firebase_authentication():
     """
-    Global fixture to mock IDPS authentication.
-    This will prevent AWS account mismatch errors in the CI pipeline.
+    Global fixture to mock Firebase authentication and secrets.
+    This replaces IDPS mocking and prevents Firebase authentication issues in tests.
     """
-    # Create a mock for the machina_swagger_client.rest.ApiException
+    patches = []
+    
     try:
-        with patch("machina_swagger_client.rest.ApiException", MockApiException):
-            # Mock the REST client methods directly involved in the authentication error
-            with patch("idps_client.rest_client.RestClient", MockRestClient):
-                # Create mock for IdpsClient
-                with patch(
-                    "app.utils.idps_utils.IdpsClientFactory.get_instance"
-                ) as mock_get_instance:
-                    mock_get_instance.return_value = MockIdpsClient()
-                    # Directly mock the method that's causing the issue
-                    with patch(
-                        "idps_client.rest_client.RestClient._get_temp_creds_with_presigned_url"
-                    ) as mock_creds:
-                        mock_creds.return_value = {
-                            "AccessKeyId": "mock-access-key",
-                            "SecretAccessKey": "mock-secret-key",
-                            "SessionToken": "mock-session-token",
-                            "Expiration": "2025-01-01T00:00:00Z",
-                        }
-                        yield
-    except ImportError as e:
-        # Log any import errors to help debug CI issues
-        logger.warning(f"Import error during mocking: {e}")
+        # Mock Firebase Admin SDK initialization
+        firebase_admin_patch = patch('firebase_admin.initialize_app')
+        firebase_admin_patch.start()
+        patches.append(firebase_admin_patch)
+        
+        # Mock Firebase App
+        firebase_app_patch = patch('firebase_admin._apps', [MockFirebaseApp()])
+        firebase_app_patch.start()
+        patches.append(firebase_app_patch)
+        
+        # Mock Google Cloud Secret Manager client
+        secret_manager_patch = patch('google.cloud.secretmanager.SecretManagerServiceClient')
+        mock_client = secret_manager_patch.start()
+        mock_client.return_value = MockFirebaseSecretClient()
+        patches.append(secret_manager_patch)
+        
+        # Mock our Firebase secrets utility functions directly
+        firebase_secret_patch = patch('app.utils.firebase_secrets.get_firebase_secret', side_effect=mock_get_firebase_secret)
+        firebase_secret_patch.start()
+        patches.append(firebase_secret_patch)
+        
+        app_secret_patch = patch('app.utils.firebase_secrets.get_app_secret', side_effect=mock_get_app_secret)
+        app_secret_patch.start()
+        patches.append(app_secret_patch)
+        
+        # Set mock environment variables for Firebase
+        os.environ['FIREBASE_PROJECT_ID'] = 'mock-project-id'
+        os.environ['FIREBASE_PRIVATE_KEY'] = 'mock-private-key'
+        os.environ['FIREBASE_CLIENT_EMAIL'] = 'mock@serviceaccount.com'
+        
+        logger.info("Firebase authentication and secrets have been mocked for testing")
+        
         yield
-
-
-# Add a test to verify our mocking is working
-def test_idps_mocking():
-    """Test to verify our mocking of AWS/IDPS authentication is working"""
-    try:
-        from app.utils.idps_utils import get_app_secret
-
-        # This would fail with AWS account mismatch error if mocking wasn't working
-        secret = get_app_secret("test/secret")
-        assert secret is not None, "get_app_secret should return a mock value"
-        return True
+        
     except ImportError as e:
-        # Skip test if we can't import the required modules
-        logger.warning(f"Skipping test_idps_mocking due to import error: {e}")
-        pytest.skip(f"Required module not available: {e}")
+        logger.warning(f"Import error during Firebase mocking: {e}")
+        yield
+    finally:
+        # Clean up patches
+        for patch_obj in patches:
+            try:
+                patch_obj.stop()
+            except RuntimeError:
+                # Patch was already stopped
+                pass
+
+
+@pytest.fixture
+def mock_firebase_secrets():
+    """
+    Fixture that provides a way to customize mock secrets for individual tests
+    """
+    mock_client = MockFirebaseSecretClient()
+    
+    with patch('google.cloud.secretmanager.SecretManagerServiceClient') as mock_sm:
+        mock_sm.return_value = mock_client
+        yield mock_client.secrets
+
+
+# Test to verify Firebase mocking is working
+def test_firebase_mocking():
+    """Test to verify that our Firebase mocking is working correctly"""
+    try:
+        from app.utils.firebase_secrets import get_app_secret, get_firebase_secret
+        
+        # Test that get_firebase_secret returns our mocked value
+        secret = get_firebase_secret("test/secret")
+        assert secret is not None, "get_firebase_secret should return a mock value"
+        assert secret == "mock-test-secret", f"Expected 'mock-test-secret', got '{secret}'"
+        
+        # Test legacy get_app_secret function
+        app_secret = get_app_secret("olorin/app_secret")
+        assert app_secret is not None, "get_app_secret should return a mock value"
+        assert app_secret == "mock-app-secret-value", f"Expected 'mock-app-secret-value', got '{app_secret}'"
+        
+        logger.info("Firebase mocking verification passed")
+        return True
+        
+    except ImportError as e:
+        logger.error(f"Firebase mocking verification failed due to import error: {e}")
+        pytest.skip(f"Required Firebase module not available: {e}")
         return False
+    except Exception as e:
+        logger.error(f"Firebase mocking verification failed: {e}")
+        raise
 
 
-@pytest.fixture(autouse=True)
-def mock_get_auth_token(monkeypatch):
-    def fake_token():
-        return ("test_user_id", "test_token", "test_realm")
-
-    monkeypatch.setattr("app.utils.auth_utils.get_auth_token", fake_token)
-    # Note: risk_assessment_router no longer imports get_auth_token directly
-    # It's now handled in the service layer
+# Additional test fixtures for specific testing scenarios
+@pytest.fixture
+def firebase_secret_override():
+    """
+    Fixture that allows tests to override specific Firebase secrets
+    Returns a function that can be used to set secret values
+    """
+    original_secrets = {}
+    
+    def set_secret(secret_name: str, secret_value: str):
+        """Set a mock secret value for testing"""
+        # Store original value if not already stored
+        if secret_name not in original_secrets:
+            try:
+                from app.utils.firebase_secrets import get_firebase_secret
+                original_secrets[secret_name] = get_firebase_secret(secret_name)
+            except:
+                original_secrets[secret_name] = None
+        
+        # Set environment variable override
+        env_var_name = secret_name.upper().replace('/', '_')
+        os.environ[env_var_name] = secret_value
+    
+    yield set_secret
+    
+    # Cleanup: restore original values
+    for secret_name, original_value in original_secrets.items():
+        env_var_name = secret_name.upper().replace('/', '_')
+        if original_value is not None:
+            os.environ[env_var_name] = original_value
+        elif env_var_name in os.environ:
+            del os.environ[env_var_name]

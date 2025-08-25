@@ -1,4 +1,4 @@
-import { isDemoModeActive } from '../utils/urlParams';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 
 // Import mock data for demo mode
 import mockSettings from '../../mock/settings.json';

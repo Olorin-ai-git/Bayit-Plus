@@ -88,6 +88,128 @@ class SvcSettings(BaseSettings):
         env="SPLUNK_PASSWORD",
     )
 
+    # SumoLogic integration settings
+    sumo_logic_endpoint: str = Field(
+        "https://api.sumologic.com",
+        description="SumoLogic API endpoint",
+        env="SUMO_LOGIC_ENDPOINT",
+    )
+    sumo_logic_access_id_secret: str = Field(
+        "olorin/sumo_logic_access_id",
+        description="Firebase secret path for SumoLogic Access ID",
+        env="SUMO_LOGIC_ACCESS_ID_SECRET",
+    )
+    sumo_logic_access_key_secret: str = Field(
+        "olorin/sumo_logic_access_key",
+        description="Firebase secret path for SumoLogic Access Key",
+        env="SUMO_LOGIC_ACCESS_KEY_SECRET",
+    )
+    
+    # Allow overriding SumoLogic credentials directly via environment for local/dev
+    sumo_logic_access_id: Optional[str] = Field(
+        None,
+        description="Override SumoLogic Access ID via env var SUMO_LOGIC_ACCESS_ID",
+        env="SUMO_LOGIC_ACCESS_ID",
+    )
+    sumo_logic_access_key: Optional[str] = Field(
+        None,
+        description="Override SumoLogic Access Key via env var SUMO_LOGIC_ACCESS_KEY",
+        env="SUMO_LOGIC_ACCESS_KEY",
+    )
+    
+    # Snowflake integration settings
+    snowflake_account: Optional[str] = Field(
+        None,
+        description="Override Snowflake account via env var SNOWFLAKE_ACCOUNT",
+        env="SNOWFLAKE_ACCOUNT",
+    )
+    snowflake_user: Optional[str] = Field(
+        None,
+        description="Override Snowflake user via env var SNOWFLAKE_USER",
+        env="SNOWFLAKE_USER",
+    )
+    snowflake_password: Optional[str] = Field(
+        None,
+        description="Override Snowflake password via env var SNOWFLAKE_PASSWORD",
+        env="SNOWFLAKE_PASSWORD",
+    )
+    snowflake_private_key: Optional[str] = Field(
+        None,
+        description="Override Snowflake private key via env var SNOWFLAKE_PRIVATE_KEY",
+        env="SNOWFLAKE_PRIVATE_KEY",
+    )
+    snowflake_database: Optional[str] = Field(
+        None,
+        description="Snowflake database name",
+        env="SNOWFLAKE_DATABASE",
+    )
+    snowflake_schema: Optional[str] = Field(
+        None,
+        description="Snowflake schema name",
+        env="SNOWFLAKE_SCHEMA",
+    )
+    snowflake_warehouse: Optional[str] = Field(
+        None,
+        description="Snowflake warehouse name",
+        env="SNOWFLAKE_WAREHOUSE",
+    )
+    snowflake_role: Optional[str] = Field(
+        None,
+        description="Snowflake role name",
+        env="SNOWFLAKE_ROLE",
+    )
+    snowflake_authenticator: str = Field(
+        "snowflake",
+        description="Snowflake authentication method",
+        env="SNOWFLAKE_AUTHENTICATOR",
+    )
+    
+    # Firebase secret paths for Snowflake credentials
+    snowflake_account_secret: str = Field(
+        "olorin/snowflake_account",
+        description="Firebase secret path for Snowflake account",
+        env="SNOWFLAKE_ACCOUNT_SECRET",
+    )
+    snowflake_user_secret: str = Field(
+        "olorin/snowflake_user",
+        description="Firebase secret path for Snowflake user",
+        env="SNOWFLAKE_USER_SECRET",
+    )
+    snowflake_password_secret: str = Field(
+        "olorin/snowflake_password",
+        description="Firebase secret path for Snowflake password",
+        env="SNOWFLAKE_PASSWORD_SECRET",
+    )
+    snowflake_private_key_secret: str = Field(
+        "olorin/snowflake_private_key",
+        description="Firebase secret path for Snowflake private key",
+        env="SNOWFLAKE_PRIVATE_KEY_SECRET",
+    )
+
+    # Log source configuration
+    enabled_log_sources: List[str] = Field(
+        ["splunk"],
+        description="List of enabled log sources (splunk, sumo_logic)",
+        env="ENABLED_LOG_SOURCES"
+    )
+    primary_log_source: str = Field(
+        "splunk",
+        description="Primary log source for analysis",
+        env="PRIMARY_LOG_SOURCE"
+    )
+    
+    # Data source configuration
+    enabled_data_sources: List[str] = Field(
+        ["snowflake"],
+        description="List of enabled data sources (snowflake)",
+        env="ENABLED_DATA_SOURCES"
+    )
+    primary_data_source: str = Field(
+        "snowflake",
+        description="Primary data source for structured data analysis",
+        env="PRIMARY_DATA_SOURCE"
+    )
+
     enabled_tool_list: List[str] = [
         "QBRetrieverTool",
         "TTRetrieverTool",

@@ -60,9 +60,9 @@ import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
 import { useParams, useLocation } from 'react-router-dom';
 import {
   getCurrentUrlParams,
-  isDemoModeActive,
   getCurrentAuthId,
 } from '../utils/urlParams';
+import { useDemoMode } from '../hooks/useDemoMode';
 
 /**
  * Represents a single log entry in the investigation.
@@ -116,9 +116,6 @@ interface InvestigationPageProps {
   investigationId?: string | null;
 }
 
-// Dynamic demo mode detection - checks URL parameter for demo mode
-const useMock = isDemoModeActive();
-
 interface ErrorResponse {
   error?: {
     message?: string;
@@ -136,6 +133,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
 }) => {
   const theme = useTheme();
   const sandbox = useSandboxContext();
+  const { isDemoMode } = useDemoMode();
+  const useMock = isDemoMode;
   const api = useMemo(() => new OlorinService(sandbox, false), [sandbox]);
   const [getToolsForStep] = useStepTools();
   const analytics = useFirebaseAnalytics();
@@ -1467,7 +1466,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   useEffect(() => {
     const params = getCurrentUrlParams();
     const urlAuthId = getCurrentAuthId();
-    const isDemo = isDemoModeActive();
+    const isDemo = isDemoMode;
     const isDemoOff = params.get('demo') === 'false';
     if (urlAuthId) {
       setUserId(urlAuthId);

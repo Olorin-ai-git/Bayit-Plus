@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { preserveUrlParams } from '../js/utils/urlParams';
+import { useDemoMode } from '../js/hooks/useDemoMode';
 
 interface LayoutProps {
   children: ReactNode;
@@ -37,6 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isDemoMode } = useDemoMode();
 
   const isActive = (path: string) => {
     if (path === '/investigation') {
@@ -48,28 +50,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return location.pathname === path;
   };
 
-  const navigationItems = [
+  const allNavigationItems = [
     {
       path: '/investigations',
       label: 'Investigations',
       icon: <InvestigationsIcon />,
+      allowedInDemo: false,
     },
     {
       path: '/investigation',
       label: 'New Investigation',
       icon: <InvestigationIcon />,
+      allowedInDemo: true,
     },
     {
       path: '/rag',
       label: 'Investigate with AI',
       icon: <MCPIcon />,
+      allowedInDemo: true,
     },
     {
       path: '/settings',
       label: 'Settings',
       icon: <SettingsIcon />,
+      allowedInDemo: false,
     },
   ];
+
+  // Filter navigation items based on demo mode
+  const navigationItems = isDemoMode 
+    ? allNavigationItems.filter(item => item.allowedInDemo)
+    : allNavigationItems;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -85,35 +96,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const drawer = (
     <Box sx={{ width: 250 }}>
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            fontWeight: 700,
-            color: 'primary.main',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-          }}
-        >
-          <img
-            src="/assets/images/Olorin-Logo-With-Text-transparent.png"
-            alt="Olorin.ai"
-            style={{ height: 40, width: 'auto' }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = '/logo.png';
+      {!isDemoMode && (
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontWeight: 700,
+              color: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
             }}
-          />
-          <Box
-            component="span"
-            sx={{ color: 'text.primary', fontSize: '1.25rem' }}
           >
-            Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
-          </Box>
-        </Typography>
-      </Box>
+            <img
+              src="/assets/images/Olorin-Logo-With-Text-transparent.png"
+              alt="Olorin.ai"
+              style={{ height: 40, width: 'auto' }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/logo.png';
+              }}
+            />
+            <Box
+              component="span"
+              sx={{ color: 'text.primary', fontSize: '1.25rem' }}
+            >
+              Olorin<span style={{ color: theme.palette.primary.main }}>.ai</span>
+            </Box>
+          </Typography>
+        </Box>
+      )}
       <List>
         {navigationItems.map((item) => (
           <ListItem key={item.path} disablePadding>
@@ -155,6 +168,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {isDemoMode && (
+        <Box 
+          sx={{ 
+            backgroundColor: 'warning.main',
+            color: 'warning.contrastText',
+            textAlign: 'center',
+            py: 0.5,
+            fontSize: '0.875rem',
+            fontWeight: 600,
+          }}
+        >
+          Demo Mode Active
+        </Box>
+      )}
       <AppBar
         position="sticky"
         elevation={0}
@@ -179,31 +206,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </IconButton>
             )}
 
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                fontWeight: 700,
-                color: 'text.primary',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-              }}
-            >
-              <img
-                src="/assets/images/Olorin-Logo-With-Text-transparent.png"
-                alt="Olorin.ai"
-                style={{ height: 40, width: 'auto' }}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/logo.png';
+            {!isDemoMode && (
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{
+                  fontWeight: 700,
+                  color: 'text.primary',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
                 }}
-              />
-              <Box component="span" sx={{ fontSize: '1.25rem' }}>
-                Olorin
-                <span style={{ color: theme.palette.primary.main }}>.ai</span>
-              </Box>
-            </Typography>
+              >
+                <img
+                  src="/assets/images/Olorin-Logo-With-Text-transparent.png"
+                  alt="Olorin.ai"
+                  style={{ height: 40, width: 'auto' }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/logo.png';
+                  }}
+                />
+                <Box component="span" sx={{ fontSize: '1.25rem' }}>
+                  Olorin
+                  <span style={{ color: theme.palette.primary.main }}>.ai</span>
+                </Box>
+              </Typography>
+            )}
           </Box>
 
           {!isMobile && (

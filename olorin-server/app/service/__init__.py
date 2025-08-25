@@ -36,6 +36,13 @@ from .config import (
 from .error_handling import register_error_handlers
 from .logging_helper import RequestFormatter, logging_context
 
+# Performance optimization imports
+from .performance_integration import (
+    initialize_performance_optimization_system,
+    get_performance_optimization_manager,
+    PerformanceOptimizationConfig
+)
+
 # from pskactuator import add_actuator_endpoints
 
 
@@ -122,10 +129,46 @@ async def on_startup(app: FastAPI):
         >>> async def on_startup(app: FastAPI):
         ...     app.state.client = pymongo.MongoClient()
     """
+    logger.info("Starting Olorin application with performance optimizations...")
+    
+    try:
+        # Initialize performance optimization system first
+        perf_config = PerformanceOptimizationConfig(
+            database_url=os.getenv("DATABASE_URL", "sqlite:///olorin_fraud_detection.db"),
+            redis_host=os.getenv("REDIS_HOST", "localhost"),
+            redis_port=int(os.getenv("REDIS_PORT", "6379")),
+            max_parallel_agents=int(os.getenv("MAX_PARALLEL_AGENTS", "8")),
+            enable_alerts=os.getenv("ENABLE_PERFORMANCE_ALERTS", "true").lower() == "true"
+        )
+        
+        initialization_result = await initialize_performance_optimization_system(perf_config)
+        
+        if initialization_result.get('status') == 'success':
+            logger.info("✓ Performance optimization system initialized successfully")
+            app.state.performance_optimizations_enabled = True
+            app.state.performance_init_result = initialization_result
+            
+            # Log performance improvements
+            improvements = initialization_result.get('target_improvements', {})
+            logger.info("Performance targets:")
+            for metric, improvement in improvements.items():
+                target_improvement = improvement.get('target_improvement', '0%')
+                logger.info(f"  - {metric}: {target_improvement} improvement target")
+        else:
+            logger.warning("Performance optimization system initialization failed")
+            app.state.performance_optimizations_enabled = False
+            app.state.performance_init_error = initialization_result.get('error')
+            
+    except Exception as e:
+        logger.error(f"Failed to initialize performance optimizations: {e}")
+        app.state.performance_optimizations_enabled = False
+        app.state.performance_init_error = str(e)
+    
     # Initialize the graph and add a route
     from .agent_init import initialize_agent
-
     await initialize_agent(app)
+    
+    logger.info("Olorin application startup completed")
 
 
 async def on_shutdown(app: FastAPI):
@@ -143,7 +186,18 @@ async def on_shutdown(app: FastAPI):
         >>> async def on_shutdown(app: FastAPI):
         ...     app.state.client.close()
     """
-    pass
+    logger.info("Shutting down Olorin application...")
+    
+    # Shutdown performance optimization system
+    if getattr(app.state, 'performance_optimizations_enabled', False):
+        try:
+            performance_manager = get_performance_optimization_manager()
+            shutdown_result = await performance_manager.shutdown()
+            logger.info("Performance optimization system shutdown completed")
+        except Exception as e:
+            logger.error(f"Error during performance system shutdown: {e}")
+    
+    logger.info("Olorin application shutdown completed")
 
 
 class OlorinApplication:
@@ -234,6 +288,7 @@ class OlorinApplication:
         from app.router import agent_router, api_router, websocket_router
         from app.router.auth_router import router as auth_router
         from app.router.mcp_bridge_router import router as mcp_bridge_router
+        from app.router.performance_router import router as performance_router
 
         from . import example
 
@@ -243,6 +298,7 @@ class OlorinApplication:
         app.include_router(api_router.router)
         app.include_router(websocket_router.router)
         app.include_router(mcp_bridge_router)
+        app.include_router(performance_router)  # Performance monitoring and optimization
 
         # Add Olorin TID middleware
         from starlette.middleware.base import BaseHTTPMiddleware

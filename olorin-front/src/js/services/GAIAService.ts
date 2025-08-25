@@ -1,6 +1,7 @@
 import RestService, { ApiMethod, RestResponse } from './restService';
 import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
+import { isDemoModeActive } from '../hooks/useDemoMode';
 import type { Sandbox } from './envConstants';
 
 /**
@@ -378,7 +379,7 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('network'); // or mock risk
     }
     return this.get(entityId, 'assessRisk', entityType, {
@@ -394,7 +395,7 @@ export class OlorinService {
    * @returns {Promise<RestResponse>} Olorin state response.
    */
   async getOii(entityId: string, entityType: string): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('oii');
     }
     return this.get(entityId, 'getOii', entityType);
@@ -414,7 +415,7 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('network');
     }
     return this.get(entityId, 'analyzeNetwork', entityType, {
@@ -437,7 +438,7 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('location');
     }
     return this.get(entityId, 'analyzeLocation', entityType, {
@@ -460,7 +461,7 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('device');
     }
     return this.get(entityId, 'analyzeDevice', entityType, {
@@ -483,7 +484,7 @@ export class OlorinService {
     investigationId: string,
     timeRange: string = '30d',
   ): Promise<RestResponse> {
-    if (this.useMock) {
+    if (this.useMock || isDemoModeActive()) {
       return OlorinService.getMockResponse('logs');
     }
     return this.get(entityId, 'analyzeLogs', entityType, {
