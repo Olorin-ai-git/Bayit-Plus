@@ -12,6 +12,17 @@ from app.service.agent.agent_factory import get_agent_factory, create_agent, exe
 from app.service.agent.patterns import PatternType, PatternConfig
 from app.service.agent.websocket_streaming_service import WebSocketStreamingService
 
+# Import autonomous agent system
+from app.service.agent.autonomous_agents import (
+    autonomous_network_agent,
+    autonomous_device_agent,
+    autonomous_location_agent,
+    autonomous_logs_agent,
+    autonomous_risk_agent,
+)
+from app.service.agent.autonomous_context import AutonomousInvestigationContext
+from app.service.agent.recursion_guard import get_recursion_guard, protect_node
+
 # LangGraph imports may fail if dependencies (langchain_core.tracers) are missing
 try:
     from langgraph.graph import START, MessagesState, StateGraph
@@ -133,6 +144,7 @@ except Exception as e:
         llm_with_tools = llm
 
 
+@protect_node("assistant")
 def assistant(state: MessagesState, config: RunnableConfig):
     olorin_header = _get_config_value(
         config, ["configurable", "agent_context"]
@@ -666,18 +678,22 @@ async def risk_agent(state: MessagesState, config) -> dict:
 
 
 def create_parallel_agent_graph():
-    """Create agent graph for parallel execution - fixed to avoid infinite recursion."""
+    """Create autonomous agent graph for parallel execution with RecursionGuard protection."""
+    # Initialize recursion guard
+    guard = get_recursion_guard()
+    logger.info("Creating parallel graph with autonomous agents and RecursionGuard protection")
+    
     # Graph
     builder = StateGraph(MessagesState)
 
-    # Define nodes: investigation start, fraud investigation, and domain agents
+    # Define nodes: investigation start, fraud investigation, and AUTONOMOUS domain agents
     builder.add_node("start_investigation", start_investigation)
     builder.add_node("fraud_investigation", assistant)
-    builder.add_node("network_agent", network_agent)
-    builder.add_node("location_agent", location_agent)
-    builder.add_node("logs_agent", logs_agent)
-    builder.add_node("device_agent", device_agent)
-    builder.add_node("risk_agent", risk_agent)
+    builder.add_node("network_agent", autonomous_network_agent)
+    builder.add_node("location_agent", autonomous_location_agent)
+    builder.add_node("logs_agent", autonomous_logs_agent)
+    builder.add_node("device_agent", autonomous_device_agent)
+    builder.add_node("risk_agent", autonomous_risk_agent)
 
     # Add the tools node with error handling
     try:
@@ -700,39 +716,54 @@ def create_parallel_agent_graph():
     builder.add_edge(START, "start_investigation")
     builder.add_edge("start_investigation", "fraud_investigation")
 
-    # FIXED: Simplified parallel execution without tools interference
-    # fraud_investigation directly triggers all domain agents in parallel
+    # AUTONOMOUS MODE: Enable LLM-driven tool selection with conditional edges
+    # The fraud_investigation node can now choose tools autonomously
+    builder.add_conditional_edges(
+        "fraud_investigation",
+        tools_condition,  # LLM decides whether to use tools or proceed to domain analysis
+    )
+    
+    # Tool routing: Enable autonomous tool selection
+    builder.add_edge("tools", "fraud_investigation")  # Return to fraud_investigation after tool use
+    
+    # Domain agent triggering: fraud_investigation can trigger specific domain agents
+    # These edges are now part of the autonomous decision process
     builder.add_edge("fraud_investigation", "network_agent")
     builder.add_edge("fraud_investigation", "location_agent")
     builder.add_edge("fraud_investigation", "logs_agent")
     builder.add_edge("fraud_investigation", "device_agent")
 
+    # Domain agents have autonomous tool access through their own LLM instances
+    # Each autonomous agent makes independent tool selection decisions
+    
     # All domain agents feed into risk_agent for final assessment
     builder.add_edge("network_agent", "risk_agent")
     builder.add_edge("location_agent", "risk_agent")
     builder.add_edge("logs_agent", "risk_agent")
     builder.add_edge("device_agent", "risk_agent")
-
-    # REMOVED: Tools conditional edges to prevent recursion
-    # The domain agents handle their own tool calls internally
-    # No need for graph-level tool routing that can cause loops
+    
+    # RecursionGuard prevents infinite loops while enabling autonomous tool selection
 
     return builder
 
 
 def create_sequential_agent_graph():
-    """Create agent graph for sequential execution."""
+    """Create autonomous agent graph for sequential execution with RecursionGuard protection."""
+    # Initialize recursion guard
+    guard = get_recursion_guard()
+    logger.info("Creating sequential graph with autonomous agents and RecursionGuard protection")
+    
     # Graph
     builder = StateGraph(MessagesState)
 
-    # Define nodes: investigation start, fraud investigation, and domain agents
+    # Define nodes: investigation start, fraud investigation, and AUTONOMOUS domain agents
     builder.add_node("start_investigation", start_investigation)
     builder.add_node("fraud_investigation", assistant)
-    builder.add_node("network_agent", network_agent)
-    builder.add_node("location_agent", location_agent)
-    builder.add_node("logs_agent", logs_agent)
-    builder.add_node("device_agent", device_agent)
-    builder.add_node("risk_agent", risk_agent)
+    builder.add_node("network_agent", autonomous_network_agent)
+    builder.add_node("location_agent", autonomous_location_agent)
+    builder.add_node("logs_agent", autonomous_logs_agent)
+    builder.add_node("device_agent", autonomous_device_agent)
+    builder.add_node("risk_agent", autonomous_risk_agent)
 
     # Add the tools node with error handling
     try:
@@ -754,18 +785,25 @@ def create_sequential_agent_graph():
     builder.add_edge(START, "start_investigation")
     builder.add_edge("start_investigation", "fraud_investigation")
 
-    # Sequential chain: fraud_investigation → network → location → logs → device → risk (END)
-    # FIXED: Removed the infinite loop back to fraud_investigation
+    # AUTONOMOUS SEQUENTIAL MODE: Enable LLM-driven tool selection with conditional edges
+    builder.add_conditional_edges(
+        "fraud_investigation",
+        tools_condition,  # LLM decides whether to use tools or proceed
+    )
+    
+    # Tool routing: Enable autonomous tool selection
+    builder.add_edge("tools", "fraud_investigation")  # Return after tool use
+    
+    # Sequential chain with autonomous agents: fraud_investigation → network → location → logs → device → risk
     builder.add_edge("fraud_investigation", "network_agent")
     builder.add_edge("network_agent", "location_agent")
     builder.add_edge("location_agent", "logs_agent")
     builder.add_edge("logs_agent", "device_agent")
     builder.add_edge("device_agent", "risk_agent")
-    # risk_agent is the final node - no more edges from it
-
-    # REMOVED: Tools conditional edges to prevent recursion
-    # The domain agents handle their own tool calls internally
-    # No need for graph-level tool routing that can cause loops
+    # risk_agent is the final node - investigation completes here
+    
+    # Each autonomous domain agent has its own tool selection capabilities
+    # RecursionGuard prevents infinite loops while enabling autonomous behavior
 
     return builder
 

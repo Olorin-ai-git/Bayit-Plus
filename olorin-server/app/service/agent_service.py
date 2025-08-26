@@ -87,8 +87,9 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
                 investigation_id
             )
 
-        # TEMPORARY: Force sequential to test recursion issue
-        use_parallel = False
+        # AUTONOMOUS MODE: Enable parallel with recursion guard protection
+        # Autonomous agents use RecursionGuard to prevent infinite loops
+        use_parallel = True  # Re-enabled for autonomous investigation mode
 
         # Select appropriate graph - handle case where request is None
         if (

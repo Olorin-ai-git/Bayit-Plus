@@ -1,0 +1,181 @@
+graph TB
+    %% Current State vs Target State Architecture
+    
+    subgraph Current["🔴 CURRENT STATE - LIMITED AUTONOMOUS MODE"]
+        direction TB
+        
+        %% Current LangGraph Structure
+        CS_START[Start Investigation]
+        CS_FRAUD[Fraud Investigation<br/>🤖 LLM with Tools]
+        CS_NET[Network Agent<br/>❌ Direct Service Call]
+        CS_LOC[Location Agent<br/>❌ Direct Service Call] 
+        CS_LOGS[Logs Agent<br/>❌ Direct Service Call]
+        CS_DEV[Device Agent<br/>❌ Direct Service Call]
+        CS_RISK[Risk Agent<br/>❌ Direct Service Call]
+        
+        %% Current Services
+        CS_NET_SVC[NetworkAnalysisService<br/>🔧 Fixed Tool Usage]
+        CS_LOC_SVC[LocationAnalysisService<br/>🔧 Fixed Tool Usage]
+        CS_LOGS_SVC[LogsAnalysisService<br/>🔧 Fixed Tool Usage]
+        CS_DEV_SVC[DeviceAnalysisService<br/>🔧 Fixed Tool Usage]
+        CS_RISK_SVC[RiskAssessmentService<br/>🔧 Fixed Tool Usage]
+        
+        %% Current Flow
+        CS_START --> CS_FRAUD
+        CS_FRAUD --> CS_NET
+        CS_FRAUD --> CS_LOC
+        CS_FRAUD --> CS_LOGS
+        CS_FRAUD --> CS_DEV
+        
+        CS_NET --> CS_NET_SVC
+        CS_LOC --> CS_LOC_SVC
+        CS_LOGS --> CS_LOGS_SVC
+        CS_DEV --> CS_DEV_SVC
+        
+        CS_NET --> CS_RISK
+        CS_LOC --> CS_RISK
+        CS_LOGS --> CS_RISK
+        CS_DEV --> CS_RISK
+        CS_RISK --> CS_RISK_SVC
+    end
+    
+    subgraph Target["🟢 TARGET STATE - FULLY AUTONOMOUS MODE"]
+        direction TB
+        
+        %% Target LangGraph Structure
+        TS_START[Start Investigation<br/>🧠 Context Setup]
+        TS_FRAUD[Fraud Investigation<br/>🤖 LLM with Full Tool Access]
+        TS_TOOLS[Tool Node<br/>🛠️ Dynamic Tool Execution]
+        
+        %% Pattern-Based Agents
+        TS_NET[Network Agent<br/>🔄 AugmentedLLM Pattern]
+        TS_LOC[Location Agent<br/>⛓️ PromptChaining Pattern]
+        TS_LOGS[Logs Agent<br/>🔄 AugmentedLLM Pattern]
+        TS_DEV[Device Agent<br/>⛓️ PromptChaining Pattern]
+        TS_RISK[Risk Agent<br/>🎯 OrchestratorWorkers Pattern]
+        
+        %% Autonomous Decision System
+        TS_DECISION{🧠 LLM Decision Engine<br/>Tool Selection & Workflow}
+        TS_CONTEXT[📋 Investigation Context<br/>Dynamic State Management]
+        TS_QUALITY[✅ Quality Gates<br/>Validation & Fallback]
+        
+        %% Tool Ecosystem
+        subgraph Tools["🛠️ AUTONOMOUS TOOL ECOSYSTEM"]
+            SPLUNK[SplunkQueryTool<br/>📊 Log Analysis]
+            CDC_C[CdcCompanyTool<br/>🏢 Company Data]
+            CDC_U[CdcUserTool<br/>👤 User Data]
+            OII[OIITool<br/>🌍 Geographic Data]
+            CUSTOMERS[ListCustomersTool<br/>📋 Customer Data]
+            QB_RET[QBRetrieverTool<br/>🔍 Knowledge Base]
+            TT_RET[TTRetrieverTool<br/>🔍 Threat Intel]
+            VECTOR[VectorSearchTool<br/>🔍 Semantic Search]
+            SUMOLOGIC[SumoLogicQueryTool<br/>📊 Multi-source Logs]
+        end
+        
+        %% Target Flow
+        TS_START --> TS_FRAUD
+        TS_FRAUD --> TS_DECISION
+        TS_DECISION -->|LLM Reasoning| TS_TOOLS
+        TS_TOOLS --> Tools
+        TS_TOOLS --> TS_NET
+        TS_TOOLS --> TS_LOC
+        TS_TOOLS --> TS_LOGS
+        TS_TOOLS --> TS_DEV
+        
+        %% Pattern-based execution
+        TS_NET --> TS_DECISION
+        TS_LOC --> TS_DECISION
+        TS_LOGS --> TS_DECISION
+        TS_DEV --> TS_DECISION
+        
+        TS_NET --> TS_RISK
+        TS_LOC --> TS_RISK
+        TS_LOGS --> TS_RISK
+        TS_DEV --> TS_RISK
+        
+        %% Quality and Context Management
+        TS_DECISION --> TS_CONTEXT
+        TS_DECISION --> TS_QUALITY
+        TS_CONTEXT --> TS_NET
+        TS_CONTEXT --> TS_LOC
+        TS_CONTEXT --> TS_LOGS
+        TS_CONTEXT --> TS_DEV
+        TS_CONTEXT --> TS_RISK
+        
+        %% Feedback loops
+        TS_QUALITY -->|Validation Failed| TS_DECISION
+        TS_RISK -->|Final Assessment| TS_QUALITY
+    end
+    
+    subgraph Comparison["📊 KEY DIFFERENCES ANALYSIS"]
+        direction LR
+        
+        subgraph Current_Issues["❌ CURRENT ISSUES"]
+            CI1[🔧 Fixed Tool Selection<br/>Hardcoded in Services]
+            CI2[🤖 No LLM Decision Making<br/>Direct Service Calls]
+            CI3[🔄 No Tool Routing<br/>Disabled to Prevent Loops]
+            CI4[📋 Limited Context Sharing<br/>Between Domain Agents]
+            CI5[🎯 Pattern System Unused<br/>By Main Graph]
+        end
+        
+        subgraph Target_Benefits["✅ TARGET BENEFITS"]
+            TB1[🧠 LLM-Driven Tool Selection<br/>Dynamic Based on Context]
+            TB2[🔄 Intelligent Tool Routing<br/>With Recursion Prevention]
+            TB3[📋 Rich Context Management<br/>Cross-Agent Collaboration]
+            TB4[🎯 Pattern-Based Execution<br/>Specialized Agent Behaviors]
+            TB5[✅ Quality Assurance<br/>Validation & Fallback]
+        end
+    end
+    
+    subgraph Implementation["🚀 IMPLEMENTATION PHASES"]
+        direction TB
+        
+        subgraph Phase1["Phase 1: Graph Refactoring"]
+            P1_1[Restore Tool Routing<br/>with Recursion Prevention]
+            P1_2[Convert Domain Agents<br/>to Pattern-Based System]
+            P1_3[LLM Investigation Prompts<br/>Replace Fixed Service Calls]
+        end
+        
+        subgraph Phase2["Phase 2: Autonomous Logic"]
+            P2_1[Enhanced Agent Context<br/>Rich Investigation Metadata]
+            P2_2[Dynamic Tool Selection<br/>LLM Reasoning Based]
+            P2_3[Multi-Source Integration<br/>Intelligent Data Gathering]
+        end
+        
+        subgraph Phase3["Phase 3: Advanced Features"]
+            P3_1[Adaptive Workflows<br/>LLM Modifies Approach]
+            P3_2[Cross-Domain Intelligence<br/>Agent Collaboration]
+            P3_3[Quality Assurance<br/>Validation & Audit]
+        end
+        
+        Phase1 --> Phase2
+        Phase2 --> Phase3
+    end
+    
+    subgraph Metrics["📈 SUCCESS METRICS"]
+        direction LR
+        
+        M1[🎯 95% Autonomous Tool Selection Rate]
+        M2[💯 90% Investigation Quality Score]
+        M3[🔧 85% Tool Selection Accuracy]
+        M4[🤝 80% Cross-Domain Coordination]
+        M5[⚡ ≤150% Completion Time]
+        M6[🛡️ ≤1% System Failure Rate]
+    end
+    
+    %% Styling
+    classDef currentAgent fill:#ff9999,stroke:#cc0000,stroke-width:2px,color:#000
+    classDef targetAgent fill:#99ff99,stroke:#00cc00,stroke-width:2px,color:#000
+    classDef pattern fill:#99ccff,stroke:#0066cc,stroke-width:2px,color:#000
+    classDef tool fill:#ffcc99,stroke:#ff6600,stroke-width:2px,color:#000
+    classDef decision fill:#cc99ff,stroke:#6600cc,stroke-width:2px,color:#000
+    classDef issue fill:#ffcccc,stroke:#ff3333,stroke-width:1px,color:#000
+    classDef benefit fill:#ccffcc,stroke:#33ff33,stroke-width:1px,color:#000
+    
+    class CS_NET,CS_LOC,CS_LOGS,CS_DEV,CS_RISK currentAgent
+    class TS_NET,TS_LOC,TS_LOGS,TS_DEV,TS_RISK targetAgent
+    class TS_NET,TS_LOC,TS_LOGS,TS_DEV,TS_RISK pattern
+    class SPLUNK,CDC_C,CDC_U,OII,CUSTOMERS,QB_RET,TT_RET,VECTOR,SUMOLOGIC tool
+    class TS_DECISION,TS_QUALITY decision
+    class CI1,CI2,CI3,CI4,CI5 issue
+    class TB1,TB2,TB3,TB4,TB5 benefit

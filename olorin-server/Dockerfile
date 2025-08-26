@@ -1,72 +1,64 @@
-# Base Python 3.11 slim image
-FROM python:3.11-slim-bullseye as base
-# USER root needed for build, since CPD does not allow root user for gold images.
-# Intermediate containers will be discarded at final stage, runtime image will be executed with non root user.
-USER root
+# Multi-stage build for Olorin Backend Service
+FROM python:3.11-slim AS poetry-deps
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    nginx \
-    && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies required for Python packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN install -d -m 0755 -o appuser -g appuser /app /app/app /app/tmp
+# Install Poetry
+RUN pip install poetry==1.8.0
+COPY pyproject.toml poetry.lock ./
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-root
+
+# Production stage
+FROM python:3.11-slim AS runner
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r olorin \
+    && useradd -r -g olorin -s /bin/bash olorin
+
+# Copy Python packages from poetry-deps stage
+COPY --from=poetry-deps /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=poetry-deps /usr/local/bin /usr/local/bin
+
+# Set working directory
 WORKDIR /app
 
-FROM base as venv
-# Set poetry environment variables first
-ENV POETRY_BIN=/opt/poetry/stable/bin
-ENV PATH=$POETRY_BIN:$PATH
-ENV POETRY=$POETRY_BIN/poetry
+# Copy application code
+COPY --chown=olorin:olorin . .
 
-# Verify poetry version and set config
-RUN poetry --version \
-  && poetry config virtualenvs.in-project true --local
+# Copy fonts and assets for PDF generation
+COPY --chown=olorin:olorin DejaVuSans.ttf /usr/share/fonts/truetype/
+COPY --chown=olorin:olorin DejaVuSans.pkl /app/
+COPY --chown=olorin:olorin DejaVuSans.cw127.pkl /app/
 
-# Copy project files and regenerate lock if needed
-COPY pyproject.toml poetry.lock* ./
-# Force regenerate lock file to match pyproject.toml
-RUN poetry lock --no-update
-# Then install dependencies
-RUN poetry install --without dev,test
+# Create necessary directories
+RUN mkdir -p /app/logs /app/uploads /app/reports \
+    && chown -R olorin:olorin /app
 
-FROM venv as test
-RUN poetry install
-COPY tox.ini mypy.ini .coveragerc ./
-COPY app /app/app
-ARG APP_ENV=jenkins
-ENV APP_ENV=$APP_ENV
-RUN poetry run tox
-RUN poetry run python -m app.scripts.generate_openapi
+# Switch to non-root user
+USER olorin
 
-FROM base as build
-# The following ARG and 2 LABEL are used by Jenkinsfile command
-# to identify this intermediate container, for extraction of
-# code coverage and other reported values.
-ARG build
-ARG GIT_BRANCH
-ARG GIT_COMMIT
-ARG DOCKER_TAGS=latest
-ARG WATCHFILES_FORCE_POLLING=false
-ENV WATCHFILES_FORCE_POLLING=$WATCHFILES_FORCE_POLLING
-# ARG JIRA_PROJECT=<CHANGE_ME>
-ARG DOCKER_IMAGE_NAME=olorin/service/olorin:${DOCKER_TAGS}
-ARG SERVICE_LINK=http://localhost:8000
+# Set Python path and environment variables
+ENV PYTHONPATH="/app:$PYTHONPATH"
+ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
 
-LABEL maintainer=some_email@olorin.com \
-      app=olorin \
-      app-scope=runtime \
-      build=${build}
+# Expose port
+EXPOSE 8000
 
-COPY --chown=appuser:appuser --from=venv /app/.venv ./.venv/
-COPY --chown=appuser:appuser package/entry.sh /app/entry.sh
-COPY --chown=appuser:appuser package/nginx.conf /app/nginx/nginx.conf
-COPY --chown=appuser:appuser app /app/app
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
 
-RUN chown -R appuser:appuser /var/log/nginx
-
-RUN chmod 755 /app/entry.sh \
-    && /home/appuser/post_harden.sh
-USER appuser
-
-CMD ["/bin/bash", "/app/entry.sh"]
+# Command to run the application
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
