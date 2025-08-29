@@ -42,6 +42,7 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.auth_router import router as auth_router
     from app.router.mcp_bridge_router import router as mcp_bridge_router
     from app.router.performance_router import router as performance_router
+    from app.router.autonomous_investigation_router import router as autonomous_router
     from .. import example
 
     # Include routers in order of dependency
@@ -52,6 +53,7 @@ def _include_core_routers(app: FastAPI) -> None:
     app.include_router(websocket_router.router)
     app.include_router(mcp_bridge_router)
     app.include_router(performance_router)  # Performance monitoring and optimization
+    app.include_router(autonomous_router)  # Autonomous investigation testing
 
     logger.info("All core routers have been included")
 

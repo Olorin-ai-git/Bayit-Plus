@@ -36,13 +36,13 @@ import os
 # Add the app directory to the path so we can import our modules
 sys.path.append(str(Path(__file__).parent.parent))
 
-from test.data.mock_transactions.mock_data_loader import MockDataLoader
-from service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
-from service.agent.journey_tracker import LangGraphJourneyTracker
-from service.agent.chain_of_thought_logger import ChainOfThoughtLogger
+from app.test.data.mock_transactions.mock_data_loader import MockDataLoader
+from app.service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
+from app.service.agent.journey_tracker import LangGraphJourneyTracker
+from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger
 
 # Test runner configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = "http://localhost:8090"
 AUTONOMOUS_API_BASE = f"{SERVER_BASE_URL}/autonomous"
 TEST_TIMEOUT_SECONDS = 300  # 5 minutes max per test
 PROGRESS_CHECK_INTERVAL = 2  # Check progress every 2 seconds
