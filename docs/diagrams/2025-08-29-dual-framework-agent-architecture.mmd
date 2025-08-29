@@ -1,0 +1,183 @@
+graph TB
+    subgraph "API Layer"
+        API[FastAPI Router]
+        WS[WebSocket Manager]
+    end
+
+    subgraph "Framework Orchestration Layer"
+        FD[Framework Detector]
+        FM[Framework Manager]
+        
+        FD --> FM
+    end
+
+    subgraph "Configuration System"
+        EC[Environment Config]
+        FC[Framework Config]
+        AC[Agent Config]
+        
+        EC --> FC
+        FC --> AC
+    end
+
+    subgraph "Framework Abstraction Layer"
+        FAL[Framework Abstraction Interface]
+        
+        subgraph "LangGraph Implementation"
+            LGF[LangGraph Framework]
+            LGA[LangGraph Agents]
+            LGT[LangGraph Tools]
+            LGS[LangGraph State]
+        end
+        
+        subgraph "OpenAI Agents Implementation"
+            OAF[OpenAI Framework]
+            OAA[OpenAI Agents]
+            OAT[OpenAI Tools]
+            OAS[OpenAI Sessions]
+        end
+        
+        FAL --> LGF
+        FAL --> OAF
+    end
+
+    subgraph "Unified Agent System"
+        AF[Agent Factory]
+        
+        subgraph "Agent Types"
+            DA[Device Agent]
+            NA[Network Agent]
+            LA[Location Agent]
+            LogA[Logs Agent]
+            RA[Risk Agent]
+            ADA[Anomaly Detection Agent]
+        end
+        
+        AF --> DA
+        AF --> NA
+        AF --> LA
+        AF --> LogA
+        AF --> RA
+        AF --> ADA
+    end
+
+    subgraph "Tool Compatibility Layer"
+        TC[Tool Converter]
+        TR[Tool Registry]
+        
+        subgraph "Universal Tools"
+            ST[Splunk Tool]
+            CDT[CDC Tool]
+            DT[Database Tool]
+            AT[API Tool]
+            VST[Vector Search Tool]
+        end
+        
+        TC --> ST
+        TC --> CDT
+        TC --> DT
+        TC --> AT
+        TC --> VST
+        
+        ST --> LGT
+        ST --> OAT
+    end
+
+    subgraph "Investigation Context Management"
+        ICM[Investigation Context Manager]
+        
+        subgraph "Context Components"
+            IC[Investigation Context]
+            IS[Investigation State]
+            IF[Investigation Findings]
+            IR[Investigation Results]
+        end
+        
+        ICM --> IC
+        IC --> IS
+        IC --> IF
+        IC --> IR
+    end
+
+    subgraph "Streaming & WebSocket Integration"
+        SI[Streaming Interface]
+        UP[Update Processor]
+        WH[WebSocket Handler]
+        
+        SI --> UP
+        UP --> WH
+    end
+
+    subgraph "Validation & Testing"
+        FV[Framework Validator]
+        PT[Parity Tester]
+        PB[Performance Benchmarks]
+        
+        FV --> PT
+        FV --> PB
+    end
+
+    subgraph "Migration & Rollback"
+        MS[Migration Service]
+        RS[Rollback Service]
+        SM[State Migrator]
+        
+        MS --> SM
+        RS --> SM
+    end
+
+    %% API Flow
+    API --> FD
+    WS --> SI
+
+    %% Configuration Flow
+    FC --> FM
+    AC --> AF
+
+    %% Framework Selection Flow
+    FM --> FAL
+    FAL --> LGF
+    FAL --> OAF
+
+    %% Agent Creation Flow
+    LGF --> AF
+    OAF --> AF
+    AF --> LGA
+    AF --> OAA
+
+    %% Tool Integration Flow
+    TR --> TC
+    LGT --> LGA
+    OAT --> OAA
+
+    %% Context Flow
+    IC --> LGS
+    IC --> OAS
+    ICM --> IS
+
+    %% Investigation Flow
+    LGA --> ICM
+    OAA --> ICM
+    ICM --> SI
+
+    %% Validation Flow
+    LGF --> FV
+    OAF --> FV
+    FV --> MS
+
+    %% Streaming Flow
+    WH --> WS
+    SI --> API
+
+    %% Styling
+    classDef framework fill:#e1f5fe
+    classDef agent fill:#f3e5f5
+    classDef tool fill:#e8f5e8
+    classDef config fill:#fff3e0
+    classDef stream fill:#fce4ec
+
+    class LGF,OAF,FAL framework
+    class DA,NA,LA,LogA,RA,ADA agent
+    class ST,CDT,DT,AT,VST tool
+    class EC,FC,AC config
+    class SI,UP,WH stream
