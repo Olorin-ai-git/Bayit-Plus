@@ -42,10 +42,17 @@ class SvcSettings(BaseSettings):
     verification_task_policy_risk_analysis_threshold: float = Field(default=0.9)
     verification_task_policy_risk_analysis_max_retries: int = Field(default=2)
 
-    # Anthropic API
+    # Anthropic API - stored in Firebase Secrets Manager
+    anthropic_api_key_secret: str = Field(
+        "olorin/anthropic_api_key",
+        description="Firebase secret path for Anthropic API key",
+        env="ANTHROPIC_API_KEY_SECRET",
+    )
+    
+    # Allow overriding Anthropic API key directly via environment for local/dev
     anthropic_api_key: Optional[str] = Field(
         default=None,
-        description="Anthropic API key for Opus verifier",
+        description="Override Anthropic API key via env var ANTHROPIC_API_KEY",
         env="ANTHROPIC_API_KEY",
     )
 

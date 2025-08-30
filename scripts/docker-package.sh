@@ -180,7 +180,15 @@ if [[ "$INCLUDE_CONFIG" == "true" ]]; then
     
     # Docker Compose files
     cp docker-compose.yml "$OUTPUT_DIR/"
-    cp .env.docker "$OUTPUT_DIR/.env.example"
+    # Configuration template for Firebase Secrets
+    cat > "$OUTPUT_DIR/firebase-config-template.env" << 'EOF'
+# Firebase Secrets Manager Configuration Template
+# Set these environment variables for production deployment
+FIREBASE_PROJECT_ID=olorin-ui
+ANTHROPIC_API_KEY_SECRET=olorin/anthropic_api_key
+SPLUNK_USERNAME_SECRET=olorin/splunk_username
+SPLUNK_PASSWORD_SECRET=olorin/splunk_password
+EOF
     
     # Application configurations
     if [[ -d "config" ]]; then
@@ -365,14 +373,19 @@ fi
 
 print_status "Setting up environment configuration..."
 if [[ ! -f ".env" ]]; then
-    if [[ -f ".env.example" ]]; then
-        cp .env.example .env
-        print_status "Created .env from .env.example"
-        print_status "Please edit .env file to configure your deployment"
-        read -p "Press Enter to continue after editing .env file..."
+    if [[ -f "firebase-config-template.env" ]]; then
+        cp firebase-config-template.env .env
+        print_status "Created .env from Firebase configuration template"
+        print_status "⚠️  IMPORTANT: Configure Firebase Secrets Manager with olorin-ui project"
+        print_status "Please configure Firebase secrets before deployment"
+        read -p "Press Enter to continue after configuring Firebase secrets..."
     else
-        print_error ".env.example file not found"
-        exit 1
+        print_status "Creating Firebase-based .env file"
+        cat > .env << 'EOF'
+# Firebase Secrets Manager Configuration
+FIREBASE_PROJECT_ID=olorin-ui
+ANTHROPIC_API_KEY_SECRET=olorin/anthropic_api_key
+EOF
     fi
 fi
 
@@ -476,7 +489,7 @@ This package contains everything needed to deploy the Olorin fraud detection sys
 
 - **images/**: Docker images saved as .tar files
 - **docker-compose.yml**: Service orchestration configuration
-- **.env.example**: Environment configuration template
+- **firebase-config-template.env**: Firebase Secrets Manager configuration template
 - **scripts/**: Database initialization and utility scripts
 - **config/**: Application configuration files
 - **docs/**: Complete documentation
@@ -486,7 +499,7 @@ This package contains everything needed to deploy the Olorin fraud detection sys
 ## Quick Start
 
 1. **Prerequisites**: Ensure Docker and Docker Compose are installed
-2. **Configure**: Copy \`.env.example\` to \`.env\` and edit values
+2. **Configure**: Set up Firebase Secrets Manager with olorin-ui project
 3. **Deploy**: Run \`./deploy.sh\`
 4. **Access**: Open http://localhost:3000 for the application
 
@@ -496,7 +509,9 @@ This package contains everything needed to deploy the Olorin fraud detection sys
 
 \`\`\`bash
 # Copy environment template
-cp .env.example .env
+# Configure Firebase Secrets Manager
+export FIREBASE_PROJECT_ID="olorin-ui"
+export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key"
 
 # Edit configuration (required!)
 nano .env
@@ -700,7 +715,9 @@ echo "  - Components:"
 echo
 echo "To deploy on target machine:"
 echo "  1. Extract: tar -xzf $ARCHIVE_NAME"
-echo "  2. Configure: cd $(basename "$OUTPUT_DIR") && cp .env.example .env && nano .env"
+echo "  2. Configure: cd $(basename "$OUTPUT_DIR") && # Configure Firebase Secrets Manager
+export FIREBASE_PROJECT_ID="olorin-ui"
+export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key" && nano .env"
 echo "  3. Deploy: ./deploy.sh"
 echo
 print_status "Package creation completed at $(date)"

@@ -41,7 +41,18 @@ class OpusVerifier:
         )
 
     async def _call_opus(self, ctx: VerificationContext) -> str:
-        api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
+        from app.utils.firebase_secrets import get_firebase_secret
+        from app.service.config import get_settings_for_env
+        
+        settings = get_settings_for_env()
+        
+        # Try Firebase secrets first, then environment variable, then instance variable
+        api_key = (
+            self._api_key or 
+            settings.anthropic_api_key or
+            get_firebase_secret(settings.anthropic_api_key_secret) or
+            os.getenv("ANTHROPIC_API_KEY")
+        )
         if not api_key:
             # Fallback scaffold behavior
             if ctx.original_response_text and len(ctx.original_response_text.strip()) > 0:

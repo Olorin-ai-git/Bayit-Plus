@@ -492,7 +492,7 @@ React TypeScript application with:
 
 ## Environment Configuration
 
-Create `.env` file in olorin-server directory based on `.env.example`:
+Configure environment variables in olorin-server directory using Firebase Secrets Manager:
 - JWT secrets and expiry
 - CORS configuration
 - Redis connection details

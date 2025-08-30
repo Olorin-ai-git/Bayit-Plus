@@ -1,0 +1,48 @@
+{
+  "investigation_id": "inv_1756566284",
+  "entity_id": "user_suspect_001",
+  "start_time": "2025-08-30T10:04:44.389315",
+  "context": {
+    "entity_id": "user_suspect_001",
+    "timestamp": "2025-08-30T10:04:44.389295",
+    "scenario": {
+      "location": "Moscow, Russia",
+      "previous_locations": [
+        "New York, USA",
+        "Boston, USA"
+      ],
+      "ip": "185.220.101.45",
+      "connection": "TOR/VPN",
+      "device": "Unknown Linux Device",
+      "os": "Linux",
+      "browser": "Tor Browser",
+      "known_devices": [
+        "iPhone 14 Pro",
+        "MacBook Pro"
+      ],
+      "amount": 75000,
+      "avg_transaction": 500,
+      "time": "03:30 AM local",
+      "merchant": "Cryptocurrency Exchange",
+      "login_attempts": 5,
+      "password_changes": 3,
+      "account_changes": [
+        "Email changed",
+        "Phone removed",
+        "2FA disabled"
+      ],
+      "session_duration": "2 minutes",
+      "time_gap": "5 minutes",
+      "distance": "7,500 miles",
+      "impossible_travel": true
+    },
+    "investigation_type": "autonomous_fraud_detection"
+  },
+  "agent_findings": {},
+  "overall_risk": 0,
+  "end_time": "2025-08-30T10:04:45.053437",
+  "total_api_calls": 7,
+  "total_cost": 0.0,
+  "real_api_used": true,
+  "mock_data": false
+}

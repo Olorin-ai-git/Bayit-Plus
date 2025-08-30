@@ -198,6 +198,9 @@ SECRET_MAPPINGS = {
     # App secrets
     'olorin/app_secret': 'olorin_app_secret',
     
+    # AI/ML API secrets
+    'olorin/anthropic_api_key': 'olorin_anthropic_api_key',
+    
     # Splunk secrets
     'olorin/splunk_username': 'olorin_splunk_username',
     'olorin/splunk_password': 'olorin_splunk_password',

@@ -10,8 +10,13 @@ def test_anthropic_api():
     print("🚀 TESTING ANTHROPIC API DIRECTLY")
     print("="*60)
     
-    # API configuration
-    api_key = "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"
+    # SECURITY: Get API key from environment variable or Firebase secrets
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
+        print("For production: Use Firebase secret 'olorin/anthropic_api_key'")
+        print("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
+        return False
     api_url = "https://api.anthropic.com/v1/messages"
     
     print("📡 Making direct HTTP call to Anthropic API...")

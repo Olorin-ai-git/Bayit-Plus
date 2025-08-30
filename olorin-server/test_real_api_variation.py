@@ -3,13 +3,20 @@
 
 import json
 import requests
+import os
 
 def test_with_variation():
     """Test API multiple times to show response variation."""
     print("🚀 TESTING REAL ANTHROPIC API WITH VARIATION")
     print("="*60)
     
-    api_key = "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"
+    # SECURITY: Get API key from environment variable or Firebase secrets
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
+        print("For production: Use Firebase secret 'olorin/anthropic_api_key'")
+        print("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
+        return False
     api_url = "https://api.anthropic.com/v1/messages"
     
     headers = {

@@ -47,8 +47,10 @@ tar -xzf olorin-deployment-*.tar.gz
 cd olorin-package
 
 # 2. Configure
-cp .env.example .env
-nano .env  # Set passwords and configuration
+# Set required environment variables or use Firebase Secrets Manager
+export FIREBASE_PROJECT_ID="olorin-ui"
+export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key"
+# Configure other environment variables as needed
 
 # 3. Deploy
 ./deploy.sh

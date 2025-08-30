@@ -5,8 +5,12 @@ import os
 import json
 import asyncio
 
-# Set the API key
-os.environ["ANTHROPIC_API_KEY"] = "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"
+# API key should be set via environment variable ANTHROPIC_API_KEY
+# For Firebase secrets integration, use: get_firebase_secret('olorin/anthropic_api_key')
+if not os.getenv("ANTHROPIC_API_KEY"):
+    print("❌ ANTHROPIC_API_KEY environment variable not set")
+    print("Set it via: export ANTHROPIC_API_KEY='your-api-key'")
+    print("Or use Firebase secrets: olorin/anthropic_api_key")
 
 async def test_real_api():
     """Make a real API call to Anthropic Claude."""
