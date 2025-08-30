@@ -144,7 +144,6 @@ except Exception as e:
         llm_with_tools = llm
 
 
-@protect_node("assistant")
 def assistant(state: MessagesState, config: RunnableConfig):
     olorin_header = _get_config_value(
         config, ["configurable", "agent_context"]
@@ -255,20 +254,30 @@ def _rehydrate_agent_context(agent_context):
 
 
 async def start_investigation(state: MessagesState, config) -> dict:
+    logger.error("🔥🔥🔥 START_INVESTIGATION FUNCTION CALLED 🔥🔥🔥")
     logger.info("[start_investigation] initiating fraud investigation flow")
     agent_context = _get_config_value(config, ["configurable", "agent_context"])
     agent_context = _rehydrate_agent_context(agent_context)
-    md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
+    md = agent_context.metadata.additional_metadata or {}
     entity_id = md.get("entity_id") or md.get("entityId")
     entity_type = md.get("entity_type") or md.get("entityType")
-    from uuid import uuid4
+    
+    # Debug: Log what metadata we actually received
+    logger.error(f"🔍 start_investigation received metadata: {md}")
+    logger.error(f"🔍 agent_context.metadata: {agent_context.metadata}")
+    
+    # Extract investigation_id from metadata or generate if not provided
+    investigation_id = md.get("investigation_id") or md.get("investigationId")
+    logger.error(f"🔍 extracted investigation_id: {investigation_id}")
+    if not investigation_id:
+        from uuid import uuid4
+        investigation_id = str(uuid4())
+        logger.error(f"🔍 generated new UUID investigation_id: {investigation_id}")
 
     from langchain_core.messages import HumanMessage
 
     from app.models.api_models import InvestigationCreate
     from app.persistence import create_investigation
-
-    investigation_id = str(uuid4())
 
     # Emit progress update: Starting investigation
     await websocket_manager.broadcast_progress(

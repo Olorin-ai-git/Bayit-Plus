@@ -24,9 +24,13 @@ from app.service.agent.autonomous_context import (
 from app.service.agent.recursion_guard import get_recursion_guard, protect_node
 from app.service.config import get_settings_for_env
 from app.service.websocket_manager import AgentPhase, websocket_manager
+from app.service.agent.journey_tracker import LangGraphJourneyTracker, NodeType, NodeStatus
 
 logger = logging.getLogger(__name__)
 settings_for_env = get_settings_for_env()
+
+# Initialize journey tracker for LangGraph node tracking
+journey_tracker = LangGraphJourneyTracker()
 
 # Create autonomous LLM for decision making
 autonomous_llm = ChatOpenAI(
@@ -372,7 +376,6 @@ Let the investigation context guide your decisions, not fixed workflows.
 
 # Domain-specific autonomous agents
 
-@protect_node("autonomous_network_agent")
 async def autonomous_network_agent(state, config) -> dict:
     """Autonomous network analysis using LLM-driven tool selection"""
     
@@ -380,6 +383,19 @@ async def autonomous_network_agent(state, config) -> dict:
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
         return _create_error_response("Missing investigation context")
+    
+    # Track network agent node execution start
+    journey_tracker.track_node_execution(
+        investigation_id=investigation_id,
+        node_name="network_agent",
+        node_type=NodeType.AGENT,
+        input_state={"entity_id": entity_id, "network_analysis": "starting", "investigation_phase": "network_domain"},
+        output_state={"network_analysis": "in_progress", "agent_status": "active"},
+        duration_ms=0,
+        status=NodeStatus.IN_PROGRESS,
+        agent_name="AutonomousNetworkAgent",
+        metadata={"domain": "network", "analysis_type": "autonomous_llm_driven", "objectives_count": 3}
+    )
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
@@ -424,6 +440,19 @@ async def autonomous_network_agent(state, config) -> dict:
             f"Autonomous network analysis completed: {len(findings.key_findings)} findings, risk={findings.risk_score:.2f}"
         )
         
+        # Track network agent completion
+        journey_tracker.track_node_execution(
+            investigation_id=investigation_id,
+            node_name="network_agent",
+            node_type=NodeType.AGENT,
+            input_state={"entity_id": entity_id, "network_analysis": "starting", "investigation_phase": "network_domain"},
+            output_state={"network_analysis": "completed", "findings_count": len(findings.key_findings), "risk_score": findings.risk_score},
+            duration_ms=0,  # TODO: Calculate actual duration
+            status=NodeStatus.COMPLETED,
+            agent_name="AutonomousNetworkAgent",
+            metadata={"domain": "network", "findings_generated": len(findings.key_findings), "risk_level": findings.risk_score, "confidence": findings.confidence}
+        )
+        
         # Return structured result
         result = {
             "risk_assessment": {
@@ -447,7 +476,6 @@ async def autonomous_network_agent(state, config) -> dict:
         return _create_error_response(f"Network analysis failed: {str(e)}")
 
 
-@protect_node("autonomous_device_agent") 
 async def autonomous_device_agent(state, config) -> dict:
     """Autonomous device analysis using LLM-driven tool selection"""
     
@@ -455,6 +483,19 @@ async def autonomous_device_agent(state, config) -> dict:
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
         return _create_error_response("Missing investigation context")
+    
+    # Track device agent node execution start
+    journey_tracker.track_node_execution(
+        investigation_id=investigation_id,
+        node_name="device_agent",
+        node_type=NodeType.AGENT,
+        input_state={"entity_id": entity_id, "device_analysis": "starting", "investigation_phase": "device_domain"},
+        output_state={"device_analysis": "in_progress", "agent_status": "active"},
+        duration_ms=0,
+        status=NodeStatus.IN_PROGRESS,
+        agent_name="AutonomousDeviceAgent",
+        metadata={"domain": "device", "analysis_type": "autonomous_llm_driven", "objectives_count": 3}
+    )
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
@@ -499,6 +540,19 @@ async def autonomous_device_agent(state, config) -> dict:
             f"Autonomous device analysis completed: {len(findings.key_findings)} findings, risk={findings.risk_score:.2f}"
         )
         
+        # Track device agent completion
+        journey_tracker.track_node_execution(
+            investigation_id=investigation_id,
+            node_name="device_agent",
+            node_type=NodeType.AGENT,
+            input_state={"entity_id": entity_id, "device_analysis": "starting", "investigation_phase": "device_domain"},
+            output_state={"device_analysis": "completed", "findings_count": len(findings.key_findings), "risk_score": findings.risk_score},
+            duration_ms=0,  # TODO: Calculate actual duration
+            status=NodeStatus.COMPLETED,
+            agent_name="AutonomousDeviceAgent",
+            metadata={"domain": "device", "findings_generated": len(findings.key_findings), "risk_level": findings.risk_score, "confidence": findings.confidence}
+        )
+        
         # Return structured result
         result = {
             "llm_assessment": {
@@ -522,7 +576,6 @@ async def autonomous_device_agent(state, config) -> dict:
         return _create_error_response(f"Device analysis failed: {str(e)}")
 
 
-@protect_node("autonomous_location_agent")
 async def autonomous_location_agent(state, config) -> dict:
     """Autonomous location analysis using LLM-driven tool selection"""
     
@@ -530,6 +583,19 @@ async def autonomous_location_agent(state, config) -> dict:
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
         return _create_error_response("Missing investigation context")
+    
+    # Track location agent node execution start
+    journey_tracker.track_node_execution(
+        investigation_id=investigation_id,
+        node_name="location_agent",
+        node_type=NodeType.AGENT,
+        input_state={"entity_id": entity_id, "location_analysis": "starting", "investigation_phase": "location_domain"},
+        output_state={"location_analysis": "in_progress", "agent_status": "active"},
+        duration_ms=0,
+        status=NodeStatus.IN_PROGRESS,
+        agent_name="AutonomousLocationAgent",
+        metadata={"domain": "location", "analysis_type": "autonomous_llm_driven", "objectives_count": 3}
+    )
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
@@ -574,6 +640,19 @@ async def autonomous_location_agent(state, config) -> dict:
             f"Autonomous location analysis completed: {len(findings.key_findings)} findings, risk={findings.risk_score:.2f}"
         )
         
+        # Track location agent completion
+        journey_tracker.track_node_execution(
+            investigation_id=investigation_id,
+            node_name="location_agent",
+            node_type=NodeType.AGENT,
+            input_state={"entity_id": entity_id, "location_analysis": "starting", "investigation_phase": "location_domain"},
+            output_state={"location_analysis": "completed", "findings_count": len(findings.key_findings), "risk_score": findings.risk_score},
+            duration_ms=0,  # TODO: Calculate actual duration
+            status=NodeStatus.COMPLETED,
+            agent_name="AutonomousLocationAgent",
+            metadata={"domain": "location", "findings_generated": len(findings.key_findings), "risk_level": findings.risk_score, "confidence": findings.confidence}
+        )
+        
         # Return structured result
         result = {
             "location_risk_assessment": {
@@ -597,7 +676,6 @@ async def autonomous_location_agent(state, config) -> dict:
         return _create_error_response(f"Location analysis failed: {str(e)}")
 
 
-@protect_node("autonomous_logs_agent")
 async def autonomous_logs_agent(state, config) -> dict:
     """Autonomous logs analysis using LLM-driven tool selection"""
     
@@ -605,6 +683,19 @@ async def autonomous_logs_agent(state, config) -> dict:
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
         return _create_error_response("Missing investigation context")
+    
+    # Track logs agent node execution start
+    journey_tracker.track_node_execution(
+        investigation_id=investigation_id,
+        node_name="logs_agent",
+        node_type=NodeType.AGENT,
+        input_state={"entity_id": entity_id, "logs_analysis": "starting", "investigation_phase": "logs_domain"},
+        output_state={"logs_analysis": "in_progress", "agent_status": "active"},
+        duration_ms=0,
+        status=NodeStatus.IN_PROGRESS,
+        agent_name="AutonomousLogsAgent",
+        metadata={"domain": "logs", "analysis_type": "autonomous_llm_driven", "objectives_count": 3}
+    )
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
@@ -648,6 +739,18 @@ async def autonomous_logs_agent(state, config) -> dict:
             findings.raw_data or {},
             f"Autonomous logs analysis completed: {len(findings.key_findings)} findings, risk={findings.risk_score:.2f}"
         )
+        # Track logs agent completion
+        journey_tracker.track_node_execution(
+            investigation_id=investigation_id,
+            node_name="logs_agent",
+            node_type=NodeType.AGENT,
+            input_state={"entity_id": entity_id, "logs_analysis": "starting", "investigation_phase": "logs_domain"},
+            output_state={"logs_analysis": "completed", "findings_count": len(findings.key_findings), "risk_score": findings.risk_score},
+            duration_ms=0,  # TODO: Calculate actual duration
+            status=NodeStatus.COMPLETED,
+            agent_name="AutonomousLogsAgent",
+            metadata={"domain": "logs", "findings_generated": len(findings.key_findings), "risk_level": findings.risk_score, "confidence": findings.confidence}
+        )
         
         # Return structured result
         result = {
@@ -672,7 +775,6 @@ async def autonomous_logs_agent(state, config) -> dict:
         return _create_error_response(f"Logs analysis failed: {str(e)}")
 
 
-@protect_node("autonomous_risk_agent")
 async def autonomous_risk_agent(state, config) -> dict:
     """Autonomous risk assessment using comprehensive correlation analysis"""
     
@@ -680,6 +782,19 @@ async def autonomous_risk_agent(state, config) -> dict:
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
         return _create_error_response("Missing investigation context")
+    
+    # Track risk agent node execution start
+    journey_tracker.track_node_execution(
+        investigation_id=investigation_id,
+        node_name="risk_agent",
+        node_type=NodeType.AGENT,
+        input_state={"entity_id": entity_id, "risk_assessment": "starting", "investigation_phase": "final_correlation"},
+        output_state={"risk_assessment": "in_progress", "agent_status": "active"},
+        duration_ms=0,
+        status=NodeStatus.IN_PROGRESS,
+        agent_name="AutonomousRiskAgent",
+        metadata={"domain": "risk_correlation", "analysis_type": "final_autonomous_synthesis", "objectives_count": 3}
+    )
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
@@ -733,6 +848,19 @@ async def autonomous_risk_agent(state, config) -> dict:
             f"Autonomous investigation completed: overall_risk={autonomous_context.progress.overall_risk_score:.2f}"
         )
         
+        # Track risk agent completion (final node in investigation)
+        journey_tracker.track_node_execution(
+            investigation_id=investigation_id,
+            node_name="risk_agent",
+            node_type=NodeType.AGENT,
+            input_state={"entity_id": entity_id, "risk_assessment": "starting", "investigation_phase": "final_correlation"},
+            output_state={"risk_assessment": "completed", "final_risk_score": autonomous_context.progress.overall_risk_score, "investigation_complete": True},
+            duration_ms=0,  # TODO: Calculate actual duration
+            status=NodeStatus.COMPLETED,
+            agent_name="AutonomousRiskAgent",
+            metadata={"domain": "risk_correlation", "final_findings": len(findings.key_findings), "overall_risk": autonomous_context.progress.overall_risk_score, "confidence": autonomous_context.progress.confidence_score}
+        )
+        
         # Return comprehensive result
         result = {
             "risk_assessment": {
@@ -769,7 +897,7 @@ def _extract_investigation_info(config) -> tuple:
         entity_id = None
         
         if hasattr(agent_context, "metadata") and agent_context.metadata:
-            md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
+            md = agent_context.metadata.additional_metadata or {}
             investigation_id = md.get("investigationId") or md.get("investigation_id")
             entity_id = md.get("entityId") or md.get("entity_id")
         

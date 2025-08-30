@@ -1,0 +1,77 @@
+graph TB
+    subgraph "Frontend Performance Layer"
+        A[React App] --> B[Code Splitting Router]
+        B --> C[Lazy Loaded Components]
+        C --> D[Memoized Components]
+        D --> E[React Query Cache]
+        E --> F[Service Worker Cache]
+        F --> G[Optimized Assets]
+    end
+    
+    subgraph "API Gateway Performance Layer"
+        H[Load Balancer] --> I[API Rate Limiter]
+        I --> J[Request Compression]
+        J --> K[Response Caching]
+        K --> L[FastAPI Async Routes]
+    end
+    
+    subgraph "Backend Performance Layer"
+        L --> M[Enhanced Cache Manager]
+        M --> N[Redis Distributed Cache]
+        M --> O[Memory Cache L1]
+        O --> P[Agent Result Cache]
+        P --> Q[Database Query Cache]
+    end
+    
+    subgraph "Agent Performance Layer"
+        Q --> R[Agent Pool Manager]
+        R --> S[Parallel Agent Execution]
+        S --> T[Agent Memory Optimization]
+        T --> U[Result Memoization]
+    end
+    
+    subgraph "Database Performance Layer"
+        U --> V[Connection Pool]
+        V --> W[Query Optimization]
+        W --> X[Index Management]
+        X --> Y[PostgreSQL DB]
+    end
+    
+    subgraph "Monitoring Performance Layer"
+        Z[Performance Monitor] --> AA[Metrics Collection]
+        AA --> BB[Alerting System]
+        BB --> CC[Performance Dashboard]
+        CC --> DD[Real-time Analytics]
+    end
+    
+    subgraph "WebSocket Performance Layer"
+        EE[WebSocket Manager] --> FF[Connection Pooling]
+        FF --> GG[Message Batching]
+        GG --> HH[Compression]
+        HH --> II[Client Queue]
+    end
+    
+    %% Performance Flow Connections
+    A -.->|Performance Metrics| Z
+    L -.->|API Metrics| Z
+    R -.->|Agent Metrics| Z
+    V -.->|DB Metrics| Z
+    EE -.->|WS Metrics| Z
+    
+    %% Optimization Connections
+    E -->|Cached Requests| K
+    N -->|Distributed Cache| M
+    S -->|Parallel Processing| T
+    W -->|Optimized Queries| Y
+    
+    %% Real-time Performance
+    L -.->|Real-time Updates| EE
+    EE -.->|Live Data| A
+    
+    style A fill:#e1f5fe
+    style L fill:#f3e5f5
+    style M fill:#fff3e0
+    style R fill:#e8f5e8
+    style V fill:#fce4ec
+    style Z fill:#fff8e1
+    style EE fill:#f1f8e9

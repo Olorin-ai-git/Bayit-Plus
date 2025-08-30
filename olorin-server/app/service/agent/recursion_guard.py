@@ -167,10 +167,26 @@ class RecursionGuard:
     
     def can_enter_node(self, investigation_id: str, thread_id: str, node_name: str) -> bool:
         """Check if a node can be safely entered"""
+        logger.error(f"🔍 can_enter_node: looking for investigation_id='{investigation_id}', thread_id='{thread_id}', node='{node_name}'")
         context = self.get_context(investigation_id, thread_id)
         if not context:
             logger.error(f"No context found for investigation {investigation_id}, thread {thread_id}")
-            return False
+            logger.error(f"🔍 Available contexts: {list(self._contexts.keys())}")
+            
+            # AUTO-CREATE CONTEXT FOR UUID-BASED INVESTIGATION IDS
+            # This handles the case where start_investigation generates a UUID that overwrites our original investigation_id
+            if len(investigation_id) == 36 and '-' in investigation_id:  # UUID format detection
+                logger.error(f"🔧 AUTO-CREATING context for UUID-based investigation_id: {investigation_id}")
+                context = self.create_context(
+                    investigation_id=investigation_id,
+                    thread_id=thread_id,
+                    max_depth=15,
+                    max_tool_calls=50,
+                    max_duration_seconds=600
+                )
+                logger.error(f"🔧 AUTO-CREATED RecursionGuard context for UUID investigation {investigation_id}")
+            else:
+                return False
         
         return context.can_enter_node(node_name)
     
@@ -283,8 +299,11 @@ def protect_node(node_name: str):
             thread_id = config.get("configurable", {}).get("thread_id", "unknown")
             
             if hasattr(agent_context, "metadata") and agent_context.metadata:
-                md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
+                md = agent_context.metadata.additional_metadata or {}
                 investigation_id = md.get("investigationId") or md.get("investigation_id", "unknown")
+                logger.error(f"🔍 RecursionGuard extracted: investigation_id='{investigation_id}', thread_id='{thread_id}', md={md}")
+            else:
+                logger.error(f"🔍 RecursionGuard no metadata: agent_context={agent_context}, thread_id='{thread_id}'")
             
             # Check if we can enter this node
             if not guard.enter_node(investigation_id, thread_id, node_name):

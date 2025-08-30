@@ -1,0 +1,52 @@
+flowchart TD
+    A[API Request] --> B{Cache Check L1<br/>Memory Cache}
+    
+    B -->|HIT| C[Return Cached Result]
+    B -->|MISS| D{Cache Check L2<br/>Redis Distributed}
+    
+    D -->|HIT| E[Store in L1 Cache]
+    E --> C
+    D -->|MISS| F{Agent Result Cache}
+    
+    F -->|HIT| G[Store in L2 & L1]
+    G --> C
+    F -->|MISS| H{Database Query Cache}
+    
+    H -->|HIT| I[Store in Agent Cache]
+    I --> G
+    H -->|MISS| J[Execute Agent/Query]
+    
+    J --> K[Store in All Cache Layers]
+    K --> L[Return Fresh Result]
+    
+    %% Cache Invalidation Flow
+    M[Data Update Event] --> N{Identify Affected Caches}
+    N --> O[Invalidate L1 Memory]
+    N --> P[Invalidate L2 Redis]
+    N --> Q[Invalidate Agent Cache]
+    N --> R[Invalidate DB Cache]
+    
+    %% Cache Statistics
+    S[Cache Manager] --> T[Hit Rate Monitor]
+    S --> U[Memory Usage Monitor]
+    S --> V[Performance Metrics]
+    S --> W[Eviction Statistics]
+    
+    %% Cache Configuration
+    X[Cache Configuration] --> Y[TTL Settings]
+    X --> Z[Size Limits]
+    X --> AA[Eviction Policy]
+    X --> BB[Compression Settings]
+    
+    %% Performance Optimization Triggers
+    C --> CC{Performance Check}
+    CC -->|Slow Response| DD[Increase Cache TTL]
+    CC -->|High Memory| EE[Trigger Eviction]
+    CC -->|Low Hit Rate| FF[Warm Cache]
+    
+    style A fill:#e3f2fd
+    style C fill:#c8e6c9
+    style J fill:#ffcdd2
+    style L fill:#c8e6c9
+    style M fill:#fff3e0
+    style S fill:#f3e5f5
