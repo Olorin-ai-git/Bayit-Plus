@@ -20,12 +20,22 @@ class DataEncryption:
 
     def __init__(self, password: Optional[str] = None):
         """Initialize encryption with a password or environment variable."""
-        self.password = password or os.getenv(
-            "ENCRYPTION_PASSWORD", "default-change-in-production"
-        )
-        self.salt = os.getenv("ENCRYPTION_SALT", "default-salt-change").encode()[
-            :16
-        ]  # Use first 16 bytes
+        # Use environment variables for encryption settings
+        encryption_password = password or os.getenv("ENCRYPTION_PASSWORD")
+        if not encryption_password:
+            raise ValueError(
+                "ENCRYPTION_PASSWORD environment variable is required. "
+                "Generate with: openssl rand -base64 32"
+            )
+        self.password = encryption_password
+        
+        encryption_salt = os.getenv("ENCRYPTION_SALT")
+        if not encryption_salt:
+            raise ValueError(
+                "ENCRYPTION_SALT environment variable is required. "
+                "Generate with: openssl rand -base64 16"
+            )
+        self.salt = encryption_salt.encode()[:16]  # Use first 16 bytes
         self._fernet = None
 
     @property

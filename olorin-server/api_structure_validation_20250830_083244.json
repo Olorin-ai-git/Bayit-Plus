@@ -1,0 +1,91 @@
+{
+  "timestamp": "2025-08-30T08:32:43.282105",
+  "server_availability": {
+    "status": "available",
+    "status_code": 200,
+    "response": {
+      "status": "healthy"
+    },
+    "server_type": "uvicorn"
+  },
+  "openapi_spec": {
+    "status": "available",
+    "total_endpoints": 73,
+    "agent_endpoints": [
+      "/v1/agent/invoke",
+      "/v1/agent/start/{entity_id}",
+      "/api/settings/agents",
+      "/api/settings/agent-tools-mapping",
+      "/performance/agents"
+    ],
+    "websocket_endpoints": [],
+    "api_info": {
+      "title": "olorin",
+      "version": "0.1.0",
+      "description": "\n            Olorin Fraud Investigation Platform API\n            \n            A comprehensive fraud detection and investigation system that provides:\n            \u2022 Multi-agent fraud analysis across de..."
+    }
+  },
+  "agent_endpoints": {
+    "endpoints_tested": 2,
+    "results": [
+      {
+        "endpoint": "/v1/agent/invoke",
+        "method": "POST",
+        "description": "Agent invocation endpoint",
+        "status": "reachable",
+        "status_code": 422,
+        "content_type": "application/json",
+        "sample_response": "{'detail': [{'type': 'missing', 'loc': ['body'], 'msg': 'Field required', 'input': None}]}..."
+      },
+      {
+        "endpoint": "/v1/agent/start/test_entity",
+        "method": "POST",
+        "description": "Agent start endpoint",
+        "status": "service_error",
+        "status_code": 500,
+        "content_type": "application/json",
+        "sample_response": "{'detail': 'Autonomous investigation failed: Connection error.'}..."
+      }
+    ],
+    "summary": {
+      "reachable": 1,
+      "service_errors": 1,
+      "network_errors": 0
+    }
+  },
+  "websocket_endpoints": {
+    "status": "connection_error",
+    "endpoint": "/ws/{investigation_id}",
+    "error": "server rejected WebSocket connection: HTTP 403"
+  },
+  "authentication": {
+    "endpoints_tested": [
+      "/auth/login",
+      "/auth/token"
+    ],
+    "results": [
+      {
+        "endpoint": "/auth/login",
+        "status": "available",
+        "status_code": 405,
+        "method_allowed": true
+      },
+      {
+        "endpoint": "/auth/token",
+        "status": "available",
+        "status_code": 404,
+        "method_allowed": false
+      }
+    ]
+  },
+  "validation_summary": {
+    "overall_status": "healthy",
+    "server_available": true,
+    "api_spec_available": true,
+    "agent_endpoints_reachable": "1/2",
+    "websocket_support": false,
+    "total_endpoints_discovered": 73,
+    "agent_specific_endpoints": 5,
+    "api_framework": "FastAPI"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-08-30T09:19:00.293428",
+  "project": "Olorin Fraud Detection Platform",
+  "scan_type": "Final Security Validation",
+  "summary": {
+    "total_issues": 16,
+    "critical_issues": 0,
+    "high_priority_issues": 16,
+    "recommendations": 0,
+    "security_status": "PASS"
+  },
+  "issues": {
+    "critical": [],
+    "high": [
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_deletion_response.cpython-311.pyc",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_deletion_response.cpython-311.pyc",
+        "timestamp": "2025-08-30T09:19:00.256375"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_deletion_response.py",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_deletion_response.py",
+        "timestamp": "2025-08-30T09:19:00.256796"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_response.cpython-311.pyc",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_response.cpython-311.pyc",
+        "timestamp": "2025-08-30T09:19:00.258232"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: olorin-server/.env.example",
+        "file": "olorin-server/.env.example",
+        "timestamp": "2025-08-30T09:19:00.262937"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_list.py",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_list.py",
+        "timestamp": "2025-08-30T09:19:00.263547"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_response.py",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_response.py",
+        "timestamp": "2025-08-30T09:19:00.265325"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/fastapi/security/api_key.py",
+        "file": "back/venv/lib/python3.11/site-packages/fastapi/security/api_key.py",
+        "timestamp": "2025-08-30T09:19:00.271068"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_list.cpython-311.pyc",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_list.cpython-311.pyc",
+        "timestamp": "2025-08-30T09:19:00.274075"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: front/src/.env",
+        "file": "front/src/.env",
+        "timestamp": "2025-08-30T09:19:00.274247"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_summary.py",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/api_key_summary.py",
+        "timestamp": "2025-08-30T09:19:00.278637"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/fastapi/security/__pycache__/api_key.cpython-311.pyc",
+        "file": "back/venv/lib/python3.11/site-packages/fastapi/security/__pycache__/api_key.cpython-311.pyc",
+        "timestamp": "2025-08-30T09:19:00.279048"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_summary.cpython-311.pyc",
+        "file": "back/venv/lib/python3.11/site-packages/langfuse/api/resources/projects/types/__pycache__/api_key_summary.cpython-311.pyc",
+        "timestamp": "2025-08-30T09:19:00.287133"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: olorin-server/.envrc",
+        "file": "olorin-server/.envrc",
+        "timestamp": "2025-08-30T09:19:00.287528"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: olorin-front/src/.env",
+        "file": "olorin-front/src/.env",
+        "timestamp": "2025-08-30T09:19:00.287946"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: olorin-front/.env.example",
+        "file": "olorin-front/.env.example",
+        "timestamp": "2025-08-30T09:19:00.288744"
+      },
+      {
+        "severity": "HIGH",
+        "category": "Git History Security",
+        "message": "Potentially sensitive file found in git history: back/.envrc",
+        "file": "back/.envrc",
+        "timestamp": "2025-08-30T09:19:00.289318"
+      }
+    ],
+    "recommendations": []
+  }
+}

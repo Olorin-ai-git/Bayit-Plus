@@ -56,14 +56,14 @@ clients:
     max_retries: 3
     
   splunk:
-    host: "localhost"
-    port: 8089
-    username: "admin"
-    password: "changeme"
+    host: "${SPLUNK_HOST:-localhost}"
+    port: ${SPLUNK_PORT:-8089}
+    username: "${SPLUNK_USERNAME}"
+    password: "${SPLUNK_PASSWORD}"
     
   databricks:
-    workspace_url: "http://localhost:8083"
-    token: "your-token-here"
+    workspace_url: "${DATABRICKS_WORKSPACE_URL:-http://localhost:8083}"
+    token: "${DATABRICKS_TOKEN}"
     
   mfa:
     base_url: "http://localhost:8084"
@@ -78,12 +78,12 @@ cache:
   ttl: 3600
   
 database:
-  host: "localhost"
-  port: 3306
-  database: "fraud_detection"
-  user: "admin"
-  password: "changeme"
-  pool_size: 5
+  host: "${DB_HOST:-localhost}"
+  port: ${DB_PORT:-3306}
+  database: "${DB_NAME:-fraud_detection}"
+  user: "${DB_USER}"
+  password: "${DB_PASSWORD}"
+  pool_size: ${DB_POOL_SIZE:-5}
   
 metrics:
   enabled: true

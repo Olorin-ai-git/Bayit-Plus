@@ -11,10 +11,8 @@ from pydantic import BaseModel
 class SecurityConfig(BaseModel):
     """Security configuration settings."""
 
-    # JWT Configuration
-    jwt_secret_key: str = os.getenv(
-        "JWT_SECRET_KEY", "your-secret-key-change-in-production"
-    )
+    # JWT Configuration - Environment Variable Required
+    jwt_secret_key: str = os.getenv("JWT_SECRET_KEY")
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
@@ -33,11 +31,9 @@ class SecurityConfig(BaseModel):
     csrf_secret_key: Optional[str] = os.getenv("CSRF_SECRET_KEY")
     csrf_enabled: bool = os.getenv("CSRF_ENABLED", "true").lower() == "true"
 
-    # Encryption
-    encryption_password: str = os.getenv(
-        "ENCRYPTION_PASSWORD", "default-change-in-production"
-    )
-    encryption_salt: str = os.getenv("ENCRYPTION_SALT", "default-salt-change")
+    # Encryption - Environment Variables Required
+    encryption_password: str = os.getenv("ENCRYPTION_PASSWORD")
+    encryption_salt: str = os.getenv("ENCRYPTION_SALT")
 
     # Redis Security
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379")
@@ -62,19 +58,47 @@ class SecurityConfig(BaseModel):
         """Check if running in production environment."""
         return self.environment.lower() == "production"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Validate critical environment variables on initialization
+        if not self.jwt_secret_key:
+            raise ValueError(
+                "JWT_SECRET_KEY environment variable is required. "
+                "Generate with: openssl rand -base64 64"
+            )
+        
+        if not self.encryption_password:
+            raise ValueError(
+                "ENCRYPTION_PASSWORD environment variable is required. "
+                "Generate with: openssl rand -base64 32"
+            )
+        
+        if not self.encryption_salt:
+            raise ValueError(
+                "ENCRYPTION_SALT environment variable is required. "
+                "Generate with: openssl rand -base64 16"
+            )
+    
     def validate_production_settings(self) -> List[str]:
         """Validate security settings for production deployment."""
         issues = []
 
         if self.is_production:
-            if self.jwt_secret_key == "your-secret-key-change-in-production":
-                issues.append("JWT_SECRET_KEY must be changed in production")
+            # Validate required environment variables
+            if not self.jwt_secret_key:
+                issues.append("JWT_SECRET_KEY environment variable is required in production")
+            elif len(self.jwt_secret_key) < 32:
+                issues.append("JWT_SECRET_KEY must be at least 32 characters long in production")
 
-            if self.encryption_password == "default-change-in-production":
-                issues.append("ENCRYPTION_PASSWORD must be changed in production")
+            if not self.encryption_password:
+                issues.append("ENCRYPTION_PASSWORD environment variable is required in production")
+            elif len(self.encryption_password) < 32:
+                issues.append("ENCRYPTION_PASSWORD must be at least 32 characters long in production")
 
-            if self.encryption_salt == "default-salt-change":
-                issues.append("ENCRYPTION_SALT must be changed in production")
+            if not self.encryption_salt:
+                issues.append("ENCRYPTION_SALT environment variable is required in production")
+            elif len(self.encryption_salt) < 16:
+                issues.append("ENCRYPTION_SALT must be at least 16 characters long in production")
 
             if not self.olorin_api_key:
                 issues.append("OLORIN_API_KEY must be set in production")

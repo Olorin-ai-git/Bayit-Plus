@@ -26,6 +26,9 @@ def configure_middleware(app: FastAPI, config: SvcSettings) -> None:
         app: FastAPI application instance
         config: Service configuration settings
     """
+    # Add production error handling middleware (must be first)
+    _configure_error_middleware(app)
+    
     # Add security middleware
     _configure_security_middleware(app)
     
@@ -76,6 +79,17 @@ def _configure_cors_middleware(app: FastAPI) -> None:
     )
     
     logger.info(f"CORS configured with allowed origins: {allowed_origins}")
+
+
+def _configure_error_middleware(app: FastAPI) -> None:
+    """Configure production error handling middleware."""
+    from app.middleware.production_error_middleware import ProductionErrorMiddleware
+    
+    # Add error handling middleware (must be first middleware)
+    environment = os.getenv("APP_ENV", "local")
+    app.add_middleware(ProductionErrorMiddleware, environment=environment)
+    
+    logger.info(f"Production error middleware configured for environment: {environment}")
 
 
 def _configure_transaction_id_middleware(app: FastAPI) -> None:

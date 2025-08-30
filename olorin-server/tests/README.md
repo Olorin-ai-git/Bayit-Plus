@@ -1,6 +1,33 @@
-# Tests Directory
+# Olorin Autonomous Investigation Test Infrastructure
 
-This directory contains all test files for the Olorin application, including unit tests, integration tests, and test utilities.
+## 🚀 NEW: Real API Test Infrastructure (NO MOCK DATA)
+
+This test infrastructure now includes comprehensive testing for the autonomous investigation system using **ONLY REAL API CALLS** - NO MOCK DATA.
+
+### Key Features of New Test Infrastructure
+
+- ✅ **100% Real API Calls**: All tests use real Anthropic Claude Opus 4.1 API
+- ✅ **Real Data Patterns**: Tests use actual investigation scenarios from real data
+- ✅ **Natural Variation**: Results show authentic variation from real LLM responses
+- ✅ **Cost Tracking**: Monitor and control API usage costs during testing
+- ✅ **87% Coverage Target**: Comprehensive test coverage requirement
+- ✅ **Performance Monitoring**: Track API latencies and system performance
+
+### New Test Structure
+
+```
+tests/
+├── conftest.py                 # Test configuration with real API fixtures
+├── run_tests.py               # NEW: Test runner with cost tracking
+├── fixtures/
+│   └── real_investigation_scenarios.py  # NEW: Real data scenario generators
+├── unit/
+│   └── service/
+│       └── agent/
+│           └── test_autonomous_agents.py  # NEW: Unit tests for agents
+└── integration/
+    └── test_autonomous_investigation.py  # NEW: End-to-end integration tests
+```
 
 ## Test Files Overview
 
@@ -122,12 +149,47 @@ The PDF generation has been significantly improved with the following features:
 ## Running Tests
 
 ### Prerequisites
+
+#### Required Environment Variables for Real API Tests
+```bash
+export ANTHROPIC_API_KEY="your-real-api-key"  # Required for Claude Opus 4.1
+export TEST_DATABASE_URL="sqlite:///./test_olorin.db"  # Test database
+```
+
+#### API Costs
+The new tests use real Anthropic API calls with the following pricing:
+- **Input tokens**: $15 per 1M tokens
+- **Output tokens**: $75 per 1M tokens
+- **Default max cost per session**: $10.00
+
 ```bash
 # Install dependencies
 poetry install
 
 # Start the server (for integration tests)
 poetry run uvicorn app.main:app --reload --port 8000
+```
+
+### NEW: Running Real API Tests
+
+```bash
+# Run all tests with real API
+python tests/run_tests.py
+
+# Run with coverage (87% minimum required)
+python tests/run_tests.py --coverage
+
+# Run with cost tracking
+python tests/run_tests.py --track-costs --max-cost 5.0
+
+# Run unit tests for autonomous agents
+python tests/run_tests.py --unit
+
+# Run integration tests
+python tests/run_tests.py --integration
+
+# Run specific test file
+python tests/run_tests.py tests/unit/service/agent/test_autonomous_agents.py
 ```
 
 ### Individual Test Execution
@@ -162,12 +224,14 @@ pytest --cov --cov-report html --cov-report term
 ## Test Categories
 
 ### 🟢 **Unit Tests**
+- **NEW**: `test_autonomous_agents.py` - Real API tests for autonomous agents
 - `run_vector_tests.py` - Vector search tool unit tests
 - `test_vector_search_simple.py` - Comprehensive vector search testing
 - `test_pdf_generation.py` - PDF generation with mock data
 - `app/test/unit/` - Official unit tests
 
 ### 🟡 **Integration Tests**
+- **NEW**: `test_autonomous_investigation.py` - E2E tests with real Anthropic API
 - `test_investigation_workflow.py` - Full workflow integration
 - `test_location_api_integration.py` - Location API integration
 - `test_location_client_vector_search.py` - Client integration
@@ -185,9 +249,61 @@ All tests use mock data to ensure consistent and predictable results:
 
 ## Coverage Requirements
 
+- **NEW Target Coverage**: 87% for autonomous investigation system
 - **Minimum Coverage**: 30% (configured in `tox.ini`)
 - **Target Coverage**: 50%+ for production readiness
 - **Exclusions**: External API tools, mock files, test files
+
+### NEW: Real API Test Scenarios
+
+The test infrastructure includes real investigation scenarios:
+
+#### 1. Account Takeover (ATO)
+- Multiple failed login attempts
+- Device fingerprint changes
+- IP location mismatches
+- Unusual access times
+
+#### 2. Payment Fraud
+- High transaction velocity
+- Amount anomalies
+- New payment methods
+- Merchant category mismatches
+
+#### 3. Identity Fraud
+- Suspicious account age
+- Device proliferation
+- Data inconsistencies
+- Behavioral anomalies
+
+#### 4. Money Laundering
+- Circular transaction patterns
+- Rapid fund movement
+- Multiple account linkages
+- Geographic dispersion
+
+## NEW: Cost Management
+
+### Monitoring API Costs
+
+```bash
+# Set maximum cost per test session
+export TEST_MAX_COST=5.0  # $5.00 limit
+
+# Or use command line
+python tests/run_tests.py --max-cost 5.0
+```
+
+### Performance Benchmarks
+
+Expected performance with real API:
+
+| Operation | Expected Time | Max Time |
+|-----------|--------------|----------|
+| Single Agent Analysis | 10-15s | 30s |
+| Full Investigation (4 agents) | 40-60s | 90s |
+| Risk Aggregation | 15-20s | 30s |
+| Concurrent Investigations (3) | 30-45s | 60s |
 
 ## Troubleshooting
 
@@ -198,6 +314,9 @@ All tests use mock data to ensure consistent and predictable results:
 3. **Import Errors**: Ensure you're running from the project root directory
 4. **Coverage Failures**: Check `tox.ini` for coverage thresholds
 5. **PDF Generation Issues**: Ensure `DejaVuSans.ttf` font file exists in project root
+6. **NEW - API Key Missing**: Set ANTHROPIC_API_KEY environment variable
+7. **NEW - Cost Limit Exceeded**: Increase --max-cost or run fewer tests
+8. **NEW - Timeout Errors**: Check network connection and API status
 
 ### Debug Commands
 ```bash
@@ -220,9 +339,15 @@ When adding new tests:
 1. Place them in the appropriate category (unit/integration)
 2. Follow the naming convention: `test_*.py`
 3. Include docstrings explaining the test purpose
-4. Add mock data if needed
-5. Update this README if adding new test categories
-6. For PDF-related changes, test with `test_pdf_generation.py` first
+4. **NEW**: Use only real API calls - no mocks for autonomous agent tests
+5. **NEW**: Include cost tracking in tests using `api_cost_monitor`
+6. **NEW**: Add appropriate test markers (@pytest.mark.real_api, etc.)
+7. **NEW**: Document expected API costs in test docstrings
+8. **NEW**: Ensure tests handle API failures gracefully
+9. **NEW**: Validate natural response variation from real LLM
+10. **NEW**: Maintain 87% coverage threshold for autonomous system
+11. Update this README if adding new test categories
+12. For PDF-related changes, test with `test_pdf_generation.py` first
 
 - All investigation comment API tests use the /comment endpoint (not /chat)
 - The router is now comment_router (not chat_router) 

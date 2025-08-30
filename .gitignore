@@ -104,31 +104,99 @@ ipython_config.py
 # pyenv
 .python-version
 
-# Environments
+# Environment Files - NEVER COMMIT SECRETS
 .env
 .env.*
+.envrc
 .env.test
 .env.production
 .env.local
 .env.secure
 .env.development
 .env.staging
+.env.docker
+*.env
+*.envrc
+**/.env
+**/.env.*
+**/*.env
+**/envrc
+**/.envrc
 
 # Credentials and Secrets (NEVER COMMIT)
 ADMIN_CREDENTIALS.txt
 *credentials*
 *secrets*
+*secret*
 *.key
 *.pem
 *.p12
 *.jks
+*.pfx
+*.crt
+*.cert
+*.csr
 api_keys.txt
+apikeys.txt
 passwords.txt
 .secrets
 .secrets.*
 secrets/
 credentials/
 keys/
+private/
+**/*secret*
+**/*credential*
+**/*password*
+**/*key*
+**/.secret*
+
+# Firebase Secrets
+firebase-adminsdk-*.json
+serviceAccountKey.json
+firebase-service-account.json
+**/*firebase*key*.json
+
+# JWT and Encryption Keys
+jwt.key
+jwt*.key
+encryption.key
+encryption*.key
+auth.key
+auth*.key
+
+# Database Connection Strings
+connection_string.txt
+db_connection.txt
+database_url.txt
+
+# SSL/TLS Certificates
+ssl/
+tls/
+certs/
+certificates/
+*.crt
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Configuration with Secrets
+config.secret.json
+config.secret.yaml
+config.secret.yml
+secret.config.*
+
+# Cloud Provider Configs
+.aws/
+.gcp/
+.azure/
+gcloud/
+
+# Security Scan Results
+security-scan-results/
+vulnerability-reports/
+pentest-results/
 
 # Logs
 logs
@@ -209,3 +277,62 @@ backup/
 
 # Ignore external Gaia sources
 Gaia/
+
+# Security and Audit Files
+*.security
+*.audit
+security_scan_*
+audit_report_*
+vulnerability_*
+pentest_*
+
+# Backup Files (May Contain Secrets)
+*.backup
+*.bak
+*.old
+*.orig
+*.save
+*.tmp
+backup/
+backups/
+**/*.backup
+**/*.bak
+
+# IDE Security Files
+.vscode/settings.json
+.idea/workspace.xml
+.idea/tasks.xml
+
+# macOS Security
+.keychain
+Keychain/
+
+# Windows Security
+*.pfx
+*.p7b
+
+# Docker Secrets
+docker-compose.override.yml
+docker-compose.secrets.yml
+.docker/
+
+# Terraform State (May Contain Secrets)
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# Kubernetes Secrets
+kube-config
+kubeconfig
+*.kubeconfig
+k8s-secrets/
+
+# Package Manager Security
+.npmrc
+.yarnrc
+.pip/
+
+# Python Security
+site-packages/
+*.pyc.secure
