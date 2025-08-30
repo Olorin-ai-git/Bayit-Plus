@@ -8,7 +8,7 @@ Provides pattern instantiation, lifecycle management, and usage statistics.
 import logging
 from typing import Any, Dict, List, Optional, Type
 
-from .base import BasePattern, PatternConfig, PatternType
+from .base import BasePattern, PatternConfig, PatternType, OpenAIBasePattern, OpenAIPatternConfig, FrameworkType
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +21,20 @@ class PatternRegistry:
         self._patterns: Dict[PatternType, Type[BasePattern]] = {}
         self._usage_stats: Dict[PatternType, Dict[str, Any]] = {}
         self._instances: Dict[str, BasePattern] = {}
+        self._framework_mapping: Dict[PatternType, FrameworkType] = {}
     
     def register_pattern(self, pattern_type: PatternType, pattern_class: Type[BasePattern]) -> None:
         """Register a pattern class with the registry"""
         self._patterns[pattern_type] = pattern_class
-        self._usage_stats[pattern_type] = {
+        
+        # Detect framework type from pattern class
+        if issubclass(pattern_class, OpenAIBasePattern):
+            self._framework_mapping[pattern_type] = FrameworkType.OPENAI_AGENTS
+        else:
+            self._framework_mapping[pattern_type] = FrameworkType.LANGGRAPH
+        
+        # Initialize enhanced usage statistics
+        base_stats = {
             "total_executions": 0,
             "successful_executions": 0,
             "total_duration_ms": 0,
@@ -33,14 +42,28 @@ class PatternRegistry:
             "cache_hits": 0,
             "error_count": 0
         }
-        logger.info(f"Registered pattern: {pattern_type.value}")
+        
+        # Add OpenAI-specific stats if it's an OpenAI pattern
+        if self._framework_mapping[pattern_type] == FrameworkType.OPENAI_AGENTS:
+            base_stats.update({
+                "total_tokens": 0,
+                "total_cost_cents": 0.0,
+                "function_calls": 0,
+                "streaming_sessions": 0,
+                "assistant_runs": 0
+            })
+        
+        self._usage_stats[pattern_type] = base_stats
+        framework = self._framework_mapping[pattern_type].value
+        logger.info(f"Registered {framework} pattern: {pattern_type.value}")
     
     def create_pattern(
         self,
         pattern_type: PatternType,
         config: PatternConfig,
         tools: Optional[List[Any]] = None,
-        ws_streaming: Optional[Any] = None
+        ws_streaming: Optional[Any] = None,
+        openai_config: Optional[OpenAIPatternConfig] = None
     ) -> BasePattern:
         """Create a pattern instance"""
         
@@ -48,13 +71,26 @@ class PatternRegistry:
             raise ValueError(f"Pattern type {pattern_type.value} not registered")
         
         pattern_class = self._patterns[pattern_type]
-        instance = pattern_class(config=config, tools=tools, ws_streaming=ws_streaming)
+        framework_type = self._framework_mapping[pattern_type]
+        
+        # Create instance based on framework type
+        if framework_type == FrameworkType.OPENAI_AGENTS:
+            if not openai_config:
+                openai_config = OpenAIPatternConfig()
+            instance = pattern_class(
+                config=config, 
+                openai_config=openai_config,
+                tools=tools, 
+                ws_streaming=ws_streaming
+            )
+        else:
+            instance = pattern_class(config=config, tools=tools, ws_streaming=ws_streaming)
         
         # Store instance for potential reuse
         instance_id = f"{pattern_type.value}_{id(instance)}"
         self._instances[instance_id] = instance
         
-        logger.debug(f"Created pattern instance: {pattern_type.value}")
+        logger.debug(f"Created {framework_type.value} pattern instance: {pattern_type.value}")
         return instance
     
     def get_available_patterns(self) -> List[PatternType]:
@@ -85,6 +121,25 @@ class PatternRegistry:
         
         if hasattr(metrics, 'success') and not metrics.success:
             stats["error_count"] += 1
+        
+        # Update OpenAI-specific metrics if this is an OpenAI pattern
+        framework_type = self._framework_mapping.get(pattern_type)
+        if framework_type == FrameworkType.OPENAI_AGENTS:
+            if hasattr(metrics, 'token_usage'):
+                total_tokens = metrics.token_usage.get('input', 0) + metrics.token_usage.get('output', 0)
+                stats["total_tokens"] += total_tokens
+            
+            if hasattr(metrics, 'api_cost_cents'):
+                stats["total_cost_cents"] += metrics.api_cost_cents
+            
+            if hasattr(metrics, 'function_calls'):
+                stats["function_calls"] += metrics.function_calls
+                
+            if hasattr(metrics, 'streaming_chunks') and metrics.streaming_chunks > 0:
+                stats["streaming_sessions"] += 1
+                
+            if hasattr(metrics, 'openai_run_id') and metrics.openai_run_id:
+                stats["assistant_runs"] += 1
     
     def get_usage_stats(self) -> Dict[PatternType, Dict[str, Any]]:
         """Get usage statistics for all patterns"""
@@ -99,13 +154,38 @@ class PatternRegistry:
         self._instances.clear()
         logger.info("Cleared all pattern instances")
     
+    def get_framework_type(self, pattern_type: PatternType) -> Optional[FrameworkType]:
+        """Get the framework type for a pattern"""
+        return self._framework_mapping.get(pattern_type)
+    
+    def get_patterns_by_framework(self, framework_type: FrameworkType) -> List[PatternType]:
+        """Get all patterns for a specific framework"""
+        return [
+            pattern_type for pattern_type, fw_type in self._framework_mapping.items()
+            if fw_type == framework_type
+        ]
+    
+    def is_openai_pattern(self, pattern_type: PatternType) -> bool:
+        """Check if a pattern is OpenAI-based"""
+        return self._framework_mapping.get(pattern_type) == FrameworkType.OPENAI_AGENTS
+    
+    def is_langgraph_pattern(self, pattern_type: PatternType) -> bool:
+        """Check if a pattern is LangGraph-based"""
+        return self._framework_mapping.get(pattern_type) == FrameworkType.LANGGRAPH
+    
     def get_registry_info(self) -> Dict[str, Any]:
         """Get information about the registry state"""
+        langgraph_patterns = self.get_patterns_by_framework(FrameworkType.LANGGRAPH)
+        openai_patterns = self.get_patterns_by_framework(FrameworkType.OPENAI_AGENTS)
+        
         return {
             "registered_patterns": len(self._patterns),
             "pattern_types": [pt.value for pt in self._patterns.keys()],
             "active_instances": len(self._instances),
-            "total_executions": sum(stats["total_executions"] for stats in self._usage_stats.values())
+            "total_executions": sum(stats["total_executions"] for stats in self._usage_stats.values()),
+            "langgraph_patterns": len(langgraph_patterns),
+            "openai_patterns": len(openai_patterns),
+            "frameworks_supported": list(set(self._framework_mapping.values()))
         }
 
 
@@ -163,5 +243,18 @@ def _register_default_patterns() -> None:
         registry.register_pattern(PatternType.EVALUATOR_OPTIMIZER, EvaluatorOptimizerPattern)
     except ImportError as e:
         logger.warning(f"Failed to register EvaluatorOptimizerPattern: {e}")
+    
+    # Register OpenAI Agent patterns
+    try:
+        from .openai import OpenAIAssistantPattern
+        registry.register_pattern(PatternType.OPENAI_ASSISTANT, OpenAIAssistantPattern)
+    except ImportError as e:
+        logger.warning(f"Failed to register OpenAIAssistantPattern: {e}")
+    
+    try:
+        from .openai.function_calling_pattern import OpenAIFunctionCallingPattern
+        registry.register_pattern(PatternType.OPENAI_FUNCTION_CALLING, OpenAIFunctionCallingPattern)
+    except ImportError as e:
+        logger.warning(f"Failed to register OpenAIFunctionCallingPattern: {e}")
     
     logger.info(f"Pattern registry initialized with {len(registry.get_available_patterns())} patterns")

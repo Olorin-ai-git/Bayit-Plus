@@ -42,6 +42,8 @@ from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
     EntityType
 )
+from app.models.agent_context import AgentContext
+from app.models.agent_headers import OlorinHeader, AuthContext
 from app.service.agent.journey_tracker import (
     LangGraphJourneyTracker,
     NodeType,
@@ -216,13 +218,32 @@ class EnhancedInvestigationTest:
         return patch('app.service.agent.tools.splunk_tool.splunk_tool.SplunkQueryTool._arun', 
                     side_effect=mock_splunk_search)
     
-    def _create_investigation_context(self, scenario_name: str, transaction: Dict[str, Any]) -> AutonomousInvestigationContext:
-        """Create investigation context from fraud scenario"""
-        return AutonomousInvestigationContext(
-            investigation_id=f"test_{scenario_name}_{int(time.time())}",
-            entity_id=transaction["user_id"],
-            entity_type=EntityType.USER_ID,
-            investigation_type="fraud_investigation"
+    def _create_agent_context(self, scenario_name: str, transaction: Dict[str, Any]) -> AgentContext:
+        """Create agent context from fraud scenario"""
+        # Create AuthContext for testing
+        auth_context = AuthContext(
+            olorin_user_id="test_user",
+            olorin_user_token="test_token",
+            olorin_realmid="test_realm"
+        )
+        
+        # Create proper OlorinHeader for testing
+        olorin_header = OlorinHeader(
+            olorin_tid=f"test_tid_{int(time.time())}",
+            olorin_experience_id="fraud_investigation",
+            olorin_originating_assetalias="Olorin.cas.hri.olorin",
+            auth_context=auth_context
+        )
+        
+        # Create metadata object
+        class TestMetadata:
+            interaction_group_id = f"test_group_{scenario_name}"
+        
+        return AgentContext(
+            input=f"Investigate transaction {transaction['transaction_id']} for fraud indicators: {transaction['fraud_indicators']}",
+            olorin_header=olorin_header,
+            metadata=TestMetadata(),
+            agent_name="fraud_investigation_agent"
         )
     
     async def _run_graph_with_monitoring(self, graph, input_data: Dict[str, Any], config: Dict[str, Any]) -> Dict[str, Any]:
@@ -320,8 +341,8 @@ class EnhancedInvestigationTest:
                     scenario_name = f"fraud_scenario_{i+1}"
                     logger.info(f"\n🎯 TESTING SCENARIO {i+1}: {transaction['fraud_indicators']}")
                     
-                    # Create investigation context
-                    context = self._create_investigation_context(scenario_name, transaction)
+                    # Create agent context
+                    agent_context = self._create_agent_context(scenario_name, transaction)
                     
                     # Prepare input for the graph
                     investigation_message = f"""
@@ -342,8 +363,8 @@ class EnhancedInvestigationTest:
                     
                     config = {
                         "configurable": {
-                            "thread_id": context.investigation_id,
-                            "agent_context": context
+                            "thread_id": agent_context.thread_id,
+                            "agent_context": agent_context
                         }
                     }
                     
@@ -456,7 +477,7 @@ async def main():
         results = await test_runner.run_comprehensive_test(use_parallel=use_parallel)
         
         # Save results to file
-        results_file = f"test_results_{mode.lower()}_{int(time.time())}.json"
+        results_file = f"tests/logs/test_results_{mode.lower()}_{int(time.time())}.json"
         with open(results_file, 'w') as f:
             json.dump(results, f, indent=2)
         logger.info(f"💾 Results saved to: {results_file}")

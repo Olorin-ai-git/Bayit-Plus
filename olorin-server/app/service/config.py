@@ -55,6 +55,20 @@ class SvcSettings(BaseSettings):
         description="Override Anthropic API key via env var ANTHROPIC_API_KEY",
         env="ANTHROPIC_API_KEY",
     )
+    
+    # OpenAI API for dual-framework agent support - stored in Firebase Secrets Manager
+    openai_api_key_secret: str = Field(
+        "olorin/openai_api_key",
+        description="Firebase secret path for OpenAI API key",
+        env="OPENAI_API_KEY_SECRET",
+    )
+    
+    # Allow overriding OpenAI API key directly via environment for local/dev
+    openai_api_key: Optional[str] = Field(
+        default=None,
+        description="Override OpenAI API key via env var OPENAI_API_KEY",
+        env="OPENAI_API_KEY",
+    )
 
     # Cache settings
     use_ips_cache: bool = (
@@ -149,6 +163,86 @@ class SvcSettings(BaseSettings):
         env="SUMO_LOGIC_ACCESS_KEY",
     )
     
+    # Database secrets - migrated to Firebase Secrets Manager
+    database_password_secret: str = Field(
+        "olorin/database_password",
+        description="Firebase secret path for database password",
+        env="DATABASE_PASSWORD_SECRET",
+    )
+    
+    # Redis secrets - migrated to Firebase Secrets Manager  
+    redis_password_secret: str = Field(
+        "olorin/redis_password",
+        description="Firebase secret path for Redis password",
+        env="REDIS_PASSWORD_SECRET",
+    )
+    
+    # JWT secrets - migrated to Firebase Secrets Manager
+    jwt_secret_key_secret: str = Field(
+        "olorin/jwt_secret_key",
+        description="Firebase secret path for JWT secret key",
+        env="JWT_SECRET_KEY_SECRET",
+    )
+    
+    # Development API keys - migrated to Firebase Secrets Manager
+    gaia_api_key_secret: str = Field(
+        "olorin/gaia_api_key",
+        description="Firebase secret path for Gaia API key",
+        env="GAIA_API_KEY_SECRET",
+    )
+    
+    olorin_api_key_secret: str = Field(
+        "olorin/olorin_api_key", 
+        description="Firebase secret path for Olorin API key",
+        env="OLORIN_API_KEY_SECRET",
+    )
+    
+    databricks_token_secret: str = Field(
+        "olorin/databricks_token",
+        description="Firebase secret path for Databricks token",
+        env="DATABRICKS_TOKEN_SECRET",
+    )
+
+    # Allow overriding database password directly via environment for local/dev
+    database_password: Optional[str] = Field(
+        default=None,
+        description="Override database password via env var DB_PASSWORD or POSTGRES_PASSWORD",
+        env="DB_PASSWORD",
+    )
+    
+    # Allow overriding Redis password directly via environment for local/dev
+    redis_password: Optional[str] = Field(
+        default=None,
+        description="Override Redis password via env var REDIS_PASSWORD",
+        env="REDIS_PASSWORD",
+    )
+    
+    # Allow overriding JWT secret directly via environment for local/dev
+    jwt_secret_key: Optional[str] = Field(
+        default=None,
+        description="Override JWT secret key via env var JWT_SECRET_KEY",
+        env="JWT_SECRET_KEY",
+    )
+    
+    # Allow overriding development API keys directly via environment for local/dev
+    gaia_api_key: Optional[str] = Field(
+        default=None,
+        description="Override Gaia API key via env var GAIA_API_KEY",
+        env="GAIA_API_KEY",
+    )
+    
+    olorin_api_key: Optional[str] = Field(
+        default=None,
+        description="Override Olorin API key via env var OLORIN_API_KEY", 
+        env="OLORIN_API_KEY",
+    )
+    
+    databricks_token: Optional[str] = Field(
+        default=None,
+        description="Override Databricks token via env var DATABRICKS_TOKEN",
+        env="DATABRICKS_TOKEN",
+    )
+
     # Snowflake integration settings
     snowflake_account: Optional[str] = Field(
         None,

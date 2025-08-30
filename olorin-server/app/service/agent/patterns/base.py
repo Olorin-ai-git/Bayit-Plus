@@ -19,12 +19,21 @@ from langchain_core.messages import BaseMessage
 class PatternType(Enum):
     """Enumeration of available agent patterns"""
     
+    # LangGraph-based patterns
     AUGMENTED_LLM = "augmented_llm"
     PROMPT_CHAINING = "prompt_chaining" 
     ROUTING = "routing"
     PARALLELIZATION = "parallelization"
     ORCHESTRATOR_WORKERS = "orchestrator_workers"
     EVALUATOR_OPTIMIZER = "evaluator_optimizer"
+    
+    # OpenAI Agent-based patterns
+    OPENAI_ASSISTANT = "openai_assistant"
+    OPENAI_FUNCTION_CALLING = "openai_function_calling"
+    OPENAI_CONVERSATION = "openai_conversation"
+    OPENAI_STREAMING = "openai_streaming"
+    OPENAI_MULTI_AGENT = "openai_multi_agent"
+    OPENAI_RAG = "openai_rag"
 
 
 @dataclass
@@ -58,6 +67,13 @@ class PatternMetrics:
     error_message: Optional[str] = None
     confidence_score: float = 0.0
     cache_hit: bool = False
+    
+    # OpenAI-specific metrics
+    openai_run_id: Optional[str] = None
+    openai_assistant_id: Optional[str] = None
+    function_calls: int = 0
+    streaming_chunks: int = 0
+    api_cost_cents: float = 0.0
     
     def finish(self, success: bool = True, error_message: Optional[str] = None):
         """Mark the pattern execution as finished"""
@@ -107,6 +123,8 @@ class BasePattern(ABC):
     Provides common functionality including caching, metrics tracking,
     and standardized execution interface.
     """
+    
+    MAX_CACHE_SIZE = 1000  # Prevent memory leaks in high-volume production
     
     def __init__(
         self,
@@ -226,7 +244,20 @@ class BasePattern(ABC):
         return cached_item.get("result")
     
     def _cache_result(self, cache_key: str, result: PatternResult) -> None:
-        """Cache a successful result"""
+        """Cache a successful result with size management"""
+        # Enforce cache size limits to prevent memory leaks
+        if len(self._cache) >= self.MAX_CACHE_SIZE:
+            # Remove oldest 10% of cache entries (FIFO eviction)
+            entries_to_remove = max(1, self.MAX_CACHE_SIZE // 10)
+            oldest_keys = list(self._cache.keys())[:entries_to_remove]
+            
+            for key in oldest_keys:
+                del self._cache[key]
+            
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.debug(f"Evicted {len(oldest_keys)} cache entries to prevent memory leak")
+        
         self._cache[cache_key] = {
             "result": result,
             "timestamp": time.time()
@@ -247,3 +278,179 @@ class BasePattern(ABC):
             "cache_enabled": self.config.enable_caching,
             "cache_ttl_seconds": self.config.cache_ttl_seconds
         }
+
+
+@dataclass
+class OpenAIPatternConfig:
+    """Configuration specific to OpenAI Agent patterns"""
+    
+    # Core OpenAI API settings
+    model: str = "gpt-4o"
+    temperature: float = 0.1
+    max_tokens: Optional[int] = None
+    top_p: float = 1.0
+    frequency_penalty: float = 0.0
+    presence_penalty: float = 0.0
+    
+    # OpenAI Assistant settings
+    assistant_instructions: Optional[str] = None
+    assistant_name: Optional[str] = None
+    assistant_description: Optional[str] = None
+    file_ids: List[str] = field(default_factory=list)
+    metadata: Dict[str, str] = field(default_factory=dict)
+    
+    # Function calling settings
+    function_calling: str = "auto"  # "auto", "none", or specific function name
+    parallel_tool_calls: bool = True
+    
+    # Streaming settings
+    stream: bool = False
+    stream_options: Dict[str, Any] = field(default_factory=dict)
+    
+    # Multi-agent settings
+    handoff_instructions: Optional[str] = None
+    agent_descriptions: Dict[str, str] = field(default_factory=dict)
+    
+    # Integration settings
+    enable_rag: bool = False
+    rag_retrieval_count: int = 5
+    enable_memory: bool = True
+    conversation_memory_limit: int = 50
+    
+    # Timeout and retry settings
+    request_timeout: int = 60
+    max_retries: int = 3
+    retry_delay: float = 1.0
+    
+    # Cost tracking
+    enable_cost_tracking: bool = True
+    cost_budget_cents: Optional[float] = None
+
+
+class FrameworkType(Enum):
+    """Framework type for pattern execution"""
+    
+    LANGGRAPH = "langgraph"
+    OPENAI_AGENTS = "openai_agents"
+
+
+class OpenAIBasePattern(BasePattern):
+    """
+    Abstract base class for OpenAI Agent-based patterns.
+    
+    Extends BasePattern with OpenAI-specific functionality including
+    Assistant API integration, function calling, and streaming.
+    """
+    
+    def __init__(
+        self,
+        config: PatternConfig,
+        openai_config: OpenAIPatternConfig,
+        tools: Optional[List[Any]] = None,
+        ws_streaming: Optional[Any] = None
+    ):
+        """Initialize OpenAI pattern with dual configuration"""
+        super().__init__(config, tools, ws_streaming)
+        self.openai_config = openai_config
+        self._openai_client = None
+        self._assistant_id = None
+        self._thread_id = None
+    
+    @property
+    def framework_type(self) -> FrameworkType:
+        """Get the framework type"""
+        return FrameworkType.OPENAI_AGENTS
+    
+    @abstractmethod
+    async def execute_openai_pattern(
+        self,
+        messages: List[BaseMessage],
+        context: Dict[str, Any]
+    ) -> PatternResult:
+        """
+        Execute the OpenAI-specific pattern logic.
+        
+        Args:
+            messages: List of messages to process
+            context: Execution context
+            
+        Returns:
+            PatternResult with execution results and metrics
+        """
+        pass
+    
+    async def execute(
+        self,
+        messages: List[BaseMessage],
+        context: Dict[str, Any]
+    ) -> PatternResult:
+        """Execute pattern with OpenAI-specific handling"""
+        try:
+            # Initialize OpenAI client if needed
+            await self._ensure_openai_client()
+            
+            # Execute the OpenAI-specific pattern
+            return await self.execute_openai_pattern(messages, context)
+            
+        except Exception as e:
+            return PatternResult.error_result(
+                error_message=f"OpenAI pattern execution failed: {str(e)}"
+            )
+    
+    async def _ensure_openai_client(self) -> None:
+        """Ensure OpenAI client is initialized with proper security"""
+        if self._openai_client is None:
+            try:
+                from openai import AsyncOpenAI
+                from app.service.config import get_settings_for_env
+                from app.utils.firebase_secrets import get_app_secret
+                
+                settings = get_settings_for_env()
+                
+                # Get OpenAI API key from Firebase Secrets or environment
+                api_key = settings.openai_api_key
+                if not api_key:
+                    try:
+                        api_key = get_app_secret(settings.openai_api_key_secret)
+                    except Exception as e:
+                        raise ValueError(
+                            f"OpenAI API key not configured. Set OPENAI_API_KEY environment variable "
+                            f"or configure Firebase secret at {settings.openai_api_key_secret}. Error: {e}"
+                        )
+                
+                if not api_key:
+                    raise ValueError(
+                        "OpenAI API key is empty. Please configure a valid API key."
+                    )
+                
+                # Validate timeout settings for production
+                if self.openai_config.request_timeout > 300:
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(
+                        f"OpenAI timeout {self.openai_config.request_timeout}s exceeds "
+                        f"recommended 300s for fraud detection workloads"
+                    )
+                
+                self._openai_client = AsyncOpenAI(
+                    api_key=api_key,
+                    timeout=self.openai_config.request_timeout
+                )
+                
+            except ImportError:
+                raise ImportError(
+                    "OpenAI library not installed. Run 'poetry add openai' to use OpenAI patterns."
+                )
+    
+    def _update_openai_metrics(self, metrics: PatternMetrics, **openai_data) -> None:
+        """Update metrics with OpenAI-specific data"""
+        if 'run_id' in openai_data:
+            metrics.openai_run_id = openai_data['run_id']
+        if 'assistant_id' in openai_data:
+            metrics.openai_assistant_id = openai_data['assistant_id']
+        if 'function_calls' in openai_data:
+            metrics.function_calls = openai_data['function_calls']
+        if 'streaming_chunks' in openai_data:
+            metrics.streaming_chunks = openai_data['streaming_chunks']
+        if 'cost_cents' in openai_data:
+            metrics.api_cost_cents = openai_data['cost_cents']

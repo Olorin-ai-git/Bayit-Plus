@@ -158,17 +158,33 @@ def _get_configured_tools():
     """Get configured tools from settings."""
     from app.service.config import get_settings_for_env
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
+    from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
+    from app.service.agent.tools.retriever_tool.retriever_tool import QBRetrieverTool, TTRetrieverTool
     from app.utils.class_utils import create_instance
     
     settings = get_settings_for_env()
     tools = []
     
-    for tool in settings.enabled_tool_list:
-        tools.append(create_instance(globals(), tool))
+    # Define available tool classes
+    available_tools = {
+        'SplunkQueryTool': SplunkQueryTool,
+        'SumoLogicQueryTool': SumoLogicQueryTool,
+        'QBRetrieverTool': QBRetrieverTool,
+        'TTRetrieverTool': TTRetrieverTool,
+    }
+    
+    for tool_name in settings.enabled_tool_list:
+        if tool_name in available_tools:
+            tools.append(available_tools[tool_name]())
+        else:
+            logger.warning(f"Tool {tool_name} not found in available tools")
 
-    # Ensure SplunkQueryTool is available
+    # Ensure essential SIEM tools are available
     if not any(isinstance(t, SplunkQueryTool) for t in tools):
         tools.append(SplunkQueryTool())
+        
+    if not any(isinstance(t, SumoLogicQueryTool) for t in tools):
+        tools.append(SumoLogicQueryTool())
     
     return tools
 

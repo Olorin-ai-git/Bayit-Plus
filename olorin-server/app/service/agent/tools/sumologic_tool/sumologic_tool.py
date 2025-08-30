@@ -1,251 +1,116 @@
 """
-SumoLogic Query Tool for Olorin Investigation System
+SumoLogic Query Tool for LangChain
 
-This module provides a tool interface for querying SumoLogic logs during
-autonomous investigations.
+This tool allows querying SumoLogic for application logs, API metrics, and performance data.
 """
 
-import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone
+from typing import Any, Dict
+from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
-class SumoLogicQueryTool(BaseModel):
-    """
-    Tool for querying SumoLogic logs during investigations.
+
+class _SumoLogicQueryArgs(BaseModel):
+    """Arguments for SumoLogic query."""
+    query: str = Field(..., description="The SumoLogic search query to execute.")
+    time_range: str = Field("-15m", description="Time range for the query (e.g., '-15m', '-1h', '-24h').")
+
+
+class SumoLogicClient:
+    """Client for interacting with SumoLogic API."""
     
-    This tool provides a standardized interface for autonomous agents to
-    query and analyze logs from SumoLogic as part of fraud investigations.
-    """
+    def __init__(self, access_id: str, access_key: str, endpoint: str):
+        self.access_id = access_id
+        self.access_key = access_key
+        self.endpoint = endpoint
+        
+    async def connect(self):
+        """Establish connection to SumoLogic."""
+        await asyncio.sleep(0.1)  # Simulate connection
+        logger.info(f"Connected to SumoLogic endpoint: {self.endpoint}")
+        
+    async def disconnect(self):
+        """Close SumoLogic connection."""
+        await asyncio.sleep(0.1)
+        logger.info("Disconnected from SumoLogic")
+        
+    async def search(self, query: str, time_range: str) -> Dict[str, Any]:
+        """Execute a SumoLogic search query."""
+        logger.info(f"Executing SumoLogic query: {query} for range: {time_range}")
+        # In production, this would make actual API calls to SumoLogic
+        await asyncio.sleep(0.5)  # Simulate query execution
+        return {"results": [], "messages": [], "fields": []}
+
+
+class SumoLogicQueryTool(BaseTool):
+    """LangChain tool for querying SumoLogic application and API logs."""
     
-    name: str = Field(default="sumologic_query", description="Tool name")
-    description: str = Field(
-        default="Query SumoLogic logs for investigation analysis",
-        description="Tool description"
+    name: str = "sumologic_query_tool"
+    description: str = (
+        "Queries SumoLogic for application logs, API metrics, and performance data. "
+        "Use this tool when you need to analyze application behavior, API call patterns, "
+        "response times, error rates, or application-level fraud indicators. "
+        "SumoLogic contains different data than Splunk - it focuses on application metrics "
+        "rather than security events."
     )
     
-    def __init__(self, **data):
-        super().__init__(**data)
-        logger.info("Initialized SumoLogicQueryTool")
+    # Explicit args schema for strict tool parsing
+    args_schema: type[BaseModel] = _SumoLogicQueryArgs
     
-    def query_user_activity(
-        self,
-        user_id: str,
-        hours_back: int = 24,
-        investigation_context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Query user activity logs from SumoLogic.
+    # Connection parameters
+    endpoint: str = Field(
+        "https://api.sumologic.com/api/v1",
+        description="SumoLogic API endpoint"
+    )
+    
+    def _run(self, query: str, time_range: str = "-15m") -> Dict[str, Any]:
+        """Synchronous execution wrapper."""
+        import asyncio
+        return asyncio.run(self._arun(query, time_range))
+    
+    async def _arun(self, query: str, time_range: str = "-15m") -> Dict[str, Any]:
+        """Async execution of the SumoLogic query."""
+        from app.service.config import get_settings_for_env
+        from app.utils.firebase_secrets import get_app_secret
         
-        Args:
-            user_id: User identifier to investigate
-            hours_back: Number of hours to look back
-            investigation_context: Additional context for the investigation
-            
-        Returns:
-            User activity analysis results
-        """
+        settings = get_settings_for_env()
+        
+        # Get credentials (would come from settings/secrets in production)
+        access_id = getattr(settings, 'sumologic_access_id', 'default_id')
+        access_key = getattr(settings, 'sumologic_access_key', None)
+        
+        if not access_key:
+            # Fallback to secrets manager
+            try:
+                access_key = get_app_secret("olorin/sumologic_access_key")
+            except:
+                access_key = "demo_key"
+        
+        client = SumoLogicClient(
+            access_id=access_id,
+            access_key=access_key,
+            endpoint=self.endpoint
+        )
+        
         try:
-            logger.info(f"Querying SumoLogic for user activity: {user_id}")
+            await client.connect()
+            results = await client.search(query, time_range)
             
-            # In a real implementation, this would use the SumoLogicClient
-            # For now, return a structured response that matches what agents expect
-            
-            return {
-                "tool": "sumologic_query",
-                "query_type": "user_activity",
-                "user_id": user_id,
-                "hours_back": hours_back,
-                "status": "completed",
-                "results": {
-                    "total_entries": 0,
-                    "activity_patterns": [],
-                    "anomalies_detected": [],
-                    "risk_indicators": [],
-                    "analysis_summary": "SumoLogic query completed - no suspicious activity patterns detected"
-                },
-                "investigation_context": investigation_context or {},
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
+            logger.info(f"SumoLogic query completed, returned {len(results.get('results', []))} results")
+            return results
             
         except Exception as e:
-            logger.error(f"SumoLogic user activity query failed: {str(e)}")
+            logger.error(f"SumoLogic query failed: {str(e)}")
             return {
-                "tool": "sumologic_query", 
-                "query_type": "user_activity",
-                "user_id": user_id,
-                "status": "failed",
                 "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "results": [],
+                "query_status": "failed"
             }
-    
-    def query_device_activity(
-        self,
-        device_id: str,
-        hours_back: int = 24,
-        investigation_context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Query device activity logs from SumoLogic.
-        
-        Args:
-            device_id: Device identifier to investigate
-            hours_back: Number of hours to look back
-            investigation_context: Additional context for the investigation
-            
-        Returns:
-            Device activity analysis results
-        """
-        try:
-            logger.info(f"Querying SumoLogic for device activity: {device_id}")
-            
-            return {
-                "tool": "sumologic_query",
-                "query_type": "device_activity",
-                "device_id": device_id,
-                "hours_back": hours_back,
-                "status": "completed",
-                "results": {
-                    "total_entries": 0,
-                    "device_patterns": [],
-                    "anomalies_detected": [],
-                    "risk_indicators": [],
-                    "analysis_summary": "SumoLogic device query completed - no suspicious device patterns detected"
-                },
-                "investigation_context": investigation_context or {},
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-            
-        except Exception as e:
-            logger.error(f"SumoLogic device activity query failed: {str(e)}")
-            return {
-                "tool": "sumologic_query",
-                "query_type": "device_activity",
-                "device_id": device_id,
-                "status": "failed",
-                "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-    
-    def analyze_behavioral_patterns(
-        self,
-        entity_id: str,
-        entity_type: str = "user",
-        analysis_window_hours: int = 72,
-        investigation_context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Analyze behavioral patterns using SumoLogic logs.
-        
-        Args:
-            entity_id: Entity identifier (user_id, device_id, etc.)
-            entity_type: Type of entity to analyze
-            analysis_window_hours: Time window for analysis
-            investigation_context: Additional context for the investigation
-            
-        Returns:
-            Behavioral pattern analysis results
-        """
-        try:
-            logger.info(f"Analyzing behavioral patterns in SumoLogic: {entity_type} {entity_id}")
-            
-            return {
-                "tool": "sumologic_query",
-                "query_type": "behavioral_analysis",
-                "entity_id": entity_id,
-                "entity_type": entity_type,
-                "analysis_window_hours": analysis_window_hours,
-                "status": "completed",
-                "results": {
-                    "behavioral_score": 0.0,
-                    "patterns_detected": [],
-                    "anomaly_indicators": [],
-                    "baseline_comparison": {},
-                    "risk_assessment": "No significant behavioral anomalies detected",
-                    "confidence_level": 0.85
-                },
-                "investigation_context": investigation_context or {},
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-            
-        except Exception as e:
-            logger.error(f"SumoLogic behavioral analysis failed: {str(e)}")
-            return {
-                "tool": "sumologic_query",
-                "query_type": "behavioral_analysis",
-                "entity_id": entity_id,
-                "entity_type": entity_type,
-                "status": "failed",
-                "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-    
-    def execute_custom_query(
-        self,
-        query: str,
-        time_range_hours: int = 24,
-        investigation_context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Execute a custom SumoLogic query.
-        
-        Args:
-            query: Custom SumoLogic search query
-            time_range_hours: Time range for the query in hours
-            investigation_context: Additional context for the investigation
-            
-        Returns:
-            Query execution results
-        """
-        try:
-            logger.info(f"Executing custom SumoLogic query: {query[:100]}...")
-            
-            return {
-                "tool": "sumologic_query",
-                "query_type": "custom_query",
-                "query": query,
-                "time_range_hours": time_range_hours,
-                "status": "completed",
-                "results": {
-                    "total_results": 0,
-                    "query_results": [],
-                    "execution_time_ms": 1500,
-                    "analysis_summary": "Custom query executed successfully"
-                },
-                "investigation_context": investigation_context or {},
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-            
-        except Exception as e:
-            logger.error(f"Custom SumoLogic query failed: {str(e)}")
-            return {
-                "tool": "sumologic_query",
-                "query_type": "custom_query",
-                "query": query,
-                "status": "failed",
-                "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
-    
-    def get_tool_info(self) -> Dict[str, Any]:
-        """
-        Get information about this tool's capabilities.
-        
-        Returns:
-            Tool capability information
-        """
-        return {
-            "tool_name": self.name,
-            "description": self.description,
-            "capabilities": [
-                "query_user_activity",
-                "query_device_activity", 
-                "analyze_behavioral_patterns",
-                "execute_custom_query"
-            ],
-            "supported_entity_types": ["user", "device", "transaction"],
-            "max_time_range_hours": 168,  # 7 days
-            "output_format": "structured_json"
-        }
+        finally:
+            try:
+                await client.disconnect()
+            except Exception:
+                pass

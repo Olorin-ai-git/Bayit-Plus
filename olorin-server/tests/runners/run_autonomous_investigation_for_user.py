@@ -179,7 +179,7 @@ async def main():
     results = await runner.run_investigation(entity_id)
     
     # Save results
-    output_file = f"investigation_{entity_id}_{int(time.time())}.json"
+    output_file = f"tests/logs/investigation_{entity_id}_{int(time.time())}.json"
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     

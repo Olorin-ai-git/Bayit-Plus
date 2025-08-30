@@ -1,0 +1,150 @@
+```mermaid
+graph TB
+    subgraph "Current Architecture"
+        A[PatternType Enum] --> B[PatternConfig]
+        B --> C[BasePattern]
+        C --> D[PatternRegistry]
+        
+        subgraph "Existing LangGraph Patterns"
+            E1[AugmentedLLMPattern]
+            E2[PromptChainingPattern]
+            E3[RoutingPattern]
+            E4[ParallelizationPattern]
+            E5[OrchestratorWorkersPattern]
+            E6[EvaluatorOptimizerPattern]
+        end
+        
+        D --> E1
+        D --> E2
+        D --> E3
+        D --> E4
+        D --> E5
+        D --> E6
+    end
+    
+    subgraph "Extended Architecture"
+        A2[Extended PatternType Enum] --> F[Dual Configuration System]
+        
+        subgraph "Configuration Types"
+            G1[PatternConfig<br/>Existing LangGraph]
+            G2[OpenAIPatternConfig<br/>New OpenAI Specific]
+        end
+        
+        F --> G1
+        F --> G2
+        
+        subgraph "Pattern Base Classes"
+            H1[BasePattern<br/>Existing LangGraph Base]
+            H2[OpenAIBasePattern<br/>New OpenAI Base]
+        end
+        
+        G1 --> H1
+        G2 --> H2
+        
+        subgraph "Enhanced Registry"
+            I[Enhanced PatternRegistry]
+            I1[Framework Detection]
+            I2[Dual Config Support]
+            I3[Enhanced Metrics]
+            I4[Instance Management]
+        end
+        
+        I --> I1
+        I --> I2
+        I --> I3
+        I --> I4
+        
+        subgraph "Future OpenAI Patterns"
+            J1[OpenAI Assistant<br/>Future Implementation]
+            J2[OpenAI Function Calling<br/>Future Implementation]
+            J3[OpenAI Conversation<br/>Future Implementation]
+            J4[OpenAI Streaming<br/>Future Implementation]
+            J5[OpenAI Multi-Agent<br/>Future Implementation]
+            J6[OpenAI RAG<br/>Future Implementation]
+        end
+        
+        H2 --> J1
+        H2 --> J2
+        H2 --> J3
+        H2 --> J4
+        H2 --> J5
+        H2 --> J6
+        
+        I --> J1
+        I --> J2
+        I --> J3
+        I --> J4
+        I --> J5
+        I --> J6
+        
+        %% Backward compatibility arrows
+        I -.->|100% Compatible| E1
+        I -.->|100% Compatible| E2
+        I -.->|100% Compatible| E3
+        I -.->|100% Compatible| E4
+        I -.->|100% Compatible| E5
+        I -.->|100% Compatible| E6
+    end
+    
+    subgraph "Framework Detection Logic"
+        K[Pattern Type Analysis]
+        K1{Is OpenAI Pattern?}
+        K2[Route to OpenAI Handler]
+        K3[Route to LangGraph Handler]
+        
+        K --> K1
+        K1 -->|Yes| K2
+        K1 -->|No| K3
+    end
+    
+    I1 --> K
+    
+    subgraph "Enhanced Metrics System"
+        L[Base Metrics<br/>Existing]
+        L1[OpenAI Metrics<br/>New]
+        L2[Token Usage Tracking]
+        L3[Cost Estimation]
+        L4[Function Call Counts]
+        L5[Assistant Run Stats]
+        
+        L --> L1
+        L1 --> L2
+        L1 --> L3
+        L1 --> L4
+        L1 --> L5
+    end
+    
+    I3 --> L
+    
+    subgraph "Integration Points"
+        M[WebSocket Streaming<br/>Preserved]
+        M1[Tool System<br/>Enhanced]
+        M2[Caching System<br/>Extended]
+        M3[Error Handling<br/>Enhanced]
+    end
+    
+    I --> M
+    I --> M1
+    I --> M2
+    I --> M3
+    
+    %% Styling
+    classDef existing fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef newImpl fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef future fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,stroke-dasharray: 5 5
+    classDef enhanced fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class A,B,C,D,E1,E2,E3,E4,E5,E6 existing
+    class A2,F,G2,H2,I,I1,I2,I3,I4,K,K1,K2,K3,L1,L2,L3,L4,L5 newImpl
+    class J1,J2,J3,J4,J5,J6 future
+    class G1,H1,L,M,M1,M2,M3 enhanced
+```
+
+**Architecture Overview:**
+
+1. **Backward Compatibility**: All existing LangGraph patterns remain unchanged and fully functional
+2. **Framework Detection**: Registry automatically detects pattern type and routes appropriately
+3. **Dual Configuration**: Support for both existing `PatternConfig` and new `OpenAIPatternConfig`
+4. **Enhanced Metrics**: Framework-specific metrics tracking with OpenAI-specific measurements
+5. **Future-Ready**: Structure prepared for OpenAI pattern implementations
+6. **Integration Preservation**: All existing integrations (WebSocket, tools, caching) maintained

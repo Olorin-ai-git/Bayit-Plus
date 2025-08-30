@@ -236,6 +236,10 @@ front/reports/
 investigation_*.pdf
 comprehensive_*.pdf
 
+# Test logs and results
+olorin-server/tests/logs/
+tests/logs/
+
 # olorin-ui directory
 olorin-ui/
 
