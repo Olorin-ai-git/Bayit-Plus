@@ -1,0 +1,50 @@
+{
+  "commands": {
+    "cleanup": {
+      "name": "cleanup",
+      "description": "CVPlus Cleanup Tool - Clean and clear database, caches, and temporary files",
+      "script": "/Users/gklainert/.claude/commands/cleanup-wrapper.sh",
+      "aliases": ["/cleanup", "cleanup"],
+      "usage": "/cleanup [level] [options]",
+      "parameters": {
+        "levels": {
+          "safe": "Basic cleanup - temporary files and build artifacts only",
+          "moderate": "Standard cleanup - includes node_modules and caches",
+          "aggressive": "Deep cleanup - includes all generated files, databases, and backups"
+        },
+        "options": {
+          "--dry-run": "Preview what would be cleaned without actually deleting",
+          "--user <userId>": "Clean data for a specific user only",
+          "--collections <list>": "Clean specific Firestore collections (comma-separated)",
+          "--backup-only": "Create backup without cleaning",
+          "--rollback <backupId>": "Restore from a specific backup",
+          "--list-backups": "List all available backups",
+          "--help": "Show help information"
+        }
+      },
+      "examples": [
+        "/cleanup safe --dry-run",
+        "/cleanup moderate",
+        "/cleanup aggressive --user user123",
+        "/cleanup safe --collections users,sessions",
+        "/cleanup --backup-only",
+        "/cleanup --rollback backup-20240823-120000",
+        "/cleanup --list-backups"
+      ],
+      "requiresConfirmation": true,
+      "dangerous": ["aggressive", "--user", "--collections"],
+      "metadata": {
+        "version": "1.0.0",
+        "author": "Gil Klainert",
+        "created": "2024-08-23",
+        "project": "CVPlus"
+      }
+    }
+  },
+  "globalSettings": {
+    "commandPrefix": "/",
+    "enableAutoComplete": true,
+    "showCommandHints": true,
+    "confirmDangerousOperations": true
+  }
+}

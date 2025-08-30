@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json#/definitions/mcpServers",
+  "description": "Centralized MCP server configurations for all Claude Code projects",
+  "version": "1.0.0",
+  "mcpServers": {
+    "brightdata": {
+      "description": "Bright Data MCP server for web scraping and data collection",
+      "command": "mcp",
+      "args": ["serve", "https://mcp.brightdata.com/mcp?token=2dc43492fa0c0207e36e4727bbf58af42ce57523f3531391d935eaf59255e3d4"],
+      "category": "data"
+    },
+    "filesystem": {
+      "description": "Filesystem access MCP server for file operations",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem"],
+      "category": "development"
+    },
+    "memory": {
+      "description": "Memory MCP server for knowledge graph and persistent context",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-memory"],
+      "category": "memory"
+    },
+    "sequential-thinking": {
+      "description": "Sequential thinking MCP server for problem solving",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-sequential-thinking"],
+      "category": "productivity"
+    },
+    "everything": {
+      "description": "Everything MCP server that exercises all MCP protocol features",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-everything"],
+      "category": "development"
+    },
+    "puppeteer": {
+      "description": "Browser automation MCP server using Puppeteer",
+      "command": "npx",
+      "args": ["puppeteer-mcp-server"],
+      "category": "automation"
+    },
+    "figma": {
+      "description": "Figma integration MCP server for design workflows",
+      "command": "npx",
+      "args": ["figma-mcp"],
+      "category": "design"
+    },
+    "claude-context": {
+      "description": "Claude Context MCP server for codebase indexing and semantic search",
+      "command": "npx",
+      "args": ["@zilliz/claude-context-mcp"],
+      "category": "development"
+    }
+  },
+  "serverCategories": {
+    "development": {
+      "description": "MCP servers for software development tasks",
+      "required": ["filesystem", "everything", "claude-context"]
+    },
+    "data": {
+      "description": "MCP servers for data collection and processing",
+      "required": []
+    },
+    "memory": {
+      "description": "MCP servers for context and memory management",
+      "required": ["memory"]
+    },
+    "productivity": {
+      "description": "MCP servers for project management and productivity",
+      "required": ["sequential-thinking"]
+    },
+    "automation": {
+      "description": "MCP servers for automation and browser control",
+      "required": []
+    },
+    "design": {
+      "description": "MCP servers for design workflows",
+      "required": []
+    }
+  },
+  "presets": {
+    "minimal": {
+      "description": "Minimal set of MCP servers for basic functionality",
+      "servers": ["filesystem", "memory", "claude-context"]
+    },
+    "development": {
+      "description": "Full development environment with all coding tools",
+      "servers": ["filesystem", "memory", "everything", "sequential-thinking", "claude-context"]
+    },
+    "data-processing": {
+      "description": "Data collection and processing focused setup",
+      "servers": ["brightdata", "memory", "filesystem", "claude-context"]
+    },
+    "automation": {
+      "description": "Automation and browser control focused setup",
+      "servers": ["puppeteer", "filesystem", "memory", "claude-context"]
+    },
+    "design": {
+      "description": "Design workflow focused setup",
+      "servers": ["figma", "filesystem", "memory", "claude-context"]
+    },
+    "full": {
+      "description": "All available MCP servers",
+      "servers": ["brightdata", "filesystem", "memory", "sequential-thinking", "everything", "puppeteer", "figma", "claude-context"]
+    }
+  }
+}
