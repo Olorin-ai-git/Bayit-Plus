@@ -257,4 +257,10 @@ def _register_default_patterns() -> None:
     except ImportError as e:
         logger.warning(f"Failed to register OpenAIFunctionCallingPattern: {e}")
     
+    try:
+        from .openai.conversation_pattern import OpenAIConversationPattern
+        registry.register_pattern(PatternType.OPENAI_CONVERSATION, OpenAIConversationPattern)
+    except ImportError as e:
+        logger.warning(f"Failed to register OpenAIConversationPattern: {e}")
+    
     logger.info(f"Pattern registry initialized with {len(registry.get_available_patterns())} patterns")

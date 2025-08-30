@@ -1,0 +1,56 @@
+%%{init: {'theme':'dark', 'themeVariables': { 'primaryColor':'#1f2937', 'primaryTextColor':'#f3f4f6', 'primaryBorderColor':'#4b5563', 'lineColor':'#60a5fa', 'secondaryColor':'#374151', 'tertiaryColor':'#1f2937', 'mainBkg':'#111827', 'secondBkg':'#1f2937', 'tertiaryBkg':'#374151', 'textColor':'#f3f4f6', 'labelTextColor':'#f3f4f6', 'errorBkgColor':'#991b1b', 'errorTextColor':'#fef2f2'}}}%%
+
+graph TB
+    Start([Investigation Triggered<br/>ID: AUTO_INVEST_*]) --> Init[Initialize Investigation<br/>0% Complete]
+    
+    Init --> AgentInit[Agent Initialization<br/>LangGraph Setup<br/>0-25% Complete]
+    
+    AgentInit --> Context[Context Preparation<br/>Load Investigation Data<br/>25% Complete]
+    
+    Context --> DetectScenario{Detect Fraud Scenario}
+    DetectScenario -->|Device Spoofing| LoadData[Load Entity Data<br/>User: USER_12345<br/>Transaction: $1,249.99]
+    
+    LoadData --> ParallelExec[Parallel Agent Execution<br/>50% Complete]
+    
+    ParallelExec --> DeviceAgent[Device Analysis Agent<br/>95% Confidence]
+    ParallelExec --> LocationAgent[Location Analysis Agent<br/>98% Confidence]
+    ParallelExec --> NetworkAgent[Network Analysis Agent<br/>88% Confidence]
+    ParallelExec --> LogsAgent[Logs Analysis Agent<br/>92% Confidence]
+    ParallelExec --> RiskAgent[Risk Assessment Agent<br/>85% Confidence]
+    
+    DeviceAgent --> DeviceFindings[Device Spoofing Detected<br/>• OS: macOS → Windows<br/>• Resolution: 2560x1600 → 1920x1080<br/>• Language: en-GB → en-US<br/>• Timezone mismatch]
+    
+    LocationAgent --> LocationFindings[Impossible Travel<br/>• SF to NYC: 2,573 miles<br/>• Time: 0.78 hours<br/>• Required: 5.5 hours<br/>• 7x faster than possible]
+    
+    NetworkAgent --> NetworkFindings[Network Anomalies<br/>• First VPN usage in 3+ years<br/>• Provider: NordVPN<br/>• Suspicious IP reputation<br/>• Cloudflare exit node]
+    
+    LogsAgent --> LogsFindings[Behavioral Anomalies<br/>• 3 transactions/hour<br/>• Rushed checkout: 15s<br/>• Minimal browsing: 3 pages<br/>• Automated behavior suspected]
+    
+    RiskAgent --> RiskSynthesis[Risk Synthesis<br/>Cross-agent correlation]
+    
+    DeviceFindings --> ResultsProc[Results Processing<br/>75% Complete]
+    LocationFindings --> ResultsProc
+    NetworkFindings --> ResultsProc
+    LogsFindings --> ResultsProc
+    RiskSynthesis --> ResultsProc
+    
+    ResultsProc --> FinalAssessment[Final Risk Assessment<br/>HIGH FRAUD RISK]
+    
+    FinalAssessment --> GenerateReport[Generate Report<br/>80-90% Complete]
+    
+    GenerateReport --> Complete([Investigation Complete<br/>100% Complete<br/>Execution: ~35ms])
+    
+    Complete --> Outcome{Investigation Outcome}
+    Outcome -->|High Risk| BlockTransaction[Block Transaction<br/>Alert Security Team]
+    Outcome -->|Medium Risk| AdditionalVerification[Request Additional<br/>Verification]
+    Outcome -->|Low Risk| AllowTransaction[Allow Transaction<br/>Monitor Activity]
+    
+    style Start fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#fff
+    style DeviceAgent fill:#3b82f6,stroke:#2563eb,stroke-width:2px
+    style LocationAgent fill:#3b82f6,stroke:#2563eb,stroke-width:2px
+    style NetworkAgent fill:#3b82f6,stroke:#2563eb,stroke-width:2px
+    style LogsAgent fill:#3b82f6,stroke:#2563eb,stroke-width:2px
+    style RiskAgent fill:#3b82f6,stroke:#2563eb,stroke-width:2px
+    style FinalAssessment fill:#f59e0b,stroke:#d97706,stroke-width:3px
+    style BlockTransaction fill:#dc2626,stroke:#991b1b,stroke-width:2px
+    style Complete fill:#10b981,stroke:#059669,stroke-width:2px

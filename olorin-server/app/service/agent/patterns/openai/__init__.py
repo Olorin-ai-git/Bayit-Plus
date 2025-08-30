@@ -7,6 +7,7 @@ the base pattern framework with OpenAI Assistant API functionality.
 
 from .assistant_pattern import OpenAIAssistantPattern
 from .function_calling_pattern import OpenAIFunctionCallingPattern
+from .conversation_pattern import OpenAIConversationPattern
 from .chat_completion_handler import ChatCompletionHandler
 from .message_formatter import MessageFormatter
 from .tool_adapter import (
@@ -17,7 +18,8 @@ from .tool_adapter import (
 
 __all__ = [
     "OpenAIAssistantPattern",
-    "OpenAIFunctionCallingPattern",
+    "OpenAIFunctionCallingPattern", 
+    "OpenAIConversationPattern",
     "ChatCompletionHandler",
     "MessageFormatter",
     "convert_langgraph_tools_to_openai_functions", 
