@@ -7,9 +7,16 @@ including tool invocation and message processing.
 
 import asyncio
 import logging
+from typing import Annotated, List
 
-from langchain_core.messages import SystemMessage, MessagesState
+from langchain_core.messages import SystemMessage, BaseMessage
 from langchain_core.runnables.config import RunnableConfig
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+# Define MessagesState since it's not available in langchain_core.messages
+class MessagesState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]
 
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.core import get_config_value, rehydrate_agent_context

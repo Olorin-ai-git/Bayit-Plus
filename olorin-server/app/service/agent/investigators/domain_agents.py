@@ -8,8 +8,15 @@ location, device, logs, and risk analysis.
 import json
 import logging
 from datetime import datetime
+from typing import Annotated, List
 
-from langchain_core.messages import AIMessage, MessagesState
+from langchain_core.messages import AIMessage, BaseMessage
+from langgraph.graph.message import add_messages
+from typing_extensions import TypedDict
+
+# Define MessagesState since it's not available in langchain_core.messages
+class MessagesState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]
 
 from app.service.device_analysis_service import DeviceAnalysisService
 from app.service.location_analysis_service import LocationAnalysisService

@@ -1,0 +1,239 @@
+```mermaid
+graph TD
+    %% Updated Dual-Framework Architecture for Olorin
+    %% Building on Existing Sophisticated Modular Infrastructure
+
+    subgraph "Investigation Interface Layer"
+        API[FastAPI Investigation Endpoints]
+        WS[WebSocket Streaming Interface]
+        UI[React Frontend]
+    end
+
+    subgraph "Unified Framework Orchestration"
+        UF[Unified Framework Controller]
+        UC[Unified Configuration Manager]
+        UJ[Unified Journey Tracker]
+    end
+
+    subgraph "Extended Pattern Registry System"
+        PR[Enhanced Pattern Registry]
+        
+        subgraph "Existing LangGraph Patterns"
+            AugLLM[Augmented LLM Pattern]
+            PromptChain[Prompt Chaining Pattern]
+            Routing[Routing Pattern]
+            Parallel[Parallelization Pattern]
+            Orchestrator[Orchestrator Workers Pattern]
+            Evaluator[Evaluator Optimizer Pattern]
+        end
+        
+        subgraph "New OpenAI Agent Patterns"
+            OAI_Asst[OpenAI Assistant Pattern]
+            OAI_Func[OpenAI Function Calling Pattern]
+            OAI_Multi[OpenAI Multi-Agent Pattern]
+            OAI_RAG[OpenAI RAG Assistant Pattern]
+        end
+    end
+
+    subgraph "Agent Factory & Creation"
+        UAF[Unified Agent Factory]
+        LGF[LangGraph Agent Factory]
+        OAF[OpenAI Agent Factory]
+    end
+
+    subgraph "Domain Agents (Extended)"
+        subgraph "Existing Modular Agents"
+            NetAgent[Network Agent]
+            DevAgent[Device Agent]
+            LocAgent[Location Agent]
+            LogAgent[Logs Agent]
+            RiskAgent[Risk Agent]
+        end
+        
+        subgraph "Base Agent Infrastructure"
+            BaseAgent[Autonomous Investigation Agent]
+            AutLLM[Autonomous LLM - Claude Opus 4.1]
+            AgentComm[Agent Communication]
+            AutContext[Autonomous Context]
+        end
+    end
+
+    subgraph "Comprehensive Tool Ecosystem"
+        TR[Enhanced Tool Registry]
+        
+        subgraph "Existing Tool Infrastructure"
+            APITool[API Tool]
+            DBTool[Database Tool]
+            FSTool[File System Tool]
+            WebTool[Web Search Tool]
+            SplunkTool[Enhanced Splunk Tool]
+            SumoTool[SumoLogic Tool]
+        end
+        
+        subgraph "Tool Adaptation Layer"
+            OAI_Adapter[OpenAI Tool Adapter]
+            LG_Adapter[LangGraph Tool Adapter]
+            ToolCache[Enhanced Tool Cache]
+        end
+    end
+
+    subgraph "Advanced Orchestration Infrastructure"
+        IC[Investigation Coordinator]
+        EM[Multi-Entity Manager]
+        
+        subgraph "Journey Tracking System"
+            LGTracker[LangGraph Journey Tracker]
+            OAITracker[OpenAI Journey Tracker]
+            NodeTracker[Node Execution Tracking]
+        end
+        
+        subgraph "RAG Integration"
+            KB[Knowledge Base]
+            RAGOrch[RAG Orchestrator]
+        end
+    end
+
+    subgraph "Communication & State Management"
+        CommSys[Communication System]
+        StateMan[Investigation State Manager]
+        ICEEvents[ICE Events System]
+        WSStream[WebSocket Streaming Service]
+    end
+
+    subgraph "Data Sources & External Services"
+        Splunk[Splunk Integration]
+        Snowflake[Snowflake Data]
+        SumoLogic[SumoLogic Integration]
+        TMX[TMX Client]
+        KKDash[KK Dashboard Client]
+    end
+
+    subgraph "Configuration & Security"
+        EnvConfig[Environment Configuration]
+        FirebaseSecrets[Firebase Secrets Management]
+        AnthropicAPI[Anthropic API Integration]
+        OpenAIAPI[OpenAI API Integration]
+    end
+
+    %% Main Flow Connections
+    API --> UF
+    WS --> UF
+    UI --> API
+    
+    UF --> PR
+    UF --> UC
+    UF --> UJ
+    
+    UC --> EnvConfig
+    UC --> FirebaseSecrets
+    
+    PR --> UAF
+    UAF --> LGF
+    UAF --> OAF
+    
+    %% Pattern Registry Connections
+    LGF --> AugLLM
+    LGF --> PromptChain
+    LGF --> Routing
+    LGF --> Parallel
+    LGF --> Orchestrator
+    LGF --> Evaluator
+    
+    OAF --> OAI_Asst
+    OAF --> OAI_Func
+    OAF --> OAI_Multi
+    OAF --> OAI_RAG
+    
+    %% Agent Creation
+    LGF --> NetAgent
+    LGF --> DevAgent
+    LGF --> LocAgent
+    LGF --> LogAgent
+    LGF --> RiskAgent
+    
+    OAF --> NetAgent
+    OAF --> DevAgent
+    OAF --> LocAgent
+    OAF --> LogAgent
+    OAF --> RiskAgent
+    
+    %% Tool System Integration
+    UAF --> TR
+    TR --> OAI_Adapter
+    TR --> LG_Adapter
+    
+    OAI_Adapter --> APITool
+    OAI_Adapter --> DBTool
+    OAI_Adapter --> FSTool
+    OAI_Adapter --> WebTool
+    OAI_Adapter --> SplunkTool
+    OAI_Adapter --> SumoTool
+    
+    LG_Adapter --> APITool
+    LG_Adapter --> DBTool
+    LG_Adapter --> FSTool
+    LG_Adapter --> WebTool
+    LG_Adapter --> SplunkTool
+    LG_Adapter --> SumoTool
+    
+    %% Journey Tracking
+    UJ --> LGTracker
+    UJ --> OAITracker
+    LGTracker --> NodeTracker
+    OAITracker --> NodeTracker
+    
+    %% Orchestration Connections
+    UAF --> IC
+    IC --> EM
+    IC --> RAGOrch
+    RAGOrch --> KB
+    
+    %% Communication Flow
+    NetAgent --> CommSys
+    DevAgent --> CommSys
+    LocAgent --> CommSys
+    LogAgent --> CommSys
+    RiskAgent --> CommSys
+    
+    CommSys --> StateMan
+    CommSys --> ICEEvents
+    CommSys --> WSStream
+    WSStream --> WS
+    
+    %% External Integrations
+    APITool --> Splunk
+    APITool --> Snowflake
+    APITool --> SumoLogic
+    APITool --> TMX
+    APITool --> KKDash
+    
+    %% API Connections
+    AnthropicAPI --> AutLLM
+    OpenAIAPI --> OAI_Asst
+    OpenAIAPI --> OAI_Func
+    OpenAIAPI --> OAI_Multi
+    OpenAIAPI --> OAI_RAG
+
+    %% Styling
+    classDef existingInfra fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef newComponents fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef externalSys fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef patternLayer fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class NetAgent,DevAgent,LocAgent,LogAgent,RiskAgent,BaseAgent,AutLLM,AgentComm,AutContext existingInfra
+    class APITool,DBTool,FSTool,WebTool,SplunkTool,SumoTool,TR,ToolCache existingInfra
+    class IC,EM,LGTracker,NodeTracker,KB,RAGOrch existingInfra
+    class CommSys,StateMan,ICEEvents,WSStream existingInfra
+    class AugLLM,PromptChain,Routing,Parallel,Orchestrator,Evaluator existingInfra
+    class PR,UAF,LGF existingInfra
+    
+    class UF,UC,UJ,OAF newComponents
+    class OAI_Asst,OAI_Func,OAI_Multi,OAI_RAG newComponents
+    class OAI_Adapter,OAITracker newComponents
+    
+    class Splunk,Snowflake,SumoLogic,TMX,KKDash externalSys
+    class AnthropicAPI,OpenAIAPI externalSys
+    
+    class AugLLM,PromptChain,Routing,Parallel,Orchestrator,Evaluator patternLayer
+    class OAI_Asst,OAI_Func,OAI_Multi,OAI_RAG patternLayer
+```

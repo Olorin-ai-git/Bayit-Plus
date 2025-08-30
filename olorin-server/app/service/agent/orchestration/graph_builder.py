@@ -6,11 +6,17 @@ for different investigation workflows.
 """
 
 import logging
-from typing import Optional
+from typing import Optional, Annotated, List
 
-from langchain_core.messages import MessagesState
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
+from typing_extensions import TypedDict
+
+# Define MessagesState since it's not available in langchain_core.messages
+class MessagesState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]
 
 from app.service.agent.autonomous_agents import (
     autonomous_network_agent,
