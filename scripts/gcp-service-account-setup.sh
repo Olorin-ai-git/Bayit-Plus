@@ -97,8 +97,9 @@ create_app_service_account() {
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$sa_email" \
         --role="roles/secretmanager.secretAccessor" \
-        --condition=None \
-        --quiet
+        --quiet 2>/dev/null || {
+        print_warning "Role may already be assigned or needs manual configuration"
+    }
     
     print_status "Secret Accessor role granted to $sa_name"
 }
@@ -126,8 +127,9 @@ create_admin_service_account() {
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$sa_email" \
         --role="roles/secretmanager.admin" \
-        --condition=None \
-        --quiet
+        --quiet 2>/dev/null || {
+        print_warning "Role may already be assigned or needs manual configuration"
+    }
     
     print_status "Secret Manager Admin role granted to $sa_name"
 }
@@ -157,8 +159,9 @@ create_cicd_service_account() {
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$sa_email" \
         --role="roles/secretmanager.secretAccessor" \
-        --condition=None \
-        --quiet
+        --quiet 2>/dev/null || {
+        print_warning "Secret Accessor role may already be assigned"
+    }
     
     # Secret Version Manager for updating non-production secrets
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \

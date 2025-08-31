@@ -78,41 +78,41 @@ runConfig:
     
     # Production Secrets (mapped from Firebase Secret Manager)
     - variable: ANTHROPIC_API_KEY
-      secret: prd/olorin/anthropic_api_key
+      secret: ANTHROPIC_API_KEY
     
     - variable: OPENAI_API_KEY
-      secret: prd/olorin/openai_api_key
+      secret: OPENAI_API_KEY
     
     - variable: DB_PASSWORD
-      secret: prd/olorin/database_password
+      secret: DATABASE_PASSWORD
     
     - variable: REDIS_PASSWORD
-      secret: prd/olorin/redis_password
+      secret: REDIS_PASSWORD
     
     - variable: JWT_SECRET_KEY
-      secret: prd/olorin/jwt_secret_key
+      secret: JWT_SECRET_KEY
     
     - variable: SPLUNK_USERNAME
-      secret: prd/olorin/splunk_username
+      secret: SPLUNK_USERNAME
     
     - variable: SPLUNK_PASSWORD
-      secret: prd/olorin/splunk_password
+      secret: SPLUNK_PASSWORD
     
     - variable: GAIA_API_KEY
-      secret: prd/olorin/gaia_api_key
+      secret: GAIA_API_KEY
     
     - variable: OLORIN_API_KEY
-      secret: prd/olorin/olorin_api_key
+      secret: OLORIN_API_KEY
     
     # Additional API Keys for Fraud Investigation Tools
     - variable: ABUSEIPDB_API_KEY
-      secret: prd/olorin/abuseipdb_api_key
+      secret: ABUSEIPDB_API_KEY
     
     - variable: VIRUSTOTAL_API_KEY
-      secret: prd/olorin/virustotal_api_key
+      secret: VIRUSTOTAL_API_KEY
     
     - variable: HIBP_API_KEY
-      secret: prd/olorin/hibp_api_key
+      secret: HIBP_API_KEY
 
 # Build Configuration
 buildConfig:
