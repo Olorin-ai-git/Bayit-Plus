@@ -304,7 +304,6 @@ export function processDeviceData(
           timestamp: formatTimestamp(response.device_risk_assessment.timestamp),
         }
       : null,
-    chronos_entities: response?.chronos_entities || [],
     // New format fields
     raw_splunk_results: processedRawSplunkResults,
     device_signal_risk_assessment: deviceSignalRiskAssessment,

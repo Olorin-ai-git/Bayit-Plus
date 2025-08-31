@@ -55,10 +55,6 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
         }
 
         # Add optional context data
-        chronos_response_dict = kwargs.get("chronos_response_dict")
-        if chronos_response_dict and isinstance(chronos_response_dict, dict):
-            prompt_data["chronos_data"] = chronos_response_dict
-
         di_response = kwargs.get("di_response")
         if di_response is not None:
             try:
@@ -169,7 +165,6 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
         user_id: str,
         extracted_signals: List[Dict[str, Any]],
         request: Request,
-        chronos_response_dict: Optional[dict] = None,
         di_response: Optional[Any] = None,
     ) -> DeviceSignalRiskLLMAssessment:
         """
@@ -181,6 +176,5 @@ class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):
             user_id=user_id,
             extracted_signals=extracted_signals,
             request=request,
-            chronos_response_dict=chronos_response_dict,
             di_response=di_response,
         )

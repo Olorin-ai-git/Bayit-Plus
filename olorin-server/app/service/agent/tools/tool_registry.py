@@ -304,7 +304,7 @@ def get_search_tools() -> List[BaseTool]:
 
 
 def get_olorin_tools() -> List[BaseTool]:
-    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, Chronos, DI)."""
+    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, DI)."""
     return tool_registry.get_tools_by_category("olorin")
 
 

@@ -26,7 +26,6 @@ class DeviceAnalysisService:
         time_range: str = "30d",
         raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
         request: Optional[Request] = None,
-        chronos_response_dict: Optional[dict] = None,
         di_response: Optional[Any] = None,
     ) -> Dict[str, Any]:
         settings = get_settings_for_env()
@@ -96,7 +95,6 @@ class DeviceAnalysisService:
                     user_id=entity_id,
                     extracted_signals=extracted_signals,
                     request=request,
-                    chronos_response_dict=chronos_response_dict,
                     di_response=di_response,
                 )
 

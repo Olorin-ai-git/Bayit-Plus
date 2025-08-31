@@ -75,7 +75,6 @@ from app.persistence.async_ips_redis import AsyncRedisSaver
 from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient
 from app.service.agent.tools.cdc_tool.cdc_tool import CdcCompanyTool, CdcUserTool
 from app.service.agent.tools.oii_tool.oii_tool import OIITool
-from app.service.agent.tools.qb_tool.customer_tools import ListCustomersTool
 from app.service.agent.tools.retriever_tool.retriever_tool import (
     QBRetrieverTool,
     TTRetrieverTool,

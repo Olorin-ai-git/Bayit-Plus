@@ -106,7 +106,6 @@ def get_tool_display_names() -> Dict[str, str]:
         # Legacy/Fallback names
         "kk_dashboard": "KK Dashboard",
         "cdc_tool": "Customer Data",
-        "qb_tool": "QuickBooks Data",
     }
 
 

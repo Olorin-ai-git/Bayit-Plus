@@ -1,8 +1,17 @@
 {
   "behavior_patterns": {
-    "login_times": ["2024-05-31T08:00:00Z", "2024-06-01T09:00:00Z"],
-    "usual_locations": ["San Francisco", "Oakland"],
-    "common_devices": ["PC", "Phone"]
+    "login_times": [
+      "2024-05-31T08:00:00Z",
+      "2024-06-01T09:00:00Z"
+    ],
+    "usual_locations": [
+      "San Francisco",
+      "Oakland"
+    ],
+    "common_devices": [
+      "PC",
+      "Phone"
+    ]
   },
   "anomalies": [
     {
@@ -45,44 +54,5 @@
       "device_ids": "dev-002",
       "device_first_seen": "2024-04-01T09:05:00Z"
     }
-  ],
-  "chronos_data": {
-    "metadata": {
-      "limit": 300,
-      "anchor": "2025-05-22T07:50:48.081Z",
-      "entitiesCount": 300,
-      "totalCount": 1372
-    },
-    "entities": [
-      {
-        "id": "8288fde5-f6e8-3479-9f7d-54b54fdb8981",
-        "origin": "olorin.money.risk.atmos",
-        "eventType": "ASSERTION",
-        "eventTimestamp": "2025-05-22T18:24:29.497Z",
-        "data": {
-          "inputIpGeo": "US",
-          "trueIpGeo": "US"
-        }
-      },
-      {
-        "id": "c4b4b86e-79b9-3154-925b-dff12a9c678d",
-        "origin": "olorin.money.risk.atmos",
-        "eventType": "ASSERTION",
-        "eventTimestamp": "2025-05-22T18:24:29.459Z",
-        "data": {
-          "trueIpGeo": "us"
-        }
-      },
-      {
-        "id": "7a596511-a0ee-3bae-86cf-4d878d33c16a",
-        "origin": "olorin.money.risk.atmos",
-        "eventType": "LOGIN",
-        "eventTimestamp": "2025-05-22T18:24:29.227Z",
-        "data": {
-          "inputIpGeo": "US",
-          "trueIpGeo": "US"
-        }
-      }
-    ]
-  }
+  ]
 }

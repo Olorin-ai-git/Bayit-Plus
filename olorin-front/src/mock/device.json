@@ -134,7 +134,6 @@
     "timestamp": "2025-05-28T12:00:00Z"
   },
   "timestamp": "2025-05-28T11:39:45.050936+00:00",
-  "chronos_warning": "ChronosTool did not return a valid response object. DI Tool was not called.",
   "di_tool_warning": "DITool failed: DITool.run() got an unexpected keyword argument 'olorin_tid'",
   "llm_thoughts": "The user's signals indicate concurrent or near-concurrent usage from India and the US across multiple device IDs in a narrow timeframe. This discrepancy is typically not feasible without a VPN or an account compromise situation. Further verification and step-up authentication are strongly recommended."
 }
