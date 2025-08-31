@@ -192,6 +192,16 @@ Apply the following rules **universally and consistently** across ALL coding tas
       - Timestamp in the filename (YYYY-MM-DD format)
       - "Gil Klainert" listed as the Author
       - Link to accompanying Mermaid diagram in `/docs/diagrams/`
+    - **MANDATORY PLAN EXECUTION PROTOCOL**:
+      - **FEATURE BRANCH**: ALWAYS create a feature branch BEFORE starting ANY plan implementation using git-expert subagent
+      - **PHASE COMMITS**: Commit after EVERY successful phase completion using git-expert subagent
+      - **PROGRESS DOCUMENTATION**: Update the plan document with progress status after each phase:
+        - Add "✅ COMPLETED" marker to finished phases
+        - Add "🔄 IN PROGRESS" marker to current phase
+        - Add "⏳ PENDING" marker to upcoming phases
+        - Include timestamp and any relevant notes for each phase completion
+      - **BRANCH NAMING**: Use format `feature/plan-{YYYY-MM-DD}-{short-description}`
+      - **COMMIT MESSAGES**: Reference the plan document in every commit message
 
 26. 🚀 **MANDATORY: Always use deployment subagents for Firebase deployments.**
     - **WHENEVER user requests deployment to Firebase, use the firebase-deployment-specialist subagent**
