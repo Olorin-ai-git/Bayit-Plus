@@ -14,6 +14,11 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from typing_extensions import TypedDict
 
+from app.service.agent.orchestration.enhanced_tool_executor import (
+    EnhancedToolNode,
+    ToolHealthManager
+)
+
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
@@ -35,7 +40,7 @@ from app.service.agent.orchestration.assistant import assistant
 logger = logging.getLogger(__name__)
 
 
-def create_parallel_agent_graph():
+async def create_parallel_agent_graph(use_enhanced_tools=True):
     """Create autonomous agent graph for parallel execution with RecursionGuard protection."""
     guard = get_recursion_guard()
     logger.info("Creating parallel graph with autonomous agents and RecursionGuard protection")
@@ -51,15 +56,21 @@ def create_parallel_agent_graph():
     builder.add_node("device_agent", autonomous_device_agent)
     builder.add_node("risk_agent", autonomous_risk_agent)
 
-    # Add tools node with validation
+    # Add tools node with enhanced executor
     tools = _get_configured_tools()
-    try:
-        tool_node = ToolNode(tools)
-        builder.add_node("tools", tool_node)
-    except Exception as e:
-        logger.error(f"Error creating ToolNode: {e}")
-        tool_node = ToolNode(_filter_working_tools(tools))
-        builder.add_node("tools", tool_node)
+    
+    # Create enhanced or standard tool node
+    if use_enhanced_tools:
+        tool_node = await _create_enhanced_tool_node(tools, use_enhanced=True)
+    else:
+        try:
+            tool_node = ToolNode(tools)
+        except Exception as e:
+            logger.error(f"Error creating ToolNode: {e}")
+            tool_node = ToolNode(_filter_working_tools(tools))
+    
+    # Add tool node to graph
+    builder.add_node("tools", tool_node)
 
     # Define edges for parallel execution
     builder.add_edge(START, "start_investigation")
@@ -88,7 +99,7 @@ def create_parallel_agent_graph():
     return graph
 
 
-def create_sequential_agent_graph():
+async def create_sequential_agent_graph(use_enhanced_tools=True):
     """Create agent graph with sequential execution for controlled fraud investigations."""
     logger.info("Creating sequential graph with controlled agent execution")
     
@@ -103,15 +114,21 @@ def create_sequential_agent_graph():
     builder.add_node("device_agent", device_agent)
     builder.add_node("risk_agent", risk_agent)
 
-    # Add tools
+    # Add tools node with enhanced executor
     tools = _get_configured_tools()
-    try:
-        tool_node = ToolNode(tools)
-        builder.add_node("tools", tool_node)
-    except Exception as e:
-        logger.error(f"Error creating ToolNode: {e}")
-        tool_node = ToolNode(_filter_working_tools(tools))
-        builder.add_node("tools", tool_node)
+    
+    # Create enhanced or standard tool node
+    if use_enhanced_tools:
+        tool_node = await _create_enhanced_tool_node(tools, use_enhanced=True)
+    else:
+        try:
+            tool_node = ToolNode(tools)
+        except Exception as e:
+            logger.error(f"Error creating ToolNode: {e}")
+            tool_node = ToolNode(_filter_working_tools(tools))
+    
+    # Add tool node to graph
+    builder.add_node("tools", tool_node)
 
     # Sequential execution flow
     builder.add_edge(START, "start_investigation")
@@ -135,23 +152,24 @@ def create_sequential_agent_graph():
     return graph
 
 
-def create_and_get_agent_graph(parallel: bool = True):
+async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: bool = True):
     """
     Create and return the appropriate agent graph based on execution mode.
     
     Args:
         parallel: If True, creates parallel autonomous agent graph.
                  If False, creates sequential controlled agent graph.
+        use_enhanced_tools: If True, use enhanced tool executor with resilience patterns.
     
     Returns:
         Compiled LangGraph instance ready for investigation execution.
     """
-    logger.info(f"Creating agent graph: parallel={parallel}")
+    logger.info(f"Creating agent graph: parallel={parallel}, enhanced_tools={use_enhanced_tools}")
     
     if parallel:
-        return create_parallel_agent_graph()
+        return await create_parallel_agent_graph(use_enhanced_tools=use_enhanced_tools)
     else:
-        return create_sequential_agent_graph()
+        return await create_sequential_agent_graph(use_enhanced_tools=use_enhanced_tools)
 
 
 def _get_configured_tools():
@@ -199,3 +217,36 @@ def _filter_working_tools(tools):
         except Exception:
             pass
     return filtered_tools
+
+
+async def _create_enhanced_tool_node(tools, use_enhanced=True):
+    """
+    Create tool node with optional enhanced executor.
+    
+    Args:
+        tools: List of tools to use
+        use_enhanced: If True, use EnhancedToolNode
+        
+    Returns:
+        ToolNode or EnhancedToolNode instance
+    """
+    if use_enhanced:
+        try:
+            # Validate tools with health manager
+            health_manager = ToolHealthManager()
+            healthy_tools = await health_manager.validate_tool_ecosystem(tools)
+            
+            if not healthy_tools:
+                logger.warning("No healthy tools found, falling back to all tools")
+                healthy_tools = tools
+            
+            # Create enhanced tool node
+            tool_node = EnhancedToolNode(healthy_tools)
+            logger.info(f"✅ Created enhanced tool node with {len(healthy_tools)} healthy tools")
+            return tool_node
+            
+        except Exception as e:
+            logger.error(f"Failed to create enhanced tool node: {e}, falling back to standard ToolNode")
+            return ToolNode(_filter_working_tools(tools))
+    else:
+        return ToolNode(_filter_working_tools(tools))
