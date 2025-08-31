@@ -17,6 +17,13 @@
 
 ## 📚 Documentation Categories
 
+### 🤖 MCP Integration (Model Context Protocol)
+- [MCP Integration Comprehensive Guide](integration/MCP_INTEGRATION_COMPREHENSIVE_GUIDE.md) - Complete technical overview of MCP integration
+- [MCP Investigator Guide](user-guides/MCP_INVESTIGATOR_GUIDE.md) - User guide for fraud investigators using Claude Desktop
+- [MCP API Documentation](api/MCP_API_DOCUMENTATION.md) - Complete API reference for developers
+- [MCP Security & Compliance Guide](security/MCP_SECURITY_COMPLIANCE_GUIDE.md) - Enterprise security and compliance framework  
+- [MCP Operations & Monitoring Guide](operations/MCP_OPERATIONS_MONITORING_GUIDE.md) - Operations and monitoring procedures
+
 ### 🔌 API Integration
 - [API Integration Guide](api/API_INTEGRATION_GUIDE.md)
 - [Polling API Examples](api/POLLING_API_EXAMPLES.md)
@@ -66,6 +73,7 @@
 - ✅ **Backend (olorin-server)**: Python FastAPI with 1,050+ tests passing, production ready
 - ✅ **Frontend (olorin-front)**: React TypeScript SPA with comprehensive investigation tools
 - ✅ **Web Portal (olorin-web-portal)**: Marketing site with multi-language support
+- ✅ **MCP Integration**: Complete Model Context Protocol integration with 200+ investigation tools
 - ✅ **Documentation**: Comprehensive technical guides and architecture documentation
 
 ## 🎯 Key Features
@@ -75,6 +83,7 @@
 - **AI-Powered Insights**: LLM-driven risk analysis with natural language explanations
 - **Real-Time Processing**: Immediate investigation results and reporting
 - **Comprehensive Dashboard**: User-friendly interface for fraud investigators
+- **MCP Integration**: Natural language investigation through Claude Desktop with 200+ specialized tools
 
 ### Development Features
 - **Modern Tech Stack**: Python 3.11, React 18, TypeScript, Tailwind CSS
