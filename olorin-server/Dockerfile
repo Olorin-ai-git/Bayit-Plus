@@ -36,10 +36,8 @@ WORKDIR /app
 # Copy application code
 COPY --chown=olorin:olorin . .
 
-# Copy fonts and assets for PDF generation
-COPY --chown=olorin:olorin DejaVuSans.ttf /usr/share/fonts/truetype/
-COPY --chown=olorin:olorin DejaVuSans.pkl /app/
-COPY --chown=olorin:olorin DejaVuSans.cw127.pkl /app/
+# Create fonts directory (PDF fonts will be installed if needed at runtime)
+RUN mkdir -p /usr/share/fonts/truetype/
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/uploads /app/reports \

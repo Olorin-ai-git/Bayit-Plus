@@ -118,9 +118,6 @@ runConfig:
 buildConfig:
   # Source directory containing the backend code
   source: ./olorin-server
-  
-  # Use existing Dockerfile in olorin-server directory
-  dockerfile: Dockerfile
 
 # Health Check Configuration
 healthCheck:
