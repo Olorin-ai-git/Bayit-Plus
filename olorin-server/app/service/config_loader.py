@@ -74,18 +74,30 @@ class ConfigLoader:
         
         Returns:
             Dictionary with database configuration
+            
+        Raises:
+            ValueError: If critical database password is missing in production
         """
+        password = self.load_secret(
+            "olorin/database_password",
+            "DB_PASSWORD",
+            None  # No default - must be explicitly set
+        )
+        
+        # Validate password exists for non-local environments
+        if not password and self.env not in ["local", "development"]:
+            raise ValueError(
+                f"CRITICAL: Database password not found for environment '{self.env}'. "
+                "Cannot start safely without database credentials."
+            )
+        
         return {
             "host": os.getenv("DB_HOST", "localhost"),
             "port": int(os.getenv("DB_PORT", "3306")),
             "name": os.getenv("DB_NAME", "fraud_detection"),
             "user": os.getenv("DB_USER", "root"),
-            "password": self.load_secret(
-                "olorin/database_password",
-                "DB_PASSWORD",
-                "default_password"
-            ),
-            "pool_size": int(os.getenv("DB_POOL_SIZE", "5"))
+            "password": password,
+            "pool_size": int(os.getenv("DB_POOL_SIZE", "10"))  # Increased from 5 for production load
         }
     
     def load_redis_config(self) -> dict:
@@ -110,15 +122,33 @@ class ConfigLoader:
         
         Returns:
             Dictionary with JWT configuration
+            
+        Raises:
+            ValueError: If JWT secret key is missing in production
         """
+        secret_key = self.load_secret(
+            "olorin/jwt_secret_key",
+            "JWT_SECRET_KEY",
+            None  # No default - must be explicitly set
+        )
+        
+        # Validate JWT secret exists for non-local environments
+        if not secret_key and self.env not in ["local", "development"]:
+            raise ValueError(
+                f"CRITICAL: JWT secret key not found for environment '{self.env}'. "
+                "Cannot start safely without JWT authentication."
+            )
+        
+        # Generate secure random key for local development only
+        if not secret_key and self.env in ["local", "development"]:
+            import secrets
+            secret_key = secrets.token_urlsafe(32)
+            logger.warning("Generated temporary JWT secret for development - DO NOT use in production")
+        
         return {
-            "secret_key": self.load_secret(
-                "olorin/jwt_secret_key",
-                "JWT_SECRET_KEY",
-                "default_jwt_secret_key_minimum_32_characters"
-            ),
+            "secret_key": secret_key,
             "algorithm": os.getenv("JWT_ALGORITHM", "HS256"),
-            "expire_hours": int(os.getenv("JWT_EXPIRE_HOURS", "24"))
+            "expire_hours": int(os.getenv("JWT_EXPIRE_HOURS", "2"))  # Reduced from 24 to 2 hours for security
         }
     
     def load_splunk_config(self) -> dict:

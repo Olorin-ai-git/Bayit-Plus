@@ -1,0 +1,133 @@
+```mermaid
+graph TB
+    subgraph "Developer Environment"
+        DEV[Developer]
+        GIT[Git Repository]
+        DEV --> GIT
+    end
+
+    subgraph "CI/CD Pipeline"
+        CB[Cloud Build]
+        GIT --> CB
+        
+        subgraph "Build Stages"
+            S1[Environment Setup]
+            S2[Install Dependencies]
+            S3[Code Quality Checks]
+            S4[Run Tests]
+            S5[Security Scan]
+            S6[Build Docker Image]
+            S7[Push to Registry]
+            S8[Deploy to App Hosting]
+            
+            S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8
+        end
+        
+        CB --> S1
+    end
+
+    subgraph "Firebase Project: olorin-ai"
+        subgraph "Firebase Secret Manager"
+            SM[Secret Manager]
+            SM --> SM1[prd/olorin/anthropic_api_key]
+            SM --> SM2[prd/olorin/openai_api_key]
+            SM --> SM3[prd/olorin/database_password]
+            SM --> SM4[prd/olorin/jwt_secret_key]
+            SM --> SM5[Other API Keys...]
+        end
+
+        subgraph "Firebase App Hosting"
+            AH[App Hosting Service]
+            CR[Cloud Run Backend]
+            
+            AH --> CR
+            SM --> CR
+        end
+
+        subgraph "Firebase Hosting"
+            FH[Static Hosting]
+            FE[Frontend Build]
+            FH --> FE
+        end
+    end
+
+    subgraph "Backend Service Architecture"
+        subgraph "Olorin Backend Container"
+            FA[FastAPI App]
+            MCP[MCP Server]
+            TOOLS[200+ Fraud Tools]
+            AGENTS[LangGraph Agents]
+            
+            FA --> MCP
+            MCP --> TOOLS
+            MCP --> AGENTS
+        end
+        
+        CR --> FA
+        
+        subgraph "External Integrations"
+            DB[(Database)]
+            REDIS[(Redis Cache)]
+            SPLUNK[Splunk Logs]
+            ANTHROPIC[Anthropic API]
+            OPENAI[OpenAI API]
+            THIRD[3rd Party APIs]
+        end
+        
+        FA --> DB
+        FA --> REDIS
+        FA --> SPLUNK
+        AGENTS --> ANTHROPIC
+        AGENTS --> OPENAI
+        TOOLS --> THIRD
+    end
+
+    subgraph "Configuration Files"
+        CONFIG[apphosting.yaml]
+        FIREBASE[firebase.json]
+        ENV[.env.yaml]
+        BUILD[cloudbuild.yaml]
+        DEPLOY[deploy-backend.sh]
+    end
+
+    CONFIG --> AH
+    FIREBASE --> AH
+    FIREBASE --> FH
+    ENV --> CR
+    BUILD --> CB
+    DEPLOY --> AH
+
+    subgraph "Monitoring & Observability"
+        LOGS[Cloud Logging]
+        METRICS[Cloud Monitoring]
+        HEALTH[Health Checks]
+        ALERTS[Alerting]
+        
+        CR --> LOGS
+        CR --> METRICS
+        CR --> HEALTH
+        METRICS --> ALERTS
+    end
+
+    subgraph "Production Features"
+        SCALE[Auto-scaling: 1-100 instances]
+        LB[Load Balancing]
+        TLS[Managed TLS/HTTPS]
+        CDN[Global CDN]
+        
+        CR --> SCALE
+        CR --> LB
+        CR --> TLS
+        FH --> CDN
+    end
+
+    style DEV fill:#e1f5fe
+    style CB fill:#fff3e0
+    style AH fill:#e8f5e8
+    style CR fill:#e8f5e8
+    style SM fill:#fce4ec
+    style FA fill:#f3e5f5
+    style MCP fill:#f3e5f5
+    style TOOLS fill:#fff8e1
+    style AGENTS fill:#fff8e1
+```

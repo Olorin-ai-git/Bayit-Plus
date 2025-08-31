@@ -1,0 +1,170 @@
+# Firebase App Hosting Configuration for Olorin Backend
+# FastAPI Python service with MCP integration and fraud investigation tools
+# Author: Gil Klainert
+# Date: 2025-08-31
+
+# Runtime Configuration
+runConfig:
+  # Python 3.11 runtime environment
+  runtime: python311
+  
+  # Resource allocation for production workload
+  cpu: 2
+  memoryMiB: 4096
+  maxInstances: 100
+  minInstances: 1
+  
+  # Environment configuration
+  env:
+    # Application Environment
+    - variable: APP_ENV
+      value: "prd"
+    
+    # Firebase Project Configuration
+    - variable: FIREBASE_PROJECT_ID
+      value: "olorin-ai"
+    
+    # Backend Service Configuration
+    - variable: PORT
+      value: "8000"
+    
+    # Logging Configuration
+    - variable: LOG_LEVEL
+      value: "INFO"
+    
+    # CORS Configuration
+    - variable: CORS_ORIGINS
+      value: "https://olorin-ai.web.app,https://olorin-ai.firebaseapp.com"
+    
+    # Database Configuration
+    - variable: DB_HOST
+      value: "localhost"
+    - variable: DB_PORT
+      value: "3306"
+    - variable: DB_NAME
+      value: "fraud_detection"
+    - variable: DB_USER
+      value: "olorin_user"
+    - variable: DB_POOL_SIZE
+      value: "10"
+    
+    # Redis Configuration
+    - variable: REDIS_HOST
+      value: "localhost"
+    - variable: REDIS_PORT
+      value: "6379"
+    - variable: REDIS_DB
+      value: "0"
+    - variable: REDIS_POOL_SIZE
+      value: "10"
+    
+    # JWT Configuration
+    - variable: JWT_ALGORITHM
+      value: "HS256"
+    - variable: JWT_EXPIRE_HOURS
+      value: "2"
+    
+    # Rate Limiting Configuration
+    - variable: RATE_LIMIT_REQUESTS
+      value: "1000"
+    - variable: RATE_LIMIT_WINDOW
+      value: "3600"
+    
+    # MCP Server Configuration
+    - variable: MCP_SERVER_HOST
+      value: "0.0.0.0"
+    - variable: MCP_SERVER_PORT
+      value: "8001"
+    
+    # Production Secrets (mapped from Firebase Secret Manager)
+    - variable: ANTHROPIC_API_KEY
+      secret: prd/olorin/anthropic_api_key
+    
+    - variable: OPENAI_API_KEY
+      secret: prd/olorin/openai_api_key
+    
+    - variable: DB_PASSWORD
+      secret: prd/olorin/database_password
+    
+    - variable: REDIS_PASSWORD
+      secret: prd/olorin/redis_password
+    
+    - variable: JWT_SECRET_KEY
+      secret: prd/olorin/jwt_secret_key
+    
+    - variable: SPLUNK_USERNAME
+      secret: prd/olorin/splunk_username
+    
+    - variable: SPLUNK_PASSWORD
+      secret: prd/olorin/splunk_password
+    
+    - variable: GAIA_API_KEY
+      secret: prd/olorin/gaia_api_key
+    
+    - variable: OLORIN_API_KEY
+      secret: prd/olorin/olorin_api_key
+    
+    # Additional API Keys for Fraud Investigation Tools
+    - variable: ABUSEIPDB_API_KEY
+      secret: prd/olorin/abuseipdb_api_key
+    
+    - variable: VIRUSTOTAL_API_KEY
+      secret: prd/olorin/virustotal_api_key
+    
+    - variable: HIBP_API_KEY
+      secret: prd/olorin/hibp_api_key
+
+# Build Configuration
+buildConfig:
+  # Source directory containing the backend code
+  source: ./olorin-server
+  
+  # Use existing Dockerfile in olorin-server directory
+  dockerfile: Dockerfile
+
+# Health Check Configuration
+healthCheck:
+  path: "/health"
+  timeoutSeconds: 30
+  checkIntervalSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+# Startup Configuration
+startupProbe:
+  path: "/health"
+  timeoutSeconds: 30
+  periodSeconds: 10
+  failureThreshold: 10
+  initialDelaySeconds: 30
+
+# Auto-scaling Configuration
+scaling:
+  minInstances: 1
+  maxInstances: 100
+  
+  # CPU-based scaling
+  targetCpuUtilization: 70
+  
+  # Concurrency-based scaling
+  targetConcurrency: 100
+
+# Network Configuration
+network:
+  # Allow all ingress for public API
+  ingress: INGRESS_ALLOW_ALL
+  
+  # Session affinity for MCP connections
+  sessionAffinity: true
+
+# Additional Configuration
+metadata:
+  name: "olorin-backend"
+  description: "Olorin Fraud Detection Backend with MCP Integration"
+  version: "1.0.0"
+  labels:
+    app: "olorin"
+    tier: "backend"
+    environment: "production"
+    framework: "fastapi"
+    runtime: "python311"
