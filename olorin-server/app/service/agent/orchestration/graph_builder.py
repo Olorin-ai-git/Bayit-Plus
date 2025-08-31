@@ -343,3 +343,122 @@ async def _create_enhanced_tool_node(tools, use_enhanced=True):
             return ToolNode(_filter_working_tools(tools))
     else:
         return ToolNode(_filter_working_tools(tools))
+
+
+async def create_mcp_enhanced_graph(
+    parallel: bool = True,
+    use_enhanced_tools: bool = True,
+    use_mcp: bool = True,
+    mcp_servers: Optional[Dict] = None
+):
+    """
+    Create a graph enhanced with MCP server tools.
+    
+    This function creates a LangGraph that integrates both traditional tools
+    and MCP server tools for comprehensive fraud investigation capabilities.
+    
+    Args:
+        parallel: If True, creates parallel execution graph
+        use_enhanced_tools: If True, uses EnhancedToolNode with resilience
+        use_mcp: If True, integrates MCP server tools
+        mcp_servers: Optional dictionary of MCP server configurations
+        
+    Returns:
+        Compiled LangGraph with MCP integration
+    """
+    logger.info(f"Creating MCP-enhanced graph: parallel={parallel}, enhanced={use_enhanced_tools}, mcp={use_mcp}")
+    
+    # Get traditional tools
+    traditional_tools = _get_configured_tools()
+    all_tools = traditional_tools.copy()
+    
+    # Add MCP tools if enabled
+    if use_mcp:
+        try:
+            from app.service.agent.orchestration.mcp_client_manager import (
+                MCPClientManager,
+                get_fraud_detection_mcp_configs
+            )
+            
+            # Use provided configs or defaults
+            configs = mcp_servers or get_fraud_detection_mcp_configs()
+            
+            # Create and initialize MCP client
+            mcp_client = MCPClientManager(configs)
+            await mcp_client.initialize()
+            
+            # Get MCP tools
+            mcp_tools = await mcp_client.get_healthy_tools()
+            logger.info(f"Discovered {len(mcp_tools)} MCP tools")
+            
+            # Combine tools
+            all_tools.extend(mcp_tools)
+            
+        except ImportError:
+            logger.warning("MCP adapters not available, proceeding without MCP tools")
+        except Exception as e:
+            logger.error(f"Failed to initialize MCP tools: {e}")
+    
+    # Create base graph structure
+    builder = StateGraph(MessagesState)
+    
+    # Add investigation nodes
+    builder.add_node("start_investigation", start_investigation)
+    builder.add_node("fraud_investigation", assistant)
+    
+    # Add agent nodes based on execution mode
+    if parallel:
+        builder.add_node("network_agent", autonomous_network_agent)
+        builder.add_node("location_agent", autonomous_location_agent)
+        builder.add_node("logs_agent", autonomous_logs_agent)
+        builder.add_node("device_agent", autonomous_device_agent)
+        builder.add_node("risk_agent", autonomous_risk_agent)
+    else:
+        builder.add_node("network_agent", network_agent)
+        builder.add_node("location_agent", location_agent)
+        builder.add_node("logs_agent", logs_agent)
+        builder.add_node("device_agent", device_agent)
+        builder.add_node("risk_agent", risk_agent)
+    
+    # Create tool node with all tools
+    if use_enhanced_tools:
+        tool_node = await _create_enhanced_tool_node(all_tools, use_enhanced=True)
+    else:
+        tool_node = ToolNode(_filter_working_tools(all_tools))
+    
+    builder.add_node("tools", tool_node)
+    
+    # Define edges
+    builder.add_edge(START, "start_investigation")
+    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Tool routing
+    builder.add_conditional_edges("fraud_investigation", tools_condition)
+    builder.add_edge("tools", "fraud_investigation")
+    
+    # Agent routing based on execution mode
+    if parallel:
+        # Parallel execution
+        builder.add_edge("fraud_investigation", "network_agent")
+        builder.add_edge("fraud_investigation", "location_agent")
+        builder.add_edge("fraud_investigation", "logs_agent")
+        builder.add_edge("fraud_investigation", "device_agent")
+        
+        # All agents feed into risk assessment
+        for agent in ["network_agent", "location_agent", "logs_agent", "device_agent"]:
+            builder.add_edge(agent, "risk_agent")
+    else:
+        # Sequential execution
+        builder.add_edge("fraud_investigation", "network_agent")
+        builder.add_edge("network_agent", "location_agent")
+        builder.add_edge("location_agent", "logs_agent")
+        builder.add_edge("logs_agent", "device_agent")
+        builder.add_edge("device_agent", "risk_agent")
+    
+    # Compile with memory
+    from app.persistence.async_ips_redis import AsyncRedisSaver
+    memory = AsyncRedisSaver()
+    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    
+    logger.info(f"✅ MCP-enhanced graph compiled with {len(all_tools)} tools")
+    return graph
