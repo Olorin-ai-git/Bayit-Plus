@@ -1,0 +1,409 @@
+"""
+Enhanced Conditional Routing - Advanced routing based on fraud indicators.
+
+This module implements Phase 2 of the LangGraph enhancement plan, providing:
+- AI-driven routing decisions
+- Risk-based investigation prioritization
+- Dynamic agent allocation based on complexity
+- Adaptive investigation strategies
+"""
+
+import logging
+from typing import Dict, Any, List, Optional, Union
+from enum import Enum
+from dataclasses import dataclass
+
+from langchain_core.messages import BaseMessage, AIMessage
+from langgraph.graph import END
+
+logger = logging.getLogger(__name__)
+
+
+class InvestigationComplexity(Enum):
+    """Investigation complexity levels."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class RouteDecision(Enum):
+    """Routing decisions for investigation flow."""
+    CONTINUE = "continue"
+    ESCALATE = "escalate"
+    PARALLEL_DEEP_DIVE = "parallel_deep_dive"
+    SEQUENTIAL_ANALYSIS = "sequential_analysis"
+    SKIP_DOMAIN = "skip_domain"
+    END_INVESTIGATION = "end"
+    HUMAN_REVIEW = "human_review"
+
+
+@dataclass
+class FraudIndicators:
+    """Fraud risk indicators for routing decisions."""
+    device_anomaly_score: float = 0.0
+    network_risk_score: float = 0.0
+    location_risk_score: float = 0.0
+    activity_risk_score: float = 0.0
+    velocity_score: float = 0.0
+    account_age_days: int = 0
+    previous_fraud_count: int = 0
+    confidence_level: float = 0.0
+
+
+class EnhancedFraudRouter:
+    """Enhanced routing engine for fraud investigations."""
+    
+    def __init__(self):
+        """Initialize the fraud router."""
+        self.complexity_thresholds = {
+            InvestigationComplexity.LOW: 0.3,
+            InvestigationComplexity.MEDIUM: 0.5,
+            InvestigationComplexity.HIGH: 0.7,
+            InvestigationComplexity.CRITICAL: 0.9
+        }
+        
+        self.routing_rules = self._initialize_routing_rules()
+        
+    def _initialize_routing_rules(self) -> Dict[InvestigationComplexity, Dict[str, Any]]:
+        """Initialize routing rules based on complexity."""
+        return {
+            InvestigationComplexity.LOW: {
+                "strategy": "fast_track",
+                "domains": ["device", "network"],
+                "parallel": True,
+                "timeout": 30
+            },
+            InvestigationComplexity.MEDIUM: {
+                "strategy": "standard",
+                "domains": ["device", "network", "location"],
+                "parallel": True,
+                "timeout": 60
+            },
+            InvestigationComplexity.HIGH: {
+                "strategy": "comprehensive",
+                "domains": ["device", "network", "location", "logs"],
+                "parallel": False,  # Sequential for thoroughness
+                "timeout": 120
+            },
+            InvestigationComplexity.CRITICAL: {
+                "strategy": "full_investigation",
+                "domains": ["device", "network", "location", "logs"],
+                "parallel": False,
+                "timeout": 300,
+                "human_review": True
+            }
+        }
+    
+    def analyze_fraud_indicators(self, state: Dict[str, Any]) -> FraudIndicators:
+        """
+        Analyze state to extract fraud indicators.
+        
+        Args:
+            state: Current investigation state
+            
+        Returns:
+            FraudIndicators with calculated scores
+        """
+        indicators = FraudIndicators()
+        
+        # Extract from messages if available
+        messages = state.get("messages", [])
+        for message in messages:
+            if isinstance(message, AIMessage) and hasattr(message, "content"):
+                content = message.content
+                # Parse risk scores from message content
+                # This is simplified - in production, use proper parsing
+                if "device_risk" in content:
+                    indicators.device_anomaly_score = 0.5
+                if "network_risk" in content:
+                    indicators.network_risk_score = 0.4
+        
+        # Extract from domain findings if available
+        if "domain_findings" in state:
+            findings = state["domain_findings"]
+            
+            if "device" in findings:
+                device_findings = findings["device"]
+                if "risk_score" in device_findings:
+                    indicators.device_anomaly_score = device_findings["risk_score"]
+            
+            if "network" in findings:
+                network_findings = findings["network"]
+                if "risk_score" in network_findings:
+                    indicators.network_risk_score = network_findings["risk_score"]
+            
+            if "location" in findings:
+                location_findings = findings["location"]
+                if "risk_score" in location_findings:
+                    indicators.location_risk_score = location_findings["risk_score"]
+            
+            if "logs" in findings:
+                logs_findings = findings["logs"]
+                if "risk_score" in logs_findings:
+                    indicators.activity_risk_score = logs_findings["risk_score"]
+        
+        # Extract entity metadata
+        if "entity_metadata" in state:
+            metadata = state["entity_metadata"]
+            indicators.account_age_days = metadata.get("account_age_days", 0)
+            indicators.previous_fraud_count = metadata.get("previous_fraud_count", 0)
+        
+        # Calculate velocity score (simplified)
+        if "transaction_velocity" in state:
+            velocity = state["transaction_velocity"]
+            if velocity > 10:  # More than 10 transactions in observation period
+                indicators.velocity_score = min(1.0, velocity / 20)
+        
+        # Calculate confidence level
+        indicators.confidence_level = self._calculate_confidence(indicators)
+        
+        return indicators
+    
+    def _calculate_confidence(self, indicators: FraudIndicators) -> float:
+        """
+        Calculate confidence level based on available indicators.
+        
+        Args:
+            indicators: Fraud indicators
+            
+        Returns:
+            Confidence score between 0 and 1
+        """
+        # Count non-zero indicators
+        active_indicators = sum([
+            1 if indicators.device_anomaly_score > 0 else 0,
+            1 if indicators.network_risk_score > 0 else 0,
+            1 if indicators.location_risk_score > 0 else 0,
+            1 if indicators.activity_risk_score > 0 else 0,
+            1 if indicators.velocity_score > 0 else 0
+        ])
+        
+        # Base confidence on number of active indicators
+        base_confidence = active_indicators / 5.0
+        
+        # Adjust for account history
+        if indicators.previous_fraud_count > 0:
+            base_confidence = min(1.0, base_confidence + 0.2)
+        
+        if indicators.account_age_days < 30:
+            base_confidence = max(0.3, base_confidence - 0.1)
+        
+        return base_confidence
+    
+    def determine_complexity(self, indicators: FraudIndicators) -> InvestigationComplexity:
+        """
+        Determine investigation complexity based on indicators.
+        
+        Args:
+            indicators: Fraud indicators
+            
+        Returns:
+            Investigation complexity level
+        """
+        # Calculate composite risk score
+        composite_score = (
+            indicators.device_anomaly_score * 0.25 +
+            indicators.network_risk_score * 0.25 +
+            indicators.location_risk_score * 0.2 +
+            indicators.activity_risk_score * 0.2 +
+            indicators.velocity_score * 0.1
+        )
+        
+        # Adjust for history
+        if indicators.previous_fraud_count > 2:
+            composite_score = min(1.0, composite_score + 0.3)
+        elif indicators.previous_fraud_count > 0:
+            composite_score = min(1.0, composite_score + 0.15)
+        
+        # New accounts get extra scrutiny
+        if indicators.account_age_days < 7:
+            composite_score = min(1.0, composite_score + 0.2)
+        
+        # Determine complexity
+        if composite_score >= self.complexity_thresholds[InvestigationComplexity.CRITICAL]:
+            return InvestigationComplexity.CRITICAL
+        elif composite_score >= self.complexity_thresholds[InvestigationComplexity.HIGH]:
+            return InvestigationComplexity.HIGH
+        elif composite_score >= self.complexity_thresholds[InvestigationComplexity.MEDIUM]:
+            return InvestigationComplexity.MEDIUM
+        else:
+            return InvestigationComplexity.LOW
+    
+    def route_investigation(self, state: Dict[str, Any]) -> str:
+        """
+        Determine next step in investigation based on fraud indicators.
+        
+        Args:
+            state: Current investigation state
+            
+        Returns:
+            Next node name for routing
+        """
+        # Analyze current state
+        indicators = self.analyze_fraud_indicators(state)
+        complexity = self.determine_complexity(indicators)
+        
+        logger.info(f"Investigation complexity: {complexity.value}, "
+                   f"Composite risk: {self._calculate_composite_risk(indicators):.2f}")
+        
+        # Get routing strategy
+        strategy = self.routing_rules[complexity]
+        
+        # Check if investigation should end early
+        if self._should_end_early(state, indicators):
+            return END
+        
+        # Check if human review is needed
+        if strategy.get("human_review") and indicators.confidence_level < 0.5:
+            return "human_review"
+        
+        # Determine next domain to investigate
+        current_domain = state.get("current_domain")
+        investigated_domains = state.get("investigated_domains", [])
+        
+        for domain in strategy["domains"]:
+            if domain not in investigated_domains:
+                return f"{domain}_agent"
+        
+        # All domains investigated
+        return "risk_agent"
+    
+    def _calculate_composite_risk(self, indicators: FraudIndicators) -> float:
+        """Calculate composite risk score."""
+        return (
+            indicators.device_anomaly_score * 0.25 +
+            indicators.network_risk_score * 0.25 +
+            indicators.location_risk_score * 0.2 +
+            indicators.activity_risk_score * 0.2 +
+            indicators.velocity_score * 0.1
+        )
+    
+    def _should_end_early(self, state: Dict[str, Any], indicators: FraudIndicators) -> bool:
+        """
+        Determine if investigation should end early.
+        
+        Args:
+            state: Current state
+            indicators: Fraud indicators
+            
+        Returns:
+            True if investigation should end
+        """
+        # End if confidence is very high and risk is very low
+        if indicators.confidence_level > 0.9:
+            composite_risk = self._calculate_composite_risk(indicators)
+            if composite_risk < 0.1:
+                logger.info("Ending investigation early: Low risk with high confidence")
+                return True
+        
+        # End if maximum investigations reached
+        investigated_count = len(state.get("investigated_domains", []))
+        if investigated_count >= 4:
+            return True
+        
+        return False
+    
+    def get_domain_priority(self, complexity: InvestigationComplexity) -> List[str]:
+        """
+        Get prioritized list of domains to investigate.
+        
+        Args:
+            complexity: Investigation complexity
+            
+        Returns:
+            Ordered list of domains
+        """
+        strategy = self.routing_rules[complexity]
+        return strategy["domains"]
+    
+    def should_run_parallel(self, complexity: InvestigationComplexity) -> bool:
+        """
+        Determine if domains should run in parallel.
+        
+        Args:
+            complexity: Investigation complexity
+            
+        Returns:
+            True if parallel execution is recommended
+        """
+        strategy = self.routing_rules[complexity]
+        return strategy.get("parallel", True)
+
+
+def enhanced_fraud_routing(state: Dict[str, Any]) -> str:
+    """
+    Enhanced routing function for LangGraph.
+    
+    Args:
+        state: Current graph state
+        
+    Returns:
+        Next node to execute
+    """
+    router = EnhancedFraudRouter()
+    return router.route_investigation(state)
+
+
+def complexity_based_routing(state: Dict[str, Any]) -> str:
+    """
+    Route based on investigation complexity.
+    
+    Args:
+        state: Current graph state
+        
+    Returns:
+        Routing decision
+    """
+    router = EnhancedFraudRouter()
+    indicators = router.analyze_fraud_indicators(state)
+    complexity = router.determine_complexity(indicators)
+    
+    # Route based on complexity
+    if complexity == InvestigationComplexity.CRITICAL:
+        return "comprehensive_investigation"
+    elif complexity == InvestigationComplexity.HIGH:
+        return "detailed_investigation"
+    elif complexity == InvestigationComplexity.MEDIUM:
+        return "standard_investigation"
+    else:
+        return "fast_track_investigation"
+
+
+def adaptive_domain_routing(state: Dict[str, Any]) -> str:
+    """
+    Adaptively route to next domain based on findings.
+    
+    Args:
+        state: Current graph state
+        
+    Returns:
+        Next domain to investigate
+    """
+    router = EnhancedFraudRouter()
+    indicators = router.analyze_fraud_indicators(state)
+    
+    # Prioritize based on highest risk
+    risk_scores = {
+        "device": indicators.device_anomaly_score,
+        "network": indicators.network_risk_score,
+        "location": indicators.location_risk_score,
+        "logs": indicators.activity_risk_score
+    }
+    
+    # Filter out already investigated domains
+    investigated = state.get("investigated_domains", [])
+    available_domains = {k: v for k, v in risk_scores.items() if k not in investigated}
+    
+    if not available_domains:
+        return "risk_agent"
+    
+    # Route to highest risk domain
+    next_domain = max(available_domains, key=available_domains.get)
+    
+    # Check if risk is too low to continue
+    if available_domains[next_domain] < 0.1:
+        logger.info(f"Skipping remaining domains due to low risk scores")
+        return "risk_agent"
+    
+    return f"{next_domain}_agent"
