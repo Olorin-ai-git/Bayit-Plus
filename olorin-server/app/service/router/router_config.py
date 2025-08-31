@@ -68,12 +68,24 @@ def _register_error_handlers(app: FastAPI) -> None:
 
 def _add_health_endpoints(app: FastAPI) -> None:
     """Add health check and actuator endpoints."""
+    
+    # Add a simple health endpoint for Cloud Run
+    @app.get("/health")
+    async def health():
+        """Simple health check endpoint for Cloud Run."""
+        return {"status": "healthy", "service": "olorin-backend"}
+    
+    @app.get("/")
+    async def root():
+        """Root endpoint for basic connectivity test."""
+        return {"message": "Olorin Fraud Investigation Platform", "status": "running"}
+    
     try:
         from pskhealth import add_health_endpoint
         add_health_endpoint(app)
-        logger.info("Health endpoints added successfully")
+        logger.info("pskhealth endpoints added successfully")
     except ImportError:
-        logger.warning("pskhealth not available, health endpoints not added")
+        logger.info("pskhealth not available, using simple health endpoints")
     
     # Add actuator endpoints
     _add_actuator_endpoints(app)
