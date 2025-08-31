@@ -18,6 +18,18 @@ from app.service.agent.orchestration.enhanced_tool_executor import (
     EnhancedToolNode,
     ToolHealthManager
 )
+from app.service.agent.orchestration.subgraphs import (
+    SubgraphOrchestrator,
+    DeviceAnalysisSubgraph,
+    NetworkAnalysisSubgraph,
+    LocationAnalysisSubgraph,
+    LogsAnalysisSubgraph
+)
+from app.service.agent.orchestration.enhanced_routing import (
+    enhanced_fraud_routing,
+    complexity_based_routing,
+    adaptive_domain_routing
+)
 
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
@@ -152,7 +164,82 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
     return graph
 
 
-async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: bool = True):
+async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
+    """
+    Create a modular graph with domain-specific subgraphs.
+    Phase 2 enhancement: Subgraph pattern implementation.
+    
+    Args:
+        use_enhanced_tools: If True, use enhanced tool executor
+        
+    Returns:
+        Compiled graph with subgraph architecture
+    """
+    logger.info("Creating modular graph with domain subgraphs")
+    
+    builder = StateGraph(MessagesState)
+    
+    # Initialize subgraphs
+    device_subgraph = DeviceAnalysisSubgraph(autonomous=True)
+    network_subgraph = NetworkAnalysisSubgraph(autonomous=True)
+    location_subgraph = LocationAnalysisSubgraph(autonomous=True)
+    logs_subgraph = LogsAnalysisSubgraph(autonomous=True)
+    
+    # Add main nodes
+    builder.add_node("start_investigation", start_investigation)
+    builder.add_node("fraud_investigation", assistant)
+    builder.add_node("risk_agent", autonomous_risk_agent)
+    
+    # Add subgraphs as nodes
+    builder.add_node("device_subgraph", device_subgraph.compile().ainvoke)
+    builder.add_node("network_subgraph", network_subgraph.compile().ainvoke)
+    builder.add_node("location_subgraph", location_subgraph.compile().ainvoke)
+    builder.add_node("logs_subgraph", logs_subgraph.compile().ainvoke)
+    
+    # Add enhanced tools node
+    tools = _get_configured_tools()
+    if use_enhanced_tools:
+        tool_node = await _create_enhanced_tool_node(tools, use_enhanced=True)
+    else:
+        tool_node = ToolNode(_filter_working_tools(tools))
+    
+    builder.add_node("tools", tool_node)
+    
+    # Define routing with enhanced conditional routing
+    builder.add_edge(START, "start_investigation")
+    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Use enhanced routing for domain selection
+    builder.add_conditional_edges(
+        "fraud_investigation",
+        adaptive_domain_routing,
+        {
+            "device_agent": "device_subgraph",
+            "network_agent": "network_subgraph",
+            "location_agent": "location_subgraph",
+            "logs_agent": "logs_subgraph",
+            "risk_agent": "risk_agent"
+        }
+    )
+    
+    # Tool routing
+    builder.add_conditional_edges("fraud_investigation", tools_condition)
+    builder.add_edge("tools", "fraud_investigation")
+    
+    # Subgraphs feed back to investigation
+    for subgraph_name in ["device_subgraph", "network_subgraph", "location_subgraph", "logs_subgraph"]:
+        builder.add_edge(subgraph_name, "fraud_investigation")
+    
+    # Compile with persistence
+    from app.persistence.async_ips_redis import AsyncRedisSaver
+    memory = AsyncRedisSaver()
+    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    
+    logger.info("✅ Modular graph with subgraphs compiled successfully")
+    return graph
+
+
+async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: bool = True, use_subgraphs: bool = False):
     """
     Create and return the appropriate agent graph based on execution mode.
     
@@ -160,12 +247,18 @@ async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: 
         parallel: If True, creates parallel autonomous agent graph.
                  If False, creates sequential controlled agent graph.
         use_enhanced_tools: If True, use enhanced tool executor with resilience patterns.
+        use_subgraphs: If True, use modular subgraph architecture (Phase 2).
     
     Returns:
         Compiled LangGraph instance ready for investigation execution.
     """
-    logger.info(f"Creating agent graph: parallel={parallel}, enhanced_tools={use_enhanced_tools}")
+    logger.info(f"Creating agent graph: parallel={parallel}, enhanced_tools={use_enhanced_tools}, subgraphs={use_subgraphs}")
     
+    # Use subgraph architecture if requested (Phase 2)
+    if use_subgraphs:
+        return await create_modular_graph_with_subgraphs(use_enhanced_tools=use_enhanced_tools)
+    
+    # Original graph creation
     if parallel:
         return await create_parallel_agent_graph(use_enhanced_tools=use_enhanced_tools)
     else:
