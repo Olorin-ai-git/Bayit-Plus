@@ -464,4 +464,27 @@ _ENV_SETTINGS = {
 
 def get_settings_for_env() -> SvcSettings:
     env = os.getenv("APP_ENV", "local")
-    return _ENV_SETTINGS[env]()
+    config = _ENV_SETTINGS[env]()
+    
+    # Enhance configuration with secrets from Firebase Secret Manager
+    try:
+        from .config_secrets import enhance_config_with_secrets, validate_required_secrets
+        config = enhance_config_with_secrets(config)
+        
+        # Validate required secrets are present
+        if not validate_required_secrets(config):
+            import structlog
+            logger = structlog.get_logger(__name__)
+            logger.warning("Some required secrets are missing, using defaults where available")
+    except ImportError as e:
+        # If secret manager modules are not available, continue with env-based config
+        import structlog
+        logger = structlog.get_logger(__name__)
+        logger.warning(f"Secret Manager integration not available: {e}")
+    except Exception as e:
+        # Log any other errors but don't fail
+        import structlog
+        logger = structlog.get_logger(__name__)
+        logger.error(f"Error loading secrets from Firebase Secret Manager: {e}")
+    
+    return config
