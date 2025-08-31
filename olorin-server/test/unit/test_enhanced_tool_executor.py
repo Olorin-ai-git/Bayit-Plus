@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from app.service.agent.orchestration.enhanced_tool_executor import (
-    EnhancedInvestigationToolExecutor,
+    EnhancedToolNode,
     ToolHealthManager,
     ToolHealthMetrics,
     CircuitState
@@ -45,7 +45,7 @@ def mock_tools():
 @pytest.fixture
 def enhanced_executor(mock_tools):
     """Create enhanced executor with mock tools."""
-    return EnhancedInvestigationToolExecutor(mock_tools)
+    return EnhancedToolNode(mock_tools)
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ def health_manager():
     return ToolHealthManager()
 
 
-class TestEnhancedInvestigationToolExecutor:
+class TestEnhancedToolNode:
     """Test enhanced tool executor functionality."""
     
     @pytest.mark.asyncio
