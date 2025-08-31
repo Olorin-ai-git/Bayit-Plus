@@ -3,6 +3,7 @@
     {
       "source": "./olorin-server",
       "codebase": "olorin-backend",
+      "backendId": "olorin-backend",
       "ignore": [
         ".git/**",
         ".gitignore",
