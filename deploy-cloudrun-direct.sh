@@ -306,8 +306,10 @@ DEPLOY_CMD=(
     --cpu "2"
     --min-instances "1"
     --max-instances "100"
-    --timeout "300"
+    --timeout "900"
     --concurrency "100"
+    --cpu-throttling
+    --execution-environment gen2
     --quiet
 )
 
