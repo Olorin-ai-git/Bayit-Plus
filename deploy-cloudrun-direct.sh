@@ -253,7 +253,6 @@ if [[ $DRY_RUN == true ]]; then
     echo "gcloud run deploy $SERVICE_NAME \\"
     echo "  --source $SOURCE_DIR \\"
     echo "  --region $REGION \\"
-    echo "  --port $PORT \\"
     echo "  --allow-unauthenticated \\"
     echo "  --project $PROJECT_ID \\"
     echo "  --set-env-vars APP_ENV=prd,FIREBASE_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,PYTHONPATH=/app \\"
@@ -300,7 +299,6 @@ DEPLOY_CMD=(
     gcloud run deploy "$SERVICE_NAME"
     --source "$SOURCE_DIR"
     --region "$REGION"
-    --port "$PORT"
     --allow-unauthenticated
     --project "$PROJECT_ID"
     --set-env-vars "APP_ENV=prd,FIREBASE_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,PYTHONPATH=/app"
