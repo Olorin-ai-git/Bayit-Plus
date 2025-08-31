@@ -6,6 +6,7 @@ This module implements Phase 2 of the LangGraph enhancement plan, providing:
 - Risk-based investigation prioritization
 - Dynamic agent allocation based on complexity
 - Adaptive investigation strategies
+- MCP-aware routing for enhanced tool selection
 """
 
 import logging
@@ -368,6 +369,47 @@ def complexity_based_routing(state: Dict[str, Any]) -> str:
         return "standard_investigation"
     else:
         return "fast_track_investigation"
+
+
+def mcp_aware_routing(state: Dict[str, Any]) -> str:
+    """
+    MCP-aware routing function that considers MCP server capabilities.
+    
+    This function analyzes the investigation state and routes to appropriate
+    MCP servers based on available capabilities and investigation requirements.
+    
+    Args:
+        state: Current investigation state with messages
+        
+    Returns:
+        Next node to route to (MCP server or agent)
+    """
+    logger.info("Performing MCP-aware routing")
+    
+    # Extract messages and investigation context
+    messages = state.get("messages", [])
+    if not messages:
+        return "fraud_investigation"
+    
+    last_message = messages[-1]
+    content = last_message.content if hasattr(last_message, 'content') else str(last_message)
+    
+    # Analyze content for MCP server requirements
+    mcp_keywords = {
+        "fraud_database": ["transaction", "history", "risk score", "device fingerprint"],
+        "external_apis": ["ip reputation", "email verify", "phone validate", "credit"],
+        "graph_analysis": ["fraud ring", "money flow", "relationship", "anomaly cluster"]
+    }
+    
+    # Check for MCP server requirements
+    for server, keywords in mcp_keywords.items():
+        if any(keyword in content.lower() for keyword in keywords):
+            logger.info(f"Routing to MCP server: {server}")
+            # In practice, this would route to an MCP tool execution node
+            return "tools"  # Route to tools node which includes MCP tools
+    
+    # Fall back to standard routing if no MCP requirements detected
+    return adaptive_domain_routing(state)
 
 
 def adaptive_domain_routing(state: Dict[str, Any]) -> str:
