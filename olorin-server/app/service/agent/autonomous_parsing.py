@@ -25,10 +25,23 @@ def parse_autonomous_result(
     """Parse autonomous LLM result into structured findings"""
     
     try:
-        # Extract content from LLM response
+        # Extract content from LLM response - handle different result types
+        content = ""
+        
         if hasattr(llm_result, 'content'):
+            # Single message with content attribute
             content = llm_result.content
+        elif isinstance(llm_result, list):
+            # List of messages - extract content from all
+            content_parts = []
+            for item in llm_result:
+                if hasattr(item, 'content'):
+                    content_parts.append(str(item.content))
+                else:
+                    content_parts.append(str(item))
+            content = " ".join(content_parts)
         else:
+            # Fallback to string representation
             content = str(llm_result)
         
         logger.debug(f"Parsing autonomous {domain} result: {content[:200]}...")
@@ -36,10 +49,19 @@ def parse_autonomous_result(
         # Try to extract structured data if present
         findings_data = extract_findings_from_content(content, domain)
         
+        # Get risk_score and validate
+        risk_score = findings_data.get("risk_score")
+        if risk_score is None:
+            logger.error(
+                f"CRITICAL: Risk score is missing for {domain} analysis! "
+                f"Agent failed to provide risk assessment for investigation {context.investigation_id}"
+            )
+            print(f"        ❌ ERROR: {domain.title()} Agent failed to provide risk_score!")
+        
         # Create domain findings
         findings = DomainFindings(
             domain=domain,
-            risk_score=findings_data.get("risk_score", 0.5),
+            risk_score=risk_score,
             confidence=findings_data.get("confidence", 0.7),
             key_findings=findings_data.get("key_findings", []),
             suspicious_indicators=findings_data.get("suspicious_indicators", []),
@@ -54,10 +76,17 @@ def parse_autonomous_result(
     except Exception as e:
         logger.error(f"Failed to parse autonomous result for {domain}: {str(e)}")
         
-        # Return minimal findings on parse error
+        # Log the parsing error
+        logger.error(
+            f"CRITICAL: Failed to parse {domain} analysis result! "
+            f"Risk score will be missing for investigation {context.investigation_id}: {str(e)}"
+        )
+        print(f"        ❌ ERROR: {domain.title()} Agent parsing failed - no risk_score available!")
+        
+        # Return minimal findings on parse error with None risk_score
         return DomainFindings(
             domain=domain,
-            risk_score=0.0,
+            risk_score=None,  # Explicit None to indicate missing risk assessment
             confidence=0.0,
             key_findings=[f"Parse error: {str(e)}"],
             suspicious_indicators=[],
@@ -74,10 +103,14 @@ def extract_findings_from_content(content: str, domain: str) -> Dict[str, Any]:
         "key_findings": [],
         "suspicious_indicators": [],
         "recommended_actions": [],
-        "risk_score": 0.5,
+        "risk_score": None,  # No default - must be calculated by LLM
         "confidence": 0.7,
         "data_quality": "good"
     }
+    
+    # Ensure content is a string
+    if not isinstance(content, str):
+        content = str(content)
     
     try:
         # Try to parse JSON if present

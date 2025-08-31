@@ -263,4 +263,16 @@ def _register_default_patterns() -> None:
     except ImportError as e:
         logger.warning(f"Failed to register OpenAIConversationPattern: {e}")
     
+    try:
+        from .openai.multi_agent_pattern import OpenAIMultiAgentPattern
+        registry.register_pattern(PatternType.OPENAI_MULTI_AGENT, OpenAIMultiAgentPattern)
+    except ImportError as e:
+        logger.warning(f"Failed to register OpenAIMultiAgentPattern: {e}")
+    
+    try:
+        from .openai.rag_pattern import OpenAIRAGPattern
+        registry.register_pattern(PatternType.OPENAI_RAG, OpenAIRAGPattern)
+    except ImportError as e:
+        logger.warning(f"Failed to register OpenAIRAGPattern: {e}")
+    
     logger.info(f"Pattern registry initialized with {len(registry.get_available_patterns())} patterns")

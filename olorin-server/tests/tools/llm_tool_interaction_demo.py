@@ -15,9 +15,14 @@ Focus: ONLY the LLM → Tool Call → Tool Execution → Results flow
 import asyncio
 import json
 import logging
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict
 from unittest.mock import AsyncMock, patch
+
+# Add project root to path
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from langchain_core.runnables.config import RunnableConfig
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage

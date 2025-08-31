@@ -17,15 +17,15 @@ from app.service.agent.agent_communication import (
 from app.service.agent.agent_factory import create_autonomous_agent
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.journey_tracker import (
-    LangGraphJourneyTracker,
+    get_journey_tracker,
     NodeType,
     NodeStatus,
 )
 
 logger = logging.getLogger(__name__)
 
-# Initialize journey tracker for LangGraph node tracking
-journey_tracker = LangGraphJourneyTracker()
+# Get global journey tracker instance
+journey_tracker = get_journey_tracker()
 
 
 async def autonomous_logs_agent(state, config) -> dict:
@@ -51,7 +51,7 @@ async def autonomous_logs_agent(state, config) -> dict:
     
     # Create or get autonomous context
     autonomous_context = _get_or_create_autonomous_context(
-        investigation_id, entity_id, "fraud_investigation"
+        investigation_id, entity_id, investigation_type="fraud_investigation"
     )
     autonomous_context.start_domain_analysis("logs")
     
@@ -113,7 +113,7 @@ async def autonomous_logs_agent(state, config) -> dict:
                 "risk_factors": findings.key_findings,
                 "suspicious_indicators": findings.suspicious_indicators,
                 "summary": f"Autonomous logs analysis: {len(findings.key_findings)} findings",
-                "thoughts": f"Used LLM-driven tool selection for {autonomous_context.domain} analysis",
+                "thoughts": "Used LLM-driven tool selection for logs analysis",
                 "timestamp": findings.timestamp.isoformat(),
                 "autonomous_execution": True,
                 "domain": "logs"

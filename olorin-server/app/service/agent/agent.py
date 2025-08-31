@@ -38,10 +38,29 @@ from app.service.agent.core import (
 from app.service.agent.agent_factory import get_agent_factory, create_agent, execute_agent
 from app.service.agent.patterns import PatternType, PatternConfig
 from app.service.agent.websocket_streaming_service import WebSocketStreamingService
+
+# Import tools for autonomous agents
+from app.service.agent.tools.tool_registry import get_tools_for_agent
 from app.models.upi_response import Interaction, InteractionsResponse
 from app.service.websocket_manager import websocket_manager
 
 logger = logging.getLogger(__name__)
+
+# Initialize tools for autonomous agents
+try:
+    # Get essential tools for fraud investigation
+    tools = get_tools_for_agent(
+        categories=["olorin", "search", "database"],
+        tool_names=[
+            "splunk_query_tool",
+            "vector_search_tool",
+            "database_query_tool"
+        ]
+    )
+    logger.info(f"Initialized {len(tools)} tools for autonomous agents")
+except Exception as e:
+    logger.warning(f"Could not initialize tools: {e}")
+    tools = []
 
 
 def convert_interaction_to_langgraph_messages(

@@ -9,10 +9,12 @@ LLM-driven decision making and autonomous tool selection.
 from .autonomous_base import (
     AutonomousInvestigationAgent,
     autonomous_llm,
+    get_autonomous_llm,
 )
 
 # Re-export for backward compatibility
 __all__ = [
     'AutonomousInvestigationAgent',
     'autonomous_llm',
+    'get_autonomous_llm',
 ]

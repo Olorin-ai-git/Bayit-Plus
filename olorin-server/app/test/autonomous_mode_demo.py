@@ -54,7 +54,8 @@ async def demo_autonomous_context():
     )
     
     context.record_domain_findings("network", network_findings)
-    print(f"✓ Recorded network findings: risk={network_findings.risk_score:.2f}")
+    risk_display = "MISSING!" if network_findings.risk_score is None else f"{network_findings.risk_score:.2f}"
+    print(f"✓ Recorded network findings: risk={risk_display}")
     
     # Generate LLM context to show autonomous decision-making capabilities
     llm_context = context.generate_llm_context("device")
@@ -171,7 +172,8 @@ async def demo_autonomous_agent():
             
             print(f"✓ Autonomous investigation completed!")
             print(f"  Domain: {findings.domain}")
-            print(f"  Risk Score: {findings.risk_score:.2f}")
+            risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.2f}"
+            print(f"  Risk Score: {risk_display}")
             print(f"  Confidence: {findings.confidence:.2f}")
             print(f"  Key Findings: {len(findings.key_findings)}")
             print(f"  Autonomous Execution Evidence: {'✓ Yes' if findings.raw_data else '✗ No'}")

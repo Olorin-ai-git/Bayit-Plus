@@ -11,6 +11,33 @@ from typing import Any, List
 logger = logging.getLogger(__name__)
 
 
+class AgentFactory:
+    """Factory for creating agents."""
+    
+    def __init__(self):
+        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"]}
+    
+    def get_factory_stats(self):
+        """Get factory statistics."""
+        return self.stats
+    
+    def create_agent(self, domain: str, tools: List[Any]):
+        """Create an agent for the specified domain."""
+        self.stats["agents_created"] += 1
+        return create_autonomous_agent(domain, tools)
+
+
+_agent_factory_instance = None
+
+
+def get_agent_factory() -> AgentFactory:
+    """Get the singleton agent factory instance."""
+    global _agent_factory_instance
+    if _agent_factory_instance is None:
+        _agent_factory_instance = AgentFactory()
+    return _agent_factory_instance
+
+
 def create_autonomous_agent(domain: str, tools: List[Any]):
     """
     Create an autonomous investigation agent for the specified domain.
@@ -110,15 +137,30 @@ def initialize_llm_with_tools(tools: List[Any]) -> Any:
         LLM instance with bound tools
     """
     try:
-        from app.service.agent.base_agents import autonomous_llm
+        from app.service.agent.base_agents import get_autonomous_llm
+        
+        autonomous_llm_instance = get_autonomous_llm()
         
         if tools:
-            llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+            llm_with_tools = autonomous_llm_instance.bind_tools(tools)
             logger.info(f"Initialized LLM with {len(tools)} tools")
             return llm_with_tools
         else:
             logger.warning("No tools provided for LLM initialization")
-            return autonomous_llm
+            return autonomous_llm_instance
     except Exception as e:
         logger.error(f"Failed to initialize LLM with tools: {str(e)}")
-        return autonomous_llm
+        from app.service.agent.base_agents import get_autonomous_llm
+        return get_autonomous_llm()
+
+
+def create_agent(domain: str, tools: List[Any]):
+    """Create an agent (alias for create_autonomous_agent)."""
+    return create_autonomous_agent(domain, tools)
+
+
+def execute_agent(agent, **kwargs):
+    """Execute an agent with the given parameters."""
+    # This is a placeholder - actual implementation would depend on agent type
+    logger.info(f"Executing agent with parameters: {kwargs}")
+    return {"status": "executed", "agent": str(agent), "params": kwargs}

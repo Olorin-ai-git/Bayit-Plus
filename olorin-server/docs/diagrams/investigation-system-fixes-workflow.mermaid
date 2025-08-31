@@ -1,0 +1,114 @@
+graph TB
+    %% Investigation System Improvement Workflow
+    subgraph "🔍 Issue Analysis"
+        A1[Risk Score Aggregation<br/>CRITICAL Priority 1<br/>0.5 → 0.0 bug]
+        A2[Agent Performance<br/>HIGH Priority 2<br/>Device agent 22% slower]
+        A3[Limited Findings<br/>MEDIUM Priority 3<br/>Only 1 finding per agent]
+        A4[Missing Tool Logging<br/>LOW Priority 4<br/>No tool call visibility]
+    end
+    
+    subgraph "📋 Phase 1: Risk Aggregation Fix"
+        P1A[Analyze scenario runner<br/>aggregation logic]
+        P1B[Review agent result formats<br/>and risk score extraction]
+        P1C[Fix aggregation math<br/>and validation]
+        P1D[Add comprehensive testing<br/>for edge cases]
+        
+        P1A --> P1B --> P1C --> P1D
+    end
+    
+    subgraph "⚡ Phase 2: Performance Optimization" 
+        P2A[Profile device agent<br/>execution timing]
+        P2B[Analyze LLM initialization<br/>and tool binding overhead]
+        P2C[Optimize caching and<br/>streamline workflow]
+        P2D[Add performance monitoring<br/>and benchmarks]
+        
+        P2A --> P2B --> P2C --> P2D
+    end
+    
+    subgraph "📊 Phase 3: Enhanced Findings"
+        P3A[Review findings extraction<br/>and parsing logic]
+        P3B[Examine agent prompting<br/>strategy and quality]
+        P3C[Improve parsing to identify<br/>3-5 findings per agent]
+        P3D[Add findings validation<br/>and quality checks]
+        
+        P3A --> P3B --> P3C --> P3D
+    end
+    
+    subgraph "🔧 Phase 4: Tool Usage Logging"
+        P4A[Review journey tracker<br/>tool tracking capabilities]
+        P4B[Examine LangGraph tool<br/>integration and hooks]
+        P4C[Enhance tool call tracking<br/>with parameters/results]
+        P4D[Implement tool usage<br/>reporting and analytics]
+        
+        P4A --> P4B --> P4C --> P4D
+    end
+    
+    subgraph "✅ Validation & Testing"
+        V1[Unit Tests<br/>Aggregation & Parsing Logic]
+        V2[Integration Tests<br/>10 Fraud Scenarios]
+        V3[Performance Tests<br/>Agent Timing Validation]
+        V4[Journey Tracking Tests<br/>Tool Usage Visibility]
+        
+        V1 --> V2 --> V3 --> V4
+    end
+    
+    subgraph "🎯 Success Criteria"
+        S1[Risk scores aggregate correctly<br/>Individual 0.5 → Final 0.5]
+        S2[Device agent <17s execution<br/>Within 5% of average]
+        S3[3-5 findings per agent<br/>Comprehensive analysis]
+        S4[Complete tool call logging<br/>Parameters & results visible]
+    end
+    
+    %% Issue to Phase connections
+    A1 --> P1A
+    A2 --> P2A  
+    A3 --> P3A
+    A4 --> P4A
+    
+    %% Phase to Validation connections
+    P1D --> V1
+    P2D --> V3
+    P3D --> V1
+    P4D --> V4
+    
+    %% Validation to Success connections
+    V1 --> S1
+    V2 --> S1
+    V3 --> S2
+    V4 --> S4
+    
+    %% Success criteria relationships
+    S1 --> SUCCESS[🎉 Investigation System<br/>Fully Optimized]
+    S2 --> SUCCESS
+    S3 --> SUCCESS
+    S4 --> SUCCESS
+    
+    %% Risk mitigation flow
+    subgraph "⚠️ Risk Mitigation"
+        R1[Regression Testing<br/>Before all changes]
+        R2[Git Branches<br/>Isolated testing]
+        R3[Performance Monitoring<br/>Quality validation]
+        R4[Code Reviews<br/>Safety validation]
+    end
+    
+    %% Timeline indicators
+    P1A -.-> T1[Day 1]
+    P2A -.-> T2[Day 2] 
+    P3A -.-> T3[Day 3]
+    P4A -.-> T4[Day 4]
+    V1 -.-> T5[Day 5]
+    
+    %% Styling
+    classDef criticalIssue fill:#ff9999,stroke:#cc0000,stroke-width:3px
+    classDef highIssue fill:#ffcc99,stroke:#ff6600,stroke-width:2px
+    classDef mediumIssue fill:#ffffcc,stroke:#cccc00,stroke-width:2px
+    classDef lowIssue fill:#ccffcc,stroke:#00cc00,stroke-width:1px
+    classDef phase fill:#e6f3ff,stroke:#0066cc,stroke-width:2px
+    classDef success fill:#ccffcc,stroke:#00aa00,stroke-width:3px
+    
+    class A1 criticalIssue
+    class A2 highIssue
+    class A3 mediumIssue
+    class A4 lowIssue
+    class P1A,P1B,P1C,P1D,P2A,P2B,P2C,P2D,P3A,P3B,P3C,P3D,P4A,P4B,P4C,P4D phase
+    class S1,S2,S3,S4,SUCCESS success

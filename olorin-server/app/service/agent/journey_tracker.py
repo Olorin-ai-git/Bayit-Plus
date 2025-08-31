@@ -11,8 +11,13 @@ from typing import Dict, List, Any, Optional, Tuple, Set
 from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
 from pathlib import Path
-import networkx as nx
 from enum import Enum
+
+# Optional networkx import for visualization features
+try:
+    import networkx as nx
+except ImportError:
+    nx = None
 import uuid
 import logging
 
@@ -109,7 +114,7 @@ class LangGraphJourneyTracker:
         
         # Active journey tracking
         self._active_journeys: Dict[str, InvestigationJourney] = {}
-        self._journey_graphs: Dict[str, nx.DiGraph] = {}
+        self._journey_graphs: Dict[str, Any] = {}  # nx.DiGraph if networkx available
         
         # Callback for real-time monitoring
         self._monitoring_callbacks: List[callable] = []
@@ -134,7 +139,7 @@ class LangGraphJourneyTracker:
         )
         
         self._active_journeys[investigation_id] = journey
-        self._journey_graphs[investigation_id] = nx.DiGraph()
+        self._journey_graphs[investigation_id] = nx.DiGraph() if nx else {}
         
         logger.info(f"Started journey tracking for investigation: {investigation_id}")
     
@@ -183,15 +188,16 @@ class LangGraphJourneyTracker:
         journey = self._active_journeys[investigation_id]
         journey.node_executions.append(node_execution)
         
-        # Update journey graph
-        graph = self._journey_graphs[investigation_id]
-        graph.add_node(node_name, 
-                      node_type=node_type.value,
-                      status=status.value,
-                      duration_ms=duration_ms,
-                      agent_name=agent_name,
-                      tool_name=tool_name,
-                      execution_count=len([n for n in journey.node_executions if n.node_name == node_name]))
+        # Update journey graph (if networkx available)
+        if nx:
+            graph = self._journey_graphs[investigation_id]
+            graph.add_node(node_name, 
+                          node_type=node_type.value,
+                          status=status.value,
+                          duration_ms=duration_ms,
+                          agent_name=agent_name,
+                          tool_name=tool_name,
+                          execution_count=len([n for n in journey.node_executions if n.node_name == node_name]))
         
         # Notify monitoring callbacks
         self._notify_callbacks(investigation_id, "node_execution", asdict(node_execution))
@@ -232,11 +238,12 @@ class LangGraphJourneyTracker:
         journey = self._active_journeys[investigation_id]
         journey.state_transitions.append(state_transition)
         
-        # Update journey graph with edge
-        graph = self._journey_graphs[investigation_id]
-        graph.add_edge(from_node, to_node, 
-                      transition_reason=transition_reason,
-                      timestamp=state_transition.timestamp)
+        # Update journey graph with edge (if networkx available)
+        if nx:
+            graph = self._journey_graphs[investigation_id]
+            graph.add_edge(from_node, to_node, 
+                          transition_reason=transition_reason,
+                          timestamp=state_transition.timestamp)
         
         self._notify_callbacks(investigation_id, "state_transition", asdict(state_transition))
         
@@ -348,8 +355,8 @@ class LangGraphJourneyTracker:
                 for execution in recent_executions
             ],
             "graph_structure": {
-                "total_nodes": graph.number_of_nodes(),
-                "total_edges": graph.number_of_edges(),
+                "total_nodes": graph.number_of_nodes() if nx and hasattr(graph, 'number_of_nodes') else 0,
+                "total_edges": graph.number_of_edges() if nx and hasattr(graph, 'number_of_edges') else 0,
                 "execution_path": [execution.node_name for execution in journey.node_executions]
             }
         }
@@ -368,7 +375,7 @@ class LangGraphJourneyTracker:
             else:
                 return {"error": f"Journey not found: {investigation_id}"}
         
-        graph = self._journey_graphs.get(investigation_id, nx.DiGraph())
+        graph = self._journey_graphs.get(investigation_id, nx.DiGraph() if nx else {})
         
         # Generate visualization data
         visualization = {

@@ -10,7 +10,8 @@ from .ice_events import (
     ICEEvent,
     ICEEventBus,
     ICEEventHandler,
-    ICEEventSubscription
+    ICEEventSubscription,
+    get_event_bus
 )
 
 from .agent_communication import (
@@ -28,13 +29,8 @@ from .investigation_state import (
     StateValidator
 )
 
-from .coordination_patterns import (
-    CoordinationPatternType,
-    CoordinationPattern,
-    CoordinationManager,
-    TaskCoordination,
-    ResourceCoordination
-)
+# Note: coordination_patterns module not implemented yet
+# from .coordination_patterns import (...)
 
 __all__ = [
     # ICE Events
@@ -43,6 +39,7 @@ __all__ = [
     "ICEEventBus",
     "ICEEventHandler",
     "ICEEventSubscription",
+    "get_event_bus",
     
     # Agent Communication
     "AgentCommunicationHub",
@@ -55,12 +52,5 @@ __all__ = [
     "InvestigationStateManager",
     "InvestigationState",
     "StateTransition",
-    "StateValidator",
-    
-    # Coordination Patterns
-    "CoordinationPatternType",
-    "CoordinationPattern",
-    "CoordinationManager",
-    "TaskCoordination",
-    "ResourceCoordination"
+    "StateValidator"
 ]

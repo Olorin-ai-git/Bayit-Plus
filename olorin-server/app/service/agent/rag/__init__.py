@@ -13,27 +13,17 @@ from .knowledge_base import (
     KnowledgeBaseConfig
 )
 
-from .retrieval_engine import (
-    RetrievalEngine,
-    RetrievalQuery,
-    RetrievalResult,
-    SearchStrategy,
-    RetrievalConfig
-)
-
-from .context_augmentor import (
-    ContextAugmentor,
-    AugmentedContext,
-    ContextStrategy,
-    AugmentationConfig
-)
+# Note: retrieval_engine and context_augmentor modules not implemented yet
+# from .retrieval_engine import (...)
+# from .context_augmentor import (...)
 
 from .rag_orchestrator import (
     RAGOrchestrator,
     RAGRequest,
     RAGResponse,
     RAGConfig,
-    RAGMetrics
+    RAGMetrics,
+    get_rag_orchestrator
 )
 
 __all__ = [
@@ -44,23 +34,11 @@ __all__ = [
     "ChunkingStrategy",
     "KnowledgeBaseConfig",
     
-    # Retrieval Engine
-    "RetrievalEngine",
-    "RetrievalQuery",
-    "RetrievalResult",
-    "SearchStrategy",
-    "RetrievalConfig",
-    
-    # Context Augmentor
-    "ContextAugmentor",
-    "AugmentedContext",
-    "ContextStrategy", 
-    "AugmentationConfig",
-    
     # RAG Orchestrator
     "RAGOrchestrator",
     "RAGRequest",
     "RAGResponse",
     "RAGConfig",
-    "RAGMetrics"
+    "RAGMetrics",
+    "get_rag_orchestrator"
 ]

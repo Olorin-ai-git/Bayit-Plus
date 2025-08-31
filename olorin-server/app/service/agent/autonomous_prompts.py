@@ -54,8 +54,9 @@ def create_investigation_prompt(
         "- Tool selection rationale",
         "- Data collection summary", 
         "- Fraud indicators identified",
-        "- Risk assessment with evidence",
-        "- Confidence scoring",
+        "- MANDATORY: risk_score - A numerical risk assessment from 0.0 (no risk) to 1.0 (critical risk)",
+        "- Risk assessment with detailed evidence supporting the score",
+        "- Confidence scoring (0.0 to 1.0)",
         "- Recommendations for further investigation",
         
         f"\nBEGIN AUTONOMOUS {domain.upper()} INVESTIGATION:",

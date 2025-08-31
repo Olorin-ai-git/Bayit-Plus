@@ -1,0 +1,108 @@
+graph TB
+    %% OpenAI RAG Pattern Architecture Diagram
+    %% Author: Gil Klainert
+    %% Date: 2025-08-30
+    
+    subgraph "Investigation Request"
+        IR[Investigation Request]
+        IC[Investigation Context]
+        IM[Investigation Messages]
+    end
+    
+    subgraph "OpenAI RAG Pattern"
+        RP[OpenAI RAG Pattern]
+        QE[Query Extraction]
+        RR[RAG Request Builder]
+        MA[Message Augmentation]
+        GH[Generation Handlers]
+        FR[Fallback Recovery]
+    end
+    
+    subgraph "Knowledge Retrieval Layer"
+        RO[RAG Orchestrator]
+        KB[Knowledge Base]
+        VS[Vector Search Tool]
+        RT[Retriever Tools]
+        KE[Knowledge Enhancement]
+    end
+    
+    subgraph "OpenAI Generation Layer"  
+        CH[Chat Completion Handler]
+        SH[Streaming Handler]
+        MF[Message Formatter]
+        OA[OpenAI API]
+    end
+    
+    subgraph "Response Enhancement"
+        RE[Response Enhancement]
+        KM[Knowledge Metadata]
+        CF[Confidence Scoring]
+        SM[Source Management]
+    end
+    
+    subgraph "Output Delivery"
+        ER[Enhanced Response]
+        WS[WebSocket Streaming]
+        PR[Pattern Result]
+    end
+    
+    %% Investigation Flow
+    IR --> RP
+    IC --> RP
+    IM --> RP
+    
+    %% Pattern Processing
+    RP --> QE
+    QE --> RR
+    RR --> MA
+    MA --> GH
+    GH --> FR
+    
+    %% Knowledge Retrieval Flow
+    RR --> RO
+    RO --> KB
+    RO --> VS
+    RO --> RT
+    KB --> KE
+    VS --> KE
+    RT --> KE
+    KE --> MA
+    
+    %% Generation Flow
+    MA --> CH
+    MA --> SH
+    CH --> MF
+    SH --> MF
+    MF --> OA
+    
+    %% Response Enhancement Flow
+    OA --> RE
+    KE --> KM
+    KM --> RE
+    RE --> CF
+    CF --> SM
+    SM --> ER
+    
+    %% Output Flow
+    ER --> WS
+    ER --> PR
+    SH --> WS
+    
+    %% Fallback Flow
+    FR --> CH
+    FR --> SH
+    
+    %% Styling
+    classDef investigation fill:#e1f5fe
+    classDef pattern fill:#f3e5f5  
+    classDef knowledge fill:#e8f5e8
+    classDef generation fill:#fff3e0
+    classDef enhancement fill:#fce4ec
+    classDef output fill:#f1f8e9
+    
+    class IR,IC,IM investigation
+    class RP,QE,RR,MA,GH,FR pattern
+    class RO,KB,VS,RT,KE knowledge
+    class CH,SH,MF,OA generation
+    class RE,KM,CF,SM enhancement
+    class ER,WS,PR output

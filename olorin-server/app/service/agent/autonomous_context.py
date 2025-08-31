@@ -76,12 +76,12 @@ class InvestigationObjective:
 class DomainFindings:
     """Findings from a specific investigation domain"""
     domain: str
-    risk_score: float
-    confidence: float
-    key_findings: List[str]
-    suspicious_indicators: List[str]
-    data_quality: str
-    timestamp: datetime
+    risk_score: Optional[float] = None
+    confidence: float = 0.0
+    key_findings: List[str] = field(default_factory=list)
+    suspicious_indicators: List[str] = field(default_factory=list)
+    data_quality: str = "unknown"
+    timestamp: datetime = field(default_factory=datetime.now)
     raw_data: Optional[Dict[str, Any]] = None
     recommended_actions: List[str] = field(default_factory=list)
 
@@ -344,16 +344,33 @@ class AutonomousInvestigationContext:
         total_weight = 0
         weighted_risk = 0
         weighted_confidence = 0
+        domains_with_risk = []
+        domains_without_risk = []
         
         for domain, findings in self.progress.domain_findings.items():
             weight = domain_weights.get(domain, 0.15)
-            weighted_risk += findings.risk_score * weight
-            weighted_confidence += findings.confidence * weight
-            total_weight += weight
+            
+            # Only include domains that have valid risk scores
+            if findings.risk_score is not None:
+                weighted_risk += findings.risk_score * weight
+                weighted_confidence += findings.confidence * weight
+                total_weight += weight
+                domains_with_risk.append(domain)
+            else:
+                domains_without_risk.append(domain)
+                logger.warning(f"Domain {domain} has no risk_score - excluding from overall calculation")
         
         if total_weight > 0:
             self.progress.overall_risk_score = weighted_risk / total_weight
             self.progress.confidence_score = weighted_confidence / total_weight
+        else:
+            # No valid risk scores available
+            logger.error(
+                f"CRITICAL: No valid risk scores available for investigation {self.investigation_id}! "
+                f"All domains failed to provide risk assessment: {', '.join(domains_without_risk)}"
+            )
+            self.progress.overall_risk_score = 0.0  # Keep as 0.0 since it's an overall metric
+            self.progress.confidence_score = 0.0
     
     def get_investigation_summary(self) -> Dict[str, Any]:
         """Get comprehensive investigation summary"""
@@ -423,9 +440,10 @@ Failed: {', '.join(self.progress.failed_domains) or 'None'}
         if self.progress.domain_findings:
             context_parts.append("=== DOMAIN FINDINGS SUMMARY ===")
             for domain, findings in self.progress.domain_findings.items():
+                risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.2f}"
                 context_parts.append(f"""
 {domain.upper()} ANALYSIS:
-  Risk Score: {findings.risk_score:.2f}
+  Risk Score: {risk_display}
   Confidence: {findings.confidence:.2f}
   Key Findings: {'; '.join(findings.key_findings[:3])}
   Suspicious Indicators: {len(findings.suspicious_indicators)} detected

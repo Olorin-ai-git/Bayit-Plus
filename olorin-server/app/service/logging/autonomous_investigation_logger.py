@@ -250,10 +250,10 @@ class AutonomousInvestigationLogger:
         # Console output for key LLM interactions
         if self.enable_console_output:
             tools_used_str = ", ".join(tools_used) if tools_used else "None"
-            self.investigation_logger.info(
-                f"LLM Interaction - Agent: {agent_name}, Model: {model_name}, "
-                f"Tools Used: {tools_used_str}, Tokens: {tokens_used.get('total_tokens', 0)}"
-            )
+            print(f"        🧠 LLM Call: {agent_name} → {model_name}")
+            print(f"           Tools: {tools_used_str} | Tokens: {tokens_used.get('total_tokens', 0)}")
+            if reasoning_chain:
+                print(f"           Reasoning: {reasoning_chain[:100]}{'...' if len(reasoning_chain) > 100 else ''}")
         
         return interaction_id
     
@@ -289,10 +289,10 @@ class AutonomousInvestigationLogger:
         self._log_interaction(investigation_id, InteractionType.AGENT_DECISION, asdict(decision_log))
         
         if self.enable_console_output:
-            self.investigation_logger.info(
-                f"Agent Decision - {agent_name}: {decision_type}, "
-                f"Confidence: {confidence_score:.2f}, Outcome: {decision_outcome.get('action', 'N/A')}"
-            )
+            print(f"        🧠 Decision: {agent_name} → {decision_type}")
+            print(f"           Confidence: {confidence_score:.2f} | Outcome: {decision_outcome.get('action', 'N/A')}")
+            if reasoning:
+                print(f"           Reasoning: {reasoning[:100]}{'...' if len(reasoning) > 100 else ''}")
         
         return interaction_id
     
@@ -328,10 +328,13 @@ class AutonomousInvestigationLogger:
         self._log_interaction(investigation_id, InteractionType.TOOL_EXECUTION, asdict(tool_log))
         
         if self.enable_console_output:
-            status = "SUCCESS" if success else f"FAILED ({error_message})"
-            self.investigation_logger.info(
-                f"Tool Execution - {agent_name}: {tool_name} - {status} ({execution_time_ms}ms)"
-            )
+            status_icon = "✅" if success else "❌"
+            status_text = "SUCCESS" if success else f"FAILED ({error_message})"
+            print(f"        🔧 Tool: {agent_name} → {tool_name} {status_icon}")
+            print(f"           Duration: {execution_time_ms}ms | Status: {status_text}")
+            print(f"           Params: {str(tool_parameters)[:80]}{'...' if len(str(tool_parameters)) > 80 else ''}")
+            if selection_reasoning:
+                print(f"           Selection: {selection_reasoning[:80]}{'...' if len(selection_reasoning) > 80 else ''}")
         
         return interaction_id
     
@@ -368,9 +371,16 @@ class AutonomousInvestigationLogger:
         
         if self.enable_console_output:
             next_nodes_str = ", ".join(next_nodes) if next_nodes else "END"
-            self.investigation_logger.info(
-                f"LangGraph Node - {node_name} ({node_type}): {execution_time_ms}ms -> {next_nodes_str}"
-            )
+            print(f"        📊 Node: {node_name} ({node_type})")
+            print(f"           Duration: {execution_time_ms}ms → {next_nodes_str}")
+            
+            # Show key state changes
+            if state_before and state_after:
+                state_keys_before = set(state_before.keys())
+                state_keys_after = set(state_after.keys())
+                new_keys = state_keys_after - state_keys_before
+                if new_keys:
+                    print(f"           State Changes: +{list(new_keys)}")
         
         return interaction_id
     
@@ -405,10 +415,20 @@ class AutonomousInvestigationLogger:
         
         if self.enable_console_output:
             progress_pct = (len(completed_phases) / max(4, len(completed_phases) + 1)) * 100
-            self.investigation_logger.info(
-                f"Investigation Progress - {progress_type}: {current_phase} "
-                f"({progress_pct:.0f}% complete)"
-            )
+            print(f"        📈 Progress: {progress_type} → {current_phase}")
+            print(f"           Completion: {progress_pct:.0f}% | Phases: {len(completed_phases)} completed")
+            
+            # Show risk score progression if available
+            if risk_score_progression:
+                latest_risk = risk_score_progression[-1] if risk_score_progression else {}
+                risk_score = latest_risk.get('risk_score')
+                risk_display = "MISSING!" if risk_score is None else f"{risk_score:.3f}"
+                print(f"           Current Risk: {risk_display}")
+            
+            # Show active agents
+            active_agents = [agent for agent, status in agent_status.items() if status in ['active', 'running']]
+            if active_agents:
+                print(f"           Active Agents: {', '.join(active_agents)}")
         
         return interaction_id
     
@@ -529,9 +549,13 @@ class AutonomousInvestigationLogger:
         else:
             raise ValueError(f"Unsupported export format: {format}")
 
-# Global logger instance
-autonomous_investigation_logger = AutonomousInvestigationLogger()
+# Global logger instance with console output enabled
+autonomous_investigation_logger = AutonomousInvestigationLogger(enable_console_output=True)
 
 def get_logger() -> AutonomousInvestigationLogger:
     """Get the global autonomous investigation logger instance"""
     return autonomous_investigation_logger
+
+def get_console_logger() -> AutonomousInvestigationLogger:
+    """Get an autonomous investigation logger with console output enabled"""
+    return AutonomousInvestigationLogger(enable_console_output=True)

@@ -30,7 +30,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from app.service.config import get_settings_for_env
 from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
-    InvestigationStatus,
+    InvestigationPhase,
+    EntityType,
 )
 from app.persistence.database import Base, get_db
 from app.persistence.models import (
@@ -192,7 +193,7 @@ def real_investigation_context(db_session):
         user_id=user.user_id,
         entity_id=entity.entity_id,
         session_id=f"session_{datetime.now().timestamp()}",
-        status=InvestigationStatus.IN_PROGRESS,
+        status=InvestigationPhase.ANALYSIS,
         user_data={
             "email": user.email,
             "phone": user.phone,

@@ -48,6 +48,7 @@ def _extract_investigation_info(config: RunnableConfig) -> Tuple[Optional[Any], 
 def _get_or_create_autonomous_context(
     investigation_id: str,
     entity_id: str,
+    entity_type: Optional[EntityType] = None,
     investigation_type: str = "fraud_investigation"
 ) -> AutonomousInvestigationContext:
     """Get existing or create new autonomous investigation context."""
@@ -57,11 +58,25 @@ def _get_or_create_autonomous_context(
         if context_key in _investigation_contexts:
             return _investigation_contexts[context_key]
         
+        # Auto-detect entity type if not provided
+        if entity_type is None:
+            if "device" in entity_id.lower():
+                entity_type = EntityType.DEVICE_ID
+            elif "user" in entity_id.lower():
+                entity_type = EntityType.USER_ID
+            elif "account" in entity_id.lower():
+                entity_type = EntityType.ACCOUNT_ID
+            elif "transaction" in entity_id.lower():
+                entity_type = EntityType.TRANSACTION_ID
+            elif "@" in entity_id:
+                entity_type = EntityType.EMAIL
+            else:
+                entity_type = EntityType.USER_ID  # Default fallback
+        
         context = AutonomousInvestigationContext(
             investigation_id=investigation_id,
             entity_id=entity_id,
-            entity_type=EntityType.USER,
-            phase=InvestigationPhase.ANALYSIS,
+            entity_type=entity_type,
             investigation_type=investigation_type
         )
         
@@ -76,8 +91,7 @@ def _get_or_create_autonomous_context(
         return AutonomousInvestigationContext(
             investigation_id=investigation_id or "unknown",
             entity_id=entity_id or "unknown",
-            entity_type=EntityType.USER,
-            phase=InvestigationPhase.ANALYSIS,
+            entity_type=EntityType.USER_ID,
             investigation_type=investigation_type
         )
 

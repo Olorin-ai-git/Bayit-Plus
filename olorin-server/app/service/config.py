@@ -44,8 +44,8 @@ class SvcSettings(BaseSettings):
 
     # Anthropic API - stored in Firebase Secrets Manager
     anthropic_api_key_secret: str = Field(
-        "olorin/anthropic_api_key",
-        description="Firebase secret path for Anthropic API key",
+        "ANTHROPIC_API_KEY",
+        description="Firebase secret name for Anthropic API key",
         env="ANTHROPIC_API_KEY_SECRET",
     )
     

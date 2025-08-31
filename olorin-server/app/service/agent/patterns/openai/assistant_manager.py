@@ -52,6 +52,75 @@ class AssistantManager:
             logger.error(f"Failed to create OpenAI Assistant: {e}")
             raise
     
+    async def get_or_create_specialized_assistant(self, agent_type: str, agent_config: Dict[str, Any], 
+                                                function_definitions: List[Dict[str, Any]]) -> Assistant:
+        """Create specialized assistant for specific domain agent"""
+        
+        # Create specialized instructions based on agent type
+        specialized_instructions = self._get_specialized_instructions(agent_type, agent_config)
+        
+        try:
+            assistant = await self.client.beta.assistants.create(
+                name=f"Olorin {agent_config['name']}",
+                description=f"Specialized {agent_config['specialization']} agent",
+                instructions=specialized_instructions,
+                model=self.config.model,
+                tools=[{"type": "function", "function": func_def} 
+                       for func_def in function_definitions],
+                temperature=self.config.temperature,
+                metadata={"agent_type": agent_type, "specialization": agent_config["specialization"]}
+            )
+            
+            logger.info(f"Created specialized assistant: {assistant.id} for {agent_type}")
+            return assistant
+            
+        except Exception as e:
+            logger.error(f"Failed to create specialized assistant for {agent_type}: {e}")
+            raise
+    
+    def _get_specialized_instructions(self, agent_type: str, agent_config: Dict[str, Any]) -> str:
+        """Get specialized instructions for domain-specific agents"""
+        
+        base_instructions = f"""
+You are a specialized {agent_config['name']} for Olorin's fraud detection system.
+Your expertise area: {agent_config['specialization']}
+
+Focus on providing detailed analysis in your domain while considering the broader fraud investigation context.
+"""
+        
+        domain_specific = {
+            "network": """
+**Network Analysis Focus**:
+- Analyze IP addresses for reputation, location, and VPN/proxy usage
+- Identify suspicious network patterns and routing anomalies  
+- Assess ISP reputation and hosting provider risks
+- Detect network-level indicators of compromise
+            """,
+            "device": """  
+**Device Analysis Focus**:
+- Analyze device fingerprints for consistency and authenticity
+- Identify device spoofing and emulation indicators
+- Assess browser and OS anomalies
+- Track device reputation and behavioral patterns
+            """,
+            "location": """
+**Location Analysis Focus**: 
+- Validate geographic consistency of user activities
+- Identify impossible travel patterns and location spoofing
+- Assess timezone and locale alignment with claimed location
+- Analyze location reputation and risk factors
+            """,
+            "logs": """
+**Logs Analysis Focus**:
+- Analyze security and application logs for suspicious patterns
+- Identify behavioral anomalies and access violations
+- Detect authentication anomalies and session irregularities  
+- Correlate events across multiple log sources
+            """
+        }
+        
+        return base_instructions + domain_specific.get(agent_type, "")
+    
     async def get_or_create_thread(self, context: Dict[str, Any]) -> Thread:
         """Create or retrieve thread for conversation continuity"""
         

@@ -130,7 +130,43 @@ def get_firebase_secret(secret_name: str) -> Optional[str]:
         
     except Exception as e:
         logger.error(f"Failed to retrieve secret '{secret_name}': {e}")
-        return None
+        # Try Firebase CLI fallback if SDK method fails
+        return _get_secret_via_cli(secret_name)
+
+
+def _get_secret_via_cli(secret_name: str) -> Optional[str]:
+    """
+    Fallback method to get Firebase secrets using Firebase CLI.
+    Used when Firebase Admin SDK is not available.
+    """
+    import subprocess
+    
+    try:
+        # Get project ID from environment or use default
+        project_id = os.getenv('FIREBASE_PROJECT_ID', 'olorin-ai')
+        
+        # Execute firebase functions:secrets:access command
+        cmd = ['firebase', 'functions:secrets:access', secret_name, '--project', project_id]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        
+        if result.returncode == 0:
+            secret_value = result.stdout.strip()
+            if secret_value:
+                # Cache the secret
+                _secrets_cache[secret_name] = secret_value
+                logger.info(f"Successfully retrieved secret '{secret_name}' via Firebase CLI")
+                return secret_value
+        else:
+            logger.warning(f"Firebase CLI failed to retrieve secret '{secret_name}': {result.stderr.strip()}")
+            
+    except subprocess.TimeoutExpired:
+        logger.error(f"Firebase CLI timeout retrieving secret '{secret_name}'")
+    except FileNotFoundError:
+        logger.error("Firebase CLI not found in PATH")
+    except Exception as e:
+        logger.error(f"Firebase CLI error retrieving secret '{secret_name}': {e}")
+        
+    return None
 
 
 def _get_local_override(secret_name: str) -> Optional[str]:
