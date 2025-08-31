@@ -19,6 +19,8 @@ from .oii_tool.oii_tool import OIITool
 
 # Import Olorin-specific tools
 from .splunk_tool import SplunkQueryTool
+from .sumologic_tool.sumologic_tool import SumoLogicQueryTool
+from .snowflake_tool.snowflake_tool import SnowflakeQueryTool
 from .vector_search_tool import VectorSearchTool
 from .web_search_tool import WebScrapeTool, WebSearchTool
 
@@ -116,6 +118,18 @@ class ToolRegistry:
                 logger.info("Splunk tool registered")
             except Exception as e:
                 logger.warning(f"Failed to register Splunk tool: {e}")
+
+            try:
+                self._register_tool(SumoLogicQueryTool(), "olorin")
+                logger.info("SumoLogic tool registered")
+            except Exception as e:
+                logger.warning(f"Failed to register SumoLogic tool: {e}")
+
+            try:
+                self._register_tool(SnowflakeQueryTool(), "olorin")
+                logger.info("Snowflake tool registered")
+            except Exception as e:
+                logger.warning(f"Failed to register Snowflake tool: {e}")
 
             try:
                 self._register_tool(OIITool(), "olorin")
@@ -290,7 +304,7 @@ def get_search_tools() -> List[BaseTool]:
 
 
 def get_olorin_tools() -> List[BaseTool]:
-    """Get Olorin-specific tools (Splunk, OII, Chronos, DI)."""
+    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, Chronos, DI)."""
     return tool_registry.get_tools_by_category("olorin")
 
 

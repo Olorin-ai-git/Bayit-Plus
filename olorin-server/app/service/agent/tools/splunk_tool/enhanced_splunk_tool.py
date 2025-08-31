@@ -6,6 +6,7 @@ Built on the enhanced tool framework for improved reliability and observability.
 """
 
 import logging
+import os
 import re
 from typing import Any, Dict, List, Optional, Set
 from datetime import datetime, timedelta
@@ -211,6 +212,57 @@ class EnhancedSplunkTool(EnhancedToolBase):
         execution_context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute the actual Splunk query"""
+        
+        # Check for demo/test mode
+        if os.getenv("OLORIN_USE_DEMO_DATA", "false").lower() == "true":
+            # Return demo data for testing
+            from app.mock.demo_splunk_data import (
+                network_splunk_data,
+                device_splunk_data,
+                location_splunk_data,
+                logs_splunk_data
+            )
+            
+            # Parse query to determine what type of data to return
+            query_lower = query_input.query.lower()
+            if "device" in query_lower or "fuzzy_device" in query_lower:
+                demo_results = device_splunk_data
+            elif "network" in query_lower or "ip_address" in query_lower or "isp" in query_lower:
+                demo_results = network_splunk_data
+            elif "location" in query_lower or "city" in query_lower or "geo" in query_lower:
+                demo_results = location_splunk_data
+            elif "log" in query_lower or "transaction" in query_lower or "login" in query_lower:
+                demo_results = logs_splunk_data
+            else:
+                # Default to logs data if query type unclear
+                demo_results = logs_splunk_data
+            
+            # Return enhanced results format for demo data
+            return {
+                'results': demo_results,
+                'query_info': {
+                    'original_query': query_input.query,
+                    'execution_time_seconds': 0.1,
+                    'result_count': len(demo_results),
+                    'search_params': {
+                        'count': query_input.max_results,
+                        'timeout': query_input.timeout_seconds,
+                        'search_mode': query_input.search_mode
+                    },
+                    'query_hash': execution_context['query_hash'],
+                    'execution_id': execution_context['execution_id']
+                },
+                'performance': {
+                    'was_cached': False,
+                    'query_optimization_applied': False,
+                    'connection_reused': False,
+                    'slow_query_threshold_exceeded': False
+                },
+                'metadata': {
+                    'demo_mode': True,
+                    'data_source': 'mock_splunk_data'
+                }
+            }
         
         settings = get_settings_for_env()
         

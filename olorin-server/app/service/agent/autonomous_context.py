@@ -84,6 +84,8 @@ class DomainFindings:
     timestamp: datetime = field(default_factory=datetime.now)
     raw_data: Optional[Dict[str, Any]] = None
     recommended_actions: List[str] = field(default_factory=list)
+    # CRITICAL: Store full LLM response for Risk Assessment analysis
+    llm_response_text: Optional[str] = None
 
 
 @dataclass
@@ -205,6 +207,26 @@ class AutonomousInvestigationContext:
                 typical_usage="Investigate suspicious activities, correlate events, detect patterns",
                 reliability_score=0.9,
                 response_time_ms=3000
+            ),
+            "sumologic_query_tool": ToolCapability(
+                name="sumologic_query_tool",
+                description="Query SumoLogic for application logs, API metrics, and performance data",
+                data_sources=["application_logs", "api_metrics", "performance_data", "error_logs"],
+                analysis_types=["application_monitoring", "api_analysis", "performance_tracking", "error_correlation"],
+                output_format="sumologic_json",
+                typical_usage="Analyze application behavior, API call patterns, response times, error rates",
+                reliability_score=0.88,
+                response_time_ms=2800
+            ),
+            "snowflake_query_tool": ToolCapability(
+                name="snowflake_query_tool",
+                description="Query Snowflake data warehouse for transaction history, user profiles, and analytical data",
+                data_sources=["transaction_history", "user_profiles", "customer_data", "business_analytics"],
+                analysis_types=["transaction_analysis", "user_behavior_analytics", "historical_patterns", "data_warehousing"],
+                output_format="sql_results",
+                typical_usage="Analyze historical transaction patterns, user account details, payment methods, customer behavior analytics",
+                reliability_score=0.9,
+                response_time_ms=3200
             ),
             "vector_search_tool": ToolCapability(
                 name="vector_search_tool", 

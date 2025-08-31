@@ -120,8 +120,13 @@ mkdir -p "$SCRIPT_DIR/logs/test_runs"
 # Generate timestamp for this test run
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
+# Set demo data environment variable for testing
+export OLORIN_USE_DEMO_DATA=true
+export PYTHONPATH="$SCRIPT_DIR"
+
 # Run the test
 echo -e "${BLUE}🧪 Starting autonomous investigation tests...${NC}"
+echo -e "${YELLOW}📝 Using demo data for Splunk connections (OLORIN_USE_DEMO_DATA=true)${NC}"
 echo -e "${YELLOW}⏱️  Start time: $(date)${NC}"
 
 if [ "$ALL_SCENARIOS" = true ]; then

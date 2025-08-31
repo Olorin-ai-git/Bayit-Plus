@@ -1,3 +1,4 @@
+import os
 from typing import Any, Dict
 
 from fastapi import HTTPException
@@ -42,6 +43,31 @@ class SplunkQueryTool(BaseTool):
 
     async def _arun(self, query: str) -> Dict[str, Any]:  # type: ignore[override]
         """Async execution of the Splunk query."""
+        
+        # Check for demo/test mode
+        if os.getenv("OLORIN_USE_DEMO_DATA", "false").lower() == "true":
+            # Return demo data for testing
+            from app.mock.demo_splunk_data import (
+                network_splunk_data,
+                device_splunk_data,
+                location_splunk_data,
+                logs_splunk_data
+            )
+            
+            # Parse query to determine what type of data to return
+            query_lower = query.lower()
+            if "device" in query_lower or "fuzzy_device" in query_lower:
+                return {"results": device_splunk_data}
+            elif "network" in query_lower or "ip_address" in query_lower or "isp" in query_lower:
+                return {"results": network_splunk_data}
+            elif "location" in query_lower or "city" in query_lower or "geo" in query_lower:
+                return {"results": location_splunk_data}
+            elif "log" in query_lower or "transaction" in query_lower or "login" in query_lower:
+                return {"results": logs_splunk_data}
+            else:
+                # Default to logs data if query type unclear
+                return {"results": logs_splunk_data}
+        
         settings = get_settings_for_env()
 
         # Use environment variables if available, otherwise fall back to IDPS secrets
