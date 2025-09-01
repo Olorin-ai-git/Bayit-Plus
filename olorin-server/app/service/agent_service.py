@@ -106,7 +106,7 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
             # Fallback: create graph directly when request is None (e.g., from LLM services)
             from app.service.agent.agent import create_and_get_agent_graph
 
-            graph = create_and_get_agent_graph(parallel=use_parallel)
+            graph = await create_and_get_agent_graph(parallel=use_parallel)
 
         logger.info(
             f"Using {'parallel' if use_parallel else 'sequential'} graph for investigation {investigation_id}"

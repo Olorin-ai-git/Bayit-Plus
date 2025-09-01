@@ -159,6 +159,23 @@
         "expertise": ["test-automation", "unit-testing", "integration-testing", "e2e-testing"],
         "path": "testing/test-automation-expert.md",
         "priority": "high"
+      },
+      "python-tests-expert": {
+        "description": "Python test creation, debugging, and optimization specialist for Olorin platform",
+        "category": "testing",
+        "expertise": ["pytest", "python-testing", "coverage-optimization", "test-design", "mutation-testing", "property-based-testing", "autonomous-investigation", "endpoint-testing", "firebase-secrets"],
+        "path": "testing/python-tests-expert.md",
+        "priority": "high",
+        "project_specific": true,
+        "capabilities": [
+          "Comprehensive autonomous investigation testing",
+          "52+ endpoint coverage testing",
+          "Firebase Secrets integration testing",
+          "WebSocket real-time update testing",
+          "Multi-agent orchestration testing",
+          "Automatic test failure fixing",
+          "Detailed step-by-step reporting with citations"
+        ]
       }
     },
     "orchestration": {
@@ -213,7 +230,7 @@
     },
     "testing": {
       "description": "Quality assurance and testing specialists",
-      "agents": ["test-automation-expert"]
+      "agents": ["test-automation-expert", "python-tests-expert"]
     },
     "devops": {
       "description": "Infrastructure and deployment specialists",
@@ -251,7 +268,7 @@
     },
     "enterprise": {
       "description": "Enterprise-grade development team with all specialists",
-      "agents": ["tech-lead-orchestrator", "project-analyst", "react-expert", "nodejs-expert", "database-architect", "prisma-expert", "code-reviewer", "security-specialist", "test-automation-expert", "deployment-specialist", "performance-optimizer", "documentation-specialist", "git-expert"]
+      "agents": ["tech-lead-orchestrator", "project-analyst", "react-expert", "nodejs-expert", "database-architect", "prisma-expert", "code-reviewer", "security-specialist", "test-automation-expert", "python-tests-expert", "deployment-specialist", "performance-optimizer", "documentation-specialist", "git-expert"]
     },
     "debugging": {
       "description": "Specialized debugging and troubleshooting team",
@@ -263,7 +280,7 @@
     },
     "python-stack": {
       "description": "Python development team (Django/FastAPI)",
-      "agents": ["django-expert", "fastapi-expert", "database-architect", "code-reviewer", "security-specialist", "test-automation-expert"]
+      "agents": ["django-expert", "fastapi-expert", "database-architect", "code-reviewer", "security-specialist", "test-automation-expert", "python-tests-expert"]
     },
     "go-stack": {
       "description": "Go development team (Gin/Fiber)",

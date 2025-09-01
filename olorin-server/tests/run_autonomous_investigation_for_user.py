@@ -10,8 +10,10 @@ import requests
 import websockets
 from fpdf import FPDF
 
-BASE_URL = "http://localhost:8000/api"  # Change if your API runs elsewhere
-WS_URL = "ws://localhost:8000/ws"  # WebSocket URL
+# Get port from environment variable or use default
+SERVER_PORT = os.environ.get("SERVER_PORT", "8090")
+BASE_URL = f"http://localhost:{SERVER_PORT}/api"  # Change if your API runs elsewhere
+WS_URL = f"ws://localhost:{SERVER_PORT}/ws"  # WebSocket URL
 
 entity_id = "4621097846089147992"
 entity_type = "user_id"

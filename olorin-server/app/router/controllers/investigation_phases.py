@@ -58,7 +58,7 @@ async def execute_agent_initialization_phase(investigation_id: str, request: Aut
     # Create REAL agent graph (parallel for autonomous mode)
     logger.info(f"🔧 Creating REAL LangGraph agent system for {investigation_id}")
     from app.service.agent.agent import create_and_get_agent_graph
-    agent_graph = create_and_get_agent_graph(parallel=True)
+    agent_graph = await create_and_get_agent_graph(parallel=True)
     
     # Complete initialization phase
     journey_tracker.track_node_execution(
