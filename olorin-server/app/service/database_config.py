@@ -51,28 +51,44 @@ def get_database_password(settings: SvcSettings) -> str:
     return db_password
 
 
-def get_redis_password(settings: SvcSettings) -> Optional[str]:
-    """Get Redis password with Firebase secrets fallback
+def get_redis_api_key(settings: SvcSettings) -> Optional[str]:
+    """Get Redis API key with Firebase secrets fallback
     
     Args:
         settings: Application settings configuration
         
     Returns:
-        Redis password string or None if not configured
+        Redis API key string or None if not configured
     """
     # Try direct environment override first (for local development)
-    redis_password = settings.redis_password
+    redis_api_key = getattr(settings, 'redis_api_key', None)
     
-    if not redis_password:
+    if not redis_api_key:
+        # Try legacy REDIS_PASSWORD environment variable
+        redis_api_key = os.getenv("REDIS_PASSWORD")
+    
+    if not redis_api_key:
         # Retrieve from Firebase Secrets Manager
         try:
-            redis_password = get_app_secret(settings.redis_password_secret)
-            if redis_password:
-                logger.debug("Retrieved Redis password from Firebase Secrets Manager")
+            redis_api_key = get_app_secret(settings.redis_api_key_secret)
+            if redis_api_key:
+                logger.debug("Retrieved Redis API key from Firebase Secrets Manager")
         except Exception as e:
-            logger.warning(f"Failed to retrieve Redis password from Firebase: {e}")
+            logger.warning(f"Failed to retrieve Redis API key from Firebase: {e}")
     
-    return redis_password
+    return redis_api_key
+
+
+def get_redis_password(settings: SvcSettings) -> Optional[str]:
+    """Legacy compatibility function - redirects to get_redis_api_key
+    
+    Args:
+        settings: Application settings configuration
+        
+    Returns:
+        Redis API key string or None if not configured
+    """
+    return get_redis_api_key(settings)
 
 
 def get_jwt_secret_key(settings: SvcSettings) -> str:
@@ -213,18 +229,28 @@ def build_redis_url(settings: SvcSettings,
     Returns:
         Complete Redis URL string
     """
+    # Check for Redis Cloud URL first
+    redis_url_env = os.getenv("REDIS_URL")
+    if redis_url_env:
+        logger.info("Using Redis Cloud URL from REDIS_URL environment variable")
+        return redis_url_env
+    
     # Use provided parameters or fall back to environment variables
-    host = redis_host or os.getenv("REDIS_HOST", "localhost") 
-    port = redis_port or int(os.getenv("REDIS_PORT", "6379"))
+    # Default to Redis Cloud host if not specified
+    host = redis_host or os.getenv("REDIS_HOST", "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com") 
+    port = redis_port or int(os.getenv("REDIS_PORT", "13848"))
     db = redis_db or int(os.getenv("REDIS_DB", "0"))
     
-    # Get password with Firebase secrets integration
-    password = get_redis_password(settings)
+    # Get API key with Firebase secrets integration
+    api_key = get_redis_api_key(settings)
     
-    if password:
-        # URL-encode password to handle special characters
-        encoded_password = quote_plus(password)
-        redis_url = f"redis://:{encoded_password}@{host}:{port}/{db}"
+    # Use Redis Cloud connection parameters from settings
+    user = getattr(settings, 'redis_username', 'default')
+    
+    if api_key:
+        # URL-encode API key to handle special characters
+        encoded_api_key = quote_plus(api_key)
+        redis_url = f"redis://{user}:{encoded_api_key}@{host}:{port}/{db}"
         logger.info(f"Built Redis URL for {host}:{port}/{db} with authentication")
     else:
         redis_url = f"redis://{host}:{port}/{db}"
@@ -264,14 +290,14 @@ def validate_database_config(settings: SvcSettings) -> bool:
     except Exception as e:
         validation_errors.append(f"JWT secret key validation failed: {e}")
     
-    # Test Redis password retrieval (optional)
+    # Test Redis API key retrieval (optional)
     try:
-        redis_password = get_redis_password(settings)
-        # Redis password is optional, so no error if not found
-        if redis_password and len(redis_password) < 8:
-            validation_errors.append("Redis password is too short (< 8 characters)")
+        redis_api_key = get_redis_api_key(settings)
+        # Redis API key is optional, so no error if not found
+        if redis_api_key and len(redis_api_key) < 8:
+            validation_errors.append("Redis API key is too short (< 8 characters)")
     except Exception as e:
-        validation_errors.append(f"Redis password validation failed: {e}")
+        validation_errors.append(f"Redis API key validation failed: {e}")
     
     # Test API key retrieval (optional for development)
     for api_name in ["gaia", "olorin", "databricks"]:

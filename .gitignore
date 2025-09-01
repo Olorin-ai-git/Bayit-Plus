@@ -129,9 +129,15 @@ ipython_config.py
 
 # Credentials and Secrets (NEVER COMMIT)
 ADMIN_CREDENTIALS.txt
-*credentials*
-*secrets*
-*secret*
+*credentials.txt
+*credentials.json
+*credentials.yaml
+*secrets.txt
+*secrets.json
+*secrets.yaml
+*secret.txt
+*secret.json
+*secret.yaml
 *.key
 *.pem
 *.p12
@@ -145,15 +151,25 @@ apikeys.txt
 passwords.txt
 .secrets
 .secrets.*
-secrets/
-credentials/
-keys/
-private/
-**/*secret*
-**/*credential*
-**/*password*
-**/*key*
-**/.secret*
+.credentials
+.credentials.*
+# Only ignore secrets folders at root, not in docs
+/secrets/
+/credentials/
+/keys/
+/private/
+# Only ignore actual secret files, not documentation about secrets
+*.secret
+*.secrets
+secret.json
+secrets.json
+secret.yaml
+secrets.yaml
+secret.yml
+secrets.yml
+# Don't ignore documentation
+!docs/**/*.md
+!docs/**/*.txt
 
 # Firebase Secrets
 firebase-adminsdk-*.json
@@ -323,6 +339,7 @@ Keychain/
 docker-compose.override.yml
 docker-compose.secrets.yml
 .docker/
+.env.docker.secrets
 
 # Terraform State (May Contain Secrets)
 *.tfstate

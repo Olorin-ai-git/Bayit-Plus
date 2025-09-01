@@ -1,0 +1,72 @@
+{
+  "apphosting": [
+    {
+      "source": "./olorin-server",
+      "codebase": "olorin-backend",
+      "backendId": "olorin-backend",
+      "ignore": [
+        ".git/**",
+        ".gitignore",
+        ".pytest_cache/**",
+        ".tox/**",
+        "__pycache__/**",
+        "*.pyc",
+        "*.pyo",
+        "*.pyd",
+        "*.coverage",
+        ".coverage",
+        "htmlcov/**",
+        "coverage/**",
+        ".env",
+        ".env.local",
+        ".env.*.local",
+        "logs/**",
+        "test/**",
+        "tests/**",
+        "docs/**",
+        "*.log",
+        "*.tmp",
+        "node_modules/**",
+        ".DS_Store",
+        "Thumbs.db"
+      ]
+    }
+  ],
+  "hosting": [
+    {
+      "target": "olorin-frontend",
+      "public": "olorin-front/build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "/static/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=31536000"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(js|css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=31536000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
