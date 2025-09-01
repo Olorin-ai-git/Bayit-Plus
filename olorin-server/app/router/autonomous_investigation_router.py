@@ -165,7 +165,7 @@ async def health_check():
             "models.autonomous_investigation_models",
             "handlers.websocket_handler", 
             "handlers.test_scenario_handler",
-            "controllers.investigation_controller_v2",
+            "controllers.investigation_controller",
             "controllers.investigation_status_controller",
             "controllers.investigation_executor_v2",
             "controllers.investigation_phases",

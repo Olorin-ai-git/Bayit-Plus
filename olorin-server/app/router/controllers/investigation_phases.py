@@ -11,7 +11,7 @@ from app.service.logging.autonomous_investigation_logger import autonomous_inves
 from app.service.agent.journey_tracker import journey_tracker, NodeType, NodeStatus
 from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
 from app.router.handlers.websocket_handler import notify_websocket_connections
-from app.router.controllers.investigation_controller_v2 import update_investigation_status
+from app.router.controllers.investigation_controller import update_investigation_status
 
 logger = logging.getLogger(__name__)
 

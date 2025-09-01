@@ -8,7 +8,7 @@ from typing import Dict, Any
 
 from app.service.agent.recursion_guard import get_recursion_guard
 from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
-from app.router.controllers.investigation_controller_v2 import update_investigation_status
+from app.router.controllers.investigation_controller import update_investigation_status
 
 logger = logging.getLogger(__name__)
 

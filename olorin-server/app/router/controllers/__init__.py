@@ -2,15 +2,17 @@
 Controllers package for router modules
 """
 from .investigation_controller import (
-    start_autonomous_investigation,
+    get_active_investigations,
+    start_autonomous_investigation
+)
+from .investigation_status_controller import (
     get_investigation_status,
     get_investigation_logs,
-    get_investigation_journey,
-    get_active_investigations
+    get_investigation_journey
 )
 from .investigation_executor import execute_autonomous_investigation
 from .investigation_executor_core import _execute_agent_investigation_phase
-from .investigation_executor_completion import (
+from .investigation_completion import (
     _execute_results_processing_phase,
     _complete_investigation,
     extract_risk_score_from_result,
