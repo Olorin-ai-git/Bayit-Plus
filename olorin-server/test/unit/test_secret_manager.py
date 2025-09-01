@@ -116,7 +116,7 @@ class TestSecretManagerClient:
     def test_env_var_name_conversion(self, secret_manager):
         """Test conversion of secret names to environment variable names."""
         assert secret_manager._get_env_var_name("database_password") == "DATABASE_PASSWORD"
-        assert secret_manager._get_env_var_name("olorin/database_password") == "DATABASE_PASSWORD"
+        assert secret_manager._get_env_var_name("DATABASE_PASSWORD") == "DATABASE_PASSWORD"
         assert secret_manager._get_env_var_name("jwt-secret-key") == "JWT_SECRET_KEY"
     
     def test_cache_ttl_behavior(self, secret_manager):
@@ -309,7 +309,6 @@ class TestConfigSecrets:
         # Set all attributes to None initially
         config.anthropic_api_key = None
         config.openai_api_key = None
-        config.gaia_api_key = None
         config.olorin_api_key = None
         config.databricks_token = None
         config.database_password = None

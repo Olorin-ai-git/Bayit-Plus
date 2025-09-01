@@ -92,10 +92,10 @@ class SecretManagerTester:
             
             # Test secrets that should exist (or fallback to env vars)
             test_secrets = [
-                ("prd/olorin/anthropic_api_key", "ANTHROPIC_API_KEY"),
-                ("prd/olorin/openai_api_key", "OPENAI_API_KEY"), 
-                ("prd/olorin/database_password", "DB_PASSWORD"),
-                ("prd/olorin/jwt_secret_key", "JWT_SECRET_KEY"),
+                ("ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY"),
+                ("OPENAI_API_KEY", "OPENAI_API_KEY"), 
+                ("DATABASE_PASSWORD", "DB_PASSWORD"),
+                ("JWT_SECRET_KEY", "JWT_SECRET_KEY"),
             ]
             
             results = {}
@@ -240,7 +240,7 @@ class SecretManagerTester:
             initial_stats = client.get_cache_stats() if hasattr(client, 'get_cache_stats') else {}
             
             # Make some requests to populate cache
-            test_secret = "prd/olorin/anthropic_api_key"
+            test_secret = "ANTHROPIC_API_KEY"
             
             # First request (should populate cache)
             start_time = time.time()
@@ -298,7 +298,7 @@ class SecretManagerTester:
             
             # Test non-existent secret with env fallback
             result = client.get_secret_with_fallback(
-                "prd/olorin/non_existent_secret",
+                "NON_EXISTENT_SECRET",
                 test_env_var,
                 "default_value"
             )

@@ -100,11 +100,6 @@ class FrontendSecretLoader {
             secretName: 'google_maps_api_key',
             envVar: 'REACT_APP_GOOGLE_MAPS_API_KEY',
             default: ''
-          },
-          'REACT_APP_GAIA_API_KEY': {
-            secretName: 'gaia_api_key',
-            envVar: 'REACT_APP_GAIA_API_KEY',
-            default: ''
           }
         }
       },

@@ -122,12 +122,6 @@ class FirebaseSecretsValidator:
             description="OpenAI API key for GPT models"
         ),
         SecretSpec(
-            name="GAIA API Key",
-            path="GAIA_API_KEY",
-            env_var="GAIA_API_KEY",
-            description="GAIA service API key for integrations"
-        ),
-        SecretSpec(
             name="Olorin API Key", 
             path="OLORIN_API_KEY",
             env_var="OLORIN_API_KEY",

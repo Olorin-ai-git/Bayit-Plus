@@ -61,10 +61,6 @@ create_secret "OPENAI_API_KEY" \
     "OpenAI API key for GPT models" \
     "Enter your OpenAI API key:"
 
-create_secret "GAIA_API_KEY" \
-    "GAIA service API key for integrations" \
-    "Enter your GAIA API key (or press Enter to skip):"
-
 create_secret "OLORIN_API_KEY" \
     "Internal Olorin API authentication key" \
     "Enter your Olorin API key (or press Enter to generate one):"

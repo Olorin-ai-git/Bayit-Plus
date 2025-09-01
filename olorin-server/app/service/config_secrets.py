@@ -39,10 +39,6 @@ def enhance_config_with_secrets(config_instance):
         config_instance.openai_api_key = secrets["openai_api_key"]
         logger.debug("Loaded OpenAI API key from Secret Manager")
     
-    if not config_instance.gaia_api_key and secrets.get("gaia_api_key"):
-        config_instance.gaia_api_key = secrets["gaia_api_key"]
-        logger.debug("Loaded Gaia API key from Secret Manager")
-    
     if not config_instance.olorin_api_key and secrets.get("olorin_api_key"):
         config_instance.olorin_api_key = secrets["olorin_api_key"]
         logger.debug("Loaded Olorin API key from Secret Manager")

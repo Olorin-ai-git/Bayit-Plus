@@ -17,8 +17,8 @@ Usage:
     python firebase-secrets-manager.py restore <input-file>
 
 Examples:
-    python firebase-secrets-manager.py upload olorin/database_password "super_secure_password"
-    python firebase-secrets-manager.py get olorin/anthropic_api_key
+    python firebase-secrets-manager.py upload DATABASE_PASSWORD "super_secure_password"
+    python firebase-secrets-manager.py get ANTHROPIC_API_KEY
     python firebase-secrets-manager.py validate-all
 """
 
@@ -104,7 +104,7 @@ class FirebaseSecretsManager:
         """Upload a secret to Firebase Secrets Manager
         
         Args:
-            secret_name: Name of the secret (e.g., 'olorin/database_password')
+            secret_name: Name of the secret (e.g., 'DATABASE_PASSWORD')
             secret_value: The secret value to store
             description: Optional description for the secret
             
@@ -116,8 +116,8 @@ class FirebaseSecretsManager:
                 logger.error("Secret Manager client not initialized")
                 return False
             
-            # Convert secret name to valid Secret Manager format
-            secret_id = secret_name.replace('/', '_')
+            # Use secret name directly as it's already in valid format
+            secret_id = secret_name
             parent = f"projects/{self.project_id}"
             
             # Check if secret already exists
@@ -133,7 +133,7 @@ class FirebaseSecretsManager:
                     "labels": {
                         "managed_by": "olorin_secrets_manager",
                         "created": datetime.now().strftime("%Y%m%d"),
-                        "original_path": secret_name.replace('/', '_')
+                        "original_path": secret_name
                     }
                 }
                 if description:
@@ -167,7 +167,7 @@ class FirebaseSecretsManager:
         """Retrieve a secret from Firebase Secrets Manager
         
         Args:
-            secret_name: Name of the secret (e.g., 'olorin/database_password')
+            secret_name: Name of the secret (e.g., 'DATABASE_PASSWORD')
             
         Returns:
             Secret value as string, or None if not found/error
@@ -178,7 +178,7 @@ class FirebaseSecretsManager:
                 return None
             
             # Convert secret name to Secret Manager format
-            secret_id = secret_name.replace('/', '_')
+            secret_id = secret_name
             name = f"projects/{self.project_id}/secrets/{secret_id}/versions/latest"
             
             response = self.client.access_secret_version(request={"name": name})
@@ -208,7 +208,7 @@ class FirebaseSecretsManager:
             for secret in self.client.list_secrets(request={"parent": parent}):
                 secret_info = {
                     "name": secret.name.split('/')[-1],
-                    "original_path": secret.labels.get("original_path", "").replace('_', '/'),
+                    "original_path": secret.labels.get("original_path", ""),
                     "created": secret.create_time.strftime("%Y-%m-%d %H:%M:%S") if secret.create_time else "Unknown",
                     "description": secret.labels.get("description", ""),
                     "managed_by": secret.labels.get("managed_by", ""),
@@ -258,26 +258,25 @@ class FirebaseSecretsManager:
         """
         if required_secrets is None:
             required_secrets = [
-                "olorin/app_secret",
-                "olorin/anthropic_api_key",
-                "olorin/openai_api_key",
-                "olorin/database_password",
-                "olorin/redis_password",
-                "olorin/jwt_secret_key",
-                "olorin/splunk_username",
-                "olorin/splunk_password",
-                "olorin/sumo_logic_access_id",
-                "olorin/sumo_logic_access_key",
-                "olorin/gaia_api_key",
-                "olorin/olorin_api_key",
-                "olorin/databricks_token",
-                "olorin/snowflake_account",
-                "olorin/snowflake_user",
-                "olorin/snowflake_password",
-                "olorin/snowflake_private_key",
-                "olorin/langfuse/public_key",
-                "olorin/langfuse/secret_key",
-                "olorin/test_user_pwd",
+                "APP_SECRET",
+                "ANTHROPIC_API_KEY",
+                "OPENAI_API_KEY",
+                "DATABASE_PASSWORD",
+                "REDIS_PASSWORD",
+                "JWT_SECRET_KEY",
+                "SPLUNK_USERNAME",
+                "SPLUNK_PASSWORD",
+                "SUMO_LOGIC_ACCESS_ID",
+                "SUMO_LOGIC_ACCESS_KEY",
+                "OLORIN_API_KEY",
+                "DATABRICKS_TOKEN",
+                "SNOWFLAKE_ACCOUNT",
+                "SNOWFLAKE_USER",
+                "SNOWFLAKE_PASSWORD",
+                "SNOWFLAKE_PRIVATE_KEY",
+                "LANGFUSE_PUBLIC_KEY",
+                "LANGFUSE_SECRET_KEY",
+                "TEST_USER_PWD",
             ]
         
         valid_secrets = []
@@ -406,7 +405,7 @@ class FirebaseSecretsManager:
                 logger.error("Secret Manager client not initialized")
                 return False
             
-            secret_id = secret_name.replace('/', '_')
+            secret_id = secret_name
             name = f"projects/{self.project_id}/secrets/{secret_id}"
             
             self.client.delete_secret(request={"name": name})
@@ -425,14 +424,14 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s upload olorin/database_password "super_secure_password"
-  %(prog)s get olorin/anthropic_api_key
+  %(prog)s upload DATABASE_PASSWORD "super_secure_password"
+  %(prog)s get ANTHROPIC_API_KEY
   %(prog)s list
-  %(prog)s validate olorin/app_secret
+  %(prog)s validate APP_SECRET
   %(prog)s validate-all
-  %(prog)s rotate olorin/jwt_secret_key
+  %(prog)s rotate JWT_SECRET_KEY
   %(prog)s backup /path/to/backup.json
-  %(prog)s delete olorin/old_secret
+  %(prog)s delete OLD_SECRET
         """
     )
     
@@ -446,7 +445,7 @@ Examples:
     
     # Upload command
     upload_parser = subparsers.add_parser('upload', help='Upload a secret')
-    upload_parser.add_argument('secret_name', help='Secret name (e.g., olorin/database_password)')
+    upload_parser.add_argument('secret_name', help='Secret name (e.g., DATABASE_PASSWORD)')
     upload_parser.add_argument('secret_value', nargs='?', help='Secret value (will prompt if not provided)')
     upload_parser.add_argument('--description', help='Description for the secret')
     

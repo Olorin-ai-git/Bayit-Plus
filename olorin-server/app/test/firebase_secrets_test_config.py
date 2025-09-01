@@ -37,7 +37,6 @@ TEST_SECRETS = {
     "SNOWFLAKE_PRIVATE_KEY": "test_snowflake_private_key_content",
     
     # External APIs
-    "GAIA_API_KEY": "test_gaia_api_key_secure123",
     "OLORIN_API_KEY": "test_olorin_api_key_secure123", 
     "DATABRICKS_TOKEN": "test_databricks_token_secure123",
     

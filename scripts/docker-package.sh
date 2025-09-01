@@ -185,9 +185,9 @@ if [[ "$INCLUDE_CONFIG" == "true" ]]; then
 # Firebase Secrets Manager Configuration Template
 # Set these environment variables for production deployment
 FIREBASE_PROJECT_ID=olorin-ui
-ANTHROPIC_API_KEY_SECRET=olorin/anthropic_api_key
-SPLUNK_USERNAME_SECRET=olorin/splunk_username
-SPLUNK_PASSWORD_SECRET=olorin/splunk_password
+ANTHROPIC_API_KEY_SECRET=ANTHROPIC_API_KEY
+SPLUNK_USERNAME_SECRET=SPLUNK_USERNAME
+SPLUNK_PASSWORD_SECRET=SPLUNK_PASSWORD
 EOF
     
     # Application configurations
@@ -511,7 +511,7 @@ This package contains everything needed to deploy the Olorin fraud detection sys
 # Copy environment template
 # Configure Firebase Secrets Manager
 export FIREBASE_PROJECT_ID="olorin-ui"
-export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key"
+export ANTHROPIC_API_KEY_SECRET="ANTHROPIC_API_KEY"
 
 # Edit configuration (required!)
 nano .env
@@ -717,7 +717,7 @@ echo "To deploy on target machine:"
 echo "  1. Extract: tar -xzf $ARCHIVE_NAME"
 echo "  2. Configure: cd $(basename "$OUTPUT_DIR") && # Configure Firebase Secrets Manager
 export FIREBASE_PROJECT_ID="olorin-ui"
-export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key" && nano .env"
+export ANTHROPIC_API_KEY_SECRET="ANTHROPIC_API_KEY" && nano .env"
 echo "  3. Deploy: ./deploy.sh"
 echo
 print_status "Package creation completed at $(date)"

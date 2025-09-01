@@ -40,46 +40,45 @@ logger = logging.getLogger(__name__)
 # Secret migration mapping configuration
 MIGRATION_MAPPING = {
     # Database secrets
-    "DB_PASSWORD": "olorin/database_password",
-    "POSTGRES_PASSWORD": "olorin/database_password",
-    "REDIS_PASSWORD": "olorin/redis_password",
+    "DB_PASSWORD": "DATABASE_PASSWORD",
+    "POSTGRES_PASSWORD": "DATABASE_PASSWORD",
+    "REDIS_PASSWORD": "REDIS_PASSWORD",
     
     # Application secrets
-    "JWT_SECRET_KEY": "olorin/jwt_secret_key",
-    "GAIA_API_KEY": "olorin/gaia_api_key",
-    "OLORIN_API_KEY": "olorin/olorin_api_key",
-    "DATABRICKS_TOKEN": "olorin/databricks_token",
+    "JWT_SECRET_KEY": "JWT_SECRET_KEY",
+    "OLORIN_API_KEY": "OLORIN_API_KEY",
+    "DATABRICKS_TOKEN": "DATABRICKS_TOKEN",
     
     # AI/ML API keys (verify existing migration)
-    "ANTHROPIC_API_KEY": "olorin/anthropic_api_key",
-    "OPENAI_API_KEY": "olorin/openai_api_key",
+    "ANTHROPIC_API_KEY": "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY": "OPENAI_API_KEY",
     
     # Splunk credentials (verify existing migration)
-    "SPLUNK_USERNAME": "olorin/splunk_username",
-    "SPLUNK_PASSWORD": "olorin/splunk_password",
-    "SPLUNK_TOKEN": "olorin/splunk_token",
+    "SPLUNK_USERNAME": "SPLUNK_USERNAME",
+    "SPLUNK_PASSWORD": "SPLUNK_PASSWORD",
+    "SPLUNK_TOKEN": "SPLUNK_TOKEN",
     
     # SumoLogic credentials (verify existing migration)
-    "SUMO_LOGIC_ACCESS_ID": "olorin/sumo_logic_access_id",
-    "SUMO_LOGIC_ACCESS_KEY": "olorin/sumo_logic_access_key",
+    "SUMO_LOGIC_ACCESS_ID": "SUMO_LOGIC_ACCESS_ID",
+    "SUMO_LOGIC_ACCESS_KEY": "SUMO_LOGIC_ACCESS_KEY",
     
     # Snowflake credentials (verify existing migration)
-    "SNOWFLAKE_ACCOUNT": "olorin/snowflake_account",
-    "SNOWFLAKE_USER": "olorin/snowflake_user",
-    "SNOWFLAKE_PASSWORD": "olorin/snowflake_password",
-    "SNOWFLAKE_PRIVATE_KEY": "olorin/snowflake_private_key",
+    "SNOWFLAKE_ACCOUNT": "SNOWFLAKE_ACCOUNT",
+    "SNOWFLAKE_USER": "SNOWFLAKE_USER",
+    "SNOWFLAKE_PASSWORD": "SNOWFLAKE_PASSWORD",
+    "SNOWFLAKE_PRIVATE_KEY": "SNOWFLAKE_PRIVATE_KEY",
     
     # LangFuse credentials (verify existing migration)
-    "LANGFUSE_PUBLIC_KEY": "olorin/langfuse/public_key",
-    "LANGFUSE_SECRET_KEY": "olorin/langfuse/secret_key",
+    "LANGFUSE_PUBLIC_KEY": "LANGFUSE_PUBLIC_KEY",
+    "LANGFUSE_SECRET_KEY": "LANGFUSE_SECRET_KEY",
     
     # Test secrets
-    "TEST_USER_PASSWORD": "olorin/test_user_pwd",
-    "TEST_USER_PWD": "olorin/test_user_pwd",
+    "TEST_USER_PASSWORD": "TEST_USER_PWD",
+    "TEST_USER_PWD": "TEST_USER_PWD",
     
     # Additional application secrets
-    "APP_SECRET": "olorin/app_secret",
-    "OLORIN_APP_SECRET": "olorin/app_secret",
+    "APP_SECRET": "APP_SECRET",
+    "OLORIN_APP_SECRET": "APP_SECRET",
 }
 
 # Secrets that should NOT be migrated (keep as environment variables)

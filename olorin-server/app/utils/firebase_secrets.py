@@ -78,14 +78,14 @@ def get_firebase_secret(secret_name: str) -> Optional[str]:
     Retrieve a secret from Firebase Secrets Manager.
     
     Args:
-        secret_name: Name or path of the secret (e.g., 'olorin/app_secret')
+        secret_name: Name or path of the secret (e.g., 'APP_SECRET')
         
     Returns:
         Secret value as string, or None if not found/error
         
     Examples:
-        secret = get_firebase_secret('olorin/app_secret')
-        db_password = get_firebase_secret('olorin/database_password')
+        secret = get_firebase_secret('APP_SECRET')
+        db_password = get_firebase_secret('DATABASE_PASSWORD')
     """
     # Check local development override first
     env_override = _get_local_override(secret_name)
@@ -114,7 +114,7 @@ def get_firebase_secret(secret_name: str) -> Optional[str]:
         project_id = os.getenv('FIREBASE_PROJECT_ID', firebase_admin.get_app().project_id)
         
         # Build the resource name
-        name = f"projects/{project_id}/secrets/{secret_name.replace('/', '_')}/versions/latest"
+        name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
         
         # Access the secret version
         response = client.access_secret_version(request={"name": name})
@@ -175,15 +175,13 @@ def _get_local_override(secret_name: str) -> Optional[str]:
     Converts secret paths to environment variable names.
     
     Args:
-        secret_name: Secret path like 'olorin/app_secret'
+        secret_name: Secret path like 'APP_SECRET'
         
     Returns:
         Environment variable value if found, None otherwise
     """
-    # Convert secret path to environment variable name
-    # 'olorin/app_secret' -> 'OLORIN_APP_SECRET'
-    # 'olorin/splunk_password' -> 'OLORIN_SPLUNK_PASSWORD'
-    env_var_name = secret_name.upper().replace('/', '_')
+    # Secret name is already in uppercase format
+    env_var_name = secret_name
     
     value = os.getenv(env_var_name)
     if value:
@@ -206,7 +204,7 @@ def get_app_secret(secret_name: str) -> Optional[str]:
     This maintains backward compatibility while migrating from IDPS.
     
     Args:
-        secret_name: Secret path (e.g., 'olorin/app_secret')
+        secret_name: Secret path (e.g., 'APP_SECRET')
         
     Returns:
         Secret value as string
@@ -218,13 +216,13 @@ def get_app_secret(secret_name: str) -> Optional[str]:
         logger.warning(f"Firebase not available, using fallback for secret: {secret_name}")
         # Return test fallback values for common secrets
         fallback_secrets = {
-            'olorin/app_secret': 'test_app_secret_fallback',
-            'olorin/splunk_username': 'test_splunk_user',
-            'olorin/splunk_password': 'test_splunk_pass',
-            'olorin/sumo_logic_access_id': 'test_sumo_id',
-            'olorin/sumo_logic_access_key': 'test_sumo_key',
+            'APP_SECRET': 'test_app_secret_fallback',
+            'SPLUNK_USERNAME': 'test_splunk_user',
+            'SPLUNK_PASSWORD': 'test_splunk_pass',
+            'SUMO_LOGIC_ACCESS_ID': 'test_sumo_id',
+            'SUMO_LOGIC_ACCESS_KEY': 'test_sumo_key',
         }
-        return fallback_secrets.get(secret_name, f'test_fallback_for_{secret_name.replace("/", "_")}')
+        return fallback_secrets.get(secret_name, f'test_fallback_for_{secret_name}')
     
     return result
 
@@ -232,31 +230,44 @@ def get_app_secret(secret_name: str) -> Optional[str]:
 # Common secret mappings for migration from IDPS
 SECRET_MAPPINGS = {
     # App secrets
-    'olorin/app_secret': 'olorin_app_secret',
+    'APP_SECRET': 'APP_SECRET',
     
     # AI/ML API secrets
-    'olorin/anthropic_api_key': 'olorin_anthropic_api_key',
+    'ANTHROPIC_API_KEY': 'ANTHROPIC_API_KEY',
+    'OPENAI_API_KEY': 'OPENAI_API_KEY',
+    
+    # Database secrets
+    'DATABASE_PASSWORD': 'DATABASE_PASSWORD',
+    'REDIS_PASSWORD': 'REDIS_PASSWORD',
+    
+    # Authentication secrets
+    'JWT_SECRET_KEY': 'JWT_SECRET_KEY',
+    'OLORIN_API_KEY': 'OLORIN_API_KEY',
     
     # Splunk secrets
-    'olorin/splunk_username': 'olorin_splunk_username',
-    'olorin/splunk_password': 'olorin_splunk_password',
+    'SPLUNK_USERNAME': 'SPLUNK_USERNAME',
+    'SPLUNK_PASSWORD': 'SPLUNK_PASSWORD',
+    'SPLUNK_TOKEN': 'SPLUNK_TOKEN',
     
     # SumoLogic secrets
-    'olorin/sumo_logic_access_id': 'olorin_sumo_logic_access_id',
-    'olorin/sumo_logic_access_key': 'olorin_sumo_logic_access_key',
+    'SUMO_LOGIC_ACCESS_ID': 'SUMO_LOGIC_ACCESS_ID',
+    'SUMO_LOGIC_ACCESS_KEY': 'SUMO_LOGIC_ACCESS_KEY',
     
     # Snowflake secrets
-    'olorin/snowflake_account': 'olorin_snowflake_account',
-    'olorin/snowflake_user': 'olorin_snowflake_user',
-    'olorin/snowflake_password': 'olorin_snowflake_password',
-    'olorin/snowflake_private_key': 'olorin_snowflake_private_key',
+    'SNOWFLAKE_ACCOUNT': 'SNOWFLAKE_ACCOUNT',
+    'SNOWFLAKE_USER': 'SNOWFLAKE_USER',
+    'SNOWFLAKE_PASSWORD': 'SNOWFLAKE_PASSWORD',
+    'SNOWFLAKE_PRIVATE_KEY': 'SNOWFLAKE_PRIVATE_KEY',
+    
+    # Databricks secrets
+    'DATABRICKS_TOKEN': 'DATABRICKS_TOKEN',
     
     # LangFuse secrets
-    'olorin/langfuse/public_key': 'olorin_langfuse_public_key',
-    'olorin/langfuse/secret_key': 'olorin_langfuse_secret_key',
+    'LANGFUSE_PUBLIC_KEY': 'LANGFUSE_PUBLIC_KEY',
+    'LANGFUSE_SECRET_KEY': 'LANGFUSE_SECRET_KEY',
     
     # Test secrets
-    'olorin/test_user_pwd': 'olorin_test_user_pwd',
+    'TEST_USER_PWD': 'TEST_USER_PWD',
 }
 
 
@@ -265,12 +276,12 @@ def migrate_secret_name(old_idps_path: str) -> str:
     Migrate old IDPS secret paths to Firebase secret names.
     
     Args:
-        old_idps_path: Old IDPS path like 'olorin/app_secret'
+        old_idps_path: Old IDPS path like 'APP_SECRET'
         
     Returns:
-        Firebase secret name like 'olorin_app_secret'
+        Firebase secret name like 'APP_SECRET'
     """
-    return SECRET_MAPPINGS.get(old_idps_path, old_idps_path.replace('/', '_'))
+    return SECRET_MAPPINGS.get(old_idps_path, old_idps_path)
 
 
 if __name__ == "__main__":

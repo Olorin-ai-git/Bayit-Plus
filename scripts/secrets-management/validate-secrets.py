@@ -13,7 +13,7 @@ This script validates:
 
 Usage:
     python validate-secrets.py --all
-    python validate-secrets.py --secret olorin/database_password
+    python validate-secrets.py --secret DATABASE_PASSWORD
     python validate-secrets.py --config-validation
     python validate-secrets.py --performance-test
     python validate-secrets.py --integration-test
@@ -21,7 +21,7 @@ Usage:
 
 Examples:
     python validate-secrets.py --all --verbose
-    python validate-secrets.py --secret olorin/anthropic_api_key
+    python validate-secrets.py --secret ANTHROPIC_API_KEY
     python validate-secrets.py --performance-test --iterations 100
     python validate-secrets.py --integration-test --env local
 """
@@ -60,40 +60,39 @@ logger = logging.getLogger(__name__)
 # Required secrets for the Olorin AI application
 REQUIRED_SECRETS = [
     # Core application secrets
-    "olorin/app_secret",
+    "APP_SECRET",
     
     # AI/ML API keys
-    "olorin/anthropic_api_key",
-    "olorin/openai_api_key",
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY",
     
     # Database and infrastructure
-    "olorin/database_password",
-    "olorin/redis_password",
-    "olorin/jwt_secret_key",
+    "DATABASE_PASSWORD",
+    "REDIS_PASSWORD",
+    "JWT_SECRET_KEY",
     
     # Log analysis services
-    "olorin/splunk_username",
-    "olorin/splunk_password",
-    "olorin/sumo_logic_access_id",
-    "olorin/sumo_logic_access_key",
+    "SPLUNK_USERNAME",
+    "SPLUNK_PASSWORD",
+    "SUMO_LOGIC_ACCESS_ID",
+    "SUMO_LOGIC_ACCESS_KEY",
     
     # Data sources
-    "olorin/snowflake_account",
-    "olorin/snowflake_user",
-    "olorin/snowflake_password",
-    "olorin/snowflake_private_key",
+    "SNOWFLAKE_ACCOUNT",
+    "SNOWFLAKE_USER",
+    "SNOWFLAKE_PASSWORD",
+    "SNOWFLAKE_PRIVATE_KEY",
     
     # External APIs
-    "olorin/gaia_api_key",
-    "olorin/olorin_api_key",
-    "olorin/databricks_token",
+    "OLORIN_API_KEY",
+    "DATABRICKS_TOKEN",
     
     # Observability and tracing
-    "olorin/langfuse/public_key",
-    "olorin/langfuse/secret_key",
+    "LANGFUSE_PUBLIC_KEY",
+    "LANGFUSE_SECRET_KEY",
     
     # Testing and development
-    "olorin/test_user_pwd",
+    "TEST_USER_PWD",
 ]
 
 # Performance thresholds
@@ -439,7 +438,7 @@ class SecretsValidator:
             return results
         
         # Test environment variable fallbacks
-        test_secrets = ["olorin/app_secret", "olorin/database_password"]
+        test_secrets = ["APP_SECRET", "DATABASE_PASSWORD"]
         
         for secret_name in test_secrets:
             test_result = {
@@ -487,12 +486,12 @@ class SecretsValidator:
             
             # Time secret retrieval after cache clear
             start_time = time.time()
-            test_value = get_firebase_secret("olorin/app_secret")
+            test_value = get_firebase_secret("APP_SECRET")
             first_retrieval_time = time.time() - start_time
             
             # Time cached retrieval
             start_time = time.time()
-            test_value_cached = get_firebase_secret("olorin/app_secret")
+            test_value_cached = get_firebase_secret("APP_SECRET")
             cached_retrieval_time = time.time() - start_time
             
             results["cache_behavior"] = {
@@ -554,11 +553,11 @@ class SecretsValidator:
                     db_test["database_password_available"] = bool(db_password)
                 
                 if hasattr(settings, 'redis_password_secret'):
-                    redis_password = get_app_secret(getattr(settings, 'redis_password_secret', 'olorin/redis_password'))
+                    redis_password = get_app_secret(getattr(settings, 'redis_password_secret', 'REDIS_PASSWORD'))
                     db_test["redis_password_available"] = bool(redis_password)
                 
                 if hasattr(settings, 'jwt_secret_key_secret'):
-                    jwt_secret = get_app_secret(getattr(settings, 'jwt_secret_key_secret', 'olorin/jwt_secret_key'))
+                    jwt_secret = get_app_secret(getattr(settings, 'jwt_secret_key_secret', 'JWT_SECRET_KEY'))
                     db_test["jwt_secret_available"] = bool(jwt_secret)
                     
             except Exception as e:
@@ -704,7 +703,7 @@ def main():
         epilog="""
 Examples:
   %(prog)s --all --verbose
-  %(prog)s --secret olorin/database_password
+  %(prog)s --secret DATABASE_PASSWORD
   %(prog)s --performance-test --iterations 100
   %(prog)s --integration-test --env e2e
   %(prog)s --config-validation

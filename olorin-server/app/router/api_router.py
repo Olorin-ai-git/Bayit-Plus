@@ -663,7 +663,7 @@ async def cancel_splunk_job(job_id: str) -> Dict[str, Any]:
     else:
         # Fallback to IDPS secrets and hardcoded username
         username = "ged_temp_credentials"
-        password = get_app_secret("olorin/splunk_password")
+        password = get_app_secret("SPLUNK_PASSWORD")
     url = f"https://{splunk_host}:443/services/search/v2/jobs/{job_id}/control"
     try:
         async with httpx.AsyncClient(verify=False) as client:

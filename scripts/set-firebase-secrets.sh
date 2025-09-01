@@ -124,7 +124,6 @@ echo "These are shared across all environments"
 
 set_secret "ANTHROPIC_API_KEY" "Claude API key (sk-ant-...)" ""
 set_secret "OPENAI_API_KEY" "OpenAI GPT API key (sk-...)" ""
-set_secret "GAIA_API_KEY" "GAIA service API key" ""
 set_secret "OLORIN_API_KEY" "Internal Olorin API key" ""
 set_secret "DATABRICKS_TOKEN" "Databricks workspace token" ""
 

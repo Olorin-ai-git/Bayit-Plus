@@ -100,7 +100,6 @@ REACT_APP_WEBSOCKET_URL=ws://localhost:8000
 
 # External Services
 REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-REACT_APP_GAIA_API_KEY=your_gaia_api_key
 
 # Firebase Configuration (for Secret Manager)
 FIREBASE_PROJECT_ID=olorin-ai

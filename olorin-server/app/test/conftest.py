@@ -17,29 +17,29 @@ logger = logging.getLogger(__name__)
 def mock_get_firebase_secret(secret_name: str) -> Optional[str]:
     """Mock implementation of get_firebase_secret for app-level tests"""
     # Check if environment override exists first
-    env_var_name = secret_name.upper().replace('/', '_')
+    env_var_name = secret_name
     env_value = os.getenv(env_var_name)
     if env_value:
         return env_value
     
     # Return mock values for known secrets
     mock_secrets = {
-        "olorin/app_secret": "mock-app-secret-value",
-        "olorin/splunk_username": "mock-splunk-user", 
-        "olorin/splunk_password": "mock-splunk-password",
-        "olorin/sumo_logic_access_id": "mock-sumo-access-id",
-        "olorin/sumo_logic_access_key": "mock-sumo-access-key",
-        "olorin/snowflake_account": "mock-snowflake-account",
-        "olorin/snowflake_user": "mock-snowflake-user",
-        "olorin/snowflake_password": "mock-snowflake-password",
-        "olorin/snowflake_private_key": "mock-snowflake-private-key",
-        "olorin/langfuse/public_key": "mock-langfuse-public-key",
-        "olorin/langfuse/secret_key": "mock-langfuse-secret-key",
-        "olorin/test_user_pwd": "mock-test-user-password",
-        "test/secret": "mock-test-secret",
+        "APP_SECRET": "mock-app-secret-value",
+        "SPLUNK_USERNAME": "mock-splunk-user", 
+        "SPLUNK_PASSWORD": "mock-splunk-password",
+        "SUMO_LOGIC_ACCESS_ID": "mock-sumo-access-id",
+        "SUMO_LOGIC_ACCESS_KEY": "mock-sumo-access-key",
+        "SNOWFLAKE_ACCOUNT": "mock-snowflake-account",
+        "SNOWFLAKE_USER": "mock-snowflake-user",
+        "SNOWFLAKE_PASSWORD": "mock-snowflake-password",
+        "SNOWFLAKE_PRIVATE_KEY": "mock-snowflake-private-key",
+        "LANGFUSE_PUBLIC_KEY": "mock-langfuse-public-key",
+        "LANGFUSE_SECRET_KEY": "mock-langfuse-secret-key",
+        "TEST_USER_PWD": "mock-test-user-password",
+        "TEST_SECRET": "mock-test-secret",
     }
     
-    return mock_secrets.get(secret_name, f"mock-{secret_name.replace('/', '-')}")
+    return mock_secrets.get(secret_name, f"mock-{secret_name}")
 
 
 def mock_get_app_secret(secret_name: str) -> Optional[str]:
@@ -108,7 +108,7 @@ def test_firebase_mocking():
         assert secret is not None, "get_firebase_secret should return a mock value"
         
         # Test specific app secret
-        app_secret = get_app_secret("olorin/app_secret")
+        app_secret = get_app_secret("APP_SECRET")
         assert app_secret == "mock-app-secret-value", f"Expected 'mock-app-secret-value', got '{app_secret}'"
         
         logger.info("App-level Firebase mocking verification passed")
@@ -127,12 +127,12 @@ def firebase_test_secrets():
     Fixture that provides test-specific Firebase secret values
     """
     return {
-        "olorin/app_secret": "test-app-secret",
-        "olorin/splunk_username": "test-splunk-user",
-        "olorin/splunk_password": "test-splunk-pass",
-        "olorin/sumo_logic_access_id": "test-sumo-id",
-        "olorin/sumo_logic_access_key": "test-sumo-key",
-        "olorin/test_user_pwd": "test-password",
+        "APP_SECRET": "test-app-secret",
+        "SPLUNK_USERNAME": "test-splunk-user",
+        "SPLUNK_PASSWORD": "test-splunk-pass",
+        "SUMO_LOGIC_ACCESS_ID": "test-sumo-id",
+        "SUMO_LOGIC_ACCESS_KEY": "test-sumo-key",
+        "TEST_USER_PWD": "test-password",
     }
 
 
@@ -145,7 +145,7 @@ def override_firebase_secret():
     
     def set_secret(secret_name: str, secret_value: str):
         """Override a Firebase secret for this test"""
-        env_var_name = secret_name.upper().replace('/', '_')
+        env_var_name = secret_name
         
         # Store original value
         original_env[env_var_name] = os.environ.get(env_var_name)

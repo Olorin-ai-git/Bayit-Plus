@@ -153,11 +153,6 @@ EOF
         echo "ANTHROPIC_API_KEY=$anthropic_key" >> "$OUTPUT_FILE"
     fi
     
-    local gaia_key=$(get_secret "gaia_api_key" "GAIA_API_KEY" "")
-    if [ -n "$gaia_key" ]; then
-        echo "GAIA_API_KEY=$gaia_key" >> "$OUTPUT_FILE"
-    fi
-    
     local olorin_key=$(get_secret "olorin_api_key" "OLORIN_API_KEY" "")
     if [ -n "$olorin_key" ]; then
         echo "OLORIN_API_KEY=$olorin_key" >> "$OUTPUT_FILE"

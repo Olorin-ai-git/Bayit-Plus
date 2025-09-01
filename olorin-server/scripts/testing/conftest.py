@@ -19,19 +19,19 @@ class MockFirebaseSecretClient:
     def __init__(self, *args, **kwargs):
         self.secrets = {
             # Default mock secrets for testing
-            "olorin/app_secret": "mock-app-secret-value",
-            "olorin/splunk_username": "mock-splunk-user",
-            "olorin/splunk_password": "mock-splunk-password",
-            "olorin/sumo_logic_access_id": "mock-sumo-access-id",
-            "olorin/sumo_logic_access_key": "mock-sumo-access-key",
-            "olorin/snowflake_account": "mock-snowflake-account",
-            "olorin/snowflake_user": "mock-snowflake-user",
-            "olorin/snowflake_password": "mock-snowflake-password",
-            "olorin/snowflake_private_key": "mock-snowflake-private-key",
-            "olorin/langfuse/public_key": "mock-langfuse-public-key",
-            "olorin/langfuse/secret_key": "mock-langfuse-secret-key",
-            "olorin/test_user_pwd": "mock-test-user-password",
-            "test/secret": "mock-test-secret",  # For basic testing
+            "APP_SECRET": "mock-app-secret-value",
+            "SPLUNK_USERNAME": "mock-splunk-user",
+            "SPLUNK_PASSWORD": "mock-splunk-password",
+            "SUMO_LOGIC_ACCESS_ID": "mock-sumo-access-id",
+            "SUMO_LOGIC_ACCESS_KEY": "mock-sumo-access-key",
+            "SNOWFLAKE_ACCOUNT": "mock-snowflake-account",
+            "SNOWFLAKE_USER": "mock-snowflake-user",
+            "SNOWFLAKE_PASSWORD": "mock-snowflake-password",
+            "SNOWFLAKE_PRIVATE_KEY": "mock-snowflake-private-key",
+            "LANGFUSE_PUBLIC_KEY": "mock-langfuse-public-key",
+            "LANGFUSE_SECRET_KEY": "mock-langfuse-secret-key",
+            "TEST_USER_PWD": "mock-test-user-password",
+            "TEST_SECRET": "mock-test-secret",  # For basic testing
         }
     
     def access_secret_version(self, request):
@@ -42,7 +42,7 @@ class MockFirebaseSecretClient:
         # projects/{project}/secrets/{secret}/versions/latest
         parts = name.split("/")
         if len(parts) >= 4:
-            secret_name = parts[3].replace("_", "/")
+            secret_name = parts[3]
             
             if secret_name in self.secrets:
                 # Create mock response
@@ -68,29 +68,29 @@ class MockFirebaseApp:
 def mock_get_firebase_secret(secret_name: str) -> Optional[str]:
     """Mock implementation of get_firebase_secret for testing"""
     # Check if environment override exists first
-    env_var_name = secret_name.upper().replace('/', '_')
+    env_var_name = secret_name
     env_value = os.getenv(env_var_name)
     if env_value:
         return env_value
     
     # Return mock values for known secrets
     mock_secrets = {
-        "olorin/app_secret": "mock-app-secret-value",
-        "olorin/splunk_username": "mock-splunk-user", 
-        "olorin/splunk_password": "mock-splunk-password",
-        "olorin/sumo_logic_access_id": "mock-sumo-access-id",
-        "olorin/sumo_logic_access_key": "mock-sumo-access-key",
-        "olorin/snowflake_account": "mock-snowflake-account",
-        "olorin/snowflake_user": "mock-snowflake-user",
-        "olorin/snowflake_password": "mock-snowflake-password",
-        "olorin/snowflake_private_key": "mock-snowflake-private-key",
-        "olorin/langfuse/public_key": "mock-langfuse-public-key",
-        "olorin/langfuse/secret_key": "mock-langfuse-secret-key",
-        "olorin/test_user_pwd": "mock-test-user-password",
-        "test/secret": "mock-test-secret",
+        "APP_SECRET": "mock-app-secret-value",
+        "SPLUNK_USERNAME": "mock-splunk-user", 
+        "SPLUNK_PASSWORD": "mock-splunk-password",
+        "SUMO_LOGIC_ACCESS_ID": "mock-sumo-access-id",
+        "SUMO_LOGIC_ACCESS_KEY": "mock-sumo-access-key",
+        "SNOWFLAKE_ACCOUNT": "mock-snowflake-account",
+        "SNOWFLAKE_USER": "mock-snowflake-user",
+        "SNOWFLAKE_PASSWORD": "mock-snowflake-password",
+        "SNOWFLAKE_PRIVATE_KEY": "mock-snowflake-private-key",
+        "LANGFUSE_PUBLIC_KEY": "mock-langfuse-public-key",
+        "LANGFUSE_SECRET_KEY": "mock-langfuse-secret-key",
+        "TEST_USER_PWD": "mock-test-user-password",
+        "TEST_SECRET": "mock-test-secret",
     }
     
-    return mock_secrets.get(secret_name, f"mock-{secret_name.replace('/', '-')}")
+    return mock_secrets.get(secret_name, f"mock-{secret_name}")
 
 
 def mock_get_app_secret(secret_name: str) -> Optional[str]:
@@ -173,12 +173,12 @@ def test_firebase_mocking():
         from app.utils.firebase_secrets import get_app_secret, get_firebase_secret
         
         # Test that get_firebase_secret returns our mocked value
-        secret = get_firebase_secret("test/secret")
+        secret = get_firebase_secret("TEST_SECRET")
         assert secret is not None, "get_firebase_secret should return a mock value"
         assert secret == "mock-test-secret", f"Expected 'mock-test-secret', got '{secret}'"
         
         # Test legacy get_app_secret function
-        app_secret = get_app_secret("olorin/app_secret")
+        app_secret = get_app_secret("APP_SECRET")
         assert app_secret is not None, "get_app_secret should return a mock value"
         assert app_secret == "mock-app-secret-value", f"Expected 'mock-app-secret-value', got '{app_secret}'"
         

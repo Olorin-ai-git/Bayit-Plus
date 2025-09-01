@@ -134,16 +134,12 @@ def get_api_key(settings: SvcSettings, api_name: str) -> Optional[str]:
     
     Args:
         settings: Application settings configuration
-        api_name: Name of the API key to retrieve (gaia, olorin, databricks)
+        api_name: Name of the API key to retrieve (olorin, databricks)
         
     Returns:
         API key string or None if not found
     """
     api_config = {
-        "gaia": {
-            "direct_attr": "gaia_api_key",
-            "secret_attr": "gaia_api_key_secret"
-        },
         "olorin": {
             "direct_attr": "olorin_api_key", 
             "secret_attr": "olorin_api_key_secret"
@@ -300,7 +296,7 @@ def validate_database_config(settings: SvcSettings) -> bool:
         validation_errors.append(f"Redis API key validation failed: {e}")
     
     # Test API key retrieval (optional for development)
-    for api_name in ["gaia", "olorin", "databricks"]:
+    for api_name in ["olorin", "databricks"]:
         try:
             api_key = get_api_key(settings, api_name)
             # API keys are optional, so no error if not found
