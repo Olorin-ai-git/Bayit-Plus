@@ -38,15 +38,15 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   let apiBaseUrl = 'http://localhost:8000'; // Default for development
 
   if (isProduction && isFirebaseApp) {
-    // Production Firebase deployment
+    // Production Firebase deployment - uses Cloud Run backend
     apiBaseUrl =
       process.env.REACT_APP_API_BASE_URL ||
-      'https://olorin-server.herokuapp.com';
+      'https://olorin-backend-682679371769.us-central1.run.app';
   } else if (isProduction) {
     // Production but not Firebase (e.g., other hosting)
     apiBaseUrl =
       process.env.REACT_APP_API_BASE_URL ||
-      'https://olorin-server.herokuapp.com';
+      'https://olorin-backend-682679371769.us-central1.run.app';
   } else {
     // Development
     apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
