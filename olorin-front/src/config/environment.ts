@@ -41,12 +41,12 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
     // Production Firebase deployment - uses Cloud Run backend
     apiBaseUrl =
       process.env.REACT_APP_API_BASE_URL ||
-      'https://olorin-backend-6hbc33shba-uc.a.run.app';
+      'https://api.olorin.ai';
   } else if (isProduction) {
     // Production but not Firebase (e.g., other hosting)
     apiBaseUrl =
       process.env.REACT_APP_API_BASE_URL ||
-      'https://olorin-backend-6hbc33shba-uc.a.run.app';
+      'https://api.olorin.ai';
   } else {
     // Development
     apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
