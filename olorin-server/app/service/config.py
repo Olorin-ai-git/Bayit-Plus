@@ -42,19 +42,14 @@ class SvcSettings(BaseSettings):
     verification_task_policy_risk_analysis_threshold: float = Field(default=0.9)
     verification_task_policy_risk_analysis_max_retries: int = Field(default=2)
 
-    # Anthropic API - stored in Firebase Secrets Manager
+    # Anthropic API - stored in Firebase Secrets Manager ONLY
     anthropic_api_key_secret: str = Field(
         "ANTHROPIC_API_KEY",
-        description="Firebase secret name for Anthropic API key",
+        description="Firebase secret name for Anthropic API key (REQUIRED - no environment fallback)",
         env="ANTHROPIC_API_KEY_SECRET",
     )
     
-    # Allow overriding Anthropic API key directly via environment for local/dev
-    anthropic_api_key: Optional[str] = Field(
-        default=None,
-        description="Override Anthropic API key via env var ANTHROPIC_API_KEY",
-        env="ANTHROPIC_API_KEY",
-    )
+    # REMOVED: Environment variable override - API key must come from Firebase Secrets Manager only
     
     # OpenAI API for dual-framework agent support - stored in Firebase Secrets Manager
     openai_api_key_secret: str = Field(

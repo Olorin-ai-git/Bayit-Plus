@@ -87,10 +87,11 @@ def get_firebase_secret(secret_name: str) -> Optional[str]:
         secret = get_firebase_secret('APP_SECRET')
         db_password = get_firebase_secret('DATABASE_PASSWORD')
     """
-    # Check local development override first
-    env_override = _get_local_override(secret_name)
-    if env_override:
-        return env_override
+    # DISABLED: Local overrides are not allowed - must use Firebase/Google Cloud secrets only
+    # Per requirement: ANTHROPIC_API_KEY must come from Firebase ONLY
+    # env_override = _get_local_override(secret_name)
+    # if env_override:
+    #     return env_override
         
     # Check cache
     global _secrets_cache

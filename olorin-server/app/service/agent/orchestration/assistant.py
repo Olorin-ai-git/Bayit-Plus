@@ -90,12 +90,18 @@ def _get_llm_with_tools():
     from langchain_anthropic import ChatAnthropic
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.utils.class_utils import create_instance
+    from app.utils.firebase_secrets import get_firebase_secret
     
     settings = get_settings_for_env()
     
+    # Get API key from Firebase Secrets Manager ONLY
+    api_key = get_firebase_secret(settings.anthropic_api_key_secret)
+    if not api_key:
+        raise RuntimeError(f"Anthropic API key must be configured in Firebase Secrets Manager as '{settings.anthropic_api_key_secret}'")
+    
     # Create LLM with Claude Opus 4.1
     llm = ChatAnthropic(
-        api_key=settings.anthropic_api_key,
+        api_key=api_key,
         model="claude-opus-4-1-20250805",  # Claude Opus 4.1
         temperature=0.7,
         max_tokens=4000,

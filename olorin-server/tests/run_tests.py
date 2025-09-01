@@ -47,10 +47,12 @@ class TestRunner:
         self.results = {}
         self.coverage = None
         
-        # Validate API key
-        if not self.settings.anthropic_api_key:
-            logger.error("Anthropic API key not configured!")
-            logger.error("Please set ANTHROPIC_API_KEY environment variable")
+        # Validate API key from Firebase
+        from app.utils.firebase_secrets import get_firebase_secret
+        api_key = get_firebase_secret(self.settings.anthropic_api_key_secret)
+        if not api_key:
+            logger.error(f"Anthropic API key not configured in Firebase Secrets Manager!")
+            logger.error(f"Please configure the secret '{self.settings.anthropic_api_key_secret}' in Firebase")
             sys.exit(1)
     
     def setup_coverage(self):
@@ -138,7 +140,7 @@ class TestRunner:
             "timestamp": datetime.now().isoformat(),
             "duration_seconds": round(duration, 2),
             "test_type": self._get_test_type(),
-            "api_key_configured": bool(self.settings.anthropic_api_key),
+            "api_key_configured": bool(get_firebase_secret(self.settings.anthropic_api_key_secret)),
             "coverage_enabled": self.args.coverage,
         }
         

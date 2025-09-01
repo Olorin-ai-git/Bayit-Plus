@@ -75,13 +75,16 @@ def event_loop():
 def real_anthropic_client():
     """
     Real Anthropic API client fixture.
-    Uses actual API key and makes real calls to Claude Opus 4.1.
+    Uses actual API key from Firebase and makes real calls to Claude Opus 4.1.
     """
-    if not settings.anthropic_api_key:
-        pytest.skip("Anthropic API key not configured")
+    from app.utils.firebase_secrets import get_firebase_secret
+    
+    api_key = get_firebase_secret(settings.anthropic_api_key_secret)
+    if not api_key:
+        pytest.skip("Anthropic API key not configured in Firebase Secrets Manager")
     
     client = ChatAnthropic(
-        api_key=settings.anthropic_api_key,
+        api_key=api_key,
         model="claude-opus-4-1-20250805",
         temperature=0.1,
         max_tokens=8000,

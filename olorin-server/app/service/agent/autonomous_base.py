@@ -26,30 +26,25 @@ logger = logging.getLogger(__name__)
 _autonomous_llm = None
 
 def get_autonomous_llm():
-    """Get or create the autonomous LLM with proper Firebase secrets integration."""
+    """Get or create the autonomous LLM with Firebase secrets integration ONLY."""
     global _autonomous_llm
     
     if _autonomous_llm is None:
-        # Get Firebase secrets integration
+        # Get Firebase secrets integration - REQUIRED, no fallback
         try:
             from app.utils.firebase_secrets import get_firebase_secret
         except ImportError:
-            logger.warning("Firebase secrets not available, using environment variables only")
-            get_firebase_secret = lambda x: None
+            logger.error("Firebase secrets module not available - cannot initialize LLM")
+            raise RuntimeError("Firebase secrets integration is required for Anthropic API key")
         
         settings = get_settings_for_env()
         
-        # Priority: Firebase secrets first (as requested by user), then environment variables as fallback
-        api_key = (
-            get_firebase_secret(settings.anthropic_api_key_secret) or
-            settings.anthropic_api_key or
-            os.getenv("ANTHROPIC_API_KEY")
-        )
+        # ONLY use Firebase secrets - NO environment variable fallback
+        api_key = get_firebase_secret(settings.anthropic_api_key_secret)
         
         if not api_key:
-            logger.error("Anthropic API key not found in Firebase secrets, environment variables, or settings")
-            # Create a fallback LLM that will fail gracefully
-            api_key = "dummy-key"
+            logger.error(f"Anthropic API key not found in Firebase secrets (secret name: {settings.anthropic_api_key_secret})")
+            raise RuntimeError(f"Anthropic API key must be configured in Firebase Secrets Manager as '{settings.anthropic_api_key_secret}'")
         
         _autonomous_llm = ChatAnthropic(
             api_key=api_key,
@@ -59,7 +54,7 @@ def get_autonomous_llm():
             timeout=90,  # Longer timeout for complex reasoning with Anthropic
         )
         
-        logger.info(f"Initialized autonomous LLM with API key from {'Firebase secrets' if get_firebase_secret(settings.anthropic_api_key_secret) else 'environment/settings'}")
+        logger.info(f"Initialized autonomous LLM with API key from Firebase secrets (secret: {settings.anthropic_api_key_secret})")
     
     return _autonomous_llm
 

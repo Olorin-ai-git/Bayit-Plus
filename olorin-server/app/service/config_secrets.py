@@ -31,9 +31,8 @@ def enhance_config_with_secrets(config_instance):
     secrets = loader.load_all_secrets()
     
     # API Keys
-    if not config_instance.anthropic_api_key and secrets.get("anthropic_api_key"):
-        config_instance.anthropic_api_key = secrets["anthropic_api_key"]
-        logger.debug("Loaded Anthropic API key from Secret Manager")
+    # Note: Anthropic API key is now loaded directly from Firebase in autonomous_base.py
+    # No need to set it on config_instance as it's retrieved on-demand
     
     if not config_instance.openai_api_key and secrets.get("openai_api_key"):
         config_instance.openai_api_key = secrets["openai_api_key"]
@@ -135,8 +134,8 @@ def validate_required_secrets(config_instance) -> bool:
     # Define critical secrets for production/staging
     if env in ["production", "prd", "staging", "stg", "e2e", "prf"]:
         # Critical secrets that must exist
+        # Note: Anthropic API Key is validated separately in autonomous_base.py
         required_secrets = [
-            ("anthropic_api_key", "Anthropic API Key"),
             ("jwt_secret_key", "JWT Secret Key"),
             ("database_password", "Database Password"),
         ]

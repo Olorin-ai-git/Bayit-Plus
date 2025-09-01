@@ -46,12 +46,10 @@ class OpusVerifier:
         
         settings = get_settings_for_env()
         
-        # Try Firebase secrets first, then environment variable, then instance variable
+        # ONLY use Firebase secrets - no environment variable fallback
         api_key = (
             self._api_key or 
-            settings.anthropic_api_key or
-            get_firebase_secret(settings.anthropic_api_key_secret) or
-            os.getenv("ANTHROPIC_API_KEY")
+            get_firebase_secret(settings.anthropic_api_key_secret)
         )
         if not api_key:
             # Fallback scaffold behavior
