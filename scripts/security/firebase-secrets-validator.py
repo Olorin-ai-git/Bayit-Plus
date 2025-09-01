@@ -233,20 +233,6 @@ class FirebaseSecretsValidator:
             description="AbuseIPDB API key for IP reputation checks",
             required_for_production=False
         ),
-        SecretSpec(
-            name="VirusTotal API Key",
-            path="VIRUSTOTAL_API_KEY",
-            env_var="VIRUSTOTAL_API_KEY", 
-            description="VirusTotal API key for malware detection",
-            required_for_production=False
-        ),
-        SecretSpec(
-            name="Have I Been Pwned API Key",
-            path="HIBP_API_KEY",
-            env_var="HIBP_API_KEY",
-            description="Have I Been Pwned API key for breach detection", 
-            required_for_production=False
-        ),
     ]
     
     def __init__(self, project_id: str = "olorin-ai"):

@@ -13,40 +13,40 @@ logger = logging.getLogger(__name__)
 # Test secret values for mocking
 TEST_SECRETS = {
     # Core application secrets
-    "olorin/app_secret": "test_app_secret_value_for_testing",
+    "APP_SECRET": "test_app_secret_value_for_testing",
     
     # AI/ML API keys
-    "olorin/anthropic_api_key": "test_anthropic_api_key_sk_ant_test123",
-    "olorin/openai_api_key": "test_openai_api_key_sk_test123",
+    "ANTHROPIC_API_KEY": "test_anthropic_api_key_sk_ant_test123",
+    "OPENAI_API_KEY": "test_openai_api_key_sk_test123",
     
     # Database and infrastructure
-    "olorin/database_password": "test_database_password_secure123",
-    "olorin/redis_password": "test_redis_password_secure123", 
-    "olorin/jwt_secret_key": "test_jwt_secret_key_minimum_32_characters_long_secure",
+    "DATABASE_PASSWORD": "test_database_password_secure123",
+    "REDIS_API_KEY": "test_redis_api_key_secure123", 
+    "JWT_SECRET_KEY": "test_jwt_secret_key_minimum_32_characters_long_secure",
     
     # Log analysis services
-    "olorin/splunk_username": "test_splunk_user",
-    "olorin/splunk_password": "test_splunk_password_secure123",
-    "olorin/sumo_logic_access_id": "test_sumo_access_id",
-    "olorin/sumo_logic_access_key": "test_sumo_access_key_secure123",
+    "SPLUNK_USERNAME": "test_splunk_user",
+    "SPLUNK_PASSWORD": "test_splunk_password_secure123",
+    "SUMO_LOGIC_ACCESS_ID": "test_sumo_access_id",
+    "SUMO_LOGIC_ACCESS_KEY": "test_sumo_access_key_secure123",
     
     # Data sources
-    "olorin/snowflake_account": "test_snowflake_account",
-    "olorin/snowflake_user": "test_snowflake_user",
-    "olorin/snowflake_password": "test_snowflake_password_secure123",
-    "olorin/snowflake_private_key": "test_snowflake_private_key_content",
+    "SNOWFLAKE_ACCOUNT": "test_snowflake_account",
+    "SNOWFLAKE_USER": "test_snowflake_user",
+    "SNOWFLAKE_PASSWORD": "test_snowflake_password_secure123",
+    "SNOWFLAKE_PRIVATE_KEY": "test_snowflake_private_key_content",
     
     # External APIs
-    "olorin/gaia_api_key": "test_gaia_api_key_secure123",
-    "olorin/olorin_api_key": "test_olorin_api_key_secure123", 
-    "olorin/databricks_token": "test_databricks_token_secure123",
+    "GAIA_API_KEY": "test_gaia_api_key_secure123",
+    "OLORIN_API_KEY": "test_olorin_api_key_secure123", 
+    "DATABRICKS_TOKEN": "test_databricks_token_secure123",
     
     # Observability and tracing
-    "olorin/langfuse/public_key": "test_langfuse_public_key",
-    "olorin/langfuse/secret_key": "test_langfuse_secret_key_secure123",
+    "LANGFUSE_PUBLIC_KEY": "test_langfuse_public_key",
+    "LANGFUSE_SECRET_KEY": "test_langfuse_secret_key_secure123",
     
     # Testing and development
-    "olorin/test_user_pwd": "test_user_password_secure123",
+    "TEST_USER_PWD": "test_user_password_secure123",
 }
 
 # Environment variable overrides for testing

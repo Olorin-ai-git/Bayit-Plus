@@ -100,7 +100,6 @@ async def check_ip_reputation(
         # Services to integrate:
         # - IPQualityScore
         # - AbuseIPDB
-        # - VirusTotal
         # - Shodan
         # - MaxMind GeoIP2
         

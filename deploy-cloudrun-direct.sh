@@ -186,6 +186,7 @@ REQUIRED_APIS=(
     "run.googleapis.com"
     "cloudbuild.googleapis.com"
     "secretmanager.googleapis.com"
+    "artifactregistry.googleapis.com"
 )
 
 for api in "${REQUIRED_APIS[@]}"; do
@@ -202,6 +203,32 @@ for api in "${REQUIRED_APIS[@]}"; do
 done
 
 print_success "✓ All required APIs enabled"
+
+# Check or create service account
+print_status "Checking service account..."
+SERVICE_ACCOUNT="olorin-backend@${PROJECT_ID}.iam.gserviceaccount.com"
+if gcloud iam service-accounts describe "$SERVICE_ACCOUNT" --project="$PROJECT_ID" &>/dev/null; then
+    print_success "✓ Service account exists: $SERVICE_ACCOUNT"
+else
+    print_warning "Service account not found. Creating..."
+    if gcloud iam service-accounts create olorin-backend \
+        --description="Service account for Olorin Backend Cloud Run service" \
+        --display-name="Olorin Backend Service" \
+        --project="$PROJECT_ID"; then
+        print_success "✓ Service account created: $SERVICE_ACCOUNT"
+        
+        # Grant necessary permissions
+        print_status "Granting Secret Manager access to service account..."
+        gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+            --member="serviceAccount:$SERVICE_ACCOUNT" \
+            --role="roles/secretmanager.secretAccessor" \
+            --quiet
+        print_success "✓ Secret Manager access granted"
+    else
+        print_warning "Could not create service account. Will use default compute service account."
+        SERVICE_ACCOUNT=""
+    fi
+fi
 
 # Validate Python application structure
 print_status "Validating Python application structure..."
@@ -225,16 +252,83 @@ else
     print_warning "MCP integration not found in dependencies"
 fi
 
+# Validate Firebase Secrets
+print_header "VALIDATING FIREBASE SECRETS"
+
+print_status "Checking required secrets in Firebase Secret Manager..."
+
+# List of required secrets
+REQUIRED_SECRETS=(
+    "ANTHROPIC_API_KEY"
+    "OPENAI_API_KEY"
+    "DATABASE_PASSWORD"
+    "REDIS_PASSWORD"
+    "REDIS_API_KEY"
+    "JWT_SECRET_KEY"
+    "SPLUNK_USERNAME"
+    "SPLUNK_PASSWORD"
+    "OLORIN_API_KEY"
+    "ABUSEIPDB_API_KEY"
+)
+
+# Check each secret exists
+MISSING_SECRETS=()
+for secret in "${REQUIRED_SECRETS[@]}"; do
+    if gcloud secrets describe "$secret" --project="$PROJECT_ID" &>/dev/null; then
+        if [[ $VERBOSE == true ]]; then
+            print_success "✓ Secret exists: $secret"
+        fi
+    else
+        print_error "✗ Missing secret: $secret"
+        MISSING_SECRETS+=("$secret")
+    fi
+done
+
+if [[ ${#MISSING_SECRETS[@]} -gt 0 ]]; then
+    print_error "Missing ${#MISSING_SECRETS[@]} required secrets:"
+    for secret in "${MISSING_SECRETS[@]}"; do
+        echo "  - $secret"
+    done
+    if [[ $FORCE_DEPLOY == false ]]; then
+        print_error "Deployment cancelled. Create missing secrets and try again."
+        print_status "To create a secret: gcloud secrets create SECRET_NAME --data-file=- --project=$PROJECT_ID"
+        exit 1
+    else
+        print_warning "Force deploy enabled - continuing despite missing secrets"
+        print_warning "The deployment may fail at runtime due to missing secrets"
+    fi
+else
+    print_success "✓ All required secrets are configured"
+fi
+
 # Environment variables setup
 print_header "ENVIRONMENT CONFIGURATION"
 
-# Create environment variables file for deployment
+# Create environment variables file for deployment in YAML format
 ENV_VARS_FILE=$(mktemp)
 cat > "$ENV_VARS_FILE" << EOF
-APP_ENV=prd
-FIREBASE_PROJECT_ID=$PROJECT_ID
-LOG_LEVEL=INFO
-PYTHONPATH=/app
+APP_ENV: "prd"
+FIREBASE_PROJECT_ID: "$PROJECT_ID"
+LOG_LEVEL: "INFO"
+PYTHONPATH: "/app"
+PORT: "$PORT"
+CORS_ORIGINS: "https://olorin-ai.web.app,https://olorin-ai.firebaseapp.com"
+DB_HOST: "localhost"
+DB_PORT: "3306"
+DB_NAME: "fraud_detection"
+DB_USER: "olorin_user"
+DB_POOL_SIZE: "10"
+REDIS_HOST: "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com"
+REDIS_PORT: "13848"
+REDIS_USERNAME: "default"
+REDIS_DB: "0"
+REDIS_POOL_SIZE: "10"
+JWT_ALGORITHM: "HS256"
+JWT_EXPIRE_HOURS: "2"
+RATE_LIMIT_REQUESTS: "1000"
+RATE_LIMIT_WINDOW: "3600"
+MCP_SERVER_HOST: "0.0.0.0"
+MCP_SERVER_PORT: "8001"
 EOF
 
 print_status "Environment variables configured:"
@@ -255,13 +349,29 @@ if [[ $DRY_RUN == true ]]; then
     echo "  --region $REGION \\"
     echo "  --allow-unauthenticated \\"
     echo "  --project $PROJECT_ID \\"
-    echo "  --set-env-vars APP_ENV=prd,FIREBASE_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,PYTHONPATH=/app \\"
+    echo "  --env-vars-file $ENV_VARS_FILE \\"
+    echo "  --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,\\"
+    echo "                OPENAI_API_KEY=OPENAI_API_KEY:latest,\\"
+    echo "                DB_PASSWORD=DATABASE_PASSWORD:latest,\\"
+    echo "                REDIS_PASSWORD=REDIS_PASSWORD:latest,\\"
+    echo "                REDIS_API_KEY=REDIS_API_KEY:latest,\\"
+    echo "                JWT_SECRET_KEY=JWT_SECRET_KEY:latest,\\"
+    echo "                SPLUNK_USERNAME=SPLUNK_USERNAME:latest,\\"
+    echo "                SPLUNK_PASSWORD=SPLUNK_PASSWORD:latest,\\"
+    echo "                OLORIN_API_KEY=OLORIN_API_KEY:latest,\\"
+    echo "                ABUSEIPDB_API_KEY=ABUSEIPDB_API_KEY:latest \\"
     echo "  --memory 4Gi \\"
     echo "  --cpu 2 \\"
     echo "  --min-instances 1 \\"
     echo "  --max-instances 100 \\"
-    echo "  --timeout 300 \\"
+    echo "  --timeout 900 \\"
     echo "  --concurrency 100"
+    echo
+    
+    print_status "Secrets that will be mounted from Firebase Secret Manager:"
+    for secret in "${REQUIRED_SECRETS[@]}"; do
+        echo "  - $secret"
+    done
     echo
     
     print_status "Dry run complete. Use without --dry-run to execute deployment."
@@ -294,14 +404,28 @@ print_header "EXECUTING CLOUD RUN DEPLOYMENT"
 print_status "Deploying $SERVICE_NAME to Cloud Run..."
 print_status "This may take several minutes..."
 
-# Build deployment command
+# Create temporary env vars file
+ENV_VARS_TEMP=$(mktemp)
+cp "$ENV_VARS_FILE" "$ENV_VARS_TEMP"
+
+# Build deployment command with secrets
 DEPLOY_CMD=(
     gcloud run deploy "$SERVICE_NAME"
     --source "$SOURCE_DIR"
     --region "$REGION"
     --allow-unauthenticated
     --project "$PROJECT_ID"
-    --set-env-vars "APP_ENV=prd,FIREBASE_PROJECT_ID=$PROJECT_ID,LOG_LEVEL=INFO,PYTHONPATH=/app"
+    --env-vars-file "$ENV_VARS_TEMP"
+    --set-secrets "ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest"
+    --set-secrets "OPENAI_API_KEY=OPENAI_API_KEY:latest"
+    --set-secrets "DB_PASSWORD=DATABASE_PASSWORD:latest"
+    --set-secrets "REDIS_PASSWORD=REDIS_PASSWORD:latest"
+    --set-secrets "REDIS_API_KEY=REDIS_API_KEY:latest"
+    --set-secrets "JWT_SECRET_KEY=JWT_SECRET_KEY:latest"
+    --set-secrets "SPLUNK_USERNAME=SPLUNK_USERNAME:latest"
+    --set-secrets "SPLUNK_PASSWORD=SPLUNK_PASSWORD:latest"
+    --set-secrets "OLORIN_API_KEY=OLORIN_API_KEY:latest"
+    --set-secrets "ABUSEIPDB_API_KEY=ABUSEIPDB_API_KEY:latest"
     --memory "4Gi"
     --cpu "2"
     --min-instances "1"
@@ -313,6 +437,11 @@ DEPLOY_CMD=(
     --quiet
 )
 
+# Add service account if it exists
+if [[ -n "$SERVICE_ACCOUNT" ]]; then
+    DEPLOY_CMD+=(--service-account "$SERVICE_ACCOUNT")
+fi
+
 # Add verbose flag if requested
 if [[ $VERBOSE == true ]]; then
     DEPLOY_CMD+=(--verbosity=info)
@@ -321,9 +450,10 @@ fi
 # Execute deployment
 if "${DEPLOY_CMD[@]}"; then
     print_success "✓ Cloud Run deployment completed successfully!"
+    rm -f "$ENV_VARS_TEMP"
 else
     print_error "Deployment failed"
-    rm -f "$ENV_VARS_FILE"
+    rm -f "$ENV_VARS_FILE" "$ENV_VARS_TEMP"
     exit 1
 fi
 
@@ -370,6 +500,20 @@ print_status "Management Commands:"
 echo "  View logs: gcloud run logs tail $SERVICE_NAME --region=$REGION --project=$PROJECT_ID"
 echo "  Service info: gcloud run services describe $SERVICE_NAME --region=$REGION --project=$PROJECT_ID"
 echo "  Scale service: gcloud run services update $SERVICE_NAME --min-instances=N --max-instances=N --region=$REGION --project=$PROJECT_ID"
+echo
+
+if [[ -n "$SERVICE_ACCOUNT" ]]; then
+    print_status "Service Account Configuration:"
+    echo "  The service uses: $SERVICE_ACCOUNT"
+    echo "  This account has access to:"
+    echo "    - Firebase Secret Manager (secretmanager.secretAccessor role)"
+    echo "    - Any other required GCP services"
+    echo
+fi
+
+print_status "Secrets Configuration:"
+echo "  All ${#REQUIRED_SECRETS[@]} secrets are mounted from Firebase Secret Manager"
+echo "  To update a secret: gcloud secrets versions add SECRET_NAME --data-file=- --project=$PROJECT_ID"
 echo
 
 # Cleanup

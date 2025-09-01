@@ -59,9 +59,9 @@ def enhance_config_with_secrets(config_instance):
     
     # Redis configuration
     redis_config = secrets.get("redis", {})
-    if not config_instance.redis_password and redis_config.get("password"):
-        config_instance.redis_password = redis_config["password"]
-        logger.debug("Loaded Redis password from Secret Manager")
+    if not config_instance.redis_api_key and redis_config.get("api_key"):
+        config_instance.redis_api_key = redis_config["api_key"]
+        logger.debug("Loaded Redis API key from Secret Manager")
     
     # JWT configuration
     jwt_config = secrets.get("jwt", {})

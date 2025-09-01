@@ -36,8 +36,8 @@ class SecurityConfig(BaseModel):
     encryption_salt: str = os.getenv("ENCRYPTION_SALT")
 
     # Redis Security
-    redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379")
-    redis_password: Optional[str] = os.getenv("REDIS_PASSWORD")
+    redis_url: str = os.getenv("REDIS_URL", "redis://default@redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com:13848")
+    redis_api_key: Optional[str] = os.getenv("REDIS_API_KEY")
     redis_use_tls: bool = os.getenv("REDIS_USE_TLS", "false").lower() == "true"
 
     # Security Headers

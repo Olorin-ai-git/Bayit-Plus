@@ -31,7 +31,7 @@ class ConfigLoader:
         Load a secret with environment-specific naming.
         
         Args:
-            secret_path: Base secret path (e.g., "olorin/database_password")
+            secret_path: Base secret name (e.g., "DATABASE_PASSWORD")
             env_var: Environment variable fallback name
             default: Default value if not found
             
@@ -65,7 +65,7 @@ class ConfigLoader:
         Returns:
             The API key value or None
         """
-        secret_path = f"olorin/{key_name}"
+        secret_path = key_name.upper().replace("-", "_")
         return self.load_secret(secret_path, env_var)
     
     def load_database_config(self) -> dict:
@@ -79,7 +79,7 @@ class ConfigLoader:
             ValueError: If critical database password is missing in production
         """
         password = self.load_secret(
-            "olorin/database_password",
+            "DATABASE_PASSWORD",
             "DB_PASSWORD",
             None  # No default - must be explicitly set
         )
@@ -108,11 +108,12 @@ class ConfigLoader:
             Dictionary with Redis configuration
         """
         return {
-            "host": os.getenv("REDIS_HOST", "localhost"),
-            "port": int(os.getenv("REDIS_PORT", "6379")),
-            "password": self.load_secret(
-                "olorin/redis_password",
-                "REDIS_PASSWORD"
+            "host": os.getenv("REDIS_HOST", "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com"),
+            "port": int(os.getenv("REDIS_PORT", "13848")),
+            "username": os.getenv("REDIS_USERNAME", "default"),
+            "api_key": self.load_secret(
+                "REDIS_API_KEY",
+                "REDIS_API_KEY"
             )
         }
     
@@ -127,7 +128,7 @@ class ConfigLoader:
             ValueError: If JWT secret key is missing in production
         """
         secret_key = self.load_secret(
-            "olorin/jwt_secret_key",
+            "JWT_SECRET_KEY",
             "JWT_SECRET_KEY",
             None  # No default - must be explicitly set
         )
@@ -160,11 +161,11 @@ class ConfigLoader:
         """
         return {
             "username": self.load_secret(
-                "olorin/splunk_username",
+                "SPLUNK_USERNAME",
                 "SPLUNK_USERNAME"
             ),
             "password": self.load_secret(
-                "olorin/splunk_password",
+                "SPLUNK_PASSWORD",
                 "SPLUNK_PASSWORD"
             )
         }
@@ -178,11 +179,11 @@ class ConfigLoader:
         """
         return {
             "access_id": self.load_secret(
-                "olorin/sumo_logic_access_id",
+                "SUMO_LOGIC_ACCESS_ID",
                 "SUMO_LOGIC_ACCESS_ID"
             ),
             "access_key": self.load_secret(
-                "olorin/sumo_logic_access_key",
+                "SUMO_LOGIC_ACCESS_KEY",
                 "SUMO_LOGIC_ACCESS_KEY"
             )
         }
@@ -196,19 +197,19 @@ class ConfigLoader:
         """
         return {
             "account": self.load_secret(
-                "olorin/snowflake_account",
+                "SNOWFLAKE_ACCOUNT",
                 "SNOWFLAKE_ACCOUNT"
             ),
             "user": self.load_secret(
-                "olorin/snowflake_user",
+                "SNOWFLAKE_USER",
                 "SNOWFLAKE_USER"
             ),
             "password": self.load_secret(
-                "olorin/snowflake_password",
+                "SNOWFLAKE_PASSWORD",
                 "SNOWFLAKE_PASSWORD"
             ),
             "private_key": self.load_secret(
-                "olorin/snowflake_private_key",
+                "SNOWFLAKE_PRIVATE_KEY",
                 "SNOWFLAKE_PRIVATE_KEY"
             ),
             "database": os.getenv("SNOWFLAKE_DATABASE"),
@@ -229,7 +230,6 @@ class ConfigLoader:
             # API Keys
             "anthropic_api_key": self.load_api_key("anthropic_api_key", "ANTHROPIC_API_KEY"),
             "openai_api_key": self.load_api_key("openai_api_key", "OPENAI_API_KEY"),
-            "gaia_api_key": self.load_api_key("gaia_api_key", "GAIA_API_KEY"),
             "olorin_api_key": self.load_api_key("olorin_api_key", "OLORIN_API_KEY"),
             "databricks_token": self.load_api_key("databricks_token", "DATABRICKS_TOKEN"),
             
@@ -242,7 +242,7 @@ class ConfigLoader:
             "snowflake": self.load_snowflake_config(),
             
             # App Secret
-            "app_secret": self.load_secret("olorin/app_secret", "APP_SECRET")
+            "app_secret": self.load_secret("APP_SECRET", "APP_SECRET")
         }
 
 

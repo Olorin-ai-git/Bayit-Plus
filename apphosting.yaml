@@ -48,11 +48,13 @@ runConfig:
     - variable: DB_POOL_SIZE
       value: "10"
     
-    # Redis Configuration
+    # Redis Cloud Configuration
     - variable: REDIS_HOST
-      value: "localhost"
+      value: "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com"
     - variable: REDIS_PORT
-      value: "6379"
+      value: "13848"
+    - variable: REDIS_USERNAME
+      value: "default"
     - variable: REDIS_DB
       value: "0"
     - variable: REDIS_POOL_SIZE
@@ -89,6 +91,9 @@ runConfig:
     - variable: REDIS_PASSWORD
       secret: REDIS_PASSWORD
     
+    - variable: REDIS_API_KEY
+      secret: REDIS_API_KEY
+    
     - variable: JWT_SECRET_KEY
       secret: JWT_SECRET_KEY
     
@@ -98,21 +103,12 @@ runConfig:
     - variable: SPLUNK_PASSWORD
       secret: SPLUNK_PASSWORD
     
-    - variable: GAIA_API_KEY
-      secret: GAIA_API_KEY
-    
     - variable: OLORIN_API_KEY
       secret: OLORIN_API_KEY
     
     # Additional API Keys for Fraud Investigation Tools
     - variable: ABUSEIPDB_API_KEY
       secret: ABUSEIPDB_API_KEY
-    
-    - variable: VIRUSTOTAL_API_KEY
-      secret: VIRUSTOTAL_API_KEY
-    
-    - variable: HIBP_API_KEY
-      secret: HIBP_API_KEY
 
 # Build Configuration
 buildConfig:

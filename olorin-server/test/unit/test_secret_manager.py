@@ -313,7 +313,7 @@ class TestConfigSecrets:
         config.olorin_api_key = None
         config.databricks_token = None
         config.database_password = None
-        config.redis_password = None
+        config.redis_api_key = None
         config.jwt_secret_key = None
         config.splunk_username = None
         config.splunk_password = None
@@ -335,7 +335,7 @@ class TestConfigSecrets:
             "anthropic_api_key": "anthropic_key",
             "openai_api_key": "openai_key",
             "database": {"password": "db_password"},
-            "redis": {"password": "redis_password"},
+            "redis": {"api_key": "redis_api_key"},
             "jwt": {"secret_key": "jwt_secret"},
             "splunk": {"username": "splunk_user", "password": "splunk_pass"},
             "snowflake": {"account": "sf_account", "password": "sf_password"},
@@ -347,7 +347,7 @@ class TestConfigSecrets:
         assert enhanced_config.anthropic_api_key == "anthropic_key"
         assert enhanced_config.openai_api_key == "openai_key"
         assert enhanced_config.database_password == "db_password"
-        assert enhanced_config.redis_password == "redis_password"
+        assert enhanced_config.redis_api_key == "redis_api_key"
         assert enhanced_config.jwt_secret_key == "jwt_secret"
         assert enhanced_config.splunk_username == "splunk_user"
         assert enhanced_config.splunk_password == "splunk_pass"

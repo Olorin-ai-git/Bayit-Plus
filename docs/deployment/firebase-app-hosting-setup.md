@@ -87,8 +87,6 @@ All sensitive configuration is managed through Firebase Secret Manager with the 
 | Environment Variable | Secret Path | Description |
 |---------------------|-------------|-------------|
 | `ABUSEIPDB_API_KEY` | `prd/olorin/abuseipdb_api_key` | IP reputation checking |
-| `VIRUSTOTAL_API_KEY` | `prd/olorin/virustotal_api_key` | File/URL scanning |
-| `HIBP_API_KEY` | `prd/olorin/hibp_api_key` | Have I Been Pwned integration |
 
 ## MCP Integration Features
 

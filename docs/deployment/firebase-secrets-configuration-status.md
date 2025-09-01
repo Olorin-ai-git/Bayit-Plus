@@ -73,8 +73,6 @@ These must be created before production deployment:
 - **SUMO_LOGIC_ACCESS_ID/KEY** - Alternative logging (optional)
 - **SNOWFLAKE_ACCOUNT/USER/PASSWORD/PRIVATE_KEY** - Data warehouse (optional)
 - **ABUSEIPDB_API_KEY** - IP reputation checks (optional)
-- **VIRUSTOTAL_API_KEY** - Malware detection (optional)  
-- **HIBP_API_KEY** - Breach detection (optional)
 
 ## Technical Architecture
 

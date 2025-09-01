@@ -58,8 +58,8 @@ class SvcSettings(BaseSettings):
     
     # OpenAI API for dual-framework agent support - stored in Firebase Secrets Manager
     openai_api_key_secret: str = Field(
-        "olorin/openai_api_key",
-        description="Firebase secret path for OpenAI API key",
+        "OPENAI_API_KEY",
+        description="Firebase secret name for OpenAI API key",
         env="OPENAI_API_KEY_SECRET",
     )
     
@@ -100,7 +100,7 @@ class SvcSettings(BaseSettings):
     # App settings
     app_id: str = "Olorin.cas.hri.olorin"
     # Store app secret in Firebase Secrets Manager
-    app_secret: str = "olorin/app_secret"
+    app_secret: str = "APP_SECRET"
 
     # QB Tool settings
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
@@ -112,13 +112,13 @@ class SvcSettings(BaseSettings):
         8089, description="Splunk management port", env="SPLUNK_PORT"
     )
     splunk_username_secret: str = Field(
-        "olorin/splunk_username",
-        description="Firebase secret path for Splunk username",
+        "SPLUNK_USERNAME",
+        description="Firebase secret name for Splunk username",
         env="SPLUNK_USERNAME_SECRET",
     )
     splunk_password_secret: str = Field(
-        "olorin/splunk_password",
-        description="Firebase secret path for Splunk password",
+        "SPLUNK_PASSWORD",
+        description="Firebase secret name for Splunk password",
         env="SPLUNK_PASSWORD_SECRET",
     )
 
@@ -141,13 +141,13 @@ class SvcSettings(BaseSettings):
         env="SUMO_LOGIC_ENDPOINT",
     )
     sumo_logic_access_id_secret: str = Field(
-        "olorin/sumo_logic_access_id",
-        description="Firebase secret path for SumoLogic Access ID",
+        "SUMO_LOGIC_ACCESS_ID",
+        description="Firebase secret name for SumoLogic Access ID",
         env="SUMO_LOGIC_ACCESS_ID_SECRET",
     )
     sumo_logic_access_key_secret: str = Field(
-        "olorin/sumo_logic_access_key",
-        description="Firebase secret path for SumoLogic Access Key",
+        "SUMO_LOGIC_ACCESS_KEY",
+        description="Firebase secret name for SumoLogic Access Key",
         env="SUMO_LOGIC_ACCESS_KEY_SECRET",
     )
     
@@ -165,41 +165,53 @@ class SvcSettings(BaseSettings):
     
     # Database secrets - migrated to Firebase Secrets Manager
     database_password_secret: str = Field(
-        "olorin/database_password",
-        description="Firebase secret path for database password",
+        "DATABASE_PASSWORD",
+        description="Firebase secret name for database password",
         env="DATABASE_PASSWORD_SECRET",
     )
     
     # Redis secrets - migrated to Firebase Secrets Manager  
-    redis_password_secret: str = Field(
-        "olorin/redis_password",
-        description="Firebase secret path for Redis password",
-        env="REDIS_PASSWORD_SECRET",
+    redis_api_key_secret: str = Field(
+        "REDIS_API_KEY",
+        description="Firebase secret name for Redis API key",
+        env="REDIS_API_KEY_SECRET",
+    )
+    
+    # Redis connection parameters for Redis Cloud
+    redis_host: str = Field(
+        "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com",
+        description="Redis Cloud host",
+        env="REDIS_HOST",
+    )
+    redis_port: int = Field(
+        13848,
+        description="Redis Cloud port",
+        env="REDIS_PORT",
+    )
+    redis_username: str = Field(
+        "default",
+        description="Redis Cloud username",
+        env="REDIS_USERNAME",
     )
     
     # JWT secrets - migrated to Firebase Secrets Manager
     jwt_secret_key_secret: str = Field(
-        "olorin/jwt_secret_key",
-        description="Firebase secret path for JWT secret key",
+        "JWT_SECRET_KEY",
+        description="Firebase secret name for JWT secret key",
         env="JWT_SECRET_KEY_SECRET",
     )
     
     # Development API keys - migrated to Firebase Secrets Manager
-    gaia_api_key_secret: str = Field(
-        "olorin/gaia_api_key",
-        description="Firebase secret path for Gaia API key",
-        env="GAIA_API_KEY_SECRET",
-    )
     
     olorin_api_key_secret: str = Field(
-        "olorin/olorin_api_key", 
-        description="Firebase secret path for Olorin API key",
+        "OLORIN_API_KEY", 
+        description="Firebase secret name for Olorin API key",
         env="OLORIN_API_KEY_SECRET",
     )
     
     databricks_token_secret: str = Field(
-        "olorin/databricks_token",
-        description="Firebase secret path for Databricks token",
+        "DATABRICKS_TOKEN",
+        description="Firebase secret name for Databricks token",
         env="DATABRICKS_TOKEN_SECRET",
     )
 
@@ -210,11 +222,11 @@ class SvcSettings(BaseSettings):
         env="DB_PASSWORD",
     )
     
-    # Allow overriding Redis password directly via environment for local/dev
-    redis_password: Optional[str] = Field(
+    # Allow overriding Redis API key directly via environment for local/dev
+    redis_api_key: Optional[str] = Field(
         default=None,
-        description="Override Redis password via env var REDIS_PASSWORD",
-        env="REDIS_PASSWORD",
+        description="Override Redis API key via env var REDIS_API_KEY",
+        env="REDIS_API_KEY",
     )
     
     # Allow overriding JWT secret directly via environment for local/dev
@@ -225,11 +237,6 @@ class SvcSettings(BaseSettings):
     )
     
     # Allow overriding development API keys directly via environment for local/dev
-    gaia_api_key: Optional[str] = Field(
-        default=None,
-        description="Override Gaia API key via env var GAIA_API_KEY",
-        env="GAIA_API_KEY",
-    )
     
     olorin_api_key: Optional[str] = Field(
         default=None,
@@ -290,25 +297,25 @@ class SvcSettings(BaseSettings):
         env="SNOWFLAKE_AUTHENTICATOR",
     )
     
-    # Firebase secret paths for Snowflake credentials
+    # Firebase secret names for Snowflake credentials
     snowflake_account_secret: str = Field(
-        "olorin/snowflake_account",
-        description="Firebase secret path for Snowflake account",
+        "SNOWFLAKE_ACCOUNT",
+        description="Firebase secret name for Snowflake account",
         env="SNOWFLAKE_ACCOUNT_SECRET",
     )
     snowflake_user_secret: str = Field(
-        "olorin/snowflake_user",
-        description="Firebase secret path for Snowflake user",
+        "SNOWFLAKE_USER",
+        description="Firebase secret name for Snowflake user",
         env="SNOWFLAKE_USER_SECRET",
     )
     snowflake_password_secret: str = Field(
-        "olorin/snowflake_password",
-        description="Firebase secret path for Snowflake password",
+        "SNOWFLAKE_PASSWORD",
+        description="Firebase secret name for Snowflake password",
         env="SNOWFLAKE_PASSWORD_SECRET",
     )
     snowflake_private_key_secret: str = Field(
-        "olorin/snowflake_private_key",
-        description="Firebase secret path for Snowflake private key",
+        "SNOWFLAKE_PRIVATE_KEY",
+        description="Firebase secret name for Snowflake private key",
         env="SNOWFLAKE_PRIVATE_KEY_SECRET",
     )
 
@@ -360,14 +367,14 @@ class PreProdSettings(SvcSettings):
     idps_endpoint: str = "vkm-e2e.ps.idps.a.olorin.com"
     idps_policy_id: str = "p-2abqgwqm8n5i"
     app_id: str = "Olorin.cas.hri.olorin"
-    app_secret: str = "olorin/app_secret"
+    app_secret: str = "APP_SECRET"
     rag_search_url: str = (
         "https://aimqasvc-e2e.api.olorin.com/v1/genosplugins/AIMSearchPlugin/generate"
     )
     enable_langfuse: bool = True  # Set to True to enable langfuse tracing;
     # and set the langfuse_public_key and langfuse_secret_key to the values in IDPS below
-    langfuse_public_key: str = "olorin/langfuse/public_key"
-    langfuse_secret_key: str = "olorin/langfuse/secret_key"
+    langfuse_public_key: str = "LANGFUSE_PUBLIC_KEY"
+    langfuse_secret_key: str = "LANGFUSE_SECRET_KEY"
     langfuse_host: str = "https://langfuse-e2e.api.olorin.com"
     ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
     cdc_env: str = "preprod"

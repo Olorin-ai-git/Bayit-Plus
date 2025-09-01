@@ -60,4 +60,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Command to run the application (use PORT env var, default to 8000)
 # Start with single worker for debugging startup issues
-CMD ["sh", "-c", "echo 'Starting on port ${PORT:-8000}' && python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --log-level info"]
+CMD ["sh", "-c", "echo 'Starting on port ${PORT:-8000}' && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --log-level info"]
