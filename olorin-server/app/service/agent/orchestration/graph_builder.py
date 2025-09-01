@@ -6,7 +6,7 @@ for different investigation workflows.
 """
 
 import logging
-from typing import Optional, Annotated, List
+from typing import Optional, Annotated, List, Dict
 
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages

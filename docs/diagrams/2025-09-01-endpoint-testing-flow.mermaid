@@ -1,0 +1,80 @@
+graph TB
+    Start([Start Testing]) --> Health[Phase 1: Health & Utility]
+    
+    %% Phase 1: Health Checks
+    Health --> H1[GET /]
+    Health --> H2[GET /health]
+    Health --> H3[GET /version]
+    Health --> H4[GET /performance/health]
+    
+    H1 & H2 & H3 & H4 --> Auth[Phase 2: Authentication]
+    
+    %% Phase 2: Authentication
+    Auth --> A1[POST /auth/login-json]
+    A1 --> A2[GET /auth/me]
+    A2 --> A3[POST /auth/logout]
+    
+    A3 --> Inv[Phase 3: Investigations]
+    
+    %% Phase 3: Investigation Management
+    Inv --> I1[POST /api/investigation]
+    I1 --> I2[GET /api/investigation/id]
+    I2 --> I3[PUT /api/investigation/id]
+    I3 --> I4[DELETE /api/investigation/id]
+    I4 --> I5[GET /api/investigations]
+    
+    I5 --> Analysis[Phase 4: Core Analysis]
+    
+    %% Phase 4: Core Business Logic
+    Analysis --> Device[Device Analysis]
+    Analysis --> Network[Network Analysis]
+    Analysis --> Location[Location Analysis]
+    Analysis --> Logs[Log Analysis]
+    
+    Device --> D1[GET /api/device/entity_id]
+    Network --> N1[GET /api/network/entity_id]
+    Location --> L1[GET /api/location/source/oii/id]
+    Location --> L2[GET /api/location/source/business/id]
+    Location --> L3[GET /api/location/source/phone/id]
+    Location --> L4[GET /api/location/risk-analysis/id]
+    Logs --> LG1[GET /api/logs/user_id]
+    
+    D1 & N1 & L4 & LG1 --> Agents[Phase 5: Agent System]
+    
+    %% Phase 5: Agent System
+    Agents --> AG1[POST /v1/agent/invoke]
+    Agents --> AG2[POST /v1/agent/start/id]
+    
+    AG1 & AG2 --> WS[Phase 6: WebSocket]
+    
+    %% Phase 6: WebSocket
+    WS --> WS1[WS /ws/investigation_id]
+    
+    WS1 --> Error[Phase 7: Error Testing]
+    
+    %% Phase 7: Error Handling
+    Error --> E1[Invalid Auth Tests]
+    Error --> E2[Invalid Param Tests]
+    Error --> E3[Service Error Tests]
+    Error --> E4[Timeout Tests]
+    
+    E1 & E2 & E3 & E4 --> Report[Generate Test Report]
+    
+    Report --> End([Testing Complete])
+    
+    %% Parallel Testing Groups
+    Demo[Demo Mode Testing] -.-> Analysis
+    Demo --> DM1[GET /api/demo/user_id]
+    Demo --> DM2[GET /api/demo/user_id/all]
+    Demo --> DM3[POST /api/demo/user_id/off]
+    
+    %% Styling
+    classDef phase fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef endpoint fill:#fff3e0,stroke:#e65100,stroke-width:1px
+    classDef parallel fill:#f3e5f5,stroke:#4a148c,stroke-width:1px,stroke-dasharray: 5 5
+    classDef critical fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    
+    class Health,Auth,Inv,Analysis,Agents,WS,Error phase
+    class H1,H2,H3,H4,A1,A2,A3,I1,I2,I3,I4,I5,D1,N1,L1,L2,L3,L4,LG1,AG1,AG2,WS1,E1,E2,E3,E4 endpoint
+    class Demo,DM1,DM2,DM3 parallel
+    class Report critical
