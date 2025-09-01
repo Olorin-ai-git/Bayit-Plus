@@ -29,7 +29,7 @@ from app.service.agent.autonomous_agents import (
 )
 from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
-    InvestigationStatus,
+    InvestigationPhase as InvestigationStatus,  # Using InvestigationPhase as status
     DomainFindings,
 )
 from app.service.agent.journey_tracker import (
@@ -343,7 +343,7 @@ class TestAutonomousInvestigationE2E:
                     user_id=user.user_id,
                     entity_id=entity.entity_id,
                     session_id=f"session_{i}_{datetime.now().timestamp()}",
-                    status=InvestigationStatus.IN_PROGRESS,
+                    status=InvestigationStatus.ANALYSIS,  # Using ANALYSIS phase for active investigations
                     user_data={"email": user.email, "phone": user.phone},
                     entity_data={"name": entity.name, "type": entity.entity_type},
                     request_metadata={"test": "concurrent", "index": i},
