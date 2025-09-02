@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Optional
 
-def invoke_python_tests_expert(task: str) -> Dict:
+def invoke_python_tests_expert(task: str, csv_file: Optional[str] = None, csv_limit: int = 50) -> Dict:
     """
     Invoke the python-tests-expert subagent through Claude's Task system
     
@@ -64,10 +64,19 @@ def invoke_python_tests_expert(task: str) -> Dict:
     # In a real implementation, this would call Claude's Task API
     # For now, we'll execute the test orchestrator directly
     
+    cmd = [str(Path(__file__).parent.parent.parent / "scripts/tools/test_autonomous_investigation.sh")]
+    if "--verbose" in task.lower():
+        cmd.append("--verbose")
+    if "--no-fix" in task.lower():
+        cmd.append("--no-fix")
+    if csv_file:
+        cmd.extend(["--csv-file", csv_file, "--csv-limit", str(csv_limit)])
+    
     result = subprocess.run(
-        [sys.executable, str(Path(__file__).parent.parent.parent / "scripts/tools/test_orchestrator.py"), "--verbose"],
+        cmd,
         capture_output=True,
-        text=True
+        text=True,
+        shell=True
     )
     
     return {
@@ -141,11 +150,13 @@ def main():
                        help="Specific test task")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--no-fix", action="store_true", help="Skip auto-fixes")
+    parser.add_argument("--csv-file", type=str, help="Path to CSV file with transaction data")
+    parser.add_argument("--csv-limit", type=int, default=50, help="Max transactions from CSV")
     
     args = parser.parse_args()
     
     # Invoke the python-tests-expert
-    result = invoke_python_tests_expert(args.task)
+    result = invoke_python_tests_expert(args.task, args.csv_file, args.csv_limit)
     
     # Format and display response
     print(format_claude_response(result))

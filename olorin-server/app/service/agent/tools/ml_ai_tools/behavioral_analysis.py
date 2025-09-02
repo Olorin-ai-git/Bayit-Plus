@@ -64,7 +64,7 @@ class BehavioralAnalysisTool(BaseTool):
     session behaviors, navigation patterns, and temporal usage to create unique behavioral
     fingerprints and detect deviations from normal patterns.
     """
-    args_schema = BehavioralAnalysisInput
+    args_schema: type = BehavioralAnalysisInput
     
     def _run(
         self,

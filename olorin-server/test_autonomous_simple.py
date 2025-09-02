@@ -18,6 +18,7 @@ import csv
 from datetime import datetime
 import requests
 import websockets
+from html_report_generator import AutonomousInvestigationHTMLReporter
 
 # Configuration
 SERVER_PORT = os.environ.get("SERVER_PORT", "8090")
@@ -428,11 +429,48 @@ if __name__ == "__main__":
     # Save results to file
     if results:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"autonomous_test_results_{timestamp}.json"
-
-        with open(filename, 'w') as f:
+        
+        # Save JSON results
+        json_filename = f"autonomous_test_results_{timestamp}.json"
+        with open(json_filename, 'w') as f:
             json.dump(results, f, indent=2, default=str)
-
-        print(f"\n💾 Results saved to {filename}")
+        print(f"\n💾 JSON results saved to {json_filename}")
+        
+        # Generate HTML report
+        html_reporter = AutonomousInvestigationHTMLReporter(
+            report_title="Autonomous Investigation Test Report - Simple"
+        )
+        
+        # Prepare CSV metadata if CSV was used
+        csv_metadata = None
+        if args.csv_file:
+            csv_metadata = {
+                'file_path': args.csv_file,
+                'transaction_count': args.csv_limit,
+                'unique_users': 1,  # Simple test uses one user
+                'sample_user_id': results.get('investigation_id', 'N/A'),
+                'date_range': 'See CSV file'
+            }
+        
+        # Convert results to test format for HTML report
+        test_results = {
+            "Simple Investigation": {
+                "status": "PASSED" if results.get("final_status", {}).get("phase") == "completed" else "FAILED",
+                "duration": 0,  # Could calculate from timestamps
+                "final_risk_score": results.get("final_status", {}).get("risk_score", 0),
+                "investigation_id": results.get("investigation_id"),
+                "phases": {}
+            }
+        }
+        
+        html_filename = f"autonomous_test_report_{timestamp}.html"
+        html_path = html_reporter.generate_html_report(
+            test_results=test_results,
+            csv_metadata=csv_metadata,
+            output_path=html_filename
+        )
+        
+        print(f"📊 HTML report generated: {html_filename}")
+        print(f"\n🌐 Open in browser: file://{os.path.abspath(html_filename)}")
     
     print("\n✨ Test completed!")

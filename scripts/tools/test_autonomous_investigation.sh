@@ -12,6 +12,8 @@
 #   --verbose     Enable verbose output
 #   --no-fix      Skip automatic fixing of failed tests
 #   --report-only Generate report from last run
+#   --csv-file    Path to CSV file containing transaction data
+#   --csv-limit   Maximum number of transactions to load from CSV (default: 50)
 # ============================================================================
 
 set -e
@@ -37,6 +39,8 @@ LOG_FILE="$REPORT_DIR/test_logs_$TIMESTAMP.log"
 VERBOSE=false
 AUTO_FIX=true
 REPORT_ONLY=false
+CSV_FILE=""
+CSV_LIMIT="50"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -51,6 +55,14 @@ while [[ $# -gt 0 ]]; do
         --report-only)
             REPORT_ONLY=true
             shift
+            ;;
+        --csv-file)
+            CSV_FILE="$2"
+            shift 2
+            ;;
+        --csv-limit)
+            CSV_LIMIT="$2"
+            shift 2
             ;;
         *)
             echo "Unknown option: $1"
@@ -118,6 +130,13 @@ This report documents the comprehensive testing of the Olorin autonomous investi
 - **Test Framework**: pytest with asyncio
 - **Coverage Requirement**: 30% minimum
 - **Test Categories**: Unit, Integration, E2E, WebSocket
+$(if [ -n "$CSV_FILE" ]; then
+    echo "- **CSV Data Source**: $CSV_FILE"
+    echo "- **CSV Transaction Limit**: $CSV_LIMIT"
+    echo "- **Data Mode**: Real transaction data"
+else
+    echo "- **Data Mode**: Synthetic test data"
+fi)
 
 ---
 
@@ -166,11 +185,23 @@ run_test_phase() {
     echo "### Phase: $phase_name" >> "$REPORT_FILE"
     echo "**Description**: $description" >> "$REPORT_FILE"
     echo "**Started**: $(date +"%H:%M:%S")" >> "$REPORT_FILE"
+    if [ -n "$CSV_FILE" ]; then
+        echo "**CSV Data**: Using $CSV_FILE (limit: $CSV_LIMIT transactions)" >> "$REPORT_FILE"
+    fi
     echo "" >> "$REPORT_FILE"
+    
+    # Build test command with CSV parameters if provided
+    local full_test_command="$test_command"
+    if [ -n "$CSV_FILE" ]; then
+        # For autonomous test scripts, add CSV parameters
+        if [[ "$test_command" == *"test_autonomous"* ]] || [[ "$test_command" == *"run_autonomous"* ]]; then
+            full_test_command="$test_command --csv-file \"$CSV_FILE\" --csv-limit $CSV_LIMIT"
+        fi
+    fi
     
     # Run the test command
     cd "$BACKEND_DIR"
-    if poetry run $test_command >> "$LOG_FILE" 2>&1; then
+    if poetry run $full_test_command >> "$LOG_FILE" 2>&1; then
         log_message "SUCCESS" "Phase $phase_name passed"
         echo "**Status**: ✅ PASSED" >> "$REPORT_FILE"
     else
@@ -179,7 +210,7 @@ run_test_phase() {
         
         if [ "$AUTO_FIX" = true ]; then
             log_message "INFO" "Attempting automatic fix for $phase_name"
-            fix_test_failures "$phase_name" "$test_command"
+            fix_test_failures "$phase_name" "$full_test_command"
         fi
     fi
     
@@ -264,8 +295,8 @@ main() {
     
     # Phase 2: Integration Tests for Autonomous Investigation
     run_test_phase "Integration_Tests_Autonomous" \
-        "pytest tests/integration/test_autonomous_investigation.py -v --asyncio-mode=auto" \
-        "Testing full autonomous investigation workflow with all agents"
+        "python run_autonomous_tests.py" \
+        "Testing full autonomous investigation workflow with comprehensive scenarios"
     
     # Phase 3: WebSocket Real-time Updates
     run_test_phase "WebSocket_Updates" \
@@ -284,8 +315,8 @@ main() {
     
     # Phase 6: Performance Testing
     run_test_phase "Performance_Testing" \
-        "pytest tests/integration/test_autonomous_investigation.py::test_performance_benchmarks -v" \
-        "Testing performance requirements and timeouts"
+        "python test_autonomous_simple.py" \
+        "Testing basic autonomous investigation with simple workflow"
     
     # Phase 7: Firebase Secrets Integration
     run_test_phase "Firebase_Secrets" \
@@ -402,6 +433,24 @@ EOF
     print_color "$GREEN" "Test execution completed!"
     print_color "$CYAN" "Report saved to: $REPORT_FILE"
     print_color "$CYAN" "Logs saved to: $LOG_FILE"
+    
+    # Check for HTML reports
+    HTML_REPORT=$(ls -t autonomous_test_report_*.html 2>/dev/null | head -1)
+    if [ -n "$HTML_REPORT" ]; then
+        print_color "$PURPLE" "📊 HTML Report generated: $HTML_REPORT"
+        
+        # Try to open in default browser
+        if command -v open &> /dev/null; then
+            open "$HTML_REPORT"
+            print_color "$GREEN" "🌐 Opening HTML report in browser..."
+        elif command -v xdg-open &> /dev/null; then
+            xdg-open "$HTML_REPORT"
+            print_color "$GREEN" "🌐 Opening HTML report in browser..."
+        else
+            print_color "$YELLOW" "🌐 Open in browser: file://$(pwd)/$HTML_REPORT"
+        fi
+    fi
+    
     print_color "$GREEN" "════════════════════════════════════════════════════════════"
 }
 

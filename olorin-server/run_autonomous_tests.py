@@ -53,6 +53,7 @@ from tests.fixtures.real_investigation_scenarios import (
     get_scenario_by_type,
     RealScenarioGenerator,
 )
+from html_report_generator import AutonomousInvestigationHTMLReporter
 
 # Configure logging
 logging.basicConfig(
@@ -660,21 +661,51 @@ class AutonomousTestRunner:
         logger.info(f"Completed at: {datetime.now().isoformat()}")
 
         # Save detailed report to file
-        report_filename = f"test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(report_filename, 'w') as f:
-            json.dump({
-                "timestamp": datetime.now().isoformat(),
-                "total_duration": total_duration,
-                "summary": {
-                    "total": len(all_results),
-                    "passed": passed,
-                    "failed": failed,
-                    "errors": errors
-                },
-                "results": all_results
-            }, f, indent=2, default=str)
-
-        logger.info(f"Detailed report saved to: {report_filename}")
+        timestamp_str = datetime.now().strftime('%Y%m%d_%H%M%S')
+        json_filename = f"test_report_{timestamp_str}.json"
+        
+        report_data = {
+            "timestamp": datetime.now().isoformat(),
+            "total_duration": total_duration,
+            "summary": {
+                "total": len(all_results),
+                "passed": passed,
+                "failed": failed,
+                "errors": errors
+            },
+            "results": all_results
+        }
+        
+        with open(json_filename, 'w') as f:
+            json.dump(report_data, f, indent=2, default=str)
+        
+        logger.info(f"Detailed JSON report saved to: {json_filename}")
+        
+        # Generate comprehensive HTML report
+        html_reporter = AutonomousInvestigationHTMLReporter(
+            report_title="Comprehensive Autonomous Investigation Test Report"
+        )
+        
+        # Prepare CSV metadata if available
+        csv_metadata = None
+        if self.csv_transactions:
+            csv_metadata = {
+                'file_path': 'CSV data loaded',
+                'transaction_count': len(self.csv_transactions),
+                'unique_users': len(self.csv_users),
+                'sample_user_id': self.csv_users[0]['user_id'] if self.csv_users else 'N/A',
+                'date_range': f"{self.csv_transactions[0].get('tx_datetime', 'N/A')} to {self.csv_transactions[-1].get('tx_datetime', 'N/A')}" if self.csv_transactions else 'N/A'
+            }
+        
+        html_filename = f"autonomous_test_report_{timestamp_str}.html"
+        html_path = html_reporter.generate_html_report(
+            test_results=all_results,
+            csv_metadata=csv_metadata,
+            output_path=html_filename
+        )
+        
+        logger.info(f"📊 Comprehensive HTML report generated: {html_filename}")
+        logger.info(f"🌐 Open in browser: file://{os.path.abspath(html_filename)}")
 
         return all_results
 

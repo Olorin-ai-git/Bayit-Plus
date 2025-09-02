@@ -68,6 +68,20 @@ except ImportError as e:
     logger.warning(f"Intelligence tools not available: {e}")
     INTELLIGENCE_TOOLS_AVAILABLE = False
 
+# Import ML/AI tools
+try:
+    from .ml_ai_tools import (
+        BehavioralAnalysisTool,
+        AnomalyDetectionTool,
+        PatternRecognitionTool,
+        FraudDetectionTool,
+        RiskScoringTool
+    )
+    ML_AI_TOOLS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"ML/AI tools not available: {e}")
+    ML_AI_TOOLS_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 # Try to import threat intelligence tools
@@ -115,6 +129,7 @@ class ToolRegistry:
             "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
             "blockchain": [],  # Blockchain and cryptocurrency analysis tools
             "intelligence": [],  # Advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)
+            "ml_ai": [],  # Machine learning and AI enhancement tools
             "utility": [],
         }
         self._initialized = False
@@ -394,6 +409,38 @@ class ToolRegistry:
                     logger.info("Deep web search tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register deep web search tool: {e}")
+            
+            # ML/AI Tools
+            if ML_AI_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(BehavioralAnalysisTool(), "ml_ai")
+                    logger.info("Behavioral analysis ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register behavioral analysis ML tool: {e}")
+                
+                try:
+                    self._register_tool(AnomalyDetectionTool(), "ml_ai")
+                    logger.info("Anomaly detection ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register anomaly detection ML tool: {e}")
+                
+                try:
+                    self._register_tool(PatternRecognitionTool(), "ml_ai")
+                    logger.info("Pattern recognition ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register pattern recognition ML tool: {e}")
+                
+                try:
+                    self._register_tool(FraudDetectionTool(), "ml_ai")
+                    logger.info("Fraud detection ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register fraud detection ML tool: {e}")
+                
+                try:
+                    self._register_tool(RiskScoringTool(), "ml_ai")
+                    logger.info("Risk scoring ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register risk scoring ML tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -577,6 +624,11 @@ def get_blockchain_tools() -> List[BaseTool]:
 def get_intelligence_tools() -> List[BaseTool]:
     """Get advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)."""
     return tool_registry.get_tools_by_category("intelligence")
+
+
+def get_ml_ai_tools() -> List[BaseTool]:
+    """Get machine learning and AI enhancement tools."""
+    return tool_registry.get_tools_by_category("ml_ai")
 
 
 def get_essential_tools() -> List[BaseTool]:

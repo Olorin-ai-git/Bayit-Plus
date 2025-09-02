@@ -15,7 +15,7 @@ class AgentFactory:
     """Factory for creating agents."""
     
     def __init__(self):
-        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"]}
+        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"], "ml_ai_tools_enabled": True}
     
     def get_factory_stats(self):
         """Get factory statistics."""
@@ -92,6 +92,8 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Detect unusual network traffic or connection behaviors", 
             "Assess network-based fraud indicators",
             "Correlate network data with known threat intelligence",
+            "Apply pattern recognition to network traffic analysis using pattern_recognition_ml tool",
+            "Detect network anomalies and suspicious behaviors using anomaly_detection_ml tool",
             "Use threat intelligence tools (AbuseIPDB, VirusTotal, Shodan) to verify IP reputation",
             "Check for blockchain-related network activity using blockchain_mcp_client",
             "Analyze cryptocurrency exchanges and wallet addresses using crypto_exchange_analysis",
@@ -110,6 +112,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Identify device-based fraud indicators",
             "Evaluate device reputation and risk history",
             "Use ml_ai_mcp_client for behavioral analysis and anomaly detection",
+            "Perform comprehensive behavioral analysis using behavioral_analysis_ml tool",
+            "Detect device anomalies using anomaly_detection_ml tool",
+            "Apply pattern recognition for device fraud patterns using pattern_recognition_ml tool",
             "Check device-related files with VirusTotal for malware indicators",
             "Analyze wallet addresses linked to device using blockchain_wallet_analysis",
             "Detect NFT fraud patterns using nft_fraud_detection",
@@ -125,6 +130,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Assess location-based risk factors", 
             "Identify geographic fraud indicators",
             "Correlate location data with behavioral patterns",
+            "Apply behavioral analysis to travel patterns using behavioral_analysis_ml tool",
+            "Detect geographic anomalies using anomaly_detection_ml tool",
+            "Apply pattern recognition to location sequences using pattern_recognition_ml tool",
             "Use intelligence_mcp_client for OSINT on geographic locations",
             "Cross-reference locations with Shodan infrastructure data",
             "Aggregate OSINT data for location analysis using osint_data_aggregator",
@@ -140,6 +148,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Assess log-based fraud indicators",
             "Correlate activities across time periods",
             "Use ml_ai_mcp_client to detect anomalies in log patterns",
+            "Apply pattern recognition to identify suspicious activity patterns using pattern_recognition_ml tool",
+            "Perform behavioral analysis on user activity logs using behavioral_analysis_ml tool",
+            "Detect log anomalies and outliers using anomaly_detection_ml tool",
             "Check for cryptocurrency addresses in logs using blockchain_mcp_client",
             "Analyze DeFi protocol interactions using defi_protocol_analysis",
             "Preserve blockchain evidence using blockchain_forensics",
@@ -157,6 +168,11 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Provide final risk assessment and recommendations",
             "Aggregate threat intelligence findings from all sources",
             "Use ml_ai_mcp_client for final fraud detection scoring",
+            "Apply comprehensive fraud detection using fraud_detection_ml tool",
+            "Calculate advanced risk scores using risk_scoring_ml tool",
+            "Perform final anomaly detection analysis using anomaly_detection_ml tool",
+            "Apply pattern recognition for overall fraud pattern analysis using pattern_recognition_ml tool",
+            "Conduct final behavioral analysis assessment using behavioral_analysis_ml tool",
             "Compile blockchain and cryptocurrency risk indicators",
             "Ensure regulatory compliance using cryptocurrency_compliance",
             "Generate forensic reports using blockchain_forensics for legal proceedings",
