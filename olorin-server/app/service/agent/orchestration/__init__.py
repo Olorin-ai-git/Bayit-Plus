@@ -15,6 +15,11 @@ from app.service.agent.orchestration.enhanced_mcp_client_manager import (
     MCPServerInfo,
     RoutingPolicy
 )
+from app.service.agent.orchestration.langfuse_tracing import (
+    LangfuseTracer,
+    get_langfuse_tracer,
+    init_langfuse_tracing
+)
 
 __all__ = [
     "create_parallel_agent_graph",
@@ -25,5 +30,8 @@ __all__ = [
     "EnhancedMCPClientManager",
     "MCPServerCategory",
     "MCPServerInfo",
-    "RoutingPolicy"
+    "RoutingPolicy",
+    "LangfuseTracer",
+    "get_langfuse_tracer",
+    "init_langfuse_tracing"
 ]

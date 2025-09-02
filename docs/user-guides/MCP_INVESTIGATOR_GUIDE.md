@@ -63,7 +63,7 @@ Claude will respond with a comprehensive list of available tools and their capab
 ### Core Fraud Investigation Tools
 
 #### 1. User Identity and Behavior Analysis
-- **OIITool**: Olorin Identity Intelligence lookup for user profiles and history
+- **SplunkQueryTool**: Log analysis and historical activity investigation
 - **BehaviorProfilingTool**: Analyze user behavior patterns and detect anomalies
 - **DeviceFingerprintTool**: Device analysis and consistency checking
 - **RiskAssessmentTool**: AI-powered risk scoring with detailed explanations
@@ -75,7 +75,7 @@ Claude will respond with a comprehensive list of available tools and their capab
 
 #### 3. Data Intelligence and Search
 - **SplunkQueryTool**: Execute SPL queries against log data
-- **DITool**: Access Data Intelligence services for comprehensive data analysis
+- **SnowflakeQueryTool**: Access data warehouse for comprehensive data analysis
 - **VectorSearchTool**: Similarity search across investigation databases
 - **DatabaseQueryTool**: Direct database queries for detailed investigation
 
@@ -110,8 +110,8 @@ Investigator: "Investigate user ID 12345 for any suspicious activity or fraud in
 
 Claude Response: "I'll conduct a comprehensive investigation of user 12345. Let me analyze multiple data sources and behavioral patterns.
 
-[Using OIITool]
-- User profile retrieved: John Smith, account created 2023-03-15
+[Using SplunkQueryTool]
+- User activity logs retrieved: John Smith, account created 2023-03-15
 - Account status: Active, no previous fraud flags
 - Transaction history: 247 transactions, average $156.78
 
