@@ -1,0 +1,218 @@
+```mermaid
+graph TD
+    subgraph "Test Execution Layer"
+        A[pytest Test Runner] --> B[Integration Test Suite]
+        B --> C[Autonomous Investigation Tests]
+        C --> D[Real API Calls]
+        C --> E[WebSocket Communication]
+        C --> F[Performance Monitoring]
+    end
+
+    subgraph "Data Collection Layer"
+        G[MetricsCollector] --> H[Test Results]
+        G --> I[Performance Data]
+        G --> J[Agent Health Data]
+        G --> K[Error Categories]
+        
+        L[AgentHealthMonitor] --> M[Response Times]
+        L --> N[Success Rates]
+        L --> O[API Call Counts]
+        L --> P[Memory Usage]
+    end
+
+    subgraph "HTML Reporting Engine"
+        Q[HTMLTestReporter] --> R[DashboardGenerator]
+        Q --> S[TemplateRenderer]
+        Q --> T[ChartGenerator]
+        
+        R --> U[Executive Dashboard]
+        R --> V[Agent Status Cards]
+        R --> W[Performance KPIs]
+        
+        S --> X[Jinja2 Templates]
+        S --> Y[Bootstrap CSS]
+        S --> Z[Responsive Design]
+        
+        T --> AA[Chart.js Integration]
+        T --> BB[Performance Charts]
+        T --> CC[Timeline Visualization]
+    end
+
+    subgraph "Real-time Features"
+        DD[RealtimeHTMLReporter] --> EE[WebSocket Manager]
+        EE --> FF[Live Test Updates]
+        EE --> GG[Agent Progress Tracking]
+        EE --> HH[Dynamic Chart Updates]
+    end
+
+    subgraph "Export & Distribution"
+        II[PDFExporter] --> JJ[WeasyPrint Engine]
+        JJ --> KK[Professional PDF Reports]
+        
+        LL[AlertSystem] --> MM[Email Notifications]
+        LL --> NN[Slack Webhooks]
+        LL --> OO[Performance Alerts]
+    end
+
+    subgraph "Report Output"
+        PP[Interactive HTML Dashboard]
+        QQ[PDF Reports]
+        RR[JSON Data Export]
+        SS[Email Reports]
+    end
+
+    subgraph "User Interface"
+        TT[Executive Dashboard] --> UU[Test Summary Cards]
+        TT --> VV[Performance Charts]
+        TT --> WW[Agent Health Status]
+        
+        XX[Detailed View] --> YY[Test Results Table]
+        XX --> ZZ[Error Analysis]
+        XX --> AAA[Coverage Visualization]
+        
+        BBB[Timeline View] --> CCC[Test Execution Flow]
+        BBB --> DDD[Agent Performance]
+        BBB --> EEE[Milestone Tracking]
+    end
+
+    %% Data Flow Connections
+    A --> G
+    C --> L
+    
+    H --> Q
+    I --> Q
+    J --> Q
+    K --> Q
+    
+    M --> R
+    N --> R
+    O --> R
+    P --> R
+    
+    Q --> DD
+    Q --> II
+    Q --> LL
+    
+    U --> PP
+    V --> PP
+    W --> PP
+    
+    KK --> QQ
+    MM --> SS
+    
+    PP --> TT
+    PP --> XX
+    PP --> BBB
+    
+    %% WebSocket Real-time Flow
+    E --> DD
+    FF --> PP
+    GG --> TT
+    HH --> VV
+
+    %% Styling
+    classDef testLayer fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef dataLayer fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef reportingLayer fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef realtimeLayer fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef exportLayer fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef outputLayer fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef uiLayer fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+
+    class A,B,C,D,E,F testLayer
+    class G,H,I,J,K,L,M,N,O,P dataLayer
+    class Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC reportingLayer
+    class DD,EE,FF,GG,HH realtimeLayer
+    class II,JJ,KK,LL,MM,NN,OO exportLayer
+    class PP,QQ,RR,SS outputLayer
+    class TT,UU,VV,WW,XX,YY,ZZ,AAA,BBB,CCC,DDD,EEE uiLayer
+```
+
+## Component Integration Flow
+
+```mermaid
+sequenceDiagram
+    participant TR as Test Runner
+    participant MC as MetricsCollector
+    participant HR as HTMLReporter
+    participant RT as RealtimeReporter
+    participant WS as WebSocket
+    participant PDF as PDFExporter
+    participant UI as Dashboard UI
+
+    TR->>MC: Start test execution
+    MC->>HR: Initialize report session
+    HR->>RT: Start real-time reporting
+    RT->>WS: Connect WebSocket
+    
+    loop For each test
+        TR->>MC: Execute test
+        MC->>MC: Collect performance data
+        MC->>HR: Send metrics
+        HR->>RT: Update report data
+        RT->>WS: Broadcast update
+        WS->>UI: Update dashboard
+    end
+    
+    TR->>MC: Complete test session
+    MC->>HR: Finalize metrics
+    HR->>HR: Generate HTML report
+    HR->>PDF: Export to PDF
+    HR->>UI: Display final report
+    
+    Note over UI: Interactive dashboard with<br/>charts, filters, and exports
+```
+
+## Data Architecture
+
+```mermaid
+erDiagram
+    TestSession ||--o{ TestResult : contains
+    TestSession ||--o{ AgentMetrics : tracks
+    TestSession ||--o{ PerformanceData : monitors
+    
+    TestResult {
+        string test_name
+        string status
+        float duration
+        datetime timestamp
+        json error_details
+        json coverage_data
+    }
+    
+    AgentMetrics {
+        string agent_name
+        float avg_response_time
+        float success_rate
+        int api_calls_count
+        float memory_usage
+        json performance_profile
+    }
+    
+    PerformanceData {
+        float cpu_usage
+        float memory_delta
+        float network_latency
+        json profiling_data
+        datetime measurement_time
+    }
+    
+    HTMLReport ||--|| TestSession : generates_from
+    HTMLReport ||--o{ ChartData : includes
+    HTMLReport ||--o{ Template : renders
+    
+    HTMLReport {
+        string report_id
+        datetime generated_at
+        string output_path
+        json dashboard_config
+        boolean realtime_enabled
+    }
+    
+    ChartData {
+        string chart_type
+        json chart_config
+        json data_points
+        string render_target
+    }
+```
