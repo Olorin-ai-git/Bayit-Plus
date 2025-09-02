@@ -7,7 +7,7 @@ like Chainalysis, Elliptic, and TRM Labs for cryptocurrency fraud detection.
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, ClassVar, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -40,7 +40,7 @@ class BlockchainMCPClient(BaseTool):
     args_schema: type[BaseModel] = BlockchainAnalysisInput
     
     # Define available servers as class attribute
-    available_servers = {
+    available_servers: ClassVar[Dict[str, Any]] = {
         "chainalysis": {
             "endpoint": "mcp://chainalysis.example.com",
             "capabilities": ["wallet_analysis", "transaction_trace", "sanctions_check"]
