@@ -308,7 +308,7 @@ async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: 
 
 
 def _get_configured_tools():
-    """Get configured tools from tool registry including threat intelligence tools."""
+    """Get configured tools from tool registry including threat intelligence and MCP client tools."""
     from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
@@ -317,10 +317,10 @@ def _get_configured_tools():
         # Initialize the tool registry if not already initialized
         initialize_tools()
         
-        # Get all essential tools including threat intelligence
+        # Get all essential tools including threat intelligence and MCP clients
         # Load ALL tools from these categories (no specific tool_names filter)
         tools = get_tools_for_agent(
-            categories=["olorin", "search", "database", "threat_intelligence"]
+            categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients"]
             # All tools from these categories will be loaded
         )
         
@@ -342,8 +342,9 @@ def _get_configured_tools():
             except Exception as e:
                 logger.warning(f"Could not add fallback SumoLogic tool: {e}")
         
-        threat_tools_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name])
-        logger.info(f"Graph builder loaded {len(tools)} tools including {threat_tools_count} threat intelligence tools")
+        threat_tools_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name or 'shodan' in t.name])
+        mcp_tools_count = len([t for t in tools if 'mcp' in t.name])
+        logger.info(f"Graph builder loaded {len(tools)} tools including {threat_tools_count} threat intelligence tools and {mcp_tools_count} MCP client tools")
         
         return tools
         

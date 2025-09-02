@@ -91,35 +91,46 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Identify suspicious IP addresses and geographic locations",
             "Detect unusual network traffic or connection behaviors", 
             "Assess network-based fraud indicators",
-            "Correlate network data with known threat intelligence"
+            "Correlate network data with known threat intelligence",
+            "Use threat intelligence tools (AbuseIPDB, VirusTotal, Shodan) to verify IP reputation",
+            "Check for blockchain-related network activity using blockchain_mcp_client"
         ],
         "device": [
             "Analyze device fingerprints for consistency and authenticity",
             "Detect device spoofing or manipulation attempts",
             "Assess device behavioral patterns and anomalies",
             "Identify device-based fraud indicators",
-            "Evaluate device reputation and risk history"
+            "Evaluate device reputation and risk history",
+            "Use ml_ai_mcp_client for behavioral analysis and anomaly detection",
+            "Check device-related files with VirusTotal for malware indicators"
         ],
         "location": [
             "Analyze geographic patterns and travel behavior",
             "Detect impossible travel or location anomalies",
             "Assess location-based risk factors", 
             "Identify geographic fraud indicators",
-            "Correlate location data with behavioral patterns"
+            "Correlate location data with behavioral patterns",
+            "Use intelligence_mcp_client for OSINT on geographic locations",
+            "Cross-reference locations with Shodan infrastructure data"
         ],
         "logs": [
             "Analyze activity logs for suspicious patterns",
             "Identify behavioral anomalies in user actions",
             "Detect unauthorized access attempts",
             "Assess log-based fraud indicators",
-            "Correlate activities across time periods"
+            "Correlate activities across time periods",
+            "Use ml_ai_mcp_client to detect anomalies in log patterns",
+            "Check for cryptocurrency addresses in logs using blockchain_mcp_client"
         ],
         "risk": [
             "Integrate findings from all investigation domains",
             "Perform comprehensive risk correlation analysis",
             "Calculate overall fraud probability",
             "Assess evidence quality and reliability",
-            "Provide final risk assessment and recommendations"
+            "Provide final risk assessment and recommendations",
+            "Aggregate threat intelligence findings from all sources",
+            "Use ml_ai_mcp_client for final fraud detection scoring",
+            "Compile blockchain and cryptocurrency risk indicators"
         ]
     }
     

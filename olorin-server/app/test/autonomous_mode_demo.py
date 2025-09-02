@@ -114,7 +114,7 @@ async def demo_autonomous_agent():
     # Create mock tools
     mock_tools = []
     
-    for i, tool_name in enumerate(["splunk_query_tool", "vector_search_tool", "oii_tool"]):
+    for i, tool_name in enumerate(["splunk_query_tool", "vector_search_tool"]):
         mock_tool = MagicMock()
         mock_tool.name = tool_name
         mock_tool.description = f"Mock {tool_name} for testing autonomous behavior"

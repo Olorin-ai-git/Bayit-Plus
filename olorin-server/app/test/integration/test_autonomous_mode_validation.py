@@ -173,7 +173,7 @@ class TestAutonomousModeValidation:
             {
                 "domain": "network",
                 "context": "suspicious network traffic",
-                "expected_tools": ["splunk_query_tool", "oii_tool"],
+                "expected_tools": ["splunk_query_tool"],
                 "inappropriate_tools": ["qb_retriever_tool"]
             },
             {
@@ -185,7 +185,7 @@ class TestAutonomousModeValidation:
             {
                 "domain": "location",
                 "context": "geographic risk assessment",
-                "expected_tools": ["vector_search_tool", "oii_tool"],
+                "expected_tools": ["vector_search_tool"],
                 "inappropriate_tools": ["qb_retriever_tool", "tt_retriever_tool"]
             },
             {
