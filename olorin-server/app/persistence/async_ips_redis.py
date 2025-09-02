@@ -29,6 +29,7 @@ from langgraph.checkpoint.serde.base import SerializerProtocol
 from app.adapters.ips_cache_client import IPSCacheClient
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -288,7 +289,15 @@ class AsyncRedisSaver(BaseCheckpointSaver):
     def __init__(self, namespace: str = "default") -> None:
         super().__init__()
         self.namespace = namespace
-        self.ips_cache = IPSCacheClient()
+        
+        # Use mock client if environment variable is set
+        use_mock = os.environ.get("USE_MOCK_IPS_CACHE", "false").lower() == "true"
+        if use_mock:
+            from app.adapters.mock_ips_cache_client import MockIPSCacheClient
+            self.ips_cache = MockIPSCacheClient()
+            logger.info("AsyncRedisSaver using MockIPSCacheClient for testing")
+        else:
+            self.ips_cache = IPSCacheClient()
 
     @classmethod
     @asynccontextmanager

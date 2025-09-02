@@ -29,6 +29,7 @@ from app.service.agent.autonomous_agents import (
 )
 from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
+    EntityType,
     InvestigationPhase as InvestigationStatus,  # Using InvestigationPhase as status
     DomainFindings,
 )
@@ -302,36 +303,41 @@ class TestAutonomousInvestigationE2E:
         db_session = real_database()
         try:
             for i in range(3):
-                # Create unique user and entity for each investigation
+                # Create unique investigator user and entity for each investigation
                 user = UserRecord(
-                    user_id=f"concurrent_user_{i}_{datetime.now().timestamp()}",
-                    email=f"user{i}@concurrent.test",
-                    phone=f"+1415555000{i}",
-                    ip_address=generator._generate_test_ip(),
-                    device_fingerprint=json.dumps(generator._generate_device_fingerprint()),
-                    created_at=datetime.now() - timedelta(days=30),
-                    last_activity=datetime.now(),
+                    username=f"investigator_{i}_{int(datetime.now().timestamp())}",
+                    email=f"investigator{i}@concurrent.test",
+                    hashed_password="hashed_password_placeholder",
+                    first_name=f"Investigator",
+                    last_name=f"User{i}",
+                    is_active=True,
                 )
                 db_session.add(user)
+                db_session.flush()  # Get the ID
                 
                 entity = EntityRecord(
-                    entity_id=f"concurrent_entity_{i}_{datetime.now().timestamp()}",
-                    entity_type="merchant",
-                    name=f"Concurrent Test Merchant {i}",
+                    entity_id=f"concurrent_entity_{i}_{int(datetime.now().timestamp())}",
+                    entity_type="user",  # Changed to user type for investigation subject
+                    attributes=json.dumps({
+                        "name": f"Concurrent Test User {i}",
+                        "email": f"subject{i}@concurrent.test",
+                        "phone": f"+1415555000{i}",
+                        "ip_address": "192.168.1.100",  # Test IP
+                        "device_fingerprint": {"browser": "Chrome", "os": "Windows"}
+                    }),
                     risk_score=0.5,
-                    metadata=json.dumps({"test": True}),
-                    created_at=datetime.now() - timedelta(days=90),
                 )
                 db_session.add(entity)
                 
                 investigation = InvestigationRecord(
-                    investigation_id=f"concurrent_inv_{i}_{datetime.now().timestamp()}",
-                    user_id=user.user_id,
+                    user_id=user.id,  # Reference to investigator user
+                    entity_type="user",
                     entity_id=entity.entity_id,
+                    investigation_type="fraud",
                     status="active",
                     risk_score=0.0,
-                    created_at=datetime.now(),
-                    metadata=json.dumps({"concurrent_test": True}),
+                    title=f"Concurrent Investigation {i}",
+                    description="Test investigation for concurrent processing",
                 )
                 db_session.add(investigation)
                 
@@ -339,14 +345,10 @@ class TestAutonomousInvestigationE2E:
                 
                 # Create context
                 context = AutonomousInvestigationContext(
-                    investigation_id=investigation.investigation_id,
-                    user_id=user.user_id,
+                    investigation_id=investigation.id,
                     entity_id=entity.entity_id,
-                    session_id=f"session_{i}_{datetime.now().timestamp()}",
-                    status=InvestigationStatus.ANALYSIS,  # Using ANALYSIS phase for active investigations
-                    user_data={"email": user.email, "phone": user.phone},
-                    entity_data={"name": entity.name, "type": entity.entity_type},
-                    request_metadata={"test": "concurrent", "index": i},
+                    entity_type=EntityType.USER_ID,
+                    investigation_type="fraud_investigation"
                 )
                 contexts.append(context)
         finally:
@@ -563,51 +565,54 @@ class TestScenarioBasedInvestigations:
         # Create investigation context with ATO patterns
         db_session = real_database()
         try:
-            # Create user with ATO indicators
+            # Create investigator user
             user = UserRecord(
-                user_id=scenario.user_data["user_id"],
+                username=f"investigator_ato_{int(datetime.now().timestamp())}",
                 email=scenario.user_data["email"],
-                phone=scenario.user_data["phone"],
-                ip_address=scenario.user_data["ip_address"],
-                device_fingerprint=json.dumps(scenario.user_data["device_fingerprint"]),
-                created_at=datetime.now() - timedelta(days=180),
-                last_activity=datetime.now() - timedelta(minutes=5),
+                hashed_password="hashed_password_placeholder",
+                first_name="ATO",
+                last_name="Investigator",
+                is_active=True,
             )
             db_session.add(user)
+            db_session.flush()  # Get the ID
             
-            entity = UserRecord(
+            # Create investigation subject entity
+            entity = EntityRecord(
                 entity_id=scenario.entity_data["entity_id"],
                 entity_type=scenario.entity_data["entity_type"],
-                name=scenario.entity_data["name"],
+                attributes=json.dumps({
+                    "name": scenario.entity_data["name"],
+                    "user_id": scenario.user_data["user_id"],
+                    "email": scenario.user_data["email"],
+                    "phone": scenario.user_data["phone"],
+                    "ip_address": scenario.user_data["ip_address"],
+                    "device_fingerprint": scenario.user_data["device_fingerprint"],
+                    **scenario.entity_data
+                }),
                 risk_score=scenario.entity_data["risk_score"],
-                metadata=json.dumps(scenario.entity_data),
-                created_at=datetime.now() - timedelta(days=365),
             )
             db_session.add(entity)
             
             investigation = InvestigationRecord(
-                investigation_id=f"ato_test_{datetime.now().timestamp()}",
-                user_id=user.user_id,
+                user_id=user.id,
+                entity_type=entity.entity_type,
                 entity_id=entity.entity_id,
+                investigation_type="ato",
                 status="active",
                 risk_score=0.0,
-                created_at=datetime.now(),
-                metadata=json.dumps({"scenario": "account_takeover"}),
+                title="ATO Detection Test",
+                description="Test investigation for account takeover detection",
             )
             db_session.add(investigation)
             db_session.commit()
             
             # Create context with ATO patterns
             context = AutonomousInvestigationContext(
-                investigation_id=investigation.investigation_id,
-                user_id=user.user_id,
+                investigation_id=investigation.id,
                 entity_id=entity.entity_id,
-                session_id=f"ato_session_{datetime.now().timestamp()}",
-                status=InvestigationStatus.IN_PROGRESS,
-                user_data=scenario.user_data,
-                entity_data=scenario.entity_data,
-                behavioral_patterns=scenario.behavioral_patterns,
-                request_metadata={"scenario": "account_takeover", "risk_level": "critical"},
+                entity_type=EntityType.USER_ID,
+                investigation_type="ato"
             )
         finally:
             db_session.close()

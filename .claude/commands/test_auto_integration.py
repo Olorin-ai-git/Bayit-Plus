@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude /tools/test Command Integration
+test-auto Command Integration
 Bridges Claude commands with python-tests-expert subagent
 """
 
@@ -136,7 +136,7 @@ def main():
     """Main entry point for Claude command"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Claude /tools/test command")
+    parser = argparse.ArgumentParser(description="test-auto command")
     parser.add_argument("--task", default="Run full autonomous investigation test suite", 
                        help="Specific test task")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
