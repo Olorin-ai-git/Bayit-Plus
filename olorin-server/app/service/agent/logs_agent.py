@@ -70,14 +70,23 @@ async def autonomous_logs_agent(state, config) -> dict:
         # Create autonomous agent
         logs_agent = create_autonomous_agent("logs", tools)
         
-        # Perform autonomous investigation
+        # Enhanced objectives with threat intelligence for behavioral analysis
         findings = await logs_agent.autonomous_investigate(
             context=autonomous_context,
             config=config,
             specific_objectives=[
-                "Analyze activity logs for suspicious patterns",
-                "Identify behavioral anomalies and inconsistencies",
-                "Detect unauthorized access attempts"
+                "Analyze activity logs for suspicious patterns and fraud indicators",
+                "Cross-reference accessed URLs with VirusTotal for malicious domain detection",
+                "Check all IP addresses in logs against AbuseIPDB threat database",
+                "Identify connections to known C2 servers or malicious infrastructure using Shodan",
+                "Detect automated bot behavior and scripted attack patterns",
+                "Identify brute force attempts, credential stuffing, and account takeover activities",
+                "Check for data exfiltration patterns to suspicious IPs using threat intelligence",
+                "Analyze user agent strings for known malicious tools and fraud frameworks",
+                "Detect privilege escalation attempts and lateral movement patterns",
+                "Identify API abuse and rate limit violations indicative of attacks",
+                "Check for access from sanctioned countries or high-risk regions",
+                "Use unified threat intelligence to correlate behavioral anomalies with known attack patterns"
             ]
         )
         

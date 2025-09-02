@@ -70,14 +70,23 @@ async def autonomous_device_agent(state, config) -> dict:
         # Create autonomous agent
         device_agent = create_autonomous_agent("device", tools)
         
-        # Perform autonomous investigation
+        # Enhanced objectives with threat intelligence focus
         findings = await device_agent.autonomous_investigate(
             context=autonomous_context,
             config=config,
             specific_objectives=[
-                "Analyze device fingerprints for authenticity",
-                "Detect device spoofing or manipulation",
-                "Identify behavioral anomalies and patterns"
+                "Analyze device fingerprints for authenticity and known fraud patterns",
+                "PRIORITY: Check device IP addresses against AbuseIPDB and VirusTotal threat databases",
+                "PRIORITY: Use VirusTotal file analysis to check any file hashes associated with the device",
+                "Scan for malware signatures and suspicious file modifications using VirusTotal",
+                "Use Shodan to identify if device IPs are associated with known compromised infrastructure",
+                "Detect device spoofing, emulation, or virtualization attempts",
+                "Check for jailbroken/rooted devices and security bypasses",
+                "Analyze installed applications for malicious or fraudulent software",
+                "Identify device cloning or multiple accounts on same device",
+                "Check browser fingerprints against known fraud tools and automation",
+                "Detect remote access tools, screen sharing, or device takeover attempts",
+                "Use unified threat intelligence to correlate device indicators across sources"
             ]
         )
         

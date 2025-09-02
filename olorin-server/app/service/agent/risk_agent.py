@@ -70,15 +70,24 @@ async def autonomous_risk_agent(state, config) -> dict:
         # Create autonomous agent
         risk_agent = create_autonomous_agent("risk", tools)
         
-        # Perform autonomous investigation
+        # Enhanced objectives with threat intelligence aggregation focus
         findings = await risk_agent.autonomous_investigate(
             context=autonomous_context,
             config=config,
             specific_objectives=[
-                "Integrate findings from all investigation domains",
-                "Perform comprehensive risk correlation analysis",
-                "Calculate overall fraud probability",
-                "Provide final risk assessment and recommendations"
+                "Integrate findings from all investigation domains (device, network, location, logs)",
+                "PRIORITY: Use unified_threat_intelligence tool to aggregate all threat signals from multiple sources",
+                "Correlate threat intelligence findings from AbuseIPDB, VirusTotal, and Shodan",
+                "Calculate weighted risk score based on threat intelligence confidence levels",
+                "Analyze consensus between different threat intelligence providers",
+                "Identify high-confidence malicious indicators confirmed by multiple sources",
+                "Assess infrastructure risk using Shodan vulnerability and exposure data",
+                "Evaluate file and URL threats using VirusTotal analysis results",
+                "Determine IP reputation consensus from AbuseIPDB and VirusTotal",
+                "Generate comprehensive fraud probability incorporating threat intelligence signals",
+                "Prioritize critical threats requiring immediate action",
+                "Provide risk-based recommendations with threat intelligence context",
+                "Create executive summary highlighting key threat intelligence findings"
             ]
         )
         

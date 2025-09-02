@@ -70,14 +70,22 @@ async def autonomous_location_agent(state, config) -> dict:
         # Create autonomous agent
         location_agent = create_autonomous_agent("location", tools)
         
-        # Perform autonomous investigation
+        # Enhanced objectives with threat intelligence for geographic analysis
         findings = await location_agent.autonomous_investigate(
             context=autonomous_context,
             config=config,
             specific_objectives=[
-                "Analyze geographic patterns and travel behavior",
-                "Detect impossible travel scenarios",
-                "Identify location-based risk factors"
+                "Analyze geographic patterns and travel behavior for anomalies",
+                "Check location IP addresses against AbuseIPDB for geographic consistency",
+                "Use Shodan to verify if IPs match claimed geographic locations",
+                "Detect VPN, proxy, or TOR usage masking true location using threat intelligence",
+                "Identify impossible travel scenarios and velocity violations",
+                "Check if locations are associated with high-risk countries or sanctioned regions",
+                "Verify ISP and organization data matches expected location using Shodan",
+                "Detect location spoofing using threat intelligence correlation",
+                "Identify data center IPs pretending to be residential using AbuseIPDB",
+                "Check for location-based fraud hotspots and known criminal infrastructure",
+                "Analyze timezone inconsistencies with claimed location"
             ]
         )
         

@@ -70,14 +70,22 @@ async def autonomous_network_agent(state, config) -> dict:
         # Create autonomous agent
         network_agent = create_autonomous_agent("network", tools)
         
-        # Perform autonomous investigation
+        # Enhanced objectives with threat intelligence focus
         findings = await network_agent.autonomous_investigate(
             context=autonomous_context,
             config=config,
             specific_objectives=[
-                "Analyze network patterns for suspicious connections",
-                "Identify IP reputation and geographic anomalies", 
-                "Detect network-based fraud indicators"
+                "Analyze network patterns for suspicious connections and anomalies",
+                "PRIORITY: Check ALL IP addresses against AbuseIPDB for reputation scores and abuse confidence levels",
+                "PRIORITY: Use Shodan to gather infrastructure intelligence about any suspicious or external IPs",
+                "Query VirusTotal for IP reputation and malicious activity indicators",
+                "Use the unified threat intelligence tool to correlate findings across multiple sources",
+                "Identify geographic anomalies, impossible travel, and VPN/proxy usage",
+                "Detect command and control (C2) server connections and botnet activity",
+                "Check for connections to known malicious domains using VirusTotal domain analysis",
+                "Analyze port scanning attempts and unusual network protocols",
+                "Identify data exfiltration patterns and suspicious outbound connections",
+                "Detect network-based fraud indicators including account takeover attempts"
             ]
         )
         

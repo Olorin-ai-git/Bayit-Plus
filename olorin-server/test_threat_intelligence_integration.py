@@ -101,8 +101,7 @@ async def demonstrate_agent_with_threat_intel():
     print("="*60 + "\n")
     
     # Create a sample investigation context
-    from app.service.agent.autonomous_context import AutonomousInvestigationContext
-    from app.models.types import EntityType
+    from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
     
     investigation_id = f"test_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     entity_id = "test_user_123"
@@ -114,7 +113,7 @@ async def demonstrate_agent_with_threat_intel():
     context = AutonomousInvestigationContext(
         investigation_id=investigation_id,
         entity_id=entity_id,
-        entity_type=EntityType.USER,
+        entity_type=EntityType.USER_ID,
         investigation_type="fraud_investigation"
     )
     
