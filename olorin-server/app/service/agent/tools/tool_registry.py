@@ -49,6 +49,11 @@ try:
     from .threat_intelligence_tool.virustotal.file_analysis_tool import VirusTotalFileAnalysisTool
     from .threat_intelligence_tool.virustotal.url_analysis_tool import VirusTotalURLAnalysisTool
     
+    # Shodan tools
+    from .threat_intelligence_tool.shodan.infrastructure_analysis_tool import ShodanInfrastructureAnalysisTool
+    from .threat_intelligence_tool.shodan.search_tool import ShodanSearchTool
+    from .threat_intelligence_tool.shodan.exploit_search_tool import ShodanExploitSearchTool
+    
     # Unified threat intelligence tool
     from .threat_intelligence_tool.unified_threat_intelligence_tool import UnifiedThreatIntelligenceTool
 
@@ -218,6 +223,25 @@ class ToolRegistry:
                     logger.info("VirusTotal URL analysis tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register VirusTotal URL analysis tool: {e}")
+                
+                # Shodan tools
+                try:
+                    self._register_tool(ShodanInfrastructureAnalysisTool(), "threat_intelligence")
+                    logger.info("Shodan infrastructure analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan infrastructure analysis tool: {e}")
+                
+                try:
+                    self._register_tool(ShodanSearchTool(), "threat_intelligence")
+                    logger.info("Shodan search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan search tool: {e}")
+                
+                try:
+                    self._register_tool(ShodanExploitSearchTool(), "threat_intelligence")
+                    logger.info("Shodan exploit search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan exploit search tool: {e}")
                 
                 # Unified threat intelligence tool
                 try:
