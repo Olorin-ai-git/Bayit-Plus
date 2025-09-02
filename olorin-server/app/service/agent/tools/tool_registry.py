@@ -25,7 +25,11 @@ from .web_search_tool import WebScrapeTool, WebSearchTool
 
 # Import MCP client tools (connect to external MCP servers)
 try:
-    from ..mcp_client import blockchain_mcp_client
+    from ..mcp_client import (
+        blockchain_mcp_client,
+        intelligence_mcp_client,
+        ml_ai_mcp_client
+    )
     MCP_CLIENTS_AVAILABLE = True
 except ImportError:
     MCP_CLIENTS_AVAILABLE = False
@@ -74,6 +78,7 @@ class ToolRegistry:
             "search": [],
             "olorin": [],  # Olorin-specific tools
             "threat_intelligence": [],  # Threat intelligence tools
+            "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
             "utility": [],
         }
         self._initialized = False
@@ -163,6 +168,18 @@ class ToolRegistry:
                     logger.info("Blockchain MCP client registered")
                 except Exception as e:
                     logger.warning(f"Failed to register Blockchain MCP client: {e}")
+                
+                try:
+                    self._register_tool(intelligence_mcp_client, "mcp_clients")
+                    logger.info("Intelligence MCP client registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Intelligence MCP client: {e}")
+                
+                try:
+                    self._register_tool(ml_ai_mcp_client, "mcp_clients")
+                    logger.info("ML/AI MCP client registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register ML/AI MCP client: {e}")
             
             # Threat Intelligence Tools
             if THREAT_INTEL_AVAILABLE:
