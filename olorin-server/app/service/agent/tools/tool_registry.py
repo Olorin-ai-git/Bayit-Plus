@@ -15,7 +15,6 @@ from .file_system_tool import (
     FileSearchTool,
     FileWriteTool,
 )
-from .oii_tool.oii_tool import OIITool
 
 # Import Olorin-specific tools
 from .splunk_tool import SplunkQueryTool
@@ -24,14 +23,12 @@ from .snowflake_tool.snowflake_tool import SnowflakeQueryTool
 from .vector_search_tool import VectorSearchTool
 from .web_search_tool import WebScrapeTool, WebSearchTool
 
-# Try to import optional tools - they may have dependencies or issues
+# Import MCP client tools (connect to external MCP servers)
 try:
-    from .di_tool.di_tool import DITool
-
-    DI_AVAILABLE = True
-except ImportError as e:
-    logger.warning(f"DITool not available: {e}")
-    DI_AVAILABLE = False
+    from ..mcp_client import blockchain_mcp_client
+    MCP_CLIENTS_AVAILABLE = True
+except ImportError:
+    MCP_CLIENTS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -159,19 +156,14 @@ class ToolRegistry:
             except Exception as e:
                 logger.warning(f"Failed to register Snowflake tool: {e}")
 
-            try:
-                self._register_tool(OIITool(), "olorin")
-                logger.info("OII tool registered")
-            except Exception as e:
-                logger.warning(f"Failed to register OII tool: {e}")
-
-            if DI_AVAILABLE:
+            # MCP Client Tools (connect to external MCP servers)
+            if MCP_CLIENTS_AVAILABLE:
                 try:
-                    self._register_tool(DITool(), "olorin")
-                    logger.info("DI tool registered")
+                    self._register_tool(blockchain_mcp_client, "mcp_clients")
+                    logger.info("Blockchain MCP client registered")
                 except Exception as e:
-                    logger.warning(f"Failed to register DI tool: {e}")
-
+                    logger.warning(f"Failed to register Blockchain MCP client: {e}")
+            
             # Threat Intelligence Tools
             if THREAT_INTEL_AVAILABLE:
                 # AbuseIPDB tools
@@ -410,13 +402,18 @@ def get_search_tools() -> List[BaseTool]:
 
 
 def get_olorin_tools() -> List[BaseTool]:
-    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, DI)."""
+    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake)."""
     return tool_registry.get_tools_by_category("olorin")
 
 
 def get_threat_intelligence_tools() -> List[BaseTool]:
     """Get threat intelligence tools (AbuseIPDB, VirusTotal, unified aggregator, etc.)."""
     return tool_registry.get_tools_by_category("threat_intelligence")
+
+
+def get_mcp_client_tools() -> List[BaseTool]:
+    """Get MCP client tools that connect to external MCP servers."""
+    return tool_registry.get_tools_by_category("mcp_clients")
 
 
 def get_essential_tools() -> List[BaseTool]:

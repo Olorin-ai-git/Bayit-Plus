@@ -6,10 +6,13 @@ This package provides comprehensive security for MCP server communications inclu
 - Input validation and sanitization
 - Audit logging and compliance
 - Rate limiting and DDoS protection
+- Extended compliance frameworks (AML, KYC, GDPR, SOX)
+- PII masking and tokenization services
 
 Author: Security Specialist
 Date: 2025-08-31
 Phase: 3 - Security and Enterprise Integration
+Phase: 5 - Extended Security Framework (Enhanced)
 """
 
 from .mcp_auth import (
@@ -37,6 +40,18 @@ from .input_validator import (
     validation_rate_limiter,
 )
 
+from .extended_security_framework import (
+    ExtendedSecurityFramework,
+    SecurityLevel,
+    ComplianceFramework,
+    SecurityContext,
+    ValidationResult as ExtendedValidationResult,
+    AuditLogEntry,
+    PIIMaskingEngine,
+    TokenizationService,
+    APIKeyRotationManager
+)
+
 __all__ = [
     # Authentication & Authorization
     'MCPAuthenticationService',
@@ -60,4 +75,15 @@ __all__ = [
     'ValidationRateLimiter',
     'fraud_validator',
     'validation_rate_limiter',
+    
+    # Extended Security Framework
+    'ExtendedSecurityFramework',
+    'SecurityLevel',
+    'ComplianceFramework',
+    'SecurityContext',
+    'ExtendedValidationResult',
+    'AuditLogEntry',
+    'PIIMaskingEngine',
+    'TokenizationService',
+    'APIKeyRotationManager',
 ]
