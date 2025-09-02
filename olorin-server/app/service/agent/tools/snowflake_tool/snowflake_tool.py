@@ -1,66 +1,66 @@
 """
 Snowflake Query Tool for LangChain
 
-This tool allows querying Snowflake data warehouse for transaction history, 
-user profiles, and analytical data.
+This tool allows querying Snowflake data warehouse for comprehensive transaction analysis,
+fraud detection, user profiling, and business intelligence. The tool provides access to
+a rich dataset containing transaction records, user data, payment methods, risk scores,
+disputes, fraud alerts, and much more.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, Optional
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 import logging
-import asyncio
+from datetime import datetime
+from .client import SnowflakeClient
+from .schema_info import SNOWFLAKE_SCHEMA_INFO
 
 logger = logging.getLogger(__name__)
 
 
 class _SnowflakeQueryArgs(BaseModel):
     """Arguments for Snowflake SQL query."""
-    query: str = Field(..., description="The SQL query to execute against Snowflake data warehouse.")
-    database: str = Field("FRAUD_DB", description="The Snowflake database to query.")
-    schema: str = Field("PUBLIC", description="The database schema to use.")
+    query: str = Field(
+        ..., 
+        description=(
+            "The SQL query to execute against Snowflake data warehouse. "
+            "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
+            "Key columns include: TX_ID_KEY (transaction ID), EMAIL (user email), "
+            "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
+            "NSURE_LAST_DECISION (approval/reject decision), GMV (gross merchandise value), "
+            "TX_DATETIME (transaction timestamp), PAYMENT_METHOD, CARD_BRAND, etc. "
+            "Use LIMIT clause for large result sets."
+        )
+    )
+    database: str = Field(
+        "FRAUD_DB", 
+        description="The Snowflake database to query (default: FRAUD_DB)."
+    )
+    db_schema: str = Field(
+        "PUBLIC", 
+        description="The database schema to use (default: PUBLIC)."
+    )
+    limit: Optional[int] = Field(
+        1000,
+        description="Maximum number of rows to return (default: 1000, max: 10000)."
+    )
 
-
-class SnowflakeClient:
-    """Client for interacting with Snowflake data warehouse."""
-    
-    def __init__(self, account: str, user: str, password: str, warehouse: str):
-        self.account = account
-        self.user = user
-        self.password = password
-        self.warehouse = warehouse
-        self.connection = None
-        
-    async def connect(self, database: str = "FRAUD_DB", schema: str = "PUBLIC"):
-        """Establish connection to Snowflake."""
-        await asyncio.sleep(0.1)  # Simulate connection
-        logger.info(f"Connected to Snowflake: {self.account}/{database}.{schema}")
-        self.database = database
-        self.schema = schema
-        
-    async def disconnect(self):
-        """Close Snowflake connection."""
-        await asyncio.sleep(0.1)
-        logger.info("Disconnected from Snowflake")
-        
-    async def execute_query(self, query: str) -> List[Dict[str, Any]]:
-        """Execute a SQL query against Snowflake."""
-        logger.info(f"Executing Snowflake query in {self.database}.{self.schema}: {query[:100]}...")
-        # In production, this would use snowflake-connector-python
-        await asyncio.sleep(0.5)  # Simulate query execution
-        return []
 
 
 class SnowflakeQueryTool(BaseTool):
     """LangChain tool for querying Snowflake data warehouse."""
     
-    name: str = "snowflake_query_tool"
+    name: str = "snowflake_query_tool" 
     description: str = (
-        "Queries Snowflake data warehouse for transaction history, user profiles, "
-        "customer data, and analytical insights. Use this tool when you need to analyze "
-        "historical transaction patterns, user account details, payment methods, "
-        "customer behavior analytics, or financial data. Snowflake contains structured "
-        "business data that complements the logs from Splunk and SumoLogic."
+        "Queries comprehensive Snowflake fraud detection data warehouse containing detailed "
+        "transaction records, user profiles, payment methods, risk scores, fraud indicators, "
+        "disputes, and business intelligence data. Main table is TRANSACTIONS_ENRICHED with "
+        "300+ columns including: transaction IDs, user emails, fraud scores (MODEL_SCORE 0-1), "
+        "payment methods, card details, IP geolocation, device fingerprints, merchant data, "
+        "NSure decisions, MaxMind risk scores, triggered fraud rules, dispute records, "
+        "fraud alerts, KYC data, and comprehensive transaction metadata. Use for fraud analysis, "
+        "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "
+        "Supports complex queries with JOINs, aggregations, time-based filtering, and statistical analysis."
     )
     
     # Explicit args schema for strict tool parsing
@@ -76,12 +76,12 @@ class SnowflakeQueryTool(BaseTool):
         description="Snowflake warehouse for query execution"
     )
     
-    def _run(self, query: str, database: str = "FRAUD_DB", schema: str = "PUBLIC") -> Dict[str, Any]:
+    def _run(self, query: str, database: str = "FRAUD_DB", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Synchronous execution wrapper."""
         import asyncio
-        return asyncio.run(self._arun(query, database, schema))
+        return asyncio.run(self._arun(query, database, db_schema, limit))
     
-    async def _arun(self, query: str, database: str = "FRAUD_DB", schema: str = "PUBLIC") -> Dict[str, Any]:
+    async def _arun(self, query: str, database: str = "FRAUD_DB", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Async execution of the Snowflake query."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret
@@ -107,17 +107,37 @@ class SnowflakeQueryTool(BaseTool):
         )
         
         try:
-            await client.connect(database=database, schema=schema)
-            results = await client.execute_query(query)
+            await client.connect(database=database, schema=db_schema)
+            results = await client.execute_query(query, limit=limit)
             
             logger.info(f"Snowflake query completed, returned {len(results)} rows")
+            
+            # Extract column names from first row if available
+            columns = list(results[0].keys()) if results else []
+            
+            # Provide query insights
+            query_insights = {
+                "contains_fraud_analysis": any(keyword in query.upper() for keyword in ['FRAUD', 'MODEL_SCORE', 'RISK']),
+                "contains_user_analysis": any(keyword in query.upper() for keyword in ['EMAIL', 'USER', 'CUSTOMER']),
+                "contains_payment_analysis": any(keyword in query.upper() for keyword in ['PAYMENT', 'CARD', 'BIN']),
+                "contains_time_analysis": any(keyword in query.upper() for keyword in ['TX_DATETIME', 'DATE', 'TIME']),
+                "is_aggregate_query": any(keyword in query.upper() for keyword in ['COUNT', 'SUM', 'AVG', 'GROUP BY'])
+            }
             
             return {
                 "results": results,
                 "row_count": len(results),
+                "columns": columns,
                 "database": database,
-                "schema": schema,
-                "query_status": "success"
+                "schema": db_schema,
+                "table": "TRANSACTIONS_ENRICHED",
+                "query_insights": query_insights,
+                "query_status": "success",
+                "execution_timestamp": datetime.now().isoformat(),
+                "schema_info": {
+                    "available_columns": list(SNOWFLAKE_SCHEMA_INFO["key_columns"].keys()),
+                    "common_queries": list(SNOWFLAKE_SCHEMA_INFO["common_queries"].keys())
+                }
             }
             
         except Exception as e:
@@ -126,7 +146,12 @@ class SnowflakeQueryTool(BaseTool):
                 "error": str(e),
                 "results": [],
                 "row_count": 0,
-                "query_status": "failed"
+                "query_status": "failed",
+                "execution_timestamp": datetime.now().isoformat(),
+                "suggestion": (
+                    "Ensure your query uses SELECT statements only and references the "
+                    "TRANSACTIONS_ENRICHED table. Check column names against schema documentation."
+                )
             }
         finally:
             try:

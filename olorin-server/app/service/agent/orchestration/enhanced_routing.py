@@ -449,3 +449,130 @@ def adaptive_domain_routing(state: Dict[str, Any]) -> str:
         return "risk_agent"
     
     return f"{next_domain}_agent"
+
+
+def csv_data_routing(state: Dict[str, Any]) -> str:
+    """
+    Route to raw data processing if CSV data is detected in messages.
+    
+    This function analyzes the investigation state to determine if raw CSV data
+    has been provided and routes accordingly. If CSV data is detected, it routes
+    to the raw_data_node for processing. Otherwise, it continues with standard
+    investigation flow.
+    
+    Args:
+        state: Current investigation state with messages
+        
+    Returns:
+        Next node to route to ("raw_data_node" or "fraud_investigation")
+    """
+    logger.info("Performing CSV data routing analysis")
+    
+    # Extract messages from state
+    messages = state.get("messages", [])
+    if not messages:
+        logger.info("No messages found, routing to standard investigation")
+        return "fraud_investigation"
+    
+    # Check for CSV data in messages
+    has_csv_data = _detect_csv_data_in_messages(messages)
+    
+    if has_csv_data:
+        logger.info("CSV data detected, routing to raw data processing")
+        return "raw_data_node"
+    else:
+        logger.info("No CSV data detected, routing to standard fraud investigation")
+        return "fraud_investigation"
+
+
+def raw_data_or_investigation_routing(state: Dict[str, Any]) -> str:
+    """
+    Primary routing function that determines whether to process raw CSV data
+    or proceed with standard fraud investigation.
+    
+    This is the main entry point for investigation routing after initialization.
+    It first checks for raw CSV data, and if found, routes to raw data processing.
+    Otherwise, it proceeds with standard investigation flow.
+    
+    Args:
+        state: Current investigation state
+        
+    Returns:
+        Next node to execute ("raw_data_node" or "fraud_investigation")
+    """
+    logger.info("Determining investigation routing: raw data vs standard flow")
+    
+    # First check for CSV data
+    if _detect_csv_data_in_messages(state.get("messages", [])):
+        logger.info("Raw CSV data detected - routing to raw data processing")
+        return "raw_data_node"
+    
+    # No CSV data found, proceed with standard investigation
+    logger.info("No raw data detected - routing to standard fraud investigation")
+    return "fraud_investigation"
+
+
+def _detect_csv_data_in_messages(messages: List[BaseMessage]) -> bool:
+    """
+    Detect if CSV data is present in the messages.
+    
+    Args:
+        messages: List of messages to analyze
+        
+    Returns:
+        True if CSV data is detected
+    """
+    # CSV detection indicators
+    csv_indicators = [
+        "csv_data",
+        "file_content", 
+        ".csv",
+        "transaction_id",
+        "amount,timestamp",  # Common CSV header pattern
+        ",,",  # Multiple commas suggesting CSV structure
+    ]
+    
+    for message in messages:
+        try:
+            # Check message content
+            content = ""
+            if hasattr(message, 'content') and message.content:
+                content = str(message.content).lower()
+                
+                # Look for CSV indicators in content
+                if any(indicator in content for indicator in csv_indicators):
+                    logger.info(f"CSV indicator found in message content: {content[:100]}...")
+                    return True
+                
+                # Check for comma-separated structure (basic heuristic)
+                lines = content.split('\n')
+                if len(lines) > 1:
+                    # Check if multiple lines have comma separations
+                    comma_lines = [line for line in lines if ',' in line]
+                    if len(comma_lines) > 2:  # At least header + 2 data rows
+                        # Check if lines have similar comma counts (suggesting tabular data)
+                        comma_counts = [line.count(',') for line in comma_lines[:5]]  # Check first 5 lines
+                        if comma_counts and all(count > 2 and abs(count - comma_counts[0]) <= 1 for count in comma_counts):
+                            logger.info("CSV structure detected based on comma patterns")
+                            return True
+            
+            # Check additional_kwargs for structured data
+            if hasattr(message, 'additional_kwargs') and message.additional_kwargs:
+                kwargs = message.additional_kwargs
+                
+                # Direct CSV data keys
+                if kwargs.get('csv_data') or kwargs.get('file_content'):
+                    logger.info("CSV data found in message additional_kwargs")
+                    return True
+                
+                # Filename checks
+                filename = kwargs.get('filename', '')
+                if filename and filename.lower().endswith('.csv'):
+                    logger.info(f"CSV file detected: {filename}")
+                    return True
+                    
+        except Exception as e:
+            logger.warning(f"Error analyzing message for CSV data: {e}")
+            continue
+    
+    return False

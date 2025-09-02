@@ -28,7 +28,9 @@ from app.service.agent.orchestration.subgraphs import (
 from app.service.agent.orchestration.enhanced_routing import (
     enhanced_fraud_routing,
     complexity_based_routing,
-    adaptive_domain_routing
+    adaptive_domain_routing,
+    csv_data_routing,
+    raw_data_or_investigation_routing
 )
 
 # Define MessagesState since it's not available in langchain_core.messages
@@ -48,6 +50,7 @@ from app.service.agent.investigators.domain_agents import (
 )
 from app.service.agent.orchestration.investigation_coordinator import start_investigation
 from app.service.agent.orchestration.assistant import assistant
+from app.service.agent.nodes.raw_data_node import raw_data_node
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +64,7 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
 
     # Define nodes
     builder.add_node("start_investigation", start_investigation)
+    builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
     builder.add_node("network_agent", autonomous_network_agent)
     builder.add_node("location_agent", autonomous_location_agent)
@@ -86,7 +90,19 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
 
     # Define edges for parallel execution
     builder.add_edge(START, "start_investigation")
-    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Add conditional routing for raw data vs standard investigation
+    builder.add_conditional_edges(
+        "start_investigation",
+        raw_data_or_investigation_routing,
+        {
+            "raw_data_node": "raw_data_node",
+            "fraud_investigation": "fraud_investigation"
+        }
+    )
+    
+    # Raw data processing flows back to fraud investigation
+    builder.add_edge("raw_data_node", "fraud_investigation")
     
     # Autonomous tool selection
     builder.add_conditional_edges("fraud_investigation", tools_condition)
@@ -119,6 +135,7 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
 
     # Define nodes with traditional sequential execution
     builder.add_node("start_investigation", start_investigation)
+    builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
     builder.add_node("network_agent", network_agent)
     builder.add_node("location_agent", location_agent)
@@ -144,7 +161,19 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
 
     # Sequential execution flow
     builder.add_edge(START, "start_investigation")
-    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Add conditional routing for raw data vs standard investigation
+    builder.add_conditional_edges(
+        "start_investigation",
+        raw_data_or_investigation_routing,
+        {
+            "raw_data_node": "raw_data_node",
+            "fraud_investigation": "fraud_investigation"
+        }
+    )
+    
+    # Raw data processing flows back to fraud investigation
+    builder.add_edge("raw_data_node", "fraud_investigation")
     builder.add_conditional_edges("fraud_investigation", tools_condition)
     builder.add_edge("tools", "fraud_investigation")
     
@@ -187,6 +216,7 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     
     # Add main nodes
     builder.add_node("start_investigation", start_investigation)
+    builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
     builder.add_node("risk_agent", autonomous_risk_agent)
     
@@ -207,7 +237,19 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     
     # Define routing with enhanced conditional routing
     builder.add_edge(START, "start_investigation")
-    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Add conditional routing for raw data vs standard investigation
+    builder.add_conditional_edges(
+        "start_investigation",
+        raw_data_or_investigation_routing,
+        {
+            "raw_data_node": "raw_data_node",
+            "fraud_investigation": "fraud_investigation"
+        }
+    )
+    
+    # Raw data processing flows back to fraud investigation
+    builder.add_edge("raw_data_node", "fraud_investigation")
     
     # Use enhanced routing for domain selection
     builder.add_conditional_edges(
@@ -415,6 +457,7 @@ async def create_mcp_enhanced_graph(
     
     # Add investigation nodes
     builder.add_node("start_investigation", start_investigation)
+    builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
     
     # Add agent nodes based on execution mode
@@ -441,7 +484,19 @@ async def create_mcp_enhanced_graph(
     
     # Define edges
     builder.add_edge(START, "start_investigation")
-    builder.add_edge("start_investigation", "fraud_investigation")
+    
+    # Add conditional routing for raw data vs standard investigation
+    builder.add_conditional_edges(
+        "start_investigation",
+        raw_data_or_investigation_routing,
+        {
+            "raw_data_node": "raw_data_node",
+            "fraud_investigation": "fraud_investigation"
+        }
+    )
+    
+    # Raw data processing flows back to fraud investigation
+    builder.add_edge("raw_data_node", "fraud_investigation")
     
     # Tool routing
     builder.add_conditional_edges("fraud_investigation", tools_condition)

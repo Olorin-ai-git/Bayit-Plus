@@ -1,11 +1,14 @@
 from typing import List
+import uuid
+import logging
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, UploadFile, File, Form, status
 
 from app.models.api_models import (
     InvestigationCreate,
     InvestigationOut,
     InvestigationUpdate,
+    RawDataUploadResponse,
 )
 from app.persistence import (
     create_investigation,
@@ -109,3 +112,87 @@ def get_investigations_endpoint(current_user: User = Depends(require_read)):
 def delete_all_investigations_endpoint(current_user: User = Depends(require_admin)):
     purge_investigation_cache()
     return {"detail": "All investigations deleted"}
+
+
+@investigations_router.post("/investigation/raw-data", response_model=RawDataUploadResponse)
+async def upload_raw_data_endpoint(
+    investigation_id: str = Form(..., description="Investigation identifier"),
+    file: UploadFile = File(..., description="CSV file containing transaction data"),
+    current_user: User = Depends(require_write)
+):
+    """
+    Upload and process raw CSV transaction data for investigation.
+    
+    This endpoint accepts CSV files containing transaction data and processes them
+    using the RawDataNode for quality assessment, validation, and anomaly detection.
+    
+    **File Requirements:**
+    - Format: CSV (Comma Separated Values)
+    - Size: Maximum 50MB
+    - Encoding: UTF-8
+    - Headers: Must include transaction_id, amount, timestamp
+    
+    **Security Features:**
+    - File type validation
+    - Size limit enforcement
+    - Input sanitization
+    - Rate limiting applied
+    
+    **Processing Features:**
+    - Data validation using Pydantic models
+    - Quality assessment with scoring
+    - Anomaly detection
+    - Batch processing for large files
+    """
+    from app.service.raw_data_service import raw_data_service
+    
+    logger = logging.getLogger(__name__)
+    upload_id = str(uuid.uuid4())
+    
+    try:
+        # Validate file upload
+        raw_data_service.validate_file_upload(file)
+        
+        # Ensure investigation exists
+        raw_data_service.ensure_investigation_exists(investigation_id)
+        
+        # Read file content
+        file_content = await file.read()
+        
+        # Validate file is not empty
+        if not file_content:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Uploaded file is empty"
+            )
+        
+        # Process the CSV data
+        success, processing_result = await raw_data_service.process_raw_data_file(
+            file_content, file.filename, investigation_id
+        )
+        
+        # Convert to API models
+        api_processing_result = raw_data_service.convert_to_api_models(
+            processing_result, investigation_id, file.filename
+        )
+        
+        if success:
+            return raw_data_service.create_success_response(
+                investigation_id, upload_id, api_processing_result
+            )
+        else:
+            error_message = f"Failed to process CSV file: {processing_result.get('error', 'Unknown error')}"
+            return raw_data_service.create_error_response(
+                investigation_id, upload_id, error_message, api_processing_result
+            )
+    
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in raw data upload: {str(e)}", exc_info=True)
+        
+        # Return error response for unexpected errors
+        return raw_data_service.create_error_response(
+            investigation_id, upload_id, f"Internal server error: {str(e)}"
+        )
