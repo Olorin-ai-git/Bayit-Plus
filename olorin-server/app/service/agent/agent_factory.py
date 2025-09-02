@@ -93,7 +93,10 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Assess network-based fraud indicators",
             "Correlate network data with known threat intelligence",
             "Use threat intelligence tools (AbuseIPDB, VirusTotal, Shodan) to verify IP reputation",
-            "Check for blockchain-related network activity using blockchain_mcp_client"
+            "Check for blockchain-related network activity using blockchain_mcp_client",
+            "Analyze cryptocurrency exchanges and wallet addresses using crypto_exchange_analysis",
+            "Monitor dark web cryptocurrency activities using darkweb_crypto_monitor",
+            "Trace cryptocurrency fund flows using cryptocurrency_tracing"
         ],
         "device": [
             "Analyze device fingerprints for consistency and authenticity",
@@ -102,7 +105,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Identify device-based fraud indicators",
             "Evaluate device reputation and risk history",
             "Use ml_ai_mcp_client for behavioral analysis and anomaly detection",
-            "Check device-related files with VirusTotal for malware indicators"
+            "Check device-related files with VirusTotal for malware indicators",
+            "Analyze wallet addresses linked to device using blockchain_wallet_analysis",
+            "Detect NFT fraud patterns using nft_fraud_detection"
         ],
         "location": [
             "Analyze geographic patterns and travel behavior",
@@ -120,7 +125,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Assess log-based fraud indicators",
             "Correlate activities across time periods",
             "Use ml_ai_mcp_client to detect anomalies in log patterns",
-            "Check for cryptocurrency addresses in logs using blockchain_mcp_client"
+            "Check for cryptocurrency addresses in logs using blockchain_mcp_client",
+            "Analyze DeFi protocol interactions using defi_protocol_analysis",
+            "Preserve blockchain evidence using blockchain_forensics"
         ],
         "risk": [
             "Integrate findings from all investigation domains",
@@ -130,7 +137,9 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Provide final risk assessment and recommendations",
             "Aggregate threat intelligence findings from all sources",
             "Use ml_ai_mcp_client for final fraud detection scoring",
-            "Compile blockchain and cryptocurrency risk indicators"
+            "Compile blockchain and cryptocurrency risk indicators",
+            "Ensure regulatory compliance using cryptocurrency_compliance",
+            "Generate forensic reports using blockchain_forensics for legal proceedings"
         ]
     }
     

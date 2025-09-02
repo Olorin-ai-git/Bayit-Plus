@@ -34,6 +34,23 @@ try:
 except ImportError:
     MCP_CLIENTS_AVAILABLE = False
 
+# Import blockchain tools
+try:
+    from .blockchain_tools import (
+        BlockchainWalletAnalysisTool,
+        CryptocurrencyTracingTool,
+        DeFiProtocolAnalysisTool,
+        NFTFraudDetectionTool,
+        BlockchainForensicsTool,
+        CryptoExchangeAnalysisTool,
+        DarkWebCryptoMonitorTool,
+        CryptocurrencyComplianceTool
+    )
+    BLOCKCHAIN_TOOLS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Blockchain tools not available: {e}")
+    BLOCKCHAIN_TOOLS_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 # Try to import threat intelligence tools
@@ -79,6 +96,7 @@ class ToolRegistry:
             "olorin": [],  # Olorin-specific tools
             "threat_intelligence": [],  # Threat intelligence tools
             "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
+            "blockchain": [],  # Blockchain and cryptocurrency analysis tools
             "utility": [],
         }
         self._initialized = False
@@ -258,6 +276,56 @@ class ToolRegistry:
                     logger.info("Unified threat intelligence tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register unified threat intelligence tool: {e}")
+            
+            # Blockchain Tools
+            if BLOCKCHAIN_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(BlockchainWalletAnalysisTool(), "blockchain")
+                    logger.info("Blockchain wallet analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register blockchain wallet analysis tool: {e}")
+                
+                try:
+                    self._register_tool(CryptocurrencyTracingTool(), "blockchain")
+                    logger.info("Cryptocurrency tracing tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register cryptocurrency tracing tool: {e}")
+                
+                try:
+                    self._register_tool(DeFiProtocolAnalysisTool(), "blockchain")
+                    logger.info("DeFi protocol analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register DeFi protocol analysis tool: {e}")
+                
+                try:
+                    self._register_tool(NFTFraudDetectionTool(), "blockchain")
+                    logger.info("NFT fraud detection tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register NFT fraud detection tool: {e}")
+                
+                try:
+                    self._register_tool(BlockchainForensicsTool(), "blockchain")
+                    logger.info("Blockchain forensics tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register blockchain forensics tool: {e}")
+                
+                try:
+                    self._register_tool(CryptoExchangeAnalysisTool(), "blockchain")
+                    logger.info("Crypto exchange analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register crypto exchange analysis tool: {e}")
+                
+                try:
+                    self._register_tool(DarkWebCryptoMonitorTool(), "blockchain")
+                    logger.info("Dark web crypto monitor tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register dark web crypto monitor tool: {e}")
+                
+                try:
+                    self._register_tool(CryptocurrencyComplianceTool(), "blockchain")
+                    logger.info("Cryptocurrency compliance tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register cryptocurrency compliance tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -431,6 +499,11 @@ def get_threat_intelligence_tools() -> List[BaseTool]:
 def get_mcp_client_tools() -> List[BaseTool]:
     """Get MCP client tools that connect to external MCP servers."""
     return tool_registry.get_tools_by_category("mcp_clients")
+
+
+def get_blockchain_tools() -> List[BaseTool]:
+    """Get blockchain and cryptocurrency analysis tools."""
+    return tool_registry.get_tools_by_category("blockchain")
 
 
 def get_essential_tools() -> List[BaseTool]:
