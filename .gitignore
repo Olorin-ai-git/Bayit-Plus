@@ -361,3 +361,7 @@ k8s-secrets/
 # Python Security
 site-packages/
 *.pyc.secure
+
+# Data Files - Large CSV files should not be committed
+*.csv
+transaction_dataset*.csv
