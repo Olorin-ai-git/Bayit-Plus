@@ -35,6 +35,33 @@ except ImportError as e:
 
 logger = logging.getLogger(__name__)
 
+# Try to import threat intelligence tools
+try:
+    # AbuseIPDB tools
+    from .threat_intelligence_tool.abuseipdb.simple_ip_reputation_tool import SimpleIPReputationTool
+    from .threat_intelligence_tool.abuseipdb.bulk_analysis_tool import BulkIPAnalysisTool
+    from .threat_intelligence_tool.abuseipdb.cidr_block_tool import CIDRBlockAnalysisTool
+    from .threat_intelligence_tool.abuseipdb.abuse_reporting_tool import AbuseReportingTool
+    
+    # VirusTotal tools
+    from .threat_intelligence_tool.virustotal.ip_analysis_tool import VirusTotalIPAnalysisTool
+    from .threat_intelligence_tool.virustotal.domain_analysis_tool import VirusTotalDomainAnalysisTool
+    from .threat_intelligence_tool.virustotal.file_analysis_tool import VirusTotalFileAnalysisTool
+    from .threat_intelligence_tool.virustotal.url_analysis_tool import VirusTotalURLAnalysisTool
+    
+    # Shodan tools
+    from .threat_intelligence_tool.shodan.infrastructure_analysis_tool import ShodanInfrastructureAnalysisTool
+    from .threat_intelligence_tool.shodan.search_tool import ShodanSearchTool
+    from .threat_intelligence_tool.shodan.exploit_search_tool import ShodanExploitSearchTool
+    
+    # Unified threat intelligence tool
+    from .threat_intelligence_tool.unified_threat_intelligence_tool import UnifiedThreatIntelligenceTool
+
+    THREAT_INTEL_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Threat intelligence tools not available: {e}")
+    THREAT_INTEL_AVAILABLE = False
+
 
 class ToolRegistry:
     """Registry for managing and accessing LangGraph agent tools."""
@@ -49,6 +76,7 @@ class ToolRegistry:
             "api": [],
             "search": [],
             "olorin": [],  # Olorin-specific tools
+            "threat_intelligence": [],  # Threat intelligence tools
             "utility": [],
         }
         self._initialized = False
@@ -143,6 +171,84 @@ class ToolRegistry:
                     logger.info("DI tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register DI tool: {e}")
+
+            # Threat Intelligence Tools
+            if THREAT_INTEL_AVAILABLE:
+                # AbuseIPDB tools
+                try:
+                    self._register_tool(SimpleIPReputationTool(), "threat_intelligence")
+                    logger.info("AbuseIPDB IP reputation tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register AbuseIPDB IP reputation tool: {e}")
+                
+                try:
+                    self._register_tool(BulkIPAnalysisTool(), "threat_intelligence")
+                    logger.info("AbuseIPDB bulk IP analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register AbuseIPDB bulk IP analysis tool: {e}")
+                
+                try:
+                    self._register_tool(CIDRBlockAnalysisTool(), "threat_intelligence")
+                    logger.info("AbuseIPDB CIDR block analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register AbuseIPDB CIDR block analysis tool: {e}")
+                
+                try:
+                    self._register_tool(AbuseReportingTool(), "threat_intelligence")
+                    logger.info("AbuseIPDB abuse reporting tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register AbuseIPDB abuse reporting tool: {e}")
+                
+                # VirusTotal tools
+                try:
+                    self._register_tool(VirusTotalIPAnalysisTool(), "threat_intelligence")
+                    logger.info("VirusTotal IP analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register VirusTotal IP analysis tool: {e}")
+                
+                try:
+                    self._register_tool(VirusTotalDomainAnalysisTool(), "threat_intelligence")
+                    logger.info("VirusTotal domain analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register VirusTotal domain analysis tool: {e}")
+                
+                try:
+                    self._register_tool(VirusTotalFileAnalysisTool(), "threat_intelligence")
+                    logger.info("VirusTotal file analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register VirusTotal file analysis tool: {e}")
+                
+                try:
+                    self._register_tool(VirusTotalURLAnalysisTool(), "threat_intelligence")
+                    logger.info("VirusTotal URL analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register VirusTotal URL analysis tool: {e}")
+                
+                # Shodan tools
+                try:
+                    self._register_tool(ShodanInfrastructureAnalysisTool(), "threat_intelligence")
+                    logger.info("Shodan infrastructure analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan infrastructure analysis tool: {e}")
+                
+                try:
+                    self._register_tool(ShodanSearchTool(), "threat_intelligence")
+                    logger.info("Shodan search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan search tool: {e}")
+                
+                try:
+                    self._register_tool(ShodanExploitSearchTool(), "threat_intelligence")
+                    logger.info("Shodan exploit search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Shodan exploit search tool: {e}")
+                
+                # Unified threat intelligence tool
+                try:
+                    self._register_tool(UnifiedThreatIntelligenceTool(), "threat_intelligence")
+                    logger.info("Unified threat intelligence tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register unified threat intelligence tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -306,6 +412,11 @@ def get_search_tools() -> List[BaseTool]:
 def get_olorin_tools() -> List[BaseTool]:
     """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, DI)."""
     return tool_registry.get_tools_by_category("olorin")
+
+
+def get_threat_intelligence_tools() -> List[BaseTool]:
+    """Get threat intelligence tools (AbuseIPDB, VirusTotal, unified aggregator, etc.)."""
+    return tool_registry.get_tools_by_category("threat_intelligence")
 
 
 def get_essential_tools() -> List[BaseTool]:

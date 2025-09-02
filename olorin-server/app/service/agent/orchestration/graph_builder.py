@@ -266,38 +266,49 @@ async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: 
 
 
 def _get_configured_tools():
-    """Get configured tools from settings."""
-    from app.service.config import get_settings_for_env
+    """Get configured tools from tool registry including threat intelligence tools."""
+    from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
-    from app.service.agent.tools.retriever_tool.retriever_tool import QBRetrieverTool, TTRetrieverTool
-    from app.utils.class_utils import create_instance
     
-    settings = get_settings_for_env()
-    tools = []
-    
-    # Define available tool classes
-    available_tools = {
-        'SplunkQueryTool': SplunkQueryTool,
-        'SumoLogicQueryTool': SumoLogicQueryTool,
-        'QBRetrieverTool': QBRetrieverTool,
-        'TTRetrieverTool': TTRetrieverTool,
-    }
-    
-    for tool_name in settings.enabled_tool_list:
-        if tool_name in available_tools:
-            tools.append(available_tools[tool_name]())
-        else:
-            logger.warning(f"Tool {tool_name} not found in available tools")
-
-    # Ensure essential SIEM tools are available
-    if not any(isinstance(t, SplunkQueryTool) for t in tools):
-        tools.append(SplunkQueryTool())
+    try:
+        # Initialize the tool registry if not already initialized
+        initialize_tools()
         
-    if not any(isinstance(t, SumoLogicQueryTool) for t in tools):
-        tools.append(SumoLogicQueryTool())
-    
-    return tools
+        # Get all essential tools including threat intelligence
+        # Load ALL tools from these categories (no specific tool_names filter)
+        tools = get_tools_for_agent(
+            categories=["olorin", "search", "database", "threat_intelligence"]
+            # All tools from these categories will be loaded
+        )
+        
+        # Ensure essential SIEM tools are available as fallback
+        has_splunk = any(isinstance(t, SplunkQueryTool) for t in tools)
+        has_sumologic = any(isinstance(t, SumoLogicQueryTool) for t in tools)
+        
+        if not has_splunk:
+            try:
+                tools.append(SplunkQueryTool())
+                logger.info("Added fallback SplunkQueryTool")
+            except Exception as e:
+                logger.warning(f"Could not add fallback Splunk tool: {e}")
+                
+        if not has_sumologic:
+            try:
+                tools.append(SumoLogicQueryTool())
+                logger.info("Added fallback SumoLogicQueryTool")
+            except Exception as e:
+                logger.warning(f"Could not add fallback SumoLogic tool: {e}")
+        
+        threat_tools_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name])
+        logger.info(f"Graph builder loaded {len(tools)} tools including {threat_tools_count} threat intelligence tools")
+        
+        return tools
+        
+    except Exception as e:
+        logger.error(f"Failed to get tools from registry, falling back to basic tools: {e}")
+        # Fallback to essential tools only
+        return [SplunkQueryTool(), SumoLogicQueryTool()]
 
 
 def _filter_working_tools(tools):
