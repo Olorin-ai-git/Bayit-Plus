@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
-from app.models.oii_response import OIIResponse
-from app.service.agent.tools.oii_tool.oii_tool import OIITool
+# Removed non-existent tool imports
 from app.service.agent.tools.vector_search_tool import VectorSearchTool
 
 logger = logging.getLogger(__name__)
@@ -29,7 +28,7 @@ class LocationDataClient:
     def __init__(self):
         """Initialize the LocationDataClient."""
         self.session = None
-        self.oii_tool = OIITool()
+        # Tool initialization removed - using real services only
         self.vector_search_tool = VectorSearchTool()
 
     async def connect(self):

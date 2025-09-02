@@ -55,7 +55,7 @@ from app.service.agent.ato_agents.splunk_agent.fraud_response import FraudRespon
 from app.service.agent.ato_agents.splunk_agent.user_analysis_query_constructor import (
     get_direct_auth_query,
 )
-from app.service.agent.tools.oii_tool.oii_tool import OIITool
+# from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token

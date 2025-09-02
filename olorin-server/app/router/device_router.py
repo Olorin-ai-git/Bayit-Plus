@@ -24,7 +24,7 @@ from app.persistence import (
     get_investigation,
     update_investigation_llm_thoughts,
 )
-from app.service.agent.tools.di_tool.di_tool import DITool
+# from app.service.agent.tools.di_tool.di_tool import DITool  # Removed non-existent tool
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env

@@ -233,7 +233,7 @@ roles:
     description: "Front-line fraud investigators with standard investigation tools"
     permissions:
       tools:
-        - oii_tool
+        - splunk_query_tool
         - behavior_profiling_tool
         - risk_assessment_tool
         - device_fingerprint_tool

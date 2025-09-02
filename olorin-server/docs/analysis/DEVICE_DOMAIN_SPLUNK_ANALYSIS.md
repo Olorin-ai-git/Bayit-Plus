@@ -12,7 +12,7 @@ The **Device Domain** represents the device fingerprinting and behavioral analys
 - **Processing Framework**: Direct `SplunkClient` with `get_splunk_query()`
 - **LLM Integration**: Sophisticated device risk analysis with structured responses
 - **Chronos Integration**: 17-field behavioral data enrichment
-- **DI Tool Integration**: Advanced device intelligence analysis
+- **Device Intelligence Integration**: Advanced device intelligence analysis
 - **Fallback System**: Rule-based risk assessment for system resilience
 
 ### Domain Focus
@@ -210,9 +210,9 @@ chronos_fields = [
 - **Reputation Scoring**: First-seen analysis for device and IP addresses
 - **Geographic Validation**: Multi-source location data correlation
 
-### 4.2 DI Tool Integration
+### 4.2 Device Intelligence Integration
 
-#### DI Tool Activation Logic
+#### Device Intelligence Activation Logic
 ```python
 # Extract sessionId from Chronos entities
 if (chronos_response_dict and 
@@ -228,8 +228,8 @@ if (chronos_response_dict and
                 break
 
 if chronos_session_id:
-    di_tool = DITool()
-    di_response = await di_tool.run(chronos_session_id, user_id)
+    # Device intelligence tool integration
+    di_response = await device_intelligence_analysis(chronos_session_id, user_id)
 ```
 
 #### Enhanced Intelligence Analysis
@@ -346,7 +346,7 @@ if extracted_signals:
 - **Splunk Connection Failures**: Graceful degradation with credential validation
 - **LLM Processing Errors**: JSON validation with fallback assessment
 - **Chronos Integration Failures**: Continue with Splunk-only analysis
-- **DI Tool Failures**: Log errors but maintain primary assessment flow
+- **Device Intelligence Failures**: Log errors but maintain primary assessment flow
 
 #### System Reliability Features
 ```python
@@ -539,7 +539,7 @@ The **Device Domain Splunk Implementation** provides the most sophisticated devi
 ### **Technical Excellence**
 - **Advanced Query Architecture**: 13-field comprehensive device data extraction
 - **Sophisticated LLM Integration**: Structured risk assessment with detailed anomaly analysis
-- **Multi-Source Data Correlation**: Splunk + Chronos + DI Tool integration
+- **Multi-Source Data Correlation**: Splunk + Chronos + device intelligence integration
 - **Production-Ready Performance**: Sub-5 second analysis with 95%+ success rates
 
 ### **Real-World Validation**
@@ -551,7 +551,7 @@ The analysis successfully identified a **0.85 high-risk pattern** with:
 
 ### **System Architecture Achievements**
 - **13-field device data extraction** with optimized processing pipeline
-- **Multi-integration strategy** combining Splunk, Chronos, and DI Tool data
+- **Multi-integration strategy** combining Splunk, Chronos, and device intelligence data
 - **Intelligent fallback systems** ensuring 100% operational reliability
 - **Cross-domain correlation** capabilities for comprehensive fraud detection
 - **Production-scale performance** with concurrent analysis capabilities

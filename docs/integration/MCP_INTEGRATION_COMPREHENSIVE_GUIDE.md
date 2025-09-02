@@ -127,8 +127,8 @@ graph TB
 
 #### Core Investigation Tools
 1. **SplunkQueryTool**: Advanced SPL query execution with result optimization
-2. **OIITool**: Olorin Identity Intelligence integration with caching
-3. **DITool**: Data Intelligence services with performance monitoring
+2. **SnowflakeQueryTool**: Data warehouse integration with query optimization
+3. **SumoLogicTool**: Log aggregation and analysis services with performance monitoring
 4. **VectorSearchTool**: Similarity search with enhanced matching algorithms
 5. **RiskAssessmentTool**: AI-powered risk scoring with explanation
 6. **TimelineAnalysisTool**: Temporal pattern analysis and visualization
