@@ -3,10 +3,13 @@ Security configuration for Olorin application
 """
 
 import os
+import logging
 from typing import List, Optional
 
 from pydantic import BaseModel
 from app.service.config_loader import ConfigLoader
+
+logger = logging.getLogger(__name__)
 
 
 class SecurityConfig(BaseModel):
@@ -81,17 +84,12 @@ class SecurityConfig(BaseModel):
                 "Generate with: openssl rand -base64 64"
             )
         
-        if not self.encryption_password:
-            raise ValueError(
-                "ENCRYPTION_PASSWORD secret is required in Firebase Secret Manager. "
-                "Generate with: openssl rand -base64 32"
-            )
+        # For now, allow missing encryption secrets (will be added to Firebase Secret Manager later)
+        if self.encryption_password and len(self.encryption_password) < 32:
+            logger.warning("ENCRYPTION_PASSWORD should be at least 32 characters long")
         
-        if not self.encryption_salt:
-            raise ValueError(
-                "ENCRYPTION_SALT secret is required in Firebase Secret Manager. "
-                "Generate with: openssl rand -base64 16"
-            )
+        if self.encryption_salt and len(self.encryption_salt) < 16:
+            logger.warning("ENCRYPTION_SALT should be at least 16 characters long")
     
     # JWT Configuration - From Firebase Secrets
     jwt_secret_key: str
@@ -109,9 +107,9 @@ class SecurityConfig(BaseModel):
     csrf_secret_key: Optional[str] = None
     csrf_enabled: bool = True
 
-    # Encryption - From Firebase Secrets
-    encryption_password: str
-    encryption_salt: str
+    # Encryption - From Firebase Secrets (optional for now)
+    encryption_password: Optional[str] = None
+    encryption_salt: Optional[str] = None
 
     # Redis Security
     redis_url: str
