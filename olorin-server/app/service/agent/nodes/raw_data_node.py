@@ -256,6 +256,23 @@ class RawDataNode:
             # Process the CSV data
             result = await self.process_csv_data(csv_content, filename)
             
+            # Extract investigation_id from messages for database update
+            investigation_id = None
+            for message in state.get('messages', []):
+                if hasattr(message, 'additional_kwargs') and message.additional_kwargs:
+                    investigation_id = message.additional_kwargs.get('investigation_id')
+                    if investigation_id:
+                        break
+            
+            # Update investigation with raw data results if successful
+            if result['success'] and investigation_id:
+                try:
+                    # Import here to avoid circular imports
+                    from app.service.agent.orchestration.investigation_coordinator import update_investigation_with_raw_data
+                    await update_investigation_with_raw_data(investigation_id, result)
+                except Exception as e:
+                    self.logger.warning(f"Failed to update investigation with raw data results: {e}")
+            
             # Create response message
             if result['success']:
                 response_content = (

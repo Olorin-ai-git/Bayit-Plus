@@ -24,6 +24,14 @@ class Investigation(BaseModel):
     location_risk_score: float = 0.0
     network_risk_score: float = 0.0
     logs_risk_score: float = 0.0
+    
+    # Raw data processing fields
+    raw_data_processed: bool = False
+    raw_data_filename: Optional[str] = None
+    raw_data_quality_score: Optional[float] = None
+    raw_data_records_count: Optional[int] = None
+    raw_data_anomalies_count: Optional[int] = None
+    raw_data_processing_results: Optional[Dict[str, Any]] = None
 
 
 class InvestigationCreate(BaseModel):
@@ -56,6 +64,14 @@ class InvestigationOut(BaseModel):
     location_risk_score: float = 0.0
     network_risk_score: float = 0.0
     logs_risk_score: float = 0.0
+    
+    # Raw data processing fields
+    raw_data_processed: bool = False
+    raw_data_filename: Optional[str] = None
+    raw_data_quality_score: Optional[float] = None
+    raw_data_records_count: Optional[int] = None
+    raw_data_anomalies_count: Optional[int] = None
+    raw_data_processing_results: Optional[Dict[str, Any]] = None
 
     # Map chat_messages to policy_comments and investigator_comments
     # Remove chat_messages as a list
