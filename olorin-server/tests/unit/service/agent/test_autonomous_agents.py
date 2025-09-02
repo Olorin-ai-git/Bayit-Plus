@@ -32,7 +32,7 @@ from app.service.agent.autonomous_agents import (
 from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
     DomainFindings,
-    InvestigationStatus,
+    InvestigationPhase,
 )
 from tests.fixtures.real_investigation_scenarios import (
     get_test_scenarios,
@@ -798,7 +798,7 @@ class TestIntegrationWorkflows:
         investigation_id = real_investigation_context.investigation_id
         
         # Step 1: Initialize investigation
-        real_investigation_context.status = InvestigationStatus.IN_PROGRESS
+        real_investigation_context.status = InvestigationPhase.ANALYSIS
         
         # Step 2: Run all domain analyses
         domain_findings = {}
@@ -824,7 +824,7 @@ class TestIntegrationWorkflows:
         api_cost_monitor.track_call(2000, 1800)
         
         # Step 4: Update investigation status
-        real_investigation_context.status = InvestigationStatus.COMPLETED
+        real_investigation_context.status = InvestigationPhase.COMPLETED
         real_investigation_context.final_risk_score = final_assessment.risk_score
         
         # Step 5: Validate complete workflow

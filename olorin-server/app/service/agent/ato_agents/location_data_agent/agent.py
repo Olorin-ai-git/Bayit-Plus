@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from agents import Agent
-from app.service.agent.ato_agents.clients.kk_dash_client import KKDashClient
+# from app.service.agent.ato_agents.clients.kk_dash_client import KKDashClient  # Commented out - missing module
 
 from ..utils.logging import get_logger
 from .client import LocationDataClient, LocationInfo
@@ -40,7 +40,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
         from app.service.agent.tools.oii_tool.oii_tool import OIITool
 
         self.oii_tool = OIITool()
-        self.kk_dash_client = KKDashClient()
+        # self.kk_dash_client = KKDashClient()  # Commented out - missing module
         # ----------------------------
 
         super().__init__(

@@ -95,7 +95,7 @@ class SnowflakeQueryTool(BaseTool):
         if not password:
             # Fallback to secrets manager
             try:
-                password = get_app_secret("olorin/snowflake_password")
+                password = get_app_secret("SNOWFLAKE_PASSWORD")
             except:
                 password = "demo_password"
         

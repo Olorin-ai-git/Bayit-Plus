@@ -28,10 +28,6 @@ def get_database_password(settings: SvcSettings) -> str:
     # Try direct environment override first (for local development)
     db_password = settings.database_password
     
-    # Try POSTGRES_PASSWORD as fallback
-    if not db_password:
-        db_password = os.getenv("POSTGRES_PASSWORD")
-    
     if not db_password:
         # Retrieve from Firebase Secrets Manager
         try:
@@ -43,8 +39,8 @@ def get_database_password(settings: SvcSettings) -> str:
     
     if not db_password:
         raise ValueError(
-            "Database password not available via environment variables or Firebase Secrets Manager. "
-            "Set DB_PASSWORD/POSTGRES_PASSWORD environment variable or ensure Firebase secret exists at: "
+            "Database password not available via Firebase Secrets Manager. "
+            "Ensure Firebase secret exists at: "
             f"{settings.database_password_secret}"
         )
     
@@ -62,10 +58,6 @@ def get_redis_api_key(settings: SvcSettings) -> Optional[str]:
     """
     # Try direct environment override first (for local development)
     redis_api_key = getattr(settings, 'redis_api_key', None)
-    
-    if not redis_api_key:
-        # Try legacy REDIS_PASSWORD environment variable
-        redis_api_key = os.getenv("REDIS_PASSWORD")
     
     if not redis_api_key:
         # Retrieve from Firebase Secrets Manager

@@ -20,8 +20,8 @@ class SecretManagerClient:
     """
     Client for accessing secrets from Firebase Secret Manager.
     
-    Provides time-based caching with TTL, error handling, and environment 
-    variable fallback for local development and testing.
+    Provides time-based caching with TTL and error handling.
+    No environment variable fallbacks - ALL secrets must come from Firebase.
     """
     
     def __init__(self, project_id: str = "olorin-ai", cache_ttl: int = 300):
@@ -44,10 +44,11 @@ class SecretManagerClient:
             self._client = secretmanager.SecretManagerServiceClient()
             logger.info("Secret Manager client initialized", project_id=self.project_id)
         except Exception as e:
-            logger.warning(
-                "Failed to initialize Secret Manager client, will use environment fallback",
+            logger.error(
+                "Failed to initialize Secret Manager client - Firebase Secrets Manager is required",
                 error=str(e)
             )
+            raise ValueError(f"Firebase Secret Manager client initialization failed: {e}")
     
     def get_secret(self, secret_name: str, version: str = "latest") -> Optional[str]:
         """
@@ -76,20 +77,13 @@ class SecretManagerClient:
                 del self._cache[cache_key]
                 logger.debug("Cache expired for secret")
         
-        # Check for environment variable override
-        env_var = self._get_env_var_name(secret_name)
-        env_value = os.getenv(env_var)
-        
-        if env_value:
-            logger.debug("Using environment override for configuration")
-            # Cache the env value too
-            self._cache[cache_key] = (env_value, time.time() + self.cache_ttl)
-            return env_value
-        
-        # If no client available (local dev without GCP), return None
+        # No environment variable fallbacks - must use Firebase Secret Manager
         if not self._client:
-            logger.debug("No Secret Manager client available, checking env fallback")
-            return None
+            logger.error("No Secret Manager client available - Firebase connection required")
+            raise ValueError(
+                f"Cannot retrieve secret '{secret_name}' - Firebase Secret Manager connection required. "
+                "Ensure GCP credentials are configured."
+            )
         
         # Try to get from Secret Manager
         try:
@@ -162,39 +156,27 @@ class SecretManagerClient:
         # Convert to uppercase and replace hyphens with underscores
         return secret_name.replace("-", "_").upper()
     
-    def get_secret_with_fallback(self, 
-                                  secret_name: str, 
-                                  env_var: Optional[str] = None,
-                                  default: Optional[str] = None) -> Optional[str]:
+    def get_secret_or_raise(self, secret_name: str) -> str:
         """
-        Get secret with explicit environment variable fallback and default.
+        Get secret from Firebase Secret Manager or raise an error.
+        No fallbacks allowed - Firebase is the only source of truth.
         
         Args:
             secret_name: The name/path of the secret
-            env_var: Explicit environment variable to check (optional)
-            default: Default value if secret not found anywhere (optional)
             
         Returns:
-            The secret value, environment value, default, or None
+            The secret value from Firebase
+            
+        Raises:
+            ValueError: If secret not found in Firebase Secret Manager
         """
-        # Try Secret Manager first
         secret_value = self.get_secret(secret_name)
-        if secret_value:
-            return secret_value
-        
-        # Try explicit environment variable
-        if env_var:
-            env_value = os.getenv(env_var)
-            if env_value:
-                logger.debug("Using explicit env fallback")
-                return env_value
-        
-        # Return default if provided
-        if default:
-            logger.debug("Using default value for configuration")
-            return default
-        
-        return None
+        if not secret_value:
+            raise ValueError(
+                f"Secret '{secret_name}' not found in Firebase Secret Manager (project: {self.project_id}). "
+                "All secrets must be configured in Firebase Secret Manager."
+            )
+        return secret_value
     
     def clear_cache(self):
         """Clear the TTL cache for secrets."""

@@ -11,6 +11,7 @@ from typing import Optional, Union
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from app.service.config_loader import ConfigLoader
 
 logger = logging.getLogger(__name__)
 
@@ -19,20 +20,22 @@ class DataEncryption:
     """Handles encryption and decryption of sensitive data."""
 
     def __init__(self, password: Optional[str] = None):
-        """Initialize encryption with a password or environment variable."""
-        # Use environment variables for encryption settings
-        encryption_password = password or os.getenv("ENCRYPTION_PASSWORD")
+        """Initialize encryption with a password from Firebase Secret Manager."""
+        config_loader = ConfigLoader()
+        
+        # Load encryption settings from Firebase Secret Manager
+        encryption_password = password or config_loader.load_secret("ENCRYPTION_PASSWORD")
         if not encryption_password:
             raise ValueError(
-                "ENCRYPTION_PASSWORD environment variable is required. "
+                "ENCRYPTION_PASSWORD secret is required in Firebase Secret Manager. "
                 "Generate with: openssl rand -base64 32"
             )
         self.password = encryption_password
         
-        encryption_salt = os.getenv("ENCRYPTION_SALT")
+        encryption_salt = config_loader.load_secret("ENCRYPTION_SALT")
         if not encryption_salt:
             raise ValueError(
-                "ENCRYPTION_SALT environment variable is required. "
+                "ENCRYPTION_SALT secret is required in Firebase Secret Manager. "
                 "Generate with: openssl rand -base64 16"
             )
         self.salt = encryption_salt.encode()[:16]  # Use first 16 bytes

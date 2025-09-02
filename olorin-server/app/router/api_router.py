@@ -63,6 +63,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
+from app.service.config_loader import ConfigLoader
 
 from .device_router import analyze_device
 from .device_router import router as device_router
@@ -73,14 +74,15 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api")
 
-# Load API key from environment variable
-OLORIN_API_KEY = os.getenv("OLORIN_API_KEY", "")
+# Load API key from Firebase Secret Manager
+config_loader = ConfigLoader()
+OLORIN_API_KEY = config_loader.load_secret("OLORIN_API_KEY") or ""
 
 
 def get_default_headers():
-    """Get default headers with API key from environment."""
+    """Get default headers with API key from Firebase Secret Manager."""
     if not OLORIN_API_KEY:
-        logger.warning("OLORIN_API_KEY not set in environment variables")
+        logger.warning("OLORIN_API_KEY not found in Firebase Secret Manager")
 
     return {
         "Authorization": f"Olorin_APIKey olorin_apikey={OLORIN_API_KEY},olorin_apikey_version=1.0",

@@ -139,87 +139,59 @@ def real_investigation_context(db_session):
     """
     # Create real user record
     user = UserRecord(
-        user_id=f"real_user_{datetime.now().timestamp()}",
+        id=f"real_user_{datetime.now().timestamp()}",
+        username=f"testuser_{datetime.now().timestamp()}",
         email=f"user_{datetime.now().timestamp()}@realtest.com",
-        phone="+14155552671",  # Real format phone
-        ip_address="198.51.100.42",  # Documentation IP range
-        device_fingerprint=json.dumps({
-            "browser": "Chrome",
-            "version": "120.0.0",
-            "os": "Windows",
-            "screen_resolution": "1920x1080",
-            "timezone": "America/New_York",
-            "language": "en-US",
-            "canvas_fingerprint": f"canvas_{datetime.now().timestamp()}",
-        }),
-        created_at=datetime.now() - timedelta(days=30),
-        last_activity=datetime.now() - timedelta(hours=2),
+        hashed_password="hashed_password_placeholder",
+        first_name="Test",
+        last_name="User",
+        is_active=True,
+        is_admin=False,
     )
     db_session.add(user)
     
     # Create real entity record
     entity = EntityRecord(
+        id=f"entity_{datetime.now().timestamp()}",
         entity_id=f"real_entity_{datetime.now().timestamp()}",
         entity_type="merchant",
-        name="Real Test Merchant LLC",
         risk_score=0.45,  # Moderate risk
-        metadata=json.dumps({
+        risk_level="medium",
+        attributes={
+            "name": "Real Test Merchant LLC",
             "category": "electronics",
             "volume": "high",
             "established": "2020-01-15",
             "location": "San Francisco, CA",
-        }),
-        created_at=datetime.now() - timedelta(days=365),
+        },
     )
     db_session.add(entity)
     
     # Create investigation record
     investigation = InvestigationRecord(
-        investigation_id=f"inv_{datetime.now().timestamp()}",
-        user_id=user.user_id,
-        entity_id=entity.entity_id,
+        id=f"inv_{datetime.now().timestamp()}",
+        user_id=user.id,
+        entity_type="user",
+        entity_id=entity.id,
+        investigation_type="fraud",
         status="active",
         risk_score=0.0,
-        created_at=datetime.now(),
-        metadata=json.dumps({
-            "source": "automated_test",
-            "priority": "high",
-            "test_type": "real_api_validation",
-        }),
+        title="Test Investigation",
+        description="Automated test investigation",
     )
     db_session.add(investigation)
     db_session.commit()
     
     # Create autonomous context
+    from app.service.agent.autonomous_context import EntityType
     context = AutonomousInvestigationContext(
-        investigation_id=investigation.investigation_id,
-        user_id=user.user_id,
+        investigation_id=investigation.id,
         entity_id=entity.entity_id,
-        session_id=f"session_{datetime.now().timestamp()}",
-        status=InvestigationPhase.ANALYSIS,
-        user_data={
-            "email": user.email,
-            "phone": user.phone,
-            "ip_address": user.ip_address,
-            "device_fingerprint": json.loads(user.device_fingerprint),
-            "account_age_days": (datetime.now() - user.created_at).days,
-            "last_activity_hours": (datetime.now() - user.last_activity).total_seconds() / 3600,
-        },
-        entity_data={
-            "name": entity.name,
-            "type": entity.entity_type,
-            "risk_score": entity.risk_score,
-            "metadata": json.loads(entity.metadata),
-        },
-        request_metadata={
-            "timestamp": datetime.now().isoformat(),
-            "source": "test_suite",
-            "api_version": "v1",
-            "real_test": True,
-        },
+        entity_type=EntityType.USER_ID,
+        investigation_type="fraud_investigation"
     )
     
-    logger.info(f"Created real investigation context: {investigation.investigation_id}")
+    logger.info(f"Created real investigation context: {investigation.id}")
     return context
 
 

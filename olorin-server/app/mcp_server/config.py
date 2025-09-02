@@ -4,6 +4,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+from app.service.config_loader import ConfigLoader
 
 
 class MCPConfig(BaseModel):
@@ -84,6 +85,11 @@ class MCPConfig(BaseModel):
     @classmethod
     def from_env(cls) -> "MCPConfig":
         """Create configuration from environment variables."""
+        # Load API keys from Firebase Secret Manager
+        config_loader = ConfigLoader()
+        openai_api_key = config_loader.load_secret("OPENAI_API_KEY")
+        langfuse_api_key = config_loader.load_secret("LANGFUSE_API_KEY")
+        
         return cls(
             # Server
             server_name=os.getenv("MCP_SERVER_NAME", "olorin-mcp-server"),
@@ -114,8 +120,8 @@ class MCPConfig(BaseModel):
             api_default_headers=None,  # Could be parsed from JSON env var if needed
             # Agents
             enable_agents=os.getenv("MCP_ENABLE_AGENTS", "true").lower() == "true",
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            langfuse_api_key=os.getenv("LANGFUSE_API_KEY"),
+            openai_api_key=openai_api_key,
+            langfuse_api_key=langfuse_api_key,
             # Security
             allowed_origins=os.getenv("MCP_ALLOWED_ORIGINS", "*").split(","),
             max_request_size=int(os.getenv("MCP_MAX_REQUEST_SIZE", "10485760")),

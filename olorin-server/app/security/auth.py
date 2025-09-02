@@ -3,6 +3,7 @@ JWT Authentication and Authorization for Olorin API
 """
 
 import os
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
@@ -11,6 +12,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+import structlog
+
+logger = structlog.get_logger(__name__)
 
 
 class TokenData(BaseModel):
@@ -30,10 +34,34 @@ class UserInDB(User):
     hashed_password: str
 
 
-# Security configuration
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("JWT_SECRET_KEY environment variable is required. Generate with: openssl rand -base64 64")
+# Security configuration - Load JWT secret from Firebase Secrets Manager ONLY
+def _get_jwt_secret() -> str:
+    """
+    Get JWT secret from Firebase Secrets Manager ONLY - no fallbacks.
+    """
+    try:
+        from app.service.config_loader import ConfigLoader
+        config_loader = ConfigLoader()
+        jwt_config = config_loader.load_jwt_config()
+        secret_key = jwt_config.get("secret_key")
+        
+        if secret_key:
+            logger.info("JWT secret loaded from Firebase Secrets Manager")
+            return secret_key
+    except Exception as e:
+        logger.error(f"Failed to load JWT secret from Firebase Secrets Manager: {e}")
+        raise ValueError(
+            f"JWT_SECRET_KEY must be configured in Firebase Secrets Manager. Error: {e}"
+        )
+    
+    # No fallbacks - must use Firebase Secrets Manager
+    raise ValueError(
+        "JWT_SECRET_KEY not found in Firebase Secrets Manager. "
+        "All secrets must be configured in Firebase Secrets Manager (project: olorin-ai)."
+    )
+
+
+SECRET_KEY = _get_jwt_secret()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

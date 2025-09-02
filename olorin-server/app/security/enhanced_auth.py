@@ -18,6 +18,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, validator
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
+from app.service.config_loader import ConfigLoader
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import redis
@@ -155,7 +156,9 @@ class EnhancedSecurityConfig:
         
         # Redis Configuration for session management
         self.REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
-        self.REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+        # Load Redis password from Firebase Secret Manager
+        config_loader = ConfigLoader()
+        self.REDIS_PASSWORD = config_loader.load_secret('REDIS_API_KEY')
         
         # Initialize Redis connection
         self.redis_client = self._init_redis()
