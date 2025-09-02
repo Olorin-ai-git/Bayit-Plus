@@ -35,6 +35,15 @@ except ImportError as e:
 
 logger = logging.getLogger(__name__)
 
+# Try to import threat intelligence tools
+try:
+    from .threat_intelligence_tool.abuseipdb.simple_ip_reputation_tool import SimpleIPReputationTool
+
+    THREAT_INTEL_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Threat intelligence tools not available: {e}")
+    THREAT_INTEL_AVAILABLE = False
+
 
 class ToolRegistry:
     """Registry for managing and accessing LangGraph agent tools."""
@@ -49,6 +58,7 @@ class ToolRegistry:
             "api": [],
             "search": [],
             "olorin": [],  # Olorin-specific tools
+            "threat_intelligence": [],  # Threat intelligence tools
             "utility": [],
         }
         self._initialized = False
@@ -143,6 +153,14 @@ class ToolRegistry:
                     logger.info("DI tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register DI tool: {e}")
+
+            # Threat Intelligence Tools
+            if THREAT_INTEL_AVAILABLE:
+                try:
+                    self._register_tool(SimpleIPReputationTool(), "threat_intelligence")
+                    logger.info("IP reputation tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register IP reputation tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -306,6 +324,11 @@ def get_search_tools() -> List[BaseTool]:
 def get_olorin_tools() -> List[BaseTool]:
     """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, DI)."""
     return tool_registry.get_tools_by_category("olorin")
+
+
+def get_threat_intelligence_tools() -> List[BaseTool]:
+    """Get threat intelligence tools (AbuseIPDB, VirusTotal, etc.)."""
+    return tool_registry.get_tools_by_category("threat_intelligence")
 
 
 def get_essential_tools() -> List[BaseTool]:
