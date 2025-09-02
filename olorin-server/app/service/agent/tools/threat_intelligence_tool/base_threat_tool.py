@@ -17,7 +17,10 @@ from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
 from ..enhanced_tool_base import EnhancedToolBase, ValidationLevel, RetryStrategy
+from ..enhanced_cache import EnhancedCache, EvictionPolicy
 from app.utils.firebase_secrets import get_firebase_secret
+from app.service.redis_client import get_redis_client
+from app.service.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +87,47 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
             max_requests=config.rate_limit_requests,
             window_seconds=config.rate_limit_window
         )
+        
+        # Initialize enhanced caching system
+        self._cache = self._initialize_cache()
+    
+    def _initialize_cache(self) -> EnhancedCache:
+        """Initialize enhanced caching system with Redis backend."""
+        try:
+            # Get Redis client if available
+            redis_client = None
+            if self.config.enable_caching:
+                try:
+                    settings = get_settings()
+                    redis_client = get_redis_client(settings).get_client()
+                except Exception as e:
+                    logger.warning(f"Redis not available, using local cache only: {e}")
+            
+            # Configure cache for threat intelligence
+            cache = EnhancedCache(
+                max_size=10000,  # 10K entries
+                max_memory_mb=50,  # 50MB memory limit
+                default_ttl_seconds=self.config.cache_ttl_seconds,
+                eviction_policy=EvictionPolicy.LRU,
+                cleanup_interval_seconds=300,  # 5 minutes
+                enable_content_deduplication=True,
+                enable_compression=False,
+                redis_client=redis_client
+            )
+            
+            logger.info(f"Initialized enhanced cache for {self.name} with Redis: {redis_client is not None}")
+            return cache
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize cache for {self.name}: {e}")
+            # Return a basic cache without Redis
+            return EnhancedCache(
+                max_size=1000,
+                max_memory_mb=10,
+                default_ttl_seconds=self.config.cache_ttl_seconds,
+                eviction_policy=EvictionPolicy.LRU,
+                enable_content_deduplication=False
+            )
     
     async def _get_api_key(self) -> str:
         """Get API key from Firebase secrets."""
@@ -177,13 +221,13 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
                     timestamp=start_time
                 )
             
-            # Check cache first
+            # Check enhanced cache first
             cache_key = self._generate_cache_key({"query_type": query_type, **query_data})
             
             if self.config.enable_caching:
-                cached_response = await self._get_from_cache(cache_key)
-                if cached_response:
-                    response = ThreatIntelligenceResponse.model_validate(cached_response)
+                cached_data = await self._cache.get(cache_key)
+                if cached_data:
+                    response = ThreatIntelligenceResponse.model_validate(cached_data)
                     response.cache_hit = True
                     await self._log_threat_query(query_type, query_data, response)
                     return response
@@ -192,9 +236,19 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
             response = await self._execute_threat_query(query_type, query_data)
             response.cache_hit = False
             
-            # Cache successful responses
+            # Cache successful responses using enhanced cache
             if self.config.enable_caching and response.success:
-                await self._set_cache(cache_key, response.model_dump(), self.config.cache_ttl_seconds)
+                # Tag cache entries for intelligent invalidation
+                cache_tags = {f"tool:{self.name}", f"query_type:{query_type}"}
+                if "ip_address" in query_data:
+                    cache_tags.add(f"ip:{query_data['ip_address']}")
+                
+                await self._cache.set(
+                    key=cache_key,
+                    value=response.model_dump(),
+                    ttl_seconds=self.config.cache_ttl_seconds,
+                    tags=cache_tags
+                )
             
             # Log query
             await self._log_threat_query(query_type, query_data, response)
@@ -233,3 +287,23 @@ class RateLimiter:
             return True
         
         return False
+    
+    async def get_cache_statistics(self) -> Dict[str, Any]:
+        """Get comprehensive cache statistics."""
+        return self._cache.get_statistics()
+    
+    async def invalidate_cache_by_tag(self, tag: str) -> int:
+        """Invalidate cache entries by tag."""
+        return await self._cache.invalidate_by_tag(tag)
+    
+    async def clear_cache(self) -> None:
+        """Clear all cache entries for this tool."""
+        await self._cache.invalidate_by_tag(f"tool:{self.name}")
+    
+    async def warm_cache_with_data(self, key_value_pairs: Dict[str, Any]) -> int:
+        """Warm cache with predefined data."""
+        warmed = 0
+        for key, value in key_value_pairs.items():
+            if await self._cache.set(key, value):
+                warmed += 1
+        return warmed

@@ -38,6 +38,9 @@ logger = logging.getLogger(__name__)
 # Try to import threat intelligence tools
 try:
     from .threat_intelligence_tool.abuseipdb.simple_ip_reputation_tool import SimpleIPReputationTool
+    from .threat_intelligence_tool.abuseipdb.bulk_analysis_tool import BulkIPAnalysisTool
+    from .threat_intelligence_tool.abuseipdb.cidr_block_tool import CIDRBlockAnalysisTool
+    from .threat_intelligence_tool.abuseipdb.abuse_reporting_tool import AbuseReportingTool
 
     THREAT_INTEL_AVAILABLE = True
 except ImportError as e:
@@ -161,6 +164,24 @@ class ToolRegistry:
                     logger.info("IP reputation tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register IP reputation tool: {e}")
+                
+                try:
+                    self._register_tool(BulkIPAnalysisTool(), "threat_intelligence")
+                    logger.info("Bulk IP analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register bulk IP analysis tool: {e}")
+                
+                try:
+                    self._register_tool(CIDRBlockAnalysisTool(), "threat_intelligence")
+                    logger.info("CIDR block analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register CIDR block analysis tool: {e}")
+                
+                try:
+                    self._register_tool(AbuseReportingTool(), "threat_intelligence")
+                    logger.info("Abuse reporting tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register abuse reporting tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
