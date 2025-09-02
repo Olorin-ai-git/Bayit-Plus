@@ -96,7 +96,12 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Check for blockchain-related network activity using blockchain_mcp_client",
             "Analyze cryptocurrency exchanges and wallet addresses using crypto_exchange_analysis",
             "Monitor dark web cryptocurrency activities using darkweb_crypto_monitor",
-            "Trace cryptocurrency fund flows using cryptocurrency_tracing"
+            "Trace cryptocurrency fund flows using cryptocurrency_tracing",
+            "Perform social media profiling using social_media_profiling",
+            "Monitor dark web activities using darkweb_monitoring",
+            "Use web_search to research suspicious IP addresses and domains",
+            "Search for public reports about network infrastructure using web_scrape",
+            "Investigate domain registration history via web sources"
         ],
         "device": [
             "Analyze device fingerprints for consistency and authenticity",
@@ -107,7 +112,12 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Use ml_ai_mcp_client for behavioral analysis and anomaly detection",
             "Check device-related files with VirusTotal for malware indicators",
             "Analyze wallet addresses linked to device using blockchain_wallet_analysis",
-            "Detect NFT fraud patterns using nft_fraud_detection"
+            "Detect NFT fraud patterns using nft_fraud_detection",
+            "Perform social network analysis using social_network_analysis",
+            "Search for device owner information using people_search",
+            "Search for device fingerprint patterns in security forums using web_search",
+            "Research device vulnerabilities and exploits via web sources",
+            "Check for device-specific fraud reports online using web_scrape"
         ],
         "location": [
             "Analyze geographic patterns and travel behavior",
@@ -116,7 +126,12 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Identify geographic fraud indicators",
             "Correlate location data with behavioral patterns",
             "Use intelligence_mcp_client for OSINT on geographic locations",
-            "Cross-reference locations with Shodan infrastructure data"
+            "Cross-reference locations with Shodan infrastructure data",
+            "Aggregate OSINT data for location analysis using osint_data_aggregator",
+            "Search deep web sources for location intelligence using deepweb_search",
+            "Use web_search to verify business locations and addresses",
+            "Research geographic anomalies in travel patterns via web sources",
+            "Search for location-based fraud reports and warnings using web_scrape"
         ],
         "logs": [
             "Analyze activity logs for suspicious patterns",
@@ -127,7 +142,12 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Use ml_ai_mcp_client to detect anomalies in log patterns",
             "Check for cryptocurrency addresses in logs using blockchain_mcp_client",
             "Analyze DeFi protocol interactions using defi_protocol_analysis",
-            "Preserve blockchain evidence using blockchain_forensics"
+            "Preserve blockchain evidence using blockchain_forensics",
+            "Monitor social media mentions using social_media_monitoring",
+            "Conduct business intelligence analysis using business_intelligence",
+            "Research suspicious activity patterns in security blogs using web_search",
+            "Search for similar attack signatures in threat databases via web sources",
+            "Use web_scrape to correlate log patterns with known threats"
         ],
         "risk": [
             "Integrate findings from all investigation domains",
@@ -139,7 +159,12 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Use ml_ai_mcp_client for final fraud detection scoring",
             "Compile blockchain and cryptocurrency risk indicators",
             "Ensure regulatory compliance using cryptocurrency_compliance",
-            "Generate forensic reports using blockchain_forensics for legal proceedings"
+            "Generate forensic reports using blockchain_forensics for legal proceedings",
+            "Consolidate OSINT findings using osint_data_aggregator",
+            "Analyze overall social network risk using social_network_analysis",
+            "Aggregate web-based threat intelligence for final assessment",
+            "Search for recent fraud trends and patterns online using web_search",
+            "Use web sources to enhance risk scoring with current threat landscape"
         ]
     }
     

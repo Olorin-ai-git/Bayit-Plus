@@ -317,10 +317,10 @@ def _get_configured_tools():
         # Initialize the tool registry if not already initialized
         initialize_tools()
         
-        # Get all essential tools including threat intelligence, MCP clients, and blockchain tools
+        # Get all essential tools including threat intelligence, MCP clients, blockchain, intelligence, and web tools
         # Load ALL tools from these categories (no specific tool_names filter)
         tools = get_tools_for_agent(
-            categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients", "blockchain"]
+            categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients", "blockchain", "intelligence", "web"]
             # All tools from these categories will be loaded
         )
         

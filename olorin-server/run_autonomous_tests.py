@@ -4,12 +4,22 @@ Standalone Autonomous Investigation Test Runner
 
 Runs comprehensive tests of the autonomous investigation system without pytest dependencies.
 Tests all major scenarios with real API calls and comprehensive reporting.
+
+Supports CSV transaction data for realistic testing scenarios.
+
+Usage:
+    python run_autonomous_tests.py --csv-file /path/to/transactions.csv
+    python run_autonomous_tests.py --csv-file /path/to/transactions.csv --csv-limit 100 --concurrent-users 5
+    python run_autonomous_tests.py --csv-file /path/to/transactions.csv --log-level DEBUG
+    python run_autonomous_tests.py  # Run with synthetic data
 """
 
 import asyncio
 import json
 import logging
 import time
+import argparse
+import csv
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
 import sys
@@ -52,13 +62,96 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def load_transactions_from_csv(csv_file_path, limit=50):
+    """Load transaction data from CSV file for comprehensive testing."""
+    logger.info(f"Loading transactions from {csv_file_path}...")
+    transactions = []
+    
+    try:
+        with open(csv_file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for i, row in enumerate(reader):
+                if i >= limit:
+                    break
+                
+                # Extract relevant fields for investigation
+                transaction = {
+                    "tx_id": row.get("TX_ID_KEY", ""),
+                    "unique_user_id": row.get("UNIQUE_USER_ID", ""),
+                    "email": row.get("EMAIL", ""),
+                    "email_normalized": row.get("EMAIL_NORMALIZED", ""),
+                    "first_name": row.get("FIRST_NAME", ""),
+                    "app_id": row.get("APP_ID", ""),
+                    "tx_datetime": row.get("TX_DATETIME", ""),
+                    "tx_received_datetime": row.get("TX_RECEIVED_DATETIME", ""),
+                    "authorization_stage": row.get("AUTHORIZATION_STAGE", ""),
+                    "event_type": row.get("EVENT_TYPE", ""),
+                    "original_tx_id": row.get("ORIGINAL_TX_ID", ""),
+                    "client_request_id": row.get("CLIENT_REQUEST_ID", ""),
+                    "tx_timestamp_ms": row.get("TX_TIMESTAMP_MS", ""),
+                    "store_id": row.get("STORE_ID", ""),
+                    "surrogate_app_tx_id": row.get("SURROGATE_APP_TX_ID", ""),
+                    "is_sent_for_nsure_review": row.get("IS_SENT_FOR_NSURE_REVIEW", "0")
+                }
+                transactions.append(transaction)
+        
+        logger.info(f"✅ Loaded {len(transactions)} transactions from CSV")
+        if transactions:
+            logger.info(f"   Sample transaction ID: {transactions[0]['tx_id']}")
+            logger.info(f"   Sample user ID: {transactions[0]['unique_user_id']}")
+            logger.info(f"   Date range: {transactions[0].get('tx_datetime', 'N/A')} to {transactions[-1].get('tx_datetime', 'N/A')}")
+        
+        return transactions
+        
+    except FileNotFoundError:
+        logger.error(f"CSV file not found: {csv_file_path}")
+        return []
+    except Exception as e:
+        logger.error(f"Error loading CSV: {e}")
+        return []
+
+def get_csv_user_samples(transactions, sample_size=5):
+    """Extract unique user samples from CSV transactions."""
+    if not transactions:
+        return []
+    
+    # Group by unique user ID
+    user_groups = {}
+    for tx in transactions:
+        user_id = tx.get('unique_user_id', '')
+        if user_id and user_id not in user_groups:
+            user_groups[user_id] = {
+                'user_id': user_id,
+                'email': tx.get('email', ''),
+                'first_name': tx.get('first_name', ''),
+                'app_id': tx.get('app_id', ''),
+                'transaction_count': 1,
+                'latest_tx_datetime': tx.get('tx_datetime', ''),
+                'authorization_stages': [tx.get('authorization_stage', '')],
+                'sample_transactions': [tx]
+            }
+        elif user_id in user_groups:
+            user_groups[user_id]['transaction_count'] += 1
+            user_groups[user_id]['authorization_stages'].append(tx.get('authorization_stage', ''))
+            if len(user_groups[user_id]['sample_transactions']) < 3:
+                user_groups[user_id]['sample_transactions'].append(tx)
+    
+    # Return sample of users
+    users = list(user_groups.values())[:sample_size]
+    logger.info(f"Extracted {len(users)} unique users from CSV transactions")
+    
+    return users
+
 class AutonomousTestRunner:
     """Runs comprehensive autonomous investigation tests."""
 
-    def __init__(self):
+    def __init__(self, csv_transactions=None, concurrent_users=3):
         self.results = {}
         self.generator = RealScenarioGenerator()
         self.journey_tracker = LangGraphJourneyTracker()
+        self.csv_transactions = csv_transactions or []
+        self.csv_users = get_csv_user_samples(self.csv_transactions) if csv_transactions else []
+        self.concurrent_users = concurrent_users
 
     async def test_full_investigation_lifecycle(self) -> Dict[str, Any]:
         """Test complete investigation from creation to completion."""
@@ -68,9 +161,34 @@ class AutonomousTestRunner:
 
         # Create test context
         investigation_id = f"test_full_{datetime.now().timestamp()}"
-        user_data = self.generator.generate_real_user_data("high_risk")
-        entity_data = self.generator.generate_real_entity_data()
-        behavioral_patterns = self.generator.generate_behavioral_patterns("abnormal")
+        
+        # Use CSV data if available, otherwise generate synthetic data
+        if self.csv_users:
+            csv_user = self.csv_users[0]  # Use first user from CSV
+            user_data = {
+                "user_id": csv_user['user_id'],
+                "email": csv_user['email'],
+                "first_name": csv_user['first_name'],
+                "app_id": csv_user['app_id'],
+                "transaction_count": csv_user['transaction_count'],
+                "latest_activity": csv_user['latest_tx_datetime']
+            }
+            entity_data = {
+                "entity_id": csv_user['user_id'],
+                "entity_type": "user_id",
+                "source": "csv_transactions"
+            }
+            behavioral_patterns = {
+                "transaction_frequency": csv_user['transaction_count'],
+                "authorization_patterns": csv_user['authorization_stages'],
+                "risk_indicators": []
+            }
+            logger.info(f"Using CSV user data: {csv_user['user_id']} ({csv_user['email']})")
+        else:
+            user_data = self.generator.generate_real_user_data("high_risk")
+            entity_data = self.generator.generate_real_entity_data()
+            behavioral_patterns = self.generator.generate_behavioral_patterns("abnormal")
+            logger.info("Using synthetic test data")
 
         context = AutonomousInvestigationContext(
             investigation_id=investigation_id,
@@ -82,6 +200,16 @@ class AutonomousTestRunner:
         context.data_sources["user"] = user_data
         context.data_sources["entity"] = entity_data
         context.data_sources["behavioral"] = behavioral_patterns
+        
+        # Add CSV transaction data if available
+        if self.csv_users:
+            context.data_sources["transactions"] = self.csv_users[0]['sample_transactions']
+            context.data_sources["csv_metadata"] = {
+                "total_csv_transactions": len(self.csv_transactions),
+                "user_transaction_count": self.csv_users[0]['transaction_count'],
+                "data_source": "csv_file"
+            }
+        
         context.current_phase = InvestigationPhase.ANALYSIS
 
         # Initialize journey tracking
@@ -205,13 +333,31 @@ class AutonomousTestRunner:
         logger.info("TEST: Concurrent Investigations")
         logger.info("=" * 60)
 
-        num_concurrent = 3
+        num_concurrent = self.concurrent_users
         contexts = []
 
         # Create multiple investigation contexts
         for i in range(num_concurrent):
-            user_data = self.generator.generate_real_user_data("normal")
-            entity_data = self.generator.generate_real_entity_data()
+            # Use CSV users if available, cycling through them
+            if self.csv_users and i < len(self.csv_users):
+                csv_user = self.csv_users[i]
+                user_data = {
+                    "user_id": csv_user['user_id'],
+                    "email": csv_user['email'],
+                    "first_name": csv_user['first_name'],
+                    "app_id": csv_user['app_id'],
+                    "transaction_count": csv_user['transaction_count']
+                }
+                entity_data = {
+                    "entity_id": csv_user['user_id'],
+                    "entity_type": "user_id",
+                    "source": "csv_transactions"
+                }
+                logger.info(f"Concurrent test {i+1}: Using CSV user {csv_user['user_id']}")
+            else:
+                user_data = self.generator.generate_real_user_data("normal")
+                entity_data = self.generator.generate_real_entity_data()
+                logger.info(f"Concurrent test {i+1}: Using synthetic data")
 
             context = AutonomousInvestigationContext(
                 investigation_id=f"concurrent_{i}_{datetime.now().timestamp()}",
@@ -221,6 +367,15 @@ class AutonomousTestRunner:
             )
             context.data_sources["user"] = user_data
             context.data_sources["entity"] = entity_data
+            
+            # Add CSV transaction data if available
+            if self.csv_users and i < len(self.csv_users):
+                context.data_sources["transactions"] = self.csv_users[i]['sample_transactions']
+                context.data_sources["csv_metadata"] = {
+                    "user_transaction_count": self.csv_users[i]['transaction_count'],
+                    "data_source": "csv_file"
+                }
+            
             context.current_phase = InvestigationPhase.ANALYSIS
             contexts.append(context)
 
@@ -344,9 +499,26 @@ class AutonomousTestRunner:
         logger.info("TEST: Performance Metrics")
         logger.info("=" * 60)
 
-        # Create test context
-        user_data = self.generator.generate_real_user_data("normal")
-        entity_data = self.generator.generate_real_entity_data()
+        # Create test context - use CSV data for more realistic performance testing
+        if self.csv_users:
+            csv_user = self.csv_users[0]  # Use first user from CSV for performance test
+            user_data = {
+                "user_id": csv_user['user_id'],
+                "email": csv_user['email'],
+                "first_name": csv_user['first_name'],
+                "app_id": csv_user['app_id'],
+                "transaction_count": csv_user['transaction_count']
+            }
+            entity_data = {
+                "entity_id": csv_user['user_id'],
+                "entity_type": "user_id",
+                "source": "csv_transactions"
+            }
+            logger.info(f"Performance test using CSV user: {csv_user['user_id']} with {csv_user['transaction_count']} transactions")
+        else:
+            user_data = self.generator.generate_real_user_data("normal")
+            entity_data = self.generator.generate_real_entity_data()
+            logger.info("Performance test using synthetic data")
 
         context = AutonomousInvestigationContext(
             investigation_id=f"perf_test_{datetime.now().timestamp()}",
@@ -356,6 +528,16 @@ class AutonomousTestRunner:
         )
         context.data_sources["user"] = user_data
         context.data_sources["entity"] = entity_data
+        
+        # Add CSV transaction data for more realistic performance testing
+        if self.csv_users:
+            context.data_sources["transactions"] = self.csv_users[0]['sample_transactions']
+            context.data_sources["csv_metadata"] = {
+                "total_csv_transactions": len(self.csv_transactions),
+                "user_transaction_count": self.csv_users[0]['transaction_count'],
+                "data_source": "csv_file"
+            }
+            
         context.current_phase = InvestigationPhase.ANALYSIS
 
         config = RunnableConfig(
@@ -496,15 +678,87 @@ class AutonomousTestRunner:
 
         return all_results
 
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Comprehensive autonomous investigation test suite with CSV transaction data support"
+    )
+    
+    parser.add_argument(
+        "--csv-file",
+        type=str,
+        help="Path to CSV file containing transaction data",
+        default=None
+    )
+    
+    parser.add_argument(
+        "--csv-limit",
+        type=int,
+        help="Maximum number of transactions to load from CSV (default: 50)",
+        default=50
+    )
+    
+    parser.add_argument(
+        "--concurrent-users",
+        type=int,
+        help="Number of concurrent investigations to run (default: 3)",
+        default=3
+    )
+    
+    parser.add_argument(
+        "--log-level",
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
+        default='INFO',
+        help="Set logging level (default: INFO)"
+    )
+    
+    return parser.parse_args()
+
 async def main():
     """Main entry point."""
-    runner = AutonomousTestRunner()
+    args = parse_arguments()
+    
+    # Configure logging level
+    logging.getLogger().setLevel(getattr(logging, args.log_level))
+    
+    logger.info("=" * 60)
+    logger.info("COMPREHENSIVE AUTONOMOUS INVESTIGATION TEST SUITE")
+    logger.info("=" * 60)
+    
+    # Load CSV data if provided
+    csv_transactions = None
+    if args.csv_file:
+        logger.info(f"Loading transaction data from: {args.csv_file}")
+        csv_transactions = load_transactions_from_csv(args.csv_file, args.csv_limit)
+        if not csv_transactions:
+            logger.error("Failed to load CSV data. Continuing with synthetic data.")
+    else:
+        logger.info("No CSV file provided. Using synthetic test data.")
+    
+    # Initialize test runner with CSV data
+    runner = AutonomousTestRunner(
+        csv_transactions=csv_transactions,
+        concurrent_users=args.concurrent_users
+    )
+    
+    # Display configuration
+    logger.info(f"Configuration:")
+    logger.info(f"  CSV File: {args.csv_file or 'None (using synthetic data)'}")
+    if args.csv_file and csv_transactions:
+        logger.info(f"  CSV Transactions: {len(csv_transactions)}")
+        logger.info(f"  Unique Users: {len(runner.csv_users)}")
+    logger.info(f"  Concurrent Tests: {args.concurrent_users}")
+    logger.info(f"  Log Level: {args.log_level}")
+    logger.info("")
+    
     results = await runner.run_all_tests()
 
     # Exit with appropriate code
     if all(r.get("status") == "PASSED" for r in results.values()):
+        logger.info("\n🎉 All tests PASSED!")
         sys.exit(0)
     else:
+        logger.error("\n❌ Some tests FAILED!")
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -51,6 +51,23 @@ except ImportError as e:
     logger.warning(f"Blockchain tools not available: {e}")
     BLOCKCHAIN_TOOLS_AVAILABLE = False
 
+# Import intelligence tools
+try:
+    from .intelligence_tools import (
+        SocialMediaProfilingTool,
+        SocialNetworkAnalysisTool,
+        SocialMediaMonitoringTool,
+        OSINTDataAggregatorTool,
+        PeopleSearchTool,
+        BusinessIntelligenceTool,
+        DarkWebMonitoringTool,
+        DeepWebSearchTool
+    )
+    INTELLIGENCE_TOOLS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Intelligence tools not available: {e}")
+    INTELLIGENCE_TOOLS_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 # Try to import threat intelligence tools
@@ -97,6 +114,7 @@ class ToolRegistry:
             "threat_intelligence": [],  # Threat intelligence tools
             "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
             "blockchain": [],  # Blockchain and cryptocurrency analysis tools
+            "intelligence": [],  # Advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)
             "utility": [],
         }
         self._initialized = False
@@ -326,6 +344,56 @@ class ToolRegistry:
                     logger.info("Cryptocurrency compliance tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register cryptocurrency compliance tool: {e}")
+            
+            # Intelligence Tools
+            if INTELLIGENCE_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(SocialMediaProfilingTool(), "intelligence")
+                    logger.info("Social media profiling tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social media profiling tool: {e}")
+                
+                try:
+                    self._register_tool(SocialNetworkAnalysisTool(), "intelligence")
+                    logger.info("Social network analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social network analysis tool: {e}")
+                
+                try:
+                    self._register_tool(SocialMediaMonitoringTool(), "intelligence")
+                    logger.info("Social media monitoring tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social media monitoring tool: {e}")
+                
+                try:
+                    self._register_tool(OSINTDataAggregatorTool(), "intelligence")
+                    logger.info("OSINT data aggregator tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register OSINT data aggregator tool: {e}")
+                
+                try:
+                    self._register_tool(PeopleSearchTool(), "intelligence")
+                    logger.info("People search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register people search tool: {e}")
+                
+                try:
+                    self._register_tool(BusinessIntelligenceTool(), "intelligence")
+                    logger.info("Business intelligence tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register business intelligence tool: {e}")
+                
+                try:
+                    self._register_tool(DarkWebMonitoringTool(), "intelligence")
+                    logger.info("Dark web monitoring tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register dark web monitoring tool: {e}")
+                
+                try:
+                    self._register_tool(DeepWebSearchTool(), "intelligence")
+                    logger.info("Deep web search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register deep web search tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -504,6 +572,11 @@ def get_mcp_client_tools() -> List[BaseTool]:
 def get_blockchain_tools() -> List[BaseTool]:
     """Get blockchain and cryptocurrency analysis tools."""
     return tool_registry.get_tools_by_category("blockchain")
+
+
+def get_intelligence_tools() -> List[BaseTool]:
+    """Get advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)."""
+    return tool_registry.get_tools_by_category("intelligence")
 
 
 def get_essential_tools() -> List[BaseTool]:

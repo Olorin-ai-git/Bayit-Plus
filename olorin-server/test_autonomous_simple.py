@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
 Simple test script for autonomous investigation using the correct endpoints.
+
+Usage:
+    python test_autonomous_simple.py --csv-file /path/to/transactions.csv
+    python test_autonomous_simple.py --csv-file /path/to/transactions.csv --csv-limit 20
+    python test_autonomous_simple.py --csv-file /path/to/transactions.csv --entity-id "custom_entity_id"
+    python test_autonomous_simple.py  # Run with default test data
 """
 
 import asyncio
 import json
 import os
 import time
+import argparse
+import csv
 from datetime import datetime
 import requests
 import websockets
@@ -16,9 +24,50 @@ SERVER_PORT = os.environ.get("SERVER_PORT", "8090")
 BASE_URL = f"http://localhost:{SERVER_PORT}"
 WS_URL = f"ws://localhost:{SERVER_PORT}/ws"
 
-# Test data
+# Default test data
 test_user_id = "4621097846089147992"
 test_entity_type = "user_id"
+
+def load_transactions_from_csv(csv_file_path, limit=10):
+    """Load transaction data from CSV file."""
+    print(f"\n📊 Loading transactions from {csv_file_path}...")
+    transactions = []
+    
+    try:
+        with open(csv_file_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for i, row in enumerate(reader):
+                if i >= limit:
+                    break
+                
+                # Extract relevant fields for investigation
+                transaction = {
+                    "tx_id": row.get("TX_ID_KEY", ""),
+                    "unique_user_id": row.get("UNIQUE_USER_ID", ""),
+                    "email": row.get("EMAIL", ""),
+                    "first_name": row.get("FIRST_NAME", ""),
+                    "app_id": row.get("APP_ID", ""),
+                    "tx_datetime": row.get("TX_DATETIME", ""),
+                    "authorization_stage": row.get("AUTHORIZATION_STAGE", ""),
+                    "event_type": row.get("EVENT_TYPE", ""),
+                    "original_tx_id": row.get("ORIGINAL_TX_ID", ""),
+                    "client_request_id": row.get("CLIENT_REQUEST_ID", "")
+                }
+                transactions.append(transaction)
+        
+        print(f"✅ Loaded {len(transactions)} transactions from CSV")
+        if transactions:
+            print(f"   Sample transaction ID: {transactions[0]['tx_id']}")
+            print(f"   Sample user ID: {transactions[0]['unique_user_id']}")
+        
+        return transactions
+        
+    except FileNotFoundError:
+        print(f"❌ CSV file not found: {csv_file_path}")
+        return []
+    except Exception as e:
+        print(f"❌ Error loading CSV: {e}")
+        return []
 
 # Headers for authentication
 headers = {
@@ -88,12 +137,14 @@ def get_scenarios():
         print(f"❌ Failed to get scenarios: {e}")
         return []
 
-def start_investigation(entity_id, entity_type="user_id", parallel=True):
+def start_investigation(entity_id, entity_type="user_id", parallel=True, transaction_data=None):
     """Start an autonomous investigation."""
     print(f"\n🚀 Starting autonomous investigation...")
     print(f"   Entity ID: {entity_id}")
     print(f"   Entity Type: {entity_type}")
     print(f"   Execution Mode: {'Parallel' if parallel else 'Sequential'}")
+    if transaction_data:
+        print(f"   Transaction Data: {len(transaction_data)} transactions loaded")
 
     payload = {
         "entity_id": entity_id,
@@ -105,6 +156,10 @@ def start_investigation(entity_id, entity_type="user_id", parallel=True):
             "enable_journey_tracking": True
         }
     }
+    
+    # Add transaction data if provided
+    if transaction_data:
+        payload["transaction_data"] = transaction_data
 
     try:
         resp = requests.post(
@@ -230,9 +285,25 @@ async def monitor_investigation_websocket(investigation_id):
     except Exception as e:
         print(f"❌ Failed to connect to WebSocket: {e}")
 
-def run_full_test():
+def run_full_test(csv_file_path=None, csv_limit=10, entity_id_override=None):
     """Run a complete autonomous investigation test."""
     print_separator("AUTONOMOUS INVESTIGATION TEST")
+    
+    # Load transaction data if CSV path provided
+    transaction_data = None
+    entity_id_to_use = test_user_id
+    
+    if csv_file_path:
+        transaction_data = load_transactions_from_csv(csv_file_path, csv_limit)
+        if transaction_data and transaction_data[0]['unique_user_id']:
+            # Use the first transaction's user ID for investigation
+            entity_id_to_use = transaction_data[0]['unique_user_id']
+            print(f"📝 Using entity ID from CSV: {entity_id_to_use}")
+    
+    # Override entity ID if specified
+    if entity_id_override:
+        entity_id_to_use = entity_id_override
+        print(f"🔄 Entity ID override applied: {entity_id_to_use}")
 
     # Step 1: Check server health
     if not check_health():
@@ -247,7 +318,7 @@ def run_full_test():
     scenarios = get_scenarios()
 
     # Step 4: Start investigation
-    result = start_investigation(test_user_id, test_entity_type, parallel=True)
+    result = start_investigation(entity_id_to_use, test_entity_type, parallel=True, transaction_data=transaction_data)
     if not result:
         print("\n❌ Failed to start investigation. Exiting.")
         return
@@ -304,9 +375,55 @@ def run_full_test():
         "logs": logs
     }
 
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Simple autonomous investigation test script with CSV transaction data support"
+    )
+    
+    parser.add_argument(
+        "--csv-file",
+        type=str,
+        help="Path to CSV file containing transaction data",
+        default=None
+    )
+    
+    parser.add_argument(
+        "--csv-limit",
+        type=int,
+        help="Maximum number of transactions to load from CSV (default: 10)",
+        default=10
+    )
+    
+    parser.add_argument(
+        "--entity-id",
+        type=str,
+        help="Override entity ID for investigation (default: use from CSV or test data)",
+        default=None
+    )
+    
+    return parser.parse_args()
+
 if __name__ == "__main__":
+    # Parse command line arguments
+    args = parse_arguments()
+    
+    # Display configuration
+    print("🔧 Configuration:")
+    print(f"   Server Port: {SERVER_PORT}")
+    print(f"   Base URL: {BASE_URL}")
+    if args.csv_file:
+        print(f"   CSV File: {args.csv_file}")
+        print(f"   CSV Limit: {args.csv_limit}")
+    if args.entity_id:
+        print(f"   Entity ID Override: {args.entity_id}")
+    
     # Run the test
-    results = run_full_test()
+    results = run_full_test(
+        csv_file_path=args.csv_file, 
+        csv_limit=args.csv_limit,
+        entity_id_override=args.entity_id
+    )
 
     # Save results to file
     if results:
@@ -317,3 +434,5 @@ if __name__ == "__main__":
             json.dump(results, f, indent=2, default=str)
 
         print(f"\n💾 Results saved to {filename}")
+    
+    print("\n✨ Test completed!")
