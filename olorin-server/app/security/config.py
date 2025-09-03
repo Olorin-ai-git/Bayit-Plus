@@ -7,7 +7,7 @@ import logging
 from typing import List, Optional
 
 from pydantic import BaseModel
-from app.service.config_loader import ConfigLoader
+from app.service.config_loader import get_config_loader
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +16,8 @@ class SecurityConfig(BaseModel):
     """Security configuration settings."""
     
     def __init__(self, **kwargs):
-        # Initialize ConfigLoader for secrets
-        config_loader = ConfigLoader()
+        # Get singleton ConfigLoader for secrets
+        config_loader = get_config_loader()
         
         # Load secrets from Firebase Secret Manager
         jwt_secret_key = config_loader.load_secret("JWT_SECRET_KEY")

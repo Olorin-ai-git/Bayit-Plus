@@ -17,11 +17,22 @@ logger = structlog.get_logger(__name__)
 class ConfigLoader:
     """Loads configuration values from Firebase Secret Manager."""
     
+    _instance = None
+    _initialized = False
+    
+    def __new__(cls):
+        """Implement singleton pattern for ConfigLoader."""
+        if cls._instance is None:
+            cls._instance = super(ConfigLoader, cls).__new__(cls)
+        return cls._instance
+    
     def __init__(self):
-        """Initialize the configuration loader."""
-        self.secret_manager = get_secret_manager()
-        self.env = os.getenv("APP_ENV", "local")
-        logger.info(f"ConfigLoader initialized for environment: {self.env}")
+        """Initialize the configuration loader (only once)."""
+        if not ConfigLoader._initialized:
+            self.secret_manager = get_secret_manager()
+            self.env = os.getenv("APP_ENV", "local")
+            logger.info(f"ConfigLoader initialized for environment: {self.env}")
+            ConfigLoader._initialized = True
     
     def load_secret(self, secret_path: str) -> Optional[str]:
         """

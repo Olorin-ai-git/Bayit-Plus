@@ -1,15 +1,13 @@
 #!/bin/bash
-"""
-Autonomous Investigation Test Runner Script
-
-Simple wrapper script to run autonomous investigation tests with proper
-environment setup and error handling.
-
-Usage:
-  ./run_autonomous_test.sh device_spoofing           # Test single scenario
-  ./run_autonomous_test.sh --all                     # Test all scenarios
-  ./run_autonomous_test.sh device_spoofing --verbose # Verbose output
-"""
+# Autonomous Investigation Test Runner Script
+#
+# Simple wrapper script to run autonomous investigation tests with proper
+# environment setup and error handling.
+#
+# Usage:
+#   ./run_autonomous_test.sh device_spoofing           # Test single scenario
+#   ./run_autonomous_test.sh --all                     # Test all scenarios
+#   ./run_autonomous_test.sh device_spoofing --verbose # Verbose output
 
 set -e  # Exit on any error
 
@@ -27,12 +25,15 @@ TEST_SCRIPT="$SCRIPT_DIR/app/test/autonomous_investigation_test_runner.py"
 echo -e "${BLUE}🚀 Autonomous Investigation Test Runner${NC}"
 echo -e "${BLUE}======================================${NC}"
 
-# Check if olorin-server is running
-echo -e "${YELLOW}📡 Checking server status...${NC}"
-if ! curl -s http://localhost:8000/health > /dev/null 2>&1; then
-    echo -e "${RED}❌ Error: olorin-server is not running!${NC}"
+# Check if olorin-server is running (default port 8090)
+SERVER_PORT="${SERVER_PORT:-8090}"
+echo -e "${YELLOW}📡 Checking server status on port ${SERVER_PORT}...${NC}"
+if ! curl -s http://localhost:${SERVER_PORT}/health > /dev/null 2>&1; then
+    echo -e "${RED}❌ Error: olorin-server is not running on port ${SERVER_PORT}!${NC}"
     echo -e "${YELLOW}💡 Please start the server first:${NC}"
     echo -e "   cd olorin-server"
+    echo -e "   ./scripts/start_server.sh"
+    echo -e "   # or"
     echo -e "   poetry run python -m app.local_server"
     echo -e "   # or"
     echo -e "   npm run olorin"

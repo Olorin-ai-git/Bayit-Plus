@@ -40,8 +40,8 @@ def _get_jwt_secret() -> str:
     Get JWT secret from Firebase Secrets Manager ONLY - no fallbacks.
     """
     try:
-        from app.service.config_loader import ConfigLoader
-        config_loader = ConfigLoader()
+        from app.service.config_loader import get_config_loader
+        config_loader = get_config_loader()
         jwt_config = config_loader.load_jwt_config()
         secret_key = jwt_config.get("secret_key")
         

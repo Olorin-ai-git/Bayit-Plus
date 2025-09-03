@@ -70,12 +70,14 @@ class SecretManagerClient:
             cached_value, expiry_time = self._cache[cache_key]
             if time.time() < expiry_time:
                 logger.debug("Using cached secret", 
+                           secret_name=firebase_secret_name,
                            ttl_remaining=int(expiry_time - time.time()))
                 return cached_value
             else:
                 # Cache expired, remove it
                 del self._cache[cache_key]
-                logger.debug("Cache expired for secret")
+                logger.debug("Cache expired for secret",
+                           secret_name=firebase_secret_name)
         
         # No environment variable fallbacks - must use Firebase Secret Manager
         if not self._client:
@@ -97,21 +99,28 @@ class SecretManagerClient:
             # Cache the secret with TTL
             self._cache[cache_key] = (secret_value, time.time() + self.cache_ttl)
             
-            logger.debug("Successfully retrieved secret from Secret Manager")
+            logger.debug("Successfully retrieved secret from Secret Manager",
+                        secret_name=firebase_secret_name)
             return secret_value
             
         except google_exceptions.NotFound:
             logger.warning("Secret not found in Secret Manager",
+                          secret_name=firebase_secret_name,
+                          original_name=secret_name,
                           project_id=self.project_id)
             return None
             
         except google_exceptions.PermissionDenied:
             logger.error("Permission denied accessing secret",
+                        secret_name=firebase_secret_name,
+                        original_name=secret_name,
                         project_id=self.project_id)
             return None
             
         except Exception as e:
             logger.error("Error retrieving secret from Secret Manager",
+                        secret_name=firebase_secret_name,
+                        original_name=secret_name,
                         error=str(e))
             return None
     

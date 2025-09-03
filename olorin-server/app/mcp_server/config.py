@@ -4,7 +4,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
-from app.service.config_loader import ConfigLoader
+from app.service.config_loader import get_config_loader
 
 
 class MCPConfig(BaseModel):
@@ -86,7 +86,7 @@ class MCPConfig(BaseModel):
     def from_env(cls) -> "MCPConfig":
         """Create configuration from environment variables."""
         # Load API keys from Firebase Secret Manager
-        config_loader = ConfigLoader()
+        config_loader = get_config_loader()
         openai_api_key = config_loader.load_secret("OPENAI_API_KEY")
         langfuse_api_key = config_loader.load_secret("LANGFUSE_API_KEY")
         

@@ -34,7 +34,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
-from app.service.config_loader import ConfigLoader
+from app.service.config_loader import get_config_loader
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/device")
@@ -44,7 +44,7 @@ async def get_identity_authorization_header(
     profile_id: str, olorin_tid: str = "demo-6790ae9b-553a-4312-9f5e-55964d21c380"
 ):
     # Load app secret from Firebase Secret Manager
-    config_loader = ConfigLoader()
+    config_loader = get_config_loader()
     olorin_app_secret = config_loader.load_secret("OLORIN_APP_SECRET") or ""
     
     url = "https://identityinternal-e2e.api.olorin.com/v1/graphql"

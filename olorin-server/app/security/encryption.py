@@ -11,7 +11,7 @@ from typing import Optional, Union
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from app.service.config_loader import ConfigLoader
+from app.service.config_loader import get_config_loader
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class DataEncryption:
 
     def __init__(self, password: Optional[str] = None):
         """Initialize encryption with a password from Firebase Secret Manager."""
-        config_loader = ConfigLoader()
+        config_loader = get_config_loader()
         
         # Load encryption settings from Firebase Secret Manager
         encryption_password = password or config_loader.load_secret("ENCRYPTION_PASSWORD")

@@ -12,7 +12,7 @@ NC='\033[0m' # No Color
 CSV_FILE="/Users/gklainert/Documents/olorin/transaction_dataset_10k.csv"
 CSV_LIMIT=2000
 LOG_LEVEL="INFO"
-SERVER_PORT=8000
+SERVER_PORT=8090
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --csv-file PATH     Path to CSV file (default: $CSV_FILE)"
             echo "  --csv-limit NUM     Number of CSV rows to process (default: 2000)"
             echo "  --log-level LEVEL   Log level: DEBUG, INFO, WARNING, ERROR (default: INFO)"
-            echo "  --port PORT         Server port (default: 8000)"
+            echo "  --port PORT         Server port (default: 8090)"
             echo "  -h, --help          Show this help message"
             exit 0
             ;;
