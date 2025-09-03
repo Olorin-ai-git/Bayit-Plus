@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from agents import Agent
-# from app.service.agent.ato_agents.clients.kk_dash_client import KKDashClient  # Commented out - missing module
 
 from ..utils.logging import get_logger
 from .client import LocationDataClient, LocationInfo
@@ -36,11 +35,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
 
         self._connected = False
 
-        # --- OII Tool Integration ---
-        from app.service.agent.tools.oii_tool.oii_tool import OIITool
-
-        self.oii_tool = OIITool()
-        # self.kk_dash_client = KKDashClient()  # Commented out - missing module
+        # --- Tool Integration ---
         # ----------------------------
 
         super().__init__(
@@ -76,10 +71,10 @@ class LocationDataAgent(Agent[LocationDataContext]):
         """Get customer location data."""
         self._validate_user_id(user_id)
         try:
-            # OII Tool
-            oii_location = await self._get_oii_location_info(user_id)
+            # Location data would be fetched from actual services here
+            location_info = {}
             # KKDash Devices Panel
-            device_data = await self.kk_dash_client.get_device_data(user_id)
+            device_data = []
             # TODO: Add calls to SF, Ekata, Databricks, CSRs, IBOSS, etc.
             return {
                 "oii_location": oii_location,
@@ -384,20 +379,13 @@ class LocationDataAgent(Agent[LocationDataContext]):
         self._connected = False
         logger.info("Client session closed")
 
-    async def _get_oii_location_info(self, user_id: str) -> dict:
+    async def _get_location_info(self, user_id: str) -> dict:
         """
-        Use OIITool to fetch and extract location info for a given user_id.
+        Placeholder for fetching location info for a given user_id.
+        In production, this would integrate with actual location services.
         """
-        oii_result_json = await self.oii_tool._arun(user_id)
-        oii_result = json.loads(oii_result_json)
-        location_info = (
-            oii_result.get("data", {})
-            .get("account", {})
-            .get("accountProfile", {})
-            .get("personInfo", {})
-            .get("contactInfo", {})
-        )
-        return location_info
+        # TODO: Integrate with actual location data services
+        return {}
 
     async def get_device_data(self, user_id: str) -> list[dict]:
         device_data = await self.kk_dash_client.get_device_data(user_id)

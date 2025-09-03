@@ -126,28 +126,10 @@ def test_get_all_demo_agent_responses_cache_miss(client):
     assert "error" in response.json()
 
 
-def test_get_online_identity_info_success(client):
-    with patch(
-        "app.service.agent.tools.oii_tool.oii_tool.OIITool._run",
-        return_value='{"foo": "bar"}',
-    ):
-        with patch(
-            "app.models.oii_response.OIIResponse.model_validate_json",
-            return_value=MagicMock(model_dump=lambda: {"foo": "bar"}),
-        ):
-            response = client.get("/api/oii/testuser")
-            assert response.status_code == 200
-            assert response.json()["foo"] == "bar"
+# Removed test_get_online_identity_info_success - OII tool no longer exists
 
 
-def test_get_online_identity_info_tool_error(client):
-    with patch(
-        "app.service.agent.tools.oii_tool.oii_tool.OIITool._run",
-        side_effect=Exception("fail"),
-    ):
-        response = client.get("/api/oii/testuser")
-        assert response.status_code == 500
-        assert "fail" in response.json()["detail"]
+# Removed test_get_online_identity_info_tool_error - OII tool no longer exists
 
 
 def test_get_oii_source_location_success(client):

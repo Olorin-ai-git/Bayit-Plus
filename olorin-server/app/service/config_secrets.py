@@ -9,7 +9,18 @@ import os
 import structlog
 from .config_loader import get_config_loader
 
-logger = structlog.get_logger(__name__)
+# Configure logging level based on environment variable
+_log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
+if _log_level == "SILENT":
+    # Special mode to completely silence config secrets logs
+    class SilentLogger:
+        def debug(self, *args, **kwargs): pass
+        def info(self, *args, **kwargs): pass
+        def warning(self, *args, **kwargs): pass
+        def error(self, *args, **kwargs): pass
+    logger = SilentLogger()
+else:
+    logger = structlog.get_logger(__name__)
 
 
 def enhance_config_with_secrets(config_instance):

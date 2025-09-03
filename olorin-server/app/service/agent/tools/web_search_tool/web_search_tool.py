@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup, NavigableString
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
+from app.service.agent.tools.pii_sanitizer import sanitize_web_content, SanitizationMethod
+
 logger = logging.getLogger(__name__)
 
 
@@ -155,13 +157,58 @@ class WebSearchTool(BaseTool):
             if not results:
                 results = self._search_fallback(query, num_results)
 
-            return {
+            # Sanitize PII from search results
+            sanitized_results = []
+            pii_summary = {}
+            
+            for result in results:
+                # Sanitize title
+                sanitized_title, title_pii = sanitize_web_content(
+                    result.get("title", ""),
+                    method=SanitizationMethod.REDACT
+                )
+                
+                # Sanitize snippet
+                sanitized_snippet, snippet_pii = sanitize_web_content(
+                    result.get("snippet", ""),
+                    method=SanitizationMethod.REDACT
+                )
+                
+                # Create sanitized result
+                sanitized_result = result.copy()
+                sanitized_result["title"] = sanitized_title
+                sanitized_result["snippet"] = sanitized_snippet
+                
+                # Track PII detections
+                if title_pii.get("detected_pii"):
+                    pii_summary[f"title_{len(sanitized_results)}"] = title_pii
+                if snippet_pii.get("detected_pii"):
+                    pii_summary[f"snippet_{len(sanitized_results)}"] = snippet_pii
+                
+                sanitized_results.append(sanitized_result)
+
+            response = {
                 "success": True,
                 "query": query,
-                "num_results": len(results),
-                "results": results,
+                "num_results": len(sanitized_results),
+                "results": sanitized_results,
                 "search_engine": search_engine,
             }
+            
+            # Add PII sanitization summary if any PII was detected
+            if pii_summary:
+                response["pii_sanitization"] = {
+                    "pii_detected": True,
+                    "total_instances": sum(
+                        sum(len(instances) for instances in detection.get("detected_pii", {}).values())
+                        for detection in pii_summary.values()
+                    ),
+                    "sanitization_method": "redact"
+                }
+            else:
+                response["pii_sanitization"] = {"pii_detected": False}
+            
+            return response
 
         except Exception as e:
             logger.error(f"Web search error: {e}")
@@ -283,21 +330,72 @@ class WebScrapeTool(BaseTool):
             if len(text) > max_length:
                 text = text[:max_length] + "... [truncated]"
 
+            # Sanitize PII from scraped content
+            sanitized_title, title_pii = sanitize_web_content(
+                title, method=SanitizationMethod.REDACT
+            )
+            
+            sanitized_meta_desc, meta_pii = sanitize_web_content(
+                meta_desc, method=SanitizationMethod.REDACT
+            )
+            
+            sanitized_content, content_pii = sanitize_web_content(
+                text, method=SanitizationMethod.REDACT
+            )
+
             result = {
                 "success": True,
                 "url": url,
-                "title": title,
-                "meta_description": meta_desc,
-                "content": text,
-                "content_length": len(text),
+                "title": sanitized_title,
+                "meta_description": sanitized_meta_desc,
+                "content": sanitized_content,
+                "content_length": len(sanitized_content),
                 "status_code": response.status_code,
             }
+            
+            # Track PII sanitization
+            pii_summary = {}
+            if title_pii.get("detected_pii"):
+                pii_summary["title"] = title_pii
+            if meta_pii.get("detected_pii"):
+                pii_summary["meta_description"] = meta_pii
+            if content_pii.get("detected_pii"):
+                pii_summary["content"] = content_pii
 
             # Extract links if requested
             if extract_links:
                 links = self._extract_links(soup, url)
-                result["links"] = links
-                result["links_count"] = len(links)
+                
+                # Sanitize link text
+                sanitized_links = []
+                for link in links:
+                    sanitized_link_text, link_pii = sanitize_web_content(
+                        link.get("text", ""), method=SanitizationMethod.REDACT
+                    )
+                    
+                    sanitized_link = link.copy()
+                    sanitized_link["text"] = sanitized_link_text
+                    
+                    if link_pii.get("detected_pii"):
+                        pii_summary[f"link_{len(sanitized_links)}"] = link_pii
+                    
+                    sanitized_links.append(sanitized_link)
+                
+                result["links"] = sanitized_links
+                result["links_count"] = len(sanitized_links)
+            
+            # Add PII sanitization summary
+            if pii_summary:
+                result["pii_sanitization"] = {
+                    "pii_detected": True,
+                    "total_instances": sum(
+                        sum(len(instances) for instances in detection.get("detected_pii", {}).values())
+                        for detection in pii_summary.values()
+                    ),
+                    "sanitization_method": "redact"
+                }
+            else:
+                result["pii_sanitization"] = {"pii_detected": False}
 
             return result
 

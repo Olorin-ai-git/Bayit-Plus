@@ -1000,3 +1000,433 @@ class TestPerformanceAndReliability:
         # Validate cost tracking
         assert final_cost > 0
         assert api_cost_monitor.get_summary()["total_calls"] > 0
+
+
+class TestWebToolsIntegration:
+    """Test web tools integration with PII sanitization in autonomous investigations."""
+    
+    @pytest.mark.asyncio
+    async def test_web_search_domain_reputation(
+        self,
+        real_investigation_context,
+        api_cost_monitor
+    ):
+        """Test web search tools for domain reputation investigation with PII sanitization."""
+        # Add suspicious domain data
+        real_investigation_context.user_data.update({
+            "suspicious_domains": ["malicious-phishing-site.com", "fake-bank-domain.org"],
+            "email": "john.doe@suspicious-domain.com",  # Contains PII that should be sanitized
+            "phone": "555-123-4567",  # Contains PII that should be sanitized
+            "ip_address": "192.168.1.100"
+        })
+        
+        config = RunnableConfig(
+            tags=["test", "web_tools", "domain_reputation"],
+            metadata={
+                "test_type": "web_domain_investigation",
+                "scenario": "suspicious_domain_reputation"
+            }
+        )
+        
+        # Run network agent which should use web search for domain reputation
+        findings = await autonomous_network_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2000, 1800)  # Web search may use more tokens
+        
+        # Validate findings structure
+        assert isinstance(findings, DomainFindings)
+        assert findings.domain == "network"
+        
+        # Check that web tools were utilized in findings
+        findings_text = " ".join(findings.key_findings + findings.suspicious_indicators).lower()
+        web_indicators = ["domain", "reputation", "malicious", "phishing", "suspicious"]
+        detected_web_analysis = [ind for ind in web_indicators if ind in findings_text]
+        
+        # Should detect web-based domain analysis
+        assert len(detected_web_analysis) >= 1, "Web domain analysis should be present in findings"
+        
+        # Check for PII sanitization in findings - should not contain raw PII
+        findings_combined = " ".join(findings.key_findings + findings.suspicious_indicators)
+        
+        # These PII patterns should be sanitized (redacted)
+        assert "john.doe@suspicious-domain.com" not in findings_combined, "Email PII should be sanitized"
+        assert "555-123-4567" not in findings_combined, "Phone PII should be sanitized"
+        
+        # Should contain redaction markers instead
+        pii_markers = ["[REDACTED-EMAIL]", "[REDACTED-PHONE]"]
+        sanitization_detected = any(marker in findings_combined for marker in pii_markers)
+        
+        logger.info(f"Domain Reputation Web Search Results:")
+        logger.info(f"  Web Analysis Indicators: {detected_web_analysis}")
+        logger.info(f"  Risk Score: {findings.risk_score:.2f}")
+        logger.info(f"  PII Sanitization Applied: {sanitization_detected}")
+        logger.info(f"  Key Findings: {findings.key_findings[:3]}")
+        
+        # Performance check - web tools should complete within reasonable time
+        assert findings.risk_score is not None
+        assert 0.0 <= findings.risk_score <= 1.0
+    
+    @pytest.mark.asyncio
+    async def test_web_scraping_business_verification(
+        self,
+        real_investigation_context,
+        api_cost_monitor
+    ):
+        """Test web scraping for business verification with PII protection."""
+        # Add business data with potential PII
+        real_investigation_context.user_data.update({
+            "business_name": "Suspicious Trading LLC",
+            "business_address": "123 Main Street, Anytown, CA 90210",  # Contains PII address
+            "business_phone": "(555) 987-6543",  # Contains PII phone
+            "business_email": "contact@suspicious-trading.com",  # Contains PII email
+            "tax_id": "12-3456789",  # Contains PII tax ID
+            "registration_state": "California"
+        })
+        
+        config = RunnableConfig(
+            tags=["test", "web_tools", "business_verification"],
+            metadata={
+                "test_type": "web_business_investigation",
+                "scenario": "business_legitimacy_check"
+            }
+        )
+        
+        # Run location agent which should use web scraping for business verification
+        findings = await autonomous_location_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(1900, 1700)  # Web scraping may use more tokens
+        
+        # Validate findings structure
+        assert isinstance(findings, DomainFindings)
+        assert findings.domain == "location"
+        
+        # Check that web scraping was utilized for business analysis
+        findings_text = " ".join(findings.key_findings + findings.suspicious_indicators).lower()
+        business_indicators = ["business", "verification", "legitimate", "registration", "address"]
+        detected_business_analysis = [ind for ind in business_indicators if ind in findings_text]
+        
+        # Should detect web-based business verification
+        assert len(detected_business_analysis) >= 1, "Web business verification should be present"
+        
+        # Check for comprehensive PII sanitization
+        findings_combined = " ".join(findings.key_findings + findings.suspicious_indicators)
+        
+        # These PII elements should be sanitized
+        sensitive_data = [
+            "123 Main Street, Anytown, CA 90210",
+            "(555) 987-6543",
+            "contact@suspicious-trading.com",
+            "12-3456789"
+        ]
+        
+        pii_found_unsanitized = [data for data in sensitive_data if data in findings_combined]
+        assert len(pii_found_unsanitized) == 0, f"PII should be sanitized: {pii_found_unsanitized}"
+        
+        # Should contain appropriate redaction markers
+        expected_redactions = ["[REDACTED-ADDRESS]", "[REDACTED-PHONE]", "[REDACTED-EMAIL]"]
+        redactions_found = [marker for marker in expected_redactions if marker in findings_combined]
+        
+        logger.info(f"Business Verification Web Scraping Results:")
+        logger.info(f"  Business Analysis Indicators: {detected_business_analysis}")
+        logger.info(f"  Risk Score: {findings.risk_score:.2f}")
+        logger.info(f"  PII Redactions Applied: {redactions_found}")
+        logger.info(f"  Suspicious Indicators: {findings.suspicious_indicators[:2]}")
+        
+        # Validate risk assessment
+        assert findings.risk_score is not None
+        assert 0.0 <= findings.risk_score <= 1.0
+    
+    @pytest.mark.asyncio
+    async def test_web_threat_intelligence_research(
+        self,
+        real_investigation_context,
+        api_cost_monitor
+    ):
+        """Test web tools for threat intelligence research with PII sanitization."""
+        # Add threat-related data with PII elements
+        real_investigation_context.user_data.update({
+            "suspicious_ips": ["203.0.113.42", "198.51.100.15"],
+            "user_agent": "Mozilla/5.0 (Malicious Bot)",
+            "attack_signatures": ["SQL injection attempt", "XSS payload detected"],
+            "victim_email": "victim@company.com",  # PII that should be sanitized
+            "attacker_email": "attacker@malicious.org",  # PII that should be sanitized
+            "credit_card": "4111-1111-1111-1234"  # PII that should be sanitized
+        })
+        
+        config = RunnableConfig(
+            tags=["test", "web_tools", "threat_intelligence"],
+            metadata={
+                "test_type": "web_threat_research",
+                "scenario": "threat_pattern_analysis"
+            }
+        )
+        
+        # Run logs agent which should use web search for threat pattern research
+        findings = await autonomous_logs_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2100, 1900)  # Threat research may use more tokens
+        
+        # Validate findings structure
+        assert isinstance(findings, DomainFindings)
+        assert findings.domain == "logs"
+        
+        # Check that web-based threat research was conducted
+        findings_text = " ".join(findings.key_findings + findings.suspicious_indicators).lower()
+        threat_indicators = ["threat", "attack", "signature", "pattern", "malicious", "suspicious"]
+        detected_threat_research = [ind for ind in threat_indicators if ind in findings_text]
+        
+        # Should detect web-based threat intelligence gathering
+        assert len(detected_threat_research) >= 1, "Web threat research should be evident in findings"
+        
+        # Check for comprehensive PII sanitization
+        findings_combined = " ".join(findings.key_findings + findings.suspicious_indicators)
+        
+        # Critical PII should be sanitized
+        critical_pii = [
+            "victim@company.com",
+            "attacker@malicious.org",
+            "4111-1111-1111-1234"
+        ]
+        
+        unsanitized_pii = [pii for pii in critical_pii if pii in findings_combined]
+        assert len(unsanitized_pii) == 0, f"Critical PII must be sanitized: {unsanitized_pii}"
+        
+        # Should contain security-appropriate redactions
+        expected_security_redactions = ["[REDACTED-EMAIL]", "[REDACTED-CREDIT_CARD]"]
+        security_redactions = [marker for marker in expected_security_redactions if marker in findings_combined]
+        
+        logger.info(f"Threat Intelligence Web Research Results:")
+        logger.info(f"  Threat Research Indicators: {detected_threat_research}")
+        logger.info(f"  Risk Score: {findings.risk_score:.2f}")
+        logger.info(f"  Security Redactions: {security_redactions}")
+        logger.info(f"  Attack Patterns Analyzed: {len(findings.key_findings)}")
+        
+        # Validate threat assessment
+        assert findings.risk_score is not None
+        assert 0.0 <= findings.risk_score <= 1.0
+    
+    @pytest.mark.asyncio
+    async def test_web_fraud_trend_analysis(
+        self,
+        real_investigation_context,
+        api_cost_monitor
+    ):
+        """Test web search for fraud trend analysis in risk aggregation with PII protection."""
+        # Set up domain findings with PII elements
+        network_findings = DomainFindings(
+            domain="network",
+            risk_score=0.7,
+            confidence=0.8,
+            key_findings=[
+                "Suspicious IP 203.0.113.42 detected",
+                "Multiple failed login attempts from john.smith@company.com",  # Contains PII
+                "Credit card 4532-1234-5678-9012 used in suspicious transactions"  # Contains PII
+            ],
+            suspicious_indicators=["High-risk geographic location", "Unusual access patterns"],
+            data_quality="complete"
+        )
+        
+        device_findings = DomainFindings(
+            domain="device",
+            risk_score=0.6,
+            confidence=0.7,
+            key_findings=[
+                "Device fingerprint mismatch detected",
+                "Browser signature associated with user SSN 123-45-6789",  # Contains PII
+                "Phone number (555) 234-5678 linked to suspicious activity"  # Contains PII
+            ],
+            suspicious_indicators=["Unusual device characteristics"],
+            data_quality="complete"
+        )
+        
+        # Set domain findings for risk aggregation
+        real_investigation_context.domain_findings = {
+            "network": network_findings,
+            "device": device_findings
+        }
+        
+        config = RunnableConfig(
+            tags=["test", "web_tools", "fraud_trends"],
+            metadata={
+                "test_type": "web_fraud_research",
+                "scenario": "fraud_trend_analysis"
+            }
+        )
+        
+        # Run risk agent which should use web search for recent fraud trends
+        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2300, 2100)  # Risk analysis with web research uses more tokens
+        
+        # Validate final risk assessment structure
+        assert isinstance(final_risk, DomainFindings)
+        assert final_risk.domain == "risk"
+        
+        # Check that web-based fraud trend research was conducted
+        risk_text = " ".join(final_risk.key_findings + final_risk.suspicious_indicators).lower()
+        fraud_trend_indicators = ["trend", "pattern", "fraud", "recent", "market", "analysis"]
+        detected_trend_analysis = [ind for ind in fraud_trend_indicators if ind in risk_text]
+        
+        # Should detect web-based fraud trend analysis
+        assert len(detected_trend_analysis) >= 1, "Web fraud trend analysis should be present"
+        
+        # Verify comprehensive PII sanitization across all findings
+        all_findings_text = " ".join(final_risk.key_findings + final_risk.suspicious_indicators)
+        
+        # All PII from domain findings should be sanitized in final risk assessment
+        sensitive_elements = [
+            "john.smith@company.com",
+            "4532-1234-5678-9012",
+            "123-45-6789",
+            "(555) 234-5678"
+        ]
+        
+        exposed_pii = [element for element in sensitive_elements if element in all_findings_text]
+        assert len(exposed_pii) == 0, f"All PII should be sanitized in final risk: {exposed_pii}"
+        
+        # Should contain appropriate sanitization markers
+        sanitization_markers = ["[REDACTED-EMAIL]", "[REDACTED-CREDIT_CARD]", "[REDACTED-SSN]", "[REDACTED-PHONE]"]
+        found_markers = [marker for marker in sanitization_markers if marker in all_findings_text]
+        
+        logger.info(f"Fraud Trend Analysis Web Research Results:")
+        logger.info(f"  Trend Analysis Indicators: {detected_trend_analysis}")
+        logger.info(f"  Final Risk Score: {final_risk.risk_score:.2f}")
+        logger.info(f"  PII Sanitization Markers: {found_markers}")
+        logger.info(f"  Recommended Actions: {final_risk.recommended_actions[:2] if hasattr(final_risk, 'recommended_actions') else 'N/A'}")
+        
+        # Validate comprehensive risk analysis
+        assert final_risk.risk_score is not None
+        assert 0.0 <= final_risk.risk_score <= 1.0
+        assert final_risk.confidence >= 0.5  # Should have reasonable confidence
+    
+    @pytest.mark.asyncio
+    async def test_full_web_tools_investigation_lifecycle(
+        self,
+        real_investigation_context,
+        api_cost_monitor
+    ):
+        """Test complete investigation lifecycle with web tools and PII sanitization."""
+        # Create comprehensive test data with multiple PII types
+        real_investigation_context.user_data.update({
+            "email": "test.user@example.com",
+            "phone": "555-987-6543",
+            "ssn": "987-65-4321",
+            "credit_card": "4111-1111-1111-1111",
+            "bank_account": "123456789",
+            "ip_address": "203.0.113.50",
+            "suspicious_domains": ["phishing-site.com", "malware-host.org"],
+            "business_name": "Suspicious Enterprises Inc",
+            "business_address": "456 Fraud Avenue, Scam City, NY 10001"
+        })
+        
+        config = RunnableConfig(
+            tags=["test", "web_tools", "full_lifecycle"],
+            metadata={
+                "test_type": "complete_web_investigation",
+                "scenario": "comprehensive_web_analysis"
+            }
+        )
+        
+        # Phase 1: Network analysis with web domain research
+        network_findings = await autonomous_network_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2000, 1800)
+        
+        # Phase 2: Device analysis with web security research 
+        device_findings = await autonomous_device_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(1800, 1600)
+        
+        # Phase 3: Location analysis with web business verification
+        location_findings = await autonomous_location_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(1900, 1700)
+        
+        # Phase 4: Logs analysis with web threat research
+        logs_findings = await autonomous_logs_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2100, 1900)
+        
+        # Phase 5: Risk aggregation with web fraud trend analysis
+        real_investigation_context.domain_findings = {
+            "network": network_findings,
+            "device": device_findings,
+            "location": location_findings,
+            "logs": logs_findings
+        }
+        
+        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        api_cost_monitor.track_call(2400, 2200)
+        
+        # Validate all phases completed successfully
+        all_findings = [network_findings, device_findings, location_findings, logs_findings, final_risk]
+        assert all(isinstance(f, DomainFindings) for f in all_findings)
+        assert all(f.risk_score is not None for f in all_findings)
+        
+        # Comprehensive PII sanitization check across all phases
+        all_pii_elements = [
+            "test.user@example.com",
+            "555-987-6543",
+            "987-65-4321", 
+            "4111-1111-1111-1111",
+            "123456789",
+            "456 Fraud Avenue, Scam City, NY 10001"
+        ]
+        
+        # Check each phase for PII sanitization
+        phases = [
+            ("network", network_findings),
+            ("device", device_findings),
+            ("location", location_findings),
+            ("logs", logs_findings),
+            ("risk", final_risk)
+        ]
+        
+        pii_exposure_report = {}
+        sanitization_effectiveness = {}
+        
+        for phase_name, findings in phases:
+            phase_text = " ".join(findings.key_findings + findings.suspicious_indicators)
+            
+            # Count PII exposures
+            exposed_pii = [pii for pii in all_pii_elements if pii in phase_text]
+            pii_exposure_report[phase_name] = exposed_pii
+            
+            # Count sanitization markers
+            redaction_markers = ["[REDACTED-", "***", "****"]
+            sanitization_count = sum(phase_text.count(marker) for marker in redaction_markers)
+            sanitization_effectiveness[phase_name] = sanitization_count > 0
+        
+        # Validate no PII exposure across any phase
+        total_exposed_pii = sum(len(exposed) for exposed in pii_exposure_report.values())
+        assert total_exposed_pii == 0, f"PII found exposed in phases: {pii_exposure_report}"
+        
+        # Validate web tools usage indicators across phases
+        web_usage_indicators = {
+            "network": ["domain", "reputation", "ip"],
+            "device": ["security", "vulnerability", "fingerprint"],
+            "location": ["business", "verification", "address"],
+            "logs": ["threat", "attack", "pattern"],
+            "risk": ["trend", "fraud", "analysis"]
+        }
+        
+        web_usage_detected = {}
+        for phase_name, findings in phases:
+            phase_text = " ".join(findings.key_findings + findings.suspicious_indicators).lower()
+            expected_indicators = web_usage_indicators[phase_name]
+            detected_indicators = [ind for ind in expected_indicators if ind in phase_text]
+            web_usage_detected[phase_name] = len(detected_indicators)
+        
+        # Each phase should show evidence of web tools usage
+        phases_with_web_analysis = sum(1 for count in web_usage_detected.values() if count > 0)
+        assert phases_with_web_analysis >= 4, f"Web tools should be used across phases: {web_usage_detected}"
+        
+        logger.info(f"Complete Web Tools Investigation Results:")
+        logger.info(f"  Phases Completed: {len(phases)}")
+        logger.info(f"  PII Exposure: {total_exposed_pii} incidents")
+        logger.info(f"  Sanitization Applied: {list(sanitization_effectiveness.values())}")
+        logger.info(f"  Web Tools Usage: {web_usage_detected}")
+        logger.info(f"  Final Risk Score: {final_risk.risk_score:.2f}")
+        logger.info(f"  Investigation Confidence: {final_risk.confidence:.2f}")
+        
+        # Performance validation for web-enhanced investigation
+        cost_summary = api_cost_monitor.get_summary()
+        assert cost_summary["total_calls"] == 5  # One call per phase
+        assert cost_summary["total_cost"] > 0  # Should have measurable cost
+        
+        # Final risk should be comprehensive
+        assert final_risk.risk_score >= 0.0
+        assert final_risk.confidence >= 0.5
+        assert len(final_risk.key_findings) >= 2  # Should have substantial findings

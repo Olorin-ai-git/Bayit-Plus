@@ -11,17 +11,39 @@ from typing import Optional
 import structlog
 from .secret_manager import get_secret_manager
 
-logger = structlog.get_logger(__name__)
+# Configure logging level based on environment variable
+_log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
+if _log_level == "SILENT":
+    # Special mode to completely silence config loader logs
+    class SilentLogger:
+        def debug(self, *args, **kwargs): pass
+        def info(self, *args, **kwargs): pass
+        def warning(self, *args, **kwargs): pass
+        def error(self, *args, **kwargs): pass
+    logger = SilentLogger()
+else:
+    logger = structlog.get_logger(__name__)
 
 
 class ConfigLoader:
     """Loads configuration values from Firebase Secret Manager."""
     
+    _instance = None
+    _initialized = False
+    
+    def __new__(cls):
+        """Implement singleton pattern for ConfigLoader."""
+        if cls._instance is None:
+            cls._instance = super(ConfigLoader, cls).__new__(cls)
+        return cls._instance
+    
     def __init__(self):
-        """Initialize the configuration loader."""
-        self.secret_manager = get_secret_manager()
-        self.env = os.getenv("APP_ENV", "local")
-        logger.info(f"ConfigLoader initialized for environment: {self.env}")
+        """Initialize the configuration loader (only once)."""
+        if not ConfigLoader._initialized:
+            self.secret_manager = get_secret_manager()
+            self.env = os.getenv("APP_ENV", "local")
+            logger.info(f"ConfigLoader initialized for environment: {self.env}")
+            ConfigLoader._initialized = True
     
     def load_secret(self, secret_path: str) -> Optional[str]:
         """

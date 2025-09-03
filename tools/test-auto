@@ -21,8 +21,8 @@ if [ -n "$CLAUDE_TASK_API" ]; then
     claude_task_command="Task(subagent_type='python-tests-expert', description='Run autonomous tests', prompt='Execute all test phases with automatic fixes and detailed reporting')"
     echo "$claude_task_command"
 else
-    echo -e "${YELLOW}Running test orchestrator directly${NC}"
-    # Direct execution for testing
+    echo -e "${YELLOW}Running autonomous investigation test suite${NC}"
+    # Direct execution using the comprehensive test shell script
     cd /Users/gklainert/Documents/olorin
-    python3 scripts/tools/test_orchestrator.py "$@"
+    bash scripts/tools/test_autonomous_investigation.sh "$@"
 fi

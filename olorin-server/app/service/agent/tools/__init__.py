@@ -18,6 +18,21 @@ from .enhanced_tool_base import (
     ToolTimeoutError
 )
 
+from .extended_tool_registry import (
+    ExtendedToolRegistry,
+    ExtendedToolCategory,
+    ToolMetadata,
+    ToolDependency,
+    extended_tool_registry,
+    initialize_extended_tools,
+    register_blockchain_tool_lazy,
+    get_blockchain_tools,
+    get_intelligence_tools,
+    get_ml_ai_tools,
+    get_communication_tools,
+    get_compliance_tools
+)
+
 from .tool_interceptor import (
     ToolExecutionInterceptor,
     InterceptorConfig,

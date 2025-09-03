@@ -119,7 +119,7 @@ llm_input_str = json.dumps(llm_input, indent=2)
 {
   "user_id": "4621097846089147992",
   "device_llm_thoughts": "The signals indicate overlapping timeframes in Mountain View (US) and Bengaluru (IN) from separate device IDs. These short time intervals strongly suggest impossible or near-impossible travel...",
-  "location_llm_thoughts": "Official OII data shows the user's address is in San Diego, CA (USA). However, logs reveal multiple sign-ins from Bengaluru, India...",
+  "location_llm_thoughts": "User profile data shows the user's address is in San Diego, CA (USA). However, logs reveal multiple sign-ins from Bengaluru, India...",
   "network_llm_thoughts": "The user's network signals indicate a quick transition between a US-based ISP and an India-based ISP, which is suspicious given the short timeframe...",
   "logs_llm_thoughts": "Medium risk. The user had at least one failed password attempt and logins from diverse locations...",
   "device_risk_score": 0.85,
@@ -432,7 +432,7 @@ return {
   "network_risk_score": 0.8,
   "logs_risk_score": 0.7,
   "device_llm_thoughts": "The signals indicate overlapping timeframes in Mountain View (US) and Bengaluru (IN) from separate device IDs...",
-  "location_llm_thoughts": "Official OII data shows the user's address is in San Diego, CA (USA). However, logs reveal multiple sign-ins from Bengaluru, India...",
+  "location_llm_thoughts": "User profile data shows the user's address is in San Diego, CA (USA). However, logs reveal multiple sign-ins from Bengaluru, India...",
   "network_llm_thoughts": "The user's network signals indicate a quick transition between a US-based ISP and an India-based ISP...",
   "logs_llm_thoughts": "Medium risk. The user had at least one failed password attempt and logins from diverse locations..."
 }

@@ -13,6 +13,8 @@ test-auto [options]
 - `--no-fix`: Skip automatic fixing of failed tests
 - `--report-only`: Generate report from the last test run
 - `--phase <name>`: Run only a specific test phase
+- `--csv-file <path>`: Path to CSV file containing transaction data for realistic testing
+- `--csv-limit <number>`: Maximum number of transactions to load from CSV (default: 50)
 
 ## Test Phases
 
@@ -108,6 +110,16 @@ Every step includes:
 test-auto --verbose
 ```
 
+### Run with CSV transaction data for realistic testing
+```bash
+test-auto --csv-file /path/to/transactions.csv --csv-limit 100
+```
+
+### Run with CSV data and verbose output
+```bash
+test-auto --csv-file /Users/gklainert/Documents/olorin/transaction_dataset_10k.csv --csv-limit 500 --verbose
+```
+
 ### Run specific phase without fixes
 ```bash
 test-auto --phase Integration_Tests_Autonomous --no-fix
@@ -118,14 +130,28 @@ test-auto --phase Integration_Tests_Autonomous --no-fix
 test-auto --report-only
 ```
 
+## CSV Transaction Data Integration
+
+When using `--csv-file`, the test suite:
+1. **Loads Real Transaction Data**: Reads transaction records from CSV files
+2. **Extracts User Profiles**: Groups transactions by unique user ID for realistic scenarios
+3. **Generates Test Cases**: Uses actual transaction patterns for investigation testing
+4. **Validates Performance**: Tests system behavior with real data volumes
+5. **Reports Data Metrics**: Includes CSV data statistics in test reports
+
+### CSV File Requirements
+- Must contain columns: `TX_ID_KEY`, `UNIQUE_USER_ID`, `EMAIL`, `FIRST_NAME`, `APP_ID`, `TX_DATETIME`
+- Should use CSV format with header row
+- Supports large datasets (tested with 10k+ transactions)
+
 ## Integration with python-tests-expert
 
 The command leverages the python-tests-expert subagent to:
 1. **Analyze Repository**: Complete codebase analysis before testing
 2. **Plan Execution**: Strategic test ordering based on dependencies
-3. **Execute Tests**: Run tests with proper environment setup
+3. **Execute Tests**: Run tests with proper environment setup (including CSV data)
 4. **Fix Failures**: Apply intelligent fixes based on failure patterns
-5. **Generate Reports**: Create comprehensive documentation
+5. **Generate Reports**: Create comprehensive documentation with CSV metrics
 
 ## Success Criteria
 

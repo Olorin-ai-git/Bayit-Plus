@@ -15,7 +15,6 @@ from .file_system_tool import (
     FileSearchTool,
     FileWriteTool,
 )
-from .oii_tool.oii_tool import OIITool
 
 # Import Olorin-specific tools
 from .splunk_tool import SplunkQueryTool
@@ -24,14 +23,64 @@ from .snowflake_tool.snowflake_tool import SnowflakeQueryTool
 from .vector_search_tool import VectorSearchTool
 from .web_search_tool import WebScrapeTool, WebSearchTool
 
-# Try to import optional tools - they may have dependencies or issues
+# Import MCP client tools (connect to external MCP servers)
 try:
-    from .di_tool.di_tool import DITool
+    from ..mcp_client import (
+        blockchain_mcp_client,
+        intelligence_mcp_client,
+        ml_ai_mcp_client
+    )
+    MCP_CLIENTS_AVAILABLE = True
+except ImportError:
+    MCP_CLIENTS_AVAILABLE = False
 
-    DI_AVAILABLE = True
+# Import blockchain tools
+try:
+    from .blockchain_tools import (
+        BlockchainWalletAnalysisTool,
+        CryptocurrencyTracingTool,
+        DeFiProtocolAnalysisTool,
+        NFTFraudDetectionTool,
+        BlockchainForensicsTool,
+        CryptoExchangeAnalysisTool,
+        DarkWebCryptoMonitorTool,
+        CryptocurrencyComplianceTool
+    )
+    BLOCKCHAIN_TOOLS_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"DITool not available: {e}")
-    DI_AVAILABLE = False
+    logger.warning(f"Blockchain tools not available: {e}")
+    BLOCKCHAIN_TOOLS_AVAILABLE = False
+
+# Import intelligence tools
+try:
+    from .intelligence_tools import (
+        SocialMediaProfilingTool,
+        SocialNetworkAnalysisTool,
+        SocialMediaMonitoringTool,
+        OSINTDataAggregatorTool,
+        PeopleSearchTool,
+        BusinessIntelligenceTool,
+        DarkWebMonitoringTool,
+        DeepWebSearchTool
+    )
+    INTELLIGENCE_TOOLS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"Intelligence tools not available: {e}")
+    INTELLIGENCE_TOOLS_AVAILABLE = False
+
+# Import ML/AI tools
+try:
+    from .ml_ai_tools import (
+        BehavioralAnalysisTool,
+        AnomalyDetectionTool,
+        PatternRecognitionTool,
+        FraudDetectionTool,
+        RiskScoringTool
+    )
+    ML_AI_TOOLS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"ML/AI tools not available: {e}")
+    ML_AI_TOOLS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +126,10 @@ class ToolRegistry:
             "search": [],
             "olorin": [],  # Olorin-specific tools
             "threat_intelligence": [],  # Threat intelligence tools
+            "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
+            "blockchain": [],  # Blockchain and cryptocurrency analysis tools
+            "intelligence": [],  # Advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)
+            "ml_ai": [],  # Machine learning and AI enhancement tools
             "utility": [],
         }
         self._initialized = False
@@ -159,19 +212,26 @@ class ToolRegistry:
             except Exception as e:
                 logger.warning(f"Failed to register Snowflake tool: {e}")
 
-            try:
-                self._register_tool(OIITool(), "olorin")
-                logger.info("OII tool registered")
-            except Exception as e:
-                logger.warning(f"Failed to register OII tool: {e}")
-
-            if DI_AVAILABLE:
+            # MCP Client Tools (connect to external MCP servers)
+            if MCP_CLIENTS_AVAILABLE:
                 try:
-                    self._register_tool(DITool(), "olorin")
-                    logger.info("DI tool registered")
+                    self._register_tool(blockchain_mcp_client, "mcp_clients")
+                    logger.info("Blockchain MCP client registered")
                 except Exception as e:
-                    logger.warning(f"Failed to register DI tool: {e}")
-
+                    logger.warning(f"Failed to register Blockchain MCP client: {e}")
+                
+                try:
+                    self._register_tool(intelligence_mcp_client, "mcp_clients")
+                    logger.info("Intelligence MCP client registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register Intelligence MCP client: {e}")
+                
+                try:
+                    self._register_tool(ml_ai_mcp_client, "mcp_clients")
+                    logger.info("ML/AI MCP client registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register ML/AI MCP client: {e}")
+            
             # Threat Intelligence Tools
             if THREAT_INTEL_AVAILABLE:
                 # AbuseIPDB tools
@@ -249,6 +309,138 @@ class ToolRegistry:
                     logger.info("Unified threat intelligence tool registered")
                 except Exception as e:
                     logger.warning(f"Failed to register unified threat intelligence tool: {e}")
+            
+            # Blockchain Tools
+            if BLOCKCHAIN_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(BlockchainWalletAnalysisTool(), "blockchain")
+                    logger.info("Blockchain wallet analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register blockchain wallet analysis tool: {e}")
+                
+                try:
+                    self._register_tool(CryptocurrencyTracingTool(), "blockchain")
+                    logger.info("Cryptocurrency tracing tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register cryptocurrency tracing tool: {e}")
+                
+                try:
+                    self._register_tool(DeFiProtocolAnalysisTool(), "blockchain")
+                    logger.info("DeFi protocol analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register DeFi protocol analysis tool: {e}")
+                
+                try:
+                    self._register_tool(NFTFraudDetectionTool(), "blockchain")
+                    logger.info("NFT fraud detection tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register NFT fraud detection tool: {e}")
+                
+                try:
+                    self._register_tool(BlockchainForensicsTool(), "blockchain")
+                    logger.info("Blockchain forensics tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register blockchain forensics tool: {e}")
+                
+                try:
+                    self._register_tool(CryptoExchangeAnalysisTool(), "blockchain")
+                    logger.info("Crypto exchange analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register crypto exchange analysis tool: {e}")
+                
+                try:
+                    self._register_tool(DarkWebCryptoMonitorTool(), "blockchain")
+                    logger.info("Dark web crypto monitor tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register dark web crypto monitor tool: {e}")
+                
+                try:
+                    self._register_tool(CryptocurrencyComplianceTool(), "blockchain")
+                    logger.info("Cryptocurrency compliance tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register cryptocurrency compliance tool: {e}")
+            
+            # Intelligence Tools
+            if INTELLIGENCE_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(SocialMediaProfilingTool(), "intelligence")
+                    logger.info("Social media profiling tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social media profiling tool: {e}")
+                
+                try:
+                    self._register_tool(SocialNetworkAnalysisTool(), "intelligence")
+                    logger.info("Social network analysis tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social network analysis tool: {e}")
+                
+                try:
+                    self._register_tool(SocialMediaMonitoringTool(), "intelligence")
+                    logger.info("Social media monitoring tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register social media monitoring tool: {e}")
+                
+                try:
+                    self._register_tool(OSINTDataAggregatorTool(), "intelligence")
+                    logger.info("OSINT data aggregator tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register OSINT data aggregator tool: {e}")
+                
+                try:
+                    self._register_tool(PeopleSearchTool(), "intelligence")
+                    logger.info("People search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register people search tool: {e}")
+                
+                try:
+                    self._register_tool(BusinessIntelligenceTool(), "intelligence")
+                    logger.info("Business intelligence tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register business intelligence tool: {e}")
+                
+                try:
+                    self._register_tool(DarkWebMonitoringTool(), "intelligence")
+                    logger.info("Dark web monitoring tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register dark web monitoring tool: {e}")
+                
+                try:
+                    self._register_tool(DeepWebSearchTool(), "intelligence")
+                    logger.info("Deep web search tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register deep web search tool: {e}")
+            
+            # ML/AI Tools
+            if ML_AI_TOOLS_AVAILABLE:
+                try:
+                    self._register_tool(BehavioralAnalysisTool(), "ml_ai")
+                    logger.info("Behavioral analysis ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register behavioral analysis ML tool: {e}")
+                
+                try:
+                    self._register_tool(AnomalyDetectionTool(), "ml_ai")
+                    logger.info("Anomaly detection ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register anomaly detection ML tool: {e}")
+                
+                try:
+                    self._register_tool(PatternRecognitionTool(), "ml_ai")
+                    logger.info("Pattern recognition ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register pattern recognition ML tool: {e}")
+                
+                try:
+                    self._register_tool(FraudDetectionTool(), "ml_ai")
+                    logger.info("Fraud detection ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register fraud detection ML tool: {e}")
+                
+                try:
+                    self._register_tool(RiskScoringTool(), "ml_ai")
+                    logger.info("Risk scoring ML tool registered")
+                except Exception as e:
+                    logger.warning(f"Failed to register risk scoring ML tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
@@ -410,13 +602,33 @@ def get_search_tools() -> List[BaseTool]:
 
 
 def get_olorin_tools() -> List[BaseTool]:
-    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake, OII, DI)."""
+    """Get Olorin-specific tools (Splunk, SumoLogic, Snowflake)."""
     return tool_registry.get_tools_by_category("olorin")
 
 
 def get_threat_intelligence_tools() -> List[BaseTool]:
     """Get threat intelligence tools (AbuseIPDB, VirusTotal, unified aggregator, etc.)."""
     return tool_registry.get_tools_by_category("threat_intelligence")
+
+
+def get_mcp_client_tools() -> List[BaseTool]:
+    """Get MCP client tools that connect to external MCP servers."""
+    return tool_registry.get_tools_by_category("mcp_clients")
+
+
+def get_blockchain_tools() -> List[BaseTool]:
+    """Get blockchain and cryptocurrency analysis tools."""
+    return tool_registry.get_tools_by_category("blockchain")
+
+
+def get_intelligence_tools() -> List[BaseTool]:
+    """Get advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)."""
+    return tool_registry.get_tools_by_category("intelligence")
+
+
+def get_ml_ai_tools() -> List[BaseTool]:
+    """Get machine learning and AI enhancement tools."""
+    return tool_registry.get_tools_by_category("ml_ai")
 
 
 def get_essential_tools() -> List[BaseTool]:

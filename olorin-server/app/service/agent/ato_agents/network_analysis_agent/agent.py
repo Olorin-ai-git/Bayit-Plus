@@ -8,11 +8,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List
 
 from agents import Agent
-from app.service.agent.tools.oii_tool.oii_tool import OIITool
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 
 from ..clients.databricks_client import DatabricksClient
-from ..clients.kk_dash_client import KKDashClient
 from ..clients.splunk_client import SplunkClient
 from ..clients.tmx_client import TMXClient
 from ..interfaces import NetworkAnalysisAgent, NetworkInfo, RiskAssessment
@@ -23,7 +21,6 @@ logger = get_logger(__name__)
 
 @dataclass
 class NetworkContext:
-    kk_dash_client: KKDashClient
     tmx_client: TMXClient
     splunk_client: SplunkClient
     databricks_client: DatabricksClient
@@ -35,12 +32,10 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
 
     def __init__(
         self,
-        kk_dash_client: KKDashClient,
         tmx_client: TMXClient,
         databricks_client: DatabricksClient,
         config: Dict[str, Any],
     ):
-        self.kk_dash_client = kk_dash_client
         self.tmx_client = tmx_client
         self.databricks_client = databricks_client
         self.config = config
@@ -52,7 +47,6 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
         self.proxy_risk_threshold = config.get("proxy_risk_threshold", 0.8)
         self.ip_change_threshold = config.get("ip_change_threshold", 5)
 
-        self.oii_tool = OIITool()
 
         super().__init__(
             name="NetworkAnalysisAgent",
@@ -81,7 +75,6 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
 
     async def initialize(self) -> None:
         logger.info("Initializing NetworkAnalysisAgent...")
-        await self.kk_dash_client.connect()
         await self.tmx_client.connect()
         await self.databricks_client.connect()
         logger.info("NetworkAnalysisAgent initialized successfully")
@@ -89,7 +82,6 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
     async def shutdown(self) -> None:
         """Clean up connections."""
         logger.info("Shutting down NetworkAnalysisAgent...")
-        await self.kk_dash_client.disconnect()
         await self.tmx_client.disconnect()
         await self.databricks_client.disconnect()
         logger.info("NetworkAnalysisAgent shut down successfully")
@@ -99,14 +91,16 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
         """Get the networks used by a customer."""
         logger.info(f"Getting current network info for user_id: {user_id}")
         self._validate_user_id(user_id)
-        device_data = await self.kk_dash_client.get_device_data(user_id)
+        # TODO: Implement device data retrieval
+        device_data = []
         # TODO: Add Databricks for PYs
         return device_data
 
     # 2. Does the customer use the same IP address?
     async def get_ip_address_usage(self, user_id: str) -> Dict[str, Any]:
         self._validate_user_id(user_id)
-        device_data = await self.kk_dash_client.get_device_data(user_id)
+        # TODO: Implement device data retrieval
+        device_data = []
         ip_addresses = set()
         for device in device_data:
             ip = device.get("TRUE_IP") or device.get("INPUT_IP_ADDRESS")
@@ -121,7 +115,8 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
     # 3. Does the customer use the same ISP?
     async def get_isp_usage(self, user_id: str) -> Dict[str, Any]:
         self._validate_user_id(user_id)
-        device_data = await self.kk_dash_client.get_device_data(user_id)
+        # TODO: Implement device data retrieval
+        device_data = []
         isps = set()
         for device in device_data:
             isp = device.get("TRUE_ISP") or device.get("INPUT_ISP")
@@ -153,8 +148,9 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
 
     # Example: OII Tool integration (if needed for network context)
     async def _get_oii_location_info(self, user_id: str) -> dict:
-        oii_result_json = await self.oii_tool._arun(user_id)
-        oii_result = json.loads(oii_result_json)
+        # Placeholder for network info
+        # In production, this would fetch from actual network services
+        network_info = {}
         location_info = (
             oii_result.get("data", {})
             .get("account", {})
@@ -166,7 +162,8 @@ class NetworkAnalysisAgentImpl(Agent[NetworkContext]):
 
     # Example: Get device data (KKDash)
     async def get_device_data(self, user_id: str) -> List[Dict[str, Any]]:
-        device_data = await self.kk_dash_client.get_device_data(user_id)
+        # TODO: Implement device data retrieval
+        device_data = []
         return device_data
 
     # ... (other methods as needed, e.g., analyze_network_patterns, detect_network_anomalies, etc.) ...

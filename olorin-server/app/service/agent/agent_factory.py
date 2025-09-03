@@ -15,7 +15,7 @@ class AgentFactory:
     """Factory for creating agents."""
     
     def __init__(self):
-        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"]}
+        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"], "ml_ai_tools_enabled": True}
     
     def get_factory_stats(self):
         """Get factory statistics."""
@@ -91,35 +91,96 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Identify suspicious IP addresses and geographic locations",
             "Detect unusual network traffic or connection behaviors", 
             "Assess network-based fraud indicators",
-            "Correlate network data with known threat intelligence"
+            "Correlate network data with known threat intelligence",
+            "Apply pattern recognition to network traffic analysis using pattern_recognition_ml tool",
+            "Detect network anomalies and suspicious behaviors using anomaly_detection_ml tool",
+            "Use threat intelligence tools (AbuseIPDB, VirusTotal, Shodan) to verify IP reputation",
+            "Check for blockchain-related network activity using blockchain_mcp_client",
+            "Analyze cryptocurrency exchanges and wallet addresses using crypto_exchange_analysis",
+            "Monitor dark web cryptocurrency activities using darkweb_crypto_monitor",
+            "Trace cryptocurrency fund flows using cryptocurrency_tracing",
+            "Perform social media profiling using social_media_profiling",
+            "Monitor dark web activities using darkweb_monitoring",
+            "Use web_search to research suspicious IP addresses and domains",
+            "Search for public reports about network infrastructure using web_scrape",
+            "Investigate domain registration history via web sources"
         ],
         "device": [
             "Analyze device fingerprints for consistency and authenticity",
             "Detect device spoofing or manipulation attempts",
             "Assess device behavioral patterns and anomalies",
             "Identify device-based fraud indicators",
-            "Evaluate device reputation and risk history"
+            "Evaluate device reputation and risk history",
+            "Use ml_ai_mcp_client for behavioral analysis and anomaly detection",
+            "Perform comprehensive behavioral analysis using behavioral_analysis_ml tool",
+            "Detect device anomalies using anomaly_detection_ml tool",
+            "Apply pattern recognition for device fraud patterns using pattern_recognition_ml tool",
+            "Check device-related files with VirusTotal for malware indicators",
+            "Analyze wallet addresses linked to device using blockchain_wallet_analysis",
+            "Detect NFT fraud patterns using nft_fraud_detection",
+            "Perform social network analysis using social_network_analysis",
+            "Search for device owner information using people_search",
+            "Search for device fingerprint patterns in security forums using web_search",
+            "Research device vulnerabilities and exploits via web sources",
+            "Check for device-specific fraud reports online using web_scrape"
         ],
         "location": [
             "Analyze geographic patterns and travel behavior",
             "Detect impossible travel or location anomalies",
             "Assess location-based risk factors", 
             "Identify geographic fraud indicators",
-            "Correlate location data with behavioral patterns"
+            "Correlate location data with behavioral patterns",
+            "Apply behavioral analysis to travel patterns using behavioral_analysis_ml tool",
+            "Detect geographic anomalies using anomaly_detection_ml tool",
+            "Apply pattern recognition to location sequences using pattern_recognition_ml tool",
+            "Use intelligence_mcp_client for OSINT on geographic locations",
+            "Cross-reference locations with Shodan infrastructure data",
+            "Aggregate OSINT data for location analysis using osint_data_aggregator",
+            "Search deep web sources for location intelligence using deepweb_search",
+            "Use web_search to verify business locations and addresses",
+            "Research geographic anomalies in travel patterns via web sources",
+            "Search for location-based fraud reports and warnings using web_scrape"
         ],
         "logs": [
             "Analyze activity logs for suspicious patterns",
             "Identify behavioral anomalies in user actions",
             "Detect unauthorized access attempts",
             "Assess log-based fraud indicators",
-            "Correlate activities across time periods"
+            "Correlate activities across time periods",
+            "Use ml_ai_mcp_client to detect anomalies in log patterns",
+            "Apply pattern recognition to identify suspicious activity patterns using pattern_recognition_ml tool",
+            "Perform behavioral analysis on user activity logs using behavioral_analysis_ml tool",
+            "Detect log anomalies and outliers using anomaly_detection_ml tool",
+            "Check for cryptocurrency addresses in logs using blockchain_mcp_client",
+            "Analyze DeFi protocol interactions using defi_protocol_analysis",
+            "Preserve blockchain evidence using blockchain_forensics",
+            "Monitor social media mentions using social_media_monitoring",
+            "Conduct business intelligence analysis using business_intelligence",
+            "Research suspicious activity patterns in security blogs using web_search",
+            "Search for similar attack signatures in threat databases via web sources",
+            "Use web_scrape to correlate log patterns with known threats"
         ],
         "risk": [
             "Integrate findings from all investigation domains",
             "Perform comprehensive risk correlation analysis",
             "Calculate overall fraud probability",
             "Assess evidence quality and reliability",
-            "Provide final risk assessment and recommendations"
+            "Provide final risk assessment and recommendations",
+            "Aggregate threat intelligence findings from all sources",
+            "Use ml_ai_mcp_client for final fraud detection scoring",
+            "Apply comprehensive fraud detection using fraud_detection_ml tool",
+            "Calculate advanced risk scores using risk_scoring_ml tool",
+            "Perform final anomaly detection analysis using anomaly_detection_ml tool",
+            "Apply pattern recognition for overall fraud pattern analysis using pattern_recognition_ml tool",
+            "Conduct final behavioral analysis assessment using behavioral_analysis_ml tool",
+            "Compile blockchain and cryptocurrency risk indicators",
+            "Ensure regulatory compliance using cryptocurrency_compliance",
+            "Generate forensic reports using blockchain_forensics for legal proceedings",
+            "Consolidate OSINT findings using osint_data_aggregator",
+            "Analyze overall social network risk using social_network_analysis",
+            "Aggregate web-based threat intelligence for final assessment",
+            "Search for recent fraud trends and patterns online using web_search",
+            "Use web sources to enhance risk scoring with current threat landscape"
         ]
     }
     

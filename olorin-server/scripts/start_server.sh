@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 PROJECT_ID="${FIREBASE_PROJECT_ID:-olorin-ai}"
-PORT="${SERVER_PORT:-8000}"
+PORT="${SERVER_PORT:-8090}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 
 # Function to print colored messages
@@ -121,6 +121,19 @@ check_existing_server() {
 start_server() {
     print_status "Starting Olorin server on port $PORT with log level: $LOG_LEVEL"
     
+    # Change to the olorin-server directory
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    SERVER_DIR="$(dirname "$SCRIPT_DIR")"
+    
+    if [ ! -d "$SERVER_DIR" ] || [ ! -f "$SERVER_DIR/pyproject.toml" ]; then
+        print_error "Cannot find olorin-server directory"
+        print_status "Expected at: $SERVER_DIR"
+        exit 1
+    fi
+    
+    cd "$SERVER_DIR"
+    print_success "Changed to directory: $(pwd)"
+    
     # Set additional environment variables
     export BACKEND_PORT=$PORT
     export LOG_LEVEL=$LOG_LEVEL
@@ -142,7 +155,7 @@ start_server() {
 usage() {
     echo "Usage: $0 [options]"
     echo "Options:"
-    echo "  -p, --port PORT          Server port (default: 8000)"
+    echo "  -p, --port PORT          Server port (default: 8090)"
     echo "  -l, --log-level LEVEL    Log level (debug|info|warning|error) (default: info)"
     echo "  -s, --skip-secrets       Skip secret retrieval (use existing environment)"
     echo "  -h, --help              Show this help message"

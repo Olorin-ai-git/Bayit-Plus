@@ -123,10 +123,10 @@ async def first_investigation():
         tools = await client.list_tools()
         print(f"Available tools: {len(tools)}")
         
-        # Execute basic user lookup
+        # Execute basic fraud investigation query
         result = await client.call_tool(
-            name="oii_tool",
-            arguments={"user_id": "12345", "include_history": True}
+            name="splunk_query_tool",
+            arguments={"query": "search index=fraud user_id=12345 | head 10"}
         )
         
         print(f"Investigation result: {result}")
@@ -304,7 +304,7 @@ async def call_tool(
         },
         "metadata": {
             "execution_time": 1.23,
-            "tools_used": ["oii_tool", "device_fingerprint_tool"],
+            "tools_used": ["splunk_query_tool", "device_fingerprint_tool"],
             "cache_hit": false,
             "query_id": "qry_67890abcdef",
             "timestamp": "2025-08-31T14:30:22Z"
@@ -332,7 +332,7 @@ async def call_tools_batch(
         
     Example:
         requests = [
-            ToolRequest("oii_tool", {"user_id": "12345"}),
+            ToolRequest("splunk_query_tool", {"query": "search index=fraud user_id=12345"}),
             ToolRequest("device_fingerprint_tool", {"user_id": "12345"}),
             ToolRequest("risk_assessment_tool", {"user_id": "12345"})
         ]
@@ -481,45 +481,44 @@ for event in result.data['results']:
     print(f"IP: {event['src_ip']}, Count: {event['count']}")
 ```
 
-#### 2. OII (Olorin Identity Intelligence) Tool
+#### 2. Snowflake Data Analysis Tool
 
 ```python
-# Tool: oii_tool
+# Tool: snowflake_query_tool
 {
-    "name": "oii_tool", 
-    "description": "Query Olorin Identity Intelligence for comprehensive user information",
-    "category": "fraud",
+    "name": "snowflake_query_tool", 
+    "description": "Query and analyze data from Snowflake data warehouse",
+    "category": "analytics",
     "security_level": "high",
     "input_schema": {
         "type": "object",
         "properties": {
-            "user_id": {
+            "query": {
                 "type": "string",
-                "description": "User ID to investigate"
+                "description": "SQL query to execute"
             },
-            "include_history": {
-                "type": "boolean",
-                "description": "Include historical user activity",
-                "default": true
-            },
-            "include_relationships": {
-                "type": "boolean", 
-                "description": "Include related user accounts and entities",
-                "default": false
-            },
-            "risk_assessment": {
-                "type": "boolean",
-                "description": "Perform AI-powered risk assessment",
-                "default": true
-            },
-            "data_freshness": {
+            "database": {
                 "type": "string",
-                "enum": ["realtime", "cached", "any"],
-                "default": "any",
-                "description": "Data freshness requirement"
+                "description": "Target database",
+                "default": "FRAUD_DB"
+            },
+            "schema": {
+                "type": "string", 
+                "description": "Target schema",
+                "default": "PUBLIC"
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Maximum rows to return",
+                "default": 1000
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "Query timeout in seconds",
+                "default": 300
             }
         },
-        "required": ["user_id"]
+        "required": ["query"]
     }
 }
 ```
@@ -527,19 +526,17 @@ for event in result.data['results']:
 **Usage Example**:
 ```python
 result = await client.call_tool(
-    "oii_tool",
+    "snowflake_query_tool",
     {
-        "user_id": "12345",
-        "include_history": True,
-        "include_relationships": True,
-        "risk_assessment": True
+        "query": "SELECT * FROM fraud_transactions WHERE user_id = '12345' ORDER BY timestamp DESC",
+        "database": "FRAUD_DB",
+        "limit": 100
     }
 )
 
-user_data = result.data
-print(f"User: {user_data['profile']['name']}")
-print(f"Risk Score: {user_data['risk_score']}/10")
-print(f"Account Status: {user_data['status']}")
+transactions = result.data['results']
+for txn in transactions:
+    print(f"Transaction: {txn['transaction_id']}, Amount: ${txn['amount']}, Risk: {txn['risk_score']}")
 ```
 
 #### 3. Behavior Profiling Tool
@@ -829,7 +826,7 @@ client = MCPClient(auth_token=token)
 # RBAC Configuration
 roles_config = {
     "fraud_investigator": {
-        "tools": ["oii_tool", "behavior_profiling_tool", "risk_assessment_tool"],
+        "tools": ["splunk_query_tool", "behavior_profiling_tool", "risk_assessment_tool"],
         "data_access": ["user_profiles", "transaction_data", "device_data"],
         "rate_limits": {"requests_per_hour": 1000, "concurrent_requests": 10}
     },
@@ -1072,12 +1069,12 @@ client = MCPClient(cache_config=cache_config)
 ```python
 # Explicit cache control
 result = await client.call_tool(
-    "oii_tool",
-    {"user_id": "12345"},
+    "splunk_query_tool",
+    {"query": "search index=fraud user_id=12345"},
     config=ToolConfig(
         cache_policy="prefer_cache",  # Use cache if available
         cache_ttl=1800,  # 30 minutes
-        cache_key="user_profile_12345"  # Custom cache key
+        cache_key="fraud_search_12345"  # Custom cache key
     )
 )
 
@@ -1133,7 +1130,7 @@ async def tracked_investigation(user_id: str):
     with PerformanceTracker("user_investigation") as tracker:
         # Track individual tool executions
         with tracker.track_operation("user_profile_lookup"):
-            profile = await client.call_tool("oii_tool", {"user_id": user_id})
+            profile = await client.call_tool("snowflake_query_tool", {"query": f"SELECT * FROM users WHERE user_id = '{user_id}'"})
         
         with tracker.track_operation("risk_assessment"):
             risk = await client.call_tool("risk_assessment_tool", {"user_id": user_id})
@@ -1507,7 +1504,7 @@ Content-Type: application/json
 {
   "requests": [
     {
-      "tool": "oii_tool",
+      "tool": "splunk_query_tool",
       "arguments": {"user_id": "12345"}
     },
     {

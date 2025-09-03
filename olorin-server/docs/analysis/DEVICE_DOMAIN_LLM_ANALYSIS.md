@@ -29,7 +29,7 @@ The Device Domain LLM implementation follows a sophisticated multi-layer archite
 graph TD
     A[Device Signals] --> B[Device Grouping by Fuzzy ID]
     B --> C[Chronos Data Enrichment]
-    C --> D[DI Tool Integration]
+    C --> D[Device Analysis Integration]
     D --> E[Prompt Data Construction]
     E --> F[Schema Integration]
     F --> G[Token Limit Management]
@@ -53,7 +53,7 @@ graph TD
 4. **`app/models/device_risk.py`**: Response schema and validation models (`DeviceSignalRiskLLMAssessment`)
 5. **`app/utils/prompt_utils.py`**: Token management and prompt optimization
 6. **`app/service/agent/tools/chronos_tool/chronos_tool.py`**: Behavioral data enrichment
-7. **`app/service/agent/tools/di_tool/di_tool.py`**: Device intelligence integration
+7. **Device Analysis Tools**: Enhanced device intelligence integration
 
 ### Domain Specialization
 
@@ -61,7 +61,7 @@ The Device domain is uniquely focused on **device fingerprinting and geographic 
 
 - **Primary Focus**: Device identification patterns and geographic consistency
 - **Risk Indicators**: Multi-device usage, cross-country access, impossible travel
-- **Integration Points**: Splunk device logs + Chronos behavioral data + DI Tool intelligence
+- **Integration Points**: Splunk device logs + Chronos behavioral data + device intelligence analysis
 
 ---
 
@@ -114,9 +114,9 @@ if chronos_response_dict and isinstance(chronos_response_dict, dict):
 - **Risk Code Integration**: ThreatMetrix reason codes for enhanced detection
 - **Session Correlation**: Session-based device analysis
 
-### 2.4 DI Tool Integration
+### 2.4 Device Intelligence Integration
 
-Device Intelligence (DI) tool integration for advanced device analysis:
+Device intelligence tool integration for advanced device analysis:
 
 ```python
 if di_response is not None:
@@ -126,7 +126,7 @@ if di_response is not None:
         llm_prompt_data["di_bb_data"] = str(di_response)
 ```
 
-**DI Tool Capabilities**:
+**Device Intelligence Capabilities**:
 - **Session-Based Analysis**: Deep dive into session-specific device intelligence
 - **Risk Code Integration**: ThreatMetrix reason codes for enhanced detection
 - **Device Reputation**: Historical device behavior analysis
@@ -532,7 +532,7 @@ The LLM successfully processed:
 - **Device Fingerprinting**: Multiple fuzzy device IDs analyzed
 - **Geographic Data**: City, country, and coordinate-level analysis
 - **Chronos Data**: Behavioral enrichment from 17 data fields
-- **DI Tool Data**: Advanced device intelligence analysis
+- **Device Intelligence Data**: Advanced device intelligence analysis
 - **Session Correlation**: Cross-device session timing analysis
 
 ---
@@ -546,7 +546,7 @@ Based on real-world execution patterns:
 - **Splunk Query Execution**: ~2-4 seconds for 90-day device signals
 - **Device Signal Extraction**: ~0.2-0.5 seconds for 13-field extraction per record
 - **Chronos Data Enrichment**: ~0.5-2.0 seconds for 17 behavioral fields
-- **DI Tool Integration**: ~1.0-3.0 seconds for device intelligence analysis
+- **Device Intelligence Integration**: ~1.0-3.0 seconds for device intelligence analysis
 - **Device Signal Grouping**: ~0.1-0.3 seconds for fuzzy ID clustering
 - **LLM Processing**: ~3-6 seconds for device risk assessment
 - **Total Processing Time**: ~7-16 seconds for complete device analysis
@@ -557,7 +557,7 @@ The system efficiently handles device signal volumes:
 
 - **Device Field Extraction**: 13 core device fields per signal
 - **Chronos Enhancement**: 17 additional behavioral data points
-- **DI Tool Integration**: Advanced device intelligence analysis
+- **Device Intelligence Integration**: Advanced device intelligence analysis
 - **Device Grouping**: Efficient fuzzy ID-based clustering
 - **Token Optimization**: Intelligent trimming for large device datasets
 - **Memory Efficiency**: Streaming device data processing
@@ -650,7 +650,7 @@ logger.error(f"LLM invocation or validation error for device risk for {user_id}:
 #### External Service Integration
 - **Splunk Integration**: Primary device signal data source
 - **Chronos Integration**: Behavioral data enrichment (17 fields)
-- **DI Tool Integration**: Advanced device intelligence analysis
+- **Device Intelligence Integration**: Advanced device intelligence analysis
 - **LLM Service Integration**: Sophisticated device risk assessment
 - **Investigation Platform**: Device analysis results persistence
 
@@ -662,7 +662,7 @@ The Device domain represents the most sophisticated fraud detection capability i
 - **Geographic Precision**: City-level impossible travel detection
 - **Multi-Device Correlation**: Cross-device pattern analysis
 - **Behavioral Integration**: 17-field Chronos data enrichment
-- **Intelligence Enhancement**: DI Tool advanced analysis
+- **Intelligence Enhancement**: Device intelligence advanced analysis
 - **Temporal Analysis**: Session timing and overlap detection
 - **Fallback Intelligence**: Rule-based geographic and device proliferation assessment
 

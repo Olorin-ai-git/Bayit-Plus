@@ -55,7 +55,7 @@ from app.service.agent.ato_agents.splunk_agent.fraud_response import FraudRespon
 from app.service.agent.ato_agents.splunk_agent.user_analysis_query_constructor import (
     get_direct_auth_query,
 )
-from app.service.agent.tools.oii_tool.oii_tool import OIITool
+# from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token
@@ -63,7 +63,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOG_RISK
-from app.service.config_loader import ConfigLoader
+from app.service.config_loader import get_config_loader
 
 from .device_router import analyze_device
 from .device_router import router as device_router
@@ -75,7 +75,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
 # Load API key from Firebase Secret Manager
-config_loader = ConfigLoader()
+config_loader = get_config_loader()
 OLORIN_API_KEY = config_loader.load_secret("OLORIN_API_KEY") or ""
 
 

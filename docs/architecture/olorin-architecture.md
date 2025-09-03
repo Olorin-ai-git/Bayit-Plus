@@ -80,7 +80,7 @@ Agent Framework:
     ├── splunk_tool/               # Splunk query and analysis
     ├── chronos_tool/              # Device timeline analysis
     ├── vector_search_tool/        # Similarity and pattern search
-    └── oii_tool/                  # Online identity investigation
+    └── snowflake_tool/            # Data warehouse analytics
 ```
 
 ## Investigation Workflow Architecture

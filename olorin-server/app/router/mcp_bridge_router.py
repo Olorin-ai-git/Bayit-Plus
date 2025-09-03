@@ -45,15 +45,9 @@ def get_tool_display_names() -> Dict[str, str]:
         # Olorin-specific Tools
         "splunk_query": "Splunk Query",
         "splunk_query_tool": "Splunk Search",
-        "identity_info_tool": "Identity Lookup",
-        "oii_tool": "Online Identity Info",
-        "di_tool": "Device Intelligence",
         # Search & Analytics
         "vector_search": "Vector Search",
         "vector_search_tool": "Semantic Search",
-        # Legacy/Fallback names
-        "kk_dashboard": "KK Dashboard",
-        "cdc_tool": "Customer Data",
     }
 
 

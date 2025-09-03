@@ -221,12 +221,12 @@ async def read_resource(request: MCPResourceReadRequest):
                 "steps": [
                     "1. Identify suspicious user/device",
                     "2. Search logs with SplunkQueryTool",
-                    "3. Get user identity with OIITool",
-                    "4. Analyze device patterns with DITool",
+                    "3. Get user data from Snowflake",
+                    "4. Analyze device behavioral patterns",
                     "5. Cross-reference with external sources",
                     "6. Document findings",
                 ],
-                "tools": ["SplunkQueryTool", "OIITool", "DITool", "WebSearchTool"],
+                "tools": ["SplunkQueryTool", "SnowflakeQueryTool", "WebSearchTool"],
             }
         elif uri == "investigation://guides/splunk":
             content = """
