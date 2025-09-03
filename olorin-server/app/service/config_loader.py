@@ -11,7 +11,18 @@ from typing import Optional
 import structlog
 from .secret_manager import get_secret_manager
 
-logger = structlog.get_logger(__name__)
+# Configure logging level based on environment variable
+_log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
+if _log_level == "SILENT":
+    # Special mode to completely silence config loader logs
+    class SilentLogger:
+        def debug(self, *args, **kwargs): pass
+        def info(self, *args, **kwargs): pass
+        def warning(self, *args, **kwargs): pass
+        def error(self, *args, **kwargs): pass
+    logger = SilentLogger()
+else:
+    logger = structlog.get_logger(__name__)
 
 
 class ConfigLoader:

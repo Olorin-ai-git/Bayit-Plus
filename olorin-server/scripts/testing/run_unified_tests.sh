@@ -473,10 +473,13 @@ run_tests() {
     if [[ "$DRY_RUN" == "true" ]]; then
         echo -e "${YELLOW}🔍 DRY RUN MODE - Command that would be executed:${NC}"
         echo ""
-        echo -e "${CYAN}poetry run python \"$TEST_RUNNER_SCRIPT\" ${cmd_args[*]}${NC}"
+        echo -e "${CYAN}SECRET_MANAGER_LOG_LEVEL=SILENT poetry run python \"$TEST_RUNNER_SCRIPT\" ${cmd_args[*]}${NC}"
         echo ""
         return 0
     fi
+    
+    # Set environment to suppress verbose secret manager logging
+    export SECRET_MANAGER_LOG_LEVEL=SILENT
     
     # Execute the test runner
     if poetry run python "$TEST_RUNNER_SCRIPT" $cmd_args; then
