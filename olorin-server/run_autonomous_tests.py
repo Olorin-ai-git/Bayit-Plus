@@ -63,6 +63,70 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def extract_risk_score_from_response(response):
+    """Extract risk score from agent response which may be dict or DomainFindings object."""
+    if response is None:
+        return 0.0
+    
+    # If it's already a DomainFindings object with risk_score attribute
+    if hasattr(response, 'risk_score'):
+        return response.risk_score or 0.0
+    
+    # If it's a dict response from the agent
+    if isinstance(response, dict):
+        # Check if it's an error response
+        if 'error' in response:
+            logger.error(f"Agent error response: {response['error']}")
+            return 0.0
+            
+        # Extract from LangChain message format
+        if 'messages' in response:
+            for message in response['messages']:
+                if hasattr(message, 'content'):
+                    try:
+                        content = json.loads(message.content)
+                        if 'risk_assessment' in content:
+                            risk_level = content['risk_assessment'].get('risk_level', 0.0)
+                            return float(risk_level) if risk_level is not None else 0.0
+                    except (json.JSONDecodeError, KeyError, ValueError) as e:
+                        logger.warning(f"Failed to parse agent response content: {e}")
+                        
+        # Direct risk_score field
+        if 'risk_score' in response:
+            return float(response['risk_score']) if response['risk_score'] is not None else 0.0
+    
+    logger.warning(f"Could not extract risk score from response: {type(response)}")
+    return 0.0
+
+def extract_confidence_from_response(response):
+    """Extract confidence from agent response which may be dict or DomainFindings object."""
+    if response is None:
+        return 0.0
+    
+    # If it's already a DomainFindings object with confidence attribute
+    if hasattr(response, 'confidence'):
+        return response.confidence or 0.0
+    
+    # If it's a dict response from the agent
+    if isinstance(response, dict):
+        # Extract from LangChain message format
+        if 'messages' in response:
+            for message in response['messages']:
+                if hasattr(message, 'content'):
+                    try:
+                        content = json.loads(message.content)
+                        if 'risk_assessment' in content:
+                            confidence = content['risk_assessment'].get('confidence', 0.0)
+                            return float(confidence) if confidence is not None else 0.0
+                    except (json.JSONDecodeError, KeyError, ValueError) as e:
+                        logger.warning(f"Failed to parse agent response content: {e}")
+                        
+        # Direct confidence field
+        if 'confidence' in response:
+            return float(response['confidence']) if response['confidence'] is not None else 0.0
+    
+    return 0.0
+
 def load_transactions_from_csv(csv_file_path, limit=50):
     """Load transaction data from CSV file for comprehensive testing."""
     logger.info(f"Loading transactions from {csv_file_path}...")
@@ -214,15 +278,19 @@ class AutonomousTestRunner:
         context.current_phase = InvestigationPhase.ANALYSIS
 
         # Initialize journey tracking
-        journey_id = self.journey_tracker.start_journey(
+        self.journey_tracker.start_journey_tracking(
             investigation_id=investigation_id,
-            user_id=user_data["user_id"],
-            metadata={"test": "full_lifecycle"}
+            initial_state={
+                "user_id": user_data["user_id"],
+                "entity_id": entity_data["entity_id"],
+                "metadata": {"test": "full_lifecycle"}
+            }
         )
 
         config = RunnableConfig(
             tags=["test", "full_lifecycle"],
-            metadata={"investigation_id": investigation_id, "journey_id": journey_id}
+            metadata={"investigation_id": investigation_id},
+            configurable={"agent_context": context}
         )
 
         phases = {}
@@ -236,7 +304,7 @@ class AutonomousTestRunner:
             phases["network"] = {
                 "duration": time.time() - phase_start,
                 "findings": network_findings,
-                "risk_score": network_findings.risk_score if network_findings else None
+                "risk_score": extract_risk_score_from_response(network_findings)
             }
             logger.info(f"✓ Network Analysis: risk_score={phases['network']['risk_score']:.2f}, duration={phases['network']['duration']:.2f}s")
 
@@ -247,7 +315,7 @@ class AutonomousTestRunner:
             phases["device"] = {
                 "duration": time.time() - phase_start,
                 "findings": device_findings,
-                "risk_score": device_findings.risk_score if device_findings else None
+                "risk_score": extract_risk_score_from_response(device_findings)
             }
             logger.info(f"✓ Device Analysis: risk_score={phases['device']['risk_score']:.2f}, duration={phases['device']['duration']:.2f}s")
 
@@ -258,7 +326,7 @@ class AutonomousTestRunner:
             phases["location"] = {
                 "duration": time.time() - phase_start,
                 "findings": location_findings,
-                "risk_score": location_findings.risk_score if location_findings else None
+                "risk_score": extract_risk_score_from_response(location_findings)
             }
             logger.info(f"✓ Location Analysis: risk_score={phases['location']['risk_score']:.2f}, duration={phases['location']['duration']:.2f}s")
 
@@ -269,7 +337,7 @@ class AutonomousTestRunner:
             phases["logs"] = {
                 "duration": time.time() - phase_start,
                 "findings": logs_findings,
-                "risk_score": logs_findings.risk_score if logs_findings else None
+                "risk_score": extract_risk_score_from_response(logs_findings)
             }
             logger.info(f"✓ Logs Analysis: risk_score={phases['logs']['risk_score']:.2f}, duration={phases['logs']['duration']:.2f}s")
 
@@ -288,16 +356,16 @@ class AutonomousTestRunner:
             phases["risk_aggregation"] = {
                 "duration": time.time() - phase_start,
                 "findings": final_risk,
-                "risk_score": final_risk.risk_score if final_risk else None
+                "risk_score": extract_risk_score_from_response(final_risk)
             }
             logger.info(f"✓ Risk Aggregation: final_risk={phases['risk_aggregation']['risk_score']:.2f}, duration={phases['risk_aggregation']['duration']:.2f}s")
 
             # Complete journey
             self.journey_tracker.complete_journey(
-                journey_id,
-                final_output={
+                investigation_id,
+                final_state={
                     "investigation_id": investigation_id,
-                    "final_risk_score": final_risk.risk_score if final_risk else 0,
+                    "final_risk_score": extract_risk_score_from_response(final_risk),
                     "status": "completed"
                 }
             )
@@ -308,8 +376,8 @@ class AutonomousTestRunner:
                 "status": "PASSED",
                 "duration": total_duration,
                 "phases": phases,
-                "final_risk_score": final_risk.risk_score if final_risk else 0,
-                "confidence": final_risk.confidence if final_risk else 0,
+                "final_risk_score": extract_risk_score_from_response(final_risk),
+                "confidence": extract_confidence_from_response(final_risk),
             }
 
             logger.info(f"✅ TEST PASSED: Total duration={total_duration:.2f}s, Final risk={result['final_risk_score']:.2f}")
@@ -324,7 +392,7 @@ class AutonomousTestRunner:
             }
 
         finally:
-            cleanup_investigation_context(investigation_id)
+            cleanup_investigation_context(investigation_id, entity_data["entity_id"])
 
         return result
 
@@ -388,8 +456,14 @@ class AutonomousTestRunner:
         async def run_investigation(ctx):
             """Run a single investigation."""
             try:
-                findings = await autonomous_network_agent(ctx, config)
-                return {"status": "SUCCESS", "risk_score": findings.risk_score if findings else 0}
+                # Create config with proper context in configurable section
+                investigation_config = RunnableConfig(
+                    tags=["test", "concurrent"],
+                    metadata={"test_type": "concurrent_investigations"},
+                    configurable={"agent_context": ctx}
+                )
+                findings = await autonomous_network_agent(ctx, investigation_config)
+                return {"status": "SUCCESS", "risk_score": extract_risk_score_from_response(findings)}
             except Exception as e:
                 return {"status": "FAILED", "error": str(e)}
 
@@ -416,7 +490,7 @@ class AutonomousTestRunner:
 
         # Cleanup
         for ctx in contexts:
-            cleanup_investigation_context(ctx.investigation_id)
+            cleanup_investigation_context(ctx.investigation_id, ctx.entity_id)
 
         return result
 
@@ -442,7 +516,8 @@ class AutonomousTestRunner:
 
         config = RunnableConfig(
             tags=["test", "ato_detection"],
-            metadata={"scenario_id": scenario.scenario_id}
+            metadata={"scenario_id": scenario.scenario_id},
+            configurable={"agent_context": context}
         )
 
         start_time = time.time()
@@ -469,14 +544,15 @@ class AutonomousTestRunner:
             final_risk = await autonomous_risk_agent(context, config)
 
             # Check if ATO was detected
-            ato_detected = final_risk.risk_score > 0.7 if final_risk else False
+            final_risk_score = extract_risk_score_from_response(final_risk)
+            ato_detected = final_risk_score > 0.7
 
             result = {
                 "status": "PASSED" if ato_detected else "FAILED",
                 "duration": time.time() - start_time,
-                "final_risk_score": final_risk.risk_score if final_risk else 0,
+                "final_risk_score": final_risk_score,
                 "ato_detected": ato_detected,
-                "confidence": final_risk.confidence if final_risk else 0
+                "confidence": extract_confidence_from_response(final_risk)
             }
 
             logger.info(f"{'✅' if ato_detected else '❌'} ATO Detection: risk_score={result['final_risk_score']:.2f}, detected={ato_detected}")
@@ -490,7 +566,7 @@ class AutonomousTestRunner:
             }
 
         finally:
-            cleanup_investigation_context(context.investigation_id)
+            cleanup_investigation_context(context.investigation_id, context.entity_id)
 
         return result
 
@@ -543,7 +619,8 @@ class AutonomousTestRunner:
 
         config = RunnableConfig(
             tags=["test", "performance"],
-            metadata={"test": "performance_metrics"}
+            metadata={"test": "performance_metrics"},
+            configurable={"agent_context": context}
         )
 
         metrics = {"agent_timings": {}}
@@ -566,7 +643,7 @@ class AutonomousTestRunner:
                 metrics["agent_timings"][agent_name] = {
                     "duration": duration,
                     "status": "SUCCESS",
-                    "risk_score": findings.risk_score if findings else 0
+                    "risk_score": extract_risk_score_from_response(findings)
                 }
                 logger.info(f"✓ {agent_name}: {duration:.2f}s")
             except Exception as e:
@@ -594,7 +671,7 @@ class AutonomousTestRunner:
         logger.info(f"{'✅' if result['status'] == 'PASSED' else '❌'} Performance Test: {successful}/{len(agents_to_test)} agents succeeded")
         logger.info(f"Total time: {total_time:.2f}s, Average: {average_time:.2f}s")
 
-        cleanup_investigation_context(context.investigation_id)
+        cleanup_investigation_context(context.investigation_id, context.entity_id)
         return result
 
     async def run_all_tests(self):
