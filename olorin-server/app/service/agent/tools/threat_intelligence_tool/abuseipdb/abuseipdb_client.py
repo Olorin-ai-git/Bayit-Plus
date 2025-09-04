@@ -15,8 +15,6 @@ import aiohttp
 from aiohttp import ClientTimeout
 
 from .models import (
-from app.service.logging import get_bridge_logger
-
     AbuseIPDBConfig,
     AbuseIPDBError,
     AbuseReportRequest,
@@ -31,6 +29,7 @@ from app.service.logging import get_bridge_logger
     IPReputationResponse,
     RateLimitError,
 )
+from app.service.logging import get_bridge_logger
 from app.utils.firebase_secrets import get_firebase_secret
 
 logger = get_bridge_logger(__name__)

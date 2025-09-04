@@ -135,7 +135,7 @@ class RawDataNode:
             'anomalies_detected': 0
         }
         
-        self.logger = logging.getLogger(f"{__name__}.RawDataNode")
+        self.logger = get_bridge_logger(f"{__name__}.RawDataNode")
     
     async def process_csv_data(
         self,

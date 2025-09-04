@@ -14,8 +14,6 @@ from aiohttp import ClientError, ClientTimeout
 
 from app.utils.firebase_secrets import get_firebase_secret
 from .models import (
-from app.service.logging import get_bridge_logger
-
     ShodanHostResponse,
     ShodanSearchResponse,
     ShodanSearchResult,
@@ -25,6 +23,7 @@ from app.service.logging import get_bridge_logger
     ShodanExploitResult,
     ShodanAPIInfo
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

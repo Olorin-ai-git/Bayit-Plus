@@ -17,13 +17,12 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from app.service.agent.autonomous_agents import (
-from app.service.logging import get_bridge_logger
-
     autonomous_network_agent,
     autonomous_device_agent,
     autonomous_location_agent,
     autonomous_logs_agent,
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.investigators.domain_agents import (
     network_agent, location_agent, logs_agent, device_agent
 )

@@ -7,12 +7,9 @@ Replaces IDPS-based secret management with Firebase-based secret storage.
 """
 
 import os
-import logging
 import subprocess
 from typing import Optional, Dict
 from functools import lru_cache
-
-logger = logging.getLogger(__name__)
 
 # Global cache for secrets to avoid repeated API calls
 _secrets_cache: Dict[str, str] = {}

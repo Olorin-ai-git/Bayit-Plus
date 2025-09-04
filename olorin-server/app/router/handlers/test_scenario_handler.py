@@ -6,11 +6,10 @@ from typing import Dict, List, Any
 from fastapi import HTTPException
 
 from app.test.data.mock_transactions.mock_data_loader import (
-from app.service.logging import get_bridge_logger
-
     list_available_test_scenarios,
     validate_investigation_outcome
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

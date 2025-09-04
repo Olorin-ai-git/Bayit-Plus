@@ -12,11 +12,10 @@ from app.test.data.mock_transactions.mock_data_loader import load_investigation_
 from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker
 from app.router.models.autonomous_investigation_models import (
-from app.service.logging import get_bridge_logger
-
     AutonomousInvestigationRequest,
     AutonomousInvestigationResponse
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

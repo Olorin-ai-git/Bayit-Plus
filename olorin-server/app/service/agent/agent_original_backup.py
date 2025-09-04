@@ -15,14 +15,13 @@ from langgraph.checkpoint.memory import MemorySaver
 
 # Import refactored modules
 from app.service.agent.orchestration import (
-from app.service.logging import get_bridge_logger
-
     create_parallel_agent_graph,
     create_sequential_agent_graph,
     create_and_get_agent_graph,
     start_investigation,
     assistant
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.investigators import (
     network_agent,
     location_agent,

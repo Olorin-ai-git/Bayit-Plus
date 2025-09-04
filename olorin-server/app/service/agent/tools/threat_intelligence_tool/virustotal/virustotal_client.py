@@ -16,8 +16,6 @@ import aiohttp
 from app.utils.firebase_secrets import get_firebase_secret
 
 from .models import (
-from app.service.logging import get_bridge_logger
-
     VirusTotalConfig,
     VirusTotalIPResponse,
     VirusTotalDomainResponse, 
@@ -31,6 +29,7 @@ from app.service.logging import get_bridge_logger
     VirusTotalNotFoundError,
     VirusTotalQuotaError
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

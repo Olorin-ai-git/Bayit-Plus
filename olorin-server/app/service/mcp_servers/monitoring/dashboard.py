@@ -16,11 +16,10 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST
 
 from .mcp_monitor import (
-from app.service.logging import get_bridge_logger
-
     MCPMonitor, HealthStatus, AlertSeverity,
     get_mcp_monitor
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

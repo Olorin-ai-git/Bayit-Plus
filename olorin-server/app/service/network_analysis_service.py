@@ -13,12 +13,12 @@ from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.network_risk import NetworkRiskLLMAssessment
 from app.models.upi_response import Metadata
 from app.persistence import (
-from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
-
     get_investigation,
     update_investigation_llm_thoughts,
 )
+from app.service.logging import get_bridge_logger
+
+logger = get_bridge_logger(__name__)
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.service.agent.ato_agents.clients.splunk_client import SplunkClient
 from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (

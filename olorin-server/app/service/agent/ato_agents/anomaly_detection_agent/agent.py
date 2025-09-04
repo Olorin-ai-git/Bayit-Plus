@@ -11,8 +11,6 @@ import numpy as np
 from agents import Agent
 
 from ..interfaces import (
-from app.service.logging import get_bridge_logger
-
     AnomalyDetectionAgent,
     DeviceFingerprintAgent,
     Location,
@@ -20,6 +18,7 @@ from app.service.logging import get_bridge_logger
     RiskAssessment,
     UserBehaviorAgent,
 )
+from app.service.logging import get_bridge_logger
 from ..utils.logging import get_logger
 
 logger = get_logger(__name__)

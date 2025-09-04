@@ -9,12 +9,11 @@ import json
 from langchain_core.messages import AIMessage
 
 from app.service.agent.agent_communication import (
-from app.service.logging import get_bridge_logger
-
     _extract_investigation_info,
     _get_or_create_autonomous_context,
     _create_error_response,
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.agent_factory import create_rag_agent
 
 # RAG imports with graceful fallback

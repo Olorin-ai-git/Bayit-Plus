@@ -13,6 +13,24 @@ from google.cloud import secretmanager
 from google.api_core import exceptions as google_exceptions
 from app.service.logging import get_bridge_logger
 
+
+def _mask_secret_value(value: str, show_chars: int = 4) -> str:
+    """
+    Mask secret value for logging, showing only first few characters.
+    
+    Args:
+        value: The secret value to mask
+        show_chars: Number of characters to show (default: 4)
+        
+    Returns:
+        Masked secret value for safe logging
+    """
+    if not value:
+        return "[EMPTY]"
+    if len(value) <= show_chars:
+        return "*" * len(value)
+    return value[:show_chars] + "*" * (len(value) - show_chars)
+
 # Configure logging level based on environment variable
 _log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
 if _log_level == "SILENT":
@@ -54,12 +72,9 @@ class SecretManagerClient:
         """Initialize the Secret Manager client with error handling."""
         try:
             self._client = secretmanager.SecretManagerServiceClient()
-            logger.info("Secret Manager client initialized", project_id=self.project_id)
+            logger.info(f"Secret Manager client initialized for project: {self.project_id}")
         except Exception as e:
-            logger.error(
-                "Failed to initialize Secret Manager client - Firebase Secrets Manager is required",
-                error=str(e)
-            )
+            logger.error(f"Failed to initialize Secret Manager client - Firebase Secrets Manager is required: {e}")
             raise ValueError(f"Firebase Secret Manager client initialization failed: {e}")
     
     def get_secret(self, secret_name: str, version: str = "latest") -> Optional[str]:
@@ -81,15 +96,13 @@ class SecretManagerClient:
         if cache_key in self._cache:
             cached_value, expiry_time = self._cache[cache_key]
             if time.time() < expiry_time:
-                logger.debug("Using cached secret", 
-                           secret_name=firebase_secret_name,
-                           ttl_remaining=int(expiry_time - time.time()))
+                masked_value = _mask_secret_value(cached_value)
+                logger.debug(f"Using cached secret {firebase_secret_name} (value: {masked_value}, TTL remaining: {int(expiry_time - time.time())}s)")
                 return cached_value
             else:
                 # Cache expired, remove it
                 del self._cache[cache_key]
-                logger.debug("Cache expired for secret",
-                           secret_name=firebase_secret_name)
+                logger.debug(f"Cache expired for secret {firebase_secret_name}")
         
         # No environment variable fallbacks - must use Firebase Secret Manager
         if not self._client:
@@ -111,29 +124,21 @@ class SecretManagerClient:
             # Cache the secret with TTL
             self._cache[cache_key] = (secret_value, time.time() + self.cache_ttl)
             
-            logger.debug("Successfully retrieved secret from Secret Manager",
-                        secret_name=firebase_secret_name)
+            # Log success with masked value for security
+            masked_value = _mask_secret_value(secret_value)
+            logger.debug(f"Successfully retrieved secret {firebase_secret_name} from Secret Manager (value: {masked_value})")
             return secret_value
             
         except google_exceptions.NotFound:
-            logger.warning("Secret not found in Secret Manager",
-                          secret_name=firebase_secret_name,
-                          original_name=secret_name,
-                          project_id=self.project_id)
+            logger.warning(f"Secret not found in Secret Manager: {firebase_secret_name} (original: {secret_name}) in project {self.project_id}")
             return None
             
         except google_exceptions.PermissionDenied:
-            logger.error("Permission denied accessing secret",
-                        secret_name=firebase_secret_name,
-                        original_name=secret_name,
-                        project_id=self.project_id)
+            logger.error(f"Permission denied accessing secret {firebase_secret_name} (original: {secret_name}) in project {self.project_id}")
             return None
             
         except Exception as e:
-            logger.error("Error retrieving secret from Secret Manager",
-                        secret_name=firebase_secret_name,
-                        original_name=secret_name,
-                        error=str(e))
+            logger.error(f"Error retrieving secret {firebase_secret_name} (original: {secret_name}) from Secret Manager: {e}")
             return None
     
     def _convert_to_firebase_format(self, secret_name: str) -> str:

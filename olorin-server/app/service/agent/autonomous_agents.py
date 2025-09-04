@@ -11,14 +11,13 @@ while preserving all existing functionality and imports.
 # Import from refactored modules for backward compatibility
 from .base_agents import AutonomousInvestigationAgent, autonomous_llm
 from .domain_agents import (
-from app.service.logging import get_bridge_logger
-
     autonomous_network_agent,
     autonomous_device_agent,
     autonomous_location_agent,
     autonomous_logs_agent,
     autonomous_risk_agent,
 )
+from app.service.logging import get_bridge_logger
 from .agent_communication import (
     _extract_investigation_info,
     _get_or_create_autonomous_context,

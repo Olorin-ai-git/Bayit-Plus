@@ -8,13 +8,12 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from mcp.server import Server
 from mcp.types import (
-from app.service.logging import get_bridge_logger
-
     Resource,
     TextContent,
     TextResourceContents,
     Tool,
 )
+from app.service.logging import get_bridge_logger
 
 from ..service.agent.tools.tool_registry import (
     get_tools_for_agent,

@@ -14,8 +14,6 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field, validator
 
 from ..enhanced_tool_base import (
-from app.service.logging import get_bridge_logger
-
     EnhancedToolBase,
     ToolConfig,
     ToolResult,
@@ -24,6 +22,7 @@ from app.service.logging import get_bridge_logger
     CacheStrategy,
     ToolValidationError
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.ato_agents.splunk_agent.client import SplunkClient
 from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret

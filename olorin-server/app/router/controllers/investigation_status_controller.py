@@ -8,10 +8,9 @@ from typing import Dict, List, Any, Optional
 from fastapi import HTTPException
 
 from app.service.logging.autonomous_investigation_logger import (
-from app.service.logging import get_bridge_logger
-
     autonomous_investigation_logger, InteractionType
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.journey_tracker import journey_tracker
 from app.router.models.autonomous_investigation_models import (
     InvestigationStatusResponse,

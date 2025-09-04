@@ -22,11 +22,10 @@ from pathlib import Path
 
 # Import our investigation services
 from app.test.data.mock_transactions.mock_data_loader import (
-from app.service.logging import get_bridge_logger
-
     MockDataLoader, load_investigation_scenario, validate_investigation_outcome,
     list_available_test_scenarios
 )
+from app.service.logging import get_bridge_logger
 from app.service.logging.autonomous_investigation_logger import (
     autonomous_investigation_logger, InteractionType
 )

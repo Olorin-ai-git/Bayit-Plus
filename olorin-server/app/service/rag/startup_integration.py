@@ -8,14 +8,13 @@ import os
 from typing import Optional
 
 from app.service.rag import (
-from app.service.logging import get_bridge_logger
-
     initialize_vector_database,
     initialize_embedding_service,
     get_rag_service,
     initialize_enhanced_knowledge_base,
     cleanup_vector_database
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

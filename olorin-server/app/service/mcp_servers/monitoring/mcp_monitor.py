@@ -19,11 +19,10 @@ from contextlib import asynccontextmanager
 # Third-party imports
 import aiohttp
 from prometheus_client import (
-from app.service.logging import get_bridge_logger
-
     Counter, Histogram, Gauge, Summary,
     generate_latest, CONTENT_TYPE_LATEST
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

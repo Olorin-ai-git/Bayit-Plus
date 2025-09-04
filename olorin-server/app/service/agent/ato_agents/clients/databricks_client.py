@@ -5,13 +5,12 @@ import aiohttp
 
 from app.utils.firebase_secrets import get_firebase_secret
 from .databricks_config import (
-from app.service.logging import get_bridge_logger
-
     DatabricksConfig, 
     DatabricksError, 
     DatabricksConnectionError, 
     DatabricksQueryError
 )
+from app.service.logging import get_bridge_logger
 from .databricks_executor import DatabricksExecutor
 
 logger = get_bridge_logger(__name__)

@@ -11,12 +11,11 @@ from typing import List, Dict, Any
 from langchain_core.messages import AIMessage
 
 from app.service.agent.agent_communication import (
-from app.service.logging import get_bridge_logger
-
     _extract_investigation_info,
     _get_or_create_autonomous_context,
     _create_error_response,
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.agent_factory import create_autonomous_agent
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.journey_tracker import (

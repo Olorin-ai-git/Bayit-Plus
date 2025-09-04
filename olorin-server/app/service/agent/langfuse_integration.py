@@ -10,11 +10,10 @@ from functools import wraps
 
 from langchain_core.runnables import RunnableConfig
 from app.service.agent.orchestration.langfuse_tracing import (
-from app.service.logging import get_bridge_logger
-
     get_langfuse_tracer,
     init_langfuse_tracing
 )
+from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 

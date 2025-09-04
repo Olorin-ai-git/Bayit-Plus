@@ -15,8 +15,6 @@ from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import (
-from app.service.logging import get_bridge_logger
-
     BaseCheckpointSaver,
     ChannelVersions,
     Checkpoint,
@@ -25,6 +23,7 @@ from app.service.logging import get_bridge_logger
     PendingWrite,
     get_checkpoint_id,
 )
+from app.service.logging import get_bridge_logger
 from langgraph.checkpoint.serde.base import SerializerProtocol
 
 from app.adapters.ips_cache_client import IPSCacheClient

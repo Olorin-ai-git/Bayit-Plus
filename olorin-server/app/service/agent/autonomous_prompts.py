@@ -9,13 +9,12 @@ from typing import List, Optional, Dict, Any
 
 from app.service.agent.autonomous_context import AutonomousInvestigationContext
 from app.service.agent.prompts.olorin_prompts import (
-from app.service.logging import get_bridge_logger
-
     get_olorin_prompt,
     format_olorin_prompt,
     validate_olorin_response_format,
     get_supported_olorin_domains
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.prompts.gaia_prompts import (
     get_gaia_prompt,
     format_gaia_prompt,

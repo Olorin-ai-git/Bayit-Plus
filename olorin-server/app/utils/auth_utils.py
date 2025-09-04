@@ -1,7 +1,6 @@
 # Olorin PrivateAuth+ headers
 import http.client
 import json
-import logging
 import re
 import uuid
 from typing import Tuple
@@ -12,9 +11,6 @@ from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret
 from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
-
-
-logger = logging.getLogger(__name__)
 settings_for_env = get_settings_for_env()
 
 # Base URLs that will be used in SDKs

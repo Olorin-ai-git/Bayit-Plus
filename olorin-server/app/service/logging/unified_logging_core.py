@@ -42,6 +42,61 @@ class LogOutput(Enum):
     STRUCTURED_FILE = "structured_file"
 
 
+class ColoredFormatter(logging.Formatter):
+    """Colored formatter for console output with consistent timestamps"""
+    
+    # ANSI color codes
+    COLORS = {
+        'DEBUG': '\033[36m',    # Cyan
+        'INFO': '\033[34m',     # Blue
+        'WARNING': '\033[33m',  # Yellow
+        'ERROR': '\033[31m',    # Red
+        'CRITICAL': '\033[35m', # Magenta
+        'RESET': '\033[0m'      # Reset
+    }
+    
+    def __init__(self, fmt=None, datefmt=None, use_colors=None):
+        super().__init__(fmt, datefmt)
+        # Auto-detect color support if not specified
+        if use_colors is None:
+            use_colors = self._supports_color()
+        self.use_colors = use_colors
+    
+    def _supports_color(self) -> bool:
+        """Check if terminal supports colors"""
+        import os
+        # Check if we're in a terminal and not piped
+        if not hasattr(sys.stdout, 'isatty') or not sys.stdout.isatty():
+            return False
+        
+        # Check environment variables
+        if os.getenv('NO_COLOR'):
+            return False
+        if os.getenv('FORCE_COLOR'):
+            return True
+            
+        # Check TERM variable
+        term = os.getenv('TERM', '')
+        return 'color' in term or term in ['xterm', 'xterm-256color', 'screen']
+    
+    def format(self, record: logging.LogRecord) -> str:
+        """Format log record with colors and consistent timestamp"""
+        # Format the record normally first
+        formatted = super().format(record)
+        
+        # Apply colors if supported
+        if self.use_colors:
+            color = self.COLORS.get(record.levelname, self.COLORS['RESET'])
+            reset = self.COLORS['RESET']
+            
+            # Apply color to the level name in the formatted message
+            if '[' + record.levelname + ']' in formatted:
+                colored_level = f"{color}[{record.levelname}]{reset}"
+                formatted = formatted.replace('[' + record.levelname + ']', colored_level)
+        
+        return formatted
+
+
 class StructuredFormatter(logging.Formatter):
     """Enhanced structured formatter with metadata and performance metrics"""
     
@@ -146,7 +201,7 @@ class UnifiedLoggingCore:
     def _setup_formatters(self):
         """Setup logging formatters for different formats"""
         self._formatters = {
-            LogFormat.HUMAN: logging.Formatter(
+            LogFormat.HUMAN: ColoredFormatter(
                 '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S'
             ),
@@ -262,7 +317,12 @@ class UnifiedLoggingCore:
                     encoding='utf8'
                 )
                 handler.setLevel(logging.INFO)
-                handler.setFormatter(self._formatters[LogFormat.HUMAN])
+                # Use plain formatter for file output (no colors)
+                file_formatter = logging.Formatter(
+                    '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S'
+                )
+                handler.setFormatter(file_formatter)
                 self._handlers[output] = handler
                 
             elif output == LogOutput.JSON_FILE:

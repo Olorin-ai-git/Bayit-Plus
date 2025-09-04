@@ -5,8 +5,6 @@ from typing import Any, Dict, List, Optional
 from app.service.websocket_manager import AgentPhase, websocket_manager
 
 from .interfaces import (
-from app.service.logging import get_bridge_logger
-
     AnomalyDetectionAgent,
     BaseAgent,
     DeviceFingerprintAgent,
@@ -14,6 +12,7 @@ from app.service.logging import get_bridge_logger
     RiskAssessment,
     UserBehaviorAgent,
 )
+from app.service.logging import get_bridge_logger
 from .location_data_agent import LocationDataAgent
 
 logger = get_bridge_logger(__name__)
