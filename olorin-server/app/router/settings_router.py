@@ -144,7 +144,14 @@ def get_user_id(request: Request) -> str:
     """
     Extract user ID from request headers or session.
     In production, this would integrate with your authentication system.
+    
+    For CORS preflight OPTIONS requests, we return a default user ID
+    since those requests don't include custom headers.
     """
+    # Skip user ID extraction for OPTIONS requests (CORS preflight)
+    if request.method == "OPTIONS":
+        return "default_user"
+    
     # For now, use a simple approach - in production you'd extract from JWT/session
     user_id = request.headers.get("X-User-ID", "default_user")
     return user_id

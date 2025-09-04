@@ -76,7 +76,7 @@ runConfig:
     - variable: MCP_SERVER_HOST
       value: "0.0.0.0"
     - variable: MCP_SERVER_PORT
-      value: "8001"
+      value: "8091"
     
     # Production Secrets (mapped from Firebase Secret Manager)
     - variable: ANTHROPIC_API_KEY
