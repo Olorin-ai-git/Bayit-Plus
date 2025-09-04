@@ -232,7 +232,7 @@ graph TB
     
     subgraph "HTTP Layer"
         AXIOS[Axios HTTP Client<br/>- Request Interceptors<br/>- Response Interceptors<br/>- Error Handling]
-        BASE_URL[Base URL Configuration<br/>http://localhost:8000]
+        BASE_URL[Base URL Configuration<br/>http://localhost:8090]
         AUTH_HEADERS[Authorization Headers<br/>JWT Token Management]
     end
     

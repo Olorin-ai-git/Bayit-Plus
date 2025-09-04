@@ -34,7 +34,7 @@ class RealInvestigationRunner:
             api_key=settings_for_env.anthropic_api_key,
             model="claude-opus-4-1-20250805",
             temperature=0.1,
-            max_tokens=8000,
+            max_tokens=8090,
         )
         self.api_calls = []
         self.total_cost = 0.0

@@ -22,7 +22,7 @@ from app.security.encryption import DataEncryption, FieldEncryption
 class SecurityTester:
     """Security testing and validation."""
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8090"):
         self.base_url = base_url
         self.config = get_security_config()
         self.test_results = []

@@ -98,8 +98,12 @@ def _configure_cors_middleware(app: FastAPI) -> None:
         allow_headers=[
             "Authorization",
             "Content-Type", 
+            "Accept",
             "X-Requested-With",
-            "X-User-ID"  # Custom header used by the application
+            "Cache-Control",
+            "Pragma",
+            "X-User-ID",  # Custom header used by the application
+            "olorin_originatingip"  # Custom header for IP tracking
         ],
         max_age=600,  # Cache preflight requests for 10 minutes
     )

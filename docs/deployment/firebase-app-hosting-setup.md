@@ -24,7 +24,7 @@ This document describes the Firebase App Hosting configuration for the Olorin Py
 - **CPU:** 2 vCPU cores
 - **Memory:** 4GB RAM
 - **Scaling:** 1-100 instances
-- **Port:** 8000 (FastAPI)
+- **Port:** 8090 (FastAPI)
 
 ## Configuration Files
 

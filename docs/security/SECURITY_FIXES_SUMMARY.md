@@ -185,7 +185,7 @@ REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 REACT_APP_FIREBASE_PROJECT_ID=your-project-id
 
 # API Configuration
-REACT_APP_API_BASE_URL=http://localhost:8000
+REACT_APP_API_BASE_URL=http://localhost:8090
 ```
 
 ## 🚀 Deployment Checklist

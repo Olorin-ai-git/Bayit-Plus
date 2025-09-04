@@ -84,7 +84,7 @@ def show_olorin_configuration():
     print("    api_key=settings_for_env.anthropic_api_key,")
     print('    model="claude-opus-4-1-20250805",')
     print("    temperature=0.1,")
-    print("    max_tokens=8000")
+    print("    max_tokens=8090")
     print(")")
     print("```")
     

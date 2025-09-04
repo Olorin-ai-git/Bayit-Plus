@@ -12,6 +12,12 @@ logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/logs")
 
 
+@router.options("/{entity_id}")
+def analyze_logs_options():
+    """Handle CORS preflight requests for logs analysis endpoint."""
+    return {}
+
+
 @router.get("/{entity_id}")
 async def analyze_logs(
     entity_id: str,

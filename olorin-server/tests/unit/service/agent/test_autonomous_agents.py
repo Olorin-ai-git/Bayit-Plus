@@ -51,7 +51,7 @@ class TestAutonomousLLM:
         # Verify LLM configuration
         assert autonomous_llm.model_name == "claude-opus-4-1-20250805"
         assert autonomous_llm.temperature == 0.1
-        assert autonomous_llm.max_tokens == 8000
+        assert autonomous_llm.max_tokens == 8090
         
         # Make a real API call to verify connection
         messages = [

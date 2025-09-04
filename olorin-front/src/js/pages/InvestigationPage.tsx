@@ -59,6 +59,7 @@ import { useDemoMode } from '../contexts/DemoModeContext';
  * Represents a single log entry in the investigation.
  */
 interface LogEntry {
+  id: string;
   timestamp: number;
   message: string;
   type: LogLevel;
@@ -285,7 +286,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
    * @param {LogLevel} [type=LogLevel.INFO] - The type of log entry.
    */
   const addLog = useCallback((message: string, type: LogLevel = LogLevel.INFO) => {
-    setLogs((prev) => [...prev, { timestamp: Date.now(), message, type }]);
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    setLogs((prev) => [...prev, { id, timestamp: Date.now(), message, type }]);
   }, []);
 
 
@@ -1574,11 +1576,10 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     if (!errorLogs.length) return;
     const timers: NodeJS.Timeout[] = [];
     errorLogs.forEach((log) => {
-      const key = `${log.timestamp}-${log.message}`;
-      if (!dismissedErrorKeys.includes(key)) {
+      if (!dismissedErrorKeys.includes(log.id)) {
         timers.push(
           setTimeout(() => {
-            setDismissedErrorKeys((keys) => [...keys, key]);
+            setDismissedErrorKeys((keys) => [...keys, log.id]);
           }, 3000),
         );
       }
@@ -1691,18 +1692,16 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             errorLogs
               .filter(
                 (log) =>
-                  !dismissedErrorKeys.includes(
-                    `${log.timestamp}-${log.message}`,
-                  ),
+                  !dismissedErrorKeys.includes(log.id),
               )
               .map((log) => (
                 <Alert
-                  key={`${log.timestamp}-${log.message}`}
+                  key={log.id}
                   severity="error"
                   onClose={() =>
                     setDismissedErrorKeys((keys) => [
                       ...keys,
-                      `${log.timestamp}-${log.message}`,
+                      log.id,
                     ])
                   }
                   sx={{ mb: 1 }}
@@ -1739,7 +1738,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
           {warningLogs.length > 0 &&
             warningLogs.map((log) => (
               <Alert
-                key={`${log.timestamp}-${log.message}`}
+                key={log.id}
                 severity="warning"
                 sx={{ mb: 1 }}
                 data-testid="warning-banner"
@@ -1762,7 +1761,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             >
               <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                 {logs.map((log) => (
-                  <Box key={log.timestamp}>
+                  <Box key={log.id}>
                     {log.message.replace(/<[^>]+>/g, '')}
                   </Box>
                 ))}

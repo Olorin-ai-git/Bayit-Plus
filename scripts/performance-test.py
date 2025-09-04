@@ -33,7 +33,7 @@ except ImportError as e:
 class PerformanceTestSuite:
     """Comprehensive performance testing suite."""
     
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "http://localhost:8090"):
         self.base_url = base_url
         self.results: Dict[str, Any] = {}
         
@@ -465,7 +465,7 @@ class PerformanceTestSuite:
 async def main():
     """Main function to run performance tests."""
     parser = argparse.ArgumentParser(description="Olorin Performance Test Suite")
-    parser.add_argument("--url", default="http://localhost:8000", help="Base URL for API tests")
+    parser.add_argument("--url", default="http://localhost:8090", help="Base URL for API tests")
     parser.add_argument("--users", type=int, default=5, help="Number of concurrent users for load test")
     parser.add_argument("--output", help="Output file for results (JSON)")
     parser.add_argument("--report", help="Output file for markdown report")

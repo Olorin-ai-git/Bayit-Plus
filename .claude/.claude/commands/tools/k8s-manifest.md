@@ -49,14 +49,14 @@ class AdvancedK8sAnalyzer:
             'python_fastapi': {
                 'files': ['main.py', 'requirements.txt', 'pyproject.toml'],
                 'deployment_type': 'api',
-                'port': 8000,
+                'port': 8090,
                 'health_check': '/health',
                 'resources': {'cpu': '250m', 'memory': '512Mi'}
             },
             'python_django': {
                 'files': ['manage.py', 'settings.py', 'wsgi.py'],
                 'deployment_type': 'web',
-                'port': 8000,
+                'port': 8090,
                 'health_check': '/health/',
                 'resources': {'cpu': '300m', 'memory': '1Gi'}
             },
@@ -1803,7 +1803,7 @@ class IntegratedKubernetesConfig:
             'ports': [
                 {
                     'name': 'http',
-                    'containerPort': self.api_config.get('port', 8000),
+                    'containerPort': self.api_config.get('port', 8090),
                     'protocol': 'TCP'
                 }
             ],
@@ -2084,7 +2084,7 @@ spec:
         tier: backend
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
+        prometheus.io/port: "8090"
         prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: api-service-account
@@ -2092,7 +2092,7 @@ spec:
       - name: api
         image: registry.company.com/api:optimized-latest
         ports:
-        - containerPort: 8000
+        - containerPort: 8090
           name: http
         env:
         - name: DATABASE_URL
@@ -2120,13 +2120,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8000
+            port: 8090
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /ready
-            port: 8000
+            port: 8090
           initialDelaySeconds: 5
           periodSeconds: 5
 
@@ -2157,7 +2157,7 @@ spec:
           name: http
         env:
         - name: API_URL
-          value: "http://api-service:8000"
+          value: "http://api-service:8090"
         - name: NODE_ENV
           value: "production"
         resources:
@@ -2198,8 +2198,8 @@ spec:
     tier: backend
   ports:
   - name: http
-    port: 8000
-    targetPort: 8000
+    port: 8090
+    targetPort: 8090
   type: ClusterIP
 
 ---
@@ -2249,7 +2249,7 @@ spec:
           service:
             name: api-service
             port:
-              number: 8000
+              number: 8090
       - path: /
         pathType: Prefix
         backend:
@@ -2322,7 +2322,7 @@ spec:
           name: ingress-nginx
     ports:
     - protocol: TCP
-      port: 8000
+      port: 8090
   egress:
   - to:
     - podSelector:
@@ -2364,7 +2364,7 @@ spec:
           app: api
     ports:
     - protocol: TCP
-      port: 8000
+      port: 8090
 
 ---
 # Pod Security Standards
@@ -2710,7 +2710,7 @@ jobs:
         API_URL=$(kubectl get service api-service --namespace=staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
         
         # Run tests from /test-harness
-        pytest tests/integration/ --api-url="http://${API_URL}:8000" -v
+        pytest tests/integration/ --api-url="http://${API_URL}:8090" -v
     
     # 6. Deploy to production (on main branch)
     - name: Deploy to production
@@ -2736,7 +2736,7 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: |
         # Health checks
-        kubectl exec -n production deployment/api-deployment -- curl -f http://localhost:8000/health
+        kubectl exec -n production deployment/api-deployment -- curl -f http://localhost:8090/health
         
         # Performance baseline check
         kubectl run --rm -i --tty load-test --image=loadimpact/k6:latest --restart=Never -- run - <<EOF
@@ -2752,7 +2752,7 @@ jobs:
         };
         
         export default function () {
-          let response = http.get('http://api-service.production.svc.cluster.local:8000/health');
+          let response = http.get('http://api-service.production.svc.cluster.local:8090/health');
           check(response, {
             'status is 200': (r) => r.status === 200,
             'response time < 500ms': (r) => r.timings.duration < 500,

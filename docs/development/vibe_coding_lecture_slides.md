@@ -177,7 +177,7 @@ Client → POST /investigation → Database Storage → WebSocket Broadcast → 
 ### Implementation Success:
 ```bash
 # Test the endpoint
-curl -X POST "http://localhost:8000/api/investigation" \
+curl -X POST "http://localhost:8090/api/investigation" \
   -H "Content-Type: application/json" \
   -d '{"id": "DEMO_INV", "entity_id": "demo_user"}'
 

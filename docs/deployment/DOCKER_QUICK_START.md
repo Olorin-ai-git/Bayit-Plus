@@ -19,7 +19,7 @@ docker compose up -d
 
 # 3. Access
 # Frontend: http://localhost:3000
-# Backend API: http://localhost:8000/docs  
+# Backend API: http://localhost:8090/docs  
 # Web Portal: http://localhost:8080
 ```
 
@@ -57,7 +57,7 @@ export ANTHROPIC_API_KEY_SECRET="olorin/anthropic_api_key"
 
 # 4. Access
 # Frontend: http://localhost:3000
-# Backend: http://localhost:8000
+# Backend: http://localhost:8090
 # Portal: http://localhost:8080
 ```
 
@@ -77,7 +77,7 @@ SPLUNK_TOKEN=your_splunk_token  # Optional
 
 # Ports (if defaults conflict)
 FRONTEND_PORT=3000
-BACKEND_PORT=8000
+BACKEND_PORT=8090
 PORTAL_PORT=8080
 ```
 

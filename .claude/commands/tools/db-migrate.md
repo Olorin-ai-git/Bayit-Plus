@@ -1777,7 +1777,7 @@ import aiohttp
 from sqlalchemy import text
 
 class ApiSchemaSync:
-    def __init__(self, api_base_url="{self.api_config.get('base_url', 'http://localhost:8000')}"):
+    def __init__(self, api_base_url="{self.api_config.get('base_url', 'http://localhost:8090')}"):
         self.api_base_url = api_base_url
         self.db_config = {self.db_config}
     

@@ -208,7 +208,7 @@ graph TB
 graph TB
     subgraph "Axios Configuration"
         AXIOS_INSTANCE[Axios Instance<br/>Configured HTTP Client]
-        BASE_URL[Base URL<br/>http://localhost:8000]
+        BASE_URL[Base URL<br/>http://localhost:8090]
         DEFAULT_HEADERS[Default Headers<br/>Content-Type, Accept]
         TIMEOUT_CONFIG[Timeout Configuration<br/>Request & Response Timeouts]
     end
@@ -266,7 +266,7 @@ graph TB
 ```mermaid
 graph TB
     subgraph "WebSocket Management"
-        WS_CONNECTION[WebSocket Connection<br/>ws://localhost:8000/ws]
+        WS_CONNECTION[WebSocket Connection<br/>ws://localhost:8090/ws]
         CONNECTION_MANAGER[Connection Manager<br/>Auto-reconnect Logic]
         HEARTBEAT_MONITOR[Heartbeat Monitor<br/>Connection Health Check]
         MESSAGE_QUEUE[Message Queue<br/>Pending Messages]
@@ -519,8 +519,8 @@ interface ServiceConfig {
 ### Development vs Production Settings
 ```typescript
 const developmentConfig: ServiceConfig = {
-  apiBaseUrl: 'http://localhost:8000',
-  websocketUrl: 'ws://localhost:8000/ws',
+  apiBaseUrl: 'http://localhost:8090',
+  websocketUrl: 'ws://localhost:8090/ws',
   mcpServerUrl: 'ws://localhost:8001/mcp',
   // ... development settings
 }

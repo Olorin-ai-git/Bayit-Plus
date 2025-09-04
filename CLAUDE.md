@@ -448,7 +448,7 @@ The backend uses a multi-agent system for fraud detection:
 3. **API Structure**:
    - FastAPI-based REST API
    - WebSocket support for real-time updates
-   - Endpoints documented at http://localhost:8000/docs
+   - Endpoints documented at http://localhost:8090/docs
 
 4. **Key Services**:
    - Splunk integration for log analysis
@@ -536,7 +536,7 @@ olorin/
 ## Important Notes
 
 1. **Ports**:
-   - Backend: 8000 (configurable via BACKEND_PORT)
+   - Backend: 8090 (configurable via BACKEND_PORT)
    - Frontend: 3000 (configurable via FRONTEND_PORT)
    - MCP Server: stdio (runs in separate terminal)
 

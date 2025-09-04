@@ -265,7 +265,7 @@ graph TB
 ```mermaid
 graph TB
     subgraph "WebSocket Communication"
-        WS_CONNECTION[WebSocket Connection<br/>ws://localhost:8000/ws]
+        WS_CONNECTION[WebSocket Connection<br/>ws://localhost:8090/ws]
         CONNECTION_MANAGER[Connection Manager<br/>Auto-reconnect Logic]
         MESSAGE_HANDLER[Message Handler<br/>Event Processing]
         HEARTBEAT[Heartbeat Monitor<br/>Connection Health]

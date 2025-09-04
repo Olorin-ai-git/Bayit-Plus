@@ -149,7 +149,7 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     ENVIRONMENT: str = "development"
     API_V1_STR: str = "/api/v1"
-    PORT: int = 8000
+    PORT: int = 8090
     WORKERS: int = 4
     LOG_LEVEL: str = "INFO"
     

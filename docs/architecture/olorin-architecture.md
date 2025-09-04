@@ -14,7 +14,7 @@
 │  ├── olorin-front (React Investigation Dashboard)             │
 │  └── olorin-web-portal (Marketing & Information Site)         │
 ├─────────────────────────────────────────────────────────────────┤
-│  Backend Service (olorin-server:8000)                           │
+│  Backend Service (olorin-server:8090)                           │
 │  ├── FastAPI Application with Authentication                  │
 │  ├── AI Investigation Agents & Risk Assessment                │
 │  ├── Multi-Domain Analysis Engine                             │
@@ -38,7 +38,7 @@
 
 ## Core Service Architecture
 
-### OLORIN Server (Port 8000)
+### OLORIN Server (Port 8090)
 - **Framework**: FastAPI with Python 3.11+
 - **Package Management**: Poetry for dependency management
 - **Investigation Engine**: Multi-agent investigation orchestration

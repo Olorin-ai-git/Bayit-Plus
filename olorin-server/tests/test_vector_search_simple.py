@@ -96,7 +96,7 @@ MOCK_SPLUNK_RESULTS = [
         "tm_true_ip_geo": "US",
         "tm_true_ip": "172.16.0.25",
         "tm_proxy_ip": None,
-        "rss_epoch_time": "1640995380000",  # 3 minutes later
+        "rss_epoch_time": "1640995380900",  # 3 minutes later
         "tm_os_anomaly": "false",
         "tm_http_os_signature": "mac os x",
         "tm_true_ip_longitude": "-118.2437",
@@ -125,7 +125,7 @@ MOCK_SPLUNK_RESULTS = [
         "tm_true_ip_latitude": "37.7749",
         "tm_input_ip_longitude": "-122.4194",
         "tm_input_ip_latitude": "37.7749",
-        "tm_page_time_on": "28000",
+        "tm_page_time_on": "28090",
         "tm_screen_color_depth": "32",
         "tm_agent_public_key_hash_type": "web:rsa",
         "tm_bb_bot_score": "90",

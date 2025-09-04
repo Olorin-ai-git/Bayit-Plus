@@ -39,7 +39,7 @@ tests/
 - Validates all API endpoints (device, location, network, logs, risk assessment)
 - Generates PDF summary reports with **IMPROVED FORMATTING**
 - **Usage**: `python tests/test_investigation_workflow.py`
-- **Dependencies**: Requires server running on localhost:8000
+- **Dependencies**: Requires server running on localhost:8090
 
 #### `run_investigation_flow_for_device.py`
 **Purpose**: Manual script to run the investigation flow for a specific device and generate a PDF summary report
@@ -96,7 +96,7 @@ tests/
 - Validates server health and API responses
 - Tests individual location source endpoints
 - **Usage**: `python tests/test_location_api_integration.py`
-- **Dependencies**: Requires server running on localhost:8000
+- **Dependencies**: Requires server running on localhost:8090
 
 ### 📋 **Documentation and References**
 
@@ -167,7 +167,7 @@ The new tests use real Anthropic API calls with the following pricing:
 poetry install
 
 # Start the server (for integration tests)
-poetry run uvicorn app.main:app --reload --port 8000
+poetry run uvicorn app.main:app --reload --port 8090
 ```
 
 ### NEW: Running Real API Tests
@@ -309,7 +309,7 @@ Expected performance with real API:
 
 ### Common Issues
 
-1. **Server Not Running**: Integration tests require the server on port 8000
+1. **Server Not Running**: Integration tests require the server on port 8090
 2. **Missing Dependencies**: Run `poetry install` to install all dependencies
 3. **Import Errors**: Ensure you're running from the project root directory
 4. **Coverage Failures**: Check `tox.ini` for coverage thresholds
@@ -321,7 +321,7 @@ Expected performance with real API:
 ### Debug Commands
 ```bash
 # Check server health
-curl http://localhost:8000/health
+curl http://localhost:8090/health
 
 # Verify dependencies
 poetry show

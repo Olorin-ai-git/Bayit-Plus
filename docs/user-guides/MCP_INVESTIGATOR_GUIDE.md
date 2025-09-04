@@ -43,7 +43,7 @@ The MCP (Model Context Protocol) integration transforms how you conduct fraud in
 ./start_olorin.sh
 
 # Check MCP server status
-curl http://localhost:8000/health/mcp
+curl http://localhost:8090/health/mcp
 ```
 
 ### First Investigation

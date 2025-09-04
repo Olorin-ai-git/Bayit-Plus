@@ -40,7 +40,7 @@ The OLORIN investigation system has been transformed from **65% operational** to
 
 ### Fix #3: MCP Proxy Configuration ✅
 - **Issue**: MCP test accessing server directly instead of through proxy
-- **Root Cause**: Test configured for `localhost:3000` instead of `localhost:8000/api/mcp-proxy`
+- **Root Cause**: Test configured for `localhost:3000` instead of `localhost:8090/api/mcp-proxy`
 - **Solution**: Updated all MCP endpoints to use proxy URLs
 - **Files Modified**: `fullflows/communication_protocols/mcp/test_comprehensive_mcp_flow.py`
 - **Impact**: MCP test success: 45.5% → 65.2% (+19.7%)

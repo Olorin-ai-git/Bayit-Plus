@@ -53,7 +53,7 @@ def get_autonomous_llm():
             api_key=api_key,
             model="claude-opus-4-1-20250805",  # Claude Opus 4.1 - correct model name
             temperature=0.1,  # Lower temperature for more focused decision making
-            max_tokens=8000,  # Larger context for reasoning
+            max_tokens=8090,  # Larger context for reasoning
             timeout=90,  # Longer timeout for complex reasoning with Anthropic
         )
         

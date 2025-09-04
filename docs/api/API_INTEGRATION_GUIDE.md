@@ -10,9 +10,9 @@ This guide provides comprehensive information for integrating with the OLORIN AP
 
 ```mermaid
 graph TB
-    Frontend[OLORIN Web Plugin Frontend] --> Router[FastAPI Router :8000]
+    Frontend[OLORIN Web Plugin Frontend] --> Router[FastAPI Router :8090]
     Frontend --> MCP[MCP Server :3000]
-    Frontend --> WS[WebSocket Service :8000/ws]
+    Frontend --> WS[WebSocket Service :8090/ws]
     
     Router --> Backend[OLORIN Backend Services]
     Router --> MCPProxy[MCP Proxy Endpoints]
@@ -27,7 +27,7 @@ graph TB
 
 | Environment | FastAPI Server | MCP Server | WebSocket |
 |-------------|----------------|------------|-----------|
-| Local       | localhost:8000 | localhost:3000 | ws://localhost:8000/ws |
+| Local       | localhost:8090 | localhost:3000 | ws://localhost:8090/ws |
 | QAL         | olorin-qal.api.olorin.com | olorin-qal.api.olorin.com:3000 | wss://olorin-qal.api.olorin.com/ws |
 | E2E         | olorin-e2e.api.olorin.com | olorin-e2e.api.olorin.com:3000 | wss://olorin-e2e.api.olorin.com/ws |
 | PRF         | olorin-prf.api.olorin.com | olorin-prf.api.olorin.com:3000 | wss://olorin-prf.api.olorin.com/ws |
@@ -129,7 +129,7 @@ const ENVIRONMENTS: Record<string, Record<Service, ServiceConfig>> = {
 
 ### 6.2 MCP Endpoint Structure
 
-#### FastAPI Router Endpoints (Port 8000)
+#### FastAPI Router Endpoints (Port 8090)
 Base URL: `https://olorin-{env}.api.olorin.com/mcp`
 
 | Method | Endpoint | Description |
@@ -503,9 +503,9 @@ interface EnvironmentConfig {
 export class ConfigManager {
   private static configs: Record<string, EnvironmentConfig> = {
     local: {
-      apiBaseUrl: 'http://localhost:8000',
+      apiBaseUrl: 'http://localhost:8090',
       mcpBaseUrl: 'http://localhost:3000',
-      wsUrl: 'ws://localhost:8000/ws',
+      wsUrl: 'ws://localhost:8090/ws',
       useHTTPS: false,
       enableCSRF: false,
     },

@@ -12242,17 +12242,17 @@
         {
           "file": "scripts/testing/test_server.py",
           "line": 87,
-          "content": "print(\"\ud83d\udce1 Server will be available at: http://localhost:8000\")"
+          "content": "print(\"\ud83d\udce1 Server will be available at: http://localhost:8090\")"
         },
         {
           "file": "scripts/testing/test_server.py",
           "line": 88,
-          "content": "print(\"\ud83d\udccb API documentation at: http://localhost:8000/docs\")"
+          "content": "print(\"\ud83d\udccb API documentation at: http://localhost:8090/docs\")"
         },
         {
           "file": "scripts/testing/test_server.py",
           "line": 89,
-          "content": "print(\"\ud83e\uddea Test endpoints at: http://localhost:8000/autonomous/scenarios\")"
+          "content": "print(\"\ud83e\uddea Test endpoints at: http://localhost:8090/autonomous/scenarios\")"
         },
         {
           "file": "scripts/testing/test_anthropic_direct.py",
@@ -12312,7 +12312,7 @@
         {
           "file": "scripts/testing/test_anthropic_direct.py",
           "line": 87,
-          "content": "print(\"    max_tokens=8000\")"
+          "content": "print(\"    max_tokens=8090\")"
         },
         {
           "file": "scripts/testing/test_anthropic_direct.py",
@@ -13964,22 +13964,22 @@
         {
           "file": "app/service/mcp_servers/monitoring/example_usage.py",
           "line": 327,
-          "content": "print(\"\ud83d\udcca Dashboard available at: http://localhost:8000/dashboard\")"
+          "content": "print(\"\ud83d\udcca Dashboard available at: http://localhost:8090/dashboard\")"
         },
         {
           "file": "app/service/mcp_servers/monitoring/example_usage.py",
           "line": 328,
-          "content": "print(\"\ud83d\udcc8 Metrics API at: http://localhost:8000/metrics/summary\")"
+          "content": "print(\"\ud83d\udcc8 Metrics API at: http://localhost:8090/metrics/summary\")"
         },
         {
           "file": "app/service/mcp_servers/monitoring/example_usage.py",
           "line": 329,
-          "content": "print(\"\ud83d\udd14 Alerts API at: http://localhost:8000/alerts\")"
+          "content": "print(\"\ud83d\udd14 Alerts API at: http://localhost:8090/alerts\")"
         },
         {
           "file": "app/service/mcp_servers/monitoring/example_usage.py",
           "line": 330,
-          "content": "print(\"\ud83d\udc9a Health check at: http://localhost:8000/health\")"
+          "content": "print(\"\ud83d\udc9a Health check at: http://localhost:8090/health\")"
         },
         {
           "file": "app/service/mcp_servers/monitoring/example_usage.py",
@@ -19967,36 +19967,36 @@
         },
         {
           "line_no": 327,
-          "line_content": "print(\"\ud83d\udcca Dashboard available at: http://localhost:8000/dashboard\")",
+          "line_content": "print(\"\ud83d\udcca Dashboard available at: http://localhost:8090/dashboard\")",
           "args": [
-            "\ud83d\udcca Dashboard available at: http://localhost:8000/dashboard"
+            "\ud83d\udcca Dashboard available at: http://localhost:8090/dashboard"
           ],
           "file_path": "app/service/mcp_servers/monitoring/example_usage.py",
           "context": "example_demo"
         },
         {
           "line_no": 328,
-          "line_content": "print(\"\ud83d\udcc8 Metrics API at: http://localhost:8000/metrics/summary\")",
+          "line_content": "print(\"\ud83d\udcc8 Metrics API at: http://localhost:8090/metrics/summary\")",
           "args": [
-            "\ud83d\udcc8 Metrics API at: http://localhost:8000/metrics/summary"
+            "\ud83d\udcc8 Metrics API at: http://localhost:8090/metrics/summary"
           ],
           "file_path": "app/service/mcp_servers/monitoring/example_usage.py",
           "context": "example_demo"
         },
         {
           "line_no": 329,
-          "line_content": "print(\"\ud83d\udd14 Alerts API at: http://localhost:8000/alerts\")",
+          "line_content": "print(\"\ud83d\udd14 Alerts API at: http://localhost:8090/alerts\")",
           "args": [
-            "\ud83d\udd14 Alerts API at: http://localhost:8000/alerts"
+            "\ud83d\udd14 Alerts API at: http://localhost:8090/alerts"
           ],
           "file_path": "app/service/mcp_servers/monitoring/example_usage.py",
           "context": "example_demo"
         },
         {
           "line_no": 330,
-          "line_content": "print(\"\ud83d\udc9a Health check at: http://localhost:8000/health\")",
+          "line_content": "print(\"\ud83d\udc9a Health check at: http://localhost:8090/health\")",
           "args": [
-            "\ud83d\udc9a Health check at: http://localhost:8000/health"
+            "\ud83d\udc9a Health check at: http://localhost:8090/health"
           ],
           "file_path": "app/service/mcp_servers/monitoring/example_usage.py",
           "context": "example_demo"
@@ -37162,27 +37162,27 @@
         },
         {
           "line_no": 87,
-          "line_content": "print(\"\ud83d\udce1 Server will be available at: http://localhost:8000\")",
+          "line_content": "print(\"\ud83d\udce1 Server will be available at: http://localhost:8090\")",
           "args": [
-            "\ud83d\udce1 Server will be available at: http://localhost:8000"
+            "\ud83d\udce1 Server will be available at: http://localhost:8090"
           ],
           "file_path": "scripts/testing/test_server.py",
           "context": "test_output"
         },
         {
           "line_no": 88,
-          "line_content": "print(\"\ud83d\udccb API documentation at: http://localhost:8000/docs\")",
+          "line_content": "print(\"\ud83d\udccb API documentation at: http://localhost:8090/docs\")",
           "args": [
-            "\ud83d\udccb API documentation at: http://localhost:8000/docs"
+            "\ud83d\udccb API documentation at: http://localhost:8090/docs"
           ],
           "file_path": "scripts/testing/test_server.py",
           "context": "test_output"
         },
         {
           "line_no": 89,
-          "line_content": "print(\"\ud83e\uddea Test endpoints at: http://localhost:8000/autonomous/scenarios\")",
+          "line_content": "print(\"\ud83e\uddea Test endpoints at: http://localhost:8090/autonomous/scenarios\")",
           "args": [
-            "\ud83e\uddea Test endpoints at: http://localhost:8000/autonomous/scenarios"
+            "\ud83e\uddea Test endpoints at: http://localhost:8090/autonomous/scenarios"
           ],
           "file_path": "scripts/testing/test_server.py",
           "context": "test_output"
@@ -37290,9 +37290,9 @@
         },
         {
           "line_no": 87,
-          "line_content": "print(\"    max_tokens=8000\")",
+          "line_content": "print(\"    max_tokens=8090\")",
           "args": [
-            "    max_tokens=8000"
+            "    max_tokens=8090"
           ],
           "file_path": "scripts/testing/test_anthropic_direct.py",
           "context": "test_output"

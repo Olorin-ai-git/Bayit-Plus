@@ -4,7 +4,7 @@ import time
 import pytest
 import requests
 
-BASE_URL = "http://localhost:8000/api"
+BASE_URL = "http://localhost:8090/api"
 entity_id = "4621097846089147992"
 entity_type = "user_id"
 time_range = "90d"

@@ -5,7 +5,7 @@ from datetime import datetime
 import requests
 from fpdf import FPDF
 
-BASE_URL = "http://localhost:8000/api"  # Change if your API runs elsewhere
+BASE_URL = "http://localhost:8090/api"  # Change if your API runs elsewhere
 
 investigation_id = "INV-All-TESTS"
 entity_id = "4621097846089147992"

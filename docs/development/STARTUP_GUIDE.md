@@ -5,7 +5,7 @@ This guide explains how to use the startup scripts to launch all Olorin services
 ## 🚀 Quick Start Guide
 
 **⚠️ Important: After restructure, commands must be run from specific directories:**
-- **Backend (Python/Poetry)**: `cd olorin-server/` then run `poetry install` and `poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload`
+- **Backend (Python/Poetry)**: `cd olorin-server/` then run `poetry install` and `poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload`
 - **Frontend (React/Node)**: `cd olorin-front/` then run `npm install` and `npm start`
 - **Web Portal**: `cd olorin-web-portal/` then run `npm install` and `npm start`
 
@@ -80,9 +80,9 @@ Both scripts support the same commands:
 ## Service Details
 
 ### Backend Server
-- **Port**: 8000 (configurable via `BACKEND_PORT` env var)
-- **URL**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
+- **Port**: 8090 (configurable via `BACKEND_PORT` env var)
+- **URL**: http://localhost:8090
+- **API Docs**: http://localhost:8090/docs
 - **Technology**: FastAPI with Uvicorn
 - **Log File**: `logs/backend.log`
 
@@ -155,7 +155,7 @@ All service logs are stored in the `logs/` directory:
 
 1. **Port Already in Use**
    ```
-   Port 8000 is already in use. Skipping backend startup.
+   Port 8090 is already in use. Skipping backend startup.
    ```
    **Solution**: Stop the existing service or use a different port
    ```bash
@@ -209,7 +209,7 @@ All service logs are stored in the `logs/` directory:
 4. **Check Port Usage**
    ```bash
    # Check if port is in use
-   lsof -i :8000  # Backend
+   lsof -i :8090  # Backend
    lsof -i :3000  # Frontend
    ```
 
@@ -285,7 +285,7 @@ If you need to run services individually:
 ```bash
 # Backend only
 cd back
-poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+poetry run uvicorn app.main:app --host 0.0.0.0 --port 8090 --reload
 
 # Frontend only
 cd front

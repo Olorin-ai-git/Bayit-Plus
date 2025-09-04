@@ -73,7 +73,7 @@ class OptimizedApiService {
   
   constructor(baseURL?: string) {
     this.axiosInstance = axios.create({
-      baseURL: baseURL || process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000',
+      baseURL: baseURL || process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',

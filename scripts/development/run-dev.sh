@@ -46,7 +46,7 @@ if ! command -v poetry &> /dev/null; then
 fi
 
 poetry install
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload &
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload &
 BACKEND_PID=$!
 cd ..
 
@@ -76,15 +76,15 @@ cd ..
 
 echo ""
 echo "🎉 Olorin Development Environment is starting up!"
-echo "📍 Backend API: http://localhost:8000"
-echo "📍 API Documentation: http://localhost:8000/docs"
+echo "📍 Backend API: http://localhost:8090"
+echo "📍 API Documentation: http://localhost:8090/docs"
 echo "📍 Frontend: http://localhost:3001"
 echo ""
 echo "⏳ Waiting for servers to be ready..."
 
 # Wait for backend to be ready
 for i in {1..30}; do
-    if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+    if curl -f http://localhost:8090/health > /dev/null 2>&1; then
         echo "✅ Backend is ready!"
         break
     fi
@@ -109,8 +109,8 @@ done
 echo ""
 echo "🎉 Development environment is ready!"
 echo "📍 Frontend: http://localhost:3001"
-echo "📍 Backend API: http://localhost:8000"
-echo "📍 API Docs: http://localhost:8000/docs"
+echo "📍 Backend API: http://localhost:8090"
+echo "📍 API Docs: http://localhost:8090/docs"
 echo ""
 echo "📝 Press Ctrl+C to stop both servers"
 

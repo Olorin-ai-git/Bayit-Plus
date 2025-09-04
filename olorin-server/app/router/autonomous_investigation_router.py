@@ -50,7 +50,7 @@ async def start_autonomous_investigation_endpoint(
     
     Example curl command:
     ```bash
-    curl -X POST "http://localhost:8000/autonomous/start_investigation" \
+    curl -X POST "http://localhost:8090/autonomous/start_investigation" \
       -H "Content-Type: application/json" \
       -d '{
         "entity_id": "USER_12345",
@@ -82,7 +82,7 @@ async def get_investigation_status_endpoint(investigation_id: str) -> Investigat
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
     ```
     """
     active_investigations = get_active_investigations()
@@ -96,7 +96,7 @@ async def get_investigation_logs_endpoint(investigation_id: str) -> Investigatio
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
     ```
     """
     return await get_investigation_logs(investigation_id)
@@ -109,7 +109,7 @@ async def get_investigation_journey_endpoint(investigation_id: str) -> LangGraph
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
     ```
     """
     return await get_investigation_journey(investigation_id)
@@ -133,7 +133,7 @@ async def list_test_scenarios_endpoint():
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/scenarios"
+    curl -X GET "http://localhost:8090/autonomous/scenarios"
     ```
     """
     return await list_test_scenarios()

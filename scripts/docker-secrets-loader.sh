@@ -126,7 +126,7 @@ EOF
     
     # Application Configuration
     echo "# Application Configuration" >> "$OUTPUT_FILE"
-    echo "BACKEND_PORT=${BACKEND_PORT:-8000}" >> "$OUTPUT_FILE"
+    echo "BACKEND_PORT=${BACKEND_PORT:-8090}" >> "$OUTPUT_FILE"
     echo "FRONTEND_PORT=${FRONTEND_PORT:-3000}" >> "$OUTPUT_FILE"
     echo "PORTAL_PORT=${PORTAL_PORT:-3001}" >> "$OUTPUT_FILE"
     echo "LOG_LEVEL=${LOG_LEVEL:-INFO}" >> "$OUTPUT_FILE"

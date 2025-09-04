@@ -22,7 +22,15 @@ from app.persistence import (
 )
 from app.security.auth import User, require_admin, require_read, require_write
 
+
+
 investigations_router = APIRouter()
+
+
+@investigations_router.options("/investigation")
+def create_investigation_options():
+    """Handle CORS preflight requests for create investigation endpoint."""
+    return {}
 
 
 @investigations_router.post("/investigation", response_model=InvestigationOut)
@@ -36,6 +44,12 @@ def create_investigation_endpoint(
         return InvestigationOut.model_validate(existing)
     inv = create_investigation(investigation)
     return InvestigationOut.model_validate(inv)
+
+
+@investigations_router.options("/investigation/{investigation_id}")
+def get_investigation_options():
+    """Handle CORS preflight requests for get investigation endpoint."""
+    return {}
 
 
 @investigations_router.get(
@@ -64,6 +78,12 @@ def get_investigation_endpoint(
     return db_obj
 
 
+@investigations_router.options("/investigation/{investigation_id}")
+def update_investigation_options():
+    """Handle CORS preflight requests for update investigation endpoint."""
+    return {}
+
+
 @investigations_router.put(
     "/investigation/{investigation_id}", response_model=InvestigationOut
 )
@@ -85,6 +105,12 @@ def update_investigation_endpoint(
     )
 
 
+@investigations_router.options("/investigation/{investigation_id}")
+def delete_investigation_options():
+    """Handle CORS preflight requests for delete investigation endpoint."""
+    return {}
+
+
 @investigations_router.delete("/investigation/{investigation_id}")
 def delete_investigation_endpoint(
     investigation_id: str, current_user: User = Depends(require_write)
@@ -95,6 +121,12 @@ def delete_investigation_endpoint(
     return {"deleted": True, "id": investigation_id}
 
 
+@investigations_router.options("/investigation")
+def delete_investigations_options():
+    """Handle CORS preflight requests for delete investigations endpoint."""
+    return {}
+
+
 @investigations_router.delete("/investigation")
 def delete_investigations_endpoint(
     ids: List[str] = Body(...), current_user: User = Depends(require_write)
@@ -103,16 +135,34 @@ def delete_investigations_endpoint(
     return {"deleted": True, "ids": ids}
 
 
+@investigations_router.options("/investigations")
+def get_investigations_options():
+    """Handle CORS preflight requests for get investigations endpoint."""
+    return {}
+
+
 @investigations_router.get("/investigations", response_model=List[InvestigationOut])
 def get_investigations_endpoint(current_user: User = Depends(require_read)):
     investigations = list_investigations()
     return [InvestigationOut.model_validate(i) for i in investigations]
 
 
+@investigations_router.options("/investigations/delete_all")
+def delete_all_investigations_options():
+    """Handle CORS preflight requests for delete all investigations endpoint."""
+    return {}
+
+
 @investigations_router.delete("/investigations/delete_all")
 def delete_all_investigations_endpoint(current_user: User = Depends(require_admin)):
     purge_investigation_cache()
     return {"detail": "All investigations deleted"}
+
+
+@investigations_router.options("/investigation/raw-data")
+def upload_raw_data_options():
+    """Handle CORS preflight requests for upload raw data endpoint."""
+    return {}
 
 
 @investigations_router.post("/investigation/raw-data", response_model=RawDataUploadResponse)

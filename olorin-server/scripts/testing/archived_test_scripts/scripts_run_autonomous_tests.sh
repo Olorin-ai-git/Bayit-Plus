@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 PROJECT_ID="${FIREBASE_PROJECT_ID:-olorin-ai}"
-SERVER_PORT="${SERVER_PORT:-8000}"
+SERVER_PORT="${SERVER_PORT:-8090}"
 TEST_MODE="${TEST_MODE:-all}"  # all, unit, integration, autonomous
 SERVER_PID=""
 
@@ -222,7 +222,7 @@ usage() {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -m, --mode MODE         Test mode (all|unit|integration|autonomous) (default: all)"
-    echo "  -p, --port PORT         Server port (default: 8000)"
+    echo "  -p, --port PORT         Server port (default: 8090)"
     echo "  -s, --skip-server       Skip server startup (assume it's already running)"
     echo "  -r, --report            Generate test report after completion"
     echo "  -h, --help             Show this help message"

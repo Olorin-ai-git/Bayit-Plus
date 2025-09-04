@@ -48,7 +48,7 @@ The application automatically detects the deployment environment and configures 
 
 ### Development (localhost)
 - **URL**: http://localhost:3000
-- **API Base URL**: http://localhost:8000
+- **API Base URL**: http://localhost:8090
 - **Analytics**: Disabled
 - **Debug Mode**: Enabled
 

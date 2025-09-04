@@ -51,13 +51,13 @@ ENV PYTHONPATH="/app:$PYTHONPATH"
 ENV PYTHONUNBUFFERED=1
 ENV ENVIRONMENT=production
 
-# Expose port (will be set by Cloud Run via PORT env var, defaults to 8000)
-EXPOSE ${PORT:-8000}
+# Expose port (will be set by Cloud Run via PORT env var, defaults to 8090)
+EXPOSE ${PORT:-8090}
 
-# Health check (use PORT env var, default to 8000)
+# Health check (use PORT env var, default to 8090)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8090}/health || exit 1
 
-# Command to run the application (use PORT env var, default to 8000)
+# Command to run the application (use PORT env var, default to 8090)
 # Start with single worker for debugging startup issues
-CMD ["sh", "-c", "echo 'Starting on port ${PORT:-8000}' && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --log-level info"]
+CMD ["sh", "-c", "echo 'Starting on port ${PORT:-8090}' && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers 1 --log-level info"]

@@ -432,13 +432,13 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
-    CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=5)"
+    CMD python -c "import requests; requests.get('http://localhost:8090/health', timeout=5)"
 
-EXPOSE 8000
+EXPOSE 8090
 
 # Use dumb-init and Gunicorn for production
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "app.main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8090", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "app.main:app"]
 """
         
         # Standard optimized Python Dockerfile
@@ -488,13 +488,13 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8090/health', timeout=5)"
 
-EXPOSE 8000
+EXPOSE 8090
 
 # Production server with proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "app.main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8090", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "app.main:app"]
 """
     
     def _generate_golang_optimized(self, config: Dict) -> str:
@@ -827,10 +827,10 @@ ENV PATH="/opt/venv/bin:$PATH" \
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/health', timeout=5)"]
 
-EXPOSE 8000
-CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "src.main:app"]
+EXPOSE 8090
+CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8090", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "src.main:app"]
 ```
 
 **Go Static Binary with Scratch Base**
@@ -947,7 +947,7 @@ COPY --from=build /app/app /app
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD ["/app", "--health"]
 
-EXPOSE 8000
+EXPOSE 8090
 ENTRYPOINT ["/app"]
 ```
 
@@ -1048,7 +1048,7 @@ COPY --chown=appuser:appuser . .
 USER appuser
 
 # Gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "app:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8090", "--workers", "4", "app:application"]
 ```
 
 ### 3. Image Size Optimization
@@ -1757,13 +1757,13 @@ USER appuser
 
 # Configure health check (integrates with K8s health checks)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=5)"
+    CMD python -c "import requests; requests.get('http://localhost:8090/health', timeout=5)"
 
 # Expose port (configured from API scaffold)
-EXPOSE 8000
+EXPOSE 8090
 
 # Set optimal startup command
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8090", "--workers", "4"]
 ```
 
 **Database Container Integration**
@@ -1972,14 +1972,14 @@ spec:
         
         # Optimized startup and health checks
         ports:
-        - containerPort: 8000
+        - containerPort: 8090
           protocol: TCP
           
         # Fast startup probe
         startupProbe:
           httpGet:
             path: /startup
-            port: 8000
+            port: 8090
           failureThreshold: 30
           periodSeconds: 1
           
@@ -1987,7 +1987,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8000
+            port: 8090
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5
@@ -1996,7 +1996,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /ready
-            port: 8000
+            port: 8090
           initialDelaySeconds: 2
           periodSeconds: 5
           timeoutSeconds: 3
@@ -2182,7 +2182,7 @@ jobs:
         # Run basic performance tests
         if [ "${{ matrix.service }}" = "api" ]; then
           docker exec test-${{ matrix.service }} \
-            python -c "import requests; print(requests.get('http://localhost:8000/health').status_code)"
+            python -c "import requests; print(requests.get('http://localhost:8090/health').status_code)"
         fi
         
         # Cleanup

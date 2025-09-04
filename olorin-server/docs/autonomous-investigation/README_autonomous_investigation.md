@@ -40,13 +40,13 @@ python tests/run_autonomous_investigation_for_device.py --sequential
 python tests/run_autonomous_investigation_for_device.py --device-id f394742f39214c908476c01623bf4bcd --parallel
 
 # Use custom API endpoints with sequential execution
-python tests/run_autonomous_investigation_for_device.py --base-url http://localhost:8000/api --ws-url ws://localhost:8000/ws --sequential
+python tests/run_autonomous_investigation_for_device.py --base-url http://localhost:8090/api --ws-url ws://localhost:8090/ws --sequential
 ```
 
 **Command Line Options:**
 - `--device-id`: Device ID to investigate (default: `f394742f39214c908476c01623bf4bcd`)
-- `--base-url`: Base URL for the API (default: `http://localhost:8000/api`)
-- `--ws-url`: WebSocket URL (default: `ws://localhost:8000/ws`)
+- `--base-url`: Base URL for the API (default: `http://localhost:8090/api`)
+- `--ws-url`: WebSocket URL (default: `ws://localhost:8090/ws`)
 - `--parallel`: Run investigation agents in parallel (default: True)
 - `--sequential`: Run investigation agents sequentially (overrides --parallel)
 
@@ -74,13 +74,13 @@ The autonomous investigation flows through these phases:
 **Parallel Execution (Default)**
 - All domain agents (network, location, device, logs) run simultaneously
 - Faster completion time (typically 30-60 seconds)
-- WebSocket URL: `ws://localhost:8000/ws/{investigation_id}?parallel=true`
+- WebSocket URL: `ws://localhost:8090/ws/{investigation_id}?parallel=true`
 - Agents coordinate through the central fraud investigation node
 
 **Sequential Execution**
 - Agents run one after another in order: network → location → logs → device → risk
 - Slower but more predictable execution (typically 2-5 minutes)
-- WebSocket URL: `ws://localhost:8000/ws/{investigation_id}?parallel=false`
+- WebSocket URL: `ws://localhost:8090/ws/{investigation_id}?parallel=false`
 - Each agent completes before the next one starts
 
 ### 4. WebSocket Message Format
@@ -114,7 +114,7 @@ The scripts generate comprehensive PDF reports containing:
 
 ## Prerequisites
 
-1. **API Server**: Ensure the OLORIN API server is running on `localhost:8000`
+1. **API Server**: Ensure the OLORIN API server is running on `localhost:8090`
 2. **WebSocket Support**: The server must have WebSocket support enabled
 3. **Font File**: `DejaVuSans.ttf` must be available in the project root for PDF generation
 4. **Dependencies**: All required Python packages (websockets, requests, fpdf) must be installed
@@ -165,7 +165,7 @@ Status: 200
 2️⃣ Starting WebSocket listener for real-time updates...
    Note: The real investigation ID will be captured from WebSocket messages
 
-Connecting to WebSocket: ws://localhost:8000/ws/abc123...
+Connecting to WebSocket: ws://localhost:8090/ws/abc123...
 ✅ WebSocket connected successfully
 
 📡 [INITIALIZATION] 10.0% - Starting investigation for user_id 4621097846089147992

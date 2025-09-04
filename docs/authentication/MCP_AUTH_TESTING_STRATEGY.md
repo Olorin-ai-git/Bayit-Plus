@@ -46,7 +46,7 @@ python scripts/test_e2e_mcp_auth.py
 pkill -f uvicorn || true
 
 # Start local server with NEW code
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload
 ```
 
 ### **Step 2: Test Authentication Removal**
@@ -70,10 +70,10 @@ python scripts/test_local_mcp_auth_removal.py
 ### **Step 3: Test Basic Functionality**
 ```bash
 # Test basic health endpoint (should work)
-curl http://localhost:8000/health
+curl http://localhost:8090/health
 
 # Test MCP proxy health (should be accessible, might return 503)
-curl http://localhost:8000/api/mcp-proxy/health
+curl http://localhost:8090/api/mcp-proxy/health
 ```
 
 ## 📈 **Expected Test Results**
@@ -147,7 +147,7 @@ python scripts/test_e2e_mcp_auth.py
 ### **Local Testing (Test NEW Code):**
 ```bash
 # Start local server
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload
 
 # Test auth removal locally
 python scripts/test_local_mcp_auth_removal.py
@@ -168,7 +168,7 @@ curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
 curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health" -v
 
 # Compare local vs deployed
-diff <(curl -s http://localhost:8000/api/mcp-proxy/health) \
+diff <(curl -s http://localhost:8090/api/mcp-proxy/health) \
      <(curl -s https://olorin-e2e.api.olorin.com/api/mcp-proxy/health)
 ```
 

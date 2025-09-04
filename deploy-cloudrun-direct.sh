@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 # Configuration
 SERVICE_NAME="olorin-backend"
 REGION="us-central1"
-PORT="8000"
+PORT="8090"
 PROJECT_ID="olorin-ai"
 SOURCE_DIR="./olorin-server"
 
@@ -87,7 +87,7 @@ OPTIONS:
     --verbose    Enable verbose output
     --project    Google Cloud project ID (default: olorin-ai)
     --region     Deployment region (default: us-central1)
-    --port       Service port (default: 8000)
+    --port       Service port (default: 8090)
     --help       Show this help message
 
 Examples:

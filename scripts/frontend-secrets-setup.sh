@@ -95,8 +95,8 @@ create_env_example() {
 # These will be automatically loaded from Firebase Secret Manager in production
 
 # API Configuration
-REACT_APP_API_BASE_URL=http://localhost:8000
-REACT_APP_WEBSOCKET_URL=ws://localhost:8000
+REACT_APP_API_BASE_URL=http://localhost:8090
+REACT_APP_WEBSOCKET_URL=ws://localhost:8090
 
 # External Services
 REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
@@ -111,7 +111,7 @@ EOF
 # These will be automatically loaded from Firebase Secret Manager in production
 
 # API Configuration
-REACT_APP_API_BASE_URL=http://localhost:8000
+REACT_APP_API_BASE_URL=http://localhost:8090
 
 # Email Service
 REACT_APP_EMAILJS_PUBLIC_KEY=your_emailjs_public_key

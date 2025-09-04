@@ -169,7 +169,7 @@ interface AutonomousInvestigationPanelProps {
 
 ### Connection Management
 
-**Endpoint**: `ws://localhost:8000/ws/{investigation_id}?parallel={true|false}`
+**Endpoint**: `ws://localhost:8090/ws/{investigation_id}?parallel={true|false}`
 
 **Connection Flow**:
 
@@ -536,7 +536,7 @@ useEffect(() => {
 // Environment-specific configuration
 const config = {
   development: {
-    websocketUrl: 'ws://localhost:8000',
+    websocketUrl: 'ws://localhost:8090',
     reconnectionAttempts: 3,
     heartbeatInterval: 30000,
   },

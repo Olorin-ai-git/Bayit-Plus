@@ -84,14 +84,14 @@ except Exception as e:
 
 if __name__ == "__main__":
     print("🚀 Starting Olorin Autonomous Investigation Test Server")
-    print("📡 Server will be available at: http://localhost:8000")
-    print("📋 API documentation at: http://localhost:8000/docs")
-    print("🧪 Test endpoints at: http://localhost:8000/autonomous/scenarios")
+    print("📡 Server will be available at: http://localhost:8090")
+    print("📋 API documentation at: http://localhost:8090/docs")
+    print("🧪 Test endpoints at: http://localhost:8090/autonomous/scenarios")
     
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8000,
+        port=8090,
         log_level="info",
         reload=False
     )

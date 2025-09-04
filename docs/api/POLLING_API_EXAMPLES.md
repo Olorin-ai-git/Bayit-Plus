@@ -19,7 +19,7 @@ Get real-time investigation status including participants, progress, and metadat
 
 ### Curl Command
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/status" \
+curl -X GET "http://127.0.0.1:8090/investigations/{investigation_id}/poll/status" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -28,7 +28,7 @@ curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/status
 
 ### Example
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/demo-investigation/poll/status" \
+curl -X GET "http://127.0.0.1:8090/investigations/demo-investigation/poll/status" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -82,7 +82,7 @@ Get investigation messages with filtering options (timestamp, message ID, limit)
 
 ### Curl Command
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/messages" \
+curl -X GET "http://127.0.0.1:8090/investigations/{investigation_id}/poll/messages" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -91,7 +91,7 @@ curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/messag
 
 ### Example with Timestamp Filtering
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/demo-investigation/poll/messages" \
+curl -X GET "http://127.0.0.1:8090/investigations/demo-investigation/poll/messages" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -101,7 +101,7 @@ curl -X GET "http://127.0.0.1:8000/investigations/demo-investigation/poll/messag
 
 ### Example with Message ID Filtering
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/demo-investigation/poll/messages" \
+curl -X GET "http://127.0.0.1:8090/investigations/demo-investigation/poll/messages" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -179,7 +179,7 @@ Get both investigation status and recent messages in a single call for efficienc
 
 ### Curl Command
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/latest" \
+curl -X GET "http://127.0.0.1:8090/investigations/{investigation_id}/poll/latest" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -190,7 +190,7 @@ curl -X GET "http://127.0.0.1:8000/investigations/{investigation_id}/poll/latest
 
 ### Example
 ```bash
-curl -X GET "http://127.0.0.1:8000/investigations/demo-investigation/poll/latest" \
+curl -X GET "http://127.0.0.1:8090/investigations/demo-investigation/poll/latest" \
   -H "Content-Type: application/json" \
   -G \
   -d "user_id=demo-user" \
@@ -364,7 +364,7 @@ This ensures that clients can seamlessly switch between WebSocket real-time upda
 
 INVESTIGATION_ID="demo-investigation"
 USER_ID="demo-user"
-BASE_URL="http://127.0.0.1:8000"
+BASE_URL="http://127.0.0.1:8090"
 
 # Poll every 5 seconds
 while true; do
@@ -388,7 +388,7 @@ done
 
 INVESTIGATION_ID="demo-investigation"
 USER_ID="demo-user"
-BASE_URL="http://127.0.0.1:8000"
+BASE_URL="http://127.0.0.1:8090"
 LAST_TIMESTAMP=""
 
 while true; do

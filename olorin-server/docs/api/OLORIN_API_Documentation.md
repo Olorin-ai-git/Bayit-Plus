@@ -716,10 +716,10 @@ Real-time autonomous investigation progress monitoring
 **Connection:**
 ```javascript
 // Parallel execution (default)
-const ws = new WebSocket('ws://localhost:8000/ws/inv-abc123-def456?parallel=true');
+const ws = new WebSocket('ws://localhost:8090/ws/inv-abc123-def456?parallel=true');
 
 // Sequential execution
-const ws = new WebSocket('ws://localhost:8000/ws/inv-abc123-def456?parallel=false');
+const ws = new WebSocket('ws://localhost:8090/ws/inv-abc123-def456?parallel=false');
 ```
 
 **Query Parameters:**
@@ -829,7 +829,7 @@ Real-time monitoring of autonomous investigation progress with complete API resp
 
 **Connection URL:**
 ```
-ws://localhost:8000/ws/{investigation_id}?parallel={true|false}
+ws://localhost:8090/ws/{investigation_id}?parallel={true|false}
 ```
 
 **Query Parameters:**
@@ -840,13 +840,13 @@ ws://localhost:8000/ws/{investigation_id}?parallel={true|false}
 **Connection Examples:**
 ```javascript
 // Parallel execution (default) - all agents run simultaneously
-const ws = new WebSocket('ws://localhost:8000/ws/inv-abc123-def456?parallel=true');
+const ws = new WebSocket('ws://localhost:8090/ws/inv-abc123-def456?parallel=true');
 
 // Sequential execution - agents run one after another
-const ws = new WebSocket('ws://localhost:8000/ws/inv-abc123-def456?parallel=false');
+const ws = new WebSocket('ws://localhost:8090/ws/inv-abc123-def456?parallel=false');
 
 // Default behavior (parallel if parameter omitted)
-const ws = new WebSocket('ws://localhost:8000/ws/inv-abc123-def456');
+const ws = new WebSocket('ws://localhost:8090/ws/inv-abc123-def456');
 ```
 
 ### **WebSocket Message Format**
@@ -924,7 +924,7 @@ class AutonomousInvestigationClient {
   }
 
   connect() {
-    const wsUrl = `ws://localhost:8000/ws/${this.investigationId}?parallel=${this.parallel}`;
+    const wsUrl = `ws://localhost:8090/ws/${this.investigationId}?parallel=${this.parallel}`;
     this.ws = new WebSocket(wsUrl);
     
     this.ws.onopen = () => {
@@ -993,7 +993,7 @@ class AutonomousInvestigationClient:
         self.results = {}
         
     async def connect(self):
-        uri = f"ws://localhost:8000/ws/{self.investigation_id}?parallel={'true' if self.parallel else 'false'}"
+        uri = f"ws://localhost:8090/ws/{self.investigation_id}?parallel={'true' if self.parallel else 'false'}"
         
         async with websockets.connect(uri) as websocket:
             print(f"Connected to investigation {self.investigation_id}")
@@ -1091,7 +1091,7 @@ Establish WebSocket connection with the parallel parameter:
 
 ```javascript
 function connectToInvestigation(investigationId, parallel = true) {
-  const wsUrl = `ws://localhost:8000/ws/${investigationId}?parallel=${parallel}`;
+  const wsUrl = `ws://localhost:8090/ws/${investigationId}?parallel=${parallel}`;
   const ws = new WebSocket(wsUrl);
   
   return new Promise((resolve, reject) => {
@@ -1280,7 +1280,7 @@ Here's a complete implementation that ties everything together:
 
 ```javascript
 class AutonomousInvestigationClient {
-  constructor(apiBaseUrl = '/api', wsBaseUrl = 'ws://localhost:8000') {
+  constructor(apiBaseUrl = '/api', wsBaseUrl = 'ws://localhost:8090') {
     this.apiBaseUrl = apiBaseUrl;
     this.wsBaseUrl = wsBaseUrl;
     this.monitor = null;

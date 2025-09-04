@@ -25,10 +25,10 @@ def info():
         "service": "olorin-backend",
         "version": "1.0.0",
         "environment": os.getenv("APP_ENV", "development"),
-        "port": os.getenv("PORT", "8000"),
+        "port": os.getenv("PORT", "8090"),
         "project_id": os.getenv("FIREBASE_PROJECT_ID", "olorin-ai")
     }
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8090))
     uvicorn.run(app, host="0.0.0.0", port=port)

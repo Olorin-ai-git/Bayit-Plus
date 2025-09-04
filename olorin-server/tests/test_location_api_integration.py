@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Test configuration
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8090"
 TEST_USER_ID = "test_user_vector_search_123"
 TEST_INVESTIGATION_ID = "test_investigation_vector_123"
 
@@ -414,7 +414,7 @@ async def test_location_endpoint_server_error(monkeypatch):
     # Simulate server down or 500 error
     async with httpx.AsyncClient(timeout=10.0) as client:
         # Use a likely invalid port
-        bad_url = BASE_URL.replace("8000", "9999")
+        bad_url = BASE_URL.replace("8090", "9999")
         try:
             await client.get(
                 f"{bad_url}/api/location/{TEST_USER_ID}",

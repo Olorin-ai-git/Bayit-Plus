@@ -266,7 +266,7 @@ http {
         application/json;
 
     upstream backend {
-        server olorin-backend:8000;
+        server olorin-backend:8090;
     }
 
     upstream frontend {
@@ -400,7 +400,7 @@ print_success "Olorin deployment completed!"
 echo
 echo "Services are now running:"
 echo "  - Frontend: http://localhost:3000"
-echo "  - Backend API: http://localhost:8000"
+echo "  - Backend API: http://localhost:8090"
 echo "  - Web Portal: http://localhost:8080"
 echo "  - With Proxy: http://localhost (if proxy profile enabled)"
 echo
@@ -547,9 +547,9 @@ docker compose logs -f
 ## Service Access
 
 - **Frontend Application**: http://localhost:3000
-- **Backend API**: http://localhost:8000
+- **Backend API**: http://localhost:8090
 - **Web Portal**: http://localhost:8080
-- **API Documentation**: http://localhost:8000/docs
+- **API Documentation**: http://localhost:8090/docs
 
 ## Architecture
 
@@ -607,7 +607,7 @@ docker run --rm -v postgres_data:/data -v \$(pwd):/backup alpine tar xzf /backup
 docker compose ps
 
 # Test endpoints
-curl http://localhost:8000/health
+curl http://localhost:8090/health
 curl http://localhost:3000/
 \`\`\`
 

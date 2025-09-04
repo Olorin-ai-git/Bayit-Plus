@@ -327,17 +327,17 @@ async def run_dashboard_server():
     # Mount dashboard
     main_app.mount("/dashboard", dashboard_app)
     
-    logger.info("📊 Dashboard available at: http://localhost:8000/dashboard")
-    logger.info("📈 Metrics API at: http://localhost:8000/metrics/summary")
-    logger.info("🔔 Alerts API at: http://localhost:8000/alerts")
-    logger.info("💚 Health check at: http://localhost:8000/health")
+    logger.info("📊 Dashboard available at: http://localhost:8090/dashboard")
+    logger.info("📈 Metrics API at: http://localhost:8090/metrics/summary")
+    logger.info("🔔 Alerts API at: http://localhost:8090/alerts")
+    logger.info("💚 Health check at: http://localhost:8090/health")
     logger.info("\nPress Ctrl+C to stop the server")
     
     # Run server
     config = uvicorn.Config(
         app=main_app,
         host="0.0.0.0",
-        port=8000,
+        port=8090,
         log_level="info"
     )
     server = uvicorn.Server(config)

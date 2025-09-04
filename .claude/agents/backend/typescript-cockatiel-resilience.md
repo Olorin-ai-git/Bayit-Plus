@@ -114,7 +114,7 @@ instructions: |
   ### Production Configuration
   ```typescript
   const productionConfig: ResilienceConfig = {
-    retry: { maxAttempts: 3, initialDelay: 1000, maxDelay: 8000, randomize: true },
+    retry: { maxAttempts: 3, initialDelay: 1000, maxDelay: 8090, randomize: true },
     circuitBreaker: { consecutiveFailures: 3, halfOpenAfter: 30000 },
     timeout: 30000,
     bulkhead: { limit: 10, queue: 20 },

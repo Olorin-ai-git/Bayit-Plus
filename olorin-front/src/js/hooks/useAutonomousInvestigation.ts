@@ -9,6 +9,14 @@ import {
 import { LogLevel, LogEntry } from '../types/RiskAssessment';
 import { isDemoModeActive } from '../utils/urlParams';
 
+/**
+ * Generates a unique ID for log entries
+ * @returns A unique string ID
+ */
+const generateLogId = (): string => {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
+
 export interface AutonomousInvestigationState {
   isRunning: boolean;
   isPaused: boolean;
@@ -621,6 +629,7 @@ export const useSimpleAutonomousInvestigation = () => {
       investigationIdRef.current = null;
       if (onLogCallbackRef.current) {
         onLogCallbackRef.current({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: 'Autonomous investigation completed successfully',
           type: LogLevel.SUCCESS,
@@ -653,6 +662,7 @@ export const useSimpleAutonomousInvestigation = () => {
             message,
           );
           onLogCallbackRef.current({
+            id: generateLogId(),
             timestamp: Date.now(),
             message: `${currentPhase.agent}: ${message}`,
             type: LogLevel.INFO,
@@ -685,6 +695,7 @@ export const useSimpleAutonomousInvestigation = () => {
         if (onLogCallbackRef.current) {
           console.log('Tool timeout: calling onLogCallback with tool:', tool);
           onLogCallbackRef.current({
+            id: generateLogId(),
             timestamp: Date.now(),
             message: `${currentPhase.agent}: Using tool: ${tool}`,
             type: LogLevel.INFO,
@@ -718,6 +729,7 @@ export const useSimpleAutonomousInvestigation = () => {
         if (onLogCallbackRef.current) {
           console.log('LLM timeout: calling onLogCallback with LLM response');
           onLogCallbackRef.current({
+            id: generateLogId(),
             timestamp: Date.now(),
             message: `${currentPhase.agent}: <strong>LLM Analysis:</strong> ${currentPhase.llmResponse}`,
             type: LogLevel.INFO,
@@ -728,6 +740,7 @@ export const useSimpleAutonomousInvestigation = () => {
         updateProgress();
         if (onLogCallbackRef.current) {
           onLogCallbackRef.current({
+            id: generateLogId(),
             timestamp: Date.now(),
             message: `${currentPhase.agent}: Phase complete - Risk indicators identified`,
             type: LogLevel.SUCCESS,
@@ -760,6 +773,7 @@ export const useSimpleAutonomousInvestigation = () => {
           const nextPhase = INVESTIGATION_PHASES[state.currentPhaseIndex];
           if (onLogCallbackRef.current) {
             onLogCallbackRef.current({
+              id: generateLogId(),
               timestamp: Date.now(),
               message: `Starting ${nextPhase.name} phase...`,
               type: LogLevel.INFO,
@@ -853,6 +867,7 @@ export const useSimpleAutonomousInvestigation = () => {
       // Start the autonomous investigation
       if (onLog) {
         onLog({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: 'Autonomous investigation framework initializing...',
           type: LogLevel.INFO,
@@ -861,6 +876,7 @@ export const useSimpleAutonomousInvestigation = () => {
       updateProgress();
       if (onLog) {
         onLog({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: `Target entity: ${entityType} ${entityId}`,
           type: LogLevel.INFO,
@@ -869,6 +885,7 @@ export const useSimpleAutonomousInvestigation = () => {
       updateProgress();
       if (onLog) {
         onLog({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: 'Multi-agent investigation system ready',
           type: LogLevel.INFO,
@@ -881,6 +898,7 @@ export const useSimpleAutonomousInvestigation = () => {
         const firstPhase = INVESTIGATION_PHASES[0];
         if (onLog) {
           onLog({
+            id: generateLogId(),
             timestamp: Date.now(),
             message: `Starting ${firstPhase.name} phase...`,
             type: LogLevel.INFO,
@@ -911,6 +929,7 @@ export const useSimpleAutonomousInvestigation = () => {
       // Non-demo mode: Simple progress investigation
       if (onLog) {
         onLog({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: 'Starting autonomous investigation...',
           type: LogLevel.INFO,
@@ -918,6 +937,7 @@ export const useSimpleAutonomousInvestigation = () => {
       }
       if (onLog) {
         onLog({
+          id: generateLogId(),
           timestamp: Date.now(),
           message: 'Investigation system initializing...',
           type: LogLevel.INFO,
@@ -937,6 +957,7 @@ export const useSimpleAutonomousInvestigation = () => {
             investigationIdRef.current = null;
             if (onLog) {
               onLog({
+                id: generateLogId(),
                 timestamp: Date.now(),
                 message: 'Autonomous investigation completed',
                 type: LogLevel.SUCCESS,

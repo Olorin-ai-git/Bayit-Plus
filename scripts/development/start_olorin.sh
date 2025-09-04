@@ -328,7 +328,7 @@ usage() {
     echo "  --help            Show this help message"
     echo ""
     echo "Environment Variables:"
-    echo "  BACKEND_PORT   Backend server port (default: 8000)"
+    echo "  BACKEND_PORT   Backend server port (default: 8090)"
     echo "  FRONTEND_PORT  Frontend server port (default: 3000)"
     echo "  LOG_LEVEL      Default log level (default: info)"
     echo ""

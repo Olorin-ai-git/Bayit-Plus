@@ -139,9 +139,9 @@ from app.service.mcp_servers.monitoring import create_dashboard_app
 app = create_dashboard_app()
 
 # Access at:
-# - Dashboard: http://localhost:8000/
-# - API: http://localhost:8000/api/metrics
-# - Prometheus: http://localhost:8000/metrics
+# - Dashboard: http://localhost:8090/
+# - API: http://localhost:8090/api/metrics
+# - Prometheus: http://localhost:8090/metrics
 ```
 
 ## Configuration

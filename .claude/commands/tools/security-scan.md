@@ -3066,13 +3066,13 @@ USER appuser
 # Security: Read-only filesystem, no new privileges
 # These will be enforced at runtime via Kubernetes security context
 
-EXPOSE 8000
+EXPOSE 8090
 
 # Health check for container security monitoring
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
+    CMD python -c "import requests; requests.get('http://localhost:8090/health')"
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8090"]
 ```
 
 **Kubernetes Security Integration**
@@ -3105,7 +3105,7 @@ spec:
           name: ingress-nginx
     ports:
     - protocol: TCP
-      port: 8000
+      port: 8090
   egress:
   - to:
     - namespaceSelector:
@@ -3151,7 +3151,7 @@ spec:
       - name: api
         image: api:secure-latest
         ports:
-        - containerPort: 8000
+        - containerPort: 8090
         securityContext:
           # Container-level security context
           allowPrivilegeEscalation: false
@@ -3189,13 +3189,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8000
+            port: 8090
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /ready
-            port: 8000
+            port: 8090
           initialDelaySeconds: 5
           periodSeconds: 5
       volumes:
@@ -3349,7 +3349,7 @@ jobs:
     - name: Run OWASP ZAP Scan
       uses: zaproxy/action-full-scan@v0.4.0
       with:
-        target: 'http://localhost:8000'
+        target: 'http://localhost:8090'
         rules_file_name: '.zap/rules.tsv'
         cmd_options: '-a -j -m 10 -T 60'
         

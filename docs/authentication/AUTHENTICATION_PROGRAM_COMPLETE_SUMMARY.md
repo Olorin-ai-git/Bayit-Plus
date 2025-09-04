@@ -117,7 +117,7 @@ The OLORIN Authentication Enhancement Program has successfully delivered a compr
 
 ### **System Health Check** ✅
 - **MCP Service**: Healthy on port 3000 ✅
-- **Main Service**: Operational on port 8000 ✅  
+- **Main Service**: Operational on port 8090 ✅  
 - **All Authentication Services**: Fully operational ✅
 - **Cross-Service Communication**: Validated ✅
 

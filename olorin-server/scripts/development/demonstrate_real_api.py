@@ -43,7 +43,7 @@ def show_real_api_configuration():
             ("API Key Source", "anthropic_api_key", "✅ From environment variable"),
             ("Model", "claude-opus-4-1-20250805", "✅ Claude Opus 4.1"),
             ("Temperature", "temperature=0.1", "✅ Low for consistency"),
-            ("Max Tokens", "max_tokens=8000", "✅ Large context window")
+            ("Max Tokens", "max_tokens=8090", "✅ Large context window")
         ]
         
         for name, pattern, description in configs:

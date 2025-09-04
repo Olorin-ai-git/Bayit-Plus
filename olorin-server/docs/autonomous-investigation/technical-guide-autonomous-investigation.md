@@ -167,7 +167,7 @@ autonomous_llm = ChatAnthropic(
     api_key=settings_for_env.anthropic_api_key,
     model="claude-opus-4-1-20250805",  # Claude Opus 4.1
     temperature=0.1,  # Lower temperature for focused decision making
-    max_tokens=8000,  # Larger context for reasoning
+    max_tokens=8090,  # Larger context for reasoning
     timeout=90,  # Longer timeout for complex reasoning
 )
 ```
@@ -607,7 +607,7 @@ print(json.dumps(report, indent=2))
 import websockets
 
 async def monitor_investigation(investigation_id):
-    uri = f"ws://localhost:8000/ws/{investigation_id}?parallel=true"
+    uri = f"ws://localhost:8090/ws/{investigation_id}?parallel=true"
     async with websockets.connect(uri) as websocket:
         while True:
             message = await websocket.recv()
@@ -730,7 +730,7 @@ RUN poetry config virtualenvs.create false \
 COPY . .
 
 # Run with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8090", "--workers", "4"]
 ```
 
 ### Kubernetes Configuration
@@ -755,7 +755,7 @@ spec:
       - name: olorin
         image: olorin/investigation-service:latest
         ports:
-        - containerPort: 8000
+        - containerPort: 8090
         env:
         - name: ANTHROPIC_API_KEY
           valueFrom:
@@ -793,7 +793,7 @@ async def start_autonomous_investigation(
         {
             "investigation_id": "uuid",
             "status": "started",
-            "websocket_url": "ws://localhost:8000/ws/{investigation_id}"
+            "websocket_url": "ws://localhost:8090/ws/{investigation_id}"
         }
     """
 ```

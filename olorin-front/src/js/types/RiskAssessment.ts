@@ -203,6 +203,7 @@ export enum LogLevel {
 }
 
 export interface LogEntry {
+  id: string;
   timestamp: number;
   message: string;
   type: LogLevel;

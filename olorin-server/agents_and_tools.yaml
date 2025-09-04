@@ -18,13 +18,13 @@ agents:
     prompt_id: ""
     environments:
       qal:
-        agent_url: "http://localhost:8000"
+        agent_url: "http://localhost:8090"
         path: "/v1/agent/invoke"
       e2e:
-        agent_url: "http://localhost:8000"
+        agent_url: "http://localhost:8090"
         path: "/v1/agent/invoke"
       prd:
-        agent_url: "http://localhost:8000"
+        agent_url: "http://localhost:8090"
         path: "/v1/agent/invoke"
 tools:
   - name: "financial_knowledgebase_retriever"
@@ -36,11 +36,11 @@ tools:
     description: "This tool can read from financial RAG Knowledge Base to answer questions related to financial transactions and accounting"
     environments:
       qal:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       e2e:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       prd:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
     tags:
       - "A2D"
       - "FINANCIAL"
@@ -60,11 +60,11 @@ tools:
     description: "This tool can read from tax RAG Knowledge Base to answer questions related to tax preparation and filing"
     environments:
       qal:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       e2e:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       prd:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
     tags:
       - "A2D"
       - "TAX"
@@ -84,11 +84,11 @@ tools:
     description: "This tool can read from user data to answer questions related to user attributes and profiles"
     environments:
       qal:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       e2e:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       prd:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
     tags:
       - "A2D"
       - "USER_DATA"
@@ -107,11 +107,11 @@ tools:
     description: "This tool can read from company data to answer questions related to company attributes and business information"
     environments:
       qal:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       e2e:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       prd:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
     tags:
       - "A2D"
       - "COMPANY_DATA"
@@ -130,11 +130,11 @@ tools:
     description: "This tool can read from customer service to answer questions related to customer data and management"
     environments:
       qal:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       e2e:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
       prd:
-        tool_url: "http://localhost:8000"
+        tool_url: "http://localhost:8090"
     tags:
       - "A2D"
       - "CUSTOMERS"

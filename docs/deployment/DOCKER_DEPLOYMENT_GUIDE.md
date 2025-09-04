@@ -88,7 +88,7 @@ nano .env  # Edit configuration
 
 ### 4. Access Application
 - **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8000/docs
+- **Backend API**: http://localhost:8090/docs
 - **Web Portal**: http://localhost:8080
 
 ## Building Images
@@ -231,7 +231,7 @@ docker compose ps
 docker compose logs -f
 
 # Test endpoints
-curl http://localhost:8000/health
+curl http://localhost:8090/health
 curl http://localhost:3000/
 ```
 
@@ -253,7 +253,7 @@ REDIS_PASSWORD=redis_secure_password_change_me
 REDIS_PORT=6379
 
 # Backend
-BACKEND_PORT=8000
+BACKEND_PORT=8090
 JWT_SECRET_KEY=your-32-character-secret-key-here
 CORS_ORIGINS=http://localhost:3000,http://localhost:3001
 
@@ -264,7 +264,7 @@ SPLUNK_HOST=your-splunk-host
 
 # Frontend
 FRONTEND_PORT=3000
-REACT_APP_API_URL=http://localhost:8000
+REACT_APP_API_URL=http://localhost:8090
 
 # Web Portal
 PORTAL_PORT=8080
@@ -284,7 +284,7 @@ JWT_SECRET_KEY=$(openssl rand -base64 48)
 
 Default port mapping:
 - **Frontend**: 3000 → 80 (container)
-- **Backend**: 8000 → 8000 (container)
+- **Backend**: 8090 → 8090 (container)
 - **Web Portal**: 8080 → 80 (container)
 - **Database**: 5432 → 5432 (container)
 - **Redis**: 6379 → 6379 (container)
@@ -363,13 +363,13 @@ services:
 Add health check endpoints:
 ```bash
 # Service health
-curl http://localhost:8000/health
+curl http://localhost:8090/health
 
 # Database connection
-curl http://localhost:8000/db/health
+curl http://localhost:8090/db/health
 
 # Redis connection  
-curl http://localhost:8000/cache/health
+curl http://localhost:8090/cache/health
 ```
 
 ## Backup and Migration
