@@ -4,7 +4,6 @@ import sys
 
 import uvicorn
 
-from app.service.server import app
 from app.service.logging.cli import add_unified_logging_arguments, normalize_logging_args
 from app.service.logging.integration_bridge import configure_unified_bridge_from_args
 
@@ -14,6 +13,9 @@ def server(args=None):
     # Initialize unified logging from command-line arguments
     if args:
         configure_unified_bridge_from_args(args)
+    
+    # Import app after logging is configured
+    from app.service.server import app
     
     config = uvicorn.Config(
         app=app,
@@ -44,6 +46,10 @@ def main():
     args = parser.parse_args()
     args = normalize_logging_args(args)
     
+    # CRITICAL: Initialize unified logging BEFORE importing the app
+    # This ensures all loggers get the correct level from the start
+    configure_unified_bridge_from_args(args)
+    
     # Show logging configuration if requested
     if hasattr(args, 'logging_stats') and args.logging_stats:
         from app.service.logging.cli import show_logging_configuration_summary
@@ -51,8 +57,11 @@ def main():
     
     # Update server function to accept parsed arguments
     def server_with_args():
-        # Initialize unified logging from command-line arguments
+        # Re-configure logging in subprocess (multiprocessing doesn't inherit logging config)
         configure_unified_bridge_from_args(args)
+        
+        # Import app after logging is configured
+        from app.service.server import app
         
         config = uvicorn.Config(
             app=app,

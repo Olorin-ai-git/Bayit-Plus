@@ -6,48 +6,154 @@ Handles agent creation, tool binding, and domain-specific configuration.
 """
 
 import logging
-from typing import Any, List
+from typing import Any, Dict, List, Optional
+
+try:
+    from .rag import RAGOrchestrator, ContextAugmentationConfig, get_rag_orchestrator
+    from .rag_enhanced_agent import RAGEnhancedInvestigationAgent, create_rag_enhanced_agent
+    RAG_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"RAG modules not available: {e}")
+    RAG_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
 
 class AgentFactory:
-    """Factory for creating agents."""
+    """Enhanced factory for creating agents with optional RAG capabilities."""
     
-    def __init__(self):
-        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"], "ml_ai_tools_enabled": True}
+    def __init__(self, enable_rag: bool = True, rag_config: Optional[ContextAugmentationConfig] = None):
+        self.stats = {
+            "agents_created": 0, 
+            "rag_enhanced_agents_created": 0,
+            "standard_agents_created": 0,
+            "domains_supported": ["network", "device", "location", "logs", "risk"], 
+            "ml_ai_tools_enabled": True,
+            "rag_enabled": enable_rag and RAG_AVAILABLE,
+            "rag_available": RAG_AVAILABLE
+        }
+        
+        # RAG configuration
+        self.enable_rag = enable_rag and RAG_AVAILABLE
+        self.rag_config = rag_config
+        self.rag_orchestrator = None
+        
+        # Initialize RAG orchestrator if enabled
+        if self.enable_rag:
+            try:
+                self.rag_orchestrator = get_rag_orchestrator()
+                logger.info("AgentFactory initialized with RAG capabilities")
+            except Exception as e:
+                logger.warning(f"RAG orchestrator initialization failed: {e}")
+                self.enable_rag = False
+                self.stats["rag_enabled"] = False
+        else:
+            logger.info("AgentFactory initialized without RAG capabilities")
     
     def get_factory_stats(self):
         """Get factory statistics."""
         return self.stats
     
-    def create_agent(self, domain: str, tools: List[Any]):
-        """Create an agent for the specified domain."""
+    def create_agent(self, domain: str, tools: List[Any], enable_rag: Optional[bool] = None):
+        """Create an agent for the specified domain with optional RAG enhancement."""
         self.stats["agents_created"] += 1
-        return create_autonomous_agent(domain, tools)
+        
+        # Use factory-level RAG setting if not specified
+        use_rag = enable_rag if enable_rag is not None else self.enable_rag
+        
+        if use_rag and self.rag_orchestrator:
+            agent = create_rag_enhanced_agent(
+                domain=domain,
+                tools=tools,
+                rag_orchestrator=self.rag_orchestrator,
+                enable_rag=True,
+                rag_config=self.rag_config
+            )
+            self.stats["rag_enhanced_agents_created"] += 1
+            logger.info(f"Created RAG-enhanced {domain} agent with {len(tools)} tools")
+            return agent
+        else:
+            agent = create_autonomous_agent(domain, tools)
+            self.stats["standard_agents_created"] += 1
+            return agent
+    
+    def create_rag_enhanced_agent(
+        self, 
+        domain: str, 
+        tools: List[Any],
+        rag_config: Optional[ContextAugmentationConfig] = None
+    ):
+        """Explicitly create a RAG-enhanced agent."""
+        if not self.enable_rag or not self.rag_orchestrator:
+            logger.warning(f"RAG not available - creating standard agent for {domain}")
+            return self.create_agent(domain, tools, enable_rag=False)
+        
+        self.stats["agents_created"] += 1
+        self.stats["rag_enhanced_agents_created"] += 1
+        
+        agent = create_rag_enhanced_agent(
+            domain=domain,
+            tools=tools,
+            rag_orchestrator=self.rag_orchestrator,
+            enable_rag=True,
+            rag_config=rag_config or self.rag_config
+        )
+        
+        logger.info(f"Created RAG-enhanced {domain} agent with {len(tools)} tools")
+        return agent
+    
+    def create_standard_agent(self, domain: str, tools: List[Any]):
+        """Explicitly create a standard (non-RAG) agent."""
+        self.stats["agents_created"] += 1
+        self.stats["standard_agents_created"] += 1
+        
+        agent = create_autonomous_agent(domain, tools)
+        logger.info(f"Created standard {domain} agent with {len(tools)} tools")
+        return agent
+    
+    def set_rag_config(self, config: ContextAugmentationConfig) -> None:
+        """Update RAG configuration for future agent creation."""
+        self.rag_config = config
+        logger.info("Updated AgentFactory RAG configuration")
+    
+    def is_rag_available(self) -> bool:
+        """Check if RAG capabilities are available."""
+        return self.enable_rag and self.rag_orchestrator is not None
 
 
 _agent_factory_instance = None
+_rag_enhanced_factory_instance = None
 
 
-def get_agent_factory() -> AgentFactory:
+def get_agent_factory(enable_rag: bool = True) -> AgentFactory:
     """Get the singleton agent factory instance."""
     global _agent_factory_instance
     if _agent_factory_instance is None:
-        _agent_factory_instance = AgentFactory()
+        _agent_factory_instance = AgentFactory(enable_rag=enable_rag)
     return _agent_factory_instance
+
+def get_rag_enhanced_factory() -> AgentFactory:
+    """Get a RAG-enhanced agent factory instance."""
+    global _rag_enhanced_factory_instance
+    if _rag_enhanced_factory_instance is None:
+        _rag_enhanced_factory_instance = AgentFactory(enable_rag=True)
+    return _rag_enhanced_factory_instance
+
+def get_standard_factory() -> AgentFactory:
+    """Get a standard (non-RAG) agent factory instance."""
+    return AgentFactory(enable_rag=False)
 
 
 def create_autonomous_agent(domain: str, tools: List[Any]):
     """
-    Create an autonomous investigation agent for the specified domain.
+    Create a standard autonomous investigation agent for the specified domain.
     
     Args:
         domain: Investigation domain (network, device, location, logs, risk)
         tools: List of available tools for the agent
         
     Returns:
-        Configured AutonomousInvestigationAgent instance
+        Configured AutonomousInvestigationAgent instance (standard, non-RAG)
     """
     try:
         from app.service.agent.base_agents import AutonomousInvestigationAgent
@@ -215,9 +321,19 @@ def initialize_llm_with_tools(tools: List[Any]) -> Any:
         return get_autonomous_llm()
 
 
-def create_agent(domain: str, tools: List[Any]):
-    """Create an agent (alias for create_autonomous_agent)."""
-    return create_autonomous_agent(domain, tools)
+def create_agent(domain: str, tools: List[Any], enable_rag: bool = True):
+    """Create an agent using the default factory."""
+    factory = get_agent_factory(enable_rag=enable_rag)
+    return factory.create_agent(domain, tools)
+
+def create_rag_agent(domain: str, tools: List[Any], rag_config: Optional[ContextAugmentationConfig] = None):
+    """Create a RAG-enhanced agent."""
+    if not RAG_AVAILABLE:
+        logger.warning("RAG not available - creating standard agent")
+        return create_autonomous_agent(domain, tools)
+    
+    factory = get_rag_enhanced_factory()
+    return factory.create_rag_enhanced_agent(domain, tools, rag_config)
 
 
 def execute_agent(agent, **kwargs):

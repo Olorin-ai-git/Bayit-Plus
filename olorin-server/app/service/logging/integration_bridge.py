@@ -147,8 +147,10 @@ class UnifiedLoggingBridge:
         )
         handler.setFormatter(formatter)
         
-        # Set level from config
-        level = getattr(logging, app.state.config.log_level.upper())
+        # Use the log level from unified logging configuration, not app config
+        core = get_unified_logging_core()
+        unified_config = core._config  # Access the unified logging configuration
+        level = getattr(logging, unified_config.log_level.upper())
         
         # Configure root logger with unified settings
         root = logging.getLogger()
