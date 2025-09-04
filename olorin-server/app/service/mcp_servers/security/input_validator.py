@@ -10,7 +10,6 @@ Date: 2025-08-31
 Phase: 3 - Security and Enterprise Integration
 """
 
-import logging
 import re
 import json
 import html
@@ -24,8 +23,9 @@ from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, validator, ValidationError
 from fastapi import HTTPException, status
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Optional dependencies - gracefully handle missing packages
 try:

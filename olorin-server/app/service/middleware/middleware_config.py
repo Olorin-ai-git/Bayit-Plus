@@ -5,7 +5,6 @@ This module handles all middleware setup including security headers, CORS,
 rate limiting, and authentication middleware configuration.
 """
 
-import logging
 import os
 from typing import Optional
 
@@ -14,8 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from ..config import SvcSettings
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def configure_middleware(app: FastAPI, config: SvcSettings) -> None:

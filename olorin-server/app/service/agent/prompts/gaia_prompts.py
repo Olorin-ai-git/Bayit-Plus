@@ -5,10 +5,10 @@ Exact prompts from the Gaia system for fraud detection analysis.
 These prompts provide structured output formats for consistent risk assessment.
 """
 
-import logging
 from typing import Dict, Any
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Exact Gaia prompts as specified by the user
 

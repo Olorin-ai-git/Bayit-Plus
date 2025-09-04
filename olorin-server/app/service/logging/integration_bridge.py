@@ -149,8 +149,7 @@ class UnifiedLoggingBridge:
         
         # Use the log level from unified logging configuration, not app config
         core = get_unified_logging_core()
-        unified_config = core._config  # Access the unified logging configuration
-        level = getattr(logging, unified_config.log_level.upper())
+        level = getattr(logging, core.get_current_log_level().upper())
         
         # Configure root logger with unified settings
         root = logging.getLogger()
@@ -161,6 +160,31 @@ class UnifiedLoggingBridge:
             
         root.addHandler(handler)
         root.setLevel(level)
+        
+        # Also update all existing loggers to respect the new level
+        self._update_existing_loggers(level)
+    
+    def _update_existing_loggers(self, level: int):
+        """Update all existing loggers to use the unified log level."""
+        import logging
+        
+        # Update all existing loggers
+        for name in logging.Logger.manager.loggerDict:
+            logger = logging.getLogger(name)
+            if logger.handlers:  # Only update loggers that have handlers
+                logger.setLevel(level)
+        
+        # Also configure structlog if it's been initialized
+        try:
+            import structlog
+            # Force structlog to respect the standard library logging level
+            structlog.configure(
+                wrapper_class=structlog.stdlib.BoundLogger,
+                logger_factory=structlog.stdlib.LoggerFactory(),
+                cache_logger_on_first_use=True,
+            )
+        except ImportError:
+            pass
     
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get unified logging performance statistics."""

@@ -13,6 +13,7 @@ from langchain_core.runnables.config import RunnableConfig
 
 from .autonomous_base import AutonomousInvestigationAgent
 from .autonomous_context import AutonomousInvestigationContext, DomainFindings
+from app.service.logging import get_bridge_logger
 from .rag import (
     RAGOrchestrator, 
     ContextAugmentor, 
@@ -22,7 +23,7 @@ from .rag import (
     ContextAugmentationConfig
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):

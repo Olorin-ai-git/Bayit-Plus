@@ -5,7 +5,6 @@ This module handles the creation of both parallel and sequential agent graphs
 for different investigation workflows.
 """
 
-import logging
 from typing import Optional, Annotated, List, Dict
 
 from langchain_core.messages import BaseMessage
@@ -15,6 +14,8 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from typing_extensions import TypedDict
 
 from app.service.agent.orchestration.enhanced_tool_executor import (
+from app.service.logging import get_bridge_logger
+
     EnhancedToolNode,
     ToolHealthManager
 )
@@ -52,7 +53,7 @@ from app.service.agent.orchestration.investigation_coordinator import start_inve
 from app.service.agent.orchestration.assistant import assistant
 from app.service.agent.nodes.raw_data_node import raw_data_node
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def create_parallel_agent_graph(use_enhanced_tools=True):

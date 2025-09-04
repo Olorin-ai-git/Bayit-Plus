@@ -1,7 +1,6 @@
 """VirusTotal URL Analysis Tool for comprehensive URL threat intelligence."""
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
@@ -12,6 +11,7 @@ from pydantic import BaseModel, Field, validator
 from ..base_threat_tool import BaseThreatIntelligenceTool
 from .models import VirusTotalURLResponse
 from .virustotal_client import VirusTotalClient
+from app.service.logging import get_bridge_logger
 
 
 class URLAnalysisInput(BaseModel):
@@ -130,7 +130,7 @@ class VirusTotalURLAnalysisTool(BaseTool):
             
         except Exception as e:
             error_msg = f"VirusTotal URL analysis failed for {url}: {str(e)}"
-            logger = logging.getLogger(__name__)
+            logger = get_bridge_logger(__name__)
             logger.error(error_msg, exc_info=True)
             return json.dumps({
                 "error": error_msg,

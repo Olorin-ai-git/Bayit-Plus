@@ -1,7 +1,6 @@
 """Database tools for LangGraph agents to interact with SQL databases."""
 
 import json
-import logging
 from typing import Any, Dict, List, Optional, Union
 
 import sqlalchemy as sa
@@ -10,8 +9,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _DatabaseQueryArgs(BaseModel):

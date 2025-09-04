@@ -1,10 +1,10 @@
 import json
-import logging
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, HttpUrl
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ImageContent(BaseModel):

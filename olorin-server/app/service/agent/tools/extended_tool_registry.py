@@ -1,6 +1,5 @@
 """Extended tool registry with new categories and enhanced capabilities."""
 
-import logging
 import asyncio
 import time
 from typing import Dict, List, Optional, Any, Set, Type, Callable
@@ -12,8 +11,9 @@ from concurrent.futures import ThreadPoolExecutor
 from langchain_core.tools import BaseTool
 
 from .tool_registry import ToolRegistry, tool_registry
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ExtendedToolCategory(Enum):

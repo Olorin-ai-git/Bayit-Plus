@@ -1,7 +1,6 @@
 """Anomaly Detection Agent implementation."""
 
 import asyncio
-import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -12,6 +11,8 @@ import numpy as np
 from agents import Agent
 
 from ..interfaces import (
+from app.service.logging import get_bridge_logger
+
     AnomalyDetectionAgent,
     DeviceFingerprintAgent,
     Location,
@@ -79,7 +80,7 @@ class AnomalyDetectionAgentImpl(Agent[AnomalyContext]):
         self._baselines = {}
         self._risk_history = []  # Store historical risk assessments
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_bridge_logger(__name__)
         self.risk_assessments = []  # Store recent risk assessments
         self.logger.info("Initializing AnomalyDetectionAgent")
 

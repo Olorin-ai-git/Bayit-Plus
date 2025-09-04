@@ -6,7 +6,6 @@ and optimized query processing for real-time investigation support.
 """
 
 import asyncio
-import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -15,8 +14,9 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from .knowledge_base import DocumentChunk, KnowledgeBase
 from ..communication.ice_events import ICEEventBus, get_event_bus
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SearchStrategy(Enum):

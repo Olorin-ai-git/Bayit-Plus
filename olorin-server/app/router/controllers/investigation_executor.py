@@ -2,15 +2,15 @@
 Investigation Executor for Autonomous Investigations
 This module contains the main background task execution orchestration for autonomous investigations.
 """
-import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 
 from app.service.agent.recursion_guard import get_recursion_guard
 from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
 from app.router.controllers.investigation_controller import update_investigation_status
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def execute_autonomous_investigation(

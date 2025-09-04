@@ -8,6 +8,8 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from mcp.server import Server
 from mcp.types import (
+from app.service.logging import get_bridge_logger
+
     Resource,
     TextContent,
     TextResourceContents,
@@ -21,7 +23,7 @@ from ..service.agent.tools.tool_registry import (
 )
 from .config import MCPConfig
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OlorinMCPServer:

@@ -7,10 +7,10 @@ This tool allows querying SumoLogic for application logs, API metrics, and perfo
 from typing import Any, Dict
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
-import logging
 import asyncio
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _SumoLogicQueryArgs(BaseModel):

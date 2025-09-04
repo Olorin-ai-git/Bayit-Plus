@@ -11,14 +11,12 @@ from typing import Optional, Dict, Tuple
 
 from google.cloud import secretmanager
 from google.api_core import exceptions as google_exceptions
-import structlog
+from app.service.logging import get_bridge_logger
 
 # Configure logging level based on environment variable
 _log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
 if _log_level == "SILENT":
     # Special mode to completely silence secret manager logs
-    logger = structlog.get_logger(__name__).bind(silent=True)
-    # Override log methods to no-op
     class SilentLogger:
         def debug(self, *args, **kwargs): pass
         def info(self, *args, **kwargs): pass
@@ -26,7 +24,8 @@ if _log_level == "SILENT":
         def error(self, *args, **kwargs): pass
     logger = SilentLogger()
 else:
-    logger = structlog.get_logger(__name__)
+    # Use unified logging bridge - this will respect CLI log level
+    logger = get_bridge_logger(__name__)
 
 
 class SecretManagerClient:

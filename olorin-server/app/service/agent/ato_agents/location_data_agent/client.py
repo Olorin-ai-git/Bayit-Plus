@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -10,8 +9,9 @@ import aiohttp
 
 # Removed non-existent tool imports
 from app.service.agent.tools.vector_search_tool import VectorSearchTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 logger.warning("=== LOCATION_DATA_CLIENT MODULE LOADED ===")
 
 

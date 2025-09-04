@@ -6,7 +6,6 @@ and distributed investigation management.
 """
 
 import asyncio
-import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -15,8 +14,9 @@ from typing import Any, Dict, List, Optional, Set, Callable, Union
 from collections import defaultdict, deque
 
 from .ice_events import ICEEventBus, ICEEventType, get_event_bus
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MessageType(Enum):

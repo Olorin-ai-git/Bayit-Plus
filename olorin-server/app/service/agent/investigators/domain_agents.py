@@ -6,13 +6,13 @@ location, device, logs, and risk analysis.
 """
 
 import json
-import logging
 from datetime import datetime
 from typing import Annotated, List
 
 from langchain_core.messages import AIMessage, BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
+from app.service.logging import get_bridge_logger
 
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
@@ -32,7 +32,7 @@ from app.service.agent.core import (
     log_agent_execution
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def network_agent(state: MessagesState, config) -> dict:

@@ -5,7 +5,6 @@ This MCP server provides tools for IP reputation checks, email verification,
 phone validation, and credit bureau checks through external APIs.
 """
 
-import logging
 import asyncio
 import aiohttp
 from typing import Dict, List, Any, Optional
@@ -14,8 +13,9 @@ from enum import Enum
 
 from langchain_core.tools import BaseTool, tool
 from langchain_core.pydantic_v1 import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ReputationLevel(str, Enum):

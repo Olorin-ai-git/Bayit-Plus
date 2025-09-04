@@ -1,7 +1,6 @@
 """Location Data Agent implementation."""
 
 import json
-import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -11,6 +10,7 @@ from agents import Agent
 
 from ..utils.logging import get_logger
 from .client import LocationDataClient, LocationInfo
+from app.service.logging import get_bridge_logger
 
 # ----------------------------
 
@@ -29,7 +29,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
 
     def __init__(self, api_keys: Dict[str, str]):
         """Initialize the location data agent."""
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_bridge_logger(__name__)
         self.logger.info("Initializing LocationDataAgent")
         self.client = LocationDataClient()
 

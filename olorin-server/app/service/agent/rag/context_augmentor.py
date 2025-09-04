@@ -6,7 +6,6 @@ domain-aware knowledge filtering, and context injection into agent prompts.
 """
 
 import asyncio
-import logging
 from datetime import datetime
 from dataclasses import dataclass, field
 from enum import Enum
@@ -15,8 +14,9 @@ from typing import Any, Dict, List, Optional, Set, Union
 from .knowledge_base import DocumentChunk, KnowledgeBase
 from .rag_orchestrator import RAGOrchestrator, RAGRequest
 from ..autonomous_context import AutonomousInvestigationContext
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ContextRelevanceLevel(Enum):

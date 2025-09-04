@@ -8,7 +8,6 @@ All major functionality has been moved to:
 - core/: Shared utilities and helpers
 """
 
-import logging
 from datetime import datetime
 from typing import List, Optional
 
@@ -16,6 +15,8 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 # Import core functionality from refactored modules
 from app.service.agent.orchestration import (
+from app.service.logging import get_bridge_logger
+
     create_parallel_agent_graph,
     create_sequential_agent_graph,
     create_and_get_agent_graph,
@@ -44,7 +45,7 @@ from app.service.agent.tools.tool_registry import get_tools_for_agent
 from app.models.upi_response import Interaction, InteractionsResponse
 from app.service.websocket_manager import websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Initialize tools for autonomous agents
 try:

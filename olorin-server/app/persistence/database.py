@@ -5,7 +5,6 @@ This module provides SQLAlchemy database configuration and session management
 for the Olorin fraud investigation platform.
 """
 
-import logging
 from contextlib import contextmanager
 from typing import Generator
 
@@ -14,8 +13,9 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.service.config import get_settings_for_env
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # SQLAlchemy Base class for models
 Base = declarative_base()

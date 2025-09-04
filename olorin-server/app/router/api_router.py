@@ -19,14 +19,13 @@ from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
 from app.models.agent_response import AgentResponse
 from app.models.api_models import (
-from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
-
     InvestigationCreate,
     InvestigationOut,
     InvestigationUpdate,
     LocationRiskAnalysisResponse,
 )
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
     DeviceSignalDetail,

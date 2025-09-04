@@ -6,12 +6,12 @@ in web tool outputs to ensure privacy protection during fraud investigations.
 """
 
 import re
-import logging
 import hashlib
 from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class PIIType(str, Enum):

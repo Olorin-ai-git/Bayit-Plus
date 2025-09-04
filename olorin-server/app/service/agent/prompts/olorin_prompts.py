@@ -5,10 +5,10 @@ Exact prompts from the Gaia system, adapted for Olorin fraud detection analysis.
 These prompts provide structured output formats for consistent risk assessment.
 """
 
-import logging
 from typing import Dict, Any
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Exact Gaia prompts adapted for Olorin (replacing "Gaia" with "Olorin" where applicable)
 

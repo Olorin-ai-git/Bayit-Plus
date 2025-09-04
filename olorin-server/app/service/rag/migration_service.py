@@ -4,7 +4,6 @@ Handles data migration, embedding regeneration, and validation.
 """
 
 import asyncio
-import logging
 import os
 import sqlite3
 from typing import List, Dict, Any, Optional, Tuple
@@ -20,8 +19,9 @@ from app.service.database.vector_database_config import get_vector_db_config
 from app.service.database.models import DocumentCollection, Document, DocumentChunk
 from app.service.rag.vector_rag_service import get_rag_service
 from app.service.rag.embedding_service import get_embedding_service
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RAGMigrationService:

@@ -5,15 +5,15 @@ Comprehensive multi-chain wallet risk scoring, transaction history analysis,
 address clustering, and sanctions screening.
 """
 
-import logging
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from datetime import datetime
 
 from langchain.tools import BaseTool
 from pydantic import Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BlockchainNetwork(str, Enum):

@@ -5,7 +5,6 @@ This MCP server handles transaction history searches, device fingerprint lookups
 fraud pattern matching, and risk score calculations.
 """
 
-import logging
 import asyncio
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
@@ -13,8 +12,9 @@ from dataclasses import dataclass
 
 from langchain_core.tools import BaseTool, tool
 from langchain_core.pydantic_v1 import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 # Tool input schemas

@@ -4,11 +4,11 @@ Crypto Exchange Analysis Tool
 Exchange risk assessment, KYC compliance verification, trading pattern analysis.
 """
 
-import logging
 from typing import Dict, Any
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class CryptoExchangeAnalysisTool(BaseTool):

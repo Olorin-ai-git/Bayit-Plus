@@ -11,6 +11,8 @@ while preserving all existing functionality and imports.
 # Import from refactored modules for backward compatibility
 from .base_agents import AutonomousInvestigationAgent, autonomous_llm
 from .domain_agents import (
+from app.service.logging import get_bridge_logger
+
     autonomous_network_agent,
     autonomous_device_agent,
     autonomous_location_agent,
@@ -59,10 +61,9 @@ __all__ = [
 ]
 
 # Legacy imports for any code that might import directly
-import logging
 from app.service.agent.journey_tracker import LangGraphJourneyTracker, NodeType, NodeStatus
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 journey_tracker = LangGraphJourneyTracker()
 
 # Additional helper functions that were in the original file

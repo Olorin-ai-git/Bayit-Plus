@@ -5,11 +5,11 @@ Company verification, ownership structure analysis, financial health assessment,
 and regulatory compliance checking.
 """
 
-import logging
 from typing import Dict, Any
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BusinessIntelligenceTool(BaseTool):

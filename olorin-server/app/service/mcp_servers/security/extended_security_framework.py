@@ -1,6 +1,5 @@
 """Extended security framework for MCP tools with enhanced compliance and validation."""
 
-import logging
 import hashlib
 import secrets
 import time
@@ -13,8 +12,9 @@ from datetime import datetime, timedelta
 
 import asyncio
 from cryptography.fernet import Fernet
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SecurityLevel(Enum):

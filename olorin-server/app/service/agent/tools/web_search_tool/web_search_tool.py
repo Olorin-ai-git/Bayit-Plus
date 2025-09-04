@@ -1,6 +1,5 @@
 """Web search and scraping tools for LangGraph agents."""
 
-import logging
 import re
 import time
 from typing import Any, Dict, List, Optional
@@ -13,8 +12,9 @@ from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 
 from app.service.agent.tools.pii_sanitizer import sanitize_web_content, SanitizationMethod
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _WebSearchArgs(BaseModel):

@@ -4,11 +4,11 @@ People Search Tool
 Identity verification, background checking, associates mapping, and historical records.
 """
 
-import logging
 from typing import Dict, Any
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class PeopleSearchTool(BaseTool):

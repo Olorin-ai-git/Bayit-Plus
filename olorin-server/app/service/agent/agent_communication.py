@@ -4,11 +4,11 @@ Agent Communication Utilities
 Communication and context management utilities for autonomous investigation agents.
 """
 
-import logging
 from typing import Any, Dict, Optional, Tuple
 
 from langchain_core.messages import AIMessage
 from langchain_core.runnables.config import RunnableConfig
+from app.service.logging import get_bridge_logger
 
 from app.service.agent.autonomous_context import (
     AutonomousInvestigationContext,
@@ -17,7 +17,7 @@ from app.service.agent.autonomous_context import (
 )
 from app.service.websocket_manager import AgentPhase, websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 _investigation_contexts: Dict[str, AutonomousInvestigationContext] = {}
 
 

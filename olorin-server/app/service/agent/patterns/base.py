@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.messages import BaseMessage
+from app.service.logging import get_bridge_logger
 
 
 class PatternType(Enum):
@@ -255,7 +256,7 @@ class BasePattern(ABC):
                 del self._cache[key]
             
             import logging
-            logger = logging.getLogger(__name__)
+            logger = get_bridge_logger(__name__)
             logger.debug(f"Evicted {len(oldest_keys)} cache entries to prevent memory leak")
         
         self._cache[cache_key] = {
@@ -426,7 +427,7 @@ class OpenAIBasePattern(BasePattern):
                 # Validate timeout settings for production
                 if self.openai_config.request_timeout > 300:
                     import logging
-                    logger = logging.getLogger(__name__)
+                    logger = get_bridge_logger(__name__)
                     logger.warning(
                         f"OpenAI timeout {self.openai_config.request_timeout}s exceeds "
                         f"recommended 300s for fraud detection workloads"

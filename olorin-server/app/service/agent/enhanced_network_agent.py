@@ -6,12 +6,13 @@ for comprehensive fraud investigation.
 """
 
 import json
-import logging
 from typing import List, Dict, Any
 
 from langchain_core.messages import AIMessage
 
 from app.service.agent.agent_communication import (
+from app.service.logging import get_bridge_logger
+
     _extract_investigation_info,
     _get_or_create_autonomous_context,
     _create_error_response,
@@ -24,7 +25,7 @@ from app.service.agent.journey_tracker import (
     NodeStatus,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Get global journey tracker instance
 journey_tracker = get_journey_tracker()

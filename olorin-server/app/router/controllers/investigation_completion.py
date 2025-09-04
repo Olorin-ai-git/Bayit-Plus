@@ -12,8 +12,9 @@ from app.service.agent.journey_tracker import journey_tracker
 from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
 from app.router.handlers.websocket_handler import notify_websocket_connections
 from app.router.controllers.investigation_controller import update_investigation_status
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def _execute_results_processing_phase(

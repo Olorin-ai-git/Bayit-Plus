@@ -1,6 +1,5 @@
 """Blockchain Analysis Suite - Foundation for cryptocurrency investigation tools."""
 
-import logging
 import asyncio
 import hashlib
 from typing import Dict, List, Optional, Any, Set, Union, Tuple
@@ -12,8 +11,9 @@ from abc import ABC, abstractmethod
 import httpx
 import tenacity
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BlockchainNetwork(Enum):

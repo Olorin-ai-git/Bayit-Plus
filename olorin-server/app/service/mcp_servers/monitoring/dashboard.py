@@ -10,18 +10,19 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from dataclasses import asdict
-import logging
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST
 
 from .mcp_monitor import (
+from app.service.logging import get_bridge_logger
+
     MCPMonitor, HealthStatus, AlertSeverity,
     get_mcp_monitor
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPDashboard:

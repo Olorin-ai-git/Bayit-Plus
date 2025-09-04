@@ -6,7 +6,6 @@ combining multiple risk factors, predictive modeling, and dynamic risk
 calculation for real-time risk management and decision support.
 """
 
-import logging
 from typing import Any, Dict, Optional, List, Tuple
 from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
@@ -14,8 +13,9 @@ import json
 from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 import math
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RiskScoringInput(BaseModel):

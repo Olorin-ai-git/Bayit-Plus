@@ -5,7 +5,6 @@ This MCP server handles fraud ring detection, money flow analysis,
 entity relationship mapping, and anomaly clustering using graph algorithms.
 """
 
-import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Set, Tuple
 from datetime import datetime, timedelta
@@ -14,8 +13,9 @@ from enum import Enum
 
 from langchain_core.tools import BaseTool, tool
 from langchain_core.pydantic_v1 import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class EntityType(str, Enum):

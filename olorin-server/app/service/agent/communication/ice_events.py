@@ -6,7 +6,6 @@ Provides comprehensive event publishing, subscription, and handling capabilities
 """
 
 import asyncio
-import logging
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -14,8 +13,9 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 from collections import defaultdict
 import json
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ICEEventType(Enum):

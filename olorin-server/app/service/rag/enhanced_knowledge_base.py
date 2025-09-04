@@ -4,7 +4,6 @@ Provides fraud investigation domain knowledge with vector similarity search.
 """
 
 import asyncio
-import logging
 from typing import List, Dict, Any, Optional, Union, Tuple
 from datetime import datetime, timezone
 from dataclasses import dataclass
@@ -13,8 +12,9 @@ import uuid
 from app.service.rag.vector_rag_service import get_rag_service, SearchResult
 from app.service.rag.embedding_service import get_embedding_service
 from app.service.database.vector_database_config import get_vector_db_config
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

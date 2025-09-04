@@ -10,7 +10,6 @@ This module implements Phase 3 of the LangGraph enhancement plan, providing:
 
 import asyncio
 import json
-import logging
 import time
 import statistics
 from typing import Dict, Any, List, Optional, Callable, Tuple
@@ -21,8 +20,9 @@ import os
 
 import numpy as np
 from pathlib import Path
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BenchmarkType(Enum):

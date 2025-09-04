@@ -15,6 +15,8 @@ from langgraph.checkpoint.memory import MemorySaver
 
 # Import refactored modules
 from app.service.agent.orchestration import (
+from app.service.logging import get_bridge_logger
+
     create_parallel_agent_graph,
     create_sequential_agent_graph,
     create_and_get_agent_graph,
@@ -92,7 +94,7 @@ from app.service.risk_assessment_analysis_service import RiskAssessmentAnalysisS
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.utils.class_utils import create_instance
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 settings_for_env = get_settings_for_env()
 

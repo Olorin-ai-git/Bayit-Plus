@@ -6,7 +6,6 @@ knowledge retrieval, context augmentation, and enhanced LLM responses.
 """
 
 import asyncio
-import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -16,8 +15,9 @@ import uuid
 
 from .knowledge_base import KnowledgeBase, KnowledgeBaseConfig, DocumentChunk
 from ..communication.ice_events import ICEEventBus, ICEEventType, get_event_bus
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

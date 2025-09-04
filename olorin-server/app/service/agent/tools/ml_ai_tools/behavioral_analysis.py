@@ -6,14 +6,14 @@ detecting anomalies, and identifying suspicious activities through
 behavioral biometrics and pattern recognition.
 """
 
-import logging
 from typing import Any, Dict, Optional, List
 from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
 import json
 from datetime import datetime, timedelta
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BehavioralAnalysisInput(BaseModel):

@@ -6,15 +6,15 @@ supporting complex entity relationships and cross-entity analysis.
 """
 
 import asyncio
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
 import uuid
 from collections import defaultdict
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class EntityType(Enum):

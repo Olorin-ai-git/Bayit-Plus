@@ -10,8 +10,9 @@ from typing import Any, List, Optional
 
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def get_config_value(config: Any, key_path: List[str]) -> Any:

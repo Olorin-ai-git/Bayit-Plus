@@ -4,11 +4,11 @@ Cryptocurrency Compliance Tool
 AML/CFT compliance checking, regulatory reporting, Travel Rule compliance.
 """
 
-import logging
 from typing import Dict, Any
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class CryptocurrencyComplianceTool(BaseTool):

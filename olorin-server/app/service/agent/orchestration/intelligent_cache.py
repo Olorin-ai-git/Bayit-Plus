@@ -11,7 +11,6 @@ This module implements Phase 3 of the LangGraph enhancement plan, providing:
 import asyncio
 import hashlib
 import json
-import logging
 import time
 from typing import Dict, Any, List, Optional, Union, Callable
 from datetime import datetime, timedelta
@@ -22,8 +21,9 @@ import pickle
 
 import redis.asyncio as redis
 from langchain_core.runnables import RunnableConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class CacheStrategy(Enum):

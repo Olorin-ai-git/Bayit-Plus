@@ -379,6 +379,10 @@ class UnifiedLoggingCore:
                     extra={'performance_metrics': {'operation': operation, 'duration_ms': duration * 1000}}
                 )
     
+    def get_current_log_level(self) -> str:
+        """Get the current configured log level"""
+        return self._config.get('log_level', 'WARNING')
+    
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get performance statistics"""
         current_time = time.time()

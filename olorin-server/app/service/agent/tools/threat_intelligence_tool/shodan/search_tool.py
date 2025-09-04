@@ -1,7 +1,6 @@
 """Shodan Search Tool for discovering infrastructure across the internet."""
 
 import json
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain.tools import BaseTool
@@ -9,9 +8,10 @@ from pydantic import BaseModel, Field, validator
 
 from .models import ShodanSearchResponse
 from .shodan_client import ShodanClient
+from app.service.logging import get_bridge_logger
 
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ShodanSearchInput(BaseModel):

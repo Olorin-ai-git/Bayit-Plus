@@ -6,13 +6,13 @@ for OpenAI function calling format conversion.
 """
 
 import inspect
-import logging
 from typing import Any, Dict, List, Tuple
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def extract_schema_from_pydantic(schema_class: type[BaseModel]) -> Tuple[Dict[str, Any], List[str]]:

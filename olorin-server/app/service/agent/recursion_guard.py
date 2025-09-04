@@ -5,13 +5,13 @@ Prevents infinite recursion in LangGraph agent execution while enabling
 autonomous tool selection and LLM-driven decision making.
 """
 
-import logging
 import time
 from dataclasses import dataclass, field
 from threading import Lock
 from typing import Dict, List, Optional, Set
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

@@ -4,14 +4,14 @@ This module handles real-time monitoring of autonomous investigations via WebSoc
 """
 import asyncio
 import json
-import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 from fastapi import WebSocket, WebSocketDisconnect
 
 from app.service.agent.journey_tracker import journey_tracker
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Global tracking of WebSocket connections
 websocket_connections: Dict[str, WebSocket] = {}

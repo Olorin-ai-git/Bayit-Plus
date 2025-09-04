@@ -5,7 +5,6 @@ Iterative quality improvement with result evaluation and automatic refinement.
 Continuously improves investigation results through evaluation and optimization cycles.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -14,8 +13,9 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from .augmented_llm import AugmentedLLMPattern
 from .base import BasePattern, PatternResult
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class EvaluationCriteria(Enum):

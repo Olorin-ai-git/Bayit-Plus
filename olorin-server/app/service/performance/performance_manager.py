@@ -5,7 +5,6 @@ This module handles the initialization, configuration, and lifecycle management
 of the performance optimization system integrated with the Olorin application.
 """
 
-import logging
 import os
 from typing import Dict, Any, Optional
 
@@ -17,8 +16,9 @@ from ..performance_integration import (
     get_performance_optimization_manager,
     PerformanceOptimizationConfig
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class PerformanceManager:

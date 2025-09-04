@@ -9,7 +9,6 @@ This module implements Phase 1 of the LangGraph enhancement plan, providing:
 """
 
 import asyncio
-import logging
 import time
 from typing import Any, Dict, List, Optional, Set, Union, Sequence
 from datetime import datetime, timedelta
@@ -22,8 +21,9 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import AIMessage, ToolMessage, BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict, Annotated
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class CircuitState(Enum):

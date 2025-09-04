@@ -6,12 +6,12 @@ external MCP servers for specialized fraud detection capabilities.
 """
 
 import asyncio
-import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPServerCategory(Enum):

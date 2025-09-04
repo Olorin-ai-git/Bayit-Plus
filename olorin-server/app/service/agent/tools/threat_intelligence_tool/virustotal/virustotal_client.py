@@ -8,7 +8,6 @@ threat intelligence analysis capabilities for IP addresses, domains, files, and 
 import asyncio
 import base64
 import hashlib
-import logging
 from datetime import datetime
 from typing import Optional
 import urllib.parse
@@ -17,6 +16,8 @@ import aiohttp
 from app.utils.firebase_secrets import get_firebase_secret
 
 from .models import (
+from app.service.logging import get_bridge_logger
+
     VirusTotalConfig,
     VirusTotalIPResponse,
     VirusTotalDomainResponse, 
@@ -31,7 +32,7 @@ from .models import (
     VirusTotalQuotaError
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class VirusTotalClient:

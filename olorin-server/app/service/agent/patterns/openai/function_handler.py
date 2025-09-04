@@ -6,12 +6,12 @@ for fraud investigation workflows.
 """
 
 import json
-import logging
 from typing import Any, Dict, List
 
 from .tool_adapter import execute_openai_function_call
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class FunctionHandler:

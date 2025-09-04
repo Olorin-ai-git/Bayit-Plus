@@ -1,6 +1,5 @@
 """Tool registry for LangGraph agents - centralized access to all available tools."""
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.tools import BaseTool
@@ -10,6 +9,8 @@ from .api_tool import HTTPRequestTool, JSONAPITool
 # Import all available tools
 from .database_tool import DatabaseQueryTool, DatabaseSchemaTool
 from .file_system_tool import (
+from app.service.logging import get_bridge_logger
+
     DirectoryListTool,
     FileReadTool,
     FileSearchTool,
@@ -82,7 +83,7 @@ except ImportError as e:
     logger.warning(f"ML/AI tools not available: {e}")
     ML_AI_TOOLS_AVAILABLE = False
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Try to import threat intelligence tools
 try:

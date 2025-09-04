@@ -4,13 +4,13 @@ SumoLogic Client for Olorin Investigation System
 This module provides integration with SumoLogic for log analysis and investigation.
 """
 
-import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
 import requests
 import json
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 class SumoLogicClient:
     """

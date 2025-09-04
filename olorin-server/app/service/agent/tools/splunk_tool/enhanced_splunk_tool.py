@@ -5,7 +5,6 @@ Advanced Splunk query tool with validation, retry logic, caching, and monitoring
 Built on the enhanced tool framework for improved reliability and observability.
 """
 
-import logging
 import os
 import re
 from typing import Any, Dict, List, Optional, Set
@@ -15,6 +14,8 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field, validator
 
 from ..enhanced_tool_base import (
+from app.service.logging import get_bridge_logger
+
     EnhancedToolBase,
     ToolConfig,
     ToolResult,
@@ -27,7 +28,7 @@ from app.service.agent.ato_agents.splunk_agent.client import SplunkClient
 from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SplunkQueryInput(BaseModel):

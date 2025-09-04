@@ -6,7 +6,6 @@ Provides comprehensive threat intelligence for IP addresses in fraud investigati
 """
 
 import json
-import logging
 from typing import Any, Dict, List, Optional, Type
 from datetime import datetime
 
@@ -15,8 +14,9 @@ from pydantic import BaseModel, Field, validator
 
 from .virustotal_client import VirusTotalClient
 from .models import VirusTotalConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class VirusTotalIPAnalysisInput(BaseModel):

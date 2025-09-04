@@ -8,7 +8,6 @@ This module implements Phase 3 of the LangGraph enhancement plan, providing:
 - Automatic optimization recommendations
 """
 
-import logging
 import time
 import os
 from typing import Dict, Any, List, Optional, Callable
@@ -20,6 +19,7 @@ import functools
 from langchain_core.runnables import RunnableConfig
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.base import BaseCallbackHandler
+from app.service.logging import get_bridge_logger
 
 # Optional LangSmith imports (graceful fallback if not available)
 try:
@@ -28,7 +28,7 @@ try:
     LANGSMITH_AVAILABLE = True
 except ImportError:
     LANGSMITH_AVAILABLE = False
-    logger = logging.getLogger(__name__)
+    logger = get_bridge_logger(__name__)
     logger.warning("LangSmith not available. Tracing will use fallback implementation.")
     
     # Create mock decorators for compatibility
@@ -39,7 +39,7 @@ except ImportError:
         def __init__(self, *args, **kwargs):
             pass
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

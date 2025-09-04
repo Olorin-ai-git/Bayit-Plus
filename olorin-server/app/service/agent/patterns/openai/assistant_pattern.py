@@ -6,7 +6,6 @@ Olorin fraud detection system, providing cutting-edge AI agent capabilities
 while maintaining compatibility with existing tools and workflows.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
@@ -15,8 +14,9 @@ from ..base import OpenAIBasePattern, PatternResult, PatternMetrics, PatternType
 from .assistant_manager import AssistantManager
 from .run_executor import RunExecutor
 from .tool_adapter import convert_langgraph_tools_to_openai_functions
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIAssistantPattern(OpenAIBasePattern):

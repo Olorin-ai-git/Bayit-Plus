@@ -5,12 +5,12 @@ Executes OpenAI function calls using existing LangGraph tools,
 handling parameter conversion and tool execution.
 """
 
-import logging
 from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def execute_openai_function_call(

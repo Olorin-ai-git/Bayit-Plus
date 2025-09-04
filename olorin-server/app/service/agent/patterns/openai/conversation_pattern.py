@@ -6,7 +6,6 @@ for fraud investigation workflows. Features conversation history, memory optimiz
 and context continuity across investigation sessions.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
@@ -17,8 +16,9 @@ from .streaming_handler import StreamingHandler
 from .chat_completion_handler import ChatCompletionHandler
 from .message_formatter import MessageFormatter
 from .conversation_manager import ConversationManager
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIConversationPattern(OpenAIBasePattern):

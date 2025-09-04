@@ -4,7 +4,6 @@ OpenAI RAG Pattern Implementation
 Implements Retrieval-Augmented Generation for knowledge-enhanced fraud investigations.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
@@ -14,8 +13,9 @@ from ...rag.rag_orchestrator import get_rag_orchestrator, RAGRequest
 from .message_formatter import MessageFormatter
 from .chat_completion_handler import ChatCompletionHandler
 from .streaming_handler import StreamingHandler
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIRAGPattern(OpenAIBasePattern):

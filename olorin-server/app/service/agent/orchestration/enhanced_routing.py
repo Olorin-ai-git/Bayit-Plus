@@ -9,15 +9,15 @@ This module implements Phase 2 of the LangGraph enhancement plan, providing:
 - MCP-aware routing for enhanced tool selection
 """
 
-import logging
 from typing import Dict, Any, List, Optional, Union
 from enum import Enum
 from dataclasses import dataclass
 
 from langchain_core.messages import BaseMessage, AIMessage
 from langgraph.graph import END
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class InvestigationComplexity(Enum):

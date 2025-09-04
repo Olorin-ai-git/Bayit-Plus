@@ -5,7 +5,6 @@ Dynamic workflow selection based on request classification and specialized handl
 Routes investigations to the most appropriate analysis pattern based on content and context.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
@@ -13,8 +12,9 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from .augmented_llm import AugmentedLLMPattern
 from .base import BasePattern, PatternResult
 from .prompt_chaining import PromptChainingPattern
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RouteClassification:

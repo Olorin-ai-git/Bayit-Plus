@@ -5,11 +5,11 @@ Deep web content discovery, database access verification, information correlatio
 and evidence collection.
 """
 
-import logging
 from typing import Dict, Any, List, Optional
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DeepWebSearchTool(BaseTool):

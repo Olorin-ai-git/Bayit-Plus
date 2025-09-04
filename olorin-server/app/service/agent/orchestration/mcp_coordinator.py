@@ -5,7 +5,6 @@ This module provides intelligent routing of investigation tasks to appropriate
 MCP servers, load balancing, and fallback management.
 """
 
-import logging
 import asyncio
 import random
 from typing import Dict, List, Any, Optional, Tuple
@@ -16,8 +15,9 @@ from collections import defaultdict
 
 from langchain_core.tools import BaseTool
 from langchain_core.messages import BaseMessage
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RoutingStrategy(Enum):

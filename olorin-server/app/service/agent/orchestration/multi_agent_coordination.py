@@ -9,7 +9,6 @@ This module implements Phase 4 of the LangGraph enhancement plan, providing:
 - Dynamic agent allocation based on workload
 """
 
-import logging
 import asyncio
 from typing import Dict, Any, List, Optional, Callable, Set, Tuple
 from datetime import datetime
@@ -24,8 +23,9 @@ from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class CoordinationStrategy(Enum):

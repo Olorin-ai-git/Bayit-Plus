@@ -10,7 +10,6 @@ This module implements Phase 2 of the LangGraph enhancement plan, providing:
 
 import asyncio
 import json
-import logging
 import time
 from typing import Dict, Any, List, Optional, AsyncIterator
 from datetime import datetime
@@ -20,8 +19,9 @@ from enum import Enum
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import CompiledGraph
 from langgraph.checkpoint.base import BaseCheckpointer
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class StreamEventType(Enum):

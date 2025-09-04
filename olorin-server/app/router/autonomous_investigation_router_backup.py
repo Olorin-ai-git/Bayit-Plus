@@ -22,6 +22,8 @@ from pathlib import Path
 
 # Import our investigation services
 from app.test.data.mock_transactions.mock_data_loader import (
+from app.service.logging import get_bridge_logger
+
     MockDataLoader, load_investigation_scenario, validate_investigation_outcome,
     list_available_test_scenarios
 )
@@ -36,7 +38,7 @@ from app.service.agent.recursion_guard import get_recursion_guard
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables.config import RunnableConfig
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Router setup
 router = APIRouter(prefix="/autonomous", tags=["autonomous-investigation"])

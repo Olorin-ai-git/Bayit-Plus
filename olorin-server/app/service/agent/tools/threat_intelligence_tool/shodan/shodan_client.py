@@ -6,7 +6,6 @@ Provides infrastructure intelligence and internet-wide scanning data.
 """
 
 import asyncio
-import logging
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import quote
 
@@ -15,6 +14,8 @@ from aiohttp import ClientError, ClientTimeout
 
 from app.utils.firebase_secrets import get_firebase_secret
 from .models import (
+from app.service.logging import get_bridge_logger
+
     ShodanHostResponse,
     ShodanSearchResponse,
     ShodanSearchResult,
@@ -25,7 +26,7 @@ from .models import (
     ShodanAPIInfo
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ShodanClient:

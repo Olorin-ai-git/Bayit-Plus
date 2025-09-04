@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from enum import Enum
+from app.service.logging import get_bridge_logger
 
 # Optional networkx import for visualization features
 try:
@@ -19,9 +20,8 @@ try:
 except ImportError:
     nx = None
 import uuid
-import logging
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 class NodeType(Enum):
     AGENT = "agent"

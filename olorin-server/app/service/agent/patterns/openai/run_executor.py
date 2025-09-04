@@ -5,15 +5,15 @@ Coordinates OpenAI Assistant run execution, delegating to specialized handlers
 for streaming, function calling, and message management.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
 
 from .streaming_handler import StreamingHandler
 from .function_handler import FunctionHandler
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RunExecutor:

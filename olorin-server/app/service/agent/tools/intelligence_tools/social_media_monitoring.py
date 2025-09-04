@@ -5,14 +5,14 @@ Real-time content monitoring, keyword tracking, sentiment analysis,
 and threat detection across social media platforms.
 """
 
-import logging
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from datetime import datetime, timedelta
 
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MonitoringType(str, Enum):

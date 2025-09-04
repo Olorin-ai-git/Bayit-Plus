@@ -8,7 +8,6 @@ caching, rate limiting, and integration with Firebase secrets management.
 import asyncio
 import hashlib
 import json
-import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
@@ -21,8 +20,9 @@ from ..enhanced_cache import EnhancedCache, EvictionPolicy
 from app.utils.firebase_secrets import get_firebase_secret
 from app.service.redis_client import get_redis_client
 from app.service.config import get_settings
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ThreatIntelligenceConfig(BaseModel):

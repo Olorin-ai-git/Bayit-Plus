@@ -8,7 +8,6 @@ https://langchain-ai.github.io/langgraph/concepts/persistence/
 """
 
 import asyncio
-import logging
 import time
 from contextlib import asynccontextmanager
 from functools import reduce
@@ -16,6 +15,8 @@ from typing import Any, AsyncGenerator, Dict, List, Optional, Tuple
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.base import (
+from app.service.logging import get_bridge_logger
+
     BaseCheckpointSaver,
     ChannelVersions,
     Checkpoint,
@@ -31,7 +32,7 @@ from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 import os
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Constants for expiration settings and Redis key separators
 EXPIRATION_DAYS = 1

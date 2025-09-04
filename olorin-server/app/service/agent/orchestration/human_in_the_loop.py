@@ -10,7 +10,6 @@ This module implements Phase 4 of the LangGraph enhancement plan, providing:
 
 import asyncio
 import json
-import logging
 import time
 from typing import Dict, Any, List, Optional, Callable, Union
 from datetime import datetime, timedelta
@@ -22,8 +21,9 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, System
 from langgraph.graph import END
 # Note: interrupt and BaseCheckpointer are used conceptually in LangGraph but imports may vary by version
 from langchain_core.runnables import RunnableConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class EscalationReason(Enum):

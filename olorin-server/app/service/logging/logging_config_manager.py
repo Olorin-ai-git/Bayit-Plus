@@ -15,9 +15,9 @@ import argparse
 from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 from dataclasses import dataclass, field
-import logging
 
 from .unified_logging_core import LogFormat, LogOutput
+import logging
 
 
 @dataclass

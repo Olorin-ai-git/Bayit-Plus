@@ -6,7 +6,6 @@ Provides unified interface for tool registration, execution, and lifecycle manag
 """
 
 import asyncio
-import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Set, Type, Union
@@ -15,8 +14,9 @@ from dataclasses import dataclass
 from .enhanced_tool_base import EnhancedToolBase, ToolResult, ToolConfig
 from .tool_interceptor import ToolExecutionInterceptor, InterceptorConfig, HookType, InterceptorHook
 from .enhanced_cache import EnhancedCache, EvictionPolicy
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

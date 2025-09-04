@@ -5,14 +5,14 @@ Connection graph analysis, influence mapping, community detection,
 and anomaly identification for social network investigations.
 """
 
-import logging
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from datetime import datetime
 
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class NetworkAnalysisType(str, Enum):

@@ -5,15 +5,15 @@ Sequential task decomposition with step-by-step execution, validation gates,
 context passing between steps, and retry logic for failed steps.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
 from .augmented_llm import AugmentedLLMPattern
 from .base import BasePattern, PatternResult
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ChainStep:

@@ -27,6 +27,28 @@ def server(args=None):
     server.run()
 
 
+def _run_server_process(args_dict):
+    """Run server in separate process - must be module-level function for pickling."""
+    # Reconstruct args from dictionary
+    import argparse
+    args = argparse.Namespace(**args_dict)
+    
+    # Re-configure logging in subprocess (multiprocessing doesn't inherit logging config)
+    configure_unified_bridge_from_args(args)
+    
+    # Import app after logging is configured
+    from app.service.server import app
+    
+    config = uvicorn.Config(
+        app=app,
+        host=args.host,
+        port=args.port,
+        reload=not args.no_reload,
+    )
+    server = uvicorn.Server(config)
+    server.run()
+
+
 def main():
     """Main entry point with unified logging command-line support."""
     parser = argparse.ArgumentParser(
@@ -55,24 +77,10 @@ def main():
         from app.service.logging.cli import show_logging_configuration_summary
         show_logging_configuration_summary()
     
-    # Update server function to accept parsed arguments
-    def server_with_args():
-        # Re-configure logging in subprocess (multiprocessing doesn't inherit logging config)
-        configure_unified_bridge_from_args(args)
-        
-        # Import app after logging is configured
-        from app.service.server import app
-        
-        config = uvicorn.Config(
-            app=app,
-            host=args.host,
-            port=args.port,
-            reload=not args.no_reload,
-        )
-        server = uvicorn.Server(config)
-        server.run()
+    # Convert args to dictionary for multiprocessing
+    args_dict = vars(args)
     
-    srv_proc = multiprocessing.Process(target=server_with_args)
+    srv_proc = multiprocessing.Process(target=_run_server_process, args=(args_dict,))
     srv_proc.start()
     srv_proc.join()
 

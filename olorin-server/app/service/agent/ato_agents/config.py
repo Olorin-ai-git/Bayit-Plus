@@ -1,11 +1,11 @@
-import logging
 import os
 from dataclasses import dataclass
 from typing import Any, Dict
 
 import yaml
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

@@ -1,15 +1,15 @@
 """API tools for LangGraph agents to interact with HTTP APIs and web services."""
 
 import json
-import logging
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urljoin, urlparse
 
 import requests
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _HTTPRequestArgs(BaseModel):

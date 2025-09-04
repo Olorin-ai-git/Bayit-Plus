@@ -5,12 +5,12 @@ Handles chat completions with function calling for the Function Calling pattern.
 Provides streaming and non-streaming execution capabilities.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from .tool_executor import execute_openai_function_call
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ChatCompletionHandler:

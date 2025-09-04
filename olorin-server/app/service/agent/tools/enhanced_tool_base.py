@@ -6,7 +6,6 @@ Provides validation, retry orchestration, caching, and comprehensive monitoring.
 """
 
 import asyncio
-import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -15,8 +14,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union, Callable
 import json
 import hashlib
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ValidationLevel(Enum):

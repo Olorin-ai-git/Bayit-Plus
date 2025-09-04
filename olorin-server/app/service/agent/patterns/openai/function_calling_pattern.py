@@ -5,7 +5,6 @@ Direct function calling pattern for lightweight fraud queries without Assistant 
 Provides high-performance tool execution for single-turn investigations and fraud checks.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
@@ -15,8 +14,9 @@ from .tool_converter import convert_langgraph_tools_to_openai_functions
 from .streaming_handler import StreamingHandler
 from .chat_completion_handler import ChatCompletionHandler
 from .message_formatter import MessageFormatter
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIFunctionCallingPattern(OpenAIBasePattern):

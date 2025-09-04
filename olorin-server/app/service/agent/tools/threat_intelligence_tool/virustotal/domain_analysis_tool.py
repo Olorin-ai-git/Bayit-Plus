@@ -1,7 +1,6 @@
 """VirusTotal Domain Analysis Tool for comprehensive domain threat intelligence."""
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -11,6 +10,7 @@ from pydantic import BaseModel, Field, validator
 from ..base_threat_tool import BaseThreatIntelligenceTool
 from .models import VirusTotalDomainResponse
 from .virustotal_client import VirusTotalClient
+from app.service.logging import get_bridge_logger
 
 
 class DomainAnalysisInput(BaseModel):
@@ -120,7 +120,7 @@ class VirusTotalDomainAnalysisTool(BaseTool):
             
         except Exception as e:
             error_msg = f"VirusTotal domain analysis failed for {domain}: {str(e)}"
-            logger = logging.getLogger(__name__)
+            logger = get_bridge_logger(__name__)
             logger.error(error_msg, exc_info=True)
             return json.dumps({
                 "error": error_msg,

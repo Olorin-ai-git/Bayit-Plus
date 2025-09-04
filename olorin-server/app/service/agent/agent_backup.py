@@ -14,6 +14,8 @@ from app.service.agent.websocket_streaming_service import WebSocketStreamingServ
 
 # Import autonomous agent system
 from app.service.agent.autonomous_agents import (
+from app.service.logging import get_bridge_logger
+
     autonomous_network_agent,
     autonomous_device_agent,
     autonomous_location_agent,
@@ -66,7 +68,7 @@ from app.service.risk_assessment_analysis_service import RiskAssessmentAnalysisS
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.utils.class_utils import create_instance
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 settings_for_env = get_settings_for_env()
 

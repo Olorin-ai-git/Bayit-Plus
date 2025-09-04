@@ -5,8 +5,10 @@ Factory functions for creating and configuring autonomous investigation agents.
 Handles agent creation, tool binding, and domain-specific configuration.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
+from app.service.logging import get_bridge_logger
+
+logger = get_bridge_logger(__name__)
 
 try:
     from .rag import RAGOrchestrator, ContextAugmentationConfig, get_rag_orchestrator
@@ -15,8 +17,6 @@ try:
 except ImportError as e:
     logger.warning(f"RAG modules not available: {e}")
     RAG_AVAILABLE = False
-
-logger = logging.getLogger(__name__)
 
 
 class AgentFactory:

@@ -1,4 +1,3 @@
-import logging
 import uuid
 from abc import ABC
 from typing import Annotated, Any, Dict, List, Optional
@@ -12,8 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import TypedDict
 
 from app.service.config import get_settings_for_env
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 settings_for_env = get_settings_for_env()
 
 
