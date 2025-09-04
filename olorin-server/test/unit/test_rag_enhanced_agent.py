@@ -25,55 +25,57 @@ from app.service.agent.autonomous_context import (
 from langchain_core.runnables.config import RunnableConfig
 
 
+# Global test fixtures available to all test classes
+@pytest.fixture
+def mock_tools():
+    """Create mock tools"""
+    tools = []
+    for i in range(3):
+        tool = Mock()
+        tool.name = f"tool_{i}"
+        tools.append(tool)
+    return tools
+
+@pytest.fixture
+def mock_rag_orchestrator():
+    """Create mock RAG orchestrator"""
+    orchestrator = Mock(spec=RAGOrchestrator)
+    orchestrator.knowledge_base = Mock()
+    return orchestrator
+
+@pytest.fixture
+def mock_context_augmentor():
+    """Create mock context augmentor"""
+    augmentor = Mock(spec=ContextAugmentor)
+    return augmentor
+
+@pytest.fixture
+def mock_investigation_context():
+    """Create mock investigation context"""
+    context = Mock(spec=AutonomousInvestigationContext)
+    context.investigation_id = "test-investigation-123"
+    context.entity_id = "test-entity-456"
+    context.entity_type = EntityType.USER_ID
+    context.generate_llm_context = Mock(return_value={"entity": "test"})
+    return context
+
+@pytest.fixture
+def mock_knowledge_context():
+    """Create mock knowledge context"""
+    knowledge_ctx = Mock(spec=KnowledgeContext)
+    knowledge_ctx.investigation_id = "test-investigation-123"
+    knowledge_ctx.domain = "network"
+    knowledge_ctx.entity_id = "test-entity-456"
+    knowledge_ctx.total_chunks = 5
+    knowledge_ctx.critical_knowledge = []
+    knowledge_ctx.supporting_knowledge = []
+    knowledge_ctx.background_knowledge = []
+    knowledge_ctx.knowledge_sources = {"doc-1", "doc-2"}
+    return knowledge_ctx
+
+
 class TestRAGEnhancedInvestigationAgent:
     """Test RAG-enhanced investigation agent"""
-    
-    @pytest.fixture
-    def mock_tools(self):
-        """Create mock tools"""
-        tools = []
-        for i in range(3):
-            tool = Mock()
-            tool.name = f"tool_{i}"
-            tools.append(tool)
-        return tools
-    
-    @pytest.fixture
-    def mock_rag_orchestrator(self):
-        """Create mock RAG orchestrator"""
-        orchestrator = Mock(spec=RAGOrchestrator)
-        orchestrator.knowledge_base = Mock()
-        return orchestrator
-    
-    @pytest.fixture
-    def mock_context_augmentor(self):
-        """Create mock context augmentor"""
-        augmentor = Mock(spec=ContextAugmentor)
-        return augmentor
-    
-    @pytest.fixture
-    def mock_investigation_context(self):
-        """Create mock investigation context"""
-        context = Mock(spec=AutonomousInvestigationContext)
-        context.investigation_id = "test-investigation-123"
-        context.entity_id = "test-entity-456"
-        context.entity_type = EntityType.USER
-        context.generate_llm_context = Mock(return_value={"entity": "test"})
-        return context
-    
-    @pytest.fixture
-    def mock_knowledge_context(self):
-        """Create mock knowledge context"""
-        knowledge_ctx = Mock(spec=KnowledgeContext)
-        knowledge_ctx.investigation_id = "test-investigation-123"
-        knowledge_ctx.domain = "network"
-        knowledge_ctx.entity_id = "test-entity-456"
-        knowledge_ctx.total_chunks = 5
-        knowledge_ctx.critical_knowledge = []
-        knowledge_ctx.supporting_knowledge = []
-        knowledge_ctx.background_knowledge = []
-        knowledge_ctx.knowledge_sources = {"doc-1", "doc-2"}
-        return knowledge_ctx
     
     def test_init_with_rag_enabled(self, mock_tools, mock_rag_orchestrator):
         """Test initialization with RAG enabled"""
