@@ -46,6 +46,16 @@ from .enhanced_cache import (
     CacheStats
 )
 
+# RAG-Enhanced Tool Components
+from .rag_enhanced_tool_base import RAGEnhancedToolBase
+from .rag_tool_context import (
+    ToolExecutionContextEnhancer,
+    ToolExecutionContext,
+    ToolContextEnhancementResult,
+    ContextInjectionStrategy,
+    get_tool_context_enhancer
+)
+
 __all__ = [
     # Enhanced Tool Base
     "EnhancedToolBase",
@@ -68,5 +78,13 @@ __all__ = [
     # Enhanced Cache
     "EnhancedCache",
     "CacheEntry",
-    "CacheStats"
+    "CacheStats",
+    
+    # RAG-Enhanced Tool Components
+    "RAGEnhancedToolBase",
+    "ToolExecutionContextEnhancer",
+    "ToolExecutionContext",
+    "ToolContextEnhancementResult", 
+    "ContextInjectionStrategy",
+    "get_tool_context_enhancer"
 ]

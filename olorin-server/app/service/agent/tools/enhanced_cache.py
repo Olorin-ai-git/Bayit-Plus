@@ -159,7 +159,7 @@ class EnhancedCache:
         self.cleanup_task: Optional[asyncio.Task] = None
         self.start_cleanup_task()
         
-        self.logger = logging.getLogger(f"{__name__}.cache")
+        self.logger = get_bridge_logger(f"{__name__}.cache")
     
     def start_cleanup_task(self) -> None:
         """Start background cleanup task"""

@@ -14,7 +14,7 @@ from app.service.agent.agent_communication import (
     _create_error_response,
 )
 from app.service.logging import get_bridge_logger
-from app.service.agent.agent_factory import create_rag_agent
+from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
 
 # RAG imports with graceful fallback
 try:
@@ -89,12 +89,21 @@ async def autonomous_device_agent(state, config) -> dict:
         if rag_config:
             rag_stats = update_rag_stats_on_success(rag_stats)
         
-        # Create RAG-enhanced or standard agent based on availability
+        # Create agent with intelligent tool selection and RAG enhancement
         if RAG_AVAILABLE and rag_config:
-            device_agent = create_rag_agent("device", tools, rag_config)
+            device_agent = await create_agent_with_intelligent_tools(
+                domain="device",
+                investigation_context=autonomous_context,
+                fallback_tools=tools,
+                enable_rag=True,
+                categories=["threat_intelligence", "ml_ai", "blockchain", "intelligence", "web"]
+            )
+            logger.info("🔧 Created device agent with intelligent RAG-enhanced tool selection")
         else:
+            # Fallback to standard agent creation
             from app.service.agent.agent_factory import create_autonomous_agent
             device_agent = create_autonomous_agent("device", tools)
+            logger.info("🔧 Created standard device agent (RAG not available)")
         
         # Get enhanced objectives with RAG-augmented threat intelligence focus
         device_objectives = get_device_objectives(rag_enabled=(RAG_AVAILABLE and rag_config is not None))

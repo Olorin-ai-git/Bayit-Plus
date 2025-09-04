@@ -278,7 +278,7 @@ export class AutonomousInvestigationClient {
    * Handle status update messages
    */
   private handleStatusUpdate(data: InvestigationStatusData): void {
-    const { status, current_phase, progress, message } = data;
+    const { status, current_phase, progress } = data;
 
     this.log(
       `Status update: ${status} - Phase: ${current_phase} (${(

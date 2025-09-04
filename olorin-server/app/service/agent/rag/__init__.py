@@ -41,6 +41,20 @@ from .rag_orchestrator import (
     get_rag_orchestrator
 )
 
+# Tool recommendation system
+from .tool_recommender import (
+    KnowledgeBasedToolRecommender,
+    ToolRecommendation,
+    ToolEffectivenessMetrics,
+    ToolRecommendationStrategy,
+    ToolRecommenderConfig,
+    create_tool_recommender
+)
+
+# Tool recommendation utilities (for advanced usage)
+from .tool_analysis_utils import ToolAnalysisUtils
+from .tool_recommender_strategies import ToolRecommendationStrategies
+
 __all__ = [
     # Knowledge Base
     "KnowledgeBase",
@@ -71,5 +85,17 @@ __all__ = [
     "KnowledgeContext",
     "ContextRelevanceLevel",
     "ContextAugmentationConfig",
-    "create_context_augmentor"
+    "create_context_augmentor",
+    
+    # Tool Recommender
+    "KnowledgeBasedToolRecommender",
+    "ToolRecommendation",
+    "ToolEffectivenessMetrics",
+    "ToolRecommendationStrategy",
+    "ToolRecommenderConfig",
+    "create_tool_recommender",
+    
+    # Tool Recommendation Utilities (advanced usage)
+    "ToolAnalysisUtils",
+    "ToolRecommendationStrategies"
 ]

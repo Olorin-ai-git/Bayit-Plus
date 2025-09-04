@@ -24,8 +24,6 @@ import { updateStepStatus } from '../utils/investigation';
 import { DEFAULT_USER_ID } from '../constants/definitions';
 import '../components/LocationMap.css';
 import InvestigationHeader from '../components/InvestigationHeader';
-import InvestigationSteps from '../components/InvestigationSteps';
-import RiskScoreDisplay from '../components/RiskScoreDisplay';
 import CommentSidebar from '../components/CommentSidebar';
 import { CommentMessage } from '../components/CommentWindow';
 import {
@@ -41,28 +39,21 @@ import {
   processLocationData,
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
-import AutonomousInvestigationPanel from '../components/AutonomousInvestigationPanel';
 import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
 import EnhancedAutonomousInvestigationPanel from '../components/EnhancedAutonomousInvestigationPanel';
 import {
-  useTheme,
   Box,
   Typography,
   Paper,
   Alert,
-  Switch,
-  FormControlLabel,
-  Collapse,
-  Fade,
 } from '@mui/material';
 import { useStepTools } from '../hooks/useStepTools';
 import { useFirebaseAnalytics } from '../hooks/useFirebaseAnalytics';
-import { useParams, useLocation } from 'react-router-dom';
 import {
   getCurrentUrlParams,
   getCurrentAuthId,
 } from '../utils/urlParams';
-import { useDemoMode } from '../hooks/useDemoMode';
+import { useDemoMode } from '../contexts/DemoModeContext';
 
 /**
  * Represents a single log entry in the investigation.
@@ -76,6 +67,68 @@ interface LogEntry {
 const LOG_STATUS_MESSAGES = {
   COMPLETED: ['Analysis complete', 'Initialization complete'],
   FAILED: ['Analysis failed'],
+};
+
+/**
+ * Formats the duration between two dates
+ * @param {Date} start - Start time
+ * @param {Date} end - End time
+ * @returns {string} Formatted duration
+ */
+const formatDuration = (start: Date, end: Date): string => {
+  const durationMs = end.getTime() - start.getTime();
+  const seconds = Math.floor(durationMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}m ${remainingSeconds}s`;
+};
+
+/**
+ * Sends the completed investigation details to the backend server.
+ * @param {InvestigationStep[]} steps - The updated investigation steps.
+ */
+const sendInvestigationToBackend = async (
+  steps: InvestigationStep[],
+  addLog: (message: string, type: LogLevel) => void,
+  isDemoMode: boolean,
+) => {
+  if (isDemoMode) {
+    // Skip backend call in demo mode
+    return;
+  }
+  try {
+    // Compose details for backend
+    const riskStep = steps.find((s) => s.id === InvestigationStepId.RISK);
+    let overallRiskScore = null;
+    if (
+      riskStep?.details?.risk_level !== undefined &&
+      riskStep?.details?.risk_level !== null
+    ) {
+      overallRiskScore = Number(riskStep.details.risk_level);
+    } else if (
+      riskStep?.details?.overallRiskScore !== undefined &&
+      riskStep?.details?.overallRiskScore !== null
+    ) {
+      overallRiskScore = Number(riskStep.details.overallRiskScore);
+    } else if (
+      riskStep?.details?.overall_risk_score !== undefined &&
+      riskStep?.details?.overall_risk_score !== null
+    ) {
+      overallRiskScore = Number(riskStep.details.overall_risk_score);
+    }
+
+    if (overallRiskScore === null || Number.isNaN(overallRiskScore)) {
+      addLog(
+        'Investigation complete: risk score is missing.',
+        LogLevel.WARNING,
+      );
+      return;
+    }
+    // Investigation completed successfully
+    addLog('Investigation completed successfully.', LogLevel.SUCCESS);
+  } catch (err) {
+    addLog('Error: Failed to complete investigation.', LogLevel.ERROR);
+  }
 };
 
 /**
@@ -131,7 +184,6 @@ interface ErrorResponse {
 const InvestigationPage: React.FC<InvestigationPageProps> = ({
   investigationId = null,
 }) => {
-  const theme = useTheme();
   const sandbox = useSandboxContext();
   const { isDemoMode } = useDemoMode();
   const useMock = isDemoMode;
@@ -232,41 +284,10 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
    * @param {string} message - The log message.
    * @param {LogLevel} [type=LogLevel.INFO] - The type of log entry.
    */
-  const addLog = (message: string, type: LogLevel = LogLevel.INFO) => {
+  const addLog = useCallback((message: string, type: LogLevel = LogLevel.INFO) => {
     setLogs((prev) => [...prev, { timestamp: Date.now(), message, type }]);
-  };
+  }, []);
 
-  // Handle autonomous investigation step updates with risk scores
-  const handleAutonomousStepUpdate = (
-    stepId: string,
-    riskScore: number,
-    llmThoughts: string,
-  ) => {
-    console.log(
-      'Updating autonomous step:',
-      stepId,
-      'with risk score:',
-      riskScore,
-    );
-
-    setStepStates((prevSteps) => {
-      return prevSteps.map((step) => {
-        if (step.id === stepId) {
-          return {
-            ...step,
-            status: StepStatus.COMPLETED,
-            details: {
-              ...step.details,
-              risk_score: riskScore,
-              llm_thoughts: llmThoughts,
-              timestamp: new Date().toISOString(),
-            },
-          };
-        }
-        return step;
-      });
-    });
-  };
 
   /**
    * Updates the details for a specific agent step
@@ -406,11 +427,11 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
    * @param {InvestigationStep[]} newSteps - New steps to set
    * @returns {Promise<void>} Promise that resolves when steps are set
    */
-  const setStepsAsync = async (newSteps: InvestigationStep[]): Promise<void> =>
+  const setStepsAsync = useCallback(async (newSteps: InvestigationStep[]): Promise<void> =>
     new Promise<void>((resolve) => {
       setStepStates(newSteps);
       setTimeout(resolve, 0);
-    });
+    }), []);
 
   /**
    * Checks if the investigation has been cancelled
@@ -421,6 +442,82 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
       throw new Error('cancelled');
     }
   }
+
+  /**
+   * Adds agent-specific log messages
+   * @param {InvestigationStepId} stepId - The ID of the step
+   * @param {string} agentName - The name of the agent
+   */
+  const addAgentLogs = useCallback(async (
+    stepId: InvestigationStepId,
+    agentName: string,
+  ) => {
+    const autonomousLogMessages: Record<InvestigationStepId, string[]> = {
+      [InvestigationStepId.NETWORK]: [
+        'AI analyzing customer networks from Devices Panel and Databricks',
+        'Autonomous IP address consistency verification across sessions',
+        'AI-powered ISP consistency analysis from Devices Panel',
+        'Machine learning detecting VPN/proxy usage via Devices History Panel and TMX',
+      ],
+      [InvestigationStepId.LOCATION]: [
+        'AI checking customer location from OII, SF, Ekata, and Devices Panel',
+        'Autonomous business location verification from SF, Business Admin, and Google',
+        'AI validating phone registration location via Ekata and LexisNexis',
+        'Machine learning analyzing historical RSS login locations from Devices Panel',
+      ],
+      [InvestigationStepId.DEVICE]: [
+        'AI checking device type (PC/MAC) from Devices Panel and TMX',
+        'Autonomous mobile device usage verification (phone/tablet)',
+        'AI analyzing browser information from Devices Panel',
+        'Machine learning checking operating system details',
+      ],
+      [InvestigationStepId.LOG]: [
+        'AI analyzing login patterns from authentication logs',
+        'Autonomous detection of suspicious activities in system logs',
+        'Machine learning evaluating behavioral patterns against known fraud indicators',
+      ],
+      [InvestigationStepId.INIT]: [],
+      [InvestigationStepId.RISK]: [],
+    };
+
+    const manualLogMessages: Record<InvestigationStepId, string[]> = {
+      [InvestigationStepId.NETWORK]: [
+        'Manually analyzing customer networks from Devices Panel and Databricks',
+        'Investigator checking IP address consistency across sessions',
+        'Manual verification of ISP consistency from Devices Panel',
+        'Analyst detecting VPN/proxy usage via Devices History Panel and TMX',
+      ],
+      [InvestigationStepId.LOCATION]: [
+        'Manually checking customer location from OII, SF, Ekata, and Devices Panel',
+        'Investigator verifying business location from SF, Business Admin, and Google',
+        'Manual validation of phone registration location via Ekata and LexisNexis',
+        'Analyst reviewing historical RSS login locations from Devices Panel',
+      ],
+      [InvestigationStepId.DEVICE]: [
+        'Manually checking device type (PC/MAC) from Devices Panel and TMX',
+        'Investigator verifying mobile device usage (phone/tablet)',
+        'Manual analysis of browser information from Devices Panel',
+        'Analyst reviewing operating system details',
+      ],
+      [InvestigationStepId.LOG]: [
+        'Manually analyzing login patterns from authentication logs',
+        'Investigator checking for suspicious activities in system logs',
+        'Manual evaluation of behavioral patterns against known fraud indicators',
+      ],
+      [InvestigationStepId.INIT]: [],
+      [InvestigationStepId.RISK]: [],
+    };
+
+    const logMessages = autonomousMode
+      ? autonomousLogMessages
+      : manualLogMessages;
+
+    await Promise.all(
+      logMessages[stepId].map((message) =>
+        addLog(`${agentName} Agent: ${message}`, LogLevel.INFO),
+      ),
+    );
+  }, [autonomousMode, addLog]);
 
   const handleStepProgression = useCallback(
     async (
@@ -457,49 +554,181 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         }));
       }
     },
-    [],
+    [addLog, setStepsAsync, setCurrentStep, setStepEndTimes, setStepStartTimes, addAgentLogs],
   );
 
-  useEffect(() => {
-    if (stepStates.length > 0) {
-      const currentStepData = stepStates.find(
-        (step) => step.id === currentStep,
+  /**
+   * Adds risk assessment logs detailing the factors considered in determining risk
+   */
+  const addRiskAssessment = useCallback(() => {
+    // Dynamically build the factors considered list based on selected agents
+    const agentFactors: Record<string, string> = {
+      'Network Agent': 'IP reputation, connection patterns, VPN usage',
+      'Location Agent': 'Location history, velocity, known fraud patterns',
+      'Device Agent': 'Device fingerprint, changes, trust score',
+      'Log Agent': 'Login patterns, suspicious activities, behavioral patterns',
+    };
+    const usedAgents = selectedInvestigationSteps
+      .filter(
+        (step) =>
+          step.id !== InvestigationStepId.INIT &&
+          step.id !== InvestigationStepId.RISK,
+      )
+      .map((step) => step.agent)
+      .filter((agent) => agentFactors[agent]);
+    const factorsList = usedAgents
+      .map((agent) => `- ${agent}: ${agentFactors[agent]}`)
+      .join('\n');
+    addLog(
+      `Risk Assessment Agent: Risk determination complete. Factors considered:\n${factorsList}`,
+      LogLevel.INFO,
+    );
+    addLog(`Risk Assessment Agent: Analysis complete.`, LogLevel.SUCCESS);
+  }, [addLog, selectedInvestigationSteps]);
+
+  /**
+   * Closes the investigation and updates related states
+   */
+  const closeInvestigation = useCallback(async (): Promise<void> => {
+    const endTime = new Date();
+    setInvestigationEndTime(endTime);
+
+    // Record end time for current step
+    setStepEndTimes((prev) => ({
+      ...prev,
+      [currentStep]: endTime,
+    }));
+
+    if (investigationStartTime) {
+      const duration = formatDuration(investigationStartTime, endTime);
+      addLog(
+        `Investigation completed at: ${endTime.toLocaleTimeString()}`,
+        LogLevel.SUCCESS,
       );
-      if (
-        currentStepData?.status === StepStatus.COMPLETED ||
-        currentStepData?.status === StepStatus.FAILED
-      ) {
-        handleStepProgression(stepStates, currentStep);
-      }
-
-      // Wait for all agents to complete before calculating final risk score
-      const allAgentsCompleted =
-        stepStates.length > 0 &&
-        stepStates.every(
-          (step) =>
-            step.id === InvestigationStepId.INIT ||
-            step.id === InvestigationStepId.RISK ||
-            step.status === StepStatus.COMPLETED ||
-            step.status === StepStatus.FAILED,
-        );
-
-      if (
-        allAgentsCompleted &&
-        !cancelledRef.current &&
-        !isInvestigationClosed &&
-        currentStep === InvestigationStepId.RISK &&
-        currentStepData?.status === StepStatus.IN_PROGRESS
-      ) {
-        addLog('All agents completed their analysis', LogLevel.SUCCESS);
-        handleRiskAssessmentResponse();
-      }
+      addLog(`Total investigation duration: ${duration}`, LogLevel.SUCCESS);
     }
-  }, [currentStep, stepStates]);
+
+    setIsInvestigationClosed(true);
+
+    // Track manual investigation completion
+    analytics.trackInvestigationEvent(
+      'manual_investigation_completed',
+      investigationIdState,
+      {
+        user_id: userId,
+        input_type: selectedInputType,
+        time_range: timeRange,
+        selected_steps: selectedInvestigationSteps.map((step) => step.id),
+        autonomous_mode: false,
+        investigation_duration: investigationStartTime
+          ? Date.now() - investigationStartTime.getTime()
+          : null,
+      },
+    );
+
+    const updatedSteps = await updateStepStatus(
+      stepStates,
+      InvestigationStepId.RISK,
+      StepStatus.COMPLETED,
+    );
+    await setStepsAsync(updatedSteps);
+    setCurrentStepIndex(stepStates.length - 1);
+    setIsLoading(false);
+    setIsEditModalOpen(false);
+    // --- Add investigation to backend list ---
+    // Calculate and set overall risk score in RISK step details before saving
+    const agentScores = stepStates
+      .filter(
+        (step) =>
+          step.id !== InvestigationStepId.INIT &&
+          step.id !== InvestigationStepId.RISK,
+      )
+      .filter(
+        (step) =>
+          step.status === StepStatus.COMPLETED &&
+          step.details?.risk_assessment?.risk_level !== undefined,
+      )
+      .map((step) => step.details?.risk_assessment?.risk_level || 0);
+    let overallScore = 0;
+    const riskStep = stepStates.find(
+      (step) =>
+        step.id === InvestigationStepId.RISK &&
+        step.status === StepStatus.COMPLETED,
+    );
+    if (agentScores.length > 0) {
+      overallScore =
+        agentScores.reduce((sum, score) => sum + score, 0) / agentScores.length;
+    }
+    // If the riskStep already has a valid overallRiskScore, use it
+    let finalOverallScore = overallScore;
+    if (
+      riskStep?.details?.overallRiskScore !== undefined &&
+      riskStep?.details?.overallRiskScore !== null
+    ) {
+      finalOverallScore = Number(riskStep.details.overallRiskScore);
+    } else if (
+      riskStep?.details?.risk_level !== undefined &&
+      riskStep?.details?.risk_level !== null
+    ) {
+      finalOverallScore = Number(riskStep.details.risk_level);
+    } else if (
+      riskStep?.details?.overall_risk_score !== undefined &&
+      riskStep?.details?.overall_risk_score !== null
+    ) {
+      finalOverallScore = Number(riskStep.details.overall_risk_score);
+    }
+    // Write the score to the RISK step's details
+    const updatedStepsWithScore = updatedSteps.map((step) => {
+      if (step.id === InvestigationStepId.RISK) {
+        // Only set overallRiskScore if not already present
+        const hasApiScore =
+          step.details?.overallRiskScore !== undefined &&
+          step.details?.overallRiskScore !== null;
+        const hasLLMThoughts =
+          step.details?.accumulatedLLMThoughts !== undefined &&
+          step.details?.accumulatedLLMThoughts !== null;
+        return {
+          ...step,
+          details: {
+            ...step.details,
+            overallRiskScore: hasApiScore
+              ? step.details.overallRiskScore
+              : finalOverallScore,
+            ...(hasLLMThoughts
+              ? { accumulatedLLMThoughts: step.details.accumulatedLLMThoughts }
+              : {}),
+          },
+        };
+      }
+      return step;
+    });
+    await setStepsAsync(updatedStepsWithScore);
+    await sendInvestigationToBackend(updatedStepsWithScore, addLog, isDemoMode);
+  }, [
+    addLog,
+    analytics,
+    currentStep,
+    investigationIdState,
+    investigationStartTime,
+    isDemoMode,
+    selectedInputType,
+    selectedInvestigationSteps,
+    setCurrentStepIndex,
+    setInvestigationEndTime,
+    setIsEditModalOpen,
+    setIsInvestigationClosed,
+    setIsLoading,
+    setStepEndTimes,
+    setStepsAsync,
+    stepStates,
+    timeRange,
+    userId,
+  ]);
 
   /**
    * Handles the risk assessment API response, updates state, logs, and closes the investigation.
    */
-  const handleRiskAssessmentResponse = async () => {
+  const handleRiskAssessmentResponse = useCallback(async () => {
     try {
       addLog(
         'Risk Assessment Agent: Fetching accumulated risk assessment from server...',
@@ -614,36 +843,43 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         ),
       );
     }
-  };
+  }, [addLog, addRiskAssessment, api, closeInvestigation, investigationIdState, selectedInputType, setStepStates, timeRangeRef, userId]);
+  useEffect(() => {
+    if (stepStates.length > 0) {
+      const currentStepData = stepStates.find(
+        (step) => step.id === currentStep,
+      );
+      if (
+        currentStepData?.status === StepStatus.COMPLETED ||
+        currentStepData?.status === StepStatus.FAILED
+      ) {
+        handleStepProgression(stepStates, currentStep);
+      }
 
-  /**
-   * Adds risk assessment logs detailing the factors considered in determining risk
-   */
-  const addRiskAssessment = () => {
-    // Dynamically build the factors considered list based on selected agents
-    const agentFactors: Record<string, string> = {
-      'Network Agent': 'IP reputation, connection patterns, VPN usage',
-      'Location Agent': 'Location history, velocity, known fraud patterns',
-      'Device Agent': 'Device fingerprint, changes, trust score',
-      'Log Agent': 'Login patterns, suspicious activities, behavioral patterns',
-    };
-    const usedAgents = selectedInvestigationSteps
-      .filter(
-        (step) =>
-          step.id !== InvestigationStepId.INIT &&
-          step.id !== InvestigationStepId.RISK,
-      )
-      .map((step) => step.agent)
-      .filter((agent) => agentFactors[agent]);
-    const factorsList = usedAgents
-      .map((agent) => `- ${agent}: ${agentFactors[agent]}`)
-      .join('\n');
-    addLog(
-      `Risk Assessment Agent: Risk determination complete. Factors considered:\n${factorsList}`,
-      LogLevel.INFO,
-    );
-    addLog(`Risk Assessment Agent: Analysis complete.`, LogLevel.SUCCESS);
-  };
+      // Wait for all agents to complete before calculating final risk score
+      const allAgentsCompleted =
+        stepStates.length > 0 &&
+        stepStates.every(
+          (step) =>
+            step.id === InvestigationStepId.INIT ||
+            step.id === InvestigationStepId.RISK ||
+            step.status === StepStatus.COMPLETED ||
+            step.status === StepStatus.FAILED,
+        );
+
+      if (
+        allAgentsCompleted &&
+        !cancelledRef.current &&
+        !isInvestigationClosed &&
+        currentStep === InvestigationStepId.RISK &&
+        currentStepData?.status === StepStatus.IN_PROGRESS
+      ) {
+        addLog('All agents completed their analysis', LogLevel.SUCCESS);
+        handleRiskAssessmentResponse();
+      }
+    }
+  }, [currentStep, stepStates, handleStepProgression, isInvestigationClosed, addLog, handleRiskAssessmentResponse]);
+
 
   /**
    * Gets the response for a specific agent
@@ -705,95 +941,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     }
   };
 
-  /**
-   * Adds agent-specific log messages
-   * @param {InvestigationStepId} stepId - The ID of the step
-   * @param {string} agentName - The name of the agent
-   */
-  const addAgentLogs = async (
-    stepId: InvestigationStepId,
-    agentName: string,
-  ) => {
-    const autonomousLogMessages: Record<InvestigationStepId, string[]> = {
-      [InvestigationStepId.NETWORK]: [
-        'AI analyzing customer networks from Devices Panel and Databricks',
-        'Autonomous IP address consistency verification across sessions',
-        'AI-powered ISP consistency analysis from Devices Panel',
-        'Machine learning detecting VPN/proxy usage via Devices History Panel and TMX',
-      ],
-      [InvestigationStepId.LOCATION]: [
-        'AI checking customer location from OII, SF, Ekata, and Devices Panel',
-        'Autonomous business location verification from SF, Business Admin, and Google',
-        'AI validating phone registration location via Ekata and LexisNexis',
-        'Machine learning analyzing historical RSS login locations from Devices Panel',
-      ],
-      [InvestigationStepId.DEVICE]: [
-        'AI checking device type (PC/MAC) from Devices Panel and TMX',
-        'Autonomous mobile device usage verification (phone/tablet)',
-        'AI analyzing browser information from Devices Panel',
-        'Machine learning checking operating system details',
-      ],
-      [InvestigationStepId.LOG]: [
-        'AI analyzing login patterns from authentication logs',
-        'Autonomous detection of suspicious activities in system logs',
-        'Machine learning evaluating behavioral patterns against known fraud indicators',
-      ],
-      [InvestigationStepId.INIT]: [],
-      [InvestigationStepId.RISK]: [],
-    };
-
-    const manualLogMessages: Record<InvestigationStepId, string[]> = {
-      [InvestigationStepId.NETWORK]: [
-        'Manually analyzing customer networks from Devices Panel and Databricks',
-        'Investigator checking IP address consistency across sessions',
-        'Manual verification of ISP consistency from Devices Panel',
-        'Analyst detecting VPN/proxy usage via Devices History Panel and TMX',
-      ],
-      [InvestigationStepId.LOCATION]: [
-        'Manually checking customer location from OII, SF, Ekata, and Devices Panel',
-        'Investigator verifying business location from SF, Business Admin, and Google',
-        'Manual validation of phone registration location via Ekata and LexisNexis',
-        'Analyst reviewing historical RSS login locations from Devices Panel',
-      ],
-      [InvestigationStepId.DEVICE]: [
-        'Manually checking device type (PC/MAC) from Devices Panel and TMX',
-        'Investigator verifying mobile device usage (phone/tablet)',
-        'Manual analysis of browser information from Devices Panel',
-        'Analyst reviewing operating system details',
-      ],
-      [InvestigationStepId.LOG]: [
-        'Manually analyzing login patterns from authentication logs',
-        'Investigator checking for suspicious activities in system logs',
-        'Manual evaluation of behavioral patterns against known fraud indicators',
-      ],
-      [InvestigationStepId.INIT]: [],
-      [InvestigationStepId.RISK]: [],
-    };
-
-    const logMessages = autonomousMode
-      ? autonomousLogMessages
-      : manualLogMessages;
-
-    await Promise.all(
-      logMessages[stepId].map((message) =>
-        addLog(`${agentName} Agent: ${message}`, LogLevel.INFO),
-      ),
-    );
-  };
-
-  /**
-   * Formats the duration between two dates
-   * @param {Date} start - Start time
-   * @param {Date} end - End time
-   * @returns {string} Formatted duration
-   */
-  const formatDuration = (start: Date, end: Date): string => {
-    const durationMs = end.getTime() - start.getTime();
-    const seconds = Math.floor(durationMs / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
-  };
 
   /**
    * Handles the investigation form submission.
@@ -1258,169 +1405,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
     setLogs([]);
   };
 
-  /**
-   * Closes the investigation and updates related states
-   */
-  const closeInvestigation = async (): Promise<void> => {
-    const endTime = new Date();
-    setInvestigationEndTime(endTime);
 
-    // Record end time for current step
-    setStepEndTimes((prev) => ({
-      ...prev,
-      [currentStep]: endTime,
-    }));
-
-    if (investigationStartTime) {
-      const duration = formatDuration(investigationStartTime, endTime);
-      addLog(
-        `Investigation completed at: ${endTime.toLocaleTimeString()}`,
-        LogLevel.SUCCESS,
-      );
-      addLog(`Total investigation duration: ${duration}`, LogLevel.SUCCESS);
-    }
-
-    setIsInvestigationClosed(true);
-
-    // Track manual investigation completion
-    analytics.trackInvestigationEvent(
-      'manual_investigation_completed',
-      investigationIdState,
-      {
-        user_id: userId,
-        input_type: selectedInputType,
-        time_range: timeRange,
-        selected_steps: selectedInvestigationSteps.map((step) => step.id),
-        autonomous_mode: false,
-        investigation_duration: investigationStartTime
-          ? Date.now() - investigationStartTime.getTime()
-          : null,
-      },
-    );
-
-    const updatedSteps = await updateStepStatus(
-      stepStates,
-      InvestigationStepId.RISK,
-      StepStatus.COMPLETED,
-    );
-    await setStepsAsync(updatedSteps);
-    setCurrentStepIndex(stepStates.length - 1);
-    setIsLoading(false);
-    setIsEditModalOpen(false);
-    // --- Add investigation to backend list ---
-    // Calculate and set overall risk score in RISK step details before saving
-    const agentScores = stepStates
-      .filter(
-        (step) =>
-          step.id !== InvestigationStepId.INIT &&
-          step.id !== InvestigationStepId.RISK,
-      )
-      .filter(
-        (step) =>
-          step.status === StepStatus.COMPLETED &&
-          step.details?.risk_assessment?.risk_level !== undefined,
-      )
-      .map((step) => step.details?.risk_assessment?.risk_level || 0);
-    let overallScore = 0;
-    const riskStep = stepStates.find(
-      (step) =>
-        step.id === InvestigationStepId.RISK &&
-        step.status === StepStatus.COMPLETED,
-    );
-    if (agentScores.length > 0) {
-      overallScore =
-        agentScores.reduce((sum, score) => sum + score, 0) / agentScores.length;
-    }
-    // If the riskStep already has a valid overallRiskScore, use it
-    let finalOverallScore = overallScore;
-    if (
-      riskStep?.details?.overallRiskScore !== undefined &&
-      riskStep?.details?.overallRiskScore !== null
-    ) {
-      finalOverallScore = Number(riskStep.details.overallRiskScore);
-    } else if (
-      riskStep?.details?.risk_level !== undefined &&
-      riskStep?.details?.risk_level !== null
-    ) {
-      finalOverallScore = Number(riskStep.details.risk_level);
-    } else if (
-      riskStep?.details?.overall_risk_score !== undefined &&
-      riskStep?.details?.overall_risk_score !== null
-    ) {
-      finalOverallScore = Number(riskStep.details.overall_risk_score);
-    }
-    // Write the score to the RISK step's details
-    const updatedStepsWithScore = updatedSteps.map((step) => {
-      if (step.id === InvestigationStepId.RISK) {
-        // Only set overallRiskScore if not already present
-        const hasApiScore =
-          step.details?.overallRiskScore !== undefined &&
-          step.details?.overallRiskScore !== null;
-        const hasLLMThoughts =
-          step.details?.accumulatedLLMThoughts !== undefined &&
-          step.details?.accumulatedLLMThoughts !== null;
-        return {
-          ...step,
-          details: {
-            ...step.details,
-            overallRiskScore: hasApiScore
-              ? step.details.overallRiskScore
-              : finalOverallScore,
-            ...(hasLLMThoughts
-              ? { accumulatedLLMThoughts: step.details.accumulatedLLMThoughts }
-              : {}),
-          },
-        };
-      }
-      return step;
-    });
-    await setStepsAsync(updatedStepsWithScore);
-    await sendInvestigationToBackend(updatedStepsWithScore);
-  };
-
-  /**
-   * Sends the completed investigation details to the backend server.
-   * @param {InvestigationStep[]} steps - The updated investigation steps.
-   */
-  const sendInvestigationToBackend = async (steps: InvestigationStep[]) => {
-    if (useMock) {
-      // Skip backend call in demo mode
-      return;
-    }
-    try {
-      // Compose details for backend
-      const riskStep = steps.find((s) => s.id === InvestigationStepId.RISK);
-      let overallRiskScore = null;
-      if (
-        riskStep?.details?.risk_level !== undefined &&
-        riskStep?.details?.risk_level !== null
-      ) {
-        overallRiskScore = Number(riskStep.details.risk_level);
-      } else if (
-        riskStep?.details?.overallRiskScore !== undefined &&
-        riskStep?.details?.overallRiskScore !== null
-      ) {
-        overallRiskScore = Number(riskStep.details.overallRiskScore);
-      } else if (
-        riskStep?.details?.overall_risk_score !== undefined &&
-        riskStep?.details?.overall_risk_score !== null
-      ) {
-        overallRiskScore = Number(riskStep.details.overall_risk_score);
-      }
-
-      if (overallRiskScore === null || Number.isNaN(overallRiskScore)) {
-        addLog(
-          'Investigation complete: risk score is missing.',
-          LogLevel.WARNING,
-        );
-        return;
-      }
-      // Investigation completed successfully
-      addLog('Investigation completed successfully.', LogLevel.SUCCESS);
-    } catch (err) {
-      addLog('Error: Failed to complete investigation.', LogLevel.ERROR);
-    }
-  };
 
   /**
    * Handles when a log message is displayed in the UI
@@ -1506,7 +1491,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
         });
       setHasDemoApiCalled(true);
     }
-  }, [hasDemoApiCalled]);
+  }, [hasDemoApiCalled, isDemoMode]);
 
   const [systemPromptComments, setSystemPromptComments] = useState<
     CommentMessage[]
@@ -1519,14 +1504,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const [selectedStepForTools, setSelectedStepForTools] =
     useState<InvestigationStep | null>(null);
 
-  /**
-   * Handler for opening the tools sidebar with a specific step
-   * @param {InvestigationStep} step - The step to configure tools for
-   */
-  const handleOpenToolsForStep = (step: InvestigationStep) => {
-    setSelectedStepForTools(step);
-    setToolsSidebarOpen(true);
-  };
 
   /**
    * Handler for closing the tools sidebar

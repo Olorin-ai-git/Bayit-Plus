@@ -9,7 +9,7 @@ import {
   Box,
   SelectChangeEvent,
 } from '@mui/material';
-import { InvestigationType } from '../types/investigation';
+import { InvestigationType } from '../types/Investigation';
 
 interface FraudInvestigationFormProps {
   onSubmit: (data: {

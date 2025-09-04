@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from app.service.logging import get_bridge_logger
 import time
 from dataclasses import dataclass, field

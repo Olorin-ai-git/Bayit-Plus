@@ -65,19 +65,24 @@ class ColoredFormatter(logging.Formatter):
     def _supports_color(self) -> bool:
         """Check if terminal supports colors"""
         import os
-        # Check if we're in a terminal and not piped
-        if not hasattr(sys.stdout, 'isatty') or not sys.stdout.isatty():
-            return False
-        
-        # Check environment variables
+        # Check environment variables first
         if os.getenv('NO_COLOR'):
             return False
         if os.getenv('FORCE_COLOR'):
             return True
             
-        # Check TERM variable
+        # Force colors for common terminals (be more permissive)
         term = os.getenv('TERM', '')
-        return 'color' in term or term in ['xterm', 'xterm-256color', 'screen']
+        if term in ['xterm', 'xterm-256color', 'xterm-color', 'screen', 'screen-256color', 
+                    'tmux', 'tmux-256color', 'linux', 'cygwin']:
+            return True
+            
+        # Check if we're in a terminal and not piped
+        if hasattr(sys.stdout, 'isatty') and sys.stdout.isatty():
+            return True
+            
+        # Default to True for better user experience
+        return True
     
     def format(self, record: logging.LogRecord) -> str:
         """Format log record with colors and consistent timestamp"""
@@ -349,6 +354,7 @@ class UnifiedLoggingCore:
     
     def _reconfigure_existing_loggers(self):
         """Reconfigure existing loggers with new settings"""
+        # Configure our own loggers
         for logger in self._loggers.values():
             # Remove existing handlers
             for handler in logger.handlers[:]:
@@ -360,6 +366,32 @@ class UnifiedLoggingCore:
             
             # Update log level
             logger.setLevel(getattr(logging, self._config['log_level']))
+        
+        # Configure root logger to ensure consistent formatting for all external loggers
+        root_logger = logging.getLogger()
+        
+        # Remove all existing handlers from root logger
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+        
+        # Add our handlers to root logger
+        for handler in self._handlers.values():
+            root_logger.addHandler(handler)
+        
+        # Set root logger level
+        root_logger.setLevel(getattr(logging, self._config['log_level']))
+        
+        # Configure specific external loggers to use our format
+        external_loggers = ['uvicorn', 'uvicorn.error', 'uvicorn.access', 'fastapi', 'root']
+        for logger_name in external_loggers:
+            ext_logger = logging.getLogger(logger_name)
+            # Clear existing handlers
+            ext_logger.handlers.clear()
+            # Add our handlers with our formatting
+            for handler in self._handlers.values():
+                ext_logger.addHandler(handler)
+            ext_logger.propagate = False  # Prevent double logging
+            ext_logger.setLevel(getattr(logging, self._config['log_level']))
     
     @lru_cache(maxsize=256)
     def get_logger(self, name: str, structured: bool = False) -> Union[logging.Logger, Any]:

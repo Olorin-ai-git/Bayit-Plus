@@ -7,6 +7,7 @@ Provides validation, retry orchestration, caching, and comprehensive monitoring.
 
 import asyncio
 import time
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -223,7 +224,7 @@ class EnhancedToolBase(ABC):
         """Initialize enhanced tool"""
         self.config = config
         self.metrics = ToolMetrics()
-        self.logger = logging.getLogger(f"{__name__}.{config.name}")
+        self.logger = get_bridge_logger(f"{__name__}.{config.name}")
         self.logger.setLevel(getattr(logging, config.log_level.upper()))
         
         # Circuit breaker state

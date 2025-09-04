@@ -390,7 +390,7 @@ class LocationDataClient:
             await self.connect()
 
         tasks = [
-            self.get_oii_location_info(user_id),
+            self._get_oii_location(user_id),
             self.get_business_location(user_id),
             self.get_phone_location(user_id),
         ]

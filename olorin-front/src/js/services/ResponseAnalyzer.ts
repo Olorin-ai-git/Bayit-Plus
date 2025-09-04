@@ -6,7 +6,6 @@
 import {
   EnhancedChatMessage,
   ColumnDefinition,
-  StructuredData,
 } from '../types/EnhancedChatMessage';
 
 export interface DataDetectionResult {
@@ -133,7 +132,7 @@ export class ResponseAnalyzer {
   ): DataDetectionResult {
     try {
       // Skip separator lines (like |---|---|)
-      const dataLines = lines.filter((line) => !line.match(/^[\s|:\-]+$/));
+      const dataLines = lines.filter((line) => !line.match(/^[\s|:-]+$/));
 
       if (dataLines.length < 2) {
         return {
@@ -208,7 +207,7 @@ export class ResponseAnalyzer {
     // Look for numbered or bulleted lists with key-value pairs
     const listLines = lines.filter(
       (line) =>
-        line.match(/^\s*[\d\-\*\•]\s*\w+:/) || line.match(/^\s*\w+:\s*\w+/),
+        line.match(/^\s*[\d-*•]\s*\w+:/) || line.match(/^\s*\w+:\s*\w+/),
     );
 
     if (listLines.length >= 3) {
@@ -217,7 +216,7 @@ export class ResponseAnalyzer {
         let currentItem: Record<string, any> = {};
 
         for (const line of listLines) {
-          const match = line.match(/^\s*(?:[\d\-\*\•]\s*)?(\w+):\s*(.+)$/);
+          const match = line.match(/^\s*(?:[\d-*•]\s*)?(\w+):\s*(.+)$/);
           if (match) {
             const [, key, value] = match;
 

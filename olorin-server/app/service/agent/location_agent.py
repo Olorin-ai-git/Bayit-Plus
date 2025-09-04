@@ -14,7 +14,7 @@ from app.service.agent.agent_communication import (
     _get_or_create_autonomous_context,
     _create_error_response,
 )
-from app.service.agent.agent_factory import create_rag_agent
+from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
 
 # RAG imports with graceful fallback
 try:
@@ -89,12 +89,21 @@ async def autonomous_location_agent(state, config) -> dict:
         if rag_config:
             rag_stats = update_rag_stats_on_success(rag_stats)
         
-        # Create RAG-enhanced or standard agent based on availability
+        # Create agent with intelligent tool selection and RAG enhancement
         if RAG_AVAILABLE and rag_config:
-            location_agent = create_rag_agent("location", tools, rag_config)
+            location_agent = await create_agent_with_intelligent_tools(
+                domain="location",
+                investigation_context=autonomous_context,
+                fallback_tools=tools,
+                enable_rag=True,
+                categories=["intelligence", "threat_intelligence", "ml_ai", "web", "olorin"]
+            )
+            logger.info("🗺️ Created location agent with intelligent RAG-enhanced tool selection")
         else:
+            # Fallback to standard agent creation
             from app.service.agent.agent_factory import create_autonomous_agent
             location_agent = create_autonomous_agent("location", tools)
+            logger.info("🗺️ Created standard location agent (RAG not available)")
         
         # Get enhanced objectives with RAG-augmented threat intelligence focus
         location_objectives = get_location_objectives(rag_enabled=(RAG_AVAILABLE and rag_config is not None))

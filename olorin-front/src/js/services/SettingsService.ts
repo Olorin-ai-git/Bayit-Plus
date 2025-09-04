@@ -42,18 +42,9 @@ const SESSION_STORAGE_KEY = 'olorin_session_settings_override';
  * Get the base API URL for backend requests
  */
 function getApiBaseUrl(): string {
-  // In development with proxy, use relative URLs
+  // Use explicit backend URL for all environments since no proxy is configured
   // In production, this would be configured via environment variables
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
-  // Check if we have a proxy configured (relative URLs work)
-  if (isDevelopment) {
-    // First try relative URLs (works with proxy)
-    return '';
-  }
-
-  // Fallback to explicit backend URL
-  return process.env.REACT_APP_BACKEND_URL || 'http://localhost:8090';
+  return process.env.REACT_APP_API_URL || 'http://localhost:8090';
 }
 
 /**

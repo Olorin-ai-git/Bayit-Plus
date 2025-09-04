@@ -26,7 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { preserveUrlParams } from '../js/utils/urlParams';
-import { useDemoMode } from '../js/hooks/useDemoMode';
+import { useDemoMode } from '../js/contexts/DemoModeContext';
 
 interface LayoutProps {
   children: ReactNode;

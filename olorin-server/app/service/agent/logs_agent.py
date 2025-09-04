@@ -13,7 +13,7 @@ from app.service.agent.agent_communication import (
     _get_or_create_autonomous_context,
     _create_error_response,
 )
-from app.service.agent.agent_factory import create_rag_agent
+from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
 from app.service.logging import get_bridge_logger
 
 # RAG imports with graceful fallback
@@ -89,12 +89,21 @@ async def autonomous_logs_agent(state, config) -> dict:
         if rag_config:
             rag_stats = update_rag_stats_on_success(rag_stats)
         
-        # Create RAG-enhanced or standard agent based on availability
+        # Create agent with intelligent tool selection and RAG enhancement
         if RAG_AVAILABLE and rag_config:
-            logs_agent = create_rag_agent("logs", tools, rag_config)
+            logs_agent = await create_agent_with_intelligent_tools(
+                domain="logs",
+                investigation_context=autonomous_context,
+                fallback_tools=tools,
+                enable_rag=True,
+                categories=["olorin", "ml_ai", "blockchain", "intelligence", "threat_intelligence"]
+            )
+            logger.info("📄 Created logs agent with intelligent RAG-enhanced tool selection")
         else:
+            # Fallback to standard agent creation
             from app.service.agent.agent_factory import create_autonomous_agent
             logs_agent = create_autonomous_agent("logs", tools)
+            logger.info("📄 Created standard logs agent (RAG not available)")
         
         # Get enhanced objectives with RAG-augmented threat intelligence focus
         logs_objectives = get_logs_objectives(rag_enabled=(RAG_AVAILABLE and rag_config is not None))

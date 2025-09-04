@@ -5,8 +5,6 @@ import {
   getToolsForStep as getToolsForStepService,
   updateStepTools,
   hasStepToolOverrides,
-  getStepToolsFromSession,
-  StepToolsMapping,
 } from '../services/StepToolsService';
 
 /**

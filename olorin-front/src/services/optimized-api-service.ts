@@ -12,6 +12,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { ExtendedAxiosRequestConfig } from './types';
 
 // Cache interface
 interface CacheEntry<T = any> {
@@ -85,7 +86,7 @@ class OptimizedApiService {
   
   private setupInterceptors() {
     // Request interceptor for performance tracking
-    this.axiosInstance.interceptors.request.use((config) => {
+    this.axiosInstance.interceptors.request.use((config: ExtendedAxiosRequestConfig) => {
       config.metadata = { startTime: Date.now() };
       return config;
     });
@@ -94,7 +95,8 @@ class OptimizedApiService {
     this.axiosInstance.interceptors.response.use(
       (response) => {
         const endTime = Date.now();
-        const duration = endTime - (response.config.metadata?.startTime || endTime);
+        const config = response.config as ExtendedAxiosRequestConfig;
+        const duration = endTime - (config.metadata?.startTime || endTime);
         
         this.updateResponseTime(duration);
         this.updateCacheFromResponse(response);

@@ -1,6 +1,5 @@
 import type { RestClientConfig } from '../envConstants';
 import WithRUMInteractionName from './WithRUMInteractionName';
-import { RUM_FCI_START_REQUEST } from './constants';
 
 /**
  * A function to call on the start of the RestService request

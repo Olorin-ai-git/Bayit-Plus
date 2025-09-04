@@ -64,21 +64,47 @@ def _configure_rate_limiting(app: FastAPI) -> None:
 
 
 def _configure_cors_middleware(app: FastAPI) -> None:
-    """Configure CORS middleware with restricted origins."""
-    # Get allowed origins from environment with fallback
-    allowed_origins = os.getenv(
-        "ALLOWED_ORIGINS", "http://localhost:3000,https://localhost:3000"
-    ).split(",")
+    """Configure CORS middleware with environment-specific security."""
+    environment = os.getenv("APP_ENV", "local")
+    
+    # Environment-specific CORS configuration
+    if environment == "prd":
+        # Production: Use only environment-specified origins, no fallback
+        allowed_origins_str = os.getenv("ALLOWED_ORIGINS")
+        if not allowed_origins_str:
+            logger.error("ALLOWED_ORIGINS not set in production - CORS will deny all requests")
+            allowed_origins = []
+        else:
+            allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+        allow_credentials = False  # Disable credentials in production for security
+    else:
+        # Development/staging: Allow localhost origins for development
+        allowed_origins_str = os.getenv(
+            "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001"
+        )
+        allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+        allow_credentials = True  # Allow credentials in development
+    
+    # Security validation: reject wildcard origins if credentials are enabled
+    if allow_credentials and "*" in allowed_origins:
+        logger.error("SECURITY RISK: Cannot use wildcard origins with credentials enabled")
+        allowed_origins = [origin for origin in allowed_origins if origin != "*"]
     
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=allowed_origins,  # Restrict to specific origins
-        allow_credentials=True,
+        allow_origins=allowed_origins,
+        allow_credentials=allow_credentials,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type", 
+            "X-Requested-With",
+            "X-User-ID"  # Custom header used by the application
+        ],
+        max_age=600,  # Cache preflight requests for 10 minutes
     )
     
-    logger.info(f"CORS configured with allowed origins: {allowed_origins}")
+    logger.info(f"CORS configured for {environment} environment with origins: {allowed_origins}")
 
 
 def _configure_error_middleware(app: FastAPI) -> None:

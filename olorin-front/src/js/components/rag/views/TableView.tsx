@@ -7,17 +7,9 @@ import {
   TableCell,
   TextField,
   Button,
-  IconButton,
   Select,
   MenuItem,
-  CircularProgress,
-  Box,
   Typography,
-  Paper,
-  Chip,
-  Pagination,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import {
   ArrowUpward as SortAscIcon,
@@ -25,13 +17,11 @@ import {
   UnfoldMore as SortIcon,
   Search as SearchIcon,
   GetApp as ExportIcon,
-  FilterList as FilterIcon,
-  Clear as ClearIcon,
   ChevronLeft as PrevIcon,
   ChevronRight as NextIcon,
   TableChart as TableIcon,
 } from '@mui/icons-material';
-import { BaseViewProps, ViewComponentConfig } from './BaseViewComponent';
+import { BaseViewProps } from './BaseViewComponent';
 import {
   ColumnDefinition,
   FilterCriteria,
@@ -52,9 +42,8 @@ export const TableView: React.FC<BaseViewProps> = ({
   onExport,
   className = '',
 }) => {
-  const data = message.structured_data?.data || [];
-  const columns = message.structured_data?.columns || [];
-  const metadata = message.structured_data?.metadata;
+  const data = useMemo(() => message.structured_data?.data || [], [message.structured_data?.data]);
+  const columns = useMemo(() => message.structured_data?.columns || [], [message.structured_data?.columns]);
 
   const [state, setState] = useState<TableViewState>({
     sortCriteria: null,

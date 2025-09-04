@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { isDemoModeActive } from '../utils/urlParams';
 import {
   Box,
@@ -9,7 +9,6 @@ import {
   CardContent,
   TextField,
   IconButton,
-  Alert,
   Chip,
   CircularProgress,
   Dialog,
@@ -25,16 +24,8 @@ import {
   Tabs,
   Tab,
   Collapse,
-  Switch,
-  Tooltip,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Grid,
-  Divider,
-  Badge,
-  useTheme,
 } from '@mui/material';
 import {
   Send as SendIcon,
@@ -50,7 +41,6 @@ import {
   ContentCopy as CopyIcon,
   PlayArrow as PlayArrowIcon,
   Refresh as RefreshIcon,
-  Help as HelpIcon,
   Search as SearchIcon,
   Close as CloseIcon,
   GetApp as DownloadIcon,
@@ -94,14 +84,11 @@ interface PreparedPrompt {
 }
 
 const RAGPage: React.FC = () => {
-  const theme = useTheme();
   // State management
   const [activeTab, setActiveTab] = useState(0);
-  const [subTab, setSubTab] = useState<'table' | 'prompts'>('table'); // Add sub-tab state for Data Analysis tab
   const [chatMessages, setChatMessages] = useState<EnhancedChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPrompts, setShowPrompts] = useState(false);
   const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
   const [rexPatterns, setRexPatterns] = useState<RexPattern[]>([]);
   const [evalCommands, setEvalCommands] = useState<EvalCommand[]>([]);
@@ -156,13 +143,78 @@ const RAGPage: React.FC = () => {
   const [isPromptLoading, setIsPromptLoading] = useState(false);
 
   // Initialize RAG service
-  const ragService = new RAGApiService(null);
+  const ragService = useMemo(() => new RAGApiService(null), []);
+
+  // Load field mappings function
+  const loadFieldMappings = useCallback(async () => {
+    try {
+      const data = await ragService.getFieldMappings();
+
+      // Handle case where API doesn't exist or returns undefined
+      if (!data || !data.mappings) {
+        console.warn('RAG API not available - field mappings disabled');
+        return;
+      }
+
+      const mappings = Object.entries(data.mappings.field_mappings || {}).map(
+        ([category, fields]) => ({
+          category,
+          fields: fields as string[],
+        }),
+      );
+      setFieldMappings(mappings);
+
+      const patterns = Object.entries(data.mappings.rex_patterns || {}).map(
+        ([field_name, pattern]) => ({
+          field_name,
+          pattern: pattern as string,
+        }),
+      );
+      setRexPatterns(patterns);
+
+      setEvalCommands(
+        (data.mappings.dynamic_eval_commands || []).map((cmd: string) => ({
+          command: cmd,
+        })),
+      );
+    } catch (error) {
+      console.error('Failed to load field mappings:', error);
+      // Set empty arrays as fallback when API is not available
+      setFieldMappings([]);
+      setRexPatterns([]);
+      setEvalCommands([]);
+    }
+  }, [ragService]);
+
+  // Load prepared prompts function
+  const loadPreparedPrompts = useCallback(async () => {
+    try {
+      const data = await ragService.getPreparedPrompts();
+
+      // Handle case where API doesn't exist or returns undefined
+      if (!data) {
+        console.warn('RAG API not available - prepared prompts disabled');
+        setPreparedPrompts([]);
+        return;
+      }
+
+      // Handle both array format and object with prompts property
+      const prompts = Array.isArray(data) ? data : data.prompts || [];
+      setPreparedPrompts(prompts);
+
+      console.log('Loaded prepared prompts:', prompts.length);
+    } catch (error) {
+      console.error('Failed to load prepared prompts:', error);
+      // Set empty array as fallback when API is not available
+      setPreparedPrompts([]);
+    }
+  }, [ragService]);
 
   // Load initial data
   useEffect(() => {
     loadFieldMappings();
     loadPreparedPrompts();
-  }, []);
+  }, [loadFieldMappings, loadPreparedPrompts]);
 
   // Initialize demo mode with elaborate prompt
   useEffect(() => {
@@ -225,68 +277,6 @@ const RAGPage: React.FC = () => {
     setResizeStartWidth(sidebarWidth);
   };
 
-  const loadFieldMappings = async () => {
-    try {
-      const data = await ragService.getFieldMappings();
-
-      // Handle case where API doesn't exist or returns undefined
-      if (!data || !data.mappings) {
-        console.warn('RAG API not available - field mappings disabled');
-        return;
-      }
-
-      const mappings = Object.entries(data.mappings.field_mappings || {}).map(
-        ([category, fields]) => ({
-          category,
-          fields: fields as string[],
-        }),
-      );
-      setFieldMappings(mappings);
-
-      const patterns = Object.entries(data.mappings.rex_patterns || {}).map(
-        ([field_name, pattern]) => ({
-          field_name,
-          pattern: pattern as string,
-        }),
-      );
-      setRexPatterns(patterns);
-
-      setEvalCommands(
-        (data.mappings.dynamic_eval_commands || []).map((cmd: string) => ({
-          command: cmd,
-        })),
-      );
-    } catch (error) {
-      console.error('Failed to load field mappings:', error);
-      // Set empty arrays as fallback when API is not available
-      setFieldMappings([]);
-      setRexPatterns([]);
-      setEvalCommands([]);
-    }
-  };
-
-  const loadPreparedPrompts = async () => {
-    try {
-      const data = await ragService.getPreparedPrompts();
-
-      // Handle case where API doesn't exist or returns undefined
-      if (!data) {
-        console.warn('RAG API not available - prepared prompts disabled');
-        setPreparedPrompts([]);
-        return;
-      }
-
-      // Handle both array format and object with prompts property
-      const prompts = Array.isArray(data) ? data : data.prompts || [];
-      setPreparedPrompts(prompts);
-
-      console.log('Loaded prepared prompts:', prompts.length);
-    } catch (error) {
-      console.error('Failed to load prepared prompts:', error);
-      // Set empty array as fallback when API is not available
-      setPreparedPrompts([]);
-    }
-  };
 
   const sendMessage = async () => {
     if (!currentMessage.trim()) return;
@@ -305,7 +295,6 @@ const RAGPage: React.FC = () => {
 
     try {
       // Generate unique investigation ID for this query session
-      const investigationId = `rag-query-${Date.now()}`;
 
       // Use the consolidated natural query endpoint
       const naturalQueryResponse = await ragService.sendNaturalQuery({
@@ -502,19 +491,6 @@ const RAGPage: React.FC = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-  };
-
-  // Copy translated query to clipboard
-  const copyTranslatedQuery = (message: EnhancedChatMessage) => {
-    if (message.translated_query) {
-      copyToClipboard(message.translated_query);
-    }
-  };
-
-  // Start editing a translated query
-  const startEditingMessage = (messageId: string, translatedQuery: string) => {
-    setEditingMessage(messageId);
-    setEditedTranslatedQuery(translatedQuery);
   };
 
   // Cancel editing
@@ -818,12 +794,6 @@ const RAGPage: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  // Create autocomplete options from prompt titles and descriptions
-  const autocompleteOptions = preparedPrompts.map((prompt) => ({
-    label: prompt.title,
-    value: prompt.title,
-    description: prompt.description,
-  }));
 
   const filteredPrompts = preparedPrompts.filter((prompt) => {
     const matchesSearch =

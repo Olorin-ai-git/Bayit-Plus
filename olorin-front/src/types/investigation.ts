@@ -11,7 +11,15 @@ export interface InvestigationParams {
   transactionId?: string;
 }
 
-export interface InvestigationResult {
+export interface AgentResult {
+  agentName: string;
+  status: string;
+  executionTime: number;
+  result: any;
+  riskFactors: string[];
+}
+
+export interface Investigation {
   id: string;
   type: InvestigationType;
   status: 'SUCCESS' | 'FAILURE';
@@ -23,4 +31,7 @@ export interface InvestigationResult {
     timestamp: string;
     riskFactors: string[];
   };
+  agentResults: AgentResult[];
 }
+
+export interface InvestigationResult extends Investigation {}

@@ -98,6 +98,10 @@ class AutonomousInvestigationAgent:
         self.tools = tools
         self.tool_map = {tool.name: tool for tool in tools}
         
+        # Tool refresh capability for dynamic tool selection
+        self.supports_tool_refresh = False
+        self.tool_refresh_callback = None
+        
         # Bind tools to autonomous LLM using lazy initialization
         try:
             autonomous_llm_instance = get_autonomous_llm()
@@ -106,6 +110,61 @@ class AutonomousInvestigationAgent:
         except Exception as e:
             logger.error(f"Failed to bind tools to {domain} agent: {e}")
             self.llm_with_tools = get_autonomous_llm()
+    
+    def enable_tool_refresh(self, refresh_callback):
+        """Enable dynamic tool refresh with callback function.
+        
+        Args:
+            refresh_callback: Async function that returns updated tools
+                Signature: async def(context, domain) -> List[Tool]
+        """
+        self.supports_tool_refresh = True
+        self.tool_refresh_callback = refresh_callback
+        logger.info(f"Tool refresh enabled for {self.domain} agent")
+    
+    async def refresh_tools(self, context: AutonomousInvestigationContext) -> bool:
+        """Refresh tools dynamically using the configured callback.
+        
+        Args:
+            context: Investigation context for tool selection
+            
+        Returns:
+            True if tools were refreshed, False otherwise
+        """
+        if not self.supports_tool_refresh or not self.tool_refresh_callback:
+            return False
+        
+        try:
+            import time
+            start_time = time.time()
+            
+            # Get new tools from callback
+            new_tools = await self.tool_refresh_callback(context, self.domain)
+            
+            refresh_time_ms = (time.time() - start_time) * 1000
+            
+            if new_tools and new_tools != self.tools:
+                # Update tools and re-bind to LLM
+                old_tool_count = len(self.tools)
+                self.tools = new_tools
+                self.tool_map = {tool.name: tool for tool in new_tools}
+                
+                # Re-bind tools to LLM
+                autonomous_llm_instance = get_autonomous_llm()
+                self.llm_with_tools = autonomous_llm_instance.bind_tools(new_tools)
+                
+                logger.info(
+                    f"Tools refreshed for {self.domain}: {old_tool_count} -> {len(new_tools)} tools "
+                    f"(refresh time: {refresh_time_ms:.1f}ms)"
+                )
+                return True
+            else:
+                logger.debug(f"No tool changes needed for {self.domain} (refresh time: {refresh_time_ms:.1f}ms)")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Tool refresh failed for {self.domain}: {str(e)}")
+            return False
     
     async def autonomous_investigate(
         self,
@@ -126,6 +185,15 @@ class AutonomousInvestigationAgent:
         """
         from .autonomous_prompts import create_investigation_prompt
         from .autonomous_parsing import parse_autonomous_result
+        
+        # Optional: Refresh tools dynamically if enabled
+        if self.supports_tool_refresh:
+            try:
+                tools_refreshed = await self.refresh_tools(context)
+                if tools_refreshed:
+                    logger.info(f"🔄 Tools refreshed for {self.domain} investigation {context.investigation_id}")
+            except Exception as e:
+                logger.warning(f"Tool refresh failed for {self.domain}, continuing with existing tools: {str(e)}")
         
         # Generate rich investigation context for LLM
         llm_context = context.generate_llm_context(self.domain)

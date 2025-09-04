@@ -1,7 +1,7 @@
 import {
   InvestigationParams,
   InvestigationResult,
-} from '../types/investigation';
+} from '../types/Investigation';
 
 export interface FraudInvestigationService {
   investigateFraud: (

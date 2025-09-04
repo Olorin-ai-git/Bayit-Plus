@@ -1,7 +1,6 @@
 import { BaseApiService } from './BaseApiService';
 import { isDemoModeActive } from '../hooks/useDemoMode';
 import {
-  mockRAGResponses,
   mockFieldMappings,
   mockRexPatterns,
   mockEvalCommands,
@@ -14,9 +13,6 @@ import {
  * Handles natural language queries, field mappings, and pattern management
  */
 export class RAGApiService extends BaseApiService {
-  constructor(sandbox?: any) {
-    super(sandbox);
-  }
 
   /**
    * Send a natural language query to the RAG system
@@ -175,7 +171,9 @@ export class RAGApiService extends BaseApiService {
       };
     }
 
-    return this.makeGet('api/rag/mappings');
+    // Note: /api/rag/mappings endpoint doesn't exist, using empty response
+    // TODO: Replace with actual mappings endpoint when available
+    return { field_mappings: [], rex_patterns: [], eval_commands: [] };
   }
 
   /**
@@ -268,7 +266,9 @@ export class RAGApiService extends BaseApiService {
       };
     }
 
-    return this.makeGet('api/rag/prompts');
+    const prompts = await this.makeGet('api/mcp/prompts');
+    // Transform the response to match expected format
+    return { prompts };
   }
 
   /**

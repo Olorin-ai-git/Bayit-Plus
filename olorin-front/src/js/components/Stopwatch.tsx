@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { AccessTime } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
 
 interface StopwatchProps {
   startTime: Date | null;
