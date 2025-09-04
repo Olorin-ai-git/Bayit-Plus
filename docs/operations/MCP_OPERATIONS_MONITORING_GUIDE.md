@@ -130,7 +130,7 @@ rule_files:
 scrape_configs:
   - job_name: 'olorin-mcp-server'
     static_configs:
-      - targets: ['localhost:8000']
+      - targets: ['localhost:8090']
     metrics_path: '/metrics'
     scrape_interval: 10s
     

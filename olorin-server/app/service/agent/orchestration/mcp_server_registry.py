@@ -5,7 +5,6 @@ This module provides a centralized registry for MCP servers, enabling dynamic
 discovery, capability advertisement, and health monitoring.
 """
 
-import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Set
 from dataclasses import dataclass, field
@@ -13,8 +12,9 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 from langchain_core.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ServerStatus(Enum):

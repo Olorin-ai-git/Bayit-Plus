@@ -9,8 +9,9 @@ from typing import Dict, Any
 from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker, NodeType, NodeStatus
 from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def log_agent_pre_execution(investigation_id: str, investigation_query: str):

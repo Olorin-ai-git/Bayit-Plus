@@ -4,15 +4,11 @@ import { formatTimestamp } from './investigation';
 import {
   NetworkAnalysisResponse,
   DeviceAnalysisResponse,
-  LocationAnalysisResponse,
   LogsAnalysisResponse,
   RiskAssessmentResponse,
   OiiResponse,
   LocationRiskAnalysisResponse,
   InvestigationResponse,
-  CommentResponse,
-  DeviceApiResponse,
-  LogsApiResponse,
 } from '../types/ApiResponses';
 import { CommentMessage } from '../components/CommentWindow';
 

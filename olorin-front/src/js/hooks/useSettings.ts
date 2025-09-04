@@ -3,7 +3,6 @@ import {
   Settings,
   getEffectiveSettings,
   saveSettingsToServer,
-  updateSettingWithOverride,
   getDefaultSettings,
   getSessionOverrides,
   setSessionOverrides,
@@ -67,7 +66,6 @@ export function useSettings(): [
         typeof updater === 'function' ? updater(prevSettings) : updater;
 
       // Update session overrides for any changes
-      const sessionOverrides = getSessionOverrides() || {};
       const hasChanges =
         JSON.stringify(newSettings) !== JSON.stringify(prevSettings);
 

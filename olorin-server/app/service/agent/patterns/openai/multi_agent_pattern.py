@@ -6,7 +6,6 @@ requiring specialized domain experts working together with intelligent handoffs.
 """
 
 import asyncio
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage
@@ -17,8 +16,9 @@ from .multi_agent_coordinator import MultiAgentCoordinator, HandoffManager
 from .result_synthesizer import ResultSynthesizer
 from .run_executor import RunExecutor
 from .tool_adapter import convert_langgraph_tools_to_openai_functions
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIMultiAgentPattern(OpenAIBasePattern):

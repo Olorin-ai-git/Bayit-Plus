@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Mock Transaction Data Loader for Autonomous Investigation Testing
 
@@ -327,16 +330,16 @@ if __name__ == "__main__":
     loader.load_all_scenarios()
     
     scenarios = loader.list_available_scenarios()
-    print("Available scenarios:")
+    logger.info("Available scenarios:")
     for scenario_type, scenario_names in scenarios.items():
-        print(f"  {scenario_type}: {scenario_names}")
+        logger.info(f"  {scenario_type}: {scenario_names}")
     
     # Load a fraud scenario and show investigation context
     if scenarios["fraud_scenarios"]:
         scenario_name = scenarios["fraud_scenarios"][0]
         context = loader.generate_investigation_context(scenario_name)
-        print(f"\nInvestigation context for '{scenario_name}':")
-        print(f"  Investigation ID: {context['investigation_id']}")
-        print(f"  Entity ID: {context['entity_id']}")
-        print(f"  Transaction Amount: ${context['trigger_event']['amount']}")
-        print(f"  Complexity: {context['metadata']['investigation_complexity']}")
+        logger.info(f"\nInvestigation context for '{scenario_name}':")
+        logger.info(f"  Investigation ID: {context['investigation_id']}")
+        logger.info(f"  Entity ID: {context['entity_id']}")
+        logger.info(f"  Transaction Amount: ${context['trigger_event']['amount']}")
+        logger.info(f"  Complexity: {context['metadata']['investigation_complexity']}")

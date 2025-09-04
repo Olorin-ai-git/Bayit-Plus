@@ -114,7 +114,7 @@ graph TB
 
 ### 4. Autonomous LLM Usage
 - **Model**: Claude Opus 4.1 (`claude-opus-4-1-20250805`)
-- **Configuration**: Temperature 0.1, 8000 max tokens, 90s timeout
+- **Configuration**: Temperature 0.1, 8090 max tokens, 90s timeout
 - **Tool Binding**: Real tools bound to LLM with `bind_tools(tools, strict=True)`
 - **Decision Making**: LLM selects tools and analysis approaches autonomously
 

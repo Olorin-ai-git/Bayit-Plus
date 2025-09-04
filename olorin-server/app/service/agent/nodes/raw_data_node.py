@@ -6,7 +6,6 @@ system in the Olorin fraud detection platform. It handles CSV file parsing,
 transaction data validation, and data quality assessment.
 """
 
-import logging
 import asyncio
 from datetime import datetime, timedelta
 from io import StringIO, BytesIO
@@ -20,8 +19,9 @@ from pydantic import BaseModel, ValidationError, field_validator
 from langchain_core.messages import BaseMessage, AIMessage, HumanMessage
 from typing_extensions import TypedDict, Annotated
 from langgraph.graph.message import add_messages
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # LangGraph MessagesState integration
 class MessagesState(TypedDict):
@@ -135,7 +135,7 @@ class RawDataNode:
             'anomalies_detected': 0
         }
         
-        self.logger = logging.getLogger(f"{__name__}.RawDataNode")
+        self.logger = get_bridge_logger(f"{__name__}.RawDataNode")
     
     async def process_csv_data(
         self,

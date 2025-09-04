@@ -40,9 +40,9 @@ class OlorinLauncher:
         self.log_dir = self.script_dir / "logs"
         
         # Default ports
-        self.backend_port = int(os.environ.get('BACKEND_PORT', 8000))
+        self.backend_port = int(os.environ.get('BACKEND_PORT', 8090))
         self.frontend_port = int(os.environ.get('FRONTEND_PORT', 3000))
-        self.mcp_port = int(os.environ.get('MCP_PORT', 8001))
+        self.mcp_port = int(os.environ.get('MCP_PORT', 8090))
         
         # Process tracking
         self.processes: Dict[str, subprocess.Popen] = {}

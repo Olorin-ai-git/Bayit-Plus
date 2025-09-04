@@ -199,13 +199,13 @@ MAX_PARALLEL_AGENTS=8
 #### 2. Monitor Performance Metrics
 ```bash
 # Real-time metrics
-curl http://localhost:8000/performance/metrics
+curl http://localhost:8090/performance/metrics
 
 # Historical data
-curl http://localhost:8000/performance/metrics/history?minutes=60
+curl http://localhost:8090/performance/metrics/history?minutes=60
 
 # Cache statistics
-curl http://localhost:8000/performance/cache/stats
+curl http://localhost:8090/performance/cache/stats
 ```
 
 ### Frontend Performance Optimizations
@@ -247,7 +247,7 @@ python scripts/performance-test.py
 
 # Full test with custom parameters
 python scripts/performance-test.py \
-  --url http://localhost:8000 \
+  --url http://localhost:8090 \
   --users 10 \
   --output results.json \
   --report report.md

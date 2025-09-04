@@ -1,11 +1,12 @@
 import logging
+from app.service.logging import get_bridge_logger
 
 from fastapi import FastAPI
 
 from app.router import agent_router
 from app.service.agent.agent import create_and_get_agent_graph
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def validate_user_authorization(olorin_header) -> bool:

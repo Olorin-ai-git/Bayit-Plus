@@ -5,13 +5,13 @@ Handles conversation history management, context preservation, and memory optimi
 for the OpenAI Conversation Pattern.
 """
 
-import logging
 from typing import Any, Dict, List
 from datetime import datetime, timedelta
 
 from langchain_core.messages import BaseMessage, HumanMessage
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ConversationManager:

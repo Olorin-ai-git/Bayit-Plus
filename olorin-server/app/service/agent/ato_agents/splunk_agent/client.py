@@ -8,6 +8,9 @@ from urllib.parse import unquote_plus
 
 import splunklib.client as splunk
 import splunklib.results as results
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 
 
 class ChartType(str, Enum):
@@ -75,7 +78,7 @@ class SplunkClient:
 
                 if job["isFailed"] == "1":
                     error_msg = f"Job failed: {job.get('messages', 'No error message')}"
-                    print(f"Splunk job failed: {error_msg}")
+                    logger.error(f"Splunk job failed: {error_msg}")
                     raise Exception(error_msg)
 
                 # Get information about results
@@ -86,7 +89,7 @@ class SplunkClient:
                     )
                     return []
 
-                print(f"Query returned {result_count} results")
+                logger.info(f"Query returned {result_count} results")
                 raw = job.results(output_mode="json_rows", count=0).read()
                 payload = json.loads(raw.decode("utf-8"))
                 fields = payload["fields"]
@@ -94,7 +97,7 @@ class SplunkClient:
 
                 return [dict(zip(fields, row)) for row in rows]
             except Exception as e:
-                print(f"Error in Splunk query execution: {str(e)}")
+                logger.error(f"Error in Splunk query execution: {str(e)}")
                 import traceback
 
                 traceback.print_exc()
@@ -104,7 +107,7 @@ class SplunkClient:
             loop = asyncio.get_event_loop()
             return await loop.run_in_executor(self._executor, _search)
         except Exception as e:
-            print(f"Error executing Splunk query: {str(e)}")
+            logger.error(f"Error executing Splunk query: {str(e)}")
             # Return empty list instead of failing
             return []
 

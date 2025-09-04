@@ -7,7 +7,6 @@ Provides comprehensive IP reputation checking, bulk analysis, and abuse reportin
 
 import asyncio
 import json
-import logging
 import time
 from datetime import datetime
 from typing import Dict, List, Optional, Union
@@ -30,9 +29,10 @@ from .models import (
     IPReputationResponse,
     RateLimitError,
 )
+from app.service.logging import get_bridge_logger
 from app.utils.firebase_secrets import get_firebase_secret
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class AbuseIPDBClient:

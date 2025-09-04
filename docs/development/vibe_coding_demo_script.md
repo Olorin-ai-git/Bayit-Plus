@@ -21,7 +21,7 @@
 ## 📋 Pre-Demo Setup Checklist
 
 ### Environment Preparation:
-- [ ] OLORIN server running on localhost:8000
+- [ ] OLORIN server running on localhost:8090
 - [ ] Cursor AI open with codebase loaded
 - [ ] Terminal ready for testing
 - [ ] Browser with WebSocket client ready
@@ -101,10 +101,10 @@ def create_investigation_endpoint(
 ### Test the Endpoint:
 ```bash
 # Start server
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload
 
 # Test creation
-curl -X POST "http://localhost:8000/api/investigation" \
+curl -X POST "http://localhost:8090/api/investigation" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "DEMO_INV_001",
@@ -116,7 +116,7 @@ curl -X POST "http://localhost:8000/api/investigation" \
 ### Verify WebSocket:
 ```javascript
 // Browser WebSocket client
-const ws = new WebSocket('ws://localhost:8000/ws');
+const ws = new WebSocket('ws://localhost:8090/ws');
 ws.onmessage = function(event) {
     console.log('Received:', JSON.parse(event.data));
 };

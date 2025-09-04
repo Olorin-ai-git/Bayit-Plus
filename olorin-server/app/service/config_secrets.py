@@ -6,8 +6,8 @@ with secrets loaded from Firebase Secret Manager.
 """
 
 import os
-import structlog
 from .config_loader import get_config_loader
+from app.service.logging import get_bridge_logger
 
 # Configure logging level based on environment variable
 _log_level = os.getenv("SECRET_MANAGER_LOG_LEVEL", "INFO").upper()
@@ -20,7 +20,7 @@ if _log_level == "SILENT":
         def error(self, *args, **kwargs): pass
     logger = SilentLogger()
 else:
-    logger = structlog.get_logger(__name__)
+    logger = get_bridge_logger(__name__)
 
 
 def enhance_config_with_secrets(config_instance):

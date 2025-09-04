@@ -21,6 +21,7 @@ import React, {
   useImperativeHandle,
   RefObject
 } from 'react';
+import { InvestigationType, InvestigationResult } from '../types/Investigation';
 import { 
   useOptimizedCallback, 
   useOptimizedMemo, 
@@ -37,15 +38,12 @@ const RiskAnalysisPanel = lazy(() => import('./RiskAnalysisPanel'));
 const AgentExecutionLogs = lazy(() => import('./AgentExecutionLogs'));
 
 // Types
-interface Investigation {
-  id: string;
+interface Investigation extends InvestigationResult {
+  // Legacy fields for backward compatibility
   userId: string;
-  status: 'pending' | 'running' | 'completed' | 'error';
-  riskScore: number;
   startTime: string;
   endTime?: string;
-  agentResults: AgentResult[];
-  metadata: Record<string, any>;
+  metadata?: Record<string, any>;
 }
 
 interface AgentResult {
@@ -84,11 +82,9 @@ const InvestigationCard = memo<{
   
   const cardClassName = useOptimizedMemo(() => {
     const baseClasses = 'investigation-card p-4 mb-2 border rounded-lg cursor-pointer transition-colors';
-    const statusClasses = {
-      pending: 'border-yellow-300 bg-yellow-50',
-      running: 'border-blue-300 bg-blue-50',
-      completed: 'border-green-300 bg-green-50',
-      error: 'border-red-300 bg-red-50'
+    const statusClasses: Record<string, string> = {
+      SUCCESS: 'border-green-300 bg-green-50',
+      FAILURE: 'border-red-300 bg-red-50'
     };
     const selectedClass = isSelected ? 'ring-2 ring-blue-500' : '';
     
@@ -113,7 +109,7 @@ const InvestigationCard = memo<{
             User ID: {investigation.userId}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Started: {new Date(investigation.startTime).toLocaleString()}
+            Started: {investigation.startTime ? new Date(investigation.startTime).toLocaleString() : 'N/A'}
           </p>
         </div>
         <div className="flex flex-col items-end">
@@ -244,7 +240,7 @@ export const OptimizedInvestigationDashboard = memo(
         const query = searchQuery.toLowerCase();
         filtered = filtered.filter(inv => 
           inv.id.toLowerCase().includes(query) ||
-          inv.userId.toLowerCase().includes(query)
+          (inv.userId && inv.userId.toLowerCase().includes(query))
         );
       }
       
@@ -254,9 +250,11 @@ export const OptimizedInvestigationDashboard = memo(
       }
       
       // Sort by start time (most recent first)
-      return filtered.sort((a, b) => 
-        new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-      );
+      return filtered.sort((a, b) => {
+        const aTime = a.startTime ? new Date(a.startTime).getTime() : 0;
+        const bTime = b.startTime ? new Date(b.startTime).getTime() : 0;
+        return bTime - aTime;
+      });
     }, [investigations, searchQuery, filterStatus], 'filtered-investigations');
     
     // Virtual scrolling for large lists
@@ -391,28 +389,22 @@ export const OptimizedInvestigationDashboard = memo(
           </div>
           
           {/* Stats */}
-          <div className="mt-4 grid grid-cols-4 gap-4 text-center">
+          <div className="mt-4 grid grid-cols-3 gap-4 text-center">
             <div className="bg-gray-50 p-3 rounded">
               <div className="text-2xl font-bold text-gray-900">{investigations.length}</div>
               <div className="text-sm text-gray-600">Total</div>
             </div>
-            <div className="bg-yellow-50 p-3 rounded">
-              <div className="text-2xl font-bold text-yellow-800">
-                {investigations.filter(i => i.status === 'pending').length}
-              </div>
-              <div className="text-sm text-yellow-600">Pending</div>
-            </div>
-            <div className="bg-blue-50 p-3 rounded">
-              <div className="text-2xl font-bold text-blue-800">
-                {investigations.filter(i => i.status === 'running').length}
-              </div>
-              <div className="text-sm text-blue-600">Running</div>
-            </div>
             <div className="bg-green-50 p-3 rounded">
               <div className="text-2xl font-bold text-green-800">
-                {investigations.filter(i => i.status === 'completed').length}
+                {investigations.filter(i => i.status === 'SUCCESS').length}
               </div>
-              <div className="text-sm text-green-600">Completed</div>
+              <div className="text-sm text-green-600">Success</div>
+            </div>
+            <div className="bg-red-50 p-3 rounded">
+              <div className="text-2xl font-bold text-red-800">
+                {investigations.filter(i => i.status === 'FAILURE').length}
+              </div>
+              <div className="text-sm text-red-600">Failure</div>
             </div>
           </div>
         </div>

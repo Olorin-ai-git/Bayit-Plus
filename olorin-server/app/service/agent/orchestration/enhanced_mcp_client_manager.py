@@ -1,6 +1,5 @@
 """Enhanced MCP Client Manager with resilience patterns and intelligent routing."""
 
-import logging
 import asyncio
 import time
 from typing import Dict, List, Optional, Any, Set, Union
@@ -10,8 +9,9 @@ from collections import defaultdict, deque
 
 import httpx
 from .mcp_resilience_patterns import MCPResilienceManager
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPServerCategory(Enum):

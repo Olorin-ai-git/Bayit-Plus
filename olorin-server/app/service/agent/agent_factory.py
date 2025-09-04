@@ -5,49 +5,363 @@ Factory functions for creating and configuring autonomous investigation agents.
 Handles agent creation, tool binding, and domain-specific configuration.
 """
 
-import logging
-from typing import Any, List
+from typing import Any, Dict, List, Optional
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
+
+# Import RAG components with graceful fallback
+try:
+    from .rag import (
+        RAGOrchestrator, 
+        ContextAugmentationConfig, 
+        get_rag_orchestrator,
+        KnowledgeBasedToolRecommender, 
+        create_tool_recommender
+    )
+    from .rag_enhanced_agent import RAGEnhancedInvestigationAgent, create_rag_enhanced_agent
+    from .tools.tool_registry import tool_registry
+    RAG_AVAILABLE = True
+    logger.info("RAG modules loaded successfully")
+except ImportError as e:
+    logger.warning(f"RAG modules not available: {e}")
+    RAG_AVAILABLE = False
+    
+    # Create stub classes for type hints when RAG not available
+    class ContextAugmentationConfig:
+        pass
+    
+    class KnowledgeBasedToolRecommender:
+        pass
 
 
 class AgentFactory:
-    """Factory for creating agents."""
+    """Enhanced factory for creating agents with optional RAG capabilities."""
     
-    def __init__(self):
-        self.stats = {"agents_created": 0, "domains_supported": ["network", "device", "location", "logs", "risk"], "ml_ai_tools_enabled": True}
+    def __init__(self, enable_rag: bool = True, rag_config: Optional[ContextAugmentationConfig] = None):
+        self.stats = {
+            "agents_created": 0, 
+            "rag_enhanced_agents_created": 0,
+            "standard_agents_created": 0,
+            "tool_recommendations_used": 0,
+            "static_tools_used": 0,
+            "domains_supported": ["network", "device", "location", "logs", "risk"], 
+            "ml_ai_tools_enabled": True,
+            "rag_enabled": enable_rag and RAG_AVAILABLE,
+            "rag_available": RAG_AVAILABLE,
+            "tool_recommender_available": False
+        }
+        
+        # RAG configuration
+        self.enable_rag = enable_rag and RAG_AVAILABLE
+        self.rag_config = rag_config
+        self.rag_orchestrator = None
+        self.tool_recommender = None
+        
+        # Initialize RAG orchestrator and tool recommender if enabled
+        if self.enable_rag:
+            try:
+                self.rag_orchestrator = get_rag_orchestrator()
+                # Initialize tool recommender for RAG-enhanced tool selection
+                if RAG_AVAILABLE:
+                    self.tool_recommender = create_tool_recommender(
+                        rag_orchestrator=self.rag_orchestrator,
+                        tool_registry=tool_registry
+                    )
+                else:
+                    self.tool_recommender = None
+                self.stats["tool_recommender_available"] = True
+                logger.info("AgentFactory initialized with RAG capabilities and tool recommender")
+            except Exception as e:
+                logger.warning(f"RAG orchestrator/tool recommender initialization failed: {e}")
+                self.enable_rag = False
+                self.stats["rag_enabled"] = False
+                self.stats["tool_recommender_available"] = False
+        else:
+            logger.info("AgentFactory initialized without RAG capabilities")
     
     def get_factory_stats(self):
         """Get factory statistics."""
         return self.stats
     
-    def create_agent(self, domain: str, tools: List[Any]):
-        """Create an agent for the specified domain."""
+    def create_agent(self, domain: str, tools: List[Any], enable_rag: Optional[bool] = None):
+        """Create an agent for the specified domain with optional RAG enhancement."""
         self.stats["agents_created"] += 1
-        return create_autonomous_agent(domain, tools)
+        
+        # Use factory-level RAG setting if not specified
+        use_rag = enable_rag if enable_rag is not None else self.enable_rag
+        
+        if use_rag and self.rag_orchestrator:
+            agent = create_rag_enhanced_agent(
+                domain=domain,
+                tools=tools,
+                rag_orchestrator=self.rag_orchestrator,
+                enable_rag=True,
+                rag_config=self.rag_config
+            )
+            self.stats["rag_enhanced_agents_created"] += 1
+            logger.info(f"Created RAG-enhanced {domain} agent with {len(tools)} tools")
+            return agent
+        else:
+            agent = create_autonomous_agent(domain, tools)
+            self.stats["standard_agents_created"] += 1
+            return agent
+    
+    def create_rag_enhanced_agent(
+        self, 
+        domain: str, 
+        tools: List[Any],
+        rag_config: Optional[ContextAugmentationConfig] = None
+    ):
+        """Explicitly create a RAG-enhanced agent."""
+        if not self.enable_rag or not self.rag_orchestrator:
+            logger.warning(f"RAG not available - creating standard agent for {domain}")
+            return self.create_agent(domain, tools, enable_rag=False)
+        
+        self.stats["agents_created"] += 1
+        self.stats["rag_enhanced_agents_created"] += 1
+        
+        agent = create_rag_enhanced_agent(
+            domain=domain,
+            tools=tools,
+            rag_orchestrator=self.rag_orchestrator,
+            enable_rag=True,
+            rag_config=rag_config or self.rag_config
+        )
+        
+        logger.info(f"Created RAG-enhanced {domain} agent with {len(tools)} tools")
+        return agent
+    
+    def create_standard_agent(self, domain: str, tools: List[Any]):
+        """Explicitly create a standard (non-RAG) agent."""
+        self.stats["agents_created"] += 1
+        self.stats["standard_agents_created"] += 1
+        
+        agent = create_autonomous_agent(domain, tools)
+        logger.info(f"Created standard {domain} agent with {len(tools)} tools")
+        return agent
+    
+    def set_rag_config(self, config: ContextAugmentationConfig) -> None:
+        """Update RAG configuration for future agent creation."""
+        self.rag_config = config
+        logger.info("Updated AgentFactory RAG configuration")
+    
+    def is_rag_available(self) -> bool:
+        """Check if RAG capabilities are available."""
+        return self.enable_rag and self.rag_orchestrator is not None
+    
+    def is_tool_recommender_available(self) -> bool:
+        """Check if tool recommender is available for enhanced tool selection."""
+        return self.tool_recommender is not None
+    
+    async def get_enhanced_tools(
+        self,
+        domain: str,
+        investigation_context,
+        fallback_tools: List[Any],
+        categories: Optional[List[str]] = None,
+        tool_names: Optional[List[str]] = None
+    ) -> List[Any]:
+        """Get enhanced tool list using RAG-based tool recommender with fallback.
+        
+        Args:
+            domain: Investigation domain
+            investigation_context: AutonomousInvestigationContext for recommendations
+            fallback_tools: Static tools to use as fallback
+            categories: Optional tool categories for filtering
+            tool_names: Optional specific tool names to include
+            
+        Returns:
+            List of recommended tools or fallback tools
+        """
+        import time
+        
+        start_time = time.time()
+        
+        # Try RAG-enhanced tool selection if available
+        if self.is_tool_recommender_available() and investigation_context:
+            try:
+                recommended_tools = await self.tool_recommender.get_enhanced_tool_list(
+                    investigation_context=investigation_context,
+                    domain=domain,
+                    categories=categories,
+                    tool_names=tool_names
+                )
+                
+                selection_time_ms = (time.time() - start_time) * 1000
+                
+                # Update performance tracking
+                self._update_performance_stats(selection_time_ms)
+                
+                # Validate performance requirement (<100ms)
+                if selection_time_ms > 100:
+                    logger.warning(
+                        f"🚀 Tool selection took {selection_time_ms:.1f}ms (>100ms target) for {domain}"
+                    )
+                else:
+                    logger.debug(f"🚀 Tool selection completed in {selection_time_ms:.1f}ms for {domain}")
+                
+                # Log to journey tracker if available
+                try:
+                    from .journey_tracker import get_journey_tracker
+                    journey_tracker = get_journey_tracker()
+                    
+                    if hasattr(investigation_context, 'investigation_id'):
+                        journey_tracker.track_tool_selection(
+                            investigation_id=investigation_context.investigation_id,
+                            domain=domain,
+                            selection_time_ms=selection_time_ms,
+                            tools_selected=len(recommended_tools),
+                            strategy="rag_enhanced"
+                        )
+                except Exception:
+                    pass  # Don't fail if journey tracking unavailable
+                
+                if recommended_tools:
+                    self.stats["tool_recommendations_used"] += 1
+                    logger.info(
+                        f"Using {len(recommended_tools)} RAG-recommended tools for {domain} "
+                        f"(selection time: {selection_time_ms:.1f}ms)"
+                    )
+                    return recommended_tools
+                    
+            except Exception as e:
+                logger.warning(f"Tool recommendation failed for {domain}, using fallback: {str(e)}")
+        
+        # Fallback to static tools
+        self.stats["static_tools_used"] += 1
+        logger.debug(f"Using {len(fallback_tools)} static fallback tools for {domain}")
+        return fallback_tools
+    
+    def _update_performance_stats(self, selection_time_ms: float) -> None:
+        """Update performance statistics for tool selection."""
+        # Update average (simple running average)
+        current_avg = self.stats.get("tool_selection_performance_ms_avg", 0.0)
+        total_selections = self.stats["tool_recommendations_used"] + self.stats["static_tools_used"]
+        
+        if total_selections > 0:
+            new_avg = ((current_avg * (total_selections - 1)) + selection_time_ms) / total_selections
+            self.stats["tool_selection_performance_ms_avg"] = new_avg
+        
+        # Update max
+        current_max = self.stats.get("tool_selection_performance_ms_max", 0.0)
+        if selection_time_ms > current_max:
+            self.stats["tool_selection_performance_ms_max"] = selection_time_ms
 
 
 _agent_factory_instance = None
+_rag_enhanced_factory_instance = None
 
 
-def get_agent_factory() -> AgentFactory:
+class ToolRecommenderAgentFactory(AgentFactory):
+    """Specialized factory with enhanced tool recommendation capabilities."""
+    
+    def __init__(self, enable_rag: bool = True, rag_config: Optional[ContextAugmentationConfig] = None):
+        super().__init__(enable_rag=enable_rag, rag_config=rag_config)
+        
+        # Additional stats for tool recommendation tracking
+        self.stats.update({
+            "tool_selection_performance_ms_avg": 0.0,
+            "tool_selection_performance_ms_max": 0.0,
+            "tool_selection_success_rate": 0.0
+        })
+    
+    async def create_agent_with_enhanced_tools(
+        self,
+        domain: str,
+        investigation_context,
+        fallback_tools: List[Any],
+        enable_rag: Optional[bool] = None,
+        categories: Optional[List[str]] = None,
+        tool_names: Optional[List[str]] = None
+    ):
+        """Create agent with RAG-enhanced tool selection.
+        
+        This method combines agent creation with intelligent tool selection,
+        providing enhanced capabilities while maintaining backward compatibility.
+        
+        Args:
+            domain: Investigation domain
+            investigation_context: Context for tool recommendations
+            fallback_tools: Static tools for fallback
+            enable_rag: Override factory RAG setting
+            categories: Tool categories to include
+            tool_names: Specific tools to include
+            
+        Returns:
+            Agent instance with optimally selected tools
+        """
+        import time
+        
+        # Get enhanced tools using RAG recommendations
+        enhanced_tools = await self.get_enhanced_tools(
+            domain=domain,
+            investigation_context=investigation_context,
+            fallback_tools=fallback_tools,
+            categories=categories,
+            tool_names=tool_names
+        )
+        
+        # Create agent with enhanced or fallback tools
+        return self.create_agent(domain, enhanced_tools, enable_rag=enable_rag)
+    
+    def get_tool_selection_metrics(self) -> Dict[str, Any]:
+        """Get tool selection performance metrics."""
+        total_selections = self.stats["tool_recommendations_used"] + self.stats["static_tools_used"]
+        success_rate = 0.0
+        if total_selections > 0:
+            success_rate = self.stats["tool_recommendations_used"] / total_selections
+        
+        return {
+            "total_tool_selections": total_selections,
+            "rag_recommendations_used": self.stats["tool_recommendations_used"],
+            "static_fallback_used": self.stats["static_tools_used"],
+            "recommendation_success_rate": success_rate,
+            "avg_selection_time_ms": self.stats["tool_selection_performance_ms_avg"],
+            "max_selection_time_ms": self.stats["tool_selection_performance_ms_max"]
+        }
+
+
+def get_agent_factory(enable_rag: bool = True) -> AgentFactory:
     """Get the singleton agent factory instance."""
     global _agent_factory_instance
     if _agent_factory_instance is None:
-        _agent_factory_instance = AgentFactory()
+        _agent_factory_instance = AgentFactory(enable_rag=enable_rag)
     return _agent_factory_instance
+
+def get_rag_enhanced_factory() -> AgentFactory:
+    """Get a RAG-enhanced agent factory instance."""
+    global _rag_enhanced_factory_instance
+    if _rag_enhanced_factory_instance is None:
+        _rag_enhanced_factory_instance = AgentFactory(enable_rag=True)
+    return _rag_enhanced_factory_instance
+
+
+_tool_recommender_factory_instance = None
+
+
+def get_tool_recommender_factory() -> ToolRecommenderAgentFactory:
+    """Get specialized factory with enhanced tool recommendation capabilities."""
+    global _tool_recommender_factory_instance
+    if _tool_recommender_factory_instance is None:
+        _tool_recommender_factory_instance = ToolRecommenderAgentFactory(enable_rag=True)
+    return _tool_recommender_factory_instance
+
+def get_standard_factory() -> AgentFactory:
+    """Get a standard (non-RAG) agent factory instance."""
+    return AgentFactory(enable_rag=False)
 
 
 def create_autonomous_agent(domain: str, tools: List[Any]):
     """
-    Create an autonomous investigation agent for the specified domain.
+    Create a standard autonomous investigation agent for the specified domain.
     
     Args:
         domain: Investigation domain (network, device, location, logs, risk)
         tools: List of available tools for the agent
         
     Returns:
-        Configured AutonomousInvestigationAgent instance
+        Configured AutonomousInvestigationAgent instance (standard, non-RAG)
     """
     try:
         from app.service.agent.base_agents import AutonomousInvestigationAgent
@@ -215,9 +529,80 @@ def initialize_llm_with_tools(tools: List[Any]) -> Any:
         return get_autonomous_llm()
 
 
-def create_agent(domain: str, tools: List[Any]):
-    """Create an agent (alias for create_autonomous_agent)."""
-    return create_autonomous_agent(domain, tools)
+def create_agent(domain: str, tools: List[Any], enable_rag: bool = True):
+    """Create an agent using the default factory."""
+    factory = get_agent_factory(enable_rag=enable_rag)
+    return factory.create_agent(domain, tools)
+
+def create_rag_agent(domain: str, tools: List[Any], rag_config: Optional[ContextAugmentationConfig] = None):
+    """Create a RAG-enhanced agent."""
+    if not RAG_AVAILABLE:
+        logger.warning("RAG not available - creating standard agent")
+        return create_autonomous_agent(domain, tools)
+    
+    factory = get_rag_enhanced_factory()
+    return factory.create_rag_enhanced_agent(domain, tools, rag_config)
+
+
+async def create_agent_with_intelligent_tools(
+    domain: str,
+    investigation_context,
+    fallback_tools: List[Any],
+    enable_rag: bool = True,
+    categories: Optional[List[str]] = None,
+    tool_names: Optional[List[str]] = None
+):
+    """Create an agent with RAG-enhanced intelligent tool selection.
+    
+    This function combines the existing RAG agent creation with the new
+    tool recommender system to provide the most advanced agent capabilities.
+    
+    Args:
+        domain: Investigation domain
+        investigation_context: Context for tool recommendations
+        fallback_tools: Static tools to use as fallback
+        enable_rag: Whether to enable RAG capabilities
+        categories: Tool categories for filtering
+        tool_names: Specific tools to include
+        
+    Returns:
+        Agent with optimal tool selection and RAG capabilities
+    """
+    try:
+        # Use specialized factory with tool recommender
+        factory = get_tool_recommender_factory()
+        
+        # Create agent with enhanced tool selection
+        agent = await factory.create_agent_with_enhanced_tools(
+            domain=domain,
+            investigation_context=investigation_context,
+            fallback_tools=fallback_tools,
+            enable_rag=enable_rag,
+            categories=categories,
+            tool_names=tool_names
+        )
+        
+        # Enable dynamic tool refresh if tool recommender is available
+        if factory.is_tool_recommender_available():
+            async def tool_refresh_callback(ctx, dom):
+                """Tool refresh callback using RAG recommendations."""
+                return await factory.get_enhanced_tools(
+                    domain=dom,
+                    investigation_context=ctx,
+                    fallback_tools=fallback_tools,
+                    categories=categories,
+                    tool_names=tool_names
+                )
+            
+            agent.enable_tool_refresh(tool_refresh_callback)
+            logger.info(f"Enabled intelligent tool refresh for {domain} agent")
+        
+        return agent
+        
+    except Exception as e:
+        logger.error(f"Failed to create agent with intelligent tools: {str(e)}")
+        # Fallback to standard RAG agent
+        return create_rag_agent(domain, fallback_tools, enable_rag=enable_rag if enable_rag else None)
 
 
 def execute_agent(agent, **kwargs):

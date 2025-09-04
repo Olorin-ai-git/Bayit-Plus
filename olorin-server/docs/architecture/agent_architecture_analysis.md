@@ -103,7 +103,7 @@ autonomous_llm = ChatAnthropic(
     api_key=settings_for_env.anthropic_api_key,  # From Firebase secrets
     model="claude-opus-4-1-20250805",           # Claude Opus 4.1
     temperature=0.1,                             # Focused decision making
-    max_tokens=8000,                            # Large context window
+    max_tokens=8090,                            # Large context window
     timeout=90,                                 # Complex reasoning timeout
 )
 ```

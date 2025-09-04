@@ -8,7 +8,6 @@ All major functionality has been moved to:
 - core/: Shared utilities and helpers
 """
 
-import logging
 from datetime import datetime
 from typing import List, Optional
 
@@ -22,6 +21,7 @@ from app.service.agent.orchestration import (
     start_investigation,
     assistant
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.investigators import (
     network_agent,
     location_agent,
@@ -44,7 +44,7 @@ from app.service.agent.tools.tool_registry import get_tools_for_agent
 from app.models.upi_response import Interaction, InteractionsResponse
 from app.service.websocket_manager import websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Initialize tools for autonomous agents
 try:

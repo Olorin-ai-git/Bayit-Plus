@@ -90,7 +90,7 @@ The Raw Data Node API provides endpoints for uploading and processing CSV files 
 #### Example Request
 
 ```bash
-curl -X POST "http://localhost:8000/api/investigation/raw-data" \
+curl -X POST "http://localhost:8090/api/investigation/raw-data" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "investigation_id=INV-20250102-001" \
   -F "file=@transactions.csv"
@@ -283,7 +283,7 @@ curl -X POST "http://localhost:8000/api/investigation/raw-data" \
 ```python
 import requests
 
-url = "http://localhost:8000/api/investigation/raw-data"
+url = "http://localhost:8090/api/investigation/raw-data"
 headers = {"Authorization": "Bearer YOUR_TOKEN"}
 files = {"file": open("transactions.csv", "rb")}
 data = {"investigation_id": "INV-001"}
@@ -305,7 +305,7 @@ split -b 40m large_transactions.csv chunk_
 
 # Upload each chunk separately
 for chunk in chunk_*; do
-  curl -X POST "http://localhost:8000/api/investigation/raw-data" \
+  curl -X POST "http://localhost:8090/api/investigation/raw-data" \
     -H "Authorization: Bearer YOUR_TOKEN" \
     -F "investigation_id=INV-LARGE-001" \
     -F "file=@$chunk"

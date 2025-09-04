@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Unified Autonomous Investigation Test Runner
@@ -1103,32 +1106,32 @@ class UnifiedAutonomousTestRunner:
     def _print_terminal_report(self, report_data: Dict[str, Any]):
         """Print comprehensive terminal report"""
         
-        print("\n" + "=" * 80)
-        print("🔍 UNIFIED AUTONOMOUS INVESTIGATION TEST REPORT")
-        print("=" * 80)
+        logger.info("\n" + "=" * 80)
+        logger.info("🔍 UNIFIED AUTONOMOUS INVESTIGATION TEST REPORT")
+        logger.info("=" * 80)
         
         # Summary
         summary = report_data["summary"]
-        print(f"📊 SUMMARY")
-        print(f"   Total Scenarios: {summary['total_scenarios']}")
-        print(f"   Passed: {summary['scenarios_passed']} ✅")
-        print(f"   Failed: {summary['scenarios_failed']} ❌")
-        print(f"   Pass Rate: {summary['pass_rate']:.1f}%")
-        print(f"   Average Score: {summary['average_score']:.1f}/100")
-        print(f"   Total Duration: {summary['total_duration']:.2f}s")
-        print()
+        logger.info(f"📊 SUMMARY")
+        logger.info(f"   Total Scenarios: {summary['total_scenarios']}")
+        logger.info(f"   Passed: {summary['scenarios_passed']} ✅")
+        logger.error(f"   Failed: {summary['scenarios_failed']} ❌")
+        logger.info(f"   Pass Rate: {summary['pass_rate']:.1f}%")
+        logger.info(f"   Average Score: {summary['average_score']:.1f}/100")
+        logger.info(f"   Total Duration: {summary['total_duration']:.2f}s")
+        logger.info()
         
         # CSV info if available
         if report_data.get("csv_metadata"):
             csv_meta = report_data["csv_metadata"]
-            print(f"📁 CSV DATA")
-            print(f"   Transactions: {csv_meta['transaction_count']}")
-            print(f"   Unique Users: {csv_meta['unique_users']}")
-            print(f"   Date Range: {csv_meta.get('date_range', 'N/A')}")
-            print()
+            logger.info(f"📁 CSV DATA")
+            logger.info(f"   Transactions: {csv_meta['transaction_count']}")
+            logger.info(f"   Unique Users: {csv_meta['unique_users']}")
+            logger.info(f"   Date Range: {csv_meta.get('date_range', 'N/A')}")
+            logger.info()
         
         # Individual results
-        print(f"🧪 INDIVIDUAL RESULTS")
+        logger.info(f"🧪 INDIVIDUAL RESULTS")
         for result_data in report_data["results"]:
             status_symbol = "✅" if result_data["status"] == "completed" else "❌"
             validation_score = result_data.get("validation_results", {}).get("overall_score", 0)
@@ -1140,28 +1143,28 @@ class UnifiedAutonomousTestRunner:
             
             if result_data.get("errors"):
                 for error in result_data["errors"]:
-                    print(f"      ⚠️  {error}")
+                    logger.error(f"      ⚠️  {error}")
         
-        print()
+        logger.info()
         
         # Performance analysis
         perf = report_data.get("performance_analysis", {})
         if perf:
-            print(f"⚡ PERFORMANCE ANALYSIS")
-            print(f"   Average Duration: {summary['average_duration']:.2f}s")
-            print(f"   Fastest Test: {perf.get('fastest_test', 0):.2f}s")
-            print(f"   Slowest Test: {perf.get('slowest_test', 0):.2f}s")
-            print()
+            logger.info(f"⚡ PERFORMANCE ANALYSIS")
+            logger.info(f"   Average Duration: {summary['average_duration']:.2f}s")
+            logger.info(f"   Fastest Test: {perf.get('fastest_test', 0):.2f}s")
+            logger.info(f"   Slowest Test: {perf.get('slowest_test', 0):.2f}s")
+            logger.info()
         
         # Recommendations
         recommendations = report_data.get("recommendations", [])
         if recommendations:
-            print(f"💡 RECOMMENDATIONS")
+            logger.info(f"💡 RECOMMENDATIONS")
             for rec in recommendations:
-                print(f"   • {rec}")
-            print()
+                logger.info(f"   • {rec}")
+            logger.info()
         
-        print("=" * 80)
+        logger.info("=" * 80)
 
     def _serialize_result(self, result: InvestigationResult) -> Dict[str, Any]:
         """Serialize investigation result to dictionary"""

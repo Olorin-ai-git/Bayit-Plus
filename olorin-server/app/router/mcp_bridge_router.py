@@ -5,6 +5,7 @@ This allows the frontend to access MCP tools through familiar REST endpoints.
 
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
@@ -17,7 +18,7 @@ from ..service.agent.tools.tool_registry import (
     tool_registry,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 router = APIRouter(prefix="/api/mcp", tags=["MCP Bridge"])
 

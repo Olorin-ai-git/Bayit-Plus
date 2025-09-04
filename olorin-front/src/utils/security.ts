@@ -583,15 +583,5 @@ export class SecurityManager {
   }
 }
 
-// Export all utilities
-export {
-  XSSProtection,
-  InputValidator,
-  CSRFProtection,
-  SessionSecurity,
-  CSPReporting,
-  SecurityManager
-};
-
 // Default export
 export default SecurityManager;

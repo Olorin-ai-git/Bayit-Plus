@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -14,7 +15,7 @@ from app.service.base_llm_risk_service import BaseLLMRiskService
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OverallRiskAssessment(BaseModel):

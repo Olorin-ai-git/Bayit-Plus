@@ -5,14 +5,14 @@ This module handles all router inclusion and endpoint registration including
 API routes, WebSocket endpoints, health checks, and utility routes.
 """
 
-import logging
 from typing import Optional
 
 from fastapi import FastAPI
 
 from ..config import SvcSettings
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def configure_routes(app: FastAPI, config: SvcSettings) -> None:

@@ -1,6 +1,5 @@
 """Professional MySQL client with connection pooling and async support."""
 
-import logging
 from typing import Any, Dict, List, Optional, Tuple
 import aiomysql  # type: ignore
 from aiomysql import Pool  # type: ignore
@@ -8,8 +7,9 @@ from aiomysql import Pool  # type: ignore
 from app.utils.firebase_secrets import get_firebase_secret
 from .config import MySQLConfig, MySQLError, MySQLConnectionError, MySQLQueryError, TableInfo
 from .analysis import MySQLAnalyzer
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MySQLClient:

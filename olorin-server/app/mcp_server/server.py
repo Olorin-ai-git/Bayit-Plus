@@ -13,6 +13,7 @@ from mcp.types import (
     TextResourceContents,
     Tool,
 )
+from app.service.logging import get_bridge_logger
 
 from ..service.agent.tools.tool_registry import (
     get_tools_for_agent,
@@ -21,7 +22,7 @@ from ..service.agent.tools.tool_registry import (
 )
 from .config import MCPConfig
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OlorinMCPServer:

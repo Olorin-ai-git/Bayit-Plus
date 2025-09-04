@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { preserveUrlParams } from '../js/utils/urlParams';
-import { useDemoMode } from '../js/hooks/useDemoMode';
+import { useDemoMode } from '../js/contexts/DemoModeContext';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;

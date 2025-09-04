@@ -6,8 +6,8 @@ Provides validation, retry orchestration, caching, and comprehensive monitoring.
 """
 
 import asyncio
-import logging
 import time
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -15,8 +15,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Union, Callable
 import json
 import hashlib
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ValidationLevel(Enum):
@@ -223,7 +224,7 @@ class EnhancedToolBase(ABC):
         """Initialize enhanced tool"""
         self.config = config
         self.metrics = ToolMetrics()
-        self.logger = logging.getLogger(f"{__name__}.{config.name}")
+        self.logger = get_bridge_logger(f"{__name__}.{config.name}")
         self.logger.setLevel(getattr(logging, config.log_level.upper()))
         
         # Circuit breaker state

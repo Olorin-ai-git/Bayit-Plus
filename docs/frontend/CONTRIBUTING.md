@@ -133,7 +133,7 @@ When working with autonomous investigations, you'll primarily interact with:
 
 3. **WebSocket Development**:
    - Use the demo mode for testing: `?demo=true&mock=true`
-   - WebSocket endpoint: `ws://localhost:8000/ws/{investigation_id}`
+   - WebSocket endpoint: `ws://localhost:8090/ws/{investigation_id}`
    - Test both parallel and sequential execution modes
 
 ### Best Practices for Autonomous Investigation

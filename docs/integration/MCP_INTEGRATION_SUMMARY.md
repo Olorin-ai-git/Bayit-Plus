@@ -141,7 +141,7 @@ Once configured, investigators can ask Claude:
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │   MCP Server    │
 │   (React)       │    │   (FastAPI)     │    │   (Python)      │
-│   Port: 3000    │    │   Port: 8000    │    │   stdio         │
+│   Port: 3000    │    │   Port: 8090    │    │   stdio         │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          │                       │                       │

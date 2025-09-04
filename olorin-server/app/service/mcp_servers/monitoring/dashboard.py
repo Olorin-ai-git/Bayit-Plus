@@ -10,7 +10,6 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from dataclasses import asdict
-import logging
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -20,8 +19,9 @@ from .mcp_monitor import (
     MCPMonitor, HealthStatus, AlertSeverity,
     get_mcp_monitor
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPDashboard:

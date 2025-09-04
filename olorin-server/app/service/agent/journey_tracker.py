@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from enum import Enum
+from app.service.logging import get_bridge_logger
 
 # Optional networkx import for visualization features
 try:
@@ -19,9 +20,8 @@ try:
 except ImportError:
     nx = None
 import uuid
-import logging
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 class NodeType(Enum):
     AGENT = "agent"
@@ -360,6 +360,72 @@ class LangGraphJourneyTracker:
                 "execution_path": [execution.node_name for execution in journey.node_executions]
             }
         }
+    
+    def track_tool_selection(
+        self,
+        investigation_id: str,
+        domain: str,
+        selection_time_ms: float,
+        tools_selected: int,
+        strategy: str = "unknown"
+    ) -> None:
+        """Track tool selection performance metrics.
+        
+        Args:
+            investigation_id: Investigation identifier
+            domain: Investigation domain
+            selection_time_ms: Time taken for tool selection
+            tools_selected: Number of tools selected
+            strategy: Selection strategy used (rag_enhanced, static, etc.)
+        """
+        try:
+            # Create a pseudo node execution for tool selection tracking
+            execution = NodeExecution(
+                execution_id=str(uuid.uuid4()),
+                investigation_id=investigation_id,
+                node_name=f"tool_selection_{domain}",
+                node_type=NodeType.TOOL,
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                duration_ms=int(selection_time_ms),
+                status=NodeStatus.COMPLETED,
+                input_state={"domain": domain, "strategy": strategy},
+                output_state={
+                    "tools_selected": tools_selected, 
+                    "selection_time_ms": selection_time_ms,
+                    "performance_target_met": selection_time_ms <= 100
+                },
+                metadata={
+                    "tracking_type": "tool_selection",
+                    "domain": domain,
+                    "strategy": strategy,
+                    "tools_count": tools_selected,
+                    "performance_ms": selection_time_ms,
+                    "target_met": selection_time_ms <= 100
+                },
+                agent_name=f"ToolSelector-{strategy.title()}"
+            )
+            
+            # Store the execution in active journey
+            if investigation_id in self._active_journeys:
+                self._active_journeys[investigation_id].node_executions.append(execution)
+            else:
+                # Create new journey if needed
+                journey = InvestigationJourney(
+                    investigation_id=investigation_id,
+                    start_timestamp=datetime.now(timezone.utc).isoformat(),
+                    node_executions=[execution],
+                    state_transitions=[],
+                    agent_coordinations=[]
+                )
+                self._active_journeys[investigation_id] = journey
+            
+            logger.debug(
+                f"🚀 Tool selection tracked for {domain}: {tools_selected} tools selected "
+                f"in {selection_time_ms:.1f}ms using {strategy} strategy"
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to track tool selection for {domain}: {str(e)}")
     
     def generate_journey_visualization(self, investigation_id: str) -> Dict[str, Any]:
         """Generate visual representation of investigation journey"""

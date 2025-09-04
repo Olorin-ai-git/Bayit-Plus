@@ -27,9 +27,9 @@ parser.add_argument(
 )
 parser.add_argument(
     "--base-url",
-    default="http://localhost:8000/api",
+    default="http://localhost:8090/api",
     dest="base_url",
-    help="Base URL for the API (default: http://localhost:8000/api)",
+    help="Base URL for the API (default: http://localhost:8090/api)",
 )
 args = parser.parse_args()
 

@@ -5,14 +5,14 @@ Handles OpenAI Assistant creation, configuration, and lifecycle management
 specifically optimized for fraud detection workflows.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from openai import AsyncOpenAI
 from openai.types.beta import Assistant
 from openai.types.beta.thread import Thread
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class AssistantManager:

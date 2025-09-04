@@ -135,7 +135,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379"
     
     # Security
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8000"]
+    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8090"]
     
     # Rate Limiting
     RATE_LIMIT_REQUESTS: int = 100
@@ -672,7 +672,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host=settings.SERVER_HOST,
-        port=8000,
+        port=8090,
         reload=True
     )
 ```
@@ -1207,11 +1207,11 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:8090/health || exit 1
 
-EXPOSE 8000
+EXPOSE 8090
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8090"]
 ```
 
 **Docker Compose**
@@ -1223,7 +1223,7 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "8090:8090"
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/appdb
       - REDIS_URL=redis://redis:6379
@@ -1529,7 +1529,7 @@ This command integrates seamlessly with other Claude Code commands to create com
 ```yaml
 # After running /api-scaffold, use this with /test-harness
 test_config:
-  api_base_url: "http://localhost:8000"
+  api_base_url: "http://localhost:8090"
   test_database: "postgresql://test:test@localhost:5432/test_db"
   authentication:
     test_user: "test@example.com"
@@ -1546,7 +1546,7 @@ test_config:
 ```yaml
 # Configuration for /security-scan after API scaffold
 security_scan:
-  target: "localhost:8000"
+  target: "localhost:8090"
   authentication_endpoints:
     - "/api/v1/auth/login"
     - "/api/v1/auth/refresh"
@@ -1574,7 +1574,7 @@ WORKDIR /app
 COPY --from=builder /root/.local /root/.local
 COPY . .
 ENV PATH=/root/.local/bin:$PATH
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8090"]
 ```
 
 **Kubernetes Deployment:**
@@ -1598,7 +1598,7 @@ spec:
       - name: api
         image: api:latest
         ports:
-        - containerPort: 8000
+        - containerPort: 8090
         env:
         - name: DATABASE_URL
           valueFrom:
@@ -1613,13 +1613,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: 8000
+            port: 8090
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /ready
-            port: 8000
+            port: 8090
           initialDelaySeconds: 5
           periodSeconds: 5
 ```

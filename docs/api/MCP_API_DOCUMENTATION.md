@@ -1336,7 +1336,7 @@ from olorin_mcp_sdk import OlorinMCPClient, InvestigationConfig
 # Initialize client
 client = OlorinMCPClient(
     api_key="your-api-key",
-    server_url="http://localhost:8000",
+    server_url="http://localhost:8090",
     timeout=30
 )
 
@@ -1397,7 +1397,7 @@ import { OlorinMCPClient, InvestigationType, ToolConfig } from 'olorin-mcp-clien
 // Initialize client
 const client = new OlorinMCPClient({
   apiKey: 'your-api-key',
-  serverUrl: 'http://localhost:8000',
+  serverUrl: 'http://localhost:8090',
   timeout: 30000
 });
 
@@ -1470,7 +1470,7 @@ async function robustInvestigation(userId: string): Promise<UserRiskResult | nul
 
 #### HTTP API Endpoints
 ```bash
-# Base URL: http://localhost:8000/api/v1/mcp
+# Base URL: http://localhost:8090/api/v1/mcp
 
 # List available tools
 GET /tools

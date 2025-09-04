@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import Request
@@ -16,7 +17,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class LLMDeviceRiskService(BaseLLMRiskService[DeviceSignalRiskLLMAssessment]):

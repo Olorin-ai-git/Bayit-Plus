@@ -1,11 +1,9 @@
 import RestService, { ApiMethod, RestResponse } from './restService';
 import { getEnvConfig } from './envConstants';
 import locationMock from '../../mock/location.json';
-import networkMock from '../../mock/network.json';
-import deviceMock from '../../mock/device.json';
-import logsMock from '../../mock/logs.json';
 import riskMock from '../../mock/risk.json';
 import { isDemoModeActive } from '../hooks/useDemoMode';
+import { AuthService } from './AuthService';
 import type { Sandbox } from './envConstants';
 
 /**
@@ -144,6 +142,7 @@ export const generateRequestOptions = (originatingIp?: string): any => ({
     'Cache-Control': 'no-cache', // ✅ Safe - allowed by server CORS policy
     Pragma: 'no-cache', // ✅ Safe - allowed by server CORS policy
     olorin_originatingip: originatingIp, // ✅ Safe - conditional header
+    ...AuthService.getAuthHeader(), // Include JWT token if available
   },
   mode: 'cors',
   credentials: 'include', // Include cookies for authentication

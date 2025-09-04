@@ -31,7 +31,7 @@ Frontend application attempting to connect to invalid WebSocket URL:
 
 ### **3. Architecture Misunderstanding**
 - **MCP Server:** Runs on `localhost:3000` (HTTP only)
-- **WebSocket Server:** Integrated into main FastAPI app on port 8000
+- **WebSocket Server:** Integrated into main FastAPI app on port 8090
 - **These are separate services with different purposes**
 
 ---

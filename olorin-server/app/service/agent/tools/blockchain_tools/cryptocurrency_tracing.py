@@ -5,14 +5,14 @@ Cross-chain transaction tracing, fund flow analysis, mixing service detection,
 and exchange identification for comprehensive cryptocurrency investigations.
 """
 
-import logging
 from typing import Dict, List, Optional, Any, Set
 from enum import Enum
 from datetime import datetime
 
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class TracingDepth(str, Enum):

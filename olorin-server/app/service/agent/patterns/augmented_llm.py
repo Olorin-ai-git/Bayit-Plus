@@ -5,7 +5,6 @@ Base building block that enhances LLM with tool integration, memory context,
 retrieval augmentation, and reasoning streaming via WebSocket.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
@@ -13,8 +12,9 @@ from langchain_openai import ChatOpenAI
 
 from .base import BasePattern, PatternResult
 from ..websocket_streaming_service import WebSocketStreamingService
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class AugmentedLLMPattern(BasePattern):

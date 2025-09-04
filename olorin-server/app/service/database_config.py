@@ -5,13 +5,14 @@ Enhanced database connection management using Firebase Secrets Manager.
 
 import os
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Optional
 from urllib.parse import quote_plus
 
 from app.utils.firebase_secrets import get_app_secret
 from app.service.config import SvcSettings
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 def get_database_password(settings: SvcSettings) -> str:
     """Get database password with Firebase secrets fallback

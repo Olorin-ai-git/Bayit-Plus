@@ -1,6 +1,5 @@
 import { CommentMessage } from '../components/CommentWindow';
 import { processCommentData } from '../utils/investigationDataUtils';
-import { CommentResponse } from '../types/ApiResponses';
 import { isDemoModeActive } from '../hooks/useDemoMode';
 
 /**

@@ -6,15 +6,15 @@ like Chainalysis, Elliptic, and TRM Labs for cryptocurrency fraud detection.
 """
 
 import asyncio
-import logging
 from typing import Any, ClassVar, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
 
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BlockchainAnalysisInput(BaseModel):

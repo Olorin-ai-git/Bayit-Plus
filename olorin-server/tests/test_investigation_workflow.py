@@ -19,8 +19,8 @@ if not os.getenv("SPLUNK_USERNAME"):
 if not os.getenv("SPLUNK_PASSWORD"):
     os.environ["SPLUNK_PASSWORD"] = "3]38[Xrfn,gT"
 
-BASE_URL = "http://localhost:8000/api"
-WS_URL = "ws://localhost:8000/ws"
+BASE_URL = "http://localhost:8090/api"
+WS_URL = "ws://localhost:8090/ws"
 
 # Test entities - Comprehensive test matrix
 TEST_ENTITIES = [
@@ -274,7 +274,7 @@ def test_autonomous_investigation(
         print("=" * 80)
 
         # Start autonomous investigation
-        start_url = f"http://localhost:8000/v1/agent/start/{entity_id}"
+        start_url = f"http://localhost:8090/v1/agent/start/{entity_id}"
         params = {"entity_type": entity_type}
 
         print(f"🔗 Calling: {start_url}")

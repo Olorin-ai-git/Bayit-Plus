@@ -6,7 +6,6 @@ performance metrics, alerting, and comprehensive observability features.
 """
 
 import asyncio
-import logging
 import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Set, Tuple
@@ -23,8 +22,9 @@ from prometheus_client import (
     Counter, Histogram, Gauge, Summary,
     generate_latest, CONTENT_TYPE_LATEST
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class HealthStatus(Enum):

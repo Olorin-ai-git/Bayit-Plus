@@ -6,7 +6,6 @@ Follows the same patterns as existing Olorin tools for MCP compatibility.
 """
 
 import json
-import logging
 from typing import Any, Dict, Optional, Type
 from datetime import datetime
 
@@ -15,8 +14,9 @@ from pydantic import BaseModel, Field, validator
 
 from .abuseipdb_client import AbuseIPDBClient
 from .models import AbuseIPDBConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class IPReputationInput(BaseModel):

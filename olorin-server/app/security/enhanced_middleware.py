@@ -11,6 +11,7 @@ import json
 import time
 import hashlib
 import logging
+from app.service.logging import get_bridge_logger
 import re
 from typing import Any, Dict, List, Optional, Set
 from datetime import datetime, timedelta
@@ -22,7 +23,7 @@ from starlette.responses import JSONResponse
 import redis
 from pydantic import BaseModel
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SecurityConfig(BaseModel):

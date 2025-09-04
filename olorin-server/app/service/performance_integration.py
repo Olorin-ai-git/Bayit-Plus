@@ -1,5 +1,5 @@
 import asyncio
-import logging
+from app.service.logging import get_bridge_logger
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -14,7 +14,7 @@ import weakref
 import psutil
 import threading
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass

@@ -6,17 +6,20 @@ Provides unified interface for tool registration, execution, and lifecycle manag
 """
 
 import asyncio
-import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Set, Type, Union
 from dataclasses import dataclass
 
 from .enhanced_tool_base import EnhancedToolBase, ToolResult, ToolConfig
+from .rag_enhanced_tool_base import RAGEnhancedToolBase
+from .rag_tool_context import get_tool_context_enhancer
+from .rag_performance_monitor import get_rag_performance_monitor
 from .tool_interceptor import ToolExecutionInterceptor, InterceptorConfig, HookType, InterceptorHook
 from .enhanced_cache import EnhancedCache, EvictionPolicy
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 @dataclass
@@ -56,7 +59,8 @@ class ToolManager:
         enable_global_cache: bool = True,
         max_concurrent_tools: int = 20,
         health_check_interval_seconds: int = 300,
-        enable_auto_recovery: bool = True
+        enable_auto_recovery: bool = True,
+        enable_rag_tools: bool = True
     ):
         """Initialize tool manager"""
         
@@ -65,6 +69,7 @@ class ToolManager:
         self.max_concurrent_tools = max_concurrent_tools
         self.health_check_interval_seconds = health_check_interval_seconds
         self.enable_auto_recovery = enable_auto_recovery
+        self.enable_rag_tools = enable_rag_tools
         
         # Tool registry
         self.registered_tools: Dict[str, ToolRegistration] = {}
@@ -106,6 +111,23 @@ class ToolManager:
         self.tool_health_status: Dict[str, bool] = {}
         self.unhealthy_tools: Set[str] = set()
         
+        # RAG integration
+        if enable_rag_tools:
+            try:
+                self.rag_context_enhancer = get_tool_context_enhancer()
+                self.rag_performance_monitor = get_rag_performance_monitor()
+                self.rag_available = True
+                logger.info("RAG capabilities enabled for ToolManager")
+            except Exception as e:
+                logger.warning(f"RAG initialization failed - continuing without RAG: {str(e)}")
+                self.rag_context_enhancer = None
+                self.rag_performance_monitor = None
+                self.rag_available = False
+        else:
+            self.rag_context_enhancer = None
+            self.rag_performance_monitor = None
+            self.rag_available = False
+        
         # Statistics
         self.manager_stats = {
             'tools_registered': 0,
@@ -115,10 +137,12 @@ class ToolManager:
             'cache_misses': 0,
             'health_checks_performed': 0,
             'auto_recoveries': 0,
+            'rag_enhanced_executions': 0,
+            'standard_executions': 0,
             'manager_start_time': datetime.now()
         }
         
-        self.logger = logging.getLogger(f"{__name__}.manager")
+        self.logger = get_bridge_logger(f"{__name__}.manager")
         
         # Start background tasks
         self._start_background_tasks()
@@ -206,7 +230,8 @@ class ToolManager:
         input_data: Dict[str, Any],
         context: Optional[Dict[str, Any]] = None,
         bypass_cache: bool = False,
-        execution_id: Optional[str] = None
+        execution_id: Optional[str] = None,
+        investigation_context: Optional[Any] = None
     ) -> ToolResult:
         """Execute a tool with full management capabilities"""
         
@@ -269,16 +294,46 @@ class ToolManager:
                     'context': execution_context
                 }
                 
-                # Execute with or without interceptor
-                if self.interceptor and self.enable_interceptor:
+                # Execute with RAG enhancement if available
+                if isinstance(tool_instance, RAGEnhancedToolBase) and self.rag_available:
+                    # RAG-enhanced execution
+                    enhanced_context = execution_context.copy()
+                    if investigation_context:
+                        enhanced_context['investigation_context'] = investigation_context
+                    
+                    result = await tool_instance.execute(input_data, enhanced_context)
+                    
+                    # Record RAG performance metrics
+                    if result.metadata.get('rag_enhanced') and self.rag_performance_monitor:
+                        timing_data = {
+                            'total_enhancement_ms': result.metadata.get('rag_overhead_ms', 0.0),
+                            'rag_overhead_ms': result.metadata.get('rag_overhead_ms', 0.0),
+                            'context_retrieval_ms': result.metadata.get('context_retrieval_ms', 0.0)
+                        }
+                        context_data = {
+                            'knowledge_chunks_used': result.metadata.get('knowledge_chunks_used', 0),
+                            'parameter_enhancements': result.metadata.get('parameter_enhancements', 0)
+                        }
+                        
+                        self.rag_performance_monitor.record_execution_performance(
+                            tool_name, exec_id, timing_data, context_data
+                        )
+                    
+                    self.manager_stats['rag_enhanced_executions'] += 1
+                    
+                elif self.interceptor and self.enable_interceptor:
+                    # Standard execution with interceptor
                     result = await self.interceptor.execute_tool(
                         tool_instance, 
                         input_data, 
                         execution_context,
                         exec_id
                     )
+                    self.manager_stats['standard_executions'] += 1
                 else:
+                    # Basic execution
                     result = await tool_instance.execute(input_data, execution_context)
+                    self.manager_stats['standard_executions'] += 1
                 
                 # Update execution info
                 execution_time = (datetime.now() - execution_start_time).total_seconds()
@@ -483,7 +538,18 @@ class ToolManager:
             ),
             'cache_stats': (
                 self.global_cache.get_statistics() if self.global_cache else None
-            )
+            ),
+            'rag_capabilities': {
+                'enabled': self.enable_rag_tools,
+                'available': self.rag_available,
+                'enhanced_executions': self.manager_stats['rag_enhanced_executions'],
+                'standard_executions': self.manager_stats['standard_executions'],
+                'rag_usage_rate': (
+                    self.manager_stats['rag_enhanced_executions'] / 
+                    max(1, self.manager_stats['rag_enhanced_executions'] + self.manager_stats['standard_executions'])
+                )
+            },
+            'rag_performance_summary': self.get_rag_performance_summary()
         }
     
     def get_active_executions(self) -> Dict[str, Any]:
@@ -528,6 +594,74 @@ class ToolManager:
             await self.global_cache.clear()
             return True
         return False
+    
+    def get_rag_performance_summary(self) -> Optional[Dict[str, Any]]:
+        """Get RAG performance summary from monitor"""
+        if self.rag_performance_monitor:
+            return self.rag_performance_monitor.get_system_performance_summary()
+        return None
+    
+    def get_tool_rag_performance(self, tool_name: str) -> Optional[Dict[str, Any]]:
+        """Get RAG performance details for specific tool"""
+        if self.rag_performance_monitor:
+            return self.rag_performance_monitor.get_tool_performance_details(tool_name)
+        return None
+    
+    async def register_rag_enhanced_tool(
+        self,
+        tool_name: str,
+        base_tool_class: Type[EnhancedToolBase],
+        tool_config: ToolConfig,
+        category: str = "general",
+        dependencies: Optional[List[str]] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        """Register a tool as RAG-enhanced version"""
+        
+        if not self.enable_rag_tools or not self.rag_available:
+            # Fall back to standard registration
+            return self.register_tool(tool_name, base_tool_class, category, dependencies, True, metadata)
+        
+        try:
+            # Create RAG-enhanced tool instance
+            from .rag_tool_integration import RAGToolFactory
+            
+            rag_tool_instance = RAGToolFactory.create_rag_enhanced_tool(
+                base_tool_class, tool_config, enable_rag=True
+            )
+            
+            # Create registration with RAG-enhanced instance
+            registration = ToolRegistration(
+                tool_class=type(rag_tool_instance),
+                tool_instance=rag_tool_instance,
+                metadata=metadata or {}
+            )
+            
+            # Add RAG metadata
+            registration.metadata.update({
+                'rag_enhanced': True,
+                'base_tool_class': base_tool_class.__name__,
+                'enhancement_timestamp': datetime.now().isoformat()
+            })
+            
+            # Register enhanced tool
+            self.registered_tools[tool_name] = registration
+            self.tool_categories[category].add(tool_name)
+            
+            # Register dependencies
+            if dependencies:
+                self.tool_dependencies[tool_name].update(dependencies)
+            
+            # Update statistics
+            self.manager_stats['tools_registered'] += 1
+            
+            logger.info(f"Registered RAG-enhanced tool '{tool_name}' in category '{category}'")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to register RAG-enhanced tool '{tool_name}': {str(e)}")
+            # Fall back to standard registration
+            return self.register_tool(tool_name, base_tool_class, category, dependencies, True, metadata)
     
     def _start_background_tasks(self) -> None:
         """Start background management tasks"""
@@ -608,6 +742,7 @@ async def initialize_default_tools(tool_manager: Optional[ToolManager] = None) -
     # Import and register enhanced tools
     try:
         from .splunk_tool.enhanced_splunk_tool import EnhancedSplunkTool
+        from .enhanced_tool_base import ValidationLevel, RetryStrategy, CacheStrategy
         
         tool_manager.register_tool(
             tool_name="enhanced_splunk",
@@ -623,6 +758,41 @@ async def initialize_default_tools(tool_manager: Optional[ToolManager] = None) -
         
     except ImportError as e:
         logger.warning(f"Could not register enhanced Splunk tool: {str(e)}")
+    
+    # Register RAG-enhanced versions of tools if available
+    if tool_manager.enable_rag_tools and tool_manager.rag_available:
+        try:
+            from .rag_enhanced_tool_base import RAGEnhancedToolBase
+            from .rag_tool_integration import RAGToolFactory
+            
+            # Example: Create RAG-enhanced version of Splunk tool
+            enhanced_splunk_config = ToolConfig(
+                name="rag_enhanced_splunk",
+                version="2.1.0",
+                validation_level=ValidationLevel.BASIC,
+                retry_strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
+                cache_strategy=CacheStrategy.MEMORY
+            )
+            
+            success = await tool_manager.register_rag_enhanced_tool(
+                tool_name="rag_enhanced_splunk",
+                base_tool_class=EnhancedSplunkTool,
+                tool_config=enhanced_splunk_config,
+                category="rag_enhanced_analysis",
+                metadata={
+                    'description': 'RAG-enhanced Splunk tool with knowledge-augmented queries',
+                    'version': '2.1.0',
+                    'rag_capabilities': True
+                }
+            )
+            
+            if success:
+                logger.info("RAG-enhanced Splunk tool registered successfully")
+            
+        except ImportError as e:
+            logger.info(f"RAG-enhanced tools not available: {str(e)}")
+        except Exception as e:
+            logger.warning(f"Failed to register RAG-enhanced tools: {str(e)}")
     
     # TODO: Register other enhanced tools as they are created
     # - Enhanced Vector Search Tool

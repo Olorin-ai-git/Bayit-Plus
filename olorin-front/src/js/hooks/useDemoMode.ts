@@ -1,11 +1,3 @@
-import { useDemoMode as useDemoModeContext } from '../contexts/DemoModeContext';
-
-// Re-export the context hook with a more convenient name
-export const useDemoMode = () => {
-  const context = useDemoModeContext();
-  return context;
-};
-
 // Helper function to check if demo mode is active (for backward compatibility)
 export const isDemoModeActive = (): boolean => {
   // This function is used in places where hooks can't be used

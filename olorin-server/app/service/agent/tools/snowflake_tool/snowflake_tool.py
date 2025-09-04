@@ -10,12 +10,12 @@ disputes, fraud alerts, and much more.
 from typing import Any, Dict, Optional
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
-import logging
 from datetime import datetime
 from .client import SnowflakeClient
 from .schema_info import SNOWFLAKE_SCHEMA_INFO
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _SnowflakeQueryArgs(BaseModel):

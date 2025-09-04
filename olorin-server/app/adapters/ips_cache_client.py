@@ -1,13 +1,13 @@
 """Implementation of IPSCacheClient to interact with IPS Cache (Redis-based)."""
 
-import logging
 from typing import Any, Dict, List
 
 import aiohttp
 
 from app.service.config import get_settings, get_settings_for_env
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 settings_for_env = get_settings_for_env()
 
 

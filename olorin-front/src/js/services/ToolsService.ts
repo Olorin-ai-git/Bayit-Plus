@@ -3,6 +3,7 @@
  */
 
 import { isDemoModeActive } from '../hooks/useDemoMode';
+import { apiEndpoints } from '../../config/environment';
 
 export interface ToolInfo {
   name: string;
@@ -24,7 +25,7 @@ export async function fetchAvailableTools(): Promise<string[]> {
   }
 
   try {
-    const response = await fetch('/api/mcp/tools');
+    const response = await fetch(`${apiEndpoints.mcp}/tools`);
     if (!response.ok) {
       throw new Error(`Failed to fetch tools: ${response.status}`);
     }

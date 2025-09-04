@@ -29,7 +29,7 @@
 │  └── Configuration Management                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │  Integration Layer                                             │
-│  ├── OLORIN Backend API (olorin-server:8000)                   │
+│  ├── OLORIN Backend API (olorin-server:8090)                   │
 │  ├── Investigation Workflow APIs                              │
 │  ├── Risk Assessment Services                                 │
 │  └── PDF Report Generation                                    │
@@ -245,7 +245,7 @@ function useSettings() {
 ```typescript
 // API client configuration
 const apiClient = {
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8090',
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',

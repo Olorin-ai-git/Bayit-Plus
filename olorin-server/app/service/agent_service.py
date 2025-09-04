@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 import os
 
 from fastapi import Request
@@ -25,7 +26,7 @@ from app.service.error_handling import (
 )
 from app.utils.firebase_secrets import get_app_secret
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 settings_for_env = get_settings_for_env()
 

@@ -16,6 +16,9 @@ from app.persistence import (
     get_investigation,
     update_investigation_llm_thoughts,
 )
+from app.service.logging import get_bridge_logger
+
+logger = get_bridge_logger(__name__)
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.service.agent.ato_agents.clients.splunk_client import SplunkClient
 from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
@@ -71,7 +74,7 @@ class NetworkAnalysisService:
                 return demo_cache[entity_id]["network"]
 
             auth_header = request.headers.get("authorization")
-            print(f"Authorization header for /network/{entity_id}: {auth_header}")
+            logger.info(f"Authorization header for /network/{entity_id}: {auth_header}")
             splunk_warning = None
             llm_error_details = None
 

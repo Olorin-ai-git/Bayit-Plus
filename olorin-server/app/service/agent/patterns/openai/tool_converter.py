@@ -5,14 +5,14 @@ Converts LangGraph tools to OpenAI function calling format,
 using specialized schema extractors for parameter handling.
 """
 
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.tools import BaseTool
 
 from .schema_extractor import extract_schema_from_pydantic, extract_schema_from_method
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def convert_langgraph_tools_to_openai_functions(tools: List[BaseTool]) -> List[Dict[str, Any]]:

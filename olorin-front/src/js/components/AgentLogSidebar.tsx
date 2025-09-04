@@ -521,7 +521,7 @@ const AgentLogSidebar: React.FC<AgentLogSidebarProps> = ({
         >
           {[...visibleLogs].reverse().map((log) => (
             <div
-              key={`${log.timestamp}-${log.message}`}
+              key={log.id}
               className="mb-3 last:mb-0"
             >
               <div className="text-xs text-black-500 mb-1">

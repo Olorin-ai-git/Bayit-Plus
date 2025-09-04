@@ -1,12 +1,12 @@
 """Databricks SQL statement execution operations."""
 
 import asyncio
-import logging
 from typing import Any, Dict, List, Optional
 
 from .databricks_config import DatabricksQueryError
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DatabricksExecutor:

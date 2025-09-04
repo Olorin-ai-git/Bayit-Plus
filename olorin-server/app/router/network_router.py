@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Query
@@ -7,8 +8,14 @@ from starlette.requests import Request
 from app.persistence import ensure_investigation_exists
 from app.service.network_analysis_service import NetworkAnalysisService
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/network")
+
+
+@router.options("/{entity_id}")
+def analyze_network_options():
+    """Handle CORS preflight requests for network analysis endpoint."""
+    return {}
 
 
 @router.get("/{entity_id}")

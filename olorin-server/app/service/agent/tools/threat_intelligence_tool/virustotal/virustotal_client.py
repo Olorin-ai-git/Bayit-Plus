@@ -8,7 +8,6 @@ threat intelligence analysis capabilities for IP addresses, domains, files, and 
 import asyncio
 import base64
 import hashlib
-import logging
 from datetime import datetime
 from typing import Optional
 import urllib.parse
@@ -30,8 +29,9 @@ from .models import (
     VirusTotalNotFoundError,
     VirusTotalQuotaError
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class VirusTotalClient:

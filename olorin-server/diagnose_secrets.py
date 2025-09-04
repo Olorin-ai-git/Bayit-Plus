@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Diagnose which secrets are missing from Firebase Secret Manager.
@@ -13,19 +16,19 @@ sys.path.insert(0, str(Path(__file__).parent))
 def check_secrets():
     """Check which secrets are being requested and which are missing."""
     
-    print("=" * 70)
-    print("FIREBASE SECRET MANAGER DIAGNOSTIC")
-    print("=" * 70)
-    print()
+    logger.info("=" * 70)
+    logger.info("FIREBASE SECRET MANAGER DIAGNOSTIC")
+    logger.info("=" * 70)
+    logger.info()
     
     # Import the secret manager
     try:
         from app.service.secret_manager import SecretManagerClient
         client = SecretManagerClient(project_id="olorin-ai")
-        print("✅ Secret Manager client initialized")
-        print()
+        logger.info("✅ Secret Manager client initialized")
+        logger.info()
     except Exception as e:
-        print(f"❌ Failed to initialize Secret Manager: {e}")
+        logger.error(f"❌ Failed to initialize Secret Manager: {e}")
         return
     
     # List of all secrets the application typically uses
@@ -75,8 +78,8 @@ def check_secrets():
         "FIREBASE_CLIENT_EMAIL",
     ]
     
-    print("🔍 Checking secrets in Firebase Secret Manager:")
-    print("-" * 50)
+    logger.info("🔍 Checking secrets in Firebase Secret Manager:")
+    logger.info("-" * 50)
     
     found = []
     missing = []
@@ -100,79 +103,79 @@ def check_secrets():
                 missing.append(secret_name)
                 status = "❌ NOT FOUND"
             
-            print(f"  {secret_name:30} {status}")
+            logger.info(f"  {secret_name:30} {status}")
             
         except Exception as e:
             missing.append(secret_name)
-            print(f"  {secret_name:30} ❌ ERROR: {str(e)[:30]}")
+            logger.error(f"  {secret_name:30} ❌ ERROR: {str(e)[:30]}")
     
-    print()
-    print("=" * 70)
-    print("SUMMARY")
-    print("=" * 70)
-    print()
+    logger.info()
+    logger.info("=" * 70)
+    logger.info("SUMMARY")
+    logger.info("=" * 70)
+    logger.info()
     
-    print(f"✅ Found in Secret Manager: {len(found)} secrets")
+    logger.info(f"✅ Found in Secret Manager: {len(found)} secrets")
     if found:
         for secret in found[:5]:  # Show first 5
-            print(f"   • {secret}")
+            logger.info(f"   • {secret}")
         if len(found) > 5:
-            print(f"   ... and {len(found) - 5} more")
+            logger.info(f"   ... and {len(found) - 5} more")
     
-    print()
-    print(f"🟡 Environment Variables Only: {len(env_only)} secrets")
+    logger.info()
+    logger.info(f"🟡 Environment Variables Only: {len(env_only)} secrets")
     if env_only:
         for secret in env_only[:5]:
-            print(f"   • {secret}")
+            logger.info(f"   • {secret}")
         if len(env_only) > 5:
-            print(f"   ... and {len(env_only) - 5} more")
+            logger.info(f"   ... and {len(env_only) - 5} more")
     
-    print()
-    print(f"❌ Missing Completely: {len(missing)} secrets")
-    print("   (These are causing the 'Secret not found' warnings)")
+    logger.info()
+    logger.info(f"❌ Missing Completely: {len(missing)} secrets")
+    logger.info("   (These are causing the 'Secret not found' warnings)")
     if missing:
         for secret in missing:
-            print(f"   • {secret}")
+            logger.info(f"   • {secret}")
     
-    print()
-    print("=" * 70)
-    print("SOLUTIONS")
-    print("=" * 70)
-    print()
+    logger.info()
+    logger.info("=" * 70)
+    logger.info("SOLUTIONS")
+    logger.info("=" * 70)
+    logger.info()
     
     if missing:
-        print("To fix the warnings, you can either:")
-        print()
-        print("1. **Set as environment variables** (for local development):")
-        print("   ```bash")
+        logger.warning("To fix the warnings, you can either:")
+        logger.info()
+        logger.info("1. **Set as environment variables** (for local development):")
+        logger.info("   ```bash")
         for secret in missing[:3]:  # Show first 3 as examples
             if secret == "JWT_SECRET_KEY":
-                print(f'   export {secret}="$(openssl rand -base64 64)"')
+                logger.info(f'   export {secret}="$(openssl rand -base64 64)"')
             else:
-                print(f'   export {secret}="your-value-here"')
-        print("   ```")
-        print()
-        print("2. **Add to Firebase Secret Manager** (for production):")
-        print("   ```bash")
-        print("   # Use Firebase/GCP Console or CLI to add secrets")
-        print("   gcloud secrets create SECRET_NAME --data-file=-")
-        print("   ```")
-        print()
-        print("3. **Create a .env file** (for local development):")
-        print("   Create /Users/gklainert/Documents/olorin/olorin-server/.env with:")
+                logger.info(f'   export {secret}="your-value-here"')
+        logger.info("   ```")
+        logger.info()
+        logger.info("2. **Add to Firebase Secret Manager** (for production):")
+        logger.info("   ```bash")
+        logger.info("   # Use Firebase/GCP Console or CLI to add secrets")
+        logger.info("   gcloud secrets create SECRET_NAME --data-file=-")
+        logger.info("   ```")
+        logger.info()
+        logger.info("3. **Create a .env file** (for local development):")
+        logger.info("   Create /Users/gklainert/Documents/olorin/olorin-server/.env with:")
         for secret in missing[:5]:
             if secret == "JWT_SECRET_KEY":
-                print(f"   {secret}=<generate with: openssl rand -base64 64>")
+                logger.info(f"   {secret}=<generate with: openssl rand -base64 64>")
             else:
-                print(f"   {secret}=your-value-here")
+                logger.info(f"   {secret}=your-value-here")
         if len(missing) > 5:
-            print(f"   # ... and {len(missing) - 5} more")
+            logger.info(f"   # ... and {len(missing) - 5} more")
     
-    print()
-    print("💡 Note: Not all secrets are required. Only set the ones for services you use.")
-    print("   Critical ones: JWT_SECRET_KEY, OLORIN_API_KEY")
-    print("   Optional: Snowflake, Databricks, Langfuse (only if using these services)")
-    print()
+    logger.info()
+    logger.info("💡 Note: Not all secrets are required. Only set the ones for services you use.")
+    logger.info("   Critical ones: JWT_SECRET_KEY, OLORIN_API_KEY")
+    logger.info("   Optional: Snowflake, Databricks, Langfuse (only if using these services)")
+    logger.info()
 
 if __name__ == "__main__":
     check_secrets()

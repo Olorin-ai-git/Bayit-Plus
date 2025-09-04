@@ -8,7 +8,6 @@ Provides high-performance caching for tool results with comprehensive monitoring
 import asyncio
 import hashlib
 import json
-import logging
 import pickle
 import time
 from dataclasses import dataclass, field
@@ -17,8 +16,9 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from collections import OrderedDict
 import weakref
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class EvictionPolicy(Enum):
@@ -159,7 +159,7 @@ class EnhancedCache:
         self.cleanup_task: Optional[asyncio.Task] = None
         self.start_cleanup_task()
         
-        self.logger = logging.getLogger(f"{__name__}.cache")
+        self.logger = get_bridge_logger(f"{__name__}.cache")
     
     def start_cleanup_task(self) -> None:
         """Start background cleanup task"""

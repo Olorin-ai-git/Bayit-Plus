@@ -6,7 +6,6 @@ Provides comprehensive instrumentation and control over tool execution lifecycle
 """
 
 import asyncio
-import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -15,8 +14,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from collections import defaultdict
 
 from .enhanced_tool_base import EnhancedToolBase, ToolResult
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class HookType(Enum):
@@ -108,7 +108,7 @@ class ToolExecutionInterceptor:
         self.execution_semaphore = asyncio.Semaphore(config.max_concurrent_executions)
         self.execution_queue: List[Dict[str, Any]] = []
         
-        self.logger = logging.getLogger(f"{__name__}.interceptor")
+        self.logger = get_bridge_logger(f"{__name__}.interceptor")
     
     def register_hook(self, hook: InterceptorHook) -> None:
         """Register a new hook"""

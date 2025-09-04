@@ -35,7 +35,7 @@ const investigationId = investigationData.investigation_id;
 ### 2. Connect to WebSocket
 
 ```javascript
-const ws = new WebSocket(`ws://localhost:8000/ws/${investigationId}?parallel=${parallel}`);
+const ws = new WebSocket(`ws://localhost:8090/ws/${investigationId}?parallel=${parallel}`);
 
 ws.onopen = function(event) {
     console.log('WebSocket connection established');
@@ -229,7 +229,7 @@ export const useAutonomousInvestigation = (investigationId: string, parallel: bo
   useEffect(() => {
     if (!investigationId) return;
 
-    const wsUrl = `ws://localhost:8000/ws/${investigationId}?parallel=${parallel}`;
+    const wsUrl = `ws://localhost:8090/ws/${investigationId}?parallel=${parallel}`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
@@ -453,7 +453,7 @@ class WebSocketManager {
   private reconnectDelay = 1000;
 
   connect(investigationId: string, parallel: boolean = true) {
-    const wsUrl = `ws://localhost:8000/ws/${investigationId}?parallel=${parallel}`;
+    const wsUrl = `ws://localhost:8090/ws/${investigationId}?parallel=${parallel}`;
     
     try {
       this.ws = new WebSocket(wsUrl);

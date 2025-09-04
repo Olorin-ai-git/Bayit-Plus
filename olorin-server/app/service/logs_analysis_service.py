@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -22,7 +23,7 @@ from app.service.config import get_settings_for_env
 from app.service.llm_logs_risk_service import LLMLogsRiskService, LogsRiskAssessment
 from app.utils.prompt_utils import sanitize_splunk_data
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class LogsAnalysisService:

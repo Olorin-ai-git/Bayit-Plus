@@ -1,15 +1,15 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Firebase Secrets Manager integration for Olorin service.
 Replaces IDPS-based secret management with Firebase-based secret storage.
 """
 
 import os
-import logging
 import subprocess
 from typing import Optional, Dict
 from functools import lru_cache
-
-logger = logging.getLogger(__name__)
 
 # Global cache for secrets to avoid repeated API calls
 _secrets_cache: Dict[str, str] = {}
@@ -183,15 +183,15 @@ if __name__ == "__main__":
     
     if len(sys.argv) > 1:
         secret_name = sys.argv[1]
-        print(f"\nRetrieving secret '{secret_name}' from Firebase (latest version)...")
+        logger.info(f"\nRetrieving secret '{secret_name}' from Firebase (latest version)...")
         secret_value = get_firebase_secret(secret_name)
         if secret_value:
-            print(f"✓ Secret '{secret_name}' retrieved successfully from Firebase")
-            print(f"  Length: {len(secret_value)} characters")
+            logger.info(f"✓ Secret '{secret_name}' retrieved successfully from Firebase")
+            logger.info(f"  Length: {len(secret_value)} characters")
             if secret_name == 'ANTHROPIC_API_KEY':
-                print(f"  Preview: {secret_value[:20]}...{secret_value[-10:]}")
+                logger.info(f"  Preview: {secret_value[:20]}...{secret_value[-10:]}")
         else:
-            print(f"✗ Failed to retrieve secret '{secret_name}' from Firebase")
+            logger.error(f"✗ Failed to retrieve secret '{secret_name}' from Firebase")
     else:
-        print("Usage: python firebase_secrets.py <secret_name>")
-        print("\nExample: python firebase_secrets.py ANTHROPIC_API_KEY")
+        logger.info("Usage: python firebase_secrets.py <secret_name>")
+        logger.info("\nExample: python firebase_secrets.py ANTHROPIC_API_KEY")

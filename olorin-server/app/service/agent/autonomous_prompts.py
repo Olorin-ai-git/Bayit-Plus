@@ -5,7 +5,6 @@ Prompt generation utilities for autonomous investigation agents.
 Now integrates with Gaia prompts for structured fraud detection analysis.
 """
 
-import logging
 from typing import List, Optional, Dict, Any
 
 from app.service.agent.autonomous_context import AutonomousInvestigationContext
@@ -15,6 +14,7 @@ from app.service.agent.prompts.olorin_prompts import (
     validate_olorin_response_format,
     get_supported_olorin_domains
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.prompts.gaia_prompts import (
     get_gaia_prompt,
     format_gaia_prompt,
@@ -22,7 +22,7 @@ from app.service.agent.prompts.gaia_prompts import (
     get_supported_domains
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def create_investigation_prompt(

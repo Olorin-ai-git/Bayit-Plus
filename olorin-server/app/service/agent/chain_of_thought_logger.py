@@ -10,7 +10,6 @@ autonomous investigations for testing, debugging, and optimization.
 """
 
 import json
-import logging
 from typing import Dict, List, Any, Optional, Union, Tuple
 from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
@@ -18,8 +17,9 @@ from enum import Enum
 from pathlib import Path
 import uuid
 import re
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 class ReasoningType(Enum):
     ANALYSIS = "analysis"

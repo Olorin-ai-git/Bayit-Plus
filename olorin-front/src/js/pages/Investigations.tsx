@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { preserveUrlParams, isDemoModeActive } from '../utils/urlParams';
 import {
@@ -33,8 +33,6 @@ import {
   Computer as ComputerIcon,
 } from '@mui/icons-material';
 
-// Use centralized demo mode detection
-const DEMO_MODE = isDemoModeActive(); // Dynamic demo mode based on URL parameter
 
 // Mock data for demo mode
 const MOCK_INVESTIGATIONS = [
@@ -201,7 +199,7 @@ const Investigations: React.FC<InvestigationsProps> = ({
   /**
    * Fetches investigations and updates state.
    */
-  const fetchInvestigations = async () => {
+  const fetchInvestigations = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -216,11 +214,11 @@ const Investigations: React.FC<InvestigationsProps> = ({
       setError('fetch error');
     }
     setLoading(false);
-  };
+  }, [isDemoMode]);
 
   useEffect(() => {
     fetchInvestigations();
-  }, [isDemoMode]);
+  }, [isDemoMode, fetchInvestigations]);
 
   /**
    * Handles select all checkbox.

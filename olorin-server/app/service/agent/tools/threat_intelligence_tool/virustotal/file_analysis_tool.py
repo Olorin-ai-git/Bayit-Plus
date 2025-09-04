@@ -1,7 +1,6 @@
 """VirusTotal File Analysis Tool for comprehensive file threat intelligence."""
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -11,6 +10,7 @@ from pydantic import BaseModel, Field, validator
 from ..base_threat_tool import BaseThreatIntelligenceTool
 from .models import VirusTotalFileResponse
 from .virustotal_client import VirusTotalClient
+from app.service.logging import get_bridge_logger
 
 
 class FileAnalysisInput(BaseModel):
@@ -121,7 +121,7 @@ class VirusTotalFileAnalysisTool(BaseTool):
             
         except Exception as e:
             error_msg = f"VirusTotal file analysis failed for {file_hash}: {str(e)}"
-            logger = logging.getLogger(__name__)
+            logger = get_bridge_logger(__name__)
             logger.error(error_msg, exc_info=True)
             return json.dumps({
                 "error": error_msg,

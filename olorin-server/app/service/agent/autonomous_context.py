@@ -6,13 +6,13 @@ Enables agents to make intelligent decisions about which tools to use and how to
 """
 
 import json
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Union
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RiskLevel(Enum):

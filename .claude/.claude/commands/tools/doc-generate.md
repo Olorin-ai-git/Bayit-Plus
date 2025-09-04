@@ -561,7 +561,7 @@ pip install ${PACKAGE_NAME}
 
 ```bash
 docker pull ${DOCKER_IMAGE}
-docker run -p 8000:8000 ${DOCKER_IMAGE}
+docker run -p 8090:8090 ${DOCKER_IMAGE}
 ```
 
 ### From source

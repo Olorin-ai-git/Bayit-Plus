@@ -6,15 +6,15 @@ for fraud detection models, behavioral analysis, and media forensics.
 """
 
 import asyncio
-import logging
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
 from enum import Enum
 
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ModelType(str, Enum):

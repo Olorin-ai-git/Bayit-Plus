@@ -157,7 +157,7 @@ python scripts/performance-test.py
 
 # Full test with custom parameters
 python scripts/performance-test.py \
-  --url http://localhost:8000 \
+  --url http://localhost:8090 \
   --users 10 \
   --output results.json \
   --report report.md
@@ -175,10 +175,10 @@ ls -la build/static/js/
 ### 3. Monitor API Performance
 ```bash
 # Check performance metrics
-curl http://localhost:8000/performance/metrics
+curl http://localhost:8090/performance/metrics
 
 # View cache statistics
-curl http://localhost:8000/performance/cache/stats
+curl http://localhost:8090/performance/cache/stats
 ```
 
 ## Configuration Examples
@@ -203,7 +203,7 @@ config = PerformanceOptimizationConfig(
 ```typescript
 // Example optimized API service configuration
 const apiService = new OptimizedApiService({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'http://localhost:8090',
   defaultCacheTTL: 5 * 60 * 1000, // 5 minutes
   maxCacheSize: 1000,
   maxRetries: 3,
@@ -282,13 +282,13 @@ export NODE_ENV=development
 grep "Performance" logs/app.log
 
 # Monitor cache statistics
-watch -n 5 'curl -s http://localhost:8000/performance/cache/stats | jq .'
+watch -n 5 'curl -s http://localhost:8090/performance/cache/stats | jq .'
 ```
 
 ### Health Checks
 ```bash
 # Backend health
-curl http://localhost:8000/performance/health
+curl http://localhost:8090/performance/health
 
 # Frontend health (check console)
 optimizedApiService.healthCheck()

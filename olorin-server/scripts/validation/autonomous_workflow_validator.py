@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Autonomous Investigation Workflow Validator
@@ -381,23 +384,23 @@ async def main():
         report = await validator.validate_complete_workflow()
         
         # Print summary
-        print("\n" + "="*80)
-        print("AUTONOMOUS INVESTIGATION WORKFLOW VALIDATION RESULTS")
-        print("="*80)
-        print(f"Overall Status: {report.get('overall_status', 'UNKNOWN')}")
-        print(f"Investigation ID: {report['test_configuration']['investigation_id']}")
-        print(f"API Calls Made: {report['workflow_validation']['rest_api_calls']}")
-        print(f"WebSocket Messages: {report['workflow_validation']['websocket_messages']}")
-        print(f"LLM Responses: {report['workflow_validation']['llm_responses']}")
-        print(f"Investigation Completed: {report['workflow_validation']['investigation_completed']}")
+        logger.info("\n" + "="*80)
+        logger.info("AUTONOMOUS INVESTIGATION WORKFLOW VALIDATION RESULTS")
+        logger.info("="*80)
+        logger.info(f"Overall Status: {report.get('overall_status', 'UNKNOWN')}")
+        logger.info(f"Investigation ID: {report['test_configuration']['investigation_id']}")
+        logger.info(f"API Calls Made: {report['workflow_validation']['rest_api_calls']}")
+        logger.info(f"WebSocket Messages: {report['workflow_validation']['websocket_messages']}")
+        logger.info(f"LLM Responses: {report['workflow_validation']['llm_responses']}")
+        logger.info(f"Investigation Completed: {report['workflow_validation']['investigation_completed']}")
         
         if report.get("overall_status") == "PASSED":
-            print("\n✅ VALIDATION PASSED - Real APIs and LLM confirmed in workflow")
+            logger.info("\n✅ VALIDATION PASSED - Real APIs and LLM confirmed in workflow")
         else:
-            print("\n❌ VALIDATION FAILED - Issues detected in workflow")
+            logger.error("\n❌ VALIDATION FAILED - Issues detected in workflow")
             
-        print("\nFor detailed results, check the generated JSON report.")
-        print("="*80)
+        logger.info("\nFor detailed results, check the generated JSON report.")
+        logger.info("="*80)
         
     except KeyboardInterrupt:
         logger.info("🛑 Validation interrupted by user")

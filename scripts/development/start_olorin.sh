@@ -21,9 +21,9 @@ FRONTEND_DIR="$SCRIPT_DIR/olorin-front"
 LOG_DIR="$SCRIPT_DIR/logs"
 
 # Default ports
-BACKEND_PORT=8000
+BACKEND_PORT=8090
 FRONTEND_PORT=3000
-MCP_PORT=8001
+MCP_PORT=8091
 
 # Default log level
 LOG_LEVEL=${LOG_LEVEL:-info}
@@ -328,7 +328,7 @@ usage() {
     echo "  --help            Show this help message"
     echo ""
     echo "Environment Variables:"
-    echo "  BACKEND_PORT   Backend server port (default: 8000)"
+    echo "  BACKEND_PORT   Backend server port (default: 8090)"
     echo "  FRONTEND_PORT  Frontend server port (default: 3000)"
     echo "  LOG_LEVEL      Default log level (default: info)"
     echo ""

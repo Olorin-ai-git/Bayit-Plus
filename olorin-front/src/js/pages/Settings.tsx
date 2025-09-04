@@ -4,7 +4,6 @@ import { useSettings } from '../hooks/useSettings';
 import {
   getCategorizedTools,
   CategorizedToolsResponse,
-  ToolDisplayInfo,
 } from '../services/SettingsService';
 import {
   Box,
@@ -13,16 +12,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormGroup,
   FormControlLabel,
   Checkbox,
   TextField,
   Card,
   CardContent,
   Grid,
-  Divider,
   Alert,
-  useTheme,
   SelectChangeEvent,
   CircularProgress,
   Button,
@@ -57,7 +53,6 @@ const SettingsPage: React.FC = () => {
     commitToServer,
     resetToServer,
   ] = useSettings();
-  const theme = useTheme();
   const [categorizedTools, setCategorizedTools] =
     useState<CategorizedToolsResponse>({
       olorin_tools: [],

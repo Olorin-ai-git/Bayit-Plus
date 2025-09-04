@@ -6,12 +6,12 @@ Provides rich real-time feedback for investigation progress visualization.
 """
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from enum import Enum
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class StreamEventType(Enum):

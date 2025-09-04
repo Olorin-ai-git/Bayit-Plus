@@ -6,7 +6,6 @@ validation, persistence, and coordination across multiple agents and patterns.
 """
 
 import asyncio
-import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -15,8 +14,9 @@ from collections import defaultdict
 import json
 
 from .ice_events import ICEEventBus, ICEEventType, get_event_bus
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class InvestigationState(Enum):

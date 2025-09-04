@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Simplified test for CSV routing logic only
@@ -47,7 +50,7 @@ def _detect_csv_data_in_messages(messages: List[BaseMessage]) -> bool:
                 
                 # Look for CSV indicators in content
                 if any(indicator in content for indicator in csv_indicators):
-                    print(f"CSV indicator found in message content: {content[:100]}...")
+                    logger.info(f"CSV indicator found in message content: {content[:100]}...")
                     return True
                 
                 # Check for comma-separated structure (basic heuristic)
@@ -59,7 +62,7 @@ def _detect_csv_data_in_messages(messages: List[BaseMessage]) -> bool:
                         # Check if lines have similar comma counts (suggesting tabular data)
                         comma_counts = [line.count(',') for line in comma_lines[:5]]  # Check first 5 lines
                         if comma_counts and all(count > 2 and abs(count - comma_counts[0]) <= 1 for count in comma_counts):
-                            print("CSV structure detected based on comma patterns")
+                            logger.info("CSV structure detected based on comma patterns")
                             return True
             
             # Check additional_kwargs for structured data
@@ -68,17 +71,17 @@ def _detect_csv_data_in_messages(messages: List[BaseMessage]) -> bool:
                 
                 # Direct CSV data keys
                 if kwargs.get('csv_data') or kwargs.get('file_content'):
-                    print("CSV data found in message additional_kwargs")
+                    logger.info("CSV data found in message additional_kwargs")
                     return True
                 
                 # Filename checks
                 filename = kwargs.get('filename', '')
                 if filename and filename.lower().endswith('.csv'):
-                    print(f"CSV file detected: {filename}")
+                    logger.info(f"CSV file detected: {filename}")
                     return True
                     
         except Exception as e:
-            print(f"Error analyzing message for CSV data: {e}")
+            logger.error(f"Error analyzing message for CSV data: {e}")
             continue
     
     return False
@@ -88,20 +91,20 @@ def raw_data_or_investigation_routing(state: dict) -> str:
     Primary routing function that determines whether to process raw CSV data
     or proceed with standard fraud investigation.
     """
-    print("Determining investigation routing: raw data vs standard flow")
+    logger.info("Determining investigation routing: raw data vs standard flow")
     
     # First check for CSV data
     if _detect_csv_data_in_messages(state.get("messages", [])):
-        print("Raw CSV data detected - routing to raw data processing")
+        logger.info("Raw CSV data detected - routing to raw data processing")
         return "raw_data_node"
     
     # No CSV data found, proceed with standard investigation
-    print("No raw data detected - routing to standard fraud investigation")
+    logger.info("No raw data detected - routing to standard fraud investigation")
     return "fraud_investigation"
 
 def test_csv_detection():
     """Test CSV data detection in messages."""
-    print("\n=== Testing CSV Data Detection ===")
+    logger.info("\n=== Testing CSV Data Detection ===")
     
     # Test 1: Message with CSV data in additional_kwargs
     msg1 = HumanMessage(
@@ -113,7 +116,7 @@ def test_csv_detection():
     )
     
     result1 = _detect_csv_data_in_messages([msg1])
-    print(f"✓ CSV detection with additional_kwargs: {result1}")
+    logger.info(f"✓ CSV detection with additional_kwargs: {result1}")
     assert result1 == True, "Should detect CSV in additional_kwargs"
     
     # Test 2: Message with CSV-like content
@@ -122,7 +125,7 @@ def test_csv_detection():
     )
     
     result2 = _detect_csv_data_in_messages([msg2])
-    print(f"✓ CSV detection with content pattern: {result2}")
+    logger.info(f"✓ CSV detection with content pattern: {result2}")
     assert result2 == True, "Should detect CSV pattern in content"
     
     # Test 3: Message without CSV data
@@ -131,14 +134,14 @@ def test_csv_detection():
     )
     
     result3 = _detect_csv_data_in_messages([msg3])
-    print(f"✓ No CSV detection: {result3}")
+    logger.info(f"✓ No CSV detection: {result3}")
     assert result3 == False, "Should not detect CSV in regular message"
     
-    print("✅ All CSV detection tests passed!")
+    logger.info("✅ All CSV detection tests passed!")
 
 def test_routing_functions():
     """Test routing functions for raw data vs investigation flow."""
-    print("\n=== Testing Routing Functions ===")
+    logger.info("\n=== Testing Routing Functions ===")
     
     # Test 1: State with CSV data should route to raw_data_node
     state_with_csv = {
@@ -155,7 +158,7 @@ def test_routing_functions():
     }
     
     route1 = raw_data_or_investigation_routing(state_with_csv)
-    print(f"✓ Routing with CSV data: {route1}")
+    logger.info(f"✓ Routing with CSV data: {route1}")
     assert route1 == "raw_data_node", "Should route to raw_data_node"
     
     # Test 2: State without CSV data should route to fraud_investigation
@@ -173,26 +176,26 @@ def test_routing_functions():
     }
     
     route2 = raw_data_or_investigation_routing(state_without_csv)
-    print(f"✓ Routing without CSV data: {route2}")
+    logger.info(f"✓ Routing without CSV data: {route2}")
     assert route2 == "fraud_investigation", "Should route to fraud_investigation"
     
-    print("✅ All routing tests passed!")
+    logger.info("✅ All routing tests passed!")
 
 def main():
     """Run basic routing tests."""
-    print("🚀 Testing Raw Data Routing Logic")
-    print("=" * 50)
+    logger.info("🚀 Testing Raw Data Routing Logic")
+    logger.info("=" * 50)
     
     try:
         test_csv_detection()
         test_routing_functions()
         
-        print("\n" + "=" * 50)
-        print("🎉 ROUTING TESTS PASSED!")
-        print("✅ Core routing functionality working correctly")
+        logger.info("\n" + "=" * 50)
+        logger.info("🎉 ROUTING TESTS PASSED!")
+        logger.info("✅ Core routing functionality working correctly")
         
     except Exception as e:
-        print(f"\n❌ Test failed: {e}")
+        logger.error(f"\n❌ Test failed: {e}")
         raise
 
 if __name__ == "__main__":

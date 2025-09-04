@@ -1,6 +1,5 @@
 """User Behavior Agent implementation."""
 
-import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -10,6 +9,7 @@ from agents import Agent
 from ..clients.splunk_client import SplunkClient
 from ..interfaces import RiskAssessment, UserBehaviorAgent
 from ..utils.logging import get_logger
+from app.service.logging import get_bridge_logger
 
 logger = get_logger(__name__)
 
@@ -38,7 +38,7 @@ class UserBehaviorAgentImpl(Agent[BehaviorContext]):
             "transaction_amount_threshold", 1000
         )  # Max transaction amount
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_bridge_logger(__name__)
         self.logger.info("Initializing UserBehaviorAgent")
 
         super().__init__(

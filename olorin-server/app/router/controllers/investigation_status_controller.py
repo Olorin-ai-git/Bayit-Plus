@@ -10,6 +10,7 @@ from fastapi import HTTPException
 from app.service.logging.autonomous_investigation_logger import (
     autonomous_investigation_logger, InteractionType
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.journey_tracker import journey_tracker
 from app.router.models.autonomous_investigation_models import (
     InvestigationStatusResponse,
@@ -17,7 +18,7 @@ from app.router.models.autonomous_investigation_models import (
     LangGraphJourneyResponse
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def get_investigation_status(investigation_id: str, active_investigations: Dict[str, Dict[str, Any]]) -> InvestigationStatusResponse:

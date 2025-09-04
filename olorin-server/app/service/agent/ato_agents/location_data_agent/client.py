@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -10,8 +9,9 @@ import aiohttp
 
 # Removed non-existent tool imports
 from app.service.agent.tools.vector_search_tool import VectorSearchTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 logger.warning("=== LOCATION_DATA_CLIENT MODULE LOADED ===")
 
 
@@ -274,84 +274,9 @@ class LocationDataClient:
         if not self.session:
             await self.connect()
 
-        oii_results = []
         splunk_results = []
         vector_analysis = {}
 
-        logger.warning("=== ENTERING OII BLOCK ===")
-        # Get OII data
-        try:
-            oii_response_str = self.oii_tool._run(user_id=user_id)
-            oii_response = OIIResponse.model_validate_json(oii_response_str)
-            # Extract location from OII response
-            account = getattr(oii_response.data, "account", None)
-            if account and getattr(account, "accountProfile", None):
-                account_profile = account.accountProfile
-                person_info = getattr(account_profile, "personInfo", None)
-                if person_info and getattr(person_info, "contactInfo", None):
-                    contact_info = person_info.contactInfo
-                    addresses = getattr(contact_info, "addresses", [])
-                    if addresses and hasattr(addresses[0], "displayAddress"):
-                        display_address = addresses[0].displayAddress
-                        location_data = {
-                            "address1": getattr(display_address, "streetAddress", ""),
-                            "address2": getattr(display_address, "streetAddress2", ""),
-                            "country": getattr(display_address, "country", "Unknown"),
-                            "locality": getattr(display_address, "locality", "Unknown"),
-                            "region": getattr(display_address, "region", "Unknown"),
-                            "postalCode": getattr(display_address, "postalCode", ""),
-                            "postalExt": getattr(
-                                display_address, "postalCodeExt", None
-                            ),
-                            "phoneNumber": None,  # Will be populated from phone numbers
-                        }
-
-                        # Try to get phone number from contact info
-                        phone_numbers = getattr(contact_info, "phoneNumbers", [])
-                        if phone_numbers and hasattr(
-                            phone_numbers[0], "originalNumber"
-                        ):
-                            location_data["phoneNumber"] = phone_numbers[
-                                0
-                            ].originalNumber
-
-                        oii_results.append(
-                            LocationInfo(
-                                source="OII",
-                                location=location_data,
-                                confidence=1.0,
-                                timestamp=datetime.now(timezone.utc).isoformat(),
-                                additional_info=(
-                                    display_address.model_dump()
-                                    if hasattr(display_address, "model_dump")
-                                    else (
-                                        display_address.dict()
-                                        if hasattr(display_address, "dict")
-                                        else {}
-                                    )
-                                ),
-                            )
-                        )
-        except Exception as e:
-            logging.error(f"Error getting OII location data: {str(e)}")
-
-        # Salesforce and Ekata integrations removed
-
-        logger.warning("=== ENTERING BUSINESS BLOCK ===")
-        # Get business locations
-        try:
-            business_locations = await self.get_business_location(user_id)
-            oii_results.extend(business_locations)
-        except Exception as e:
-            logging.error(f"Error getting business location data: {str(e)}")
-
-        logger.warning("=== ENTERING PHONE BLOCK ===")
-        # Get phone locations
-        try:
-            phone_locations = await self.get_phone_location(user_id)
-            oii_results.extend(phone_locations)
-        except Exception as e:
-            logging.error(f"Error getting phone location data: {str(e)}")
 
         logger.warning("=== ENTERING SPLUNK BLOCK ===")
         # Get Splunk location (filter by user_id or device_id based on entity_type)
@@ -465,7 +390,7 @@ class LocationDataClient:
             await self.connect()
 
         tasks = [
-            self.get_oii_location_info(user_id),
+            self._get_oii_location(user_id),
             self.get_business_location(user_id),
             self.get_phone_location(user_id),
         ]
@@ -617,78 +542,7 @@ class LocationDataClient:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-    # Public, singular info getters for individual sources
-    async def get_oii_location_info(self, user_id: str) -> Optional[LocationInfo]:
-        """Get a single representative location from OII with live data."""
-        if not self.session:
-            await self.connect()
-        try:
-            logger.info(f"Fetching live OII location for user {user_id}")
-            oii_response_str = self.oii_tool._run(user_id=user_id)
-            oii_response = OIIResponse.model_validate_json(oii_response_str)
-
-            account = getattr(oii_response.data, "account", None)
-            if account and getattr(account, "accountProfile", None):
-                account_profile = account.accountProfile
-                person_info = getattr(account_profile, "personInfo", None)
-                if person_info and getattr(person_info, "contactInfo", None):
-                    contact_info = person_info.contactInfo
-                    addresses = getattr(contact_info, "addresses", [])
-                    if addresses and hasattr(addresses[0], "displayAddress"):
-                        display_address = addresses[0].displayAddress
-                        location_data = {
-                            "address1": getattr(display_address, "streetAddress", ""),
-                            "address2": getattr(display_address, "streetAddress2", ""),
-                            "country": getattr(display_address, "country", "Unknown"),
-                            "locality": getattr(display_address, "locality", "Unknown"),
-                            "region": getattr(display_address, "region", "Unknown"),
-                            "postalCode": getattr(display_address, "postalCode", ""),
-                        }
-                        phone_numbers = getattr(contact_info, "phoneNumbers", [])
-                        if phone_numbers and hasattr(
-                            phone_numbers[0], "originalNumber"
-                        ):
-                            location_data["phoneNumber"] = phone_numbers[
-                                0
-                            ].originalNumber
-                        else:
-                            location_data["phoneNumber"] = None
-
-                        return LocationInfo(
-                            source="OII",
-                            location=location_data,
-                            confidence=1.0,
-                            timestamp=datetime.now(timezone.utc).isoformat(),
-                            additional_info=(
-                                display_address.model_dump(exclude_none=True)
-                                if hasattr(display_address, "model_dump")
-                                else vars(display_address)
-                            ),
-                        )
-            logger.warning(
-                f"Could not extract primary address from OII for user {user_id}"
-            )
-            return LocationInfo(
-                source="OII",
-                location=None,
-                confidence=0.0,
-                timestamp=datetime.now(timezone.utc).isoformat(),
-                additional_info={"status": "No primary address found"},
-            )
-        except Exception as e:
-            logger.error(
-                f"Error getting OII location for {user_id}: {e}", exc_info=True
-            )
-            return LocationInfo(
-                source="OII",
-                location=None,
-                confidence=0.0,
-                timestamp=datetime.now(timezone.utc).isoformat(),
-                additional_info={"status": f"Error: {str(e)}"},
-            )
-
-    # Salesforce and Ekata location info methods removed
-
+  
     async def get_business_location_info(self, user_id: str) -> Optional[LocationInfo]:
         """Get a single representative business location."""
         if not self.session:

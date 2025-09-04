@@ -2,8 +2,8 @@
 
 **Date**: 2025-01-27  
 **Version**: Phase 1 - Core Infrastructure  
-**API Base URL**: `http://localhost:8000` (development)  
-**WebSocket Base URL**: `ws://localhost:8000` (development)
+**API Base URL**: `http://localhost:8090` (development)  
+**WebSocket Base URL**: `ws://localhost:8090` (development)
 
 ---
 
@@ -143,7 +143,7 @@ class InvestigationWebSocket {
   
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const wsUrl = `ws://localhost:8000/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}`;
+      const wsUrl = `ws://localhost:8090/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}`;
       
       this.ws = new WebSocket(wsUrl);
       
@@ -254,7 +254,7 @@ For more explicit parameter handling:
 ```typescript
 // Use the enhanced endpoint with query parameters
 const connectEnhanced = (investigationId: string, userId: string, role: string, parallel: boolean = false) => {
-  const wsUrl = `ws://localhost:8000/ws/enhanced/${investigationId}?user_id=${userId}&role=${role}&parallel=${parallel}`;
+  const wsUrl = `ws://localhost:8090/ws/enhanced/${investigationId}?user_id=${userId}&role=${role}&parallel=${parallel}`;
   return new WebSocket(wsUrl);
 };
 ```
@@ -266,7 +266,7 @@ For backward compatibility with existing connections:
 ```typescript
 // Legacy connection (no user context)
 const connectLegacy = (investigationId: string, parallel: boolean = false) => {
-  const wsUrl = `ws://localhost:8000/ws/${investigationId}?parallel=${parallel}`;
+  const wsUrl = `ws://localhost:8090/ws/${investigationId}?parallel=${parallel}`;
   return new WebSocket(wsUrl);
 };
 ```
@@ -639,7 +639,7 @@ class RobustInvestigationWebSocket extends InvestigationWebSocket {
 
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const wsUrl = `ws://localhost:8000/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}`;
+      const wsUrl = `ws://localhost:8090/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}`;
       
       this.ws = new WebSocket(wsUrl);
       
@@ -831,9 +831,9 @@ class RobustInvestigationWebSocket extends InvestigationWebSocket {
 ### **API Testing**
 ```bash
 # Test API endpoints with curl
-curl -X GET "http://localhost:8000/investigations/active?user_id=test_user&limit=10"
-curl -X GET "http://localhost:8000/investigations/user/test_user"
-curl -X POST "http://localhost:8000/frontend/investigations/TEST-123/join" \
+curl -X GET "http://localhost:8090/investigations/active?user_id=test_user&limit=10"
+curl -X GET "http://localhost:8090/investigations/user/test_user"
+curl -X POST "http://localhost:8090/frontend/investigations/TEST-123/join" \
   -H "Content-Type: application/json" \
   -d '{"user_id": "test_user", "role": "investigator"}'
 ```
@@ -841,7 +841,7 @@ curl -X POST "http://localhost:8000/frontend/investigations/TEST-123/join" \
 ### **WebSocket Testing**
 ```javascript
 // Test WebSocket connection in browser console
-const ws = new WebSocket('ws://localhost:8000/ws/TEST-123?user_id=test_user&role=investigator');
+const ws = new WebSocket('ws://localhost:8090/ws/TEST-123?user_id=test_user&role=investigator');
 ws.onopen = () => console.log('Connected');
 ws.onmessage = (event) => console.log('Message:', JSON.parse(event.data));
 ws.send(JSON.stringify({type: 'ping'}));

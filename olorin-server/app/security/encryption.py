@@ -5,6 +5,7 @@ Encryption utilities for sensitive data storage
 import base64
 import json
 import logging
+from app.service.logging import get_bridge_logger
 import os
 from typing import Optional, Union
 
@@ -13,7 +14,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from app.service.config_loader import get_config_loader
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DataEncryption:

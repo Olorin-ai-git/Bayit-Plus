@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 import re
 from typing import Any, Dict, List, Optional
 
@@ -11,7 +12,7 @@ from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.config import get_settings_for_env
 from app.service.llm_device_risk_service import LLMDeviceRiskService
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DeviceAnalysisService:

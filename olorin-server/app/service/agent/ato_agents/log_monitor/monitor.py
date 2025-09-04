@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import math
 import os
 import re
@@ -13,6 +12,7 @@ from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, Optional, Set, Tuple
 
 import aiofiles
+from app.service.logging import get_bridge_logger
 
 
 @dataclass
@@ -103,7 +103,7 @@ class LogMonitor:
         self._previous_metrics = None
 
         # Initialize logger
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_bridge_logger(__name__)
         self.logger.info("LogMonitor initialized successfully")
 
     def _setup_log_rotation(self):

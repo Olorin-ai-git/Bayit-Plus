@@ -15,8 +15,9 @@ from app.router.models.autonomous_investigation_models import (
     AutonomousInvestigationRequest,
     AutonomousInvestigationResponse
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Global tracking of active investigations
 active_investigations: Dict[str, Dict[str, Any]] = {}
@@ -93,7 +94,7 @@ async def start_autonomous_investigation(
             "findings_summary": {},
             "performance_metrics": {
                 "start_time": datetime.now(timezone.utc).isoformat(),
-                "estimated_completion_ms": 180000  # 3 minutes default
+                "estimated_completion_ms": 180900  # 3 minutes default
             }
         }
         
@@ -101,12 +102,12 @@ async def start_autonomous_investigation(
         execute_investigation_callback(investigation_id, investigation_context, request)
         
         # Generate monitoring endpoints
-        base_url = "http://localhost:8000/autonomous"
+        base_url = "http://localhost:8090/autonomous"
         monitoring_endpoints = {
             "status": f"{base_url}/investigation/{investigation_id}/status",
             "logs": f"{base_url}/investigation/{investigation_id}/logs",
             "journey": f"{base_url}/investigation/{investigation_id}/journey",
-            "websocket": f"ws://localhost:8000/autonomous/investigation/{investigation_id}/monitor"
+            "websocket": f"ws://localhost:8090/autonomous/investigation/{investigation_id}/monitor"
         }
         
         response = AutonomousInvestigationResponse(
@@ -115,7 +116,7 @@ async def start_autonomous_investigation(
             message=f"Autonomous investigation started for {request.entity_type}: {request.entity_id}",
             investigation_context=investigation_context,
             monitoring_endpoints=monitoring_endpoints,
-            estimated_completion_time_ms=180000,
+            estimated_completion_time_ms=180900,
             created_at=datetime.now(timezone.utc).isoformat()
         )
         

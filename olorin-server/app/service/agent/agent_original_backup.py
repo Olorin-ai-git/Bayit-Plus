@@ -21,6 +21,7 @@ from app.service.agent.orchestration import (
     start_investigation,
     assistant
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.investigators import (
     network_agent,
     location_agent,
@@ -92,7 +93,7 @@ from app.service.risk_assessment_analysis_service import RiskAssessmentAnalysisS
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.utils.class_utils import create_instance
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 settings_for_env = get_settings_for_env()
 

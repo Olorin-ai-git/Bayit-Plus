@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 
 from fastapi import (
     APIRouter,
@@ -13,7 +14,7 @@ from jose import JWTError, jwt
 from app.security.auth import ALGORITHM, SECRET_KEY
 from app.service.websocket_manager import websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 router = APIRouter()
 

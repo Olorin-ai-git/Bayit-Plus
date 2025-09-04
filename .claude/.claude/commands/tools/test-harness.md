@@ -715,7 +715,7 @@ class APILoadTest(HttpUser):
     """Locust load test for API endpoints"""
     
     wait_time = between(1, 3)
-    host = "http://localhost:8000"
+    host = "http://localhost:8090"
     
     def on_start(self):
         """Setup for each user"""
@@ -770,7 +770,7 @@ class TestAPIPerformance:
             
             start_time = time.time()
             async with session.post(
-                "http://localhost:8000/api/v1/users/",
+                "http://localhost:8090/api/v1/users/",
                 json=user_data
             ) as response:
                 end_time = time.time()
@@ -1758,7 +1758,7 @@ describe('Full Stack Integration', () => {
     // Start frontend from /frontend-optimize
     await startTestFrontend({
       mode: 'test',
-      apiUrl: 'http://localhost:8000/api/v1'
+      apiUrl: 'http://localhost:8090/api/v1'
     });
   });
   
@@ -1789,7 +1789,7 @@ metadata:
 data:
   test-database-url: "postgresql://test:test@postgres-test:5432/testdb"
   test-redis-url: "redis://redis-test:6379/0"
-  test-api-url: "http://api-test:8000"
+  test-api-url: "http://api-test:8090"
 
 ---
 apiVersion: apps/v1

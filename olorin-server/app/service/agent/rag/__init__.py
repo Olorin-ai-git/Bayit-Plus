@@ -13,9 +13,24 @@ from .knowledge_base import (
     KnowledgeBaseConfig
 )
 
-# Note: retrieval_engine and context_augmentor modules not implemented yet
-# from .retrieval_engine import (...)
-# from .context_augmentor import (...)
+# Enhanced retrieval and context augmentation modules
+from .retrieval_engine import (
+    RetrievalEngine,
+    SearchQuery,
+    SearchResult,
+    SearchStrategy,
+    QueryExpansionMethod,
+    RetrievalEngineConfig,
+    create_retrieval_engine
+)
+
+from .context_augmentor import (
+    ContextAugmentor,
+    KnowledgeContext,
+    ContextRelevanceLevel,
+    ContextAugmentationConfig,
+    create_context_augmentor
+)
 
 from .rag_orchestrator import (
     RAGOrchestrator,
@@ -25,6 +40,20 @@ from .rag_orchestrator import (
     RAGMetrics,
     get_rag_orchestrator
 )
+
+# Tool recommendation system
+from .tool_recommender import (
+    KnowledgeBasedToolRecommender,
+    ToolRecommendation,
+    ToolEffectivenessMetrics,
+    ToolRecommendationStrategy,
+    ToolRecommenderConfig,
+    create_tool_recommender
+)
+
+# Tool recommendation utilities (for advanced usage)
+from .tool_analysis_utils import ToolAnalysisUtils
+from .tool_recommender_strategies import ToolRecommendationStrategies
 
 __all__ = [
     # Knowledge Base
@@ -40,5 +69,33 @@ __all__ = [
     "RAGResponse",
     "RAGConfig",
     "RAGMetrics",
-    "get_rag_orchestrator"
+    "get_rag_orchestrator",
+    
+    # Retrieval Engine
+    "RetrievalEngine",
+    "SearchQuery",
+    "SearchResult",
+    "SearchStrategy",
+    "QueryExpansionMethod",
+    "RetrievalEngineConfig",
+    "create_retrieval_engine",
+    
+    # Context Augmentor
+    "ContextAugmentor",
+    "KnowledgeContext",
+    "ContextRelevanceLevel",
+    "ContextAugmentationConfig",
+    "create_context_augmentor",
+    
+    # Tool Recommender
+    "KnowledgeBasedToolRecommender",
+    "ToolRecommendation",
+    "ToolEffectivenessMetrics",
+    "ToolRecommendationStrategy",
+    "ToolRecommenderConfig",
+    "create_tool_recommender",
+    
+    # Tool Recommendation Utilities (advanced usage)
+    "ToolAnalysisUtils",
+    "ToolRecommendationStrategies"
 ]

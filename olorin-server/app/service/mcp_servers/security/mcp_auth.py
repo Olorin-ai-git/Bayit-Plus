@@ -10,7 +10,6 @@ Date: 2025-08-31
 Phase: 3 - Security and Enterprise Integration
 """
 
-import logging
 import json
 import secrets
 import hashlib
@@ -22,6 +21,7 @@ from enum import Enum
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field, validator
 from contextlib import asynccontextmanager
+from app.service.logging import get_bridge_logger
 
 # Optional dependencies - gracefully handle missing packages
 try:
@@ -53,7 +53,7 @@ except ImportError:
     class EnhancedSecurityConfig:
         pass
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPPermission(str, Enum):

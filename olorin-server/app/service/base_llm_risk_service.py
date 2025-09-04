@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 import asyncio
 import random
 from abc import ABC, abstractmethod
@@ -20,7 +21,7 @@ from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 T = TypeVar("T", bound=BaseModel)
 

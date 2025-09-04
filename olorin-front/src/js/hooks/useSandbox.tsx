@@ -4,7 +4,7 @@ import { Sandbox } from '../services/envConstants';
  * Provides consumers with access to sandbox
  * @returns {Sandbox} sandbox object
  */
-export default (): Sandbox => {
+const useSandbox = (): Sandbox => {
   // Return a mock sandbox for now
   return {
     env: 'e2e',
@@ -19,3 +19,5 @@ export default (): Sandbox => {
     },
   };
 };
+
+export default useSandbox;

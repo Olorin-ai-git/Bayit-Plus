@@ -5,12 +5,13 @@ Handles loading and saving user preferences and configuration.
 
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
 
@@ -149,34 +150,57 @@ def get_user_id(request: Request) -> str:
     return user_id
 
 
+def get_user_id_optional(request: Request) -> Optional[str]:
+    """
+    Extract user ID from request headers with CORS OPTIONS support.
+    Returns None for OPTIONS requests (CORS preflight) to avoid dependency failures.
+    """
+    # Skip user ID extraction for OPTIONS requests (CORS preflight)
+    if request.method == "OPTIONS":
+        return None
+    
+    # For now, use a simple approach - in production you'd extract from JWT/session
+    user_id = request.headers.get("X-User-ID", "default_user")
+    return user_id
+
+
+@router.options("/")
+async def options_settings():
+    """Handle CORS preflight requests for settings endpoints."""
+    return {}
+
+
 @router.get("/", response_model=SettingsResponse)
-async def get_settings(user_id: str = Depends(get_user_id)):
+async def get_settings(user_id: Optional[str] = Depends(get_user_id_optional)):
     """
     Get user settings from the server.
     Returns default settings if no settings exist for the user.
     """
     try:
-        logger.info(f"Getting settings for user: {user_id}")
+        # Use default user if user_id is None (CORS preflight case)
+        effective_user_id = user_id or "default_user"
+        logger.info(f"Getting settings for user: {effective_user_id}")
 
-        if user_id in _user_settings_store:
-            settings = _user_settings_store[user_id]
-            logger.info(f"Found existing settings for user {user_id}")
+        if effective_user_id in _user_settings_store:
+            settings = _user_settings_store[effective_user_id]
+            logger.info(f"Found existing settings for user {effective_user_id}")
 
             # Ensure agent_tools_mapping is populated if it's empty
             if not settings.agent_tools_mapping:
                 settings.agent_tools_mapping = get_default_agent_tools_mapping()
-                logger.info(f"Populated default agent tools mapping for user {user_id}")
+                logger.info(f"Populated default agent tools mapping for user {effective_user_id}")
         else:
             # Return default settings with agent tools mapping
             settings = UserSettings()
-            logger.info(f"Returning default settings for user {user_id}")
+            logger.info(f"Returning default settings for user {effective_user_id}")
 
         return SettingsResponse(
             success=True, message="Settings retrieved successfully", settings=settings
         )
 
     except Exception as e:
-        logger.error(f"Error getting settings for user {user_id}: {e}")
+        effective_user_id = user_id or "default_user"
+        logger.error(f"Error getting settings for user {effective_user_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get settings: {str(e)}")
 
 
@@ -378,6 +402,12 @@ async def get_agent_tools_mapping():
         )
 
 
+@router.options("/export")
+async def options_export_settings():
+    """Handle CORS preflight requests for export settings endpoint."""
+    return {}
+
+
 @router.get("/export")
 async def export_settings(user_id: str = Depends(get_user_id)):
     """
@@ -402,6 +432,12 @@ async def export_settings(user_id: str = Depends(get_user_id)):
         raise HTTPException(
             status_code=500, detail=f"Failed to export settings: {str(e)}"
         )
+
+
+@router.options("/import")
+async def options_import_settings():
+    """Handle CORS preflight requests for import settings endpoint."""
+    return {}
 
 
 @router.post("/import")

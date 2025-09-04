@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Example usage of the MCP Security Framework in Olorin fraud investigation platform.
 
@@ -311,26 +314,26 @@ async def investigate_fraud(
 
 if __name__ == "__main__":
     # Example of creating security configuration
-    print("MCP Security Framework Example")
-    print("=" * 50)
+    logger.info("MCP Security Framework Example")
+    logger.info("=" * 50)
     
     # Show available permissions
-    print("\nAvailable Permissions:")
+    logger.info("\nAvailable Permissions:")
     for permission in MCPPermission:
-        print(f"  - {permission.value}")
+        logger.info(f"  - {permission.value}")
     
-    print("\nAvailable Roles:")
+    logger.info("\nAvailable Roles:")
     for role in MCPRole:
-        print(f"  - {role.value}")
+        logger.info(f"  - {role.value}")
     
-    print("\nValidation Levels:")
+    logger.info("\nValidation Levels:")
     for level in ValidationLevel:
-        print(f"  - {level.value}")
+        logger.info(f"  - {level.value}")
     
-    print("\nSupported Input Types:")
+    logger.info("\nSupported Input Types:")
     for input_type in InputType:
-        print(f"  - {input_type.value}")
+        logger.info(f"  - {input_type.value}")
     
-    print("\n" + "=" * 50)
-    print("Security framework ready for integration!")
-    print("See integration tests for complete usage examples.")
+    logger.info("\n" + "=" * 50)
+    logger.info("Security framework ready for integration!")
+    logger.info("See integration tests for complete usage examples.")

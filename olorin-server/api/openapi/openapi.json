@@ -4,7 +4,7 @@
     "title": "olorin-api",
     "description": "Olorin Fraud Investigation API - Provides endpoints for fraud investigation workflows and AI-powered analysis.",
     "contact": {
-      "url": "http://localhost:8000/"
+      "url": "http://localhost:8090/"
     },
     "version": "0.1.0"
   },

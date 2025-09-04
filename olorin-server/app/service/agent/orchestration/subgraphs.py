@@ -8,7 +8,6 @@ This module implements Phase 2 of the LangGraph enhancement plan, providing:
 - Cross-subgraph communication patterns
 """
 
-import logging
 from typing import Dict, Any, List, Optional, Annotated
 from abc import ABC, abstractmethod
 
@@ -23,11 +22,12 @@ from app.service.agent.autonomous_agents import (
     autonomous_location_agent,
     autonomous_logs_agent,
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.investigators.domain_agents import (
     network_agent, location_agent, logs_agent, device_agent
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DomainState(TypedDict):

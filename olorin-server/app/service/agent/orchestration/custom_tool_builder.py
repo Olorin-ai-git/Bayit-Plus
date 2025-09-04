@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Custom Tool Development Framework - Streamlined tool creation for investigation-specific needs.
 
@@ -535,7 +538,7 @@ class InvestigationToolBuilder:
 
 
 # Example tool implementations
-def analyze_device_fingerprint(fingerprint: str, metadata: dict = None) -> dict:
+def analyze_device_fingerlogger.info(fingerprint: str, metadata: dict = None) -> dict:
     """Example implementation of device fingerprint analysis."""
     # Simulate analysis
     risk_score = 0.3
@@ -639,5 +642,5 @@ def example_tool_creation():
 if __name__ == "__main__":
     # Create example tools
     builder, catalog = example_tool_creation()
-    print(f"Created {len(catalog)} tools")
-    print(f"Tool catalog: {json.dumps(catalog, indent=2)}")
+    logger.info(f"Created {len(catalog)} tools")
+    logger.info(f"Tool catalog: {json.dumps(catalog, indent=2)}")

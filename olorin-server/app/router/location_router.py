@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 import re
 import traceback
 from datetime import datetime, timezone
@@ -32,7 +33,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOCATION_RISK
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/location")
 
 

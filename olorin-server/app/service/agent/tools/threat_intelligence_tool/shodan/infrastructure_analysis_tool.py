@@ -1,7 +1,6 @@
 """Shodan Infrastructure Analysis Tool for comprehensive infrastructure intelligence."""
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -10,9 +9,10 @@ from pydantic import BaseModel, Field, validator
 
 from .models import ShodanHostResponse
 from .shodan_client import ShodanClient
+from app.service.logging import get_bridge_logger
 
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class InfrastructureAnalysisInput(BaseModel):

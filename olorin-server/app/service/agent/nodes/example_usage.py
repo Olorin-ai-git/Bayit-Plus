@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Example usage of RawDataNode in LangGraph fraud investigation workflows.
 
@@ -255,13 +258,13 @@ async def generate_investigation_summary(state: MessagesState, config=None) -> M
 if __name__ == "__main__":
     # Example usage
     async def main():
-        print("Running RawDataNode example workflow...")
+        logger.info("Running RawDataNode example workflow...")
         result = await example_csv_processing_workflow()
         
-        print("\nWorkflow Results:")
+        logger.info("\nWorkflow Results:")
         for message in result['messages']:
             if isinstance(message, AIMessage):
-                print(f"\n--- {message.additional_kwargs.get('node_type', 'Unknown')} ---")
-                print(message.content[:500] + "..." if len(message.content) > 500 else message.content)
+                logger.info(f"\n--- {message.additional_kwargs.get('node_type', 'Unknown')} ---")
+                logger.info(message.content[:500] + "..." if len(message.content) > 500 else message.content)
     
     asyncio.run(main())

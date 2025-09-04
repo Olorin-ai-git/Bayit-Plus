@@ -89,12 +89,12 @@ class FrontendSecretLoader {
           'REACT_APP_API_BASE_URL': {
             secretName: 'api_base_url',
             envVar: 'REACT_APP_API_BASE_URL',
-            default: 'http://localhost:8000'
+            default: 'http://localhost:8090'
           },
           'REACT_APP_WEBSOCKET_URL': {
             secretName: 'websocket_url',
             envVar: 'REACT_APP_WEBSOCKET_URL',
-            default: 'ws://localhost:8000'
+            default: 'ws://localhost:8090'
           },
           'REACT_APP_GOOGLE_MAPS_API_KEY': {
             secretName: 'google_maps_api_key',
@@ -113,7 +113,7 @@ class FrontendSecretLoader {
           'REACT_APP_API_BASE_URL': {
             secretName: 'api_base_url',
             envVar: 'REACT_APP_API_BASE_URL',
-            default: 'http://localhost:8000'
+            default: 'http://localhost:8090'
           },
           'REACT_APP_GOOGLE_ANALYTICS_ID': {
             secretName: 'google_analytics_id',

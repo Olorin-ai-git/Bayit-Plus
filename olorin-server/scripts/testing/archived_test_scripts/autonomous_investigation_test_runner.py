@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Comprehensive Autonomous Investigation Test Runner
@@ -667,21 +670,21 @@ def main():
             report = await test_runner.generate_test_report(results, output_file)
             
             # Print summary to console
-            print("\n" + "="*60)
-            print("TEST SUMMARY")
-            print("="*60)
+            logger.info("\n" + "="*60)
+            logger.info("TEST SUMMARY")
+            logger.info("="*60)
             if args.all_scenarios:
-                print(f"Scenarios Tested: {results['total_scenarios']}")
-                print(f"Scenarios Passed: {results['scenarios_passed']}")
-                print(f"Pass Rate: {(results['scenarios_passed']/results['total_scenarios'])*100:.1f}%")
-                print(f"Average Score: {results['average_score']:.1f}/100")
+                logger.info(f"Scenarios Tested: {results['total_scenarios']}")
+                logger.info(f"Scenarios Passed: {results['scenarios_passed']}")
+                logger.info(f"Pass Rate: {(results['scenarios_passed']/results['total_scenarios'])*100:.1f}%")
+                logger.info(f"Average Score: {results['average_score']:.1f}/100")
             else:
                 test_result = results["test_results"][0]
-                print(f"Scenario: {test_result['scenario_name']}")
-                print(f"Status: {test_result['status']}")
-                print(f"Score: {test_result['overall_score']}/100")
+                logger.info(f"Scenario: {test_result['scenario_name']}")
+                logger.info(f"Status: {test_result['status']}")
+                logger.info(f"Score: {test_result['overall_score']}/100")
             
-            print(f"\nFull report saved to: {output_file}")
+            logger.info(f"\nFull report saved to: {output_file}")
     
     # Run the async test runner
     try:

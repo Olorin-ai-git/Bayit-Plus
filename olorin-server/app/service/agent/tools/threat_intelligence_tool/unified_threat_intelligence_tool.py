@@ -6,7 +6,6 @@ Multi-source threat intelligence aggregator that combines data from multiple pro
 """
 
 import json
-import logging
 import asyncio
 from typing import Any, Dict, List, Optional, Type, Union
 from datetime import datetime
@@ -14,8 +13,9 @@ from enum import Enum
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ThreatIntelligenceSource(Enum):

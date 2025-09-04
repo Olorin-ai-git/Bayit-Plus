@@ -8,7 +8,6 @@ This module provides Langfuse integration for tracing and monitoring:
 - Error tracking and debugging
 """
 
-import logging
 import os
 from typing import Dict, Any, Optional, List
 from contextlib import contextmanager
@@ -17,8 +16,9 @@ from functools import wraps
 from langfuse import Langfuse
 from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 from langchain_core.runnables import RunnableConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class LangfuseTracer:

@@ -87,7 +87,7 @@ def real_anthropic_client():
         api_key=api_key,
         model="claude-opus-4-1-20250805",
         temperature=0.1,
-        max_tokens=8000,
+        max_tokens=8090,
         timeout=90,
     )
     

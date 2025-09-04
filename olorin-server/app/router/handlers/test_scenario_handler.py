@@ -2,7 +2,6 @@
 Test Scenario Handler for Autonomous Investigations
 This module handles test scenario management and validation logic.
 """
-import logging
 from typing import Dict, List, Any
 from fastapi import HTTPException
 
@@ -10,8 +9,9 @@ from app.test.data.mock_transactions.mock_data_loader import (
     list_available_test_scenarios,
     validate_investigation_outcome
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 async def list_test_scenarios() -> Dict[str, List[str]]:

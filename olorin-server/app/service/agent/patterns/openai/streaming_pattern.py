@@ -7,7 +7,6 @@ assessment updates, live investigation progress, and enhanced WebSocket integrat
 
 import asyncio
 import json
-import logging
 from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import BaseMessage
@@ -17,8 +16,9 @@ from .tool_converter import convert_langgraph_tools_to_openai_functions
 from .streaming_handler import StreamingHandler
 from .chat_completion_handler import ChatCompletionHandler
 from .message_formatter import MessageFormatter
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OpenAIStreamingPattern(OpenAIBasePattern):

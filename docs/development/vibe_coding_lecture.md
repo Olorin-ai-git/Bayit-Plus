@@ -266,7 +266,7 @@ graph TD
 poetry run uvicorn app.main:app --reload
 
 # Test the endpoint
-curl -X POST "http://localhost:8000/api/investigation" \
+curl -X POST "http://localhost:8090/api/investigation" \
   -H "Content-Type: application/json" \
   -d '{"id": "DEMO_INV", "entity_id": "demo_user"}'
 

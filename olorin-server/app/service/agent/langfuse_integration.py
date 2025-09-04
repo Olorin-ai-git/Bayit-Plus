@@ -5,7 +5,6 @@ This module provides integration points for Langfuse tracing throughout
 the Olorin investigation system.
 """
 
-import logging
 from typing import Optional, Dict, Any
 from functools import wraps
 
@@ -14,8 +13,9 @@ from app.service.agent.orchestration.langfuse_tracing import (
     get_langfuse_tracer,
     init_langfuse_tracing
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def initialize_langfuse():

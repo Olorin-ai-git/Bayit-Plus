@@ -17,6 +17,7 @@ from .domain_agents import (
     autonomous_logs_agent,
     autonomous_risk_agent,
 )
+from app.service.logging import get_bridge_logger
 from .agent_communication import (
     _extract_investigation_info,
     _get_or_create_autonomous_context,
@@ -59,10 +60,9 @@ __all__ = [
 ]
 
 # Legacy imports for any code that might import directly
-import logging
 from app.service.agent.journey_tracker import LangGraphJourneyTracker, NodeType, NodeStatus
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 journey_tracker = LangGraphJourneyTracker()
 
 # Additional helper functions that were in the original file

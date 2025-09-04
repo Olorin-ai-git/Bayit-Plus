@@ -8,10 +8,10 @@ The WebSocket endpoint supports a `parallel` query parameter to control investig
 
 ```javascript
 // Parallel execution (default) - agents run simultaneously
-const ws = new WebSocket('ws://localhost:8000/ws/investigation-id?parallel=true');
+const ws = new WebSocket('ws://localhost:8090/ws/investigation-id?parallel=true');
 
 // Sequential execution - agents run one after another
-const ws = new WebSocket('ws://localhost:8000/ws/investigation-id?parallel=false');
+const ws = new WebSocket('ws://localhost:8090/ws/investigation-id?parallel=false');
 ```
 
 **Execution Modes:**
@@ -222,7 +222,7 @@ const ws = new WebSocket('ws://localhost:8000/ws/investigation-id?parallel=false
 ## Client Implementation Example
 
 ```javascript
-const ws = new WebSocket(`ws://localhost:8000/ws/${investigationId}`);
+const ws = new WebSocket(`ws://localhost:8090/ws/${investigationId}`);
 
 ws.onmessage = (event) => {
   const update = JSON.parse(event.data);

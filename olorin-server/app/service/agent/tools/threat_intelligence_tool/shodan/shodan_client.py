@@ -6,7 +6,6 @@ Provides infrastructure intelligence and internet-wide scanning data.
 """
 
 import asyncio
-import logging
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import quote
 
@@ -24,8 +23,9 @@ from .models import (
     ShodanExploitResult,
     ShodanAPIInfo
 )
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ShodanClient:

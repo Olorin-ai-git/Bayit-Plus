@@ -6,7 +6,6 @@ Provides comprehensive IP threat intelligence for fraud investigation workflows.
 """
 
 import json
-import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Type
 
@@ -16,8 +15,9 @@ from pydantic import BaseModel, Field, validator
 from ..base_threat_tool import BaseThreatIntelligenceTool, ThreatIntelligenceConfig, ThreatIntelligenceResponse
 from .abuseipdb_client import AbuseIPDBClient
 from .models import AbuseIPDBConfig, AbuseIPDBError, IPReputationResponse
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class IPReputationInput(BaseModel):

@@ -35,7 +35,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
     hostname.includes('web.app') || hostname.includes('firebaseapp.com');
 
   // Base API URL determination
-  let apiBaseUrl = 'http://localhost:8000'; // Default for development
+  let apiBaseUrl = 'http://localhost:8090'; // Default for development
 
   if (isProduction && isFirebaseApp) {
     // Production Firebase deployment - uses Cloud Run backend
@@ -49,7 +49,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
       'https://api.olorin.ai';
   } else {
     // Development
-    apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+    apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
   }
 
   // WebSocket URL

@@ -16,14 +16,14 @@ RUN chown -R olorin:olorin /app
 USER olorin
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8090
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8090/health')" || exit 1
 
 # Run the application
 CMD ["python", "main.py"]

@@ -6,7 +6,6 @@ including sequence patterns, behavioral patterns, fraud patterns,
 and anomalous pattern detection using various ML algorithms.
 """
 
-import logging
 from typing import Any, Dict, Optional, List, Tuple
 from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
@@ -14,8 +13,9 @@ import json
 from datetime import datetime, timedelta
 from collections import defaultdict, Counter
 import re
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class PatternRecognitionInput(BaseModel):

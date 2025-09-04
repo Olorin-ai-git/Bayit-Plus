@@ -2,15 +2,15 @@
 
 import asyncio
 import time
-import logging
 from typing import Dict, List, Any
 from collections import defaultdict
 
 import tenacity
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 import httpx
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPCircuitBreaker:

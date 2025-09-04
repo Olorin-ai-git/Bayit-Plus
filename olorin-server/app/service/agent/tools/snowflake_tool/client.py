@@ -4,11 +4,11 @@ Handles connection, query validation, and result processing.
 """
 
 from typing import Any, Dict, List, Optional
-import logging
 import asyncio
 from .schema_info import SNOWFLAKE_SCHEMA_INFO
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SnowflakeClient:

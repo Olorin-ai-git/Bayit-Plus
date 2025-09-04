@@ -5,7 +5,6 @@ Dynamic task breakdown with worker pool management and dependency resolution.
 Orchestrates complex investigations by delegating specialized tasks to worker agents.
 """
 
-import logging
 from typing import Any, Dict, List, Optional, Set
 from dataclasses import dataclass
 from enum import Enum
@@ -14,8 +13,9 @@ from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 from .augmented_llm import AugmentedLLMPattern
 from .base import BasePattern, PatternResult
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class TaskStatus(Enum):

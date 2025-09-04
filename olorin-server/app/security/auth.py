@@ -12,9 +12,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
-import structlog
+from app.service.logging import get_bridge_logger
 
-logger = structlog.get_logger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class TokenData(BaseModel):

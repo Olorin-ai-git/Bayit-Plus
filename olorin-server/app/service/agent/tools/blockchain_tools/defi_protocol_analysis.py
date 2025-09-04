@@ -5,14 +5,14 @@ Analyzes DeFi protocols, DEX transactions, liquidity pools, yield farming,
 and detects flash loan attacks and other DeFi-specific fraud patterns.
 """
 
-import logging
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from datetime import datetime
 
 from langchain.tools import BaseTool
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class DeFiProtocol(str, Enum):

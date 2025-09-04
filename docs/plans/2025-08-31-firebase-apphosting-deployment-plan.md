@@ -35,7 +35,7 @@ This plan details the deployment of the Olorin Python FastAPI backend with compr
 - **Secret Categories**: API keys, database, Redis, JWT, Splunk, SumoLogic, Snowflake
 
 **Application Structure**:
-- **Backend**: Python FastAPI (olorin-server) - Port 8000
+- **Backend**: Python FastAPI (olorin-server) - Port 8090
 - **MCP Integration**: 200+ fraud investigation tools across 3 specialized servers
 - **Dependencies**: Poetry-managed with `langchain-mcp-adapters`
 - **Configuration**: Environment-aware with Firebase Secret Manager integration
@@ -102,7 +102,7 @@ Firebase App Hosting (Cloud Run)
 **Tasks**:
 1. **Dockerfile Review**: Validate production optimizations
 2. **Build Testing**: Test container builds successfully
-3. **Port Configuration**: Ensure FastAPI runs on port 8000
+3. **Port Configuration**: Ensure FastAPI runs on port 8090
 4. **Health Endpoint**: Verify `/health` endpoint functionality
 
 **Deliverables**:
@@ -130,7 +130,7 @@ Firebase App Hosting (Cloud Run)
 # Firebase App Hosting configuration for Olorin Backend
 runConfig:
   runtime: python311
-  port: 8000
+  port: 8090
   
   # Environment variables for production
   env:
@@ -139,7 +139,7 @@ runConfig:
     - variable: FIREBASE_PROJECT_ID
       value: olorin-ai
     - variable: PORT
-      value: 8000
+      value: 8090
     - variable: LOG_LEVEL
       value: INFO
   
@@ -214,7 +214,7 @@ scaling:
     "runtime": {
       "cpu": 2,
       "memory": "4Gi",
-      "port": 8000,
+      "port": 8090,
       "maxInstances": 100
     }
   }
@@ -351,8 +351,8 @@ poetry run python -c "from app.service.config import get_settings_for_env; print
 docker build -f Dockerfile -t olorin-backend:test .
 
 # Test health endpoint
-docker run -p 8000:8000 olorin-backend:test &
-curl http://localhost:8000/health
+docker run -p 8090:8090 olorin-backend:test &
+curl http://localhost:8090/health
 ```
 
 **Tasks**:

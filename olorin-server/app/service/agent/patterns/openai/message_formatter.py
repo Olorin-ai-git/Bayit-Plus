@@ -5,12 +5,12 @@ Handles conversion of LangChain messages to OpenAI API format
 with fraud detection optimization.
 """
 
-import logging
 from typing import Any, Dict, List
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MessageFormatter:

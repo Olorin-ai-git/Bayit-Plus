@@ -47,7 +47,7 @@ gcloud auth login
 - **Project ID:** olorin-ai
 - **Location:** us-central1
 - **Runtime:** Python 3.11
-- **Port:** 8000 (FastAPI)
+- **Port:** 8090 (FastAPI)
 - **Resources:** 2 CPU, 4GB RAM
 - **Scaling:** 1-100 instances
 

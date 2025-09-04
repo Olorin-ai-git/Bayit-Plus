@@ -6,7 +6,6 @@ It encapsulates agent coordination, risk assessment, and exposes the FastAPI app
 all necessary configuration and middleware.
 """
 
-import logging
 import os
 from typing import Callable, Optional
 
@@ -16,8 +15,9 @@ from fastapi.responses import Response
 from ..config import SvcSettings
 from ..middleware import configure_middleware
 from ..router import configure_routes
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class OlorinApplication:

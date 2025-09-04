@@ -4,6 +4,7 @@ HTTP MCP Router - Exposes MCP functionality via REST API for browser clients
 
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Request
@@ -12,7 +13,7 @@ from pydantic import BaseModel
 
 from app.service.agent.tools.tool_registry import initialize_tools, tool_registry
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/mcp", tags=["mcp"])
 
 

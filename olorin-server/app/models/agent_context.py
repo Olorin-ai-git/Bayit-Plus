@@ -1,5 +1,4 @@
 import json
-import logging
 import time
 import uuid
 from typing import Any, Optional
@@ -9,10 +8,11 @@ from pydantic import BaseModel, Field
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret
+from app.service.logging import get_bridge_logger
 
 settings_for_env = get_settings_for_env()
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class BaseContextModel(BaseModel):

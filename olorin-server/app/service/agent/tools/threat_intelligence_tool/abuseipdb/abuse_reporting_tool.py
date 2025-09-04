@@ -7,7 +7,6 @@ confirmed malicious IPs with detailed abuse categories and comments.
 """
 
 import json
-import logging
 from typing import Any, Dict, List, Optional, Type
 from datetime import datetime
 
@@ -16,8 +15,9 @@ from pydantic import BaseModel, Field, validator
 
 from .abuseipdb_client import AbuseIPDBClient
 from .models import AbuseIPDBConfig
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class AbuseReportInput(BaseModel):

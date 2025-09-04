@@ -6,6 +6,9 @@ from typing import Any, Dict, List
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 
 
 class MetricsVisualizer:
@@ -166,5 +169,5 @@ class MetricsVisualizer:
             ]
 
         except Exception as e:
-            print(f"Error loading metrics history: {e}")
+            logger.error(f"Error loading metrics history: {e}")
             return []

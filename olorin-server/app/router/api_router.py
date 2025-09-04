@@ -24,6 +24,8 @@ from app.models.api_models import (
     InvestigationUpdate,
     LocationRiskAnalysisResponse,
 )
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
     DeviceSignalDetail,
@@ -35,7 +37,6 @@ from app.models.network_risk import (
     DeviceNetworkSignal,
     NetworkRiskLLMAssessment,
 )
-from app.models.oii_response import OIIResponse
 from app.models.upi_response import Metadata
 from app.persistence import (
     create_investigation,
@@ -154,7 +155,7 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
     ):
         return demo_cache[user_id]["oii"]
     auth_header = request.headers.get("authorization")
-    print(f"Authorization header: {auth_header}")
+    logger.info(f"Authorization header: {auth_header}")
     """Retrieve online identity information directly from the OII Tool."""
     try:
         # Create OIITool instance
@@ -198,7 +199,7 @@ async def analyze_logs(
         ):
             return demo_cache[user_id]["logs"]
         auth_header = request.headers.get("authorization")
-        print(f"Authorization header: {auth_header}")
+        logger.info(f"Authorization header: {auth_header}")
         if raw_splunk_override is not None:
             splunk_data = raw_splunk_override
         else:

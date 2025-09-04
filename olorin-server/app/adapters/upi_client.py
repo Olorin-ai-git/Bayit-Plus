@@ -1,6 +1,5 @@
 import asyncio
 import copy
-import logging
 from typing import Any, Dict, Optional
 
 import aiohttp
@@ -8,8 +7,9 @@ import aiohttp
 from app.models.upi_response import InteractionsResponse
 from app.service.config import get_settings_for_env
 from app.service.error_handling import UPIServiceException
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 settings_for_env = get_settings_for_env()
 
 

@@ -5,6 +5,7 @@ from typing import List, Optional
 from fastapi import Request
 from pydantic import Field
 from pydantic_settings import BaseSettings
+from app.service.logging import get_bridge_logger
 
 preprod_splunk_index: str = "rss-e2eidx"
 preprod_splunk_host: str = "splunk-rest-us-east-2.e2e.cmn.cto.a.olorin.com"
@@ -476,17 +477,17 @@ def get_settings_for_env() -> SvcSettings:
         # Validate required secrets are present
         if not validate_required_secrets(config):
             import structlog
-            logger = structlog.get_logger(__name__)
+            logger = get_bridge_logger(__name__)
             logger.warning("Some required secrets are missing, using defaults where available")
     except ImportError as e:
         # If secret manager modules are not available, continue with env-based config
         import structlog
-        logger = structlog.get_logger(__name__)
+        logger = get_bridge_logger(__name__)
         logger.warning(f"Secret Manager integration not available: {e}")
     except Exception as e:
         # Log any other errors but don't fail
         import structlog
-        logger = structlog.get_logger(__name__)
+        logger = get_bridge_logger(__name__)
         logger.error(f"Error loading secrets from Firebase Secret Manager: {e}")
     
     return config

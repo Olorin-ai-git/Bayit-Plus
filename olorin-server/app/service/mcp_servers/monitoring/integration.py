@@ -6,7 +6,6 @@ coordinators, and the Olorin platform.
 """
 
 import asyncio
-import logging
 from typing import Dict, List, Any, Optional, Callable
 from datetime import datetime
 import functools
@@ -16,8 +15,9 @@ from ...agent.orchestration.mcp_coordinator import MCPCoordinator, get_mcp_coord
 from ...agent.orchestration.mcp_server_registry import MCPServerRegistry
 from ..security.mcp_auth import MCPSecurityManager
 from .mcp_monitor import MCPMonitor, get_mcp_monitor, monitor_operation
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MCPMonitoringIntegration:

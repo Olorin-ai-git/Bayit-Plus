@@ -1,6 +1,5 @@
 """Device Fingerprint Agent implementation."""
 
-import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -12,6 +11,7 @@ from ..clients.splunk_client import SplunkClient
 from ..clients.tmx_client import TMXClient
 from ..interfaces import DeviceFingerprintAgent, RiskAssessment
 from ..utils.logging import get_logger
+from app.service.logging import get_bridge_logger
 
 logger = get_logger(__name__)
 
@@ -47,7 +47,7 @@ class DeviceFingerprintAgentImpl(Agent[DeviceContext]):
             "browser_change_threshold", 2
         )  # Max browser changes per day
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_bridge_logger(__name__)
         self.logger.info("Initializing DeviceFingerprintAgent")
 
         super().__init__(

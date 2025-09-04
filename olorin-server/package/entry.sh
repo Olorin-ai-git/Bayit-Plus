@@ -38,7 +38,7 @@ echo Using command "${CMD}" with args "${CMD_ARGS[@]}"
 exec "${CMD}" "${CMD_ARGS[@]}" \
  --loop uvloop \
  --host 0.0.0.0 \
- --port 8000 \
+ --port 8090 \
  --proxy-headers \
  --access-log \
  --no-server-header \

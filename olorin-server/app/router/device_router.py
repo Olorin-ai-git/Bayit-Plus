@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 import os
 import re
 from datetime import datetime, timedelta, timezone
@@ -36,7 +37,7 @@ from app.utils.prompt_utils import sanitize_splunk_data, trim_prompt_to_token_li
 from app.utils.prompts import SYSTEM_PROMPT_FOR_DEVICE_RISK
 from app.service.config_loader import get_config_loader
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/device")
 
 

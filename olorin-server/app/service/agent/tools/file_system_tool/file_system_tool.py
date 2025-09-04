@@ -1,15 +1,15 @@
 """File system tools for LangGraph agents to interact with files and directories."""
 
 import json
-import logging
 import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class _FileReadArgs(BaseModel):

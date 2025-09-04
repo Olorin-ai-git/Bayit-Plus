@@ -20,6 +20,7 @@ from app.service.agent.autonomous_agents import (
     autonomous_logs_agent,
     autonomous_risk_agent,
 )
+from app.service.logging import get_bridge_logger
 from app.service.agent.autonomous_context import AutonomousInvestigationContext
 from app.service.agent.recursion_guard import get_recursion_guard, protect_node
 
@@ -66,7 +67,7 @@ from app.service.risk_assessment_analysis_service import RiskAssessmentAnalysisS
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.utils.class_utils import create_instance
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 settings_for_env = get_settings_for_env()
 

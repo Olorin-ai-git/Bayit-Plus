@@ -1,10 +1,11 @@
 import asyncio
 import logging
+from app.service.logging import get_bridge_logger
 import time
 from functools import wraps
 from typing import Any, Dict
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def async_lru_cache(ttl_seconds=300):  # default TTL of 5 minutes

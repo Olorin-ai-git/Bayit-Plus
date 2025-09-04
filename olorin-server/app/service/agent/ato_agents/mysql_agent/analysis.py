@@ -1,11 +1,11 @@
 """MySQL table analysis operations."""
 
-import logging
 from typing import Any, Dict, List
 
 from .config import MySQLQueryError
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MySQLAnalyzer:

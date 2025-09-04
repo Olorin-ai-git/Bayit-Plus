@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -8,7 +9,7 @@ from fastapi import Request
 from app.service.base_llm_risk_service import BaseLLMRiskService
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOCATION_RISK
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 # Define a simple location risk assessment model since it's not using a Pydantic model

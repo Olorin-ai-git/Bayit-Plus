@@ -6,15 +6,15 @@ including statistical, temporal, behavioral, and contextual anomalies using vari
 ML algorithms and ensemble methods.
 """
 
-import logging
 from typing import Any, Dict, Optional, List, Union
 from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
 import json
 from datetime import datetime, timedelta
 import math
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class AnomalyDetectionInput(BaseModel):

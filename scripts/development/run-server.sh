@@ -36,10 +36,10 @@ echo "📦 Installing/updating dependencies..."
 poetry install
 
 echo "🐍 Starting FastAPI server..."
-echo "📍 Server will be available at: http://localhost:8000"
-echo "📍 API documentation: http://localhost:8000/docs"
+echo "📍 Server will be available at: http://localhost:8090"
+echo "📍 API documentation: http://localhost:8090/docs"
 echo "📍 Press Ctrl+C to stop the server"
 echo ""
 
 # Run the server
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload 
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8090 --reload 

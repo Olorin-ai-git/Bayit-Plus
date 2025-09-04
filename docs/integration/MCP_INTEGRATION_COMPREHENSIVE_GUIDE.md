@@ -723,7 +723,7 @@ class CoordinatedAgentOrchestrator:
 mcp_server:
   # Server Configuration
   host: "localhost"
-  port: 8000
+  port: 8090
   transport: "stdio"
   
   # Security Configuration
@@ -795,7 +795,7 @@ services:
     image: olorin-server:latest
     container_name: olorin-backend
     ports:
-      - "8000:8000"
+      - "8090:8090"
     environment:
       - OLORIN_API_KEY=${OLORIN_API_KEY}
       - REDIS_URL=${REDIS_URL}

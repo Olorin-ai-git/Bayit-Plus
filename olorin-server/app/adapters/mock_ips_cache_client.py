@@ -1,10 +1,10 @@
 """Mock implementation of IPSCacheClient for testing without external dependencies."""
 
-import logging
 from typing import Any, Dict, List
 import os
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class MockIPSCacheClient:

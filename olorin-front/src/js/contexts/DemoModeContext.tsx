@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getCurrentUrlParams } from '../utils/urlParams';
 
 interface DemoModeContextType {
@@ -50,14 +50,45 @@ export const DemoModeProvider: React.FC<{ children: ReactNode }> = ({ children }
     return null;
   });
 
+  // Enter demo mode
+  const enterDemoMode = useCallback((authId: string) => {
+    const demoData: DemoModeData = {
+      enabled: true,
+      authId,
+      timestamp: Date.now(),
+    };
+    
+    sessionStorage.setItem(DEMO_MODE_KEY, JSON.stringify(demoData));
+    sessionStorage.setItem(DEMO_AUTH_KEY, authId);
+    setIsDemoMode(true);
+    setDemoAuthId(authId);
+    
+    // Remove demo parameter from URL to prevent easy bypass
+    const url = new URL(window.location.href);
+    url.searchParams.delete('demo');
+    window.history.replaceState({}, '', url.toString());
+  }, [setIsDemoMode, setDemoAuthId]);
+
+  // Exit demo mode (requires special action)
+  const exitDemoMode = useCallback(() => {
+    sessionStorage.removeItem(DEMO_MODE_KEY);
+    sessionStorage.removeItem(DEMO_AUTH_KEY);
+    setIsDemoMode(false);
+    setDemoAuthId(null);
+    
+    // Remove demo parameter from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('demo');
+    window.history.replaceState({}, '', url.toString());
+  }, [setIsDemoMode, setDemoAuthId]);
+
   // Check if demo mode should be active
-  const checkDemoModeStatus = () => {
+  const checkDemoModeStatus = useCallback(() => {
     try {
       // Check URL parameters first
       const urlParams = getCurrentUrlParams();
       const urlDemoParam = urlParams.get('demo');
       const urlAuthId = urlParams.get('authid');
-
 
       // If URL explicitly sets demo=false, clear demo mode
       if (urlDemoParam === 'false') {
@@ -86,39 +117,7 @@ export const DemoModeProvider: React.FC<{ children: ReactNode }> = ({ children }
     } catch (error) {
       console.error('Error checking demo mode status:', error);
     }
-  };
-
-  // Enter demo mode
-  const enterDemoMode = (authId: string) => {
-    const demoData: DemoModeData = {
-      enabled: true,
-      authId,
-      timestamp: Date.now(),
-    };
-    
-    sessionStorage.setItem(DEMO_MODE_KEY, JSON.stringify(demoData));
-    sessionStorage.setItem(DEMO_AUTH_KEY, authId);
-    setIsDemoMode(true);
-    setDemoAuthId(authId);
-    
-    // Remove demo parameter from URL to prevent easy bypass
-    const url = new URL(window.location.href);
-    url.searchParams.delete('demo');
-    window.history.replaceState({}, '', url.toString());
-  };
-
-  // Exit demo mode (requires special action)
-  const exitDemoMode = () => {
-    sessionStorage.removeItem(DEMO_MODE_KEY);
-    sessionStorage.removeItem(DEMO_AUTH_KEY);
-    setIsDemoMode(false);
-    setDemoAuthId(null);
-    
-    // Remove demo parameter from URL
-    const url = new URL(window.location.href);
-    url.searchParams.delete('demo');
-    window.history.replaceState({}, '', url.toString());
-  };
+  }, [setIsDemoMode, setDemoAuthId, enterDemoMode, exitDemoMode]);
 
   // Check demo mode on mount and URL changes
   useEffect(() => {
@@ -161,7 +160,7 @@ export const DemoModeProvider: React.FC<{ children: ReactNode }> = ({ children }
       window.removeEventListener('keydown', handleKeyDown);
       clearInterval(interval);
     };
-  }, [isDemoMode]);
+  }, [isDemoMode, checkDemoModeStatus, exitDemoMode]);
 
   // Prevent navigation away in demo mode
   useEffect(() => {
@@ -193,7 +192,7 @@ export const DemoModeProvider: React.FC<{ children: ReactNode }> = ({ children }
   );
 };
 
-export const useDemoMode = () => {
+export const useDemoMode = (): DemoModeContextType => {
   const context = useContext(DemoModeContext);
   if (context === undefined) {
     throw new Error('useDemoMode must be used within a DemoModeProvider');

@@ -23,8 +23,28 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import redis
 import logging
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+
+def _mask_sensitive_value(value: str, show_chars: int = 4) -> str:
+    """
+    Mask sensitive value for logging, showing only first few characters.
+    
+    Args:
+        value: The sensitive value to mask
+        show_chars: Number of characters to show (default: 4)
+        
+    Returns:
+        Masked value for safe logging
+    """
+    if not value:
+        return "[EMPTY]"
+    if len(value) <= show_chars:
+        return "*" * len(value)
+    return value[:show_chars] + "*" * (len(value) - show_chars)
+
+
+logger = get_bridge_logger(__name__)
 
 Base = declarative_base()
 
@@ -169,7 +189,8 @@ class EnhancedSecurityConfig:
         if not secret or secret in ['your-secret-key-change-in-production', 'default-change-in-production']:
             # Generate cryptographically secure secret
             secret = secrets.token_urlsafe(byte_length)
-            logger.warning(f"Generated new secret for {env_var}. Set this in environment: {secret}")
+            masked_secret = _mask_sensitive_value(secret)
+            logger.warning(f"Generated new secret for {env_var}. Set this in environment: {masked_secret} (Value has been masked for security)")
         return secret
     
     def _init_redis(self) -> Optional[redis.Redis]:

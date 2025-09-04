@@ -25,6 +25,7 @@ from app.test.data.mock_transactions.mock_data_loader import (
     MockDataLoader, load_investigation_scenario, validate_investigation_outcome,
     list_available_test_scenarios
 )
+from app.service.logging import get_bridge_logger
 from app.service.logging.autonomous_investigation_logger import (
     autonomous_investigation_logger, InteractionType
 )
@@ -36,7 +37,7 @@ from app.service.agent.recursion_guard import get_recursion_guard
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables.config import RunnableConfig
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Router setup
 router = APIRouter(prefix="/autonomous", tags=["autonomous-investigation"])
@@ -109,7 +110,7 @@ async def start_autonomous_investigation(
     
     Example curl command:
     ```bash
-    curl -X POST "http://localhost:8000/autonomous/start_investigation" \
+    curl -X POST "http://localhost:8090/autonomous/start_investigation" \
       -H "Content-Type: application/json" \
       -d '{
         "entity_id": "USER_12345",
@@ -179,7 +180,7 @@ async def start_autonomous_investigation(
             "findings_summary": {},
             "performance_metrics": {
                 "start_time": datetime.now(timezone.utc).isoformat(),
-                "estimated_completion_ms": 180000  # 3 minutes default
+                "estimated_completion_ms": 180900  # 3 minutes default
             }
         }
         
@@ -192,12 +193,12 @@ async def start_autonomous_investigation(
         )
         
         # Generate monitoring endpoints
-        base_url = "http://localhost:8000/autonomous"
+        base_url = "http://localhost:8090/autonomous"
         monitoring_endpoints = {
             "status": f"{base_url}/investigation/{investigation_id}/status",
             "logs": f"{base_url}/investigation/{investigation_id}/logs",
             "journey": f"{base_url}/investigation/{investigation_id}/journey",
-            "websocket": f"ws://localhost:8000/autonomous/investigation/{investigation_id}/monitor"
+            "websocket": f"ws://localhost:8090/autonomous/investigation/{investigation_id}/monitor"
         }
         
         response = AutonomousInvestigationResponse(
@@ -206,7 +207,7 @@ async def start_autonomous_investigation(
             message=f"Autonomous investigation started for {request.entity_type}: {request.entity_id}",
             investigation_context=investigation_context,
             monitoring_endpoints=monitoring_endpoints,
-            estimated_completion_time_ms=180000,
+            estimated_completion_time_ms=180900,
             created_at=datetime.now(timezone.utc).isoformat()
         )
         
@@ -224,7 +225,7 @@ async def get_investigation_status(investigation_id: str) -> InvestigationStatus
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
     ```
     """
     
@@ -283,7 +284,7 @@ async def get_investigation_logs(investigation_id: str) -> InvestigationLogsResp
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
     ```
     """
     
@@ -325,7 +326,7 @@ async def get_investigation_journey(investigation_id: str) -> LangGraphJourneyRe
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
+    curl -X GET "http://localhost:8090/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
     ```
     """
     
@@ -427,7 +428,7 @@ async def list_test_scenarios():
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8000/autonomous/scenarios"
+    curl -X GET "http://localhost:8090/autonomous/scenarios"
     ```
     """
     
