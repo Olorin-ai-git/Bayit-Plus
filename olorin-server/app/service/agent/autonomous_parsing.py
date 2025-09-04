@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Autonomous Agent Result Parsing
 
@@ -118,7 +121,7 @@ def parse_autonomous_result(
                 f"CRITICAL: Risk score is missing for {domain} analysis! "
                 f"Agent failed to provide risk assessment for investigation {context.investigation_id}"
             )
-            print(f"        ❌ ERROR: {domain.title()} Agent failed to provide risk_score!")
+            logger.error(f"        ❌ ERROR: {domain.title()} Agent failed to provide risk_score!")
         
         # Create domain findings
         findings = DomainFindings(
@@ -145,7 +148,7 @@ def parse_autonomous_result(
             f"CRITICAL: Failed to parse {domain} analysis result! "
             f"Risk score will be missing for investigation {context.investigation_id}: {str(e)}"
         )
-        print(f"        ❌ ERROR: {domain.title()} Agent parsing failed - no risk_score available!")
+        logger.error(f"        ❌ ERROR: {domain.title()} Agent parsing failed - no risk_score available!")
         
         # Return minimal findings on parse error with None risk_score
         return DomainFindings(

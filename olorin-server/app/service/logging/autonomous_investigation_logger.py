@@ -1,3 +1,19 @@
+# Import will be done after module initialization to avoid circular imports
+logger = None
+
+# Initialize bridge logger lazily to avoid circular imports
+def _get_bridge_logger():
+    global logger
+    if logger is None:
+        try:
+            from .integration_bridge import get_bridge_logger
+            logger = get_bridge_logger(__name__)
+        except ImportError:
+            # Fallback to basic Python logging if bridge not available
+            import logging
+            logger = logging.getLogger(__name__)
+    return logger
+
 """
 Comprehensive Autonomous Investigation Logging System
 
@@ -148,7 +164,7 @@ class AutonomousInvestigationLogger:
         # Real-time monitoring callbacks
         self._monitoring_callbacks: List[callable] = []
         
-        logger.info(f"Initialized AutonomousInvestigationLogger with directory: {self.log_directory}")
+        _get_bridge_logger().info(f"Initialized AutonomousInvestigationLogger with directory: {self.log_directory}")
     
     def _setup_structured_logging(self) -> None:
         """Setup structured logging with custom formatters"""
@@ -200,7 +216,7 @@ class AutonomousInvestigationLogger:
         
         self._log_interaction(investigation_id, InteractionType.INVESTIGATION_PROGRESS, asdict(progress_log))
         
-        logger.info(f"Started investigation logging for: {investigation_id}")
+        _get_bridge_logger().info(f"Started investigation logging for: {investigation_id}")
     
     def log_llm_interaction(
         self,
@@ -250,10 +266,10 @@ class AutonomousInvestigationLogger:
         # Console output for key LLM interactions
         if self.enable_console_output:
             tools_used_str = ", ".join(tools_used) if tools_used else "None"
-            print(f"        🧠 LLM Call: {agent_name} → {model_name}")
-            print(f"           Tools: {tools_used_str} | Tokens: {tokens_used.get('total_tokens', 0)}")
+            _get_bridge_logger().info(f"        🧠 LLM Call: {agent_name} → {model_name}")
+            _get_bridge_logger().info(f"           Tools: {tools_used_str} | Tokens: {tokens_used.get('total_tokens', 0)}")
             if reasoning_chain:
-                print(f"           Reasoning: {reasoning_chain[:100]}{'...' if len(reasoning_chain) > 100 else ''}")
+                _get_bridge_logger().info(f"           Reasoning: {reasoning_chain[:100]}{'...' if len(reasoning_chain) > 100 else ''}")
         
         return interaction_id
     
@@ -289,10 +305,10 @@ class AutonomousInvestigationLogger:
         self._log_interaction(investigation_id, InteractionType.AGENT_DECISION, asdict(decision_log))
         
         if self.enable_console_output:
-            print(f"        🧠 Decision: {agent_name} → {decision_type}")
-            print(f"           Confidence: {confidence_score:.2f} | Outcome: {decision_outcome.get('action', 'N/A')}")
+            _get_bridge_logger().info(f"        🧠 Decision: {agent_name} → {decision_type}")
+            _get_bridge_logger().info(f"           Confidence: {confidence_score:.2f} | Outcome: {decision_outcome.get('action', 'N/A')}")
             if reasoning:
-                print(f"           Reasoning: {reasoning[:100]}{'...' if len(reasoning) > 100 else ''}")
+                _get_bridge_logger().info(f"           Reasoning: {reasoning[:100]}{'...' if len(reasoning) > 100 else ''}")
         
         return interaction_id
     
@@ -330,11 +346,11 @@ class AutonomousInvestigationLogger:
         if self.enable_console_output:
             status_icon = "✅" if success else "❌"
             status_text = "SUCCESS" if success else f"FAILED ({error_message})"
-            print(f"        🔧 Tool: {agent_name} → {tool_name} {status_icon}")
-            print(f"           Duration: {execution_time_ms}ms | Status: {status_text}")
-            print(f"           Params: {str(tool_parameters)[:80]}{'...' if len(str(tool_parameters)) > 80 else ''}")
+            _get_bridge_logger().info(f"        🔧 Tool: {agent_name} → {tool_name} {status_icon}")
+            _get_bridge_logger().info(f"           Duration: {execution_time_ms}ms | Status: {status_text}")
+            _get_bridge_logger().info(f"           Params: {str(tool_parameters)[:80]}{'...' if len(str(tool_parameters)) > 80 else ''}")
             if selection_reasoning:
-                print(f"           Selection: {selection_reasoning[:80]}{'...' if len(selection_reasoning) > 80 else ''}")
+                _get_bridge_logger().info(f"           Selection: {selection_reasoning[:80]}{'...' if len(selection_reasoning) > 80 else ''}")
         
         return interaction_id
     
@@ -371,8 +387,8 @@ class AutonomousInvestigationLogger:
         
         if self.enable_console_output:
             next_nodes_str = ", ".join(next_nodes) if next_nodes else "END"
-            print(f"        📊 Node: {node_name} ({node_type})")
-            print(f"           Duration: {execution_time_ms}ms → {next_nodes_str}")
+            _get_bridge_logger().info(f"        📊 Node: {node_name} ({node_type})")
+            _get_bridge_logger().info(f"           Duration: {execution_time_ms}ms → {next_nodes_str}")
             
             # Show key state changes
             if state_before and state_after:
@@ -380,7 +396,7 @@ class AutonomousInvestigationLogger:
                 state_keys_after = set(state_after.keys())
                 new_keys = state_keys_after - state_keys_before
                 if new_keys:
-                    print(f"           State Changes: +{list(new_keys)}")
+                    _get_bridge_logger().info(f"           State Changes: +{list(new_keys)}")
         
         return interaction_id
     
@@ -415,20 +431,20 @@ class AutonomousInvestigationLogger:
         
         if self.enable_console_output:
             progress_pct = (len(completed_phases) / max(4, len(completed_phases) + 1)) * 100
-            print(f"        📈 Progress: {progress_type} → {current_phase}")
-            print(f"           Completion: {progress_pct:.0f}% | Phases: {len(completed_phases)} completed")
+            _get_bridge_logger().info(f"        📈 Progress: {progress_type} → {current_phase}")
+            _get_bridge_logger().info(f"           Completion: {progress_pct:.0f}% | Phases: {len(completed_phases)} completed")
             
             # Show risk score progression if available
             if risk_score_progression:
                 latest_risk = risk_score_progression[-1] if risk_score_progression else {}
                 risk_score = latest_risk.get('risk_score')
                 risk_display = "MISSING!" if risk_score is None else f"{risk_score:.3f}"
-                print(f"           Current Risk: {risk_display}")
+                _get_bridge_logger().info(f"           Current Risk: {risk_display}")
             
             # Show active agents
             active_agents = [agent for agent, status in agent_status.items() if status in ['active', 'running']]
             if active_agents:
-                print(f"           Active Agents: {', '.join(active_agents)}")
+                _get_bridge_logger().info(f"           Active Agents: {', '.join(active_agents)}")
         
         return interaction_id
     
@@ -452,7 +468,7 @@ class AutonomousInvestigationLogger:
             try:
                 callback(investigation_id, interaction_type, data)
             except Exception as e:
-                logger.warning(f"Monitoring callback failed: {e}")
+                _get_bridge_logger().warning(f"Monitoring callback failed: {e}")
     
     def get_investigation_logs(self, investigation_id: str, interaction_types: List[InteractionType] = None) -> List[Dict[str, Any]]:
         """Retrieve logs for specific investigation, optionally filtered by interaction types"""

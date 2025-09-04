@@ -10,9 +10,10 @@ from fastapi.responses import JSONResponse
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
 import logging
+from app.service.logging import get_bridge_logger
 import asyncio
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Router setup
 router = APIRouter(prefix="/performance", tags=["performance"])

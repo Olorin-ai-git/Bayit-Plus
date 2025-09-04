@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
@@ -7,7 +8,7 @@ from starlette.requests import Request
 
 from app.service.logs_analysis_service import LogsAnalysisService
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/logs")
 
 

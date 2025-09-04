@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 
 from fastapi import APIRouter, Request
 
@@ -7,7 +8,7 @@ from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
 from app.utils.auth_utils import get_userid_and_token_from_authn_header
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def construct_agent_context(

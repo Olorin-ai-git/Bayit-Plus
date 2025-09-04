@@ -13,9 +13,24 @@ from .knowledge_base import (
     KnowledgeBaseConfig
 )
 
-# Note: retrieval_engine and context_augmentor modules not implemented yet
-# from .retrieval_engine import (...)
-# from .context_augmentor import (...)
+# Enhanced retrieval and context augmentation modules
+from .retrieval_engine import (
+    RetrievalEngine,
+    SearchQuery,
+    SearchResult,
+    SearchStrategy,
+    QueryExpansionMethod,
+    RetrievalEngineConfig,
+    create_retrieval_engine
+)
+
+from .context_augmentor import (
+    ContextAugmentor,
+    KnowledgeContext,
+    ContextRelevanceLevel,
+    ContextAugmentationConfig,
+    create_context_augmentor
+)
 
 from .rag_orchestrator import (
     RAGOrchestrator,
@@ -40,5 +55,21 @@ __all__ = [
     "RAGResponse",
     "RAGConfig",
     "RAGMetrics",
-    "get_rag_orchestrator"
+    "get_rag_orchestrator",
+    
+    # Retrieval Engine
+    "RetrievalEngine",
+    "SearchQuery",
+    "SearchResult",
+    "SearchStrategy",
+    "QueryExpansionMethod",
+    "RetrievalEngineConfig",
+    "create_retrieval_engine",
+    
+    # Context Augmentor
+    "ContextAugmentor",
+    "KnowledgeContext",
+    "ContextRelevanceLevel",
+    "ContextAugmentationConfig",
+    "create_context_augmentor"
 ]

@@ -3,6 +3,9 @@ import os
 from pathlib import Path
 
 import yaml
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 
 
 def setup_logging(
@@ -25,7 +28,7 @@ def setup_logging(
                 config = yaml.safe_load(f.read())
                 logging.config.dictConfig(config)
             except Exception as e:
-                print(f"Error in Logging Configuration: {e}")
+                logger.error(f"Error in Logging Configuration: {e}")
                 logging.basicConfig(level=default_level)
     else:
         logging.basicConfig(level=default_level)

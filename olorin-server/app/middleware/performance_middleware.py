@@ -6,6 +6,7 @@ performance optimization system, and provides real-time performance analytics.
 """
 
 import logging
+from app.service.logging import get_bridge_logger
 import time
 from typing import Callable, Dict, Any, Optional
 from datetime import datetime
@@ -14,7 +15,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class PerformanceTrackingMiddleware(BaseHTTPMiddleware):

@@ -4,12 +4,13 @@ Security configuration for Olorin application
 
 import os
 import logging
+from app.service.logging import get_bridge_logger
 from typing import List, Optional
 
 from pydantic import BaseModel
 from app.service.config_loader import get_config_loader
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class SecurityConfig(BaseModel):

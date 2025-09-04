@@ -7,6 +7,7 @@ backward compatibility with existing imports.
 """
 
 import logging
+from app.service.logging import get_bridge_logger
 import os
 import uuid
 from typing import Callable, Optional
@@ -39,7 +40,7 @@ except ImportError:
 
     lifespan_function = None
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 module_name = "olorin"
 service_name = "olorin"
 

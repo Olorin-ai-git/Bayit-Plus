@@ -5,12 +5,13 @@ Handles loading and saving user preferences and configuration.
 
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
 

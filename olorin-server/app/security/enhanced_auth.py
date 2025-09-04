@@ -23,8 +23,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 import redis
 import logging
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 Base = declarative_base()
 

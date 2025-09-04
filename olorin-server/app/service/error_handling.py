@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 
 try:
     from enum import StrEnum
@@ -13,7 +14,7 @@ except ImportError:
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class ErrorCode(StrEnum):

@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Autonomous Investigation Agent Base Class
 
@@ -138,10 +141,10 @@ class AutonomousInvestigationAgent:
         
         if self.domain in get_supported_olorin_domains():
             logger.info(f"🔥 OLORIN PROMPTS ENABLED: Using exact Olorin prompts for {self.domain} domain")
-            print(f"        🔥 Using Olorin prompts for {self.domain.title()} analysis")
+            logger.info(f"        🔥 Using Olorin prompts for {self.domain.title()} analysis")
         elif self.domain in get_supported_domains():
             logger.info(f"🔥 GAIA PROMPTS ENABLED: Using exact Gaia prompts for {self.domain} domain")
-            print(f"        🔥 Using Gaia prompts for {self.domain.title()} analysis")
+            logger.info(f"        🔥 Using Gaia prompts for {self.domain.title()} analysis")
         
         # Create system message for autonomous agent
         system_msg = SystemMessage(content=f"""
@@ -203,10 +206,10 @@ Let the investigation context guide your decisions, not fixed workflows.
             console_prompt, _ = LLMInteractionFormatter.format_console_interaction(
                 self.domain, context.investigation_id, context.entity_id, enhanced_prompt, ""
             )
-            print(console_prompt)
+            logger.info(console_prompt)
             
             # Execute autonomous investigation
-            print(f"        🤖 Starting {self.domain.title()} Agent analysis...")
+            logger.info(f"        🤖 Starting {self.domain.title()} Agent analysis...")
             logger.info(f"Starting autonomous {self.domain} investigation for {context.investigation_id}")
             
             messages = [system_msg, HumanMessage(content=enhanced_prompt)]
@@ -234,7 +237,7 @@ Let the investigation context guide your decisions, not fixed workflows.
             )
             
             # Let the LLM decide which tools to use and how to proceed
-            print(f"        🔄 Invoking LLM for {self.domain.title()} analysis...")
+            logger.info(f"        🔄 Invoking LLM for {self.domain.title()} analysis...")
             result = await self.llm_with_tools.ainvoke(
                 messages,
                 config=config
@@ -243,7 +246,7 @@ Let the investigation context guide your decisions, not fixed workflows.
             # CRITICAL FIX: Check if result contains tool calls and handle them properly
             if hasattr(result, 'tool_calls') and result.tool_calls:
                 logger.info(f"🔧 Tool calls detected in {self.domain} analysis - executing tools and getting final analysis")
-                print(f"        🔧 Executing {len(result.tool_calls)} tools for {self.domain.title()} analysis...")
+                logger.info(f"        🔧 Executing {len(result.tool_calls)} tools for {self.domain.title()} analysis...")
                 
                 # Execute the tool calls
                 from langchain_core.messages import ToolMessage
@@ -347,7 +350,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 analysis_messages.append(HumanMessage(content=follow_up_prompt))
                 
                 logger.info(f"🔍 Requesting final analysis from LLM for {self.domain} domain")
-                print(f"        🔍 Getting final analysis with tool results for {self.domain.title()}...")
+                logger.info(f"        🔍 Getting final analysis with tool results for {self.domain.title()}...")
                 
                 # Get the final analysis with tool results
                 final_result = await get_autonomous_llm().ainvoke(
@@ -386,7 +389,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 format_messages = messages + [result, HumanMessage(content=format_reminder_prompt)]
                 
                 logger.info(f"🔍 Requesting formatted response from LLM for {self.domain} domain")
-                print(f"        🔍 Getting formatted response for {self.domain.title()}...")
+                logger.info(f"        🔍 Getting formatted response for {self.domain.title()}...")
                 
                 # Get the formatted response
                 formatted_result = await get_autonomous_llm().ainvoke(
@@ -402,23 +405,23 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
             _, console_response = LLMInteractionFormatter.format_console_interaction(
                 self.domain, context.investigation_id, context.entity_id, "", result.content
             )
-            print(console_response)
+            logger.info(console_response)
             
             # Validate response format and show compliance
             from app.service.agent.llm_formatter import LLMInteractionFormatter
             validation_result = LLMInteractionFormatter.validate_response_format(result.content)
             
             if validation_result["has_risk_score"]:
-                print(f"        ✅ Risk Score Found: {validation_result['risk_score_value']}")
+                logger.info(f"        ✅ Risk Score Found: {validation_result['risk_score_value']}")
             else:
-                print("        ❌ Risk Score Missing!")
+                logger.info("        ❌ Risk Score Missing!")
             
             if validation_result["has_numbered_format"]:
-                print("        ✅ Numbered Format Detected")
+                logger.info("        ✅ Numbered Format Detected")
             else:
-                print("        ⚠️ Numbered Format Issues")
+                logger.info("        ⚠️ Numbered Format Issues")
             
-            print(f"        📊 Format Compliance: {validation_result['format_compliance']*100:.1f}%")
+            logger.info(f"        📊 Format Compliance: {validation_result['format_compliance']*100:.1f}%")
             
             # Enhanced log file formatting
             log_prompt, log_response = LLMInteractionFormatter.format_log_interaction(
@@ -437,27 +440,27 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 is_olorin_format = validate_investigation_response(response_content, self.domain)
                 if is_olorin_format:
                     logger.info(f"✅ OLORIN FORMAT VALIDATED: Response follows Olorin format for {self.domain}")
-                    print(f"        ✅ Olorin format validated for {self.domain.title()} response")
+                    logger.info(f"        ✅ Olorin format validated for {self.domain.title()} response")
                 else:
                     logger.warning(f"⚠️ OLORIN FORMAT WARNING: Response may not follow Olorin format for {self.domain}")
-                    print(f"        ⚠️ Olorin format warning for {self.domain.title()} response")
+                    logger.warning(f"        ⚠️ Olorin format warning for {self.domain.title()} response")
             elif self.domain in get_supported_domains():
                 is_gaia_format = validate_investigation_response(response_content, self.domain)
                 if is_gaia_format:
                     logger.info(f"✅ GAIA FORMAT VALIDATED: Response follows Gaia format for {self.domain}")
-                    print(f"        ✅ Gaia format validated for {self.domain.title()} response")
+                    logger.info(f"        ✅ Gaia format validated for {self.domain.title()} response")
                 else:
                     logger.warning(f"⚠️ GAIA FORMAT WARNING: Response may not follow Gaia format for {self.domain}")
-                    print(f"        ⚠️ Gaia format warning for {self.domain.title()} response")
+                    logger.warning(f"        ⚠️ Gaia format warning for {self.domain.title()} response")
             
             # Parse and structure the autonomous analysis result
             findings = parse_autonomous_result(result, context, self.domain)
             
             # Log completion with detailed results
             risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.3f}"
-            print(f"        ✅ {self.domain.title()} Agent completed")
-            print(f"           Risk Score: {risk_display} | Confidence: {findings.confidence:.2f}")
-            print(f"           Findings: {len(findings.key_findings)} | Quality: {findings.data_quality}")
+            logger.info(f"        ✅ {self.domain.title()} Agent completed")
+            logger.info(f"           Risk Score: {risk_display} | Confidence: {findings.confidence:.2f}")
+            logger.info(f"           Findings: {len(findings.key_findings)} | Quality: {findings.data_quality}")
             
             # Additional prompt system logging
             if self.domain in get_supported_olorin_domains():
@@ -507,7 +510,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 f"CRITICAL: Autonomous {self.domain} investigation failed completely! "
                 f"No risk assessment available for investigation {context.investigation_id}: {str(e)}"
             )
-            print(f"        ❌ ERROR: {self.domain.title()} Agent failed completely - no risk_score available!")
+            logger.error(f"        ❌ ERROR: {self.domain.title()} Agent failed completely - no risk_score available!")
             
             # Return error findings with explicit None risk_score
             return DomainFindings(

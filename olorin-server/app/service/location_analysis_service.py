@@ -1,5 +1,6 @@
 import json
 import logging
+from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -21,7 +22,7 @@ from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
 from app.utils.prompts import SYSTEM_PROMPT_FOR_LOCATION_RISK
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class LocationAnalysisService:

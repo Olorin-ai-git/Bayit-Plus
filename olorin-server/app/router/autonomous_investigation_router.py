@@ -10,6 +10,7 @@ automation of autonomous investigation workflows.
 This is the refactored version using modular architecture for maintainability.
 """
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Dict, Any
 from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket
 
@@ -33,7 +34,7 @@ from app.router.controllers.investigation_executor import execute_autonomous_inv
 from app.router.handlers.websocket_handler import monitor_investigation_websocket, get_websocket_connections
 from app.router.handlers.test_scenario_handler import list_test_scenarios, validate_investigation_results
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 # Router setup
 router = APIRouter(prefix="/autonomous", tags=["autonomous-investigation"])

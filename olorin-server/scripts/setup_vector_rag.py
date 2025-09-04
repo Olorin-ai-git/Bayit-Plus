@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Setup script for PostgreSQL + pgvector RAG system.
@@ -22,88 +25,88 @@ logging.basicConfig(
 
 async def main():
     """Main setup function."""
-    print("🚀 Setting up PostgreSQL + pgvector RAG system for Olorin...")
-    print()
+    logger.info("🚀 Setting up PostgreSQL + pgvector RAG system for Olorin...")
+    logger.info()
     
     # Check environment variables
-    print("📋 Checking environment configuration...")
+    logger.info("📋 Checking environment configuration...")
     
     # Check database configuration
     db_configured = False
     if os.getenv("DATABASE_URL"):
-        print("✅ DATABASE_URL found")
+        logger.info("✅ DATABASE_URL found")
         db_configured = True
     elif all(os.getenv(var) for var in ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"]):
-        print("✅ Database connection parameters found")
+        logger.info("✅ Database connection parameters found")
         db_configured = True
     else:
-        print("❌ Database not configured")
-        print("   Please set either:")
-        print("   - DATABASE_URL environment variable, OR")
-        print("   - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME environment variables")
-        print()
-        print("Example for local PostgreSQL:")
-        print("   export DB_HOST=localhost")
-        print("   export DB_PORT=5432")
-        print("   export DB_USER=postgres")
-        print("   export DB_PASSWORD=your_password")
-        print("   export DB_NAME=fraud_detection_vector")
-        print()
-        print("Or using DATABASE_URL:")
-        print("   export DATABASE_URL=postgresql://postgres:password@localhost:5432/fraud_detection_vector")
+        logger.info("❌ Database not configured")
+        logger.info("   Please set either:")
+        logger.info("   - DATABASE_URL environment variable, OR")
+        logger.info("   - DB_HOST, DB_USER, DB_PASSWORD, DB_NAME environment variables")
+        logger.info()
+        logger.info("Example for local PostgreSQL:")
+        logger.info("   export DB_HOST=localhost")
+        logger.info("   export DB_PORT=5432")
+        logger.info("   export DB_USER=postgres")
+        logger.info("   export DB_PASSWORD=your_password")
+        logger.info("   export DB_NAME=fraud_detection_vector")
+        logger.info()
+        logger.info("Or using DATABASE_URL:")
+        logger.info("   export DATABASE_URL=postgresql://postgres:password@localhost:5432/fraud_detection_vector")
         return
     
     # Check OpenAI API key (optional)
     if os.getenv("OPENAI_API_KEY"):
-        print("✅ OpenAI API key found - will use OpenAI embeddings")
+        logger.info("✅ OpenAI API key found - will use OpenAI embeddings")
     else:
-        print("⚠️  OpenAI API key not found - will use local embeddings only")
-        print("   Set OPENAI_API_KEY for better embedding quality")
+        logger.info("⚠️  OpenAI API key not found - will use local embeddings only")
+        logger.info("   Set OPENAI_API_KEY for better embedding quality")
     
-    print()
+    logger.info()
     
     # Initialize CLI manager and run setup
     cli = RAGCLIManager()
     
     try:
-        print("🔧 Initializing services...")
+        logger.info("🔧 Initializing services...")
         await cli.initialize_services()
         
-        print("📊 Setting up database...")
+        logger.info("📊 Setting up database...")
         await cli.setup_database()
         await cli.run_migrations()
         
-        print("📈 Checking system status...")
+        logger.info("📈 Checking system status...")
         await cli.check_status()
         
-        print("📚 Adding sample documents...")
+        logger.info("📚 Adding sample documents...")
         await cli.add_sample_documents()
         
-        print("🔍 Testing search functionality...")
+        logger.info("🔍 Testing search functionality...")
         await cli.test_search("fraud detection", limit=3)
         
-        print()
-        print("✅ Setup completed successfully!")
-        print()
-        print("🎯 Next steps:")
-        print("   1. Start the Olorin server: npm run olorin")
-        print("   2. The RAG system will be available for fraud investigations")
-        print("   3. Use the CLI manager for additional operations:")
-        print(f"      python {__file__} --help")
-        print()
-        print("📖 Available CLI commands:")
-        print("   python app/service/rag/cli_manager.py status")
-        print("   python app/service/rag/cli_manager.py test-search 'your query'")
-        print("   python app/service/rag/cli_manager.py migrate --sqlite-path /path/to/old.db")
+        logger.info()
+        logger.info("✅ Setup completed successfully!")
+        logger.info()
+        logger.info("🎯 Next steps:")
+        logger.info("   1. Start the Olorin server: npm run olorin")
+        logger.info("   2. The RAG system will be available for fraud investigations")
+        logger.info("   3. Use the CLI manager for additional operations:")
+        logger.info(f"      python {__file__} --help")
+        logger.info()
+        logger.info("📖 Available CLI commands:")
+        logger.info("   python app/service/rag/cli_manager.py status")
+        logger.info("   python app/service/rag/cli_manager.py test-search 'your query'")
+        logger.info("   python app/service/rag/cli_manager.py migrate --sqlite-path /path/to/old.db")
         
     except Exception as e:
-        print(f"❌ Setup failed: {e}")
-        print()
-        print("🔧 Troubleshooting:")
-        print("   1. Make sure PostgreSQL is running and accessible")
-        print("   2. Ensure the database user has CREATE privileges")
-        print("   3. Install pgvector extension: CREATE EXTENSION vector;")
-        print("   4. Check that all environment variables are set correctly")
+        logger.error(f"❌ Setup failed: {e}")
+        logger.info()
+        logger.info("🔧 Troubleshooting:")
+        logger.info("   1. Make sure PostgreSQL is running and accessible")
+        logger.info("   2. Ensure the database user has CREATE privileges")
+        logger.info("   3. Install pgvector extension: CREATE EXTENSION vector;")
+        logger.info("   4. Check that all environment variables are set correctly")
         
         return
     

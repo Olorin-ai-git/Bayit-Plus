@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 Unified Logging Command Line Interface
 
@@ -207,39 +210,39 @@ def show_logging_configuration_summary():
         config_manager = LoggingConfigManager()
         summary = config_manager.get_configuration_summary()
         
-        print("\n" + "="*60)
-        print("UNIFIED LOGGING CONFIGURATION SUMMARY")
-        print("="*60)
+        logger.info("\n" + "="*60)
+        logger.info("UNIFIED LOGGING CONFIGURATION SUMMARY")
+        logger.info("="*60)
         
         config = summary['configuration']
-        print(f"Log Level:              {config['log_level']}")
-        print(f"Log Format:             {config['log_format']}")
-        print(f"Log Outputs:            {', '.join(config['log_outputs'])}")
-        print(f"Async Logging:          {config['async_logging']}")
-        print(f"Buffer Size:            {config['buffer_size']}")
-        print(f"Lazy Initialization:    {config['lazy_initialization']}")
-        print(f"Suppress Noisy:         {config['suppress_noisy_loggers']}")
-        print(f"Performance Monitor:    {config['performance_monitoring']}")
+        logger.info(f"Log Level:              {config['log_level']}")
+        logger.info(f"Log Format:             {config['log_format']}")
+        logger.info(f"Log Outputs:            {', '.join(config['log_outputs'])}")
+        logger.info(f"Async Logging:          {config['async_logging']}")
+        logger.info(f"Buffer Size:            {config['buffer_size']}")
+        logger.info(f"Lazy Initialization:    {config['lazy_initialization']}")
+        logger.info(f"Suppress Noisy:         {config['suppress_noisy_loggers']}")
+        logger.info(f"Performance Monitor:    {config['performance_monitoring']}")
         
-        print(f"\nConfiguration Sources:")
+        logger.info(f"\nConfiguration Sources:")
         sources = summary['sources']
-        print(f"Config File:            {sources['config_file']}")
+        logger.info(f"Config File:            {sources['config_file']}")
         
         if sources['environment_variables']:
-            print(f"Environment Variables:  {', '.join(sources['environment_variables'])}")
+            logger.info(f"Environment Variables:  {', '.join(sources['environment_variables'])}")
         else:
-            print(f"Environment Variables:  None")
+            logger.info(f"Environment Variables:  None")
             
         if sources['command_line_args']:
-            print(f"Command Line Args:      Available")
+            logger.info(f"Command Line Args:      Available")
         else:
-            print(f"Command Line Args:      None")
+            logger.info(f"Command Line Args:      None")
             
-        print(f"Validation Status:      {summary['validation_status']}")
-        print("="*60 + "\n")
+        logger.info(f"Validation Status:      {summary['validation_status']}")
+        logger.info("="*60 + "\n")
         
     except Exception as e:
-        print(f"Error showing logging configuration: {e}")
+        logger.error(f"Error showing logging configuration: {e}")
 
 
 if __name__ == "__main__":
@@ -250,5 +253,5 @@ if __name__ == "__main__":
     if args.logging_stats:
         show_logging_configuration_summary()
     
-    print("Unified logging configuration parsed successfully!")
-    print(f"Arguments: {vars(args)}")
+    logger.info("Unified logging configuration parsed successfully!")
+    logger.info(f"Arguments: {vars(args)}")

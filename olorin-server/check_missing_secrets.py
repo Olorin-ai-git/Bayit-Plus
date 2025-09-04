@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Script to identify which secrets are missing from Firebase Secret Manager.
@@ -63,16 +66,16 @@ def find_secret_references() -> Dict[str, List[str]]:
                                 secrets[secret] = []
                             secrets[secret].append(str(file_path))
             except Exception as e:
-                print(f"Error reading {file_path}: {e}")
+                logger.error(f"Error reading {file_path}: {e}")
     
     return secrets
 
 def check_firebase_secrets():
     """Check which secrets are configured vs missing."""
-    print("=" * 60)
-    print("FIREBASE SECRET MANAGER - SECRET STATUS CHECK")
-    print("=" * 60)
-    print()
+    logger.info("=" * 60)
+    logger.info("FIREBASE SECRET MANAGER - SECRET STATUS CHECK")
+    logger.info("=" * 60)
+    logger.info()
     
     # Try to import the secret manager
     try:
@@ -81,13 +84,13 @@ def check_firebase_secrets():
         # Initialize the secret manager
         secret_manager = SecretManager(project_id="olorin-ai")
         
-        print("✅ Firebase Secret Manager initialized successfully")
-        print(f"📁 Project ID: olorin-ai")
-        print()
+        logger.info("✅ Firebase Secret Manager initialized successfully")
+        logger.info(f"📁 Project ID: olorin-ai")
+        logger.info()
         
     except Exception as e:
-        print(f"❌ Failed to initialize Firebase Secret Manager: {e}")
-        print("   This might be why secrets are not loading.")
+        logger.error(f"❌ Failed to initialize Firebase Secret Manager: {e}")
+        logger.info("   This might be why secrets are not loading.")
         return
     
     # List of all secrets the app tries to load
@@ -112,8 +115,8 @@ def check_firebase_secrets():
         'APP_SECRET',
     ]
     
-    print("🔍 Checking secret availability:")
-    print("-" * 40)
+    logger.info("🔍 Checking secret availability:")
+    logger.info("-" * 40)
     
     found_secrets = []
     missing_secrets = []
@@ -124,49 +127,49 @@ def check_firebase_secrets():
             value = secret_manager.get_secret(secret_name)
             if value:
                 found_secrets.append(secret_name)
-                print(f"✅ {secret_name}: FOUND")
+                logger.info(f"✅ {secret_name}: FOUND")
             else:
                 missing_secrets.append(secret_name)
-                print(f"❌ {secret_name}: NOT FOUND")
+                logger.info(f"❌ {secret_name}: NOT FOUND")
         except Exception as e:
             missing_secrets.append(secret_name)
             error_msg = str(e)
             if "404" in error_msg or "not found" in error_msg.lower():
-                print(f"❌ {secret_name}: NOT FOUND (404)")
+                logger.info(f"❌ {secret_name}: NOT FOUND (404)")
             else:
-                print(f"⚠️  {secret_name}: ERROR - {error_msg[:50]}...")
+                logger.error(f"⚠️  {secret_name}: ERROR - {error_msg[:50]}...")
     
-    print()
-    print("=" * 60)
-    print("SUMMARY")
-    print("=" * 60)
-    print(f"✅ Found secrets: {len(found_secrets)}")
-    print(f"❌ Missing secrets: {len(missing_secrets)}")
-    print()
+    logger.info()
+    logger.info("=" * 60)
+    logger.info("SUMMARY")
+    logger.info("=" * 60)
+    logger.info(f"✅ Found secrets: {len(found_secrets)}")
+    logger.info(f"❌ Missing secrets: {len(missing_secrets)}")
+    logger.info()
     
     if missing_secrets:
-        print("🔴 MISSING SECRETS (These are causing the warnings):")
-        print("-" * 40)
+        logger.warning("🔴 MISSING SECRETS (These are causing the warnings):")
+        logger.info("-" * 40)
         for secret in missing_secrets:
-            print(f"  • {secret}")
-        print()
-        print("💡 To fix these warnings, you need to:")
-        print("   1. Add these secrets to Firebase Secret Manager, OR")
-        print("   2. Set them as environment variables, OR")
-        print("   3. Add them to a .env file")
+            logger.info(f"  • {secret}")
+        logger.info()
+        logger.warning("💡 To fix these warnings, you need to:")
+        logger.info("   1. Add these secrets to Firebase Secret Manager, OR")
+        logger.info("   2. Set them as environment variables, OR")
+        logger.info("   3. Add them to a .env file")
     
     if found_secrets:
-        print()
-        print("🟢 AVAILABLE SECRETS:")
-        print("-" * 40)
+        logger.info()
+        logger.info("🟢 AVAILABLE SECRETS:")
+        logger.info("-" * 40)
         for secret in found_secrets:
-            print(f"  • {secret}")
+            logger.info(f"  • {secret}")
     
     # Check environment variables as fallback
-    print()
-    print("=" * 60)
-    print("ENVIRONMENT VARIABLE FALLBACK CHECK")
-    print("=" * 60)
+    logger.info()
+    logger.info("=" * 60)
+    logger.info("ENVIRONMENT VARIABLE FALLBACK CHECK")
+    logger.info("=" * 60)
     
     env_found = []
     env_missing = []
@@ -174,46 +177,46 @@ def check_firebase_secrets():
     for secret in missing_secrets:
         if os.getenv(secret):
             env_found.append(secret)
-            print(f"✅ {secret}: Set in environment")
+            logger.info(f"✅ {secret}: Set in environment")
         else:
             env_missing.append(secret)
-            print(f"❌ {secret}: Not in environment")
+            logger.info(f"❌ {secret}: Not in environment")
     
     if env_found:
-        print()
-        print(f"💡 {len(env_found)} missing secrets have environment variable fallbacks")
+        logger.info()
+        logger.info(f"💡 {len(env_found)} missing secrets have environment variable fallbacks")
     
     if env_missing:
-        print()
-        print("🔴 COMPLETELY MISSING (No Firebase secret, no env var):")
-        print("-" * 40)
+        logger.info()
+        logger.info("🔴 COMPLETELY MISSING (No Firebase secret, no env var):")
+        logger.info("-" * 40)
         for secret in env_missing:
-            print(f"  • {secret}")
+            logger.info(f"  • {secret}")
             
             # Provide specific guidance for critical secrets
             if secret == 'JWT_SECRET_KEY':
-                print(f"    → Generate with: openssl rand -base64 64")
+                logger.info(f"    → Generate with: openssl rand -base64 64")
             elif secret == 'SNOWFLAKE_ACCOUNT':
-                print(f"    → Your Snowflake account identifier")
+                logger.info(f"    → Your Snowflake account identifier")
             elif secret == 'SNOWFLAKE_USER':
-                print(f"    → Your Snowflake username")
+                logger.info(f"    → Your Snowflake username")
             elif secret == 'SNOWFLAKE_PASSWORD':
-                print(f"    → Your Snowflake password")
+                logger.info(f"    → Your Snowflake password")
 
 def check_config_loading():
     """Check how the configuration is loading secrets."""
-    print()
-    print("=" * 60)
-    print("CONFIGURATION LOADING ANALYSIS")
-    print("=" * 60)
+    logger.info()
+    logger.info("=" * 60)
+    logger.info("CONFIGURATION LOADING ANALYSIS")
+    logger.info("=" * 60)
     
     try:
         from app.config.config import Config
         
         config = Config()
         
-        print("📋 Configuration secrets status:")
-        print("-" * 40)
+        logger.info("📋 Configuration secrets status:")
+        logger.info("-" * 40)
         
         # Check which secrets are actually set in config
         secret_attrs = [
@@ -234,21 +237,21 @@ def check_config_loading():
             if hasattr(config, attr):
                 value = getattr(config, attr)
                 if value and value != env_name:  # Has actual value, not just the env var name
-                    print(f"✅ {attr}: Loaded successfully")
+                    logger.info(f"✅ {attr}: Loaded successfully")
                 else:
-                    print(f"❌ {attr}: Not loaded (using placeholder)")
+                    logger.info(f"❌ {attr}: Not loaded (using placeholder)")
             else:
-                print(f"⚠️  {attr}: Not in config")
+                logger.info(f"⚠️  {attr}: Not in config")
                 
     except Exception as e:
-        print(f"❌ Failed to load configuration: {e}")
+        logger.error(f"❌ Failed to load configuration: {e}")
 
 def main():
     """Main function to run all checks."""
-    print("\n" + "=" * 60)
-    print("🔍 OLORIN SECRET CONFIGURATION DIAGNOSTIC")
-    print("=" * 60)
-    print()
+    logger.info("\n" + "=" * 60)
+    logger.info("🔍 OLORIN SECRET CONFIGURATION DIAGNOSTIC")
+    logger.info("=" * 60)
+    logger.info()
     
     # Check Firebase secrets
     check_firebase_secrets()
@@ -256,23 +259,23 @@ def main():
     # Check configuration loading
     check_config_loading()
     
-    print()
-    print("=" * 60)
-    print("📝 RECOMMENDATIONS")
-    print("=" * 60)
-    print()
-    print("1. For local development, create a .env file with missing secrets")
-    print("2. For production, add secrets to Firebase Secret Manager")
-    print("3. Critical secrets that must be set:")
-    print("   - JWT_SECRET_KEY (for authentication)")
-    print("   - Database credentials (if using external DB)")
-    print("   - API keys for external services you're using")
-    print()
-    print("4. Optional secrets (can be omitted if not using the service):")
-    print("   - Snowflake credentials (only if using Snowflake)")
-    print("   - Splunk credentials (only if using Splunk)")
-    print("   - Langfuse keys (only if using Langfuse)")
-    print()
+    logger.info()
+    logger.info("=" * 60)
+    logger.info("📝 RECOMMENDATIONS")
+    logger.info("=" * 60)
+    logger.info()
+    logger.info("1. For local development, create a .env file with missing secrets")
+    logger.info("2. For production, add secrets to Firebase Secret Manager")
+    logger.info("3. Critical secrets that must be set:")
+    logger.info("   - JWT_SECRET_KEY (for authentication)")
+    logger.info("   - Database credentials (if using external DB)")
+    logger.info("   - API keys for external services you're using")
+    logger.info()
+    logger.info("4. Optional secrets (can be omitted if not using the service):")
+    logger.info("   - Snowflake credentials (only if using Snowflake)")
+    logger.info("   - Splunk credentials (only if using Splunk)")
+    logger.info("   - Langfuse keys (only if using Langfuse)")
+    logger.info()
 
 if __name__ == "__main__":
     main()

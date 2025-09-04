@@ -6,6 +6,7 @@ to prevent information disclosure while maintaining proper logging for debugging
 """
 
 import logging
+from app.service.logging import get_bridge_logger
 import traceback
 from typing import Dict, Any, Optional
 from fastapi import Request, Response, HTTPException
@@ -13,7 +14,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 import os
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 class ProductionErrorMiddleware(BaseHTTPMiddleware):
     """

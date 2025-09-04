@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python
 """Run a full autonomous investigation with real Anthropic API calls - FIXED VERSION."""
 
@@ -11,9 +14,9 @@ from typing import Dict, List
 # SECURITY: Get API key from environment variable or Firebase secrets
 API_KEY = os.getenv("ANTHROPIC_API_KEY")
 if not API_KEY:
-    print("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
-    print("For production: Use Firebase secret 'olorin/anthropic_api_key'")
-    print("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
+    logger.error("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
+    logger.info("For production: Use Firebase secret 'olorin/anthropic_api_key'")
+    logger.info("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
     exit(1)
 API_URL = "https://api.anthropic.com/v1/messages"
 
@@ -79,10 +82,10 @@ class AutonomousInvestigator:
     
     def run_investigation(self, entity_id: str) -> Dict:
         """Run a full autonomous investigation."""
-        print(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
-        print(f"Investigation ID: {self.investigation_id}")
-        print(f"Entity: {entity_id}")
-        print("="*60)
+        logger.info(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
+        logger.info(f"Investigation ID: {self.investigation_id}")
+        logger.info(f"Entity: {entity_id}")
+        logger.info("="*60)
         
         # High-risk fraud scenario
         scenario_data = {
@@ -127,18 +130,18 @@ class AutonomousInvestigator:
         all_findings = []\
         
         for agent in agents:
-            print(f"\n📊 Running {agent['name']}...")
-            print("-"*50)
+            logger.info(f"\n📊 Running {agent['name']}...")
+            logger.info("-"*50)
             
             start_time = time.time()
             findings = self.make_api_call(agent['name'], agent['focus'])
             elapsed = time.time() - start_time
             
             if findings["success"]:
-                print(f"✅ {agent['name']} completed in {elapsed:.2f}s")
-                print(f"   Tokens: Input {findings.get('tokens', {}).get('input_tokens', 0)}, Output {findings.get('tokens', {}).get('output_tokens', 0)}")
-                print(f"   Cost: ${findings['cost']:.4f}")
-                print(f"   Analysis preview: {findings['content'][:200]}...")
+                logger.info(f"✅ {agent['name']} completed in {elapsed:.2f}s")
+                logger.info(f"   Tokens: Input {findings.get('tokens', {}).get('input_tokens', 0)}, Output {findings.get('tokens', {}).get('output_tokens', 0)}")
+                logger.info(f"   Cost: ${findings['cost']:.4f}")
+                logger.info(f"   Analysis preview: {findings['content'][:200]}...")
                 
                 results["agent_findings"][agent['name']] = {
                     "analysis": findings["content"],
@@ -160,7 +163,7 @@ class AutonomousInvestigator:
                 time.sleep(1)
                 
             else:
-                print(f"❌ {agent['name']} failed: {findings.get('error')}")
+                logger.info(f"❌ {agent['name']} failed: {findings.get('error')}")
                 results["api_calls_log"].append({
                     "agent": agent['name'],
                     "timestamp": datetime.now().isoformat(),
@@ -170,8 +173,8 @@ class AutonomousInvestigator:
         
         # Final comprehensive analysis
         if all_findings:
-            print(f"\n🎯 Running Final Risk Aggregator...")
-            print("-"*50)
+            logger.info(f"\n🎯 Running Final Risk Aggregator...")
+            logger.info("-"*50)
             
             summary_prompt = f"""
             Comprehensive fraud investigation summary for entity {entity_id}:
@@ -187,7 +190,7 @@ class AutonomousInvestigator:
             if final_analysis["success"]:
                 results["final_assessment"] = final_analysis["content"]
                 results["overall_risk"] = self.extract_risk_score(final_analysis["content"])
-                print(f"✅ Final assessment completed - Risk Score: {results['overall_risk']}/100")
+                logger.info(f"✅ Final assessment completed - Risk Score: {results['overall_risk']}/100")
         
         results["end_time"] = datetime.now().isoformat()
         results["total_api_calls"] = self.api_calls
@@ -217,61 +220,61 @@ class AutonomousInvestigator:
 
 def print_investigation_results(results: Dict):
     """Print comprehensive investigation results."""
-    print("\n" + "="*60)
-    print("📊 AUTONOMOUS INVESTIGATION RESULTS")
-    print("="*60)
+    logger.info("\n" + "="*60)
+    logger.info("📊 AUTONOMOUS INVESTIGATION RESULTS")
+    logger.info("="*60)
     
-    print(f"🔍 Investigation Details:")
-    print(f"   ID: {results['investigation_id']}")
-    print(f"   Entity: {results['entity_id']}")
-    print(f"   Duration: {results['investigation_duration']}")
+    logger.info(f"🔍 Investigation Details:")
+    logger.info(f"   ID: {results['investigation_id']}")
+    logger.info(f"   Entity: {results['entity_id']}")
+    logger.info(f"   Duration: {results['investigation_duration']}")
     
-    print(f"\n🤖 Agent Execution Summary:")
-    print(f"   Total Agents: {len(results['agent_findings'])}")
-    print(f"   Successful Agents: {len([f for f in results['agent_findings'].values()])}")
+    logger.info(f"\n🤖 Agent Execution Summary:")
+    logger.info(f"   Total Agents: {len(results['agent_findings'])}")
+    logger.info(f"   Successful Agents: {len([f for f in results['agent_findings'].values()])}")
     
     for agent_name, findings in results['agent_findings'].items():
-        print(f"\n   📋 {agent_name}:")
-        print(f"      Execution Time: {findings['execution_time']:.2f}s")
-        print(f"      API Cost: ${findings['api_cost']:.4f}")
-        print(f"      Tokens: {findings.get('tokens_used', {}).get('input_tokens', 0)} in, {findings.get('tokens_used', {}).get('output_tokens', 0)} out")
+        logger.info(f"\n   📋 {agent_name}:")
+        logger.info(f"      Execution Time: {findings['execution_time']:.2f}s")
+        logger.info(f"      API Cost: ${findings['api_cost']:.4f}")
+        logger.info(f"      Tokens: {findings.get('tokens_used', {}).get('input_tokens', 0)} in, {findings.get('tokens_used', {}).get('output_tokens', 0)} out")
     
-    print(f"\n💰 Cost Analysis:")
-    print(f"   Total API Calls: {results['total_api_calls']}")
-    print(f"   Total Investigation Cost: ${results['total_cost']:.4f}")
-    print(f"   Average Cost per Agent: ${results['total_cost']/len(results['agent_findings']) if results['agent_findings'] else 0:.4f}")
+    logger.info(f"\n💰 Cost Analysis:")
+    logger.info(f"   Total API Calls: {results['total_api_calls']}")
+    logger.info(f"   Total Investigation Cost: ${results['total_cost']:.4f}")
+    logger.info(f"   Average Cost per Agent: ${results['total_cost']/len(results['agent_findings']) if results['agent_findings'] else 0:.4f}")
     
-    print(f"\n🎯 Risk Assessment:")
-    print(f"   Overall Risk Score: {results.get('overall_risk', 'N/A')}/100")
+    logger.info(f"\n🎯 Risk Assessment:")
+    logger.info(f"   Overall Risk Score: {results.get('overall_risk', 'N/A')}/100")
     
     if results.get('final_assessment'):
-        print(f"\n📝 Final Assessment:")
-        print("-"*50)
-        print(results['final_assessment'][:400] + "...")
+        logger.info(f"\n📝 Final Assessment:")
+        logger.info("-"*50)
+        logger.info(results['final_assessment'][:400] + "...")
     
-    print(f"\n✅ Real API Validation:")
-    print(f"   ✅ All calls made to real Anthropic Claude API")
-    print(f"   ✅ No mock data used anywhere in investigation")
-    print(f"   ✅ Each agent provided unique, contextual analysis")
-    print(f"   ✅ Responses varied based on specific fraud indicators")
-    print(f"   ✅ Investigation cost tracked in real-time")
+    logger.info(f"\n✅ Real API Validation:")
+    logger.info(f"   ✅ All calls made to real Anthropic Claude API")
+    logger.info(f"   ✅ No mock data used anywhere in investigation")
+    logger.info(f"   ✅ Each agent provided unique, contextual analysis")
+    logger.info(f"   ✅ Responses varied based on specific fraud indicators")
+    logger.info(f"   ✅ Investigation cost tracked in real-time")
     
-    print("\n" + "="*60)
-    print("🎆 FULL AUTONOMOUS INVESTIGATION COMPLETE")
-    print("="*60)
+    logger.info("\n" + "="*60)
+    logger.info("🎆 FULL AUTONOMOUS INVESTIGATION COMPLETE")
+    logger.info("="*60)
 
 def main():
     """Run the complete investigation test."""
-    print("🚀 OLORIN AUTONOMOUS INVESTIGATION SYSTEM")
-    print("Real-time fraud detection with Anthropic Claude API")
-    print("="*60)
+    logger.info("🚀 OLORIN AUTONOMOUS INVESTIGATION SYSTEM")
+    logger.info("Real-time fraud detection with Anthropic Claude API")
+    logger.info("="*60)
     
-    print("\n📋 High-Risk Fraud Scenario:")
-    print("   • Impossible travel detected (NY → Moscow in 10 minutes)")
-    print("   • Unknown device and TOR network access")
-    print("   • Large suspicious transaction ($75k)")
-    print("   • Multiple account security changes")
-    print("   • Behavioral anomalies detected")
+    logger.info("\n📋 High-Risk Fraud Scenario:")
+    logger.info("   • Impossible travel detected (NY → Moscow in 10 minutes)")
+    logger.info("   • Unknown device and TOR network access")
+    logger.info("   • Large suspicious transaction ($75k)")
+    logger.info("   • Multiple account security changes")
+    logger.info("   • Behavioral anomalies detected")
     
     # Run investigation
     investigator = AutonomousInvestigator()
@@ -285,14 +288,14 @@ def main():
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     
-    print(f"\n💾 Complete investigation data saved: {output_file}")
+    logger.info(f"\n💾 Complete investigation data saved: {output_file}")
     
-    print(f"\n🔍 VALIDATION SUMMARY:")
-    print(f"   ✅ Real Anthropic Claude Opus API used throughout")
-    print(f"   ✅ Multiple autonomous agents executed successfully") 
-    print(f"   ✅ Contextual fraud analysis with variable responses")
-    print(f"   ✅ No mock data - authentic investigation workflow")
-    print(f"   ✅ Production-ready autonomous investigation system")
+    logger.info(f"\n🔍 VALIDATION SUMMARY:")
+    logger.info(f"   ✅ Real Anthropic Claude Opus API used throughout")
+    logger.info(f"   ✅ Multiple autonomous agents executed successfully") 
+    logger.info(f"   ✅ Contextual fraud analysis with variable responses")
+    logger.info(f"   ✅ No mock data - authentic investigation workflow")
+    logger.info(f"   ✅ Production-ready autonomous investigation system")
     
     return results
 

@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 Unified Autonomous Investigation Test Runner
@@ -75,11 +78,11 @@ class UnifiedAutonomousTestRunner:
     def print_separator(self, title: str = ""):
         """Print a formatted separator."""
         if title:
-            print(f"\n{'='*60}")
-            print(f"  {title}")
-            print(f"{'='*60}")
+            logger.info(f"\n{'='*60}")
+            logger.info(f"  {title}")
+            logger.info(f"{'='*60}")
         else:
-            print(f"{'='*60}")
+            logger.info(f"{'='*60}")
     
     def check_health(self) -> bool:
         """Check if the server is healthy."""

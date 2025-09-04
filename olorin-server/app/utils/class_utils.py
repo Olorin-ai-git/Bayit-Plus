@@ -1,6 +1,7 @@
 import logging
+from app.service.logging import get_bridge_logger
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 def create_instance(global_dict, class_name_str, *args, **kwargs):

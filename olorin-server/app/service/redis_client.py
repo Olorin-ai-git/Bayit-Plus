@@ -5,6 +5,7 @@ Uses redis-py library with proper connection parameters for Redis Cloud.
 
 import os
 import logging
+from app.service.logging import get_bridge_logger
 from typing import Optional
 import redis
 from redis import Redis
@@ -13,7 +14,7 @@ from redis.exceptions import RedisError, ConnectionError
 from app.service.config import SvcSettings
 from app.service.database_config import get_redis_api_key
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RedisCloudClient:

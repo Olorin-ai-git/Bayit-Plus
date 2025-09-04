@@ -1,6 +1,7 @@
 from typing import List
 import uuid
 import logging
+from app.service.logging import get_bridge_logger
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, UploadFile, File, Form, status
 
@@ -146,7 +147,7 @@ async def upload_raw_data_endpoint(
     """
     from app.service.raw_data_service import raw_data_service
     
-    logger = logging.getLogger(__name__)
+    logger = get_bridge_logger(__name__)
     upload_id = str(uuid.uuid4())
     
     try:

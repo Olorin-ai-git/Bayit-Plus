@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """CLI for running the Olorin MCP Server."""
 
 import argparse
@@ -121,23 +124,23 @@ def main():
 
         # Print server info
         info = server.get_server_info()
-        print(f"Starting {info['name']} v{info['version']}", file=sys.stderr)
-        print(f"Description: {info['description']}", file=sys.stderr)
+        logger.info(f"Starting {info['name']} v{info['version']}", file=sys.stderr)
+        logger.info(f"Description: {info['description']}", file=sys.stderr)
         print(
             f"Enabled categories: {', '.join(info['enabled_categories'])}",
             file=sys.stderr,
         )
-        print(f"Transport: {args.transport}", file=sys.stderr)
-        print("", file=sys.stderr)
+        logger.info(f"Transport: {args.transport}", file=sys.stderr)
+        logger.info("", file=sys.stderr)
 
         # Run the server
         asyncio.run(server.run(args.transport))
 
     except KeyboardInterrupt:
-        print("\nShutting down server...", file=sys.stderr)
+        logger.info("\nShutting down server...", file=sys.stderr)
         sys.exit(0)
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        logger.error(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 

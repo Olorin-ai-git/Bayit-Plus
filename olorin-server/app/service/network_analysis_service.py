@@ -13,6 +13,9 @@ from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.network_risk import NetworkRiskLLMAssessment
 from app.models.upi_response import Metadata
 from app.persistence import (
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
     get_investigation,
     update_investigation_llm_thoughts,
 )
@@ -71,7 +74,7 @@ class NetworkAnalysisService:
                 return demo_cache[entity_id]["network"]
 
             auth_header = request.headers.get("authorization")
-            print(f"Authorization header for /network/{entity_id}: {auth_header}")
+            logger.info(f"Authorization header for /network/{entity_id}: {auth_header}")
             splunk_warning = None
             llm_error_details = None
 

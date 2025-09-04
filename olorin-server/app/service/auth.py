@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 
 from fastapi import Depends, Request
 from typing_extensions import Annotated
@@ -6,7 +7,7 @@ from typing_extensions import Annotated
 from .config import LocalSettings, SvcSettings, get_settings
 from .error_handling import AuthorizationError
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 # Routes that are allowed outside of mesh

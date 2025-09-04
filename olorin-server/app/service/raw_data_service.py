@@ -7,6 +7,7 @@ data processing, and integration with the RawDataNode.
 """
 
 import logging
+from app.service.logging import get_bridge_logger
 import uuid
 from typing import Tuple, Optional
 
@@ -21,7 +22,7 @@ from app.models.api_models import (
 )
 from app.persistence import get_investigation, create_investigation
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 
 class RawDataService:

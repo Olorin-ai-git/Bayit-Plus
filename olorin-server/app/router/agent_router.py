@@ -1,4 +1,5 @@
 import logging
+from app.service.logging import get_bridge_logger
 import uuid
 
 from fastapi import APIRouter, Query, Request
@@ -13,7 +14,7 @@ from app.service.error_handling import (
     ClientException,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_bridge_logger(__name__)
 
 router = APIRouter(prefix="/v1")
 

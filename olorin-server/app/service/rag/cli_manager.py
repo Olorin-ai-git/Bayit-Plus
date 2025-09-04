@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 """
 CLI management tool for PostgreSQL + pgvector RAG system.
 Provides commands for migration, maintenance, and administration.
@@ -125,26 +128,26 @@ class RAGCLIManager:
             # Check database connection
             async with self.db_config.session() as session:
                 await session.execute("SELECT 1")
-            print("✅ Database: Connected")
+            logger.info("✅ Database: Connected")
             
             # Check pgvector extension
             result = await self.db_config.execute_raw_query(
                 "SELECT extversion FROM pg_extension WHERE extname = 'vector'"
             )
             if result:
-                print(f"✅ pgvector: Version {result[0]['extversion']}")
+                logger.info(f"✅ pgvector: Version {result[0]['extversion']}")
             else:
-                print("❌ pgvector: Not installed")
+                logger.info("❌ pgvector: Not installed")
             
             # Check embedding service
             providers = self.embedding_service.get_available_providers()
-            print(f"✅ Embedding providers: {', '.join(providers)}")
+            logger.info(f"✅ Embedding providers: {', '.join(providers)}")
             
             # Check data statistics
             stats = await self._get_data_statistics()
-            print("\n📈 Data Statistics:")
+            logger.info("\n📈 Data Statistics:")
             for key, value in stats.items():
-                print(f"   {key}: {value}")
+                logger.info(f"   {key}: {value}")
             
         except Exception as e:
             logger.error(f"Status check failed: {e}")
@@ -198,19 +201,19 @@ class RAGCLIManager:
             
             # Check migration status
             status = await migration_service.check_migration_status()
-            print("📋 Migration Status:")
-            print(f"   SQLite available: {status['sqlite_available']}")
-            print(f"   SQLite path: {status['sqlite_path']}")
-            print(f"   PostgreSQL available: {status['postgres_available']}")
-            print(f"   Migration needed: {status['migration_needed']}")
+            logger.info("📋 Migration Status:")
+            logger.info(f"   SQLite available: {status['sqlite_available']}")
+            logger.info(f"   SQLite path: {status['sqlite_path']}")
+            logger.info(f"   PostgreSQL available: {status['postgres_available']}")
+            logger.info(f"   Migration needed: {status['migration_needed']}")
             
             if status["recommendations"]:
-                print("💡 Recommendations:")
+                logger.info("💡 Recommendations:")
                 for rec in status["recommendations"]:
-                    print(f"   - {rec}")
+                    logger.info(f"   - {rec}")
             
             if not status["migration_needed"]:
-                print("ℹ️  No migration needed")
+                logger.info("ℹ️  No migration needed")
                 return
             
             # Perform migration
@@ -220,36 +223,36 @@ class RAGCLIManager:
                 embedding_provider="openai"
             )
             
-            print("\n📊 Migration Results:")
-            print(f"   Success: {result['success']}")
-            print(f"   Collections created: {result['collections_created']}")
-            print(f"   Documents migrated: {result['documents_migrated']}")
-            print(f"   Chunks migrated: {result['chunks_migrated']}")
-            print(f"   Embeddings generated: {result['embeddings_generated']}")
-            print(f"   Processing time: {result['processing_time_ms']}ms")
+            logger.info("\n📊 Migration Results:")
+            logger.info(f"   Success: {result['success']}")
+            logger.info(f"   Collections created: {result['collections_created']}")
+            logger.info(f"   Documents migrated: {result['documents_migrated']}")
+            logger.info(f"   Chunks migrated: {result['chunks_migrated']}")
+            logger.info(f"   Embeddings generated: {result['embeddings_generated']}")
+            logger.info(f"   Processing time: {result['processing_time_ms']}ms")
             
             if result["errors"]:
-                print("❌ Errors:")
+                logger.error("❌ Errors:")
                 for error in result["errors"]:
-                    print(f"   - {error}")
+                    logger.error(f"   - {error}")
             
             # Validate migration
             if result["success"]:
                 logger.info("🔍 Validating migration...")
                 validation = await migration_service.validate_migration()
                 
-                print("\n✅ Migration Validation:")
-                print(f"   Success: {validation['success']}")
+                logger.info("\n✅ Migration Validation:")
+                logger.info(f"   Success: {validation['success']}")
                 
                 if validation["issues"]:
-                    print("   Issues:")
+                    logger.info("   Issues:")
                     for issue in validation["issues"]:
-                        print(f"     - {issue}")
+                        logger.info(f"     - {issue}")
                 
                 if validation["recommendations"]:
-                    print("   Recommendations:")
+                    logger.info("   Recommendations:")
                     for rec in validation["recommendations"]:
-                        print(f"     - {rec}")
+                        logger.info(f"     - {rec}")
             
         except Exception as e:
             logger.error(f"Migration failed: {e}")
@@ -268,17 +271,17 @@ class RAGCLIManager:
                 embedding_type="openai"
             )
             
-            print(f"\n📋 Search Results ({len(results)} found):")
+            logger.info(f"\n📋 Search Results ({len(results)} found):")
             
             for i, result in enumerate(results, 1):
-                print(f"\n{i}. Document: {result.document_title}")
-                print(f"   Similarity: {result.similarity_score:.3f}")
-                print(f"   Content: {result.content[:200]}...")
+                logger.info(f"\n{i}. Document: {result.document_title}")
+                logger.info(f"   Similarity: {result.similarity_score:.3f}")
+                logger.info(f"   Content: {result.content[:200]}...")
                 if result.keywords:
-                    print(f"   Keywords: {', '.join(result.keywords[:5])}")
+                    logger.info(f"   Keywords: {', '.join(result.keywords[:5])}")
             
             if not results:
-                print("   No results found. Make sure documents are ingested and have embeddings.")
+                logger.info("   No results found. Make sure documents are ingested and have embeddings.")
             
         except Exception as e:
             logger.error(f"Search test failed: {e}")
@@ -338,9 +341,9 @@ class RAGCLIManager:
                 )
                 
                 if result.success:
-                    print(f"✅ Added: {doc['title']} ({result.chunk_count} chunks)")
+                    logger.info(f"✅ Added: {doc['title']} ({result.chunk_count} chunks)")
                 else:
-                    print(f"❌ Failed to add: {doc['title']} - {result.error_message}")
+                    logger.error(f"❌ Failed to add: {doc['title']} - {result.error_message}")
             
             logger.info("✅ Sample documents added successfully")
             

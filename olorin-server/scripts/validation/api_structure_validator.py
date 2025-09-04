@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python3
 """
 API Structure Validator
@@ -267,39 +270,39 @@ async def main():
     """Main execution function"""
     validator = APIStructureValidator()
     
-    print("🚀 API Structure Validation Starting...")
-    print("=" * 80)
+    logger.info("🚀 API Structure Validation Starting...")
+    logger.info("=" * 80)
     
     try:
         results = await validator.validate_api_structure()
         
         # Print summary
         summary = results["validation_summary"]
-        print(f"\n📊 VALIDATION SUMMARY")
-        print("-" * 40)
-        print(f"Overall Status: {summary['overall_status']}")
-        print(f"Server Available: {summary['server_available']}")
-        print(f"API Spec Available: {summary['api_spec_available']}")
-        print(f"Agent Endpoints: {summary['agent_endpoints_reachable']}")
-        print(f"WebSocket Support: {summary['websocket_support']}")
-        print(f"Total Endpoints: {summary['total_endpoints_discovered']}")
-        print(f"Agent Endpoints: {summary['agent_specific_endpoints']}")
-        print(f"API Framework: {summary['api_framework']}")
+        logger.info(f"\n📊 VALIDATION SUMMARY")
+        logger.info("-" * 40)
+        logger.info(f"Overall Status: {summary['overall_status']}")
+        logger.info(f"Server Available: {summary['server_available']}")
+        logger.info(f"API Spec Available: {summary['api_spec_available']}")
+        logger.info(f"Agent Endpoints: {summary['agent_endpoints_reachable']}")
+        logger.info(f"WebSocket Support: {summary['websocket_support']}")
+        logger.info(f"Total Endpoints: {summary['total_endpoints_discovered']}")
+        logger.info(f"Agent Endpoints: {summary['agent_specific_endpoints']}")
+        logger.info(f"API Framework: {summary['api_framework']}")
         
         # Print agent endpoints details
         if results["openapi_spec"].get("status") == "available":
-            print(f"\n🤖 AGENT ENDPOINTS DISCOVERED")
-            print("-" * 40)
+            logger.info(f"\n🤖 AGENT ENDPOINTS DISCOVERED")
+            logger.info("-" * 40)
             for endpoint in results["openapi_spec"]["agent_endpoints"]:
-                print(f"  • {endpoint}")
+                logger.info(f"  • {endpoint}")
         
         # Print endpoint test results
         if results["agent_endpoints"].get("results"):
-            print(f"\n🔍 ENDPOINT TEST RESULTS")
-            print("-" * 40)
+            logger.info(f"\n🔍 ENDPOINT TEST RESULTS")
+            logger.info("-" * 40)
             for result in results["agent_endpoints"]["results"]:
                 status_icon = "✅" if result["status"] == "reachable" else "⚠️" if result["status"] == "service_error" else "❌"
-                print(f"  {status_icon} {result['endpoint']} [{result['status_code']}] - {result['description']}")
+                logger.info(f"  {status_icon} {result['endpoint']} [{result['status_code']}] - {result['description']}")
         
         # Save detailed results
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -308,24 +311,24 @@ async def main():
         with open(filename, 'w') as f:
             json.dump(results, f, indent=2)
         
-        print(f"\n💾 Detailed results saved to: {filename}")
+        logger.info(f"\n💾 Detailed results saved to: {filename}")
         
         # Final assessment
         if summary["overall_status"] == "healthy":
-            print(f"\n✅ API STRUCTURE VALIDATION PASSED")
-            print("   - All core endpoints are reachable")
-            print("   - API specification is available")
-            print("   - Agent workflow endpoints confirmed")
+            logger.info(f"\n✅ API STRUCTURE VALIDATION PASSED")
+            logger.info("   - All core endpoints are reachable")
+            logger.info("   - API specification is available")
+            logger.info("   - Agent workflow endpoints confirmed")
         else:
-            print(f"\n⚠️ API STRUCTURE VALIDATION COMPLETED WITH ISSUES")
-            print("   - Some services may need configuration")
-            print("   - Check endpoint details above for specific issues")
+            logger.info(f"\n⚠️ API STRUCTURE VALIDATION COMPLETED WITH ISSUES")
+            logger.info("   - Some services may need configuration")
+            logger.info("   - Check endpoint details above for specific issues")
         
     except Exception as e:
-        print(f"\n❌ VALIDATION FAILED: {str(e)}")
+        logger.error(f"\n❌ VALIDATION FAILED: {str(e)}")
         return 1
     
-    print("\n" + "=" * 80)
+    logger.info("\n" + "=" * 80)
     return 0
 
 if __name__ == "__main__":

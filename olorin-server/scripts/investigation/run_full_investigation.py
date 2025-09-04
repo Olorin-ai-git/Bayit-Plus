@@ -1,3 +1,6 @@
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 #!/usr/bin/env python
 """Run a full autonomous investigation with real Anthropic API calls."""
 
@@ -11,9 +14,9 @@ from typing import Dict, List, Any
 # SECURITY: Get API key from environment variable or Firebase secrets
 API_KEY = os.getenv("ANTHROPIC_API_KEY")
 if not API_KEY:
-    print("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
-    print("For production: Use Firebase secret 'olorin/anthropic_api_key'")
-    print("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
+    logger.error("❌ ERROR: ANTHROPIC_API_KEY environment variable not set")
+    logger.info("For production: Use Firebase secret 'olorin/anthropic_api_key'")
+    logger.info("For testing: Set environment variable: export ANTHROPIC_API_KEY='your-key'")
     exit(1)
 API_URL = "https://api.anthropic.com/v1/messages"
 
@@ -76,10 +79,10 @@ class AutonomousInvestigator:
     
     def run_investigation(self, entity_id: str, scenario: Dict) -> Dict:
         """Run a full autonomous investigation."""
-        print(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
-        print(f"Investigation ID: {self.investigation_id}")
-        print(f"Entity: {entity_id}")
-        print("="*60)
+        logger.info(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
+        logger.info(f"Investigation ID: {self.investigation_id}")
+        logger.info(f"Entity: {entity_id}")
+        logger.info("="*60)
         
         # Create investigation context
         context = {
@@ -111,17 +114,17 @@ class AutonomousInvestigator:
         all_findings = []
         
         for agent_name, agent_func in agents:
-            print(f"\n📊 Running {agent_name}...")
-            print("-"*50)
+            logger.info(f"\n📊 Running {agent_name}...")
+            logger.info("-"*50)
             
             start_time = time.time()
             findings = agent_func(context)
             elapsed = time.time() - start_time
             
             if findings["success"]:
-                print(f"✅ {agent_name} completed in {elapsed:.2f}s")
-                print(f"   Cost: ${findings['cost']:.4f}")
-                print(f"   Finding preview: {findings['content'][:150]}...")
+                logger.info(f"✅ {agent_name} completed in {elapsed:.2f}s")
+                logger.info(f"   Cost: ${findings['cost']:.4f}")
+                logger.info(f"   Finding preview: {findings['content'][:150]}...")
                 
                 results["agent_findings"][agent_name] = {
                     "analysis": findings["content"],
@@ -130,10 +133,10 @@ class AutonomousInvestigator:
                 }
                 all_findings.append(findings["content"])
             else:
-                print(f"❌ {agent_name} failed: {findings.get('error')}")
+                logger.error(f"❌ {agent_name} failed: {findings.get('error')}")
         
         # Final risk assessment
-        print(f"\n🎯 Final Risk Assessment...")
+        logger.info(f"\n🎯 Final Risk Assessment...")
         final_assessment = self.final_risk_assessment(all_findings)
         
         if final_assessment["success"]:
@@ -275,46 +278,46 @@ def create_test_scenario() -> Dict:
 
 def print_investigation_summary(results: Dict):
     """Print formatted investigation summary."""
-    print("\n" + "="*60)
-    print("📊 INVESTIGATION SUMMARY")
-    print("="*60)
+    logger.info("\n" + "="*60)
+    logger.info("📊 INVESTIGATION SUMMARY")
+    logger.info("="*60)
     
-    print(f"Investigation ID: {results['investigation_id']}")
-    print(f"Entity ID: {results['entity_id']}")
-    print(f"Start Time: {results['start_time']}")
-    print(f"End Time: {results['end_time']}")
+    logger.info(f"Investigation ID: {results['investigation_id']}")
+    logger.info(f"Entity ID: {results['entity_id']}")
+    logger.info(f"Start Time: {results['start_time']}")
+    logger.info(f"End Time: {results['end_time']}")
     
-    print(f"\n🤖 Autonomous Agents Executed: {len(results['agent_findings'])}")
+    logger.info(f"\n🤖 Autonomous Agents Executed: {len(results['agent_findings'])}")
     for agent, findings in results['agent_findings'].items():
-        print(f"  ✅ {agent}")
-        print(f"     Execution Time: {findings['execution_time']:.2f}s")
-        print(f"     API Cost: ${findings['api_cost']:.4f}")
+        logger.info(f"  ✅ {agent}")
+        logger.info(f"     Execution Time: {findings['execution_time']:.2f}s")
+        logger.info(f"     API Cost: ${findings['api_cost']:.4f}")
     
-    print(f"\n💰 API Usage:")
-    print(f"  Total API Calls: {results['total_api_calls']}")
-    print(f"  Total Cost: ${results['total_cost']:.4f}")
+    logger.info(f"\n💰 API Usage:")
+    logger.info(f"  Total API Calls: {results['total_api_calls']}")
+    logger.info(f"  Total Cost: ${results['total_cost']:.4f}")
     
-    print(f"\n🎯 Risk Assessment:")
-    print(f"  Overall Risk Score: {results.get('overall_risk', 'N/A')}/100")
+    logger.info(f"\n🎯 Risk Assessment:")
+    logger.info(f"  Overall Risk Score: {results.get('overall_risk', 'N/A')}/100")
     
     if results.get('final_assessment'):
-        print(f"\n📝 Final Assessment Preview:")
-        print("-"*50)
-        print(results['final_assessment'][:300] + "...")
+        logger.info(f"\n📝 Final Assessment Preview:")
+        logger.info("-"*50)
+        logger.info(results['final_assessment'][:300] + "...")
     
-    print(f"\n✅ Validation:")
-    print(f"  Real API Used: {results['real_api_used']}")
-    print(f"  Mock Data: {results['mock_data']}")
+    logger.info(f"\n✅ Validation:")
+    logger.info(f"  Real API Used: {results['real_api_used']}")
+    logger.info(f"  Mock Data: {results['mock_data']}")
     
-    print("\n" + "="*60)
-    print("🎆 FULL INVESTIGATION COMPLETE")
-    print("="*60)
+    logger.info("\n" + "="*60)
+    logger.info("🎆 FULL INVESTIGATION COMPLETE")
+    logger.info("="*60)
 
 def main():
     """Run full investigation test."""
-    print("🚀 OLORIN FULL AUTONOMOUS INVESTIGATION TEST")
-    print("Testing complete investigation workflow with REAL Anthropic API")
-    print("="*60)
+    logger.info("🚀 OLORIN FULL AUTONOMOUS INVESTIGATION TEST")
+    logger.info("Testing complete investigation workflow with REAL Anthropic API")
+    logger.info("="*60)
     
     # Create investigator
     investigator = AutonomousInvestigator()
@@ -322,10 +325,10 @@ def main():
     # Create test scenario
     scenario = create_test_scenario()
     
-    print("\n📋 Test Scenario:")
-    print(f"  High-risk fraud indicators present")
-    print(f"  Impossible travel detected")
-    print(f"  Multiple suspicious activities")
+    logger.info("\n📋 Test Scenario:")
+    logger.info(f"  High-risk fraud indicators present")
+    logger.info(f"  Impossible travel detected")
+    logger.info(f"  Multiple suspicious activities")
     
     # Run investigation
     results = investigator.run_investigation("user_suspect_001", scenario)
@@ -338,14 +341,14 @@ def main():
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     
-    print(f"\n💾 Full results saved to: {output_file}")
+    logger.info(f"\n💾 Full results saved to: {output_file}")
     
-    print("\n🎯 KEY VALIDATION POINTS:")
-    print("  1. All agents used REAL Anthropic Claude API")
-    print("  2. Each agent made independent API calls")
-    print("  3. Responses show contextual analysis")
-    print("  4. No mock data or predetermined outcomes")
-    print("  5. Total investigation cost tracked")
+    logger.info("\n🎯 KEY VALIDATION POINTS:")
+    logger.info("  1. All agents used REAL Anthropic Claude API")
+    logger.info("  2. Each agent made independent API calls")
+    logger.info("  3. Responses show contextual analysis")
+    logger.info("  4. No mock data or predetermined outcomes")
+    logger.info("  5. Total investigation cost tracked")
     
     return results
 
