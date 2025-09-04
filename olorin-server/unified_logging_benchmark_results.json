@@ -1,0 +1,44 @@
+{
+  "latency": {
+    "standard_avg_ms": 0.009814479039050639,
+    "standard_p95_ms": 0.010499963536858559,
+    "standard_max_ms": 0.17933303024619818,
+    "json_avg_ms": 0.01709747628774494,
+    "json_p95_ms": 0.016874982975423336,
+    "json_max_ms": 2.173124928958714,
+    "structured_avg_ms": 0.007304986473172903,
+    "structured_p95_ms": 0.00829098280519247,
+    "structured_max_ms": 0.5075839580968022
+  },
+  "throughput": {
+    "standard_logs_per_second": 91621.72721298537,
+    "structured_logs_per_second": 148863.24297467284
+  },
+  "memory": {
+    "base_overhead_mb": 0.0,
+    "hundred_loggers_mb": 0.05078125,
+    "per_logger_kb": 0.52,
+    "under_load_increase_mb": 0.0
+  },
+  "concurrency": {
+    "1_threads_logs_per_second": 92702.3845738604,
+    "1_threads_avg_thread_time": 0.01042745797894895,
+    "5_threads_logs_per_second": 54370.08652789825,
+    "5_threads_avg_thread_time": 0.08299695018213242,
+    "10_threads_logs_per_second": 45803.48472579191,
+    "10_threads_avg_thread_time": 0.20588383758440615,
+    "20_threads_logs_per_second": 45105.68547235583,
+    "20_threads_avg_thread_time": 0.43374301881412974
+  },
+  "format_switching": {
+    "avg_switch_time_ms": 1.1638641566969454,
+    "max_switch_time_ms": 1.3715409440919757,
+    "total_switches_per_second": 358.5869172385037
+  },
+  "system_health": {
+    "memory_growth_mb": 0.0,
+    "memory_leak_detected": false,
+    "latency_consistency_cv": 0.4151616438097418,
+    "performance_consistent": true
+  }
+}

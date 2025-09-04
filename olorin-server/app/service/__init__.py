@@ -62,7 +62,20 @@ async def inject_transaction_id(request: Request, call_next: Callable) -> Respon
 
 
 def configure_logger(app):
-    """Configure application logging with proper formatting and levels."""
+    """Configure application logging with unified logging integration."""
+    # Use unified logging bridge for enhanced functionality
+    # while maintaining backward compatibility
+    try:
+        from .logging.integration_bridge import bridge_configure_logger
+        bridge_configure_logger(app)
+    except Exception as e:
+        # Fallback to legacy logging configuration if bridge fails
+        logger.warning(f"Unified logging bridge failed, using legacy configuration: {e}")
+        _legacy_configure_logger(app)
+
+
+def _legacy_configure_logger(app):
+    """Legacy logging configuration as fallback."""
     handler = logging.StreamHandler()
     formatter = RequestFormatter(
         "[%(asctime)s] %(levelname)s [%(context)s] module=%(module)s: %(message)s",
