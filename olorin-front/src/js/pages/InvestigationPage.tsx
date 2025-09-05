@@ -41,8 +41,8 @@ import {
 } from '../utils/investigationDataUtils';
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
-import EnhancedAutonomousInvestigationPanel from '../components/EnhancedAutonomousInvestigationPanel';
-import RAGEnhancedAutonomousInvestigationPanel from '../components/RAGEnhancedAutonomousInvestigationPanel';
+import { CombinedAutonomousInvestigationDisplay } from '../../components/autonomous/display/CombinedAutonomousInvestigationDisplay';
+import { AgentNodeData, ConnectionData, InvestigationFlowData, TerminalLogEntry } from '../../types/AutonomousDisplayTypes';
 import {
   Box,
   Typography,
@@ -1643,7 +1643,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
+            overflow: autonomousMode ? 'auto' : 'hidden', // Allow scrolling in autonomous mode
             p: 2, // Add padding inside the main content
           }}
         >
@@ -1670,68 +1670,79 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             setAutonomousMode={setAutonomousMode}
           />
 
-          {/* RAG-Enhanced Autonomous Investigation Panel */}
+          {/* Combined Autonomous Investigation Display */}
           {autonomousMode ? (
-            <div className="space-y-4">
-              {/* Original Enhanced Panel for backward compatibility */}
-              <EnhancedAutonomousInvestigationPanel
-                autonomousMode={autonomousMode}
-                stepStates={stepStates}
-                userId={userId}
-                selectedInputType={selectedInputType}
-                investigationId={investigationId || ''}
-                isLoading={isLoading}
-                timeRange={timeRange}
-                selectedInvestigationSteps={selectedInvestigationSteps}
-                investigationIdState={investigationIdState}
-                investigationStartTime={investigationStartTime}
-                addLog={addLog}
-                closeInvestigation={closeInvestigation}
-                setIsInvestigationClosed={setIsInvestigationClosed}
-                setInvestigationEndTime={setInvestigationEndTime}
-                setStepStates={setStepStates}
-              />
-              
-              {/* RAG Enhancement Overlay */}
-              <RAGEnhancedAutonomousInvestigationPanel
-                entityId={userId}
-                entityType={selectedInputType === 'userId' ? 'user_id' : 'device_id'}
-                investigationId={investigationIdState}
-                isInvestigating={isLoading}
-                onLog={(logEntry) => {
-                  if (logEntry && logEntry.message) {
-                    addLog(logEntry.message, logEntry.type);
-                  }
-                }}
-                closeInvestigation={closeInvestigation}
-                onInvestigationComplete={() => {
-                  addLog('RAG-enhanced investigation completed successfully', 'success' as any);
-                  setIsInvestigationClosed(true);
-                  setInvestigationEndTime(new Date());
-                }}
-                onInvestigationStart={() => {
-                  addLog('Starting RAG-enhanced autonomous investigation...', 'info' as any);
-                }}
-              />
-            </div>
-          ) : (
-            <EnhancedAutonomousInvestigationPanel
-              autonomousMode={autonomousMode}
-              stepStates={stepStates}
-              userId={userId}
-              selectedInputType={selectedInputType}
-              investigationId={investigationId || ''}
-              isLoading={isLoading}
-              timeRange={timeRange}
-              selectedInvestigationSteps={selectedInvestigationSteps}
-              investigationIdState={investigationIdState}
-              investigationStartTime={investigationStartTime}
-              addLog={addLog}
-              closeInvestigation={closeInvestigation}
-              setIsInvestigationClosed={setIsInvestigationClosed}
-              setInvestigationEndTime={setInvestigationEndTime}
-              setStepStates={setStepStates}
+            <CombinedAutonomousInvestigationDisplay
+              investigationId={investigationIdState}
+              isActive={isLoading}
+              agents={stepStates.map((step, index): AgentNodeData => ({
+                id: step.id,
+                name: step.agent || step.title || step.id,
+                status: step.status === StepStatus.COMPLETED ? 'completed' : 
+                       step.status === StepStatus.IN_PROGRESS ? 'active' : 
+                       step.status === StepStatus.FAILED ? 'error' : 'idle',
+                position: { x: 100 + (index % 3) * 200, y: 100 + Math.floor(index / 3) * 150 },
+                type: step.id === InvestigationStepId.INIT ? 'orchestrator' :
+                      step.id === InvestigationStepId.NETWORK ? 'network' :
+                      step.id === InvestigationStepId.LOCATION ? 'location' :
+                      step.id === InvestigationStepId.DEVICE ? 'device' :
+                      step.id === InvestigationStepId.LOG ? 'logs' :
+                      step.id === InvestigationStepId.RISK ? 'risk' : 'network'
+              }))}
+              connections={stepStates.slice(0, -1).map((_, index): ConnectionData => ({
+                id: `connection-${index}`,
+                fromNodeId: stepStates[index]?.id || '',
+                toNodeId: stepStates[index + 1]?.id || '',
+                status: stepStates[index]?.status === StepStatus.COMPLETED ? 'active' : 'idle',
+                dataFlow: stepStates[index]?.status === StepStatus.COMPLETED
+              }))}
+              investigationFlow={{
+                nodes: stepStates.map((step, index) => ({
+                  id: step.id,
+                  name: step.title || step.id,
+                  type: step.id === InvestigationStepId.INIT ? 'start' :
+                        step.id === InvestigationStepId.RISK ? 'result' : 'agent',
+                  position: { x: 100 + (index % 4) * 180, y: 100 + Math.floor(index / 4) * 120 },
+                  status: step.status === StepStatus.COMPLETED ? 'completed' : 
+                         step.status === StepStatus.IN_PROGRESS ? 'active' : 
+                         step.status === StepStatus.FAILED ? 'error' : 'idle',
+                  phase: step.title || step.id
+                })),
+                edges: stepStates.slice(0, -1).map((_, index) => ({
+                  id: `edge-${index}`,
+                  fromNodeId: stepStates[index]?.id || '',
+                  toNodeId: stepStates[index + 1]?.id || '',
+                  status: stepStates[index]?.status === StepStatus.COMPLETED ? 'completed' : 
+                         stepStates[index]?.status === StepStatus.IN_PROGRESS ? 'active' : 'idle',
+                  progress: stepStates[index]?.status === StepStatus.COMPLETED ? 1.0 : 
+                           stepStates[index]?.status === StepStatus.IN_PROGRESS ? 0.5 : 0.0
+                })),
+                currentPhase: stepStates.find(s => s.status === StepStatus.IN_PROGRESS)?.title || 'Idle',
+                progress: stepStates.length > 0 ? 
+                  stepStates.filter(s => s.status === StepStatus.COMPLETED).length / stepStates.length : 0
+              }}
+              logs={logs.map((log): TerminalLogEntry => ({
+                id: log.id,
+                timestamp: log.timestamp.toString(),
+                message: log.message,
+                type: log.type === LogLevel.ERROR ? 'error' : 
+                      log.type === LogLevel.WARNING ? 'warning' : 
+                      log.type === LogLevel.SUCCESS ? 'success' : 'info',
+                agent: log.message.includes('Agent:') ? 
+                       log.message.split(' Agent:')[0] : 'System'
+              }))}
+              onComponentInteraction={(component: string, data: any) => {
+                console.log(`Interaction with ${component}:`, data);
+                // Handle component interactions here
+                if (component === 'neural-network' && data.nodeId) {
+                  addLog(`Selected agent: ${data.nodeId}`, LogLevel.INFO);
+                }
+              }}
+              className="w-full flex-1 min-h-0 overflow-auto"
             />
+          ) : (
+            /* Manual Investigation Mode uses the dedicated ManualInvestigationPanel below */
+            <div />
           )}
 
           {/* Error and warning banners */}

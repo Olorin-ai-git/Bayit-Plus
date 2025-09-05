@@ -83,7 +83,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
   }, [onComponentInteraction]);
 
   return (
-    <div className={`combined-autonomous-display ${className}`}>
+    <div className={`combined-autonomous-display min-h-full w-full overflow-auto ${className}`}>
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-blue-400 mb-2 drop-shadow-lg">
@@ -101,7 +101,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
       </div>
 
       {/* Main Display Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 flex-1 min-h-0">
         {/* Neural Network Flow Panel */}
         <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-green-500 rounded-2xl overflow-hidden shadow-2xl">
           <div className="bg-gradient-to-r from-green-500 to-blue-500 px-6 py-4 border-b border-gray-700">
@@ -127,7 +127,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
               </div>
             </div>
           </div>
-          <div className="p-6 h-96">
+          <div className="p-6 h-80 md:h-96">
             <NeuralNetworkFlow
               agents={agents}
               connections={connections}
@@ -159,7 +159,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
               </div>
             </div>
           </div>
-          <div className="p-6 h-96">
+          <div className="p-6 h-80 md:h-96">
             <InteractiveInvestigationGraph
               investigationFlow={investigationFlow}
               onGraphInteraction={handleGraphInteraction}
@@ -198,7 +198,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
             maxLines={20}
             autoScroll={true}
             onTerminalCommand={handleTerminalCommand}
-            className="h-80"
+            className="h-64 md:h-80"
           />
         </div>
       </div>
