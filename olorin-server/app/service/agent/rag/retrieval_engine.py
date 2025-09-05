@@ -180,7 +180,7 @@ class RetrievalEngine:
         self.synonym_dict = self._initialize_synonym_dict()
         self.domain_terms_dict = self._initialize_domain_terms()
         
-        self.logger = logging.getLogger(f"{__name__}.retrieval_engine")
+        self.logger = get_bridge_logger(f"{__name__}.retrieval_engine")
         self.logger.info("Enhanced retrieval engine initialized")
     
     async def search(

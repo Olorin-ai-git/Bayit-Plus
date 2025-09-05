@@ -21,7 +21,7 @@ import React, {
   useImperativeHandle,
   RefObject
 } from 'react';
-import { InvestigationType, InvestigationResult } from '../types/Investigation';
+import { InvestigationType, InvestigationResult, AgentResult } from '../types/Investigation';
 import { 
   useOptimizedCallback, 
   useOptimizedMemo, 
@@ -46,13 +46,7 @@ interface Investigation extends InvestigationResult {
   metadata?: Record<string, any>;
 }
 
-interface AgentResult {
-  agentName: string;
-  status: string;
-  executionTime: number;
-  result: any;
-  riskFactors: string[];
-}
+// AgentResult is now imported from types
 
 interface DashboardProps {
   userId?: string;

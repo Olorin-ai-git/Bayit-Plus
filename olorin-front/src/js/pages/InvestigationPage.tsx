@@ -18,6 +18,7 @@ import {
 import { InvestigationStepId, StepStatus } from '../constants/definitions';
 import { OlorinService } from '../services/OlorinService';
 import AgentLogSidebar from '../components/AgentLogSidebar';
+import RAGEnhancedAgentLogSidebar from '../components/RAGEnhancedAgentLogSidebar';
 import EditStepsModal from '../components/EditStepsModal';
 import ToolsSidebar from '../components/ToolsSidebar';
 import { updateStepStatus } from '../utils/investigation';
@@ -41,6 +42,7 @@ import {
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
 import EnhancedAutonomousInvestigationPanel from '../components/EnhancedAutonomousInvestigationPanel';
+import RAGEnhancedAutonomousInvestigationPanel from '../components/RAGEnhancedAutonomousInvestigationPanel';
 import {
   Box,
   Typography,
@@ -232,7 +234,7 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const [selectedInputType, setSelectedInputType] = useState<
     'userId' | 'deviceId'
   >('userId');
-  const [autonomousMode, setAutonomousMode] = useState(false);
+  const [autonomousMode, setAutonomousMode] = useState(true);
   const timeRangeRef = useRef(timeRange);
   useEffect(() => {
     timeRangeRef.current = timeRange;
@@ -1668,24 +1670,69 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             setAutonomousMode={setAutonomousMode}
           />
 
-          {/* Enhanced Autonomous Investigation Panel */}
-          <EnhancedAutonomousInvestigationPanel
-            autonomousMode={autonomousMode}
-            stepStates={stepStates}
-            userId={userId}
-            selectedInputType={selectedInputType}
-            investigationId={investigationId || ''}
-            isLoading={isLoading}
-            timeRange={timeRange}
-            selectedInvestigationSteps={selectedInvestigationSteps}
-            investigationIdState={investigationIdState}
-            investigationStartTime={investigationStartTime}
-            addLog={addLog}
-            closeInvestigation={closeInvestigation}
-            setIsInvestigationClosed={setIsInvestigationClosed}
-            setInvestigationEndTime={setInvestigationEndTime}
-            setStepStates={setStepStates}
-          />
+          {/* RAG-Enhanced Autonomous Investigation Panel */}
+          {autonomousMode ? (
+            <div className="space-y-4">
+              {/* Original Enhanced Panel for backward compatibility */}
+              <EnhancedAutonomousInvestigationPanel
+                autonomousMode={autonomousMode}
+                stepStates={stepStates}
+                userId={userId}
+                selectedInputType={selectedInputType}
+                investigationId={investigationId || ''}
+                isLoading={isLoading}
+                timeRange={timeRange}
+                selectedInvestigationSteps={selectedInvestigationSteps}
+                investigationIdState={investigationIdState}
+                investigationStartTime={investigationStartTime}
+                addLog={addLog}
+                closeInvestigation={closeInvestigation}
+                setIsInvestigationClosed={setIsInvestigationClosed}
+                setInvestigationEndTime={setInvestigationEndTime}
+                setStepStates={setStepStates}
+              />
+              
+              {/* RAG Enhancement Overlay */}
+              <RAGEnhancedAutonomousInvestigationPanel
+                entityId={userId}
+                entityType={selectedInputType === 'userId' ? 'user_id' : 'device_id'}
+                investigationId={investigationIdState}
+                isInvestigating={isLoading}
+                onLog={(logEntry) => {
+                  if (logEntry && logEntry.message) {
+                    addLog(logEntry.message, logEntry.type);
+                  }
+                }}
+                closeInvestigation={closeInvestigation}
+                onInvestigationComplete={() => {
+                  addLog('RAG-enhanced investigation completed successfully', 'success' as any);
+                  setIsInvestigationClosed(true);
+                  setInvestigationEndTime(new Date());
+                }}
+                onInvestigationStart={() => {
+                  addLog('Starting RAG-enhanced autonomous investigation...', 'info' as any);
+                }}
+              />
+            </div>
+          ) : (
+            <EnhancedAutonomousInvestigationPanel
+              autonomousMode={autonomousMode}
+              stepStates={stepStates}
+              userId={userId}
+              selectedInputType={selectedInputType}
+              investigationId={investigationId || ''}
+              isLoading={isLoading}
+              timeRange={timeRange}
+              selectedInvestigationSteps={selectedInvestigationSteps}
+              investigationIdState={investigationIdState}
+              investigationStartTime={investigationStartTime}
+              addLog={addLog}
+              closeInvestigation={closeInvestigation}
+              setIsInvestigationClosed={setIsInvestigationClosed}
+              setInvestigationEndTime={setInvestigationEndTime}
+              setStepStates={setStepStates}
+            />
+          )}
 
           {/* Error and warning banners */}
           {errorLogs.length > 0 &&
@@ -1782,13 +1829,15 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
             stepEndTimes={stepEndTimes}
           />
         </Box>
-        <AgentLogSidebar
+        <RAGEnhancedAgentLogSidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
           logs={logs}
           onClearLogs={handleClearLogs}
           cancelledRef={cancelledRef}
           onLogDisplayed={handleLogDisplayed}
+          investigationId={investigationIdState}
+          autonomousMode={autonomousMode}
         />
       </Paper>
 

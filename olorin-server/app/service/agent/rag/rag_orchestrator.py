@@ -174,7 +174,7 @@ class RAGOrchestrator:
         self.llm_client = None
         self._initialize_llm_client()
         
-        self.logger = logging.getLogger(f"{__name__}.rag_orchestrator")
+        self.logger = get_bridge_logger(f"{__name__}.rag_orchestrator")
     
     def _initialize_llm_client(self) -> None:
         """Initialize LLM client"""

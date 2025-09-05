@@ -1,5 +1,6 @@
 import { LogLevel } from '../types/RiskAssessment';
 import { isDemoModeActive } from '../hooks/useDemoMode';
+import { RAGEventData, RAGPerformanceData } from '../types/RAGTypes';
 
 export interface AutonomousInvestigationOptions {
   apiBaseUrl?: string;
@@ -44,6 +45,13 @@ export type InvestigationEventHandler = {
   onComplete?: (results: Record<string, any>) => void;
   onCancelled?: () => void;
   onLog?: (message: string, level: LogLevel) => void;
+  // RAG Event Handlers
+  onRAGEvent?: (data: RAGEventData) => void;
+  onRAGPerformanceUpdate?: (data: RAGPerformanceData) => void;
+  onRAGKnowledgeRetrieved?: (data: RAGEventData) => void;
+  onRAGContextAugmented?: (data: RAGEventData) => void;
+  onRAGToolRecommended?: (data: RAGEventData) => void;
+  onRAGResultEnhanced?: (data: RAGEventData) => void;
 };
 
 export class AutonomousInvestigationClient {
@@ -241,6 +249,26 @@ export class AutonomousInvestigationClient {
         break;
       case 'heartbeat':
         // Log heartbeat messages at debug level
+        break;
+      // RAG Event Types
+      case 'rag_knowledge_retrieved':
+        this.handleRAGEvent(data as RAGEventData);
+        this.eventHandlers.onRAGKnowledgeRetrieved?.(data as RAGEventData);
+        break;
+      case 'rag_context_augmented':
+        this.handleRAGEvent(data as RAGEventData);
+        this.eventHandlers.onRAGContextAugmented?.(data as RAGEventData);
+        break;
+      case 'rag_tool_recommended':
+        this.handleRAGEvent(data as RAGEventData);
+        this.eventHandlers.onRAGToolRecommended?.(data as RAGEventData);
+        break;
+      case 'rag_result_enhanced':
+        this.handleRAGEvent(data as RAGEventData);
+        this.eventHandlers.onRAGResultEnhanced?.(data as RAGEventData);
+        break;
+      case 'rag_performance_metrics':
+        this.handleRAGPerformanceUpdate(data as RAGPerformanceData);
         break;
       default:
         // Handle phase progress messages
@@ -467,6 +495,57 @@ export class AutonomousInvestigationClient {
   }
 
   /**
+   * Handle RAG events
+   */
+  private handleRAGEvent(data: RAGEventData): void {
+    const { type, agent_type, data: ragData } = data;
+    
+    this.log(
+      `[RAG-${agent_type.toUpperCase()}] ${type}: ${ragData.operation}`,
+      LogLevel.INFO
+    );
+
+    // Log specific RAG operation details
+    if (ragData.knowledge_sources && ragData.knowledge_sources.length > 0) {
+      this.log(
+        `[RAG-${agent_type.toUpperCase()}] Knowledge sources: ${ragData.knowledge_sources.join(', ')}`,
+        LogLevel.INFO
+      );
+    }
+
+    if (ragData.retrieval_time) {
+      this.log(
+        `[RAG-${agent_type.toUpperCase()}] Retrieval time: ${ragData.retrieval_time}ms`,
+        LogLevel.INFO
+      );
+    }
+
+    if (ragData.confidence_score) {
+      this.log(
+        `[RAG-${agent_type.toUpperCase()}] Confidence: ${(ragData.confidence_score * 100).toFixed(1)}%`,
+        LogLevel.INFO
+      );
+    }
+
+    // Notify general RAG event handler
+    this.eventHandlers.onRAGEvent?.(data);
+  }
+
+  /**
+   * Handle RAG performance metrics updates
+   */
+  private handleRAGPerformanceUpdate(data: RAGPerformanceData): void {
+    const { metrics } = data;
+    
+    this.log(
+      `[RAG-METRICS] Updated: ${metrics.total_queries} queries, ${metrics.avg_retrieval_time.toFixed(0)}ms avg`,
+      LogLevel.INFO
+    );
+
+    this.eventHandlers.onRAGPerformanceUpdate?.(data);
+  }
+
+  /**
    * Log message with optional level
    */
   private log(message: string, level: LogLevel = LogLevel.INFO): void {
@@ -518,5 +597,68 @@ export class AutonomousInvestigationClient {
 
     // Start simulation after a short delay
     setTimeout(simulatePhase, 1000);
+  }
+
+  /**
+   * Simulate RAG events for demo mode
+   */
+  private simulateRAGEvents(phase: string, currentPhaseIndex: number): void {
+    const agentType = phase.replace('_analysis', '_agent');
+    
+    // Simulate knowledge retrieval
+    setTimeout(() => {
+      const ragEvent: RAGEventData = {
+        type: 'rag_knowledge_retrieved',
+        investigation_id: this.investigationId || 'demo-id',
+        agent_type: agentType,
+        timestamp: new Date().toISOString(),
+        data: {
+          operation: 'knowledge_retrieval',
+          knowledge_sources: ['fraud_patterns.md', 'risk_indicators.json'],
+          context_size: 1024,
+          retrieval_time: 150 + Math.random() * 100,
+          confidence_score: 0.8 + Math.random() * 0.15,
+          enhancement_applied: true,
+          knowledge_chunks_used: 3,
+        },
+      };
+      this.handleRAGEvent(ragEvent);
+    }, 500);
+
+    // Simulate context augmentation
+    setTimeout(() => {
+      const ragEvent: RAGEventData = {
+        type: 'rag_context_augmented',
+        investigation_id: this.investigationId || 'demo-id',
+        agent_type: agentType,
+        timestamp: new Date().toISOString(),
+        data: {
+          operation: 'context_augmentation',
+          context_size: 2048,
+          retrieval_time: 75 + Math.random() * 50,
+          confidence_score: 0.85 + Math.random() * 0.1,
+          enhancement_applied: true,
+        },
+      };
+      this.handleRAGEvent(ragEvent);
+    }, 1000);
+
+    // Simulate performance metrics update
+    setTimeout(() => {
+      const performanceData: RAGPerformanceData = {
+        type: 'rag_performance_metrics',
+        investigation_id: this.investigationId || 'demo-id',
+        timestamp: new Date().toISOString(),
+        metrics: {
+          total_queries: currentPhaseIndex + 1,
+          avg_retrieval_time: 180 + Math.random() * 40,
+          knowledge_hit_rate: 0.85 + Math.random() * 0.1,
+          enhancement_success_rate: 0.92 + Math.random() * 0.05,
+          total_knowledge_chunks: (currentPhaseIndex + 1) * 3,
+          active_sources: ['fraud_patterns.md', 'risk_indicators.json', 'network_anomalies.json'],
+        },
+      };
+      this.handleRAGPerformanceUpdate(performanceData);
+    }, 1500);
   }
 }

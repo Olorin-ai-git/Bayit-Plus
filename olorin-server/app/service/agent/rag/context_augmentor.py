@@ -110,7 +110,7 @@ class ContextAugmentor:
         self.context_cache: Dict[str, tuple[KnowledgeContext, datetime]] = {}
         self.cache_ttl_seconds = 300  # 5 minutes
         
-        self.logger = logging.getLogger(f"{__name__}.context_augmentor")
+        self.logger = get_bridge_logger(f"{__name__}.context_augmentor")
         
     async def augment_investigation_context(
         self,

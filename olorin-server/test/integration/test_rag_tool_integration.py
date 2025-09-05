@@ -19,7 +19,7 @@ from app.service.agent.tools.rag_tool_context import (
 from app.service.agent.tools.rag_enhanced_tool_base import RAGEnhancedToolBase
 from app.service.agent.tools.enhanced_tool_base import ToolConfig, ToolResult, ValidationLevel
 from app.service.agent.tools.rag_performance_monitor import RAGToolPerformanceMonitor
-from app.service.agent.tools.rag_tool_integration import (
+from app.service.agent.rag_tool_integration import (
     AgentRAGToolOrchestrator,
     RAGToolFactory
 )

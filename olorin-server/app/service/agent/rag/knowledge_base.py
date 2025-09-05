@@ -252,7 +252,7 @@ class KnowledgeBase:
             'start_time': datetime.now()
         }
         
-        self.logger = logging.getLogger(f"{__name__}.knowledge_base")
+        self.logger = get_bridge_logger(f"{__name__}.knowledge_base")
         
         # Initialize embedding model (placeholder)
         self.embedding_model = None
