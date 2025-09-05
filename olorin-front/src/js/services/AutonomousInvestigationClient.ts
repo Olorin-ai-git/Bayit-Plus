@@ -180,7 +180,9 @@ export class AutonomousInvestigationClient {
       return Promise.resolve();
     }
 
-    const wsUrl = `${this.wsBaseUrl}/ws/${this.investigationId}?parallel=${this.parallel}`;
+    // Get JWT token (in production this should come from auth service)
+    const token = 'your-jwt-token'; // TODO: Get from authentication service
+    const wsUrl = `${this.wsBaseUrl}/ws/${this.investigationId}?token=${token}&parallel=${this.parallel}`;
 
     return new Promise((resolve, reject) => {
       this.ws = new WebSocket(wsUrl);

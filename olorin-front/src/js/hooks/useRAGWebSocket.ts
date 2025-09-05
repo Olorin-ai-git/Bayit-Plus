@@ -43,8 +43,11 @@ export const useRAGWebSocket = ({
     if (!investigationId) return;
 
     try {
-      // WebSocket URL for RAG events
-      const wsUrl = `${process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8090'}/ws/rag/${investigationId}`;
+      // WebSocket URL for RAG events - use production API URL if in production
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? (process.env.REACT_APP_WS_BASE_URL || 'wss://api.olorin.ai')
+        : (process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8090');
+      const wsUrl = `${baseUrl}/ws/rag/${investigationId}`;
       
       wsRef.current = new WebSocket(wsUrl);
 

@@ -209,7 +209,7 @@ export const useWebSocketIntegration = ({
       // Create new client instance
       const client = new AutonomousInvestigationClient({
         apiBaseUrl: '/api',
-        wsBaseUrl: process.env.NODE_ENV === 'production' ? 'wss://localhost:8090' : 'ws://localhost:8090',
+        wsBaseUrl: process.env.NODE_ENV === 'production' ? 'wss://api.olorin.ai' : 'ws://localhost:8090',
         parallel: true,
         retryAttempts: 3,
         retryDelay: 1000

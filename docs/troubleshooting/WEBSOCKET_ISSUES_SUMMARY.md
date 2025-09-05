@@ -16,21 +16,37 @@ wss://olorin-e2e.api.olorin.com/mcp/api/mcp-proxy/health ← This is HTTP, not W
 
 ### MCP Communication (HTTP REST):
 ```
-https://olorin-e2e.api.olorin.com/api/mcp-proxy/health
-https://olorin-e2e.api.olorin.com/api/mcp-proxy/tools
-https://olorin-e2e.api.olorin.com/api/mcp-proxy/status
+# Production
+https://api.olorin.ai/api/mcp-proxy/health
+https://api.olorin.ai/api/mcp-proxy/tools
+https://api.olorin.ai/api/mcp-proxy/status
+
+# Local Development
+http://localhost:8090/api/mcp-proxy/health
+http://localhost:8090/api/mcp-proxy/tools
+http://localhost:8090/api/mcp-proxy/status
 ```
 
 ### Investigation WebSockets:
 ```
-wss://olorin-e2e.api.olorin.com/ws/{investigation_id}?user_id={user}&role={role}
-wss://olorin-e2e.api.olorin.com/ws/enhanced/{investigation_id}?user_id={user}&role={role}
-wss://olorin-e2e.api.olorin.com/ws/test
+# Production
+wss://api.olorin.ai/ws/{investigation_id}?user_id={user}&role={role}
+wss://api.olorin.ai/ws/enhanced/{investigation_id}?user_id={user}&role={role}
+wss://api.olorin.ai/ws/test
+
+# Local Development
+ws://localhost:8090/ws/{investigation_id}?user_id={user}&role={role}
+ws://localhost:8090/ws/enhanced/{investigation_id}?user_id={user}&role={role}
+ws://localhost:8090/ws/test
 ```
 
 ### Admin WebSockets:
 ```
-wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/{client_id}
+# Production
+wss://api.olorin.ai/api/admin/logs/stream/{client_id}
+
+# Local Development
+ws://localhost:8090/api/admin/logs/stream/{client_id}
 ```
 
 ## 🔧 IMMEDIATE FIX
@@ -40,7 +56,11 @@ Change frontend configuration from:
 ```
 To:
 ```javascript
-✅ wsUrl: `wss://olorin-e2e.api.olorin.com/ws/${investigationId}?user_id=${userId}&role=${role}`
+// Production
+✅ wsUrl: `wss://api.olorin.ai/ws/${investigationId}?user_id=${userId}&role=${role}`
+
+// Local Development  
+✅ wsUrl: `ws://localhost:8090/ws/${investigationId}?user_id=${userId}&role=${role}`
 ```
 
 ## 📋 KEY POINTS
@@ -52,10 +72,18 @@ To:
 ## 🛠 VERIFICATION
 Test correct WebSocket:
 ```bash
-wscat -c "wss://olorin-e2e.api.olorin.com/ws/test"
+# Production
+wscat -c "wss://api.olorin.ai/ws/test"
+
+# Local Development
+wscat -c "ws://localhost:8090/ws/test"
 ```
 
 Test correct MCP endpoint:
 ```bash
-curl "https://olorin-e2e.api.olorin.com/api/mcp-proxy/health"
+# Production
+curl "https://api.olorin.ai/api/mcp-proxy/health"
+
+# Local Development
+curl "http://localhost:8090/api/mcp-proxy/health"
 ```

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { jest } from '@jest/globals';
 import { CombinedAutonomousInvestigationDisplay } from '../CombinedAutonomousInvestigationDisplay';
-import { AutonomousInvestigationClient } from '../../../js/services/AutonomousInvestigationClient';
+import { AutonomousInvestigationClient } from '../../../../js/services/AutonomousInvestigationClient';
 import {
   AgentNodeData,
   ConnectionData,
@@ -10,11 +10,11 @@ import {
   TerminalLogEntry,
   GraphNodeData,
   GraphEdgeData
-} from '../../../types/AutonomousDisplayTypes';
+} from '../../../../types/AutonomousDisplayTypes';
 import { performance } from 'perf_hooks';
 
 // Mock the AutonomousInvestigationClient
-jest.mock('../../../js/services/AutonomousInvestigationClient');
+jest.mock('../../../../js/services/AutonomousInvestigationClient');
 
 // Mock WebSocket for performance tests
 class MockWebSocket {
@@ -122,7 +122,7 @@ const generateLargeDataSet = (size: number) => {
 };
 
 describe('Performance Integration Tests', () => {
-  let mockClient: jest.Mocked<AutonomousInvestigationClient>;
+  let mockClient: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -257,7 +257,7 @@ describe('Performance Integration Tests', () => {
 
     it('should handle rapid WebSocket updates without performance degradation', async () => {
       let eventHandlers: any;
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation';
       });
@@ -313,7 +313,7 @@ describe('Performance Integration Tests', () => {
   describe('Memory Management', () => {
     it('should not cause memory leaks with frequent log additions', async () => {
       let eventHandlers: any;
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation';
       });
@@ -377,7 +377,7 @@ describe('Performance Integration Tests', () => {
   describe('Real-time Update Performance', () => {
     it('should maintain 60fps during continuous updates', async () => {
       let eventHandlers: any;
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation';
       });
@@ -432,7 +432,7 @@ describe('Performance Integration Tests', () => {
 
     it('should handle concurrent agent status updates efficiently', async () => {
       let eventHandlers: any;
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation';
       });
@@ -514,7 +514,7 @@ describe('Performance Integration Tests', () => {
 
     it('should recover gracefully from WebSocket disconnections', async () => {
       let eventHandlers: any;
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation';
       });

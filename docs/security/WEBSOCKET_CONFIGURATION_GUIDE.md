@@ -25,7 +25,11 @@ The following WebSocket URL patterns are **INVALID** and will result in 404 erro
 
 #### **Basic Investigation WebSocket:**
 ```
-wss://olorin-e2e.api.olorin.com/ws/{investigation_id}
+# Production
+wss://api.olorin.ai/ws/{investigation_id}
+
+# Local Development  
+ws://localhost:8090/ws/{investigation_id}
 ```
 
 **Parameters (Query String):**
@@ -35,12 +39,20 @@ wss://olorin-e2e.api.olorin.com/ws/{investigation_id}
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/INVESTIGATION_123?user_id=user123&role=investigator&parallel=true`;
+// Production
+const wsUrl = `wss://api.olorin.ai/ws/INVESTIGATION_123?user_id=user123&role=investigator&parallel=true`;
+
+// Local Development
+const wsUrl = `ws://localhost:8090/ws/INVESTIGATION_123?user_id=user123&role=investigator&parallel=true`;
 ```
 
 #### **Enhanced Investigation WebSocket:**
 ```
-wss://olorin-e2e.api.olorin.com/ws/enhanced/{investigation_id}
+# Production
+wss://api.olorin.ai/ws/enhanced/{investigation_id}
+
+# Local Development
+ws://localhost:8090/ws/enhanced/{investigation_id}
 ```
 
 **Parameters (Query String):**
@@ -50,26 +62,42 @@ wss://olorin-e2e.api.olorin.com/ws/enhanced/{investigation_id}
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/enhanced/INVESTIGATION_123?user_id=user123&role=owner&parallel=false`;
+// Production
+const wsUrl = `wss://api.olorin.ai/ws/enhanced/INVESTIGATION_123?user_id=user123&role=owner&parallel=false`;
+
+// Local Development
+const wsUrl = `ws://localhost:8090/ws/enhanced/INVESTIGATION_123?user_id=user123&role=owner&parallel=false`;
 ```
 
 ### **2. Admin Log Streaming WebSocket**
 
 ```
-wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/{client_id}
+# Production
+wss://api.olorin.ai/api/admin/logs/stream/{client_id}
+
+# Local Development
+ws://localhost:8090/api/admin/logs/stream/{client_id}
 ```
 
 **Authentication Required:** Admin-level access with proper authorization headers
 
 **Example:**
 ```javascript
-const wsUrl = `wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/admin_client_123`;
+// Production
+const wsUrl = `wss://api.olorin.ai/api/admin/logs/stream/admin_client_123`;
+
+// Local Development
+const wsUrl = `ws://localhost:8090/api/admin/logs/stream/admin_client_123`;
 ```
 
 ### **3. Test WebSocket**
 
 ```
-wss://olorin-e2e.api.olorin.com/ws/test
+# Production
+wss://api.olorin.ai/ws/test
+
+# Local Development
+ws://localhost:8090/ws/test
 ```
 
 **Purpose:** Basic connectivity testing - connects and immediately closes
@@ -94,7 +122,11 @@ class OlorinWebSocketClient {
     }
 
     connect() {
-        const wsUrl = `wss://olorin-e2e.api.olorin.com/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}&parallel=${this.parallel}`;
+        // Use appropriate URL based on environment
+        const baseUrl = process.env.NODE_ENV === 'production' 
+            ? 'wss://api.olorin.ai' 
+            : 'ws://localhost:8090';
+        const wsUrl = `${baseUrl}/ws/${this.investigationId}?user_id=${this.userId}&role=${this.role}&parallel=${this.parallel}`;
         
         try {
             this.ws = new WebSocket(wsUrl);
@@ -190,7 +222,11 @@ class AdminLogStreamer {
     }
 
     connect() {
-        const wsUrl = `wss://olorin-e2e.api.olorin.com/api/admin/logs/stream/${this.clientId}`;
+        // Use appropriate URL based on environment
+        const baseUrl = process.env.NODE_ENV === 'production' 
+            ? 'wss://api.olorin.ai' 
+            : 'ws://localhost:8090';
+        const wsUrl = `${baseUrl}/api/admin/logs/stream/${this.clientId}`;
         
         this.ws = new WebSocket(wsUrl);
         
@@ -243,19 +279,31 @@ class AdminLogStreamer {
 
 1. **Verify Server Status:**
    ```bash
-   curl -s https://olorin-e2e.api.olorin.com/health
+   # Production
+   curl -s https://api.olorin.ai/health
+   
+   # Local Development
+   curl -s http://localhost:8090/health
    ```
 
 2. **Test WebSocket Connectivity:**
    ```bash
    # Use wscat for testing
-   wscat -c "wss://olorin-e2e.api.olorin.com/ws/test"
+   # Production
+   wscat -c "wss://api.olorin.ai/ws/test"
+   
+   # Local Development
+   wscat -c "ws://localhost:8090/ws/test"
    ```
 
 3. **Check Investigation Endpoint:**
    ```javascript
    // Browser console test
-   const ws = new WebSocket('wss://olorin-e2e.api.olorin.com/ws/TEST_INV?user_id=test&role=observer');
+   // Production
+   const ws = new WebSocket('wss://api.olorin.ai/ws/TEST_INV?user_id=test&role=observer');
+   
+   // Local Development
+   const ws = new WebSocket('ws://localhost:8090/ws/TEST_INV?user_id=test&role=observer');
    ws.onopen = () => console.log('✅ Connected');
    ws.onerror = (e) => console.error('❌ Error:', e);
    ```
@@ -360,9 +408,25 @@ class AdminLogStreamer {
 
 ### **Authentication Requirements**
 
-1. **Investigation WebSockets:** Require valid user authentication
-2. **Admin WebSockets:** Require admin-level permissions
-3. **MCP Endpoints:** Use standard HTTP authentication headers
+**🔐 JWT Token Authentication Required**
+
+All WebSocket connections require JWT authentication tokens passed as query parameters:
+
+```javascript
+// Example with JWT token
+const token = 'your-jwt-token-here';
+const wsUrl = `wss://api.olorin.ai/ws/${investigationId}?token=${token}&user_id=${userId}&role=${role}`;
+```
+
+**Authentication Levels:**
+1. **Investigation WebSockets:** Require valid JWT token with user authentication
+2. **Admin WebSockets:** Require JWT token with admin-level permissions  
+3. **MCP Endpoints:** Use standard HTTP authorization headers
+
+**Token Validation:**
+- Tokens are validated before WebSocket connection is established
+- Invalid tokens result in `WS_1008_POLICY_VIOLATION` close code
+- Tokens must contain valid `sub` (subject) claim
 
 ### **Production Considerations**
 

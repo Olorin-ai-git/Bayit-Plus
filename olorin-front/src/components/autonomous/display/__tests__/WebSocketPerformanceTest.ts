@@ -9,8 +9,8 @@
  * Usage: npm run test:websocket-performance
  */
 
-import { AutonomousInvestigationClient, InvestigationEventHandler } from '../../../js/services/AutonomousInvestigationClient';
-import { LogLevel } from '../../../js/types/RiskAssessment';
+import { AutonomousInvestigationClient, InvestigationEventHandler } from '../../../../js/services/AutonomousInvestigationClient';
+import { LogLevel } from '../../../../js/types/RiskAssessment';
 
 interface PerformanceMetrics {
   connectionTime: number;
@@ -171,23 +171,23 @@ class WebSocketPerformanceTester {
    */
   private createEventHandlers(): InvestigationEventHandler {
     return {
-      onPhaseUpdate: (data) => {
+      onPhaseUpdate: (data: any) => {
         this.recordEvent('phase_update');
         console.log(`📈 Phase: ${data.phase} (${(data.progress * 100).toFixed(1)}%)`);
       },
 
-      onStatusUpdate: (data) => {
+      onStatusUpdate: (data: any) => {
         this.recordEvent('status_update');
         console.log(`🔄 Status: ${data.status}`);
       },
 
-      onError: (data) => {
+      onError: (data: any) => {
         this.recordEvent('error');
         this.metrics.errorCount++;
         console.log(`⚠️  Error: ${data.message} (${data.error_code})`);
       },
 
-      onComplete: (results) => {
+      onComplete: (results: any) => {
         this.recordEvent('complete');
         console.log(`🎉 Investigation completed with ${Object.keys(results).length} results`);
       },
@@ -197,19 +197,19 @@ class WebSocketPerformanceTester {
         console.log(`🛑 Investigation cancelled`);
       },
 
-      onLog: (message, level) => {
+      onLog: (message: any, level: any) => {
         this.recordEvent('log');
         if (level === LogLevel.ERROR) {
           this.metrics.errorCount++;
         }
       },
 
-      onRAGEvent: (data) => {
+      onRAGEvent: (data: any) => {
         this.recordEvent('rag_event');
         console.log(`🧠 RAG Event: ${data.type} for ${data.agent_type}`);
       },
 
-      onRAGPerformanceUpdate: (data) => {
+      onRAGPerformanceUpdate: (data: any) => {
         this.recordEvent('rag_performance');
         console.log(`📊 RAG Performance: ${data.metrics.total_queries} queries, ${data.metrics.avg_retrieval_time.toFixed(0)}ms avg`);
       }

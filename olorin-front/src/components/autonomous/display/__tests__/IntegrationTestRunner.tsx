@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CombinedAutonomousInvestigationDisplay } from '../CombinedAutonomousInvestigationDisplay';
-import { AutonomousInvestigationClient } from '../../../js/services/AutonomousInvestigationClient';
+import { AutonomousInvestigationClient } from '../../../../js/services/AutonomousInvestigationClient';
 import {
   AgentNodeData,
   ConnectionData,
@@ -8,8 +8,8 @@ import {
   TerminalLogEntry,
   GraphNodeData,
   GraphEdgeData
-} from '../../../types/AutonomousDisplayTypes';
-import { LogLevel } from '../../../js/types/RiskAssessment';
+} from '../../../../types/AutonomousDisplayTypes';
+import { LogLevel } from '../../../../js/types/RiskAssessment';
 
 // Test data generators
 const createTestAgents = (): AgentNodeData[] => [

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, act, fireEvent } from '@testing-library/react';
 import { jest } from '@jest/globals';
-import { AutonomousInvestigationClient } from '../../../js/services/AutonomousInvestigationClient';
+import { AutonomousInvestigationClient } from '../../../../js/services/AutonomousInvestigationClient';
 import { CombinedAutonomousInvestigationDisplay } from '../CombinedAutonomousInvestigationDisplay';
 import {
   AgentNodeData,
@@ -10,10 +10,10 @@ import {
   TerminalLogEntry,
   GraphNodeData,
   GraphEdgeData
-} from '../../../types/AutonomousDisplayTypes';
+} from '../../../../types/AutonomousDisplayTypes';
 
 // Mock the WebSocket and AutonomousInvestigationClient
-jest.mock('../../../js/services/AutonomousInvestigationClient');
+jest.mock('../../../../js/services/AutonomousInvestigationClient');
 
 // Mock WebSocket
 class MockWebSocket {
@@ -184,7 +184,7 @@ const mockLogs: TerminalLogEntry[] = [
 ];
 
 describe('WebSocket Integration Tests', () => {
-  let mockClient: jest.Mocked<AutonomousInvestigationClient>;
+  let mockClient: any;
   let mockWebSocket: MockWebSocket;
 
   beforeEach(() => {
@@ -276,7 +276,7 @@ describe('WebSocket Integration Tests', () => {
     let eventHandlers: any;
 
     beforeEach(async () => {
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation-123';
       });
@@ -419,7 +419,7 @@ describe('WebSocket Integration Tests', () => {
     let eventHandlers: any;
 
     beforeEach(async () => {
-      mockClient.startInvestigation.mockImplementation(async (id, type, handlers) => {
+      mockClient.startInvestigation.mockImplementation(async (id: string, type: any, handlers: any) => {
         eventHandlers = handlers;
         return 'test-investigation-123';
       });

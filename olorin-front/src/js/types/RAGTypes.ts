@@ -37,6 +37,13 @@ export interface RAGMetrics {
   total_knowledge_chunks: number;
   active_sources: string[];
   last_operation_time?: number;
+  // Extended metrics for operational components
+  querySuccessRate?: number;
+  averageResponseTime?: number;
+  knowledgeBaseHitRate?: number;
+  activeSources?: number;
+  errorRate?: number;
+  systemLoad?: number;
 }
 
 export interface RAGStatusData {
@@ -126,4 +133,274 @@ export interface UseRAGInsightsReturn {
   addInsight: (insight: Omit<RAGInsight, 'id' | 'timestamp'>) => void;
   clearInsights: () => void;
   getInsightsByAgent: (agent: string) => RAGInsight[];
+}
+
+// Extended Interfaces for Advanced RAG Components
+export interface RAGOperationalMetricsProps {
+  metrics: RAGMetrics & {
+    querySuccessRate: number;
+    averageResponseTime: number;
+    knowledgeBaseHitRate: number;
+    activeSources: number;
+    errorRate: number;
+    systemLoad: number;
+  };
+  investigationId: string;
+  showDetails?: boolean;
+  refreshInterval?: number;
+}
+
+export interface RAGJourneyStep {
+  id: string;
+  stepNumber: number;
+  title: string;
+  description: string;
+  agent: string;
+  ragEnhancement?: {
+    applied: boolean;
+    type: string;
+    confidence: number;
+    sources: string[];
+    reasoning: string;
+  };
+  timestamp: string;
+  status: 'completed' | 'in_progress' | 'pending' | 'failed';
+  duration: number;
+  tools: string[];
+  insights: string[];
+}
+
+export interface RAGJourneyViewerProps {
+  investigationId: string;
+  journeySteps?: RAGJourneyStep[];
+  currentStep?: number;
+  onStepSelect?: (stepIndex: number, step: RAGJourneyStep) => void;
+  showDetails?: boolean;
+}
+
+export interface RAGJourneyTimelineProps {
+  investigationId: string;
+  journeySteps?: RAGJourneyStep[];
+  selectedStepId?: string;
+  onStepClick?: (step: RAGJourneyStep, index: number) => void;
+  showTimeLabels?: boolean;
+  compactMode?: boolean;
+}
+
+export interface RAGJourneyStepsProps {
+  steps: RAGJourneyStep[];
+  currentStepIndex?: number;
+  onStepSelect?: (step: RAGJourneyStep, index: number) => void;
+  showStepDetails?: boolean;
+  groupByAgent?: boolean;
+  setGroupByAgent?: (grouped: boolean) => void;
+}
+
+export interface RAGKnowledgeMetrics {
+  totalQueries: number;
+  successfulRetrievals: number;
+  averageRelevanceScore: number;
+  knowledgeBaseSize: number;
+  activeSourcesCount: number;
+  coveragePercentage: number;
+  freshnessScore: number;
+  sourcesBreakdown: {
+    name: string;
+    effectiveness: number;
+    usageCount: number;
+    avgRelevance: number;
+  }[];
+  queryPatterns: {
+    pattern: string;
+    frequency: number;
+    successRate: number;
+  }[];
+  gapAnalysis: {
+    topic: string;
+    description: string;
+    gapScore: number;
+    failedQueries: number;
+    priority: 'high' | 'medium' | 'low';
+  }[];
+}
+
+export interface RAGKnowledgeAnalyticsProps {
+  investigationId: string;
+  timeRange?: string;
+  showDetailedMetrics?: boolean;
+}
+
+export interface RAGKnowledgeSource {
+  id: string;
+  name: string;
+  type: string;
+  category: string;
+  description: string;
+  effectiveness: number;
+  usageCount: number;
+  avgRelevance: number;
+  successRate: number;
+  avgResponseTime: number;
+  errorRate: number;
+  lastUpdated: string;
+  isActive: boolean;
+  topics: string[];
+}
+
+export interface RAGSourceEffectivenessProps {
+  investigationId: string;
+  sources?: RAGKnowledgeSource[];
+  sortBy?: 'effectiveness' | 'usage' | 'relevance' | 'freshness';
+  showInactive?: boolean;
+}
+
+export interface RAGDomainMetrics {
+  name: string;
+  description: string;
+  utilizationScore: number;
+  queryCount: number;
+  successRate: number;
+  avgResponseTime: number;
+  knowledgeHitCount: number;
+  coverageScore: number;
+  qualityRating: number;
+  trend?: number;
+  topTopics?: string[];
+  knowledgeSources?: {
+    name: string;
+    usageCount: number;
+  }[];
+  usagePatterns?: {
+    description: string;
+    frequency: number;
+  }[];
+}
+
+export interface RAGDomainUtilizationProps {
+  investigationId: string;
+  domains?: RAGDomainMetrics[];
+  timeframe?: string;
+  showTrends?: boolean;
+}
+
+export interface RAGToolInsight {
+  id: string;
+  toolName: string;
+  recommendation: string;
+  reasoning: string;
+  confidence: number;
+  alternatives: string[];
+  contextFactors: string[];
+  effectiveness: number;
+  usageHistory: {
+    timestamp: string;
+    success: boolean;
+    context: string;
+  }[];
+}
+
+export interface RAGToolInsightsProps {
+  investigationId: string;
+  toolInsights?: RAGToolInsight[];
+  showAlternatives?: boolean;
+}
+
+export interface RAGToolAlternative {
+  name: string;
+  confidence: number;
+  reasoning: string;
+  pros: string[];
+  cons: string[];
+  suitabilityScore: number;
+}
+
+export interface RAGToolAlternativesProps {
+  investigationId: string;
+  primaryTool: string;
+  alternatives?: RAGToolAlternative[];
+  onAlternativeSelect?: (alternative: RAGToolAlternative) => void;
+}
+
+export interface RAGToolPerformanceMetrics {
+  toolName: string;
+  successRate: number;
+  avgExecutionTime: number;
+  errorRate: number;
+  usageCount: number;
+  userSatisfaction: number;
+  trendsData: {
+    timestamp: string;
+    successRate: number;
+    executionTime: number;
+  }[];
+}
+
+export interface RAGToolPerformanceProps {
+  investigationId: string;
+  performanceData?: RAGToolPerformanceMetrics[];
+  selectedTool?: string;
+  timeRange?: string;
+}
+
+export interface RAGExportOptions {
+  format: 'pdf' | 'csv' | 'json' | 'excel';
+  includeInsights: boolean;
+  includeMetrics: boolean;
+  includeJourney: boolean;
+  dateRange: {
+    start: string;
+    end: string;
+  };
+  customFields?: string[];
+}
+
+export interface RAGExportControlsProps {
+  investigationId: string;
+  availableData: string[];
+  onExport: (options: RAGExportOptions) => Promise<void>;
+  isExporting?: boolean;
+}
+
+export interface RAGComparisonData {
+  id: string;
+  name: string;
+  type: 'before_after' | 'a_b_test' | 'benchmark' | 'historical';
+  baselineMetrics: RAGMetrics;
+  comparisonMetrics: RAGMetrics;
+  improvementPercentage: number;
+  significantChanges: {
+    metric: string;
+    change: number;
+    isImprovement: boolean;
+  }[];
+}
+
+export interface RAGComparisonViewProps {
+  investigationId: string;
+  comparisons?: RAGComparisonData[];
+  selectedComparison?: string;
+  onComparisonSelect?: (comparison: RAGComparisonData) => void;
+}
+
+export interface RAGHealthStatus {
+  overall: 'healthy' | 'warning' | 'critical';
+  uptime: number;
+  responseTime: number;
+  errorRate: number;
+  knowledgeBaseFreshness: number;
+  systemLoad: number;
+  alerts: {
+    id: string;
+    severity: 'info' | 'warning' | 'error' | 'critical';
+    message: string;
+    timestamp: string;
+    resolved: boolean;
+  }[];
+}
+
+export interface RAGHealthMonitorProps {
+  investigationId: string;
+  healthStatus?: RAGHealthStatus;
+  refreshInterval?: number;
+  showAlerts?: boolean;
 }

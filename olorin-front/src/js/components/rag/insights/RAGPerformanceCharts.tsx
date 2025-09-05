@@ -127,11 +127,12 @@ const RAGPerformanceCharts: React.FC<RAGPerformanceChartsProps> = ({
       {/* Performance Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {metricOptions.map((metric) => {
-          const value = {
+          const valueMap = {
             retrieval_time: metrics.avg_retrieval_time,
             hit_rate: metrics.knowledge_hit_rate * 100,
             success_rate: metrics.enhancement_success_rate * 100,
-          }[metric.id as keyof typeof currentValue] || 0;
+          };
+          const value = valueMap[metric.id as keyof typeof valueMap] || 0;
           
           return (
             <div key={metric.id} className="bg-white border border-gray-200 rounded-lg p-4">
