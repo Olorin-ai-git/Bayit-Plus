@@ -193,7 +193,8 @@ class ConnectionPoolManager:
             return True
             
         except Exception as e:
-            logger.error(f"Failed to initialize Redis pool: {e}")
+            logger.warning(f"Redis not available, continuing without Redis caching: {e}")
+            self.redis_pool = None
             return False
     
     async def get_redis_client(self) -> Optional[redis.Redis]:

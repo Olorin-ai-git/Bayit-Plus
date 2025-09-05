@@ -68,6 +68,8 @@ class EnhancedToolNode(ToolNode):
     def __init__(self, tools: Sequence[BaseTool], **kwargs):
         """Initialize enhanced tool node."""
         super().__init__(tools, **kwargs)
+        # Store tools explicitly for our enhanced functionality
+        self.tools = tools
         
         # Retry configuration
         self.retry_config = {

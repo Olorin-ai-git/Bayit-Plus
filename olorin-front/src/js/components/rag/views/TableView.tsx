@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { BaseViewProps } from './BaseViewComponent';
 import {
-  ColumnDefinition,
   FilterCriteria,
   SortCriteria,
   PaginationConfig,
