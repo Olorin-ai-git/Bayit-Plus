@@ -1,12 +1,5 @@
 import { BaseApiService } from './BaseApiService';
 import { isDemoModeActive } from '../hooks/useDemoMode';
-import {
-  mockFieldMappings,
-  mockRexPatterns,
-  mockEvalCommands,
-  mockPreparedPrompts,
-  getRandomDemoResponse,
-} from '../../mock/rag';
 
 /**
  * Service for RAG (Retrieval-Augmented Generation) API operations
@@ -28,17 +21,17 @@ export class RAGApiService extends BaseApiService {
         setTimeout(resolve, 800 + Math.random() * 400),
       );
 
-      const demoResponse = getRandomDemoResponse(params.natural_query);
+      // Demo mode - return simulated response
       return {
-        response: demoResponse.response,
-        translated_query: demoResponse.translated_query,
-        execution_time: demoResponse.execution_time,
-        result_count: demoResponse.result_count,
-        sources: demoResponse.sources,
-        confidence: demoResponse.confidence,
+        response: 'Demo mode: RAG query processed successfully',
+        translated_query: `search index=main ${params.natural_query}`,
+        execution_time: 0.8 + Math.random() * 0.4,
+        result_count: Math.floor(Math.random() * 50) + 10,
+        sources: ['demo_index', 'system_logs'],
+        confidence: 0.85 + Math.random() * 0.1,
         additional_data: {
-          sources: demoResponse.sources,
-          structured_data: demoResponse.structured_data,
+          sources: ['demo_index', 'system_logs'],
+          structured_data: { demo: true },
         },
       };
     }
@@ -131,16 +124,16 @@ export class RAGApiService extends BaseApiService {
         setTimeout(resolve, 900 + Math.random() * 600),
       );
 
-      const demoResponse = getRandomDemoResponse(params.query);
+      // Demo mode - return simulated response
       return {
-        response: demoResponse.response,
-        execution_time: demoResponse.execution_time,
-        result_count: demoResponse.result_count,
-        sources: demoResponse.sources,
-        confidence: demoResponse.confidence,
+        response: 'Demo mode: Translated query executed successfully',
+        execution_time: 0.9 + Math.random() * 0.6,
+        result_count: Math.floor(Math.random() * 100) + 20,
+        sources: ['demo_index', 'translated_logs'],
+        confidence: 0.82 + Math.random() * 0.15,
         additional_data: {
-          sources: demoResponse.sources,
-          structured_data: demoResponse.structured_data,
+          sources: ['demo_index', 'translated_logs'],
+          structured_data: { demo: true },
         },
       };
     }
@@ -164,10 +157,11 @@ export class RAGApiService extends BaseApiService {
         setTimeout(resolve, 200 + Math.random() * 300),
       );
 
+      // Demo mode - return empty mappings
       return {
-        field_mappings: mockFieldMappings,
-        rex_patterns: mockRexPatterns,
-        eval_commands: mockEvalCommands,
+        field_mappings: [],
+        rex_patterns: [],
+        eval_commands: [],
       };
     }
 
@@ -261,8 +255,9 @@ export class RAGApiService extends BaseApiService {
         setTimeout(resolve, 300 + Math.random() * 200),
       );
 
+      // Demo mode - return empty prompts
       return {
-        prompts: mockPreparedPrompts,
+        prompts: [],
       };
     }
 
@@ -281,8 +276,16 @@ export class RAGApiService extends BaseApiService {
         setTimeout(resolve, 150 + Math.random() * 100),
       );
 
-      const prompt = mockPreparedPrompts.find((p) => p.id === promptId);
-      return prompt || { error: 'Prompt not found' };
+      // Demo mode - return demo prompt
+      return {
+        id: promptId,
+        title: 'Demo Prompt',
+        description: 'Demo prompt for testing',
+        template: 'Demo template',
+        category: 'demo',
+        variables: [],
+        created_at: new Date().toISOString(),
+      };
     }
 
     return this.makeGet(`api/rag/prompts/${promptId}`);

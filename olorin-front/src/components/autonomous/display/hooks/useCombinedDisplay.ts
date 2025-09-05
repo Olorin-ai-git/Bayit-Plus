@@ -7,7 +7,7 @@ import {
   AnimationSpeed,
   NodeStatus,
   EdgeStatus 
-} from '../../../types/AutonomousDisplayTypes';
+} from '../../../../types/AutonomousDisplayTypes';
 
 interface UseCombinedDisplayProps {
   investigationId: string;

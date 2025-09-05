@@ -1,12 +1,12 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { AutonomousInvestigationClient, InvestigationEventHandler } from '../../../js/services/AutonomousInvestigationClient';
+import { AutonomousInvestigationClient, InvestigationEventHandler } from '../../../../js/services/AutonomousInvestigationClient';
 import { 
   AgentNodeData, 
   TerminalLogEntry,
   NodeStatus,
   LogType 
-} from '../../../types/AutonomousDisplayTypes';
-import { LogLevel } from '../../../js/types/RiskAssessment';
+} from '../../../../types/AutonomousDisplayTypes';
+import { LogLevel } from '../../../../js/types/RiskAssessment';
 
 interface UseWebSocketIntegrationProps {
   investigationId?: string;
