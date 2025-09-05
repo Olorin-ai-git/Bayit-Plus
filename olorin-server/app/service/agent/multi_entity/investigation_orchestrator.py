@@ -16,6 +16,8 @@ from collections import defaultdict
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.multi_entity.entity_manager import EntityManager, EntityType, get_entity_manager
+from app.service.agent.multi_entity.multi_investigation_coordinator import get_multi_entity_coordinator
+from app.service.agent.multi_entity.cross_entity_analyzer import get_cross_entity_analyzer
 from app.models.multi_entity_investigation import (
     MultiEntityInvestigationRequest,
     MultiEntityInvestigationResult,
@@ -71,6 +73,8 @@ class MultiEntityInvestigationOrchestrator:
     
     def __init__(self):
         self.entity_manager = get_entity_manager()
+        self.multi_coordinator = get_multi_entity_coordinator()
+        self.cross_analyzer = get_cross_entity_analyzer()
         self.active_investigations: Dict[str, InvestigationContext] = {}
         self.logger = get_bridge_logger(f"{__name__}.orchestrator")
         
@@ -276,7 +280,7 @@ class MultiEntityInvestigationOrchestrator:
         context: InvestigationContext, 
         request: MultiEntityInvestigationRequest
     ):
-        """Execute autonomous investigations for each entity"""
+        """Execute autonomous investigations for each entity using real LangGraph coordination"""
         
         context.add_timeline_event(
             "entity_investigations_started",
@@ -285,33 +289,29 @@ class MultiEntityInvestigationOrchestrator:
         
         phase_start = datetime.now(timezone.utc)
         
-        # TODO: Phase 2.2 - Integrate with actual LangGraph agents
-        # For now, create placeholder results to establish structure
-        
-        for entity_id in context.entity_ids:
-            entity_type = context.entity_types[entity_id]
+        try:
+            # Use the real multi-entity coordinator
+            self.logger.info(f"🔄 Delegating to multi-entity coordinator for investigation: {context.investigation_id}")
             
-            # Simulate agent results for each investigation scope
-            for agent_scope in context.investigation_scope:
-                result = InvestigationResult(
-                    investigation_id=context.investigation_id,
-                    entity_id=entity_id,
-                    agent_type=f"{agent_scope}_agent",
-                    findings={
-                        "entity_type": entity_type.value,
-                        "agent_scope": agent_scope,
-                        "investigation_phase": "placeholder",
-                        "note": "Phase 2.2 will integrate with actual LangGraph agents"
-                    },
-                    risk_indicators=[],
-                    tool_results=[],
-                    risk_score=0.5,  # Placeholder
-                    confidence_score=1.0,
-                    execution_time_ms=1000,  # Placeholder
-                    agent_reasoning=f"Placeholder reasoning for {agent_scope} analysis of {entity_id}"
-                )
-                
-                context.agent_results[entity_id].append(result)
+            coordination_result = await self.multi_coordinator.coordinate_multi_entity_investigation(request)
+            
+            # Extract results from coordination
+            entity_results = coordination_result.get("entity_results", {})
+            
+            # Update context with real results
+            for entity_id, results in entity_results.items():
+                if entity_id in context.entity_ids:
+                    context.agent_results[entity_id] = results
+            
+            # Store coordination metadata
+            context.cross_entity_findings = coordination_result.get("cross_entity_findings", [])
+            
+            self.logger.info(f"✅ Multi-entity coordination completed for: {context.investigation_id}")
+            
+        except Exception as e:
+            self.logger.error(f"❌ Multi-entity coordination failed: {str(e)}")
+            # Fallback to individual entity processing if coordination fails
+            await self._execute_fallback_entity_investigations(context, request)
         
         phase_end = datetime.now(timezone.utc)
         phase_duration = int((phase_end - phase_start).total_seconds() * 1000)
@@ -328,12 +328,46 @@ class MultiEntityInvestigationOrchestrator:
             {"entities_processed": len(context.entity_ids), "duration_ms": phase_duration}
         )
     
+    async def _execute_fallback_entity_investigations(
+        self, 
+        context: InvestigationContext, 
+        request: MultiEntityInvestigationRequest
+    ):
+        """Fallback entity investigation if coordination fails"""
+        
+        self.logger.warning("Using fallback entity investigation due to coordination failure")
+        
+        for entity_id in context.entity_ids:
+            entity_type = context.entity_types[entity_id]
+            
+            # Create minimal results for fallback
+            for agent_scope in context.investigation_scope:
+                result = InvestigationResult(
+                    investigation_id=context.investigation_id,
+                    entity_id=entity_id,
+                    agent_type=f"{agent_scope}_agent",
+                    findings={
+                        "entity_type": entity_type.value,
+                        "agent_scope": agent_scope,
+                        "investigation_phase": "fallback",
+                        "note": "Generated by fallback due to coordination failure"
+                    },
+                    risk_indicators=[],
+                    tool_results=[],
+                    risk_score=0.5,  # Default risk
+                    confidence_score=0.3,  # Lower confidence for fallback
+                    execution_time_ms=500,
+                    agent_reasoning=f"Fallback analysis for {agent_scope} of {entity_id}"
+                )
+                
+                context.agent_results[entity_id].append(result)
+    
     async def _execute_cross_entity_analysis(
         self, 
         context: InvestigationContext, 
         request: MultiEntityInvestigationRequest
     ) -> Optional[CrossEntityAnalysis]:
-        """Execute cross-entity pattern analysis"""
+        """Execute cross-entity pattern analysis using real analyzer"""
         
         if not request.enable_cross_entity_analysis:
             return None
@@ -342,18 +376,32 @@ class MultiEntityInvestigationOrchestrator:
         
         phase_start = datetime.now(timezone.utc)
         
-        # TODO: Phase 2.2 - Implement actual cross-entity analysis algorithms
-        # Placeholder implementation to establish structure
-        
-        analysis = CrossEntityAnalysis(
-            investigation_id=context.investigation_id,
-            entity_interactions=[],
-            risk_correlations=[],
-            temporal_patterns=[],
-            anomaly_clusters=[],
-            behavioral_insights=[],
-            overall_confidence=0.8
-        )
+        try:
+            # Use the real cross-entity analyzer
+            self.logger.info(f"🔗 Performing cross-entity analysis for investigation: {context.investigation_id}")
+            
+            analysis = await self.cross_analyzer.analyze_cross_entity_patterns(
+                investigation_id=context.investigation_id,
+                entity_results=dict(context.agent_results),
+                relationships=context.relationships,
+                entities=[{"entity_id": eid, "entity_type": context.entity_types[eid].value} 
+                         for eid in context.entity_ids]
+            )
+            
+            self.logger.info(f"✅ Cross-entity analysis completed for: {context.investigation_id}")
+            
+        except Exception as e:
+            self.logger.error(f"❌ Cross-entity analysis failed: {str(e)}")
+            # Create fallback analysis
+            analysis = CrossEntityAnalysis(
+                investigation_id=context.investigation_id,
+                entity_interactions=[],
+                risk_correlations=[],
+                temporal_patterns=[],
+                anomaly_clusters=[],
+                behavioral_insights=[{"error": str(e), "fallback": True}],
+                overall_confidence=0.3
+            )
         
         phase_end = datetime.now(timezone.utc)
         phase_duration = int((phase_end - phase_start).total_seconds() * 1000)
@@ -404,23 +452,76 @@ class MultiEntityInvestigationOrchestrator:
         context: InvestigationContext, 
         request: MultiEntityInvestigationRequest
     ) -> Dict[str, Any]:
-        """Evaluate boolean logic expression"""
+        """Evaluate boolean logic expression using real parser"""
         
         context.add_timeline_event("boolean_evaluation_started", f"Evaluating boolean logic: {context.boolean_logic}")
         
-        # TODO: Phase 2.2 - Implement boolean logic parser and evaluator
-        # Placeholder implementation
-        
-        parser = BooleanQueryParser(
-            expression=context.boolean_logic,
-            entity_mapping={eid: eid for eid in context.entity_ids}
-        )
-        
-        result = parser.parse()
+        try:
+            # Use the real boolean query parser
+            parser = BooleanQueryParser(
+                expression=context.boolean_logic,
+                entity_mapping={eid: eid for eid in context.entity_ids}
+            )
+            
+            # Parse the expression
+            parse_result = parser.parse()
+            
+            if parse_result.get("valid"):
+                # Calculate boolean result based on entity investigations
+                entity_results = {}
+                for entity_id, agent_results in context.agent_results.items():
+                    if agent_results:
+                        # Consider entity "positive" if average risk > 0.6
+                        avg_risk = sum(r.risk_score for r in agent_results) / len(agent_results)
+                        entity_results[entity_id] = avg_risk > 0.6
+                    else:
+                        entity_results[entity_id] = False
+                
+                # Evaluate boolean expression
+                boolean_result = parser.evaluate(entity_results)
+                
+                result = {
+                    **parse_result,
+                    "evaluation_result": boolean_result,
+                    "entity_results": entity_results,
+                    "evaluation_summary": self._generate_boolean_summary(
+                        context.boolean_logic, boolean_result, entity_results
+                    )
+                }
+                
+                self.logger.info(f"✅ Boolean evaluation result: {boolean_result} for expression: {context.boolean_logic}")
+            else:
+                result = parse_result
+                self.logger.warning(f"⚠️ Boolean expression parsing failed: {parse_result.get('error')}")
+            
+        except Exception as e:
+            self.logger.error(f"❌ Boolean logic evaluation failed: {str(e)}")
+            result = {
+                "parsed": False,
+                "valid": False,
+                "error": str(e),
+                "evaluation_result": False
+            }
         
         context.add_timeline_event("boolean_evaluation_completed", "Boolean logic evaluation completed")
         
         return result
+    
+    def _generate_boolean_summary(self, expression: str, result: bool, entity_results: Dict[str, bool]) -> str:
+        """Generate human-readable summary of boolean evaluation"""
+        
+        positive_entities = [eid for eid, res in entity_results.items() if res]
+        negative_entities = [eid for eid, res in entity_results.items() if not res]
+        
+        summary = f"Boolean expression '{expression}' evaluated to {result}. "
+        
+        if positive_entities:
+            summary += f"High-risk entities: {', '.join(positive_entities)}. "
+        
+        if negative_entities:
+            summary += f"Low-risk entities: {', '.join(negative_entities)}."
+        
+        return summary
     
     async def _execute_risk_assessment(
         self, 

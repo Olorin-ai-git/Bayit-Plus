@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { InvestigationResult, AgentResult } from '../types/Investigation';
+import { InvestigationResult, AgentResult } from '../types/investigation';
 
 interface AgentExecutionLogsProps {
   investigation: InvestigationResult;

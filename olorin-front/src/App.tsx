@@ -25,8 +25,8 @@ function App() {
     <ThemeProvider theme={olorinTheme}>
       <CssBaseline />
       <AuthProvider>
-        <AuthGuard>
-          <DemoModeProvider>
+        <DemoModeProvider>
+          <AuthGuard>
             <SandboxProvider>
               <Router
                 future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -36,8 +36,8 @@ function App() {
                 </Layout>
               </Router>
             </SandboxProvider>
-          </DemoModeProvider>
-        </AuthGuard>
+          </AuthGuard>
+        </DemoModeProvider>
       </AuthProvider>
     </ThemeProvider>
   );

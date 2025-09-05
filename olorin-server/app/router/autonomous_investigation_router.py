@@ -11,7 +11,7 @@ This is the refactored version using modular architecture for maintainability.
 """
 import logging
 from app.service.logging import get_bridge_logger
-from typing import Dict, Any
+from typing import Dict, Any, List
 from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket
 
 from app.router.models.autonomous_investigation_models import (

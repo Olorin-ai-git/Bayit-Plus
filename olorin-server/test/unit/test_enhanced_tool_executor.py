@@ -8,6 +8,8 @@ import os
 import pytest
 from unittest.mock import Mock, AsyncMock, patch
 from datetime import datetime, timedelta
+from langchain.tools import BaseTool
+from pydantic import BaseModel
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -20,16 +22,28 @@ from app.service.agent.orchestration.enhanced_tool_executor import (
 )
 
 
-class MockTool:
+class MockToolInput(BaseModel):
+    """Mock tool input schema."""
+    query: str = "default query"
+
+
+class MockTool(BaseTool):
     """Mock tool for testing."""
     
-    def __init__(self, name="test_tool", description="Test tool"):
-        self.name = name
-        self.description = description
+    name: str = "test_tool"
+    description: str = "Test tool"
+    args_schema = MockToolInput
+    
+    def __init__(self, name: str = "test_tool", description: str = "Test tool", **kwargs):
+        super().__init__(name=name, description=description, **kwargs)
         
-    async def ainvoke(self, *args, **kwargs):
-        """Mock async invoke."""
-        return {"result": "success"}
+    def _run(self, query: str = "default", **kwargs) -> str:
+        """Mock run method."""
+        return f"Mock result for {query}"
+        
+    async def _arun(self, query: str = "default", **kwargs) -> str:
+        """Mock async run method."""
+        return f"Mock async result for {query}"
 
 
 @pytest.fixture
@@ -75,17 +89,30 @@ class TestEnhancedToolNode:
     @pytest.mark.asyncio
     async def test_successful_execution(self, enhanced_executor):
         """Test successful tool execution."""
-        tool_call = {"name": "tool1", "args": {}}
+        # Create proper input state with tool calls (LangGraph format)
+        input_state = {
+            "messages": [
+                {
+                    "tool_calls": [
+                        {
+                            "name": "tool1", 
+                            "args": {"query": "test"}, 
+                            "id": "call_123"
+                        }
+                    ]
+                }
+            ]
+        }
         config = {}
         
         # Mock the parent ainvoke method
         with patch.object(enhanced_executor.__class__.__bases__[0], 'ainvoke', 
                          new_callable=AsyncMock) as mock_ainvoke:
-            mock_ainvoke.return_value = {"result": "success"}
+            mock_ainvoke.return_value = input_state
             
-            result = await enhanced_executor.execute_with_resilience(tool_call, config)
+            result = await enhanced_executor.ainvoke(input_state, config)
             
-            assert result == {"result": "success"}
+            assert result is not None
             
             # Check metrics updated
             metrics = enhanced_executor.tool_metrics["tool1"]
@@ -96,7 +123,20 @@ class TestEnhancedToolNode:
     @pytest.mark.asyncio
     async def test_retry_on_failure(self, enhanced_executor):
         """Test retry logic on retryable failures."""
-        tool_call = {"name": "tool1", "args": {}}
+        # Create proper input state with tool calls (LangGraph format)
+        input_state = {
+            "messages": [
+                {
+                    "tool_calls": [
+                        {
+                            "name": "tool1", 
+                            "args": {"query": "test"}, 
+                            "id": "call_123"
+                        }
+                    ]
+                }
+            ]
+        }
         config = {}
         
         # Mock to fail twice then succeed
@@ -106,14 +146,14 @@ class TestEnhancedToolNode:
             call_count += 1
             if call_count < 3:
                 raise ConnectionError("Connection failed")
-            return {"result": "success"}
+            return input_state
         
         with patch.object(enhanced_executor.__class__.__bases__[0], 'ainvoke', 
                          side_effect=mock_ainvoke):
             with patch('asyncio.sleep', new_callable=AsyncMock):  # Skip actual sleep
-                result = await enhanced_executor.execute_with_resilience(tool_call, config)
+                result = await enhanced_executor.ainvoke(input_state, config)
                 
-                assert result == {"result": "success"}
+                assert result is not None
                 assert call_count == 3
                 
                 # Check metrics

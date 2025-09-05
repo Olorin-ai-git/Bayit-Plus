@@ -31,10 +31,10 @@ class MockTool(BaseTool):
     
     name: str = "mock_tool"
     description: str = "Mock tool for performance testing"
+    latency: float = 0.1
     
     def __init__(self, tool_name: str, latency: float = 0.1):
-        super().__init__(name=tool_name, description=f"Mock tool {tool_name} for performance testing")
-        self.latency = latency
+        super().__init__(name=tool_name, description=f"Mock tool {tool_name} for performance testing", latency=latency)
         
     async def _arun(self, *args, **kwargs) -> str:
         """Simulate tool execution with configurable latency."""
