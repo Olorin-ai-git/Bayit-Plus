@@ -3,6 +3,7 @@ import { NeuralNetworkFlow } from './neural-network/NeuralNetworkFlow';
 import { InteractiveInvestigationGraph } from './interactive-graph/InteractiveInvestigationGraph';
 import { CommandTerminal } from './command-terminal/CommandTerminal';
 import { useCombinedDisplay } from './hooks/useCombinedDisplay';
+import { useWebSocketIntegration } from './hooks/useWebSocketIntegration';
 import { 
   CombinedDisplayProps,
   GraphInteraction,
@@ -39,6 +40,22 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
     initialConnections,
     initialFlow,
     initialLogs
+  });
+
+  // Use WebSocket integration hook
+  const {
+    isConnected,
+    client,
+    reconnect,
+    disconnect,
+    connectionAttempts
+  } = useWebSocketIntegration({
+    investigationId,
+    isActive,
+    onAgentStatusUpdate: updateAgentStatus,
+    onGraphProgressUpdate: updateGraphProgress,
+    onLogAdd: addLog,
+    agents
   });
 
   // Handle neural network node clicks
@@ -99,9 +116,13 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
                 </p>
               </div>
               <div className="flex items-center space-x-2">
-                <span className={`w-3 h-3 rounded-full ${isActive ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`}></span>
+                <span className={`w-3 h-3 rounded-full ${
+                  isActive && isConnected ? 'bg-green-400 animate-pulse' : 
+                  isActive ? 'bg-yellow-400 animate-pulse' : 'bg-gray-500'
+                }`}></span>
                 <span className="text-sm text-green-100">
-                  {isActive ? 'Active' : 'Standby'}
+                  {isActive && isConnected ? 'Connected' : 
+                   isActive ? 'Connecting...' : 'Standby'}
                 </span>
               </div>
             </div>
