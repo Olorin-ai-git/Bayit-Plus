@@ -10,6 +10,7 @@ This module implements Phase 1 of the LangGraph enhancement plan, providing:
 
 import asyncio
 import time
+import threading
 from typing import Any, Dict, List, Optional, Set, Union, Sequence
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
@@ -22,11 +23,22 @@ from langchain_core.messages import AIMessage, ToolMessage, BaseMessage
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict, Annotated
 from app.service.logging import get_bridge_logger
+from app.utils.security_utils import (
+    sanitize_tool_result,
+    sanitize_exception_message,
+    sanitize_websocket_event_data,
+    get_error_category,
+    create_result_hash
+)
 
 logger = get_bridge_logger(__name__)
 
 # Global tool execution event handlers
 _tool_event_handlers = []
+
+# Resource limits for metrics storage
+MAX_TOOL_METRICS = 1000  # Maximum number of tools to track
+MAX_PERFORMANCE_SAMPLES = 50  # Reduced from 100 for memory efficiency
 
 
 class CircuitState(Enum):
@@ -69,13 +81,22 @@ class EnhancedToolNode(ToolNode):
     """Enhanced tool node with resilience patterns and monitoring."""
     
     def __init__(self, tools: Sequence[BaseTool], investigation_id: str = None, **kwargs):
-        """Initialize enhanced tool node."""
+        """Initialize enhanced tool node with validation."""
+        # Input validation
+        if not tools:
+            raise ValueError("Tools sequence cannot be empty")
+        if not isinstance(tools, (list, tuple)):
+            raise TypeError("Tools must be a sequence (list or tuple)")
+        
         super().__init__(tools, **kwargs)
         # Store tools explicitly for our enhanced functionality
         self.tools = tools
-        self.investigation_id = investigation_id
+        self.investigation_id = investigation_id if investigation_id else None
         
-        # Retry configuration
+        # Thread lock for circuit breaker state changes
+        self._state_lock = threading.RLock()
+        
+        # Retry configuration with validation
         self.retry_config = {
             'max_retries': 3,
             'backoff_factor': 1.5,
@@ -83,16 +104,34 @@ class EnhancedToolNode(ToolNode):
             'max_backoff': 30.0  # Maximum backoff time in seconds
         }
         
-        # Circuit breaker configuration
+        # Circuit breaker configuration with validation
         self.circuit_config = {
             'failure_threshold': 5,  # Open circuit after 5 failures
             'recovery_timeout': 60,  # Try recovery after 60 seconds
             'half_open_requests': 2   # Number of test requests in half-open state
         }
         
+        # Validate configurations
+        self._validate_config()
+        
         # Tool health tracking
         self.tool_metrics: Dict[str, ToolHealthMetrics] = {}
         self._initialize_metrics()
+        
+    def _validate_config(self):
+        """Validate configuration parameters."""
+        if self.retry_config['max_retries'] <= 0:
+            raise ValueError("max_retries must be greater than 0")
+        if self.retry_config['backoff_factor'] <= 1.0:
+            raise ValueError("backoff_factor must be greater than 1.0")
+        if self.retry_config['max_backoff'] <= 0:
+            raise ValueError("max_backoff must be greater than 0")
+        if self.circuit_config['failure_threshold'] <= 0:
+            raise ValueError("failure_threshold must be greater than 0")
+        if self.circuit_config['recovery_timeout'] <= 0:
+            raise ValueError("recovery_timeout must be greater than 0")
+        if self.circuit_config['half_open_requests'] <= 0:
+            raise ValueError("half_open_requests must be greater than 0")
         
         # Performance monitoring
         self.performance_threshold = 5.0  # Warn if tool takes > 5 seconds
@@ -140,10 +179,14 @@ class EnhancedToolNode(ToolNode):
                         result_messages.append(tool_message)
                         
                     except Exception as e:
-                        logger.error(f"Tool execution failed: {e}")
-                        # Create error tool message
+                        # Sanitize error message for security
+                        safe_error_msg = sanitize_exception_message(e)
+                        error_category = get_error_category(e)
+                        logger.error(f"Tool execution failed - {error_category}: {safe_error_msg}")
+                        
+                        # Create safe error tool message
                         tool_message = ToolMessage(
-                            content=f"Error: {str(e)}",
+                            content=f"Tool execution failed: {safe_error_msg}",
                             tool_call_id=tool_call.get("id", ""),
                             name=tool_call.get("name", "unknown")
                         )
@@ -182,12 +225,13 @@ class EnhancedToolNode(ToolNode):
             else:
                 raise ValueError(f"Tool {tool_name} not found")
         
-        # Check circuit breaker
-        if metrics.circuit_state == CircuitState.OPEN:
-            if self._should_attempt_recovery(metrics):
-                metrics.circuit_state = CircuitState.HALF_OPEN
-                logger.info(f"Circuit breaker for {tool_name} entering HALF_OPEN state")
-            else:
+        # Check circuit breaker (thread-safe)
+        with self._state_lock:
+            if metrics.circuit_state == CircuitState.OPEN:
+                if self._should_attempt_recovery(metrics):
+                    metrics.circuit_state = CircuitState.HALF_OPEN
+                    logger.info(f"Circuit breaker for {tool_name} entering HALF_OPEN state")
+                else:
                 await self._emit_tool_event("tool_execution_skipped", tool_name, {
                     "reason": "circuit_breaker_open",
                     "consecutive_failures": metrics.consecutive_failures,
@@ -226,12 +270,13 @@ class EnhancedToolNode(ToolNode):
                 metrics.total_latency += elapsed
                 metrics.consecutive_failures = 0
                 
-                # Close circuit if in half-open state
+                # Close circuit if in half-open state (thread-safe)
                 circuit_recovered = False
-                if metrics.circuit_state == CircuitState.HALF_OPEN:
-                    metrics.circuit_state = CircuitState.CLOSED
-                    circuit_recovered = True
-                    logger.info(f"Circuit breaker for {tool_name} CLOSED after successful recovery")
+                with self._state_lock:
+                    if metrics.circuit_state == CircuitState.HALF_OPEN:
+                        metrics.circuit_state = CircuitState.CLOSED
+                        circuit_recovered = True
+                        logger.info(f"Circuit breaker for {tool_name} CLOSED after successful recovery")
                 
                 # Warn if slow
                 performance_warning = None
@@ -239,9 +284,10 @@ class EnhancedToolNode(ToolNode):
                     performance_warning = f"Tool execution exceeded threshold: {elapsed:.2f}s > {self.performance_threshold}s"
                     logger.warning(f"Tool {tool_name} took {elapsed:.2f}s (threshold: {self.performance_threshold}s)")
                 
-                # Emit successful completion event
+                # Emit successful completion event with sanitized data
                 await self._emit_tool_event("tool_execution_completed", tool_name, {
-                    "result": str(result)[:1000] if result else None,  # Truncate large results
+                    "result_summary": sanitize_tool_result(result, max_length=200),
+                    "result_hash": create_result_hash(result),
                     "execution_time": f"{elapsed:.3f}s",
                     "attempt": attempt + 1,
                     "success_rate": f"{metrics.success_rate * 100:.1f}%",
@@ -268,16 +314,18 @@ class EnhancedToolNode(ToolNode):
                     metrics.consecutive_failures += 1
                     metrics.last_failure_time = datetime.now()
                     
-                    # Check if circuit should open
+                    # Check if circuit should open (thread-safe)
                     circuit_opened = False
-                    if metrics.consecutive_failures >= self.circuit_config['failure_threshold']:
-                        metrics.circuit_state = CircuitState.OPEN
-                        circuit_opened = True
-                        logger.error(f"Circuit breaker OPEN for {tool_name} after {metrics.consecutive_failures} failures")
+                    with self._state_lock:
+                        if metrics.consecutive_failures >= self.circuit_config['failure_threshold']:
+                            metrics.circuit_state = CircuitState.OPEN
+                            circuit_opened = True
+                            logger.error(f"Circuit breaker OPEN for {tool_name} after {metrics.consecutive_failures} failures")
                     
-                    # Emit failure event
+                    # Emit failure event with sanitized error information
                     await self._emit_tool_event("tool_execution_failed", tool_name, {
-                        "error": str(e),
+                        "error": sanitize_exception_message(e),
+                        "error_category": get_error_category(e),
                         "error_type": type(e).__name__,
                         "execution_time": f"{elapsed:.3f}s",
                         "final_attempt": attempt + 1,
@@ -301,14 +349,23 @@ class EnhancedToolNode(ToolNode):
                 
                 await asyncio.sleep(backoff)
         
-        # All retries exhausted
+        # All retries exhausted - convert to safe tool message instead of raising
         if last_exception:
-            raise last_exception
+            safe_error_msg = sanitize_exception_message(last_exception)
+            error_category = get_error_category(last_exception)
+            logger.error(f"Tool {tool_name} failed after all retries - {error_category}: {safe_error_msg}")
+            
+            # Return safe error result instead of raising exception
+            return f"Tool execution failed: {safe_error_msg} (after {self.retry_config['max_retries']} retries)"
     
     def _get_tool_by_name(self, name: str) -> Optional[BaseTool]:
-        """Get tool by name."""
+        """Get tool by name with input validation."""
+        if not name or not isinstance(name, str):
+            logger.warning(f"Invalid tool name: {name}")
+            return None
+            
         for tool in self.tools:
-            if isinstance(tool, BaseTool) and tool.name == name:
+            if isinstance(tool, BaseTool) and hasattr(tool, 'name') and tool.name == name:
                 return tool
         return None
     
@@ -454,12 +511,15 @@ class ToolHealthManager:
             tool_name: Name of the tool
             event_data: Additional event data
         """
+        # Sanitize event data before broadcasting
+        sanitized_event_data = sanitize_websocket_event_data(event_data)
+        
         event = {
             "type": event_type,
             "tool_name": tool_name,
             "timestamp": datetime.now().isoformat(),
             "investigation_id": self.investigation_id,
-            "data": event_data
+            "data": sanitized_event_data
         }
         
         # Emit to registered event handlers
@@ -500,18 +560,25 @@ def clear_tool_event_handlers():
     
     def record_performance(self, tool_name: str, latency: float):
         """
-        Record performance metric for a tool.
+        Record performance metric for a tool with resource limits.
         
         Args:
             tool_name: Name of the tool
             latency: Execution latency in seconds
         """
+        # Enforce maximum number of tracked tools
+        if len(self.performance_metrics) >= MAX_TOOL_METRICS and tool_name not in self.performance_metrics:
+            # Remove oldest tool metrics to make space
+            oldest_tool = next(iter(self.performance_metrics))
+            del self.performance_metrics[oldest_tool]
+            logger.warning(f"Removed metrics for {oldest_tool} to stay within resource limits")
+        
         if tool_name not in self.performance_metrics:
             self.performance_metrics[tool_name] = []
         
-        # Keep last 100 measurements
+        # Keep limited number of performance samples
         self.performance_metrics[tool_name].append(latency)
-        if len(self.performance_metrics[tool_name]) > 100:
+        if len(self.performance_metrics[tool_name]) > MAX_PERFORMANCE_SAMPLES:
             self.performance_metrics[tool_name].pop(0)
     
     def should_perform_health_check(self) -> bool:
