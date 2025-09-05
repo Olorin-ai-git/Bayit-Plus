@@ -92,6 +92,8 @@ const RAGOperationalMetrics: React.FC<RAGOperationalMetricsProps> = ({
 
   const getMetricStatusColor = (metric: typeof operationalData[0]) => {
     const { value, thresholds, invert } = metric;
+    if (value === undefined) return 'text-gray-600 bg-gray-100';
+    
     if (invert) {
       if (value <= thresholds.good) return 'text-green-600 bg-green-100';
       if (value <= thresholds.warning) return 'text-yellow-600 bg-yellow-100';
@@ -134,7 +136,7 @@ const RAGOperationalMetrics: React.FC<RAGOperationalMetricsProps> = ({
               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                 getMetricStatusColor(metric)
               }`}>
-                {metric.format(metric.value)}
+                {metric.value !== undefined ? metric.format(metric.value) : 'N/A'}
               </span>
             </div>
             <div>
@@ -157,17 +159,17 @@ const RAGOperationalMetrics: React.FC<RAGOperationalMetricsProps> = ({
             <div className="bg-blue-50 rounded-lg p-4">
               <h5 className="text-sm font-medium text-blue-900 mb-2">📊 Performance Insights</h5>
               <ul className="text-xs text-blue-800 space-y-1">
-                <li>• Query processing: {liveMetrics.querySuccessRate >= 0.95 ? 'Optimal' : 'Needs attention'}</li>
-                <li>• Response times: {liveMetrics.averageResponseTime <= 2000 ? 'Excellent' : 'Monitor closely'}</li>
-                <li>• Knowledge utilization: {liveMetrics.knowledgeBaseHitRate >= 0.8 ? 'High' : 'Improving'}</li>
+                <li>• Query processing: {(liveMetrics.querySuccessRate ?? 0) >= 0.95 ? 'Optimal' : 'Needs attention'}</li>
+                <li>• Response times: {(liveMetrics.averageResponseTime ?? 0) <= 2000 ? 'Excellent' : 'Monitor closely'}</li>
+                <li>• Knowledge utilization: {(liveMetrics.knowledgeBaseHitRate ?? 0) >= 0.8 ? 'High' : 'Improving'}</li>
               </ul>
             </div>
             <div className="bg-purple-50 rounded-lg p-4">
               <h5 className="text-sm font-medium text-purple-900 mb-2">🔧 System Status</h5>
               <ul className="text-xs text-purple-800 space-y-1">
-                <li>• Error handling: {liveMetrics.errorRate <= 0.05 ? 'Stable' : 'Review needed'}</li>
-                <li>• Resource usage: {liveMetrics.systemLoad <= 0.7 ? 'Normal' : 'High'}</li>
-                <li>• Data sources: {liveMetrics.activeSources} sources active</li>
+                <li>• Error handling: {(liveMetrics.errorRate ?? 0) <= 0.05 ? 'Stable' : 'Review needed'}</li>
+                <li>• Resource usage: {(liveMetrics.systemLoad ?? 0) <= 0.7 ? 'Normal' : 'High'}</li>
+                <li>• Data sources: {liveMetrics.activeSources ?? 0} sources active</li>
               </ul>
             </div>
           </div>

@@ -31,12 +31,22 @@ export { default as RAGDomainUtilization } from './analytics/RAGDomainUtilizatio
 // RAG Tool Components
 export { default as RAGToolInsights } from './tools/RAGToolInsights';
 export { default as RAGToolAlternatives } from './tools/RAGToolAlternatives';
+export { default as RAGAlternativeCard } from './tools/RAGAlternativeCard';
+export { default as RAGAlternativeComparison } from './tools/RAGAlternativeComparison';
 export { default as RAGToolPerformance } from './tools/RAGToolPerformance';
+export { default as RAGToolPerformanceOverview } from './tools/RAGToolPerformanceOverview';
+export { default as RAGToolPerformanceTrends } from './tools/RAGToolPerformanceTrends';
+export { default as RAGToolPerformanceDetailed } from './tools/RAGToolPerformanceDetailed';
 
 // RAG Advanced Features
 export { default as RAGExportControls } from './features/RAGExportControls';
 export { default as RAGComparisonView } from './features/RAGComparisonView';
+export { default as RAGComparisonOverview } from './features/RAGComparisonOverview';
+export { default as RAGComparisonDetailed } from './features/RAGComparisonDetailed';
 export { default as RAGHealthMonitor } from './features/RAGHealthMonitor';
+export { default as RAGHealthMetrics } from './features/RAGHealthMetrics';
+export { default as RAGHealthSummary } from './features/RAGHealthSummary';
+export { default as RAGHealthAlerts } from './features/RAGHealthAlerts';
 
 // Re-export types for convenience
 export type {

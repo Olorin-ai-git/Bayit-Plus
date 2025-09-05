@@ -103,7 +103,8 @@ def _configure_cors_middleware(app: FastAPI) -> None:
             "Cache-Control",
             "Pragma",
             "X-User-ID",  # Custom header used by the application
-            "olorin_originatingip"  # Custom header for IP tracking
+            "olorin_originatingip",  # Custom header for IP tracking
+            "olorin_tid"  # Custom header for transaction ID
         ],
         max_age=600,  # Cache preflight requests for 10 minutes
     )

@@ -68,7 +68,7 @@ const RAGKnowledgeAnalytics: React.FC<RAGKnowledgeAnalyticsProps> = ({
     return 'C';
   };
 
-  const calculateRetrieval Rate = () => {
+  const calculateRetrievalRate = () => {
     if (knowledgeMetrics.totalQueries === 0) return 0;
     return knowledgeMetrics.successfulRetrievals / knowledgeMetrics.totalQueries;
   };

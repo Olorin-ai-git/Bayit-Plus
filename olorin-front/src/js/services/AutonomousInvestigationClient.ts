@@ -120,7 +120,7 @@ export class AutonomousInvestigationClient {
   }
 
   /**
-   * Initiate investigation via REST API
+   * Initiate investigation via REST API using the new async endpoint
    */
   private async initiateInvestigation(
     entityId: string,
@@ -132,8 +132,18 @@ export class AutonomousInvestigationClient {
       return `demo-investigation-${Date.now()}`;
     }
 
+    const requestBody = {
+      entity_id: entityId,
+      entity_type: entityType,
+      enable_verbose_logging: true,
+      enable_journey_tracking: true,
+      enable_chain_of_thought: true,
+      investigation_priority: 'normal',
+      metadata: {}
+    };
+
     const response = await fetch(
-      `${this.apiBaseUrl}/agent/start/${entityId}?entity_type=${entityType}`,
+      `${this.apiBaseUrl}/autonomous/start_investigation`,
       {
         method: 'POST',
         headers: {
@@ -141,6 +151,7 @@ export class AutonomousInvestigationClient {
           'Content-Type': 'application/json',
           olorin_tid: 'your-transaction-id',
         },
+        body: JSON.stringify(requestBody)
       },
     );
 
@@ -151,7 +162,16 @@ export class AutonomousInvestigationClient {
     }
 
     const result = await response.json();
-    return this.extractInvestigationId(result.agentOutput.plainText);
+    
+    // The new endpoint returns a structured response with investigation_id directly
+    if (!result.investigation_id) {
+      throw new Error('Investigation ID not found in response');
+    }
+    
+    this.log(`Investigation started: ${result.message}`, LogLevel.INFO);
+    this.log(`Status: ${result.status}`, LogLevel.INFO);
+    
+    return result.investigation_id;
   }
 
   /**

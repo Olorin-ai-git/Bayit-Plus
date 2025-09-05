@@ -49,44 +49,23 @@ const RAGToolInsights: React.FC<RAGToolInsightsProps> = ({
     }
   });
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return 'text-green-600 bg-green-100 border-green-200';
-    if (confidence >= 0.6) return 'text-blue-600 bg-blue-100 border-blue-200';
-    return 'text-yellow-600 bg-yellow-100 border-yellow-200';
-  };
-
-  const getEffectivenessLevel = (effectiveness: number) => {
-    if (effectiveness >= 0.8) return 'Excellent';
-    if (effectiveness >= 0.6) return 'Good';
-    if (effectiveness >= 0.4) return 'Fair';
-    return 'Poor';
-  };
-
-  const getToolIcon = (toolName: string) => {
-    const toolIcons: Record<string, string> = {
-      'splunk_search': '🔍',
-      'risk_calculator': '📈',
-      'device_analyzer': '📱',
-      'geo_validator': '🌍',
-      'fraud_detector': '🕵️',
-      'network_analyzer': '🌐',
-      'behavioral_model': '🧠',
-      'identity_checker': '🆔',
-    };
-    return toolIcons[toolName.toLowerCase().replace(' ', '_')] || '🔧';
-  };
-
-  const formatUsageHistory = (history: RAGToolInsight['usageHistory']) => {
-    const recent = history.slice(0, 5);
-    const successRate = recent.length > 0 
-      ? (recent.filter(h => h.success).length / recent.length) * 100 
-      : 0;
-    return { recent, successRate };
-  };
 
   const renderInsightCard = (insight: RAGToolInsight) => {
     const isSelected = selectedInsight === insight.id;
-    const { recent, successRate } = formatUsageHistory(insight.usageHistory);
+    
+    return (
+      <div key={insight.id}>
+        <RAGToolInsightCard
+          insight={insight}
+          isSelected={isSelected}
+          onSelect={setSelectedInsight}
+          showAlternatives={showAlternatives}
+        />
+        {isSelected && <RAGToolInsightDetails insight={insight} />}
+      </div>
+    );
+  };
+
     
     return (
       <div 

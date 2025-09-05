@@ -17,7 +17,6 @@ import {
 } from '../types/RiskAssessment';
 import { InvestigationStepId, StepStatus } from '../constants/definitions';
 import { OlorinService } from '../services/OlorinService';
-import AgentLogSidebar from '../components/AgentLogSidebar';
 import RAGEnhancedAgentLogSidebar from '../components/RAGEnhancedAgentLogSidebar';
 import EditStepsModal from '../components/EditStepsModal';
 import ToolsSidebar from '../components/ToolsSidebar';
@@ -42,7 +41,7 @@ import {
 import { saveComment, fetchCommentLog } from '../services/ChatService';
 import ManualInvestigationPanel from '../components/ManualInvestigationPanel';
 import { CombinedAutonomousInvestigationDisplay } from '../../components/autonomous/display/CombinedAutonomousInvestigationDisplay';
-import { AgentNodeData, ConnectionData, InvestigationFlowData, TerminalLogEntry } from '../../types/AutonomousDisplayTypes';
+import { AgentNodeData, ConnectionData, TerminalLogEntry } from '../../types/AutonomousDisplayTypes';
 import {
   Box,
   Typography,
@@ -199,7 +198,8 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [stepStates, setStepStates] = useState<InvestigationStep[]>([]);
   const [currentStep, setCurrentStep] = useState(InvestigationStepId.INIT);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [autonomousMode, setAutonomousMode] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed for better UX in autonomous mode
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const cancelledRef = useRef(false);
@@ -234,7 +234,6 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const [selectedInputType, setSelectedInputType] = useState<
     'userId' | 'deviceId'
   >('userId');
-  const [autonomousMode, setAutonomousMode] = useState(true);
   const timeRangeRef = useRef(timeRange);
   useEffect(() => {
     timeRangeRef.current = timeRange;
@@ -260,6 +259,13 @@ const InvestigationPage: React.FC<InvestigationPageProps> = ({
   const [investigationIdState, setInvestigationId] = useState<string>(
     () => investigationId || generateInvestigationId(),
   );
+
+  // Adjust sidebar default state based on autonomous mode
+  useEffect(() => {
+    // In autonomous mode, keep sidebar closed by default for better UX
+    // In manual mode, open sidebar by default for investigation monitoring
+    setIsSidebarOpen(!autonomousMode);
+  }, [autonomousMode]);
 
   // Remove investigationId from URL params on mount
   useEffect(() => {

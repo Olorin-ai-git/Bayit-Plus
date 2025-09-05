@@ -47,7 +47,7 @@ def validate_user_authorization(olorin_header) -> bool:
 
 async def initialize_agent(app: FastAPI):
     # Initialize both parallel and sequential graphs
-    app.state.graph_parallel = create_and_get_agent_graph(parallel=True)
-    app.state.graph_sequential = create_and_get_agent_graph(parallel=False)
+    app.state.graph_parallel = await create_and_get_agent_graph(parallel=True)
+    app.state.graph_sequential = await create_and_get_agent_graph(parallel=False)
     logger.info("Both parallel and sequential graphs initialized")
     app.include_router(agent_router.router)

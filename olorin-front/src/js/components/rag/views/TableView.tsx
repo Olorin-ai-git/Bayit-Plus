@@ -1,26 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  Typography,
-} from '@mui/material';
-import {
-  ArrowUpward as SortAscIcon,
-  ArrowDownward as SortDescIcon,
-  UnfoldMore as SortIcon,
-  Search as SearchIcon,
-  GetApp as ExportIcon,
-  ChevronLeft as PrevIcon,
-  ChevronRight as NextIcon,
-  TableChart as TableIcon,
-} from '@mui/icons-material';
 import { BaseViewProps } from './BaseViewComponent';
 import {
   ColumnDefinition,
@@ -28,6 +6,11 @@ import {
   SortCriteria,
   PaginationConfig,
 } from '../../../types/EnhancedChatMessage';
+import TableSearchControls from './TableSearchControls';
+import TablePaginationControls from './TablePaginationControls';
+import TableDataGrid from './TableDataGrid';
+import TableExportControls from './TableExportControls';
+import TablePagination from './TablePagination';
 
 interface TableViewState {
   sortCriteria: SortCriteria | null;
@@ -157,44 +140,22 @@ export const TableView: React.FC<BaseViewProps> = ({
     }));
   };
 
-  const getSortIcon = (column: string) => {
-    if (state.sortCriteria?.column !== column)
-      return <SortIcon className="h-4 w-4" />;
-    return state.sortCriteria.direction === 'asc' ? (
-      <SortAscIcon className="h-4 w-4" />
-    ) : (
-      <SortDescIcon className="h-4 w-4" />
-    );
-  };
-
-  const formatCellValue = (value: any, column: ColumnDefinition) => {
-    if (value === null || value === undefined) return '-';
-
-    switch (column.type) {
-      case 'number':
-        return Number(value).toLocaleString();
-      case 'date':
-        return new Date(value).toLocaleDateString();
-      case 'boolean':
-        return value ? 'Yes' : 'No';
-      default:
-        return String(value);
-    }
-  };
 
   if (data.length === 0) {
     return (
       <div
         className={`p-12 text-center text-gray-500 bg-white rounded-lg border ${className}`}
       >
-        <TableIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <Typography variant="h6" className="mb-2 text-gray-600">
+        <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
+        </svg>
+        <h3 className="mb-2 text-gray-600 text-lg font-medium">
           No data available
-        </Typography>
-        <Typography variant="body2" className="text-gray-500">
+        </h3>
+        <p className="text-gray-500 text-sm">
           This response doesn't contain structured data that can be displayed in
           a table.
-        </Typography>
+        </p>
       </div>
     );
   }
@@ -204,185 +165,41 @@ export const TableView: React.FC<BaseViewProps> = ({
       {/* Table Controls Header */}
       <div className="border-b bg-gray-50 px-4 py-3 rounded-t-lg">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {/* Search */}
-            <TextField
-              placeholder="Search all columns..."
-              size="small"
-              value={state.searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="min-w-64"
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon className="w-4 h-4 text-gray-400 mr-2" />
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '&:hover fieldset': {
-                    borderColor: '#e5e7eb',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#e5e7eb',
-                    boxShadow: 'none',
-                  },
-                },
-              }}
-            />
-
-            {/* Results info */}
-            <div className="text-sm text-gray-600">
-              Showing {paginatedData.length} of {processedData.length} records
-            </div>
-          </div>
+          <TableSearchControls
+            searchTerm={state.searchTerm}
+            onSearch={handleSearch}
+            resultCount={paginatedData.length}
+            totalCount={processedData.length}
+          />
 
           <div className="flex items-center gap-2">
-            {/* Page size selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Rows per page:</span>
-              <Select
-                value={state.pagination.page_size}
-                onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                size="small"
-                className="min-w-20"
-              >
-                {[5, 10, 25, 50, 100].map((size) => (
-                  <MenuItem key={size} value={size}>
-                    {size}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-
-            {/* Export buttons */}
-            <div className="flex gap-1">
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ExportIcon className="w-4 h-4" />}
-                onClick={() => onExport?.('csv')}
-                className="text-xs"
-              >
-                CSV
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ExportIcon className="w-4 h-4" />}
-                onClick={() => onExport?.('json')}
-                className="text-xs"
-              >
-                JSON
-              </Button>
-            </div>
+            <TablePaginationControls
+              pageSize={state.pagination.page_size}
+              onPageSizeChange={handlePageSizeChange}
+            />
+            
+            <TableExportControls
+              onExport={onExport}
+            />
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHead>
-            <TableRow className="bg-gray-50">
-              {effectiveColumns.map((column) => (
-                <TableCell
-                  key={column.key}
-                  className="font-semibold text-gray-900 bg-gray-50 border-b-2 border-gray-200"
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{column.label}</span>
-                    {column.sortable && (
-                      <button
-                        onClick={() => handleSort(column.key)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        {getSortIcon(column.key)}
-                      </button>
-                    )}
-                  </div>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedData.map((row, index) => (
-              <TableRow
-                key={index}
-                className="hover:bg-gray-50 transition-colors border-b border-gray-100"
-              >
-                {effectiveColumns.map((column) => (
-                  <TableCell
-                    key={column.key}
-                    className="text-gray-800 py-3 border-b border-gray-100"
-                  >
-                    <div className="max-w-xs">
-                      <span
-                        className="block truncate"
-                        title={String(row[column.key])}
-                      >
-                        {formatCellValue(row[column.key], column)}
-                      </span>
-                    </div>
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Table Data Grid */}
+      <TableDataGrid
+        columns={effectiveColumns}
+        data={paginatedData}
+        sortCriteria={state.sortCriteria}
+        onSort={handleSort}
+      />
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="border-t bg-gray-50 px-4 py-3 rounded-b-lg">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Page {state.pagination.page} of {totalPages}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<PrevIcon className="w-4 h-4" />}
-                disabled={state.pagination.page === 1}
-                onClick={() => handlePageChange(state.pagination.page - 1)}
-                className="text-xs"
-              >
-                Previous
-              </Button>
-
-              <div className="flex items-center gap-1">
-                {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                  const pageNum = i + 1;
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 text-xs rounded transition-colors ${
-                        state.pagination.page === pageNum
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-600 hover:bg-gray-100'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<NextIcon className="w-4 h-4" />}
-                disabled={state.pagination.page === totalPages}
-                onClick={() => handlePageChange(state.pagination.page + 1)}
-                className="text-xs"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        </div>
+        <TablePagination
+          currentPage={state.pagination.page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

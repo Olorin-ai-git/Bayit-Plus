@@ -4,7 +4,8 @@
  */
 
 export interface RAGEventData {
-  type: 'rag_knowledge_retrieved' | 'rag_context_augmented' | 'rag_tool_recommended' | 'rag_result_enhanced';
+  type: 'rag_knowledge_retrieved' | 'rag_context_augmented' | 'rag_tool_recommended' | 'rag_result_enhanced' | 
+        'rag_knowledge_retrieval' | 'rag_tool_alternatives' | 'rag_tool_recommendation' | 'rag_tool_execution';
   investigation_id: string;
   agent_type: string;
   timestamp: string;
@@ -20,6 +21,21 @@ export interface RAGOperationData {
   enhancement_applied: boolean;
   tools_recommended?: string[];
   knowledge_chunks_used?: number;
+  // Additional properties used by components
+  domain?: string;
+  success?: boolean;
+  reasoning?: string;
+  description?: string;
+  processing_time?: number;
+  tools_used?: string[];
+  insights?: string[];
+  alternatives?: any[];
+  recommendation?: string;
+  context_factors?: string[];
+  effectiveness_score?: number;
+  recommended_tool?: string;
+  tool_name?: string;
+  execution_time?: number;
 }
 
 export interface RAGPerformanceData {
@@ -230,7 +246,7 @@ export interface RAGKnowledgeAnalyticsProps {
   showDetailedMetrics?: boolean;
 }
 
-export interface RAGKnowledgeSource {
+export interface RAGKnowledgeSourceExtended {
   id: string;
   name: string;
   type: string;
@@ -249,7 +265,7 @@ export interface RAGKnowledgeSource {
 
 export interface RAGSourceEffectivenessProps {
   investigationId: string;
-  sources?: RAGKnowledgeSource[];
+  sources?: RAGKnowledgeSourceExtended[];
   sortBy?: 'effectiveness' | 'usage' | 'relevance' | 'freshness';
   showInactive?: boolean;
 }

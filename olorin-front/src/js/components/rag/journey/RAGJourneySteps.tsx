@@ -14,6 +14,7 @@ const RAGJourneySteps: React.FC<RAGJourneyStepsProps> = ({
 }) => {
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
   const [sortOrder, setSortOrder] = useState<'chronological' | 'confidence' | 'agent'>('chronological');
+  const [currentGroupByAgent, setGroupByAgent] = useState(groupByAgent);
 
   const toggleStepExpansion = (stepId: string) => {
     const newExpanded = new Set(expandedSteps);
@@ -37,7 +38,7 @@ const RAGJourneySteps: React.FC<RAGJourneyStepsProps> = ({
     }
   });
 
-  const groupedSteps = groupByAgent 
+  const groupedSteps = currentGroupByAgent 
     ? sortedSteps.reduce((groups, step) => {
         const agent = step.agent;
         if (!groups[agent]) groups[agent] = [];
@@ -321,8 +322,8 @@ const RAGJourneySteps: React.FC<RAGJourneyStepsProps> = ({
             <label className="flex items-center text-sm text-gray-600">
               <input 
                 type="checkbox" 
-                checked={groupByAgent}
-                onChange={(e) => setGroupByAgent?.(e.target.checked)}
+                checked={currentGroupByAgent}
+                onChange={(e) => setGroupByAgent(e.target.checked)}
                 className="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               Group by Agent
@@ -336,14 +337,14 @@ const RAGJourneySteps: React.FC<RAGJourneyStepsProps> = ({
         <div className="space-y-4">
           {Object.entries(groupedSteps).map(([groupName, groupSteps]) => (
             <div key={groupName}>
-              {groupByAgent && (
+              {currentGroupByAgent && (
                 <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
                   🤖 {groupName} ({groupSteps.length} steps)
                 </h4>
               )}
               <div className="space-y-3">
                 {groupSteps.map((step, index) => 
-                  renderStepCard(step, sortedSteps.indexOf(step), groupByAgent)
+                  renderStepCard(step, sortedSteps.indexOf(step), currentGroupByAgent)
                 )}
               </div>
             </div>
