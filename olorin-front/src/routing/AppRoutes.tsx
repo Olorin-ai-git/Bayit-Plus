@@ -8,6 +8,7 @@ import RAGPage from '../js/pages/RAGPage';
 import InvestigationPage from '../js/pages/InvestigationPage';
 import Investigations from '../js/pages/Investigations';
 import Settings from '../js/pages/Settings';
+import MultiEntityInvestigationPanel from '../js/components/MultiEntityInvestigationPanel';
 import ProtectedRoute from '../components/ProtectedRoute';
 import RootRedirect from '../components/RootRedirect';
 
@@ -29,6 +30,10 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/investigation/:id"
         element={<ProtectedRoute element={<InvestigationPage />} allowedInDemo={true} />}
+      />
+      <Route 
+        path="/multi-entity-investigation" 
+        element={<ProtectedRoute element={<MultiEntityInvestigationPanel />} allowedInDemo={true} />} 
       />
       <Route 
         path="/settings" 

@@ -20,7 +20,6 @@ export const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
   const characterMap = React.useMemo(() => {
     const map: Array<{ char: string; html: string; isTag: boolean }> = [];
     let htmlIndex = 0;
-    let cleanIndex = 0;
     
     while (htmlIndex < text.length) {
       if (text[htmlIndex] === '<') {
@@ -37,7 +36,6 @@ export const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
         const char = text[htmlIndex];
         map.push({ char, html: char, isTag: false });
         htmlIndex++;
-        cleanIndex++;
       }
     }
     

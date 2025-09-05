@@ -23,6 +23,7 @@ import {
   Search as InvestigationIcon,
   Settings as SettingsIcon,
   Code as MCPIcon,
+  AccountTree as MultiEntityIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { preserveUrlParams } from '../js/utils/urlParams';
@@ -61,6 +62,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       path: '/investigation',
       label: 'New Investigation',
       icon: <InvestigationIcon />,
+      allowedInDemo: true,
+    },
+    {
+      path: '/multi-entity-investigation',
+      label: 'Multi-Entity Investigation',
+      icon: <MultiEntityIcon />,
       allowedInDemo: true,
     },
     {

@@ -1,4 +1,4 @@
-import { InvestigationStep, RiskAssessment } from './RiskAssessment';
+import { RiskAssessment } from './RiskAssessment';
 import { Investigation } from './investigation';
 
 // Entity Types supported in multi-entity investigations

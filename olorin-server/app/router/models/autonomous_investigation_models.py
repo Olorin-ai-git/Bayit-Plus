@@ -2,22 +2,33 @@
 Autonomous Investigation Models
 This module contains all Pydantic models for autonomous investigation requests and responses.
 """
-from pydantic import BaseModel, Field
+import re
+from pydantic import BaseModel, Field, validator
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from app.utils.entity_validation import validate_entity_type_against_enum
 
 
 class AutonomousInvestigationRequest(BaseModel):
     """Request model for starting an autonomous investigation"""
     investigation_id: Optional[str] = Field(None, description="Optional investigation ID (auto-generated if not provided)")
     entity_id: str = Field(..., description="Entity being investigated (user_id, device_id, etc.)")
-    entity_type: str = Field(..., description="Type of entity (user_id, device_id, transaction_id)")
+    entity_type: str = Field(..., min_length=1, max_length=100, description="Type of entity (user, device, transaction, etc.)")
     scenario: Optional[str] = Field(None, description="Mock scenario to use for testing (optional)")
     enable_verbose_logging: bool = Field(True, description="Enable comprehensive logging of all interactions")
     enable_journey_tracking: bool = Field(True, description="Enable LangGraph journey tracking")
     enable_chain_of_thought: bool = Field(True, description="Enable agent reasoning logging")
     investigation_priority: str = Field("normal", description="Investigation priority (low, normal, high, critical)")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional investigation metadata")
+
+    @validator("entity_type")
+    def validate_entity_type(cls, v):
+        """Validate entity type against EntityType enum with comprehensive security checks."""
+        is_valid, error_message = validate_entity_type_against_enum(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        
+        return v.strip().lower()
 
 
 class AutonomousInvestigationResponse(BaseModel):

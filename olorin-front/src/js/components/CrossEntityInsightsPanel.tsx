@@ -8,7 +8,6 @@ import {
   Grid,
   Chip,
   IconButton,
-  Tooltip,
   Button,
   Dialog,
   DialogTitle,
@@ -36,17 +35,12 @@ import {
   Warning as WarningIcon,
   Security as SecurityIcon,
   Visibility as VisibilityIcon,
-  ZoomIn as ZoomInIcon,
-  FilterList as FilterIcon,
   Share as ShareIcon
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import {
   CrossEntityAnalysis,
   EntityPattern,
-  RelationshipInsight,
-  RiskCorrelation,
-  TimelineEvent,
   EntityDefinition,
   EntityRelationship
 } from '../types/multiEntityInvestigation';

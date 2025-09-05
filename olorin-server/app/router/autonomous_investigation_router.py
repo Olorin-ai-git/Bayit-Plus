@@ -12,7 +12,7 @@ This is the refactored version using modular architecture for maintainability.
 import logging
 from app.service.logging import get_bridge_logger
 from typing import Dict, Any, List
-from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket
+from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket, Path
 
 from app.router.models.autonomous_investigation_models import (
     AutonomousInvestigationRequest,
@@ -25,6 +25,16 @@ from app.models.multi_entity_investigation import (
     MultiEntityInvestigationRequest,
     MultiEntityInvestigationResult,
     MultiEntityInvestigationStatus
+)
+from app.router.models.multi_entity_api_schemas import (
+    MultiEntityInvestigationRequestSchema,
+    MultiEntityInvestigationResultSchema,
+    QueryValidationErrorResponse,
+    InvestigationStatusSummary,
+    MultiEntityMetricsResponse,
+    EnhancedEntityTypesResponse,
+    HealthCheckResponse,
+    APIExamples
 )
 from app.router.controllers.investigation_controller import (
     start_autonomous_investigation,
@@ -39,6 +49,7 @@ from app.router.controllers.investigation_executor import execute_autonomous_inv
 from app.router.handlers.websocket_handler import monitor_investigation_websocket, get_websocket_connections
 from app.router.handlers.test_scenario_handler import list_test_scenarios, validate_investigation_results
 from app.service.agent.multi_entity.investigation_orchestrator import get_multi_entity_orchestrator
+from app.service.agent.multi_entity.query_validator import validate_multi_entity_query
 
 logger = get_bridge_logger(__name__)
 
@@ -159,11 +170,33 @@ async def validate_investigation_results_endpoint(investigation_id: str, results
 
 # ===== MULTI-ENTITY INVESTIGATION ENDPOINTS (Phase 2.1) =====
 
-@router.post("/multi-entity/start", response_model=MultiEntityInvestigationResult)
+@router.post(
+    "/multi-entity/start",
+    response_model=MultiEntityInvestigationResultSchema,
+    responses={
+        200: {
+            "description": "Investigation started successfully",
+            "model": MultiEntityInvestigationResultSchema
+        },
+        400: {
+            "description": "Query validation failed or invalid request",
+            "model": QueryValidationErrorResponse
+        },
+        422: {
+            "description": "Validation error in request data"
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    },
+    summary="Start Multi-Entity Investigation",
+    description="Start a new multi-entity autonomous investigation with Boolean logic and cross-entity analysis capabilities.",
+    tags=["Multi-Entity Investigation"]
+)
 async def start_multi_entity_investigation_endpoint(
-    request: MultiEntityInvestigationRequest,
+    request: MultiEntityInvestigationRequestSchema,
     background_tasks: BackgroundTasks
-) -> MultiEntityInvestigationResult:
+) -> MultiEntityInvestigationResultSchema:
     """
     Start a new multi-entity autonomous investigation.
     
@@ -202,6 +235,38 @@ async def start_multi_entity_investigation_endpoint(
     ```
     """
     try:
+        # Extract entity IDs for validation
+        entity_ids = [entity["entity_id"] for entity in request.entities]
+        
+        # Validate query complexity and limits before processing
+        validation_result = validate_multi_entity_query(
+            boolean_logic=request.boolean_logic,
+            entity_ids=entity_ids,
+            context={"endpoint": "start_multi_entity_investigation"}
+        )
+        
+        if not validation_result.is_valid:
+            error_details = {
+                "validation_errors": validation_result.validation_errors,
+                "complexity_metrics": {
+                    "complexity_level": validation_result.complexity_metrics.complexity_level.value,
+                    "complexity_score": validation_result.complexity_metrics.complexity_score,
+                    "entity_count": validation_result.complexity_metrics.entity_count,
+                    "estimated_time_ms": validation_result.complexity_metrics.estimated_execution_time_ms
+                }
+            }
+            raise HTTPException(
+                status_code=400,
+                detail=f"Query validation failed: {', '.join(validation_result.validation_errors)}. Details: {error_details}"
+            )
+        
+        # Log validation warnings and recommendations for API consumers
+        if validation_result.warnings:
+            logger.warning(f"API Query validation warnings for {request.investigation_id}: {', '.join(validation_result.warnings)}")
+        
+        if validation_result.recommendations:
+            logger.info(f"API Query optimization recommendations for {request.investigation_id}: {', '.join(validation_result.recommendations)}")
+        
         orchestrator = get_multi_entity_orchestrator()
         
         # Start the investigation (returns initial result with status)
@@ -223,8 +288,28 @@ async def start_multi_entity_investigation_endpoint(
         raise HTTPException(status_code=400, detail=f"Failed to start investigation: {str(e)}")
 
 
-@router.get("/multi-entity/{investigation_id}/status", response_model=Dict[str, Any])
-async def get_multi_entity_investigation_status_endpoint(investigation_id: str) -> Dict[str, Any]:
+@router.get(
+    "/multi-entity/{investigation_id}/status",
+    response_model=InvestigationStatusSummary,
+    responses={
+        200: {
+            "description": "Investigation status retrieved successfully",
+            "model": InvestigationStatusSummary
+        },
+        404: {
+            "description": "Investigation not found"
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    },
+    summary="Get Multi-Entity Investigation Status",
+    description="Get real-time status and metadata for a multi-entity investigation.",
+    tags=["Multi-Entity Investigation"]
+)
+async def get_multi_entity_investigation_status_endpoint(
+    investigation_id: str = Path(description="Unique investigation identifier", example="multi_a1b2c3d4")
+) -> InvestigationStatusSummary:
     """
     Get real-time status of a multi-entity autonomous investigation.
     
@@ -249,8 +334,28 @@ async def get_multi_entity_investigation_status_endpoint(investigation_id: str) 
         raise HTTPException(status_code=500, detail=f"Failed to get status: {str(e)}")
 
 
-@router.get("/multi-entity/{investigation_id}/results", response_model=MultiEntityInvestigationResult)
-async def get_multi_entity_investigation_results_endpoint(investigation_id: str) -> MultiEntityInvestigationResult:
+@router.get(
+    "/multi-entity/{investigation_id}/results",
+    response_model=MultiEntityInvestigationResultSchema,
+    responses={
+        200: {
+            "description": "Investigation results retrieved successfully",
+            "model": MultiEntityInvestigationResultSchema
+        },
+        404: {
+            "description": "Investigation not found"
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    },
+    summary="Get Multi-Entity Investigation Results",
+    description="Get complete results and findings for a multi-entity investigation.",
+    tags=["Multi-Entity Investigation"]
+)
+async def get_multi_entity_investigation_results_endpoint(
+    investigation_id: str = Path(description="Unique investigation identifier", example="multi_a1b2c3d4")
+) -> MultiEntityInvestigationResultSchema:
     """
     Get complete results for a multi-entity autonomous investigation.
     
@@ -260,12 +365,15 @@ async def get_multi_entity_investigation_results_endpoint(investigation_id: str)
     ```
     """
     try:
-        # TODO: Phase 2.2 - Implement result storage and retrieval
-        # For now, return placeholder response
-        raise HTTPException(
-            status_code=501, 
-            detail="Multi-entity investigation results retrieval will be implemented in Phase 2.2"
-        )
+        from app.service.agent.multi_entity.result_storage import get_result_storage
+        
+        storage = await get_result_storage()
+        result = await storage.get_result(investigation_id)
+        
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Investigation {investigation_id} not found")
+        
+        return result
         
     except HTTPException:
         raise
@@ -313,8 +421,23 @@ async def update_multi_entity_relationships_endpoint(
         raise HTTPException(status_code=500, detail=f"Failed to update relationships: {str(e)}")
 
 
-@router.get("/entities/types/enhanced", response_model=Dict[str, List[str]])
-async def get_enhanced_entity_types_endpoint() -> Dict[str, List[str]]:
+@router.get(
+    "/entities/types/enhanced",
+    response_model=EnhancedEntityTypesResponse,
+    responses={
+        200: {
+            "description": "Entity types retrieved successfully",
+            "model": EnhancedEntityTypesResponse
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    },
+    summary="Get Enhanced Entity Types",
+    description="Get comprehensive list of all available entity types with categorization and descriptions.",
+    tags=["Multi-Entity Investigation", "Entity Management"]
+)
+async def get_enhanced_entity_types_endpoint() -> EnhancedEntityTypesResponse:
     """
     Get all available enhanced entity types including transaction-specific types.
     
@@ -350,8 +473,23 @@ async def get_enhanced_entity_types_endpoint() -> Dict[str, List[str]]:
         raise HTTPException(status_code=500, detail=f"Failed to get entity types: {str(e)}")
 
 
-@router.get("/multi-entity/metrics", response_model=Dict[str, Any])
-async def get_multi_entity_metrics_endpoint() -> Dict[str, Any]:
+@router.get(
+    "/multi-entity/metrics",
+    response_model=MultiEntityMetricsResponse,
+    responses={
+        200: {
+            "description": "Orchestrator metrics retrieved successfully",
+            "model": MultiEntityMetricsResponse
+        },
+        500: {
+            "description": "Internal server error"
+        }
+    },
+    summary="Get Multi-Entity Orchestrator Metrics",
+    description="Get performance metrics and statistics for the multi-entity investigation orchestrator.",
+    tags=["Multi-Entity Investigation", "Monitoring"]
+)
+async def get_multi_entity_metrics_endpoint() -> MultiEntityMetricsResponse:
     """
     Get performance metrics for the multi-entity investigation orchestrator.
     
@@ -369,8 +507,20 @@ async def get_multi_entity_metrics_endpoint() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Failed to get metrics: {str(e)}")
 
 
-@router.get("/health")
-async def health_check():
+@router.get(
+    "/health",
+    response_model=HealthCheckResponse,
+    responses={
+        200: {
+            "description": "Service is healthy",
+            "model": HealthCheckResponse
+        }
+    },
+    summary="Health Check",
+    description="Check the health status of the autonomous investigation service and all its components.",
+    tags=["Monitoring", "Health"]
+)
+async def health_check() -> HealthCheckResponse:
     """Health check endpoint for monitoring router status"""
     active_investigations = get_active_investigations()
     websocket_connections = get_websocket_connections()

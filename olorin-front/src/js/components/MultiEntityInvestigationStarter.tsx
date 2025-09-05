@@ -10,12 +10,10 @@ import {
   FormControl,
   InputLabel,
   Chip,
-  IconButton,
   Tooltip,
   Grid,
   Card,
   CardContent,
-  Divider,
   Switch,
   FormControlLabel,
   Alert
@@ -31,7 +29,6 @@ import {
   EntityDefinition,
   EntityType,
   MultiEntityInvestigationRequest,
-  BooleanOperator
 } from '../types/multiEntityInvestigation';
 
 interface MultiEntityInvestigationStarterProps {

@@ -41,11 +41,6 @@ import {
 import { useTheme } from '@mui/material/styles';
 import {
   MultiEntityInvestigationResult,
-  EntityInvestigationResult,
-  EntityDefinition,
-  CrossEntityAnalysis,
-  MultiEntityRiskAssessment,
-  TimelineEvent
 } from '../types/multiEntityInvestigation';
 
 interface MultiEntityResultsProps {
@@ -75,7 +70,6 @@ const MultiEntityResults: React.FC<MultiEntityResultsProps> = ({
 }) => {
   const theme = useTheme();
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
   const [showTimelineDialog, setShowTimelineDialog] = useState(false);
 
   const {
@@ -154,13 +148,7 @@ const MultiEntityResults: React.FC<MultiEntityResultsProps> = ({
     setSelectedTab(newValue);
   }, []);
 
-  const handleEntityClick = useCallback((entityId: string) => {
-    setSelectedEntity(entityId);
-  }, []);
 
-  const handleEntityDrillDown = useCallback((entityId: string) => {
-    onEntityDrillDown(entityId);
-  }, [onEntityDrillDown]);
 
   const renderOverviewTab = () => (
     <Grid container spacing={3}>
@@ -323,7 +311,7 @@ const MultiEntityResults: React.FC<MultiEntityResultsProps> = ({
                   <Button
                     size="small"
                     startIcon={<ViewIcon />}
-                    onClick={() => handleEntityDrillDown(entity.entity_id)}
+                    onClick={() => onEntityDrillDown(entity.entity_id)}
                   >
                     View Details
                   </Button>

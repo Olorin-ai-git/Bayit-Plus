@@ -1,5 +1,5 @@
 import React from 'react';
-import { RAGPerformanceMetricsProps, RAGMetrics } from '../../types/RAGTypes';
+import { RAGPerformanceMetricsProps } from '../../types/RAGTypes';
 
 /**
  * RAG Performance Metrics Component

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   Paper,
   Typography,
@@ -17,15 +17,12 @@ import {
   Chip,
   LinearProgress,
   Fade,
-  Collapse
 } from '@mui/material';
 import {
   PlayArrow as StartIcon,
   Stop as StopIcon,
   Refresh as RefreshIcon,
-  Save as SaveIcon,
   Share as ShareIcon,
-  Timeline as ProgressIcon
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
@@ -41,7 +38,6 @@ import {
   MultiEntityInvestigationRequest,
   MultiEntityInvestigationResult,
   MultiEntityInvestigationStatusUpdate,
-  EntityDefinition,
   EntityRelationship,
   EntityType
 } from '../types/multiEntityInvestigation';
@@ -82,7 +78,6 @@ const MultiEntityInvestigationPanel: React.FC<MultiEntityInvestigationPanelProps
   const [statusMessage, setStatusMessage] = useState('');
   const [showAdvancedMode, setShowAdvancedMode] = useState(false);
   const [client, setClient] = useState<MultiEntityInvestigationClient | null>(null);
-  const [investigationId, setInvestigationId] = useState<string | null>(null);
   const [completedEntities, setCompletedEntities] = useState<string[]>([]);
   const [currentEntity, setCurrentEntity] = useState<string | null>(null);
   const [showStopDialog, setShowStopDialog] = useState(false);
@@ -101,55 +96,55 @@ const MultiEntityInvestigationPanel: React.FC<MultiEntityInvestigationPanelProps
   }, []);
 
   // Event handlers for investigation
-  const eventHandlers: MultiEntityEventHandler = {
-    onEntityStarted: useCallback((entityId: string) => {
+  const eventHandlers: MultiEntityEventHandler = useMemo(() => ({
+    onEntityStarted: (entityId: string) => {
       setCurrentEntity(entityId);
       setStatusMessage(`Starting investigation for ${entityId}...`);
       onLog?.(`Entity investigation started: ${entityId}`, LogLevel.INFO);
-    }, [onLog]),
+    },
 
-    onEntityCompleted: useCallback((entityId: string, result: any) => {
+    onEntityCompleted: (entityId: string, result: any) => {
       setCompletedEntities(prev => [...prev, entityId]);
       setStatusMessage(`Completed investigation for ${entityId}`);
       onLog?.(`Entity investigation completed: ${entityId}`, LogLevel.SUCCESS);
-    }, [onLog]),
+    },
 
-    onEntityFailed: useCallback((entityId: string, error: string) => {
+    onEntityFailed: (entityId: string, error: string) => {
       setStatusMessage(`Failed to investigate ${entityId}: ${error}`);
       onLog?.(`Entity investigation failed: ${entityId} - ${error}`, LogLevel.ERROR);
-    }, [onLog]),
+    },
 
-    onCrossAnalysisStarted: useCallback(() => {
+    onCrossAnalysisStarted: () => {
       setStatusMessage('Performing cross-entity analysis...');
       onLog?.('Cross-entity analysis started', LogLevel.INFO);
-    }, [onLog]),
+    },
 
-    onInvestigationCompleted: useCallback((result: MultiEntityInvestigationResult) => {
+    onInvestigationCompleted: (result: MultiEntityInvestigationResult) => {
       setInvestigationResult(result);
       setIsInvestigating(false);
       setActiveStep(InvestigationStep.RESULTS);
       setStatusMessage('Investigation completed successfully');
       onLog?.('Multi-entity investigation completed', LogLevel.SUCCESS);
       onInvestigationComplete?.(result);
-    }, [onLog, onInvestigationComplete]),
+    },
 
-    onStatusUpdate: useCallback((update: MultiEntityInvestigationStatusUpdate) => {
+    onStatusUpdate: (update: MultiEntityInvestigationStatusUpdate) => {
       setInvestigationProgress(update.progress_percentage);
       setStatusMessage(update.message);
       setCompletedEntities(update.entities_completed);
       setCurrentEntity(update.current_entity || null);
-    }, []),
+    },
 
-    onError: useCallback((error: string) => {
+    onError: (error: string) => {
       setStatusMessage(`Error: ${error}`);
       setIsInvestigating(false);
       onLog?.(error, LogLevel.ERROR);
-    }, [onLog]),
+    },
 
-    onLog: useCallback((message: string, level: LogLevel) => {
+    onLog: (message: string, level: LogLevel) => {
       onLog?.(message, level);
-    }, [onLog])
-  };
+    }
+  }), [onLog, onInvestigationComplete]);
 
   // Handle investigation start from setup step
   const handleInvestigationSetup = useCallback((request: MultiEntityInvestigationRequest) => {
@@ -191,7 +186,6 @@ const MultiEntityInvestigationPanel: React.FC<MultiEntityInvestigationPanelProps
       };
 
       const id = await client.startInvestigation(finalRequest, eventHandlers);
-      setInvestigationId(id);
       setStatusMessage('Investigation started successfully');
       onLog?.(`Investigation started with ID: ${id}`, LogLevel.SUCCESS);
     } catch (error) {
@@ -208,7 +202,6 @@ const MultiEntityInvestigationPanel: React.FC<MultiEntityInvestigationPanelProps
       client.stopInvestigation();
       setIsInvestigating(false);
       setStatusMessage('Investigation stopped by user');
-      setInvestigationId(null);
       onLog?.('Investigation stopped', LogLevel.WARNING);
     }
     setShowStopDialog(false);
@@ -245,7 +238,6 @@ const MultiEntityInvestigationPanel: React.FC<MultiEntityInvestigationPanelProps
     setStatusMessage('');
     setCompletedEntities([]);
     setCurrentEntity(null);
-    setInvestigationId(null);
     setShowAdvancedMode(false);
   }, []);
 

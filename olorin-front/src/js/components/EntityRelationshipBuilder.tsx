@@ -14,23 +14,19 @@ import {
   Grid,
   Chip,
   IconButton,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Alert
 } from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  Visibility as ViewIcon,
   Edit as EditIcon,
   Hub as RelationshipIcon,
   AutoGraph as GraphIcon
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
 import {
   EntityDefinition,
   EntityRelationship,
@@ -70,7 +66,6 @@ const EntityRelationshipBuilder: React.FC<EntityRelationshipBuilderProps> = ({
   onRelationshipsChange,
   readonly = false
 }) => {
-  const theme = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingRelationship, setEditingRelationship] = useState<EntityRelationship | null>(null);

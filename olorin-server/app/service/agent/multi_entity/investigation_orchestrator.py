@@ -18,6 +18,8 @@ from app.service.logging import get_bridge_logger
 from app.service.agent.multi_entity.entity_manager import EntityManager, EntityType, get_entity_manager
 from app.service.agent.multi_entity.multi_investigation_coordinator import get_multi_entity_coordinator
 from app.service.agent.multi_entity.cross_entity_analyzer import get_cross_entity_analyzer
+from app.service.agent.multi_entity.result_storage import get_result_storage
+from app.service.agent.multi_entity.query_validator import get_query_validator, QueryComplexityLevel
 from app.models.multi_entity_investigation import (
     MultiEntityInvestigationRequest,
     MultiEntityInvestigationResult,
@@ -205,6 +207,13 @@ class MultiEntityInvestigationOrchestrator:
                 total_duration_ms=duration_ms
             )
             
+            # Store result for persistence and retrieval
+            try:
+                storage = await get_result_storage()
+                await storage.store_result(investigation_id, request, result)
+            except Exception as e:
+                self.logger.error(f"⚠️ Failed to store result for {investigation_id}: {str(e)}")
+            
             # Update metrics
             self.metrics["successful_investigations"] += 1
             self.metrics["entities_processed"] += len(context.entity_ids)
@@ -249,6 +258,32 @@ class MultiEntityInvestigationOrchestrator:
             
             entity_ids.add(entity_id)
             entity_types[entity_id] = entity_type
+        
+        # Validate query complexity and limits
+        validator = get_query_validator()
+        validation_result = validator.validate_query(
+            boolean_logic=request.boolean_logic,
+            entity_ids=list(entity_ids),
+            context={"investigation_scope": request.investigation_scope}
+        )
+        
+        if not validation_result.is_valid:
+            error_msg = f"Query validation failed: {', '.join(validation_result.validation_errors)}"
+            self.logger.error(f"❌ {error_msg}")
+            raise ValueError(error_msg)
+        
+        # Log validation warnings and recommendations
+        if validation_result.warnings:
+            self.logger.warning(f"⚠️ Query validation warnings: {', '.join(validation_result.warnings)}")
+        
+        if validation_result.recommendations:
+            self.logger.info(f"💡 Query optimization recommendations: {', '.join(validation_result.recommendations)}")
+        
+        # Log complexity metrics
+        metrics = validation_result.complexity_metrics
+        self.logger.info(f"📊 Query complexity: {metrics.complexity_level.value} "
+                        f"(score: {metrics.complexity_score:.1f}, entities: {metrics.entity_count}, "
+                        f"estimated time: {metrics.estimated_execution_time_ms:.0f}ms)")
         
         # Validate relationships reference valid entities
         for relationship in request.relationships:
