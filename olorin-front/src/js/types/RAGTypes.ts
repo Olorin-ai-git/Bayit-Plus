@@ -312,6 +312,7 @@ export interface RAGToolInsight {
     timestamp: string;
     success: boolean;
     context: string;
+    duration?: number;
   }[];
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { BaseViewProps } from './BaseViewComponent';
 import {
+  ColumnDefinition,
   FilterCriteria,
   SortCriteria,
   PaginationConfig,
@@ -40,7 +41,7 @@ export const TableView: React.FC<BaseViewProps> = ({
   });
 
   // Generate columns from data if not provided
-  const effectiveColumns = useMemo(() => {
+  const effectiveColumns = useMemo((): ColumnDefinition[] => {
     if (columns.length > 0) return columns;
 
     if (data.length === 0) return [];

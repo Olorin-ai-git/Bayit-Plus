@@ -128,7 +128,7 @@ describe('Performance Integration Tests', () => {
     jest.clearAllMocks();
     
     mockClient = {
-      startInvestigation: jest.fn().mockResolvedValue('test-investigation'),
+      startInvestigation: jest.fn().mockImplementation(async () => 'test-investigation'),
       stopInvestigation: jest.fn(),
       isActive: jest.fn().mockReturnValue(true),
       getInvestigationId: jest.fn().mockReturnValue('test-investigation'),
