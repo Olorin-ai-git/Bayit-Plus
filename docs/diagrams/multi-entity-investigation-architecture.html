@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Entity Autonomous Investigation System Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .diagram-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .diagram-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .diagram-description {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .metadata {
+            background-color: #f1f8ff;
+            border: 1px solid #b8d4f1;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metadata strong {
+            color: #2c3e50;
+        }
+        
+        .feature-list {
+            background-color: #f8fff8;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .feature-list ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .feature-list li {
+            margin: 5px 0;
+        }
+        
+        .mermaid {
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .diagram-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Multi-Entity Autonomous Investigation System Architecture</h1>
+    
+    <div class="metadata">
+        <strong>Date:</strong> 2025-01-09<br>
+        <strong>Author:</strong> Gil Klainert<br>
+        <strong>Plan Reference:</strong> <a href="/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md">Multi-Entity Autonomous Investigation System Plan</a><br>
+        <strong>System:</strong> Olorin Fraud Detection Platform
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">🏗️ Multi-Entity Investigation Architecture Overview</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> This diagram shows the complete architecture for multi-entity autonomous investigations, extending the existing LangGraph workflow to support multiple related entities with Boolean relationship logic.
+        </div>
+        <div class="mermaid">
+graph TB
+    subgraph "Frontend Investigation Interface"
+        A[MultiEntityInvestigationStarter] --> B[EntityRelationshipBuilder]
+        B --> C[MultiEntityInvestigationResults]
+        C --> D[CrossEntityInsightsPanel]
+        A --> E[InvestigationHistoryPanel]
+    end
+
+    subgraph "Autonomous Investigation API"
+        F[AutonomousInvestigationRouter] --> G[MultiEntityInvestigationRequest]
+        G --> H[MultiEntityInvestigationResponse]
+        F --> I[InvestigationStatusEndpoint]
+        F --> J[WebSocketUpdates]
+    end
+
+    subgraph "Multi-Entity Investigation Engine"
+        K[MultiEntityInvestigationCoordinator] --> L[LangGraphWorkflowOrchestrator]
+        L --> M[DeviceAgentCluster]
+        L --> N[LocationAgentCluster]
+        L --> O[NetworkAgentCluster]
+        L --> P[LogsAgentCluster]
+        M --> Q[CrossEntityAnalyzer]
+        N --> Q
+        O --> Q
+        P --> Q
+    end
+
+    subgraph "Investigation Tools (Existing)"
+        R[SplunkTool] --> S[VectorSearchTool]
+        S --> T[ThreatIntelligenceTool]
+        T --> U[OSINTTools]
+        U --> V[FileSystemTool]
+    end
+
+    subgraph "Enhanced Entity System"
+        W[EntityManager] --> X[TransactionEntityFactory]
+        X --> Y[EnhancedEntityTypes]
+        Y --> Z[EntityGraph]
+        Z --> AA[EntityRelationships]
+    end
+
+    A --> F
+    F --> K
+    K --> R
+    K --> W
+    W --> BB[(Transaction CSV Data)]
+    W --> CC[(Existing Investigation Data)]
+
+    classDef frontend fill:#e1f5fe
+    classDef api fill:#f3e5f5
+    classDef engine fill:#e8f5e8
+    classDef tools fill:#fff3e0
+    classDef entity fill:#fce4ec
+
+    class A,B,C,D,E frontend
+    class F,G,H,I,J api
+    class K,L,M,N,O,P,Q engine
+    class R,S,T,U,V tools
+    class W,X,Y,Z,AA,BB,CC entity
+        </div>
+        <div class="feature-list">
+            <strong>Key Architecture Components:</strong>
+            <ul>
+                <li><strong>Frontend Interface:</strong> React components for multi-entity investigation management</li>
+                <li><strong>API Layer:</strong> Extended autonomous investigation endpoints</li>
+                <li><strong>Investigation Engine:</strong> LangGraph orchestrator with cross-entity analysis</li>
+                <li><strong>Existing Tools:</strong> Reuse all current investigation tools across multiple entities</li>
+                <li><strong>Enhanced Entities:</strong> Extended entity types from transaction CSV data</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">🔄 Multi-Entity Autonomous Investigation Flow</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> This sequence diagram illustrates how a multi-entity investigation request flows through the system, showing how LangGraph agents coordinate to investigate multiple related entities using existing tools.
+        </div>
+        <div class="mermaid">
+sequenceDiagram
+    participant U as Investigation UI
+    participant A as Investigation API
+    participant C as Investigation Coordinator
+    participant L as LangGraph Orchestrator
+    participant DA as Device Agent
+    participant LA as Location Agent
+    participant NA as Network Agent
+    participant LGA as Logs Agent
+    participant T as Investigation Tools
+    participant W as WebSocket
+
+    U->>A: MultiEntityInvestigationRequest<br/>entities: [user123, txn456, store789]<br/>relationships: [{user→txn}, {txn→store}]<br/>boolean_logic: "user AND (txn OR store)"
+    A->>C: Coordinate Investigation<br/>+ Entity Relationships<br/>+ Boolean Logic
+    C->>L: Create Multi-Entity Workflow<br/>+ Investigation Scope<br/>+ Agent Assignment
+    
+    par Parallel Entity Investigations
+        L->>DA: Investigate user123<br/>+ Device Analysis
+        and
+        L->>LA: Investigate user123, store789<br/>+ Location Analysis
+        and
+        L->>NA: Investigate user123<br/>+ Network Analysis
+        and
+        L->>LGA: Investigate txn456, store789<br/>+ Logs Analysis
+    end
+    
+    par Agent Tool Execution
+        DA->>T: Use VectorSearch, OSINT<br/>for user123 device
+        and
+        LA->>T: Use Splunk, ThreatIntel<br/>for user123, store789
+        and
+        NA->>T: Use NetworkTools<br/>for user123 network
+        and
+        LGA->>T: Use Splunk, FileSystem<br/>for txn456, store789
+    end
+    
+    T-->>DA: Device Investigation Results
+    T-->>LA: Location Investigation Results  
+    T-->>NA: Network Investigation Results
+    T-->>LGA: Logs Investigation Results
+    
+    DA-->>L: AgentResult + Risk Score
+    LA-->>L: AgentResult + Risk Score
+    NA-->>L: AgentResult + Risk Score
+    LGA-->>L: AgentResult + Risk Score
+    
+    L->>C: Cross-Entity Analysis<br/>+ Relationship Validation<br/>+ Pattern Detection
+    C->>C: Apply Boolean Logic<br/>Combine Entity Results<br/>Calculate Overall Risk
+    
+    C-->>A: MultiEntityInvestigationResult<br/>+ Cross-Entity Insights<br/>+ Risk Assessment
+    A-->>U: Investigation Complete<br/>+ Entity Results<br/>+ Relationship Analysis
+    
+    loop Real-time Updates
+        L->>W: Investigation Progress
+        W-->>U: Live Status Updates
+    end
+        </div>
+        <div class="feature-list">
+            <strong>Investigation Flow Features:</strong>
+            <ul>
+                <li><strong>Multi-Entity Request:</strong> Support multiple entities with relationships and Boolean logic</li>
+                <li><strong>Parallel Processing:</strong> LangGraph agents investigate entities simultaneously</li>
+                <li><strong>Tool Reuse:</strong> Existing Splunk, vector search, OSINT tools work across all entities</li>
+                <li><strong>Cross-Entity Analysis:</strong> Identify patterns spanning multiple related entities</li>
+                <li><strong>Real-Time Updates:</strong> WebSocket progress updates during investigation</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">📊 Enhanced Entity Type Mapping from CSV Data</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> Shows how the 20 CSV columns are mapped to new entity types, extending the existing 48 entity types in the EntityManager system.
+        </div>
+        <div class="mermaid">
+graph LR
+    subgraph "CSV Column Mapping"
+        A[TABLE_RECORD_CREATED_AT] --> B[TIMESTAMP]
+        C[ORIGINAL_TX_ID] --> D[TRANSACTION_ID]
+        E[STORE_ID] --> F[MERCHANT]
+        G[EMAIL] --> H[EMAIL_IDENTITY]
+        I[EVENT_TYPE] --> J[EVENT]
+        K[AUTHORIZATION_STAGE] --> L[AUTHORIZATION]
+        M[TX_DATETIME] --> N[DATETIME_PATTERN]
+        O[CLIENT_REQUEST_ID] --> P[REQUEST]
+        Q[FIRST_NAME] --> R[USER_IDENTITY]
+        S[APP_ID] --> T[APPLICATION]
+    end
+
+    subgraph "Enhanced Entity Types"
+        B --> U[ExistingEntityTypes<br/>48 types]
+        D --> U
+        F --> U
+        H --> U
+        J --> U
+        L --> U
+        N --> U
+        P --> U
+        R --> U
+        T --> U
+        U --> V[ExtendedEntityTypes<br/>60+ types]
+    end
+
+    subgraph "Entity Factory"
+        W[TransactionEntityFactory] --> X[CSVParser]
+        X --> Y[AttributeExtractor]
+        Y --> Z[ValidationEngine]
+        Z --> AA[EntityBuilder]
+        AA --> V
+    end
+
+    classDef csv fill:#e3f2fd
+    classDef types fill:#f1f8e9
+    classDef factory fill:#fff8e1
+
+    class A,C,E,G,I,K,M,O,Q,S csv
+    class B,D,F,H,J,L,N,P,R,T,U,V types
+    class W,X,Y,Z,AA factory
+        </div>
+        <div class="feature-list">
+            <strong>Entity Enhancement Features:</strong>
+            <ul>
+                <li><strong>CSV Integration:</strong> Automatic mapping of 20 CSV columns to entity types</li>
+                <li><strong>Type Extension:</strong> Expand from 48 to 60+ entity types</li>
+                <li><strong>Transaction Factory:</strong> Automated entity creation from CSV data</li>
+                <li><strong>Data Validation:</strong> Ensure data quality and consistency</li>
+                <li><strong>Attribute Extraction:</strong> Smart parsing of transaction data attributes</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">🎯 Multi-Entity Investigation Performance Architecture</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> Illustrates the performance optimization strategies for multi-entity investigations, including caching, parallel processing, and resource management.
+        </div>
+        <div class="mermaid">
+graph TB
+    subgraph "Investigation Request Processing"
+        A[Multi-Entity Request] --> B[Request Parser]
+        B --> C[Entity Validator]
+        C --> D[Relationship Mapper]
+        D --> E[Investigation Planner]
+    end
+
+    subgraph "Parallel Investigation Execution"
+        E --> F[Agent Coordinator]
+        F --> G[Device Investigation]
+        F --> H[Location Investigation]
+        F --> I[Network Investigation]
+        F --> J[Logs Investigation]
+        G --> K[Tool Execution Pool]
+        H --> K
+        I --> K
+        J --> K
+    end
+
+    subgraph "Result Aggregation & Analysis"
+        K --> L[Result Collector]
+        L --> M[Cross-Entity Analyzer]
+        M --> N[Boolean Logic Processor]
+        N --> O[Risk Calculator]
+        O --> P[Response Formatter]
+    end
+
+    subgraph "Performance Optimization"
+        Q[Investigation Cache] --> F
+        R[Entity Indexes] --> C
+        S[Tool Pool Manager] --> K
+        T[Connection Pool] --> K
+        U[WebSocket Manager] --> P
+    end
+
+    classDef request fill:#e8eaf6
+    classDef execution fill:#e0f2f1
+    classDef analysis fill:#fff3e0
+    classDef optimization fill:#fce4ec
+
+    class A,B,C,D,E request
+    class F,G,H,I,J,K execution
+    class L,M,N,O,P analysis
+    class Q,R,S,T,U optimization
+        </div>
+        <div class="feature-list">
+            <strong>Performance Optimization Features:</strong>
+            <ul>
+                <li><strong>Parallel Processing:</strong> Multiple agents investigate entities simultaneously</li>
+                <li><strong>Tool Pool Management:</strong> Efficient resource allocation for investigation tools</li>
+                <li><strong>Smart Caching:</strong> Cache investigation results and entity data</li>
+                <li><strong>Connection Pooling:</strong> Optimize database and external service connections</li>
+                <li><strong>Real-Time Streaming:</strong> WebSocket updates for investigation progress</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">⏱️ Implementation Timeline</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> Visual timeline showing the 8-phase implementation plan with dependencies and milestones.
+        </div>
+        <div class="mermaid">
+gantt
+    title Multi-Entity Investigation System Implementation
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Entity Types
+    Entity Type Extension       :active, p1a, 2025-01-09, 3d
+    Transaction Factory         :p1b, after p1a, 2d
+    
+    section Phase 2: Investigation Orchestration
+    Multi-Entity Request Model  :p2a, after p1b, 3d
+    LangGraph Workflow Enhancement :p2b, after p2a, 2d
+    
+    section Phase 3: Agent System
+    Multi-Entity Coordinator    :p3a, after p2b, 4d
+    Cross-Entity Analyzer       :p3b, after p3a, 3d
+    
+    section Phase 4: API Extensions
+    Investigation Endpoints     :p4a, after p3b, 2d
+    API Models                  :p4b, after p4a, 1d
+    
+    section Phase 5: Frontend
+    Investigation Components    :p5a, after p4b, 4d
+    Relationship Builder UI     :p5b, after p5a, 3d
+    
+    section Phase 6: Testing
+    Backend Tests               :p6a, after p5b, 3d
+    Frontend Tests              :p6b, after p6a, 2d
+    Integration Tests           :p6c, after p6b, 2d
+    
+    section Phase 7: Optimization
+    Performance Tuning          :p7a, after p6c, 2d
+    Caching & Scaling           :p7b, after p7a, 1d
+    
+    section Phase 8: Deployment
+    Documentation               :p8a, after p7b, 1d
+    Production Deployment       :p8b, after p8a, 1d
+        </div>
+        <div class="feature-list">
+            <strong>Implementation Milestones:</strong>
+            <ul>
+                <li><strong>Week 1:</strong> Enhanced entity types and investigation orchestration</li>
+                <li><strong>Week 2:</strong> Multi-entity agent system and API extensions</li>
+                <li><strong>Week 3:</strong> Frontend components and comprehensive testing</li>
+                <li><strong>Week 4:</strong> Performance optimization and production deployment</li>
+                <li><strong>Total Duration:</strong> 30 days with clear phase dependencies</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <div class="diagram-title">🚀 System Integration Overview</div>
+        <div class="diagram-description">
+            <strong>Purpose:</strong> High-level view of how the multi-entity investigation system integrates with existing Olorin components and external data sources.
+        </div>
+        <div class="feature-list">
+            <strong>Integration Points:</strong>
+            <ul>
+                <li><strong>Existing LangGraph Workflow:</strong> Extends current autonomous investigation system</li>
+                <li><strong>Investigation Tools:</strong> Reuses Splunk, vector search, OSINT, threat intelligence tools</li>
+                <li><strong>Entity Management:</strong> Builds on current EntityManager with 48 entity types</li>
+                <li><strong>WebSocket Infrastructure:</strong> Leverages existing real-time update system</li>
+                <li><strong>Transaction Data:</strong> Integrates 20-column CSV dataset with validation</li>
+                <li><strong>Frontend Components:</strong> Extends current React TypeScript investigation interface</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            },
+            gantt: {
+                titleTopMargin: 25,
+                barHeight: 20,
+                fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                fontSize: 11,
+                gridLineStartPadding: 35,
+                leftPadding: 75,
+                topPadding: 50
+            }
+        });
+    </script>
+</body>
+</html>

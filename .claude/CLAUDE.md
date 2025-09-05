@@ -105,7 +105,14 @@ Apply the following rules **universally and consistently** across ALL coding tas
 
 14. ✅ **When creating a document, always place in in an appropriate subfolder under /docs**
    - Before creating a new document, scan the codebase and make sure there are no loose documents not under /docs and that the document you are about to create does not exist already.
-   - Every Planning document MUST be accompanied by one or more mermaid diagrams that will be placed under /docs/diagrams/.
+   - Every Planning document MUST be accompanied by interactive HTML visualization files with embedded Mermaid diagrams that will be placed under /docs/diagrams/.
+   - **HTML VISUALIZATION REQUIREMENTS**: Create comprehensive HTML files with:
+     - Professional responsive CSS styling
+     - Multiple Mermaid diagrams embedded using mermaid.js CDN
+     - Contextual descriptions for each diagram
+     - Color-coded sections and feature lists
+     - Mobile-responsive design
+     - Interactive elements where applicable
  
 
 15. ✅ **When creating a batch script, always place  in an appropriate subfolder under /scripts**
