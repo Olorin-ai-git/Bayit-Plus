@@ -366,13 +366,14 @@ def _filter_working_tools(tools):
     return filtered_tools
 
 
-async def _create_enhanced_tool_node(tools, use_enhanced=True):
+async def _create_enhanced_tool_node(tools, use_enhanced=True, investigation_id=None):
     """
     Create tool node with optional enhanced executor.
     
     Args:
         tools: List of tools to use
         use_enhanced: If True, use EnhancedToolNode
+        investigation_id: Optional investigation ID for WebSocket events
         
     Returns:
         ToolNode or EnhancedToolNode instance
@@ -388,7 +389,7 @@ async def _create_enhanced_tool_node(tools, use_enhanced=True):
                 healthy_tools = tools
             
             # Create enhanced tool node
-            tool_node = EnhancedToolNode(healthy_tools)
+            tool_node = EnhancedToolNode(healthy_tools, investigation_id=investigation_id)
             logger.info(f"✅ Created enhanced tool node with {len(healthy_tools)} healthy tools")
             return tool_node
             

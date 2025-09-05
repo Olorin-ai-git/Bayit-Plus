@@ -10,28 +10,12 @@ from .entity_manager import (
     Entity,
     EntityType,
     EntityRelationship,
-    EntityGraph
+    EntityGraph,
+    get_entity_manager
 )
 
-from .cross_entity_analyzer import (
-    CrossEntityAnalyzer,
-    CrossEntityPattern,
-    EntityCluster,
-    AnalysisResult
-)
-
-from .investigation_coordinator import (
-    InvestigationCoordinator,
-    MultiEntityInvestigation,
-    InvestigationPlan,
-    CoordinationStrategy
-)
-
-from .pattern_detector import (
-    PatternDetector,
-    FraudPattern,
-    PatternMatch,
-    PatternConfidence
+from .transaction_entity_factory import (
+    TransactionEntityFactory
 )
 
 __all__ = [
@@ -41,22 +25,8 @@ __all__ = [
     "EntityType", 
     "EntityRelationship",
     "EntityGraph",
+    "get_entity_manager",
     
-    # Cross-Entity Analysis
-    "CrossEntityAnalyzer",
-    "CrossEntityPattern",
-    "EntityCluster",
-    "AnalysisResult",
-    
-    # Investigation Coordination
-    "InvestigationCoordinator", 
-    "MultiEntityInvestigation",
-    "InvestigationPlan",
-    "CoordinationStrategy",
-    
-    # Pattern Detection
-    "PatternDetector",
-    "FraudPattern",
-    "PatternMatch",
-    "PatternConfidence"
+    # Transaction Entity Factory
+    "TransactionEntityFactory"
 ]
