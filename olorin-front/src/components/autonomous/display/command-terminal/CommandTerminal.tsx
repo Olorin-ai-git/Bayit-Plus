@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { TerminalLine } from './TerminalLine';
-import { CommandTerminalProps, TerminalLogEntry } from '../../../../types/AutonomousDisplayTypes';
+import { CommandTerminalProps } from '../../../../types/AutonomousDisplayTypes';
 
 export const CommandTerminal: React.FC<CommandTerminalProps> = ({
   logs,

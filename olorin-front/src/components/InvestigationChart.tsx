@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { InvestigationResult } from '../types/Investigation';
+import { InvestigationResult } from '../types/investigation';
 
 interface InvestigationChartProps {
   investigation: InvestigationResult;

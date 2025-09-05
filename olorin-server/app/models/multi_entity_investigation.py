@@ -11,6 +11,7 @@ from typing import Dict, List, Any, Optional, Set
 from datetime import datetime
 from enum import Enum
 import uuid
+import re
 
 from app.service.agent.multi_entity.entity_manager import EntityType
 
@@ -321,10 +322,205 @@ class BooleanQueryParser(BaseModel):
     
     def parse(self) -> Dict[str, Any]:
         """Parse boolean expression into execution tree"""
-        # Implementation will be added in Phase 2.2
-        return {
-            "parsed": False,
-            "expression": self.expression,
-            "entity_mapping": self.entity_mapping,
-            "error": "Parser implementation pending Phase 2.2"
-        }
+        from typing import List, Union
+        
+        try:
+            # Normalize expression
+            normalized_expr = self._normalize_expression(self.expression)
+            
+            # Tokenize expression
+            tokens = self._tokenize(normalized_expr)
+            
+            # Parse tokens into AST
+            ast = self._parse_tokens(tokens)
+            
+            # Validate entity references
+            self._validate_entities(ast)
+            
+            return {
+                "parsed": True,
+                "expression": self.expression,
+                "normalized_expression": normalized_expr,
+                "tokens": tokens,
+                "ast": ast,
+                "entity_mapping": self.entity_mapping,
+                "valid": True
+            }
+            
+        except Exception as e:
+            return {
+                "parsed": False,
+                "expression": self.expression,
+                "entity_mapping": self.entity_mapping,
+                "error": str(e),
+                "valid": False
+            }
+    
+    def _normalize_expression(self, expr: str) -> str:
+        """Normalize boolean expression"""
+        # Convert to uppercase and clean whitespace
+        normalized = re.sub(r'\s+', ' ', expr.strip().upper())
+        
+        # Replace entity IDs with placeholders for easier parsing
+        for entity_var, entity_id in self.entity_mapping.items():
+            normalized = normalized.replace(entity_id.upper(), entity_var.upper())
+        
+        return normalized
+    
+    def _tokenize(self, expr: str) -> List[str]:
+        """Tokenize normalized expression into operators and operands"""
+        # Define token patterns
+        token_pattern = r'(\(|\)|AND|OR|NOT|\w+)'
+        tokens = re.findall(token_pattern, expr)
+        
+        return [token for token in tokens if token.strip()]
+    
+    def _parse_tokens(self, tokens: List[str]) -> Dict[str, Any]:
+        """Parse tokens into abstract syntax tree using simple recursive descent"""
+        
+        def parse_expression(tokens, start_index=0):
+            """Simple expression parser that returns (result, next_index)"""
+            return parse_or_expression(tokens, start_index)
+        
+        def parse_or_expression(tokens, index):
+            left, index = parse_and_expression(tokens, index)
+            
+            while index < len(tokens) and tokens[index] == "OR":
+                index += 1  # consume OR
+                right, index = parse_and_expression(tokens, index)
+                left = {
+                    "type": "binary_op", 
+                    "operator": "OR",
+                    "left": left,
+                    "right": right
+                }
+            
+            return left, index
+        
+        def parse_and_expression(tokens, index):
+            left, index = parse_not_expression(tokens, index)
+            
+            while index < len(tokens) and tokens[index] == "AND":
+                index += 1  # consume AND
+                right, index = parse_not_expression(tokens, index)
+                left = {
+                    "type": "binary_op",
+                    "operator": "AND", 
+                    "left": left,
+                    "right": right
+                }
+            
+            return left, index
+        
+        def parse_not_expression(tokens, index):
+            if index < len(tokens) and tokens[index] == "NOT":
+                index += 1  # consume NOT
+                operand, index = parse_primary(tokens, index)
+                return {
+                    "type": "unary_op",
+                    "operator": "NOT",
+                    "operand": operand
+                }, index
+            
+            return parse_primary(tokens, index)
+        
+        def parse_primary(tokens, index):
+            if index >= len(tokens):
+                raise ValueError("Unexpected end of expression")
+            
+            token = tokens[index]
+            
+            if token == "(":
+                index += 1  # consume (
+                expr, index = parse_or_expression(tokens, index)
+                
+                if index >= len(tokens) or tokens[index] != ")":
+                    raise ValueError("Missing closing parenthesis")
+                
+                index += 1  # consume )
+                return expr, index
+            
+            elif token in self.entity_mapping or token.upper() in [k.upper() for k in self.entity_mapping.keys()]:
+                index += 1  # consume entity
+                entity_key = next((k for k in self.entity_mapping.keys() if k.upper() == token.upper()), token)
+                return {
+                    "type": "entity",
+                    "entity_variable": entity_key,
+                    "entity_id": self.entity_mapping.get(entity_key, token)
+                }, index
+            
+            else:
+                raise ValueError(f"Unexpected token: {token}")
+        
+        # Parse the expression
+        result, final_index = parse_expression(tokens)
+        
+        if final_index < len(tokens):
+            raise ValueError(f"Unexpected token: {tokens[final_index]}")
+        
+        return result
+    
+    def _validate_entities(self, ast: Dict[str, Any]) -> None:
+        """Validate that all entities in AST exist in entity mapping"""
+        def validate_node(node):
+            if isinstance(node, dict):
+                if node.get("type") == "entity":
+                    entity_var = node.get("entity_variable")
+                    if entity_var not in self.entity_mapping:
+                        raise ValueError(f"Unknown entity variable: {entity_var}")
+                
+                # Recursively validate child nodes
+                for key, value in node.items():
+                    if key in ["left", "right", "operand"]:
+                        validate_node(value)
+        
+        validate_node(ast)
+    
+    def evaluate(self, entity_results: Dict[str, bool]) -> bool:
+        """
+        Evaluate boolean expression given entity results.
+        
+        Args:
+            entity_results: Dict mapping entity_id to boolean investigation result
+            
+        Returns:
+            Boolean result of expression evaluation
+        """
+        parse_result = self.parse()
+        if not parse_result.get("valid"):
+            raise ValueError(f"Invalid expression: {parse_result.get('error')}")
+        
+        ast = parse_result["ast"]
+        return self._evaluate_node(ast, entity_results)
+    
+    def _evaluate_node(self, node: Dict[str, Any], entity_results: Dict[str, bool]) -> bool:
+        """Recursively evaluate AST node"""
+        node_type = node.get("type")
+        
+        if node_type == "entity":
+            entity_id = node.get("entity_id")
+            return entity_results.get(entity_id, False)
+        
+        elif node_type == "binary_op":
+            operator = node.get("operator")
+            left_result = self._evaluate_node(node["left"], entity_results)
+            right_result = self._evaluate_node(node["right"], entity_results)
+            
+            if operator == "AND":
+                return left_result and right_result
+            elif operator == "OR":
+                return left_result or right_result
+            else:
+                raise ValueError(f"Unknown binary operator: {operator}")
+        
+        elif node_type == "unary_op":
+            operator = node.get("operator")
+            operand_result = self._evaluate_node(node["operand"], entity_results)
+            
+            if operator == "NOT":
+                return not operand_result
+            else:
+                raise ValueError(f"Unknown unary operator: {operator}")
+        
+        else:
+            raise ValueError(f"Unknown node type: {node_type}")

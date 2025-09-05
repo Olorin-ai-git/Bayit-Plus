@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
+from app.utils.entity_validation import validate_entity_type_against_enum
 
 
 class SecureString(BaseModel):
@@ -117,11 +118,23 @@ class ValidatedTimeRange(BaseModel):
 
 
 class ValidatedEntityType(BaseModel):
-    """Validated entity type with restricted values."""
+    """Comprehensive entity type validation supporting all EntityType enum values."""
 
-    entity_type: Literal["user_id", "device_id"] = Field(
-        ..., description="Type of entity being analyzed"
+    entity_type: str = Field(
+        ..., 
+        min_length=1,
+        max_length=100,
+        description="Type of entity being analyzed"
     )
+
+    @validator("entity_type")
+    def validate_entity_type(cls, v):
+        """Validate entity type against EntityType enum with comprehensive security checks."""
+        is_valid, error_message = validate_entity_type_against_enum(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        
+        return v.strip().lower()
 
 
 class ValidatedAnalysisMode(BaseModel):
@@ -160,8 +173,8 @@ class ValidatedInvestigationRequest(BaseModel):
     entity_id: str = Field(
         ..., min_length=1, max_length=200, description="Entity identifier"
     )
-    entity_type: Literal["user_id", "device_id"] = Field(
-        ..., description="Type of entity"
+    entity_type: str = Field(
+        ..., min_length=1, max_length=100, description="Type of entity"
     )
     investigation_id: str = Field(
         ..., min_length=1, max_length=100, description="Investigation identifier"
@@ -177,6 +190,15 @@ class ValidatedInvestigationRequest(BaseModel):
         if not re.match(r"^[a-zA-Z0-9._@-]+$", v):
             raise ValueError("Entity ID contains invalid characters")
         return v
+
+    @validator("entity_type")
+    def validate_entity_type(cls, v):
+        """Validate entity type against EntityType enum with comprehensive security checks."""
+        is_valid, error_message = validate_entity_type_against_enum(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        
+        return v.strip().lower()
 
     @validator("investigation_id")
     def validate_investigation_id(cls, v):

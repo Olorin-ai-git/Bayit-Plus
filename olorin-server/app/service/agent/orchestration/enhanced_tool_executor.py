@@ -232,12 +232,12 @@ class EnhancedToolNode(ToolNode):
                     metrics.circuit_state = CircuitState.HALF_OPEN
                     logger.info(f"Circuit breaker for {tool_name} entering HALF_OPEN state")
                 else:
-                await self._emit_tool_event("tool_execution_skipped", tool_name, {
-                    "reason": "circuit_breaker_open",
-                    "consecutive_failures": metrics.consecutive_failures,
-                    "last_failure_time": metrics.last_failure_time.isoformat() if metrics.last_failure_time else None
-                })
-                raise Exception(f"Circuit breaker OPEN for {tool_name}")
+                    await self._emit_tool_event("tool_execution_skipped", tool_name, {
+                        "reason": "circuit_breaker_open",
+                        "consecutive_failures": metrics.consecutive_failures,
+                        "last_failure_time": metrics.last_failure_time.isoformat() if metrics.last_failure_time else None
+                    })
+                    raise Exception(f"Circuit breaker OPEN for {tool_name}")
         
         # Execute with retry logic
         start_time = time.time()

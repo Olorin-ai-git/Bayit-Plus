@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { NeuralNetworkFlow } from './neural-network/NeuralNetworkFlow';
 import { InteractiveInvestigationGraph } from './interactive-graph/InteractiveInvestigationGraph';
 import { CommandTerminal } from './command-terminal/CommandTerminal';
@@ -9,7 +9,6 @@ import {
   GraphInteraction,
   AgentNodeData,
   ConnectionData,
-  TerminalLogEntry 
 } from '../../../types/AutonomousDisplayTypes';
 
 export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayProps> = ({
@@ -30,7 +29,6 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
     logs,
     animationSpeed,
     updateAgentStatus,
-    updateConnectionStatus,
     updateGraphProgress,
     addLog,
     setAnimationSpeed
@@ -44,11 +42,7 @@ export const CombinedAutonomousInvestigationDisplay: React.FC<CombinedDisplayPro
 
   // Use WebSocket integration hook
   const {
-    isConnected,
-    client,
-    reconnect,
-    disconnect,
-    connectionAttempts
+    isConnected
   } = useWebSocketIntegration({
     investigationId,
     isActive,

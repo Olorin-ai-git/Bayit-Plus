@@ -21,7 +21,7 @@ import React, {
   useImperativeHandle,
   RefObject
 } from 'react';
-import { InvestigationType, InvestigationResult, AgentResult } from '../types/Investigation';
+import { InvestigationType, InvestigationResult, AgentResult } from '../types/investigation';
 import { 
   useOptimizedCallback, 
   useOptimizedMemo, 
