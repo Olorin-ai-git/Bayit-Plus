@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "olorin-ai": {
+      "hosting": {
+        "olorin-frontend": [
+          "olorin-ai"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

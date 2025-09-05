@@ -119,7 +119,7 @@ if ! command -v firebase &> /dev/null; then
 fi
 
 # Check if user is logged in to Firebase
-if ! firebase login:list | grep -q "olorin-ai.web.app"; then
+if ! firebase login:list | grep -q "Logged in as"; then
     log_warning "You may not be logged in to Firebase. Please run:"
     echo "firebase login"
     exit 1
@@ -221,7 +221,7 @@ firebase use "$PROJECT_ID" || {
 # Deploy the backend service
 log_info "📤 Deploying backend service to App Hosting..."
 
-DEPLOY_CMD="firebase apphosting:backends:create $CODEBASE --location=$LOCATION"
+DEPLOY_CMD="firebase apphosting:backends:create --backend=$CODEBASE --primary-region=$LOCATION --root-dir=olorin-server"
 
 if [ "$VERBOSE" = true ]; then
     DEPLOY_CMD="$DEPLOY_CMD --debug"
