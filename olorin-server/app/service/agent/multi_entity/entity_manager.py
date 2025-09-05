@@ -6,6 +6,7 @@ supporting complex entity relationships and cross-entity analysis.
 """
 
 import asyncio
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -63,6 +64,36 @@ class EntityType(Enum):
     CASE = "case"
     ALERT = "alert"
     RULE = "rule"
+    
+    # Transaction-specific entities (from CSV data - Phase 1 Enhancement)
+    # Temporal entities  
+    TIMESTAMP = "timestamp"
+    RECORD_CREATED = "record_created"      # TABLE_RECORD_CREATED_AT
+    RECORD_UPDATED = "record_updated"      # TABLE_RECORD_UPDATED_AT
+    TX_DATETIME = "tx_datetime"            # TX_DATETIME
+    TX_RECEIVED = "tx_received"            # TX_RECEIVED_DATETIME
+    
+    # Transaction identifiers
+    ORIGINAL_TX_ID = "original_tx_id"      # ORIGINAL_TX_ID
+    TX_ID_KEY = "tx_id_key"               # TX_ID_KEY
+    SURROGATE_APP_TX_ID = "surrogate_app_tx_id"  # SURROGATE_APP_TX_ID
+    NSURE_UNIQUE_TX_ID = "nsure_unique_tx_id"    # NSURE_UNIQUE_TX_ID
+    CLIENT_REQUEST_ID = "client_request_id"       # CLIENT_REQUEST_ID
+    
+    # Business entities
+    STORE_ID = "store_id"                  # STORE_ID
+    APP_ID = "app_id"                      # APP_ID  
+    EVENT_TYPE = "event_type"              # EVENT_TYPE
+    AUTHORIZATION_STAGE = "authorization_stage"  # AUTHORIZATION_STAGE
+    
+    # User identity entities
+    EMAIL_NORMALIZED = "email_normalized"  # EMAIL_NORMALIZED
+    FIRST_NAME = "first_name"             # FIRST_NAME
+    UNIQUE_USER_ID = "unique_user_id"     # UNIQUE_USER_ID
+    
+    # Processing status entities
+    TX_UPLOADED_TO_SNOWFLAKE = "tx_uploaded_to_snowflake"  # TX_UPLOADED_TO_SNOWFLAKE
+    IS_SENT_FOR_NSURE_REVIEW = "is_sent_for_nsure_review"  # IS_SENT_FOR_NSURE_REVIEW
 
 
 @dataclass

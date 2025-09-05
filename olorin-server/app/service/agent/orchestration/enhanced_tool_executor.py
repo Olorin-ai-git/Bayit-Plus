@@ -25,6 +25,9 @@ from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
+# Global tool execution event handlers
+_tool_event_handlers = []
+
 
 class CircuitState(Enum):
     """Circuit breaker states."""
@@ -65,11 +68,12 @@ class MessagesState(TypedDict):
 class EnhancedToolNode(ToolNode):
     """Enhanced tool node with resilience patterns and monitoring."""
     
-    def __init__(self, tools: Sequence[BaseTool], **kwargs):
+    def __init__(self, tools: Sequence[BaseTool], investigation_id: str = None, **kwargs):
         """Initialize enhanced tool node."""
         super().__init__(tools, **kwargs)
         # Store tools explicitly for our enhanced functionality
         self.tools = tools
+        self.investigation_id = investigation_id
         
         # Retry configuration
         self.retry_config = {
@@ -157,7 +161,7 @@ class EnhancedToolNode(ToolNode):
     
     async def _execute_tool_with_resilience(self, tool_call: Dict[str, Any], config: Optional[RunnableConfig]) -> Any:
         """
-        Execute tool with resilience patterns.
+        Execute tool with resilience patterns and emit WebSocket events.
         
         Args:
             tool_call: Tool invocation details
@@ -184,11 +188,23 @@ class EnhancedToolNode(ToolNode):
                 metrics.circuit_state = CircuitState.HALF_OPEN
                 logger.info(f"Circuit breaker for {tool_name} entering HALF_OPEN state")
             else:
+                await self._emit_tool_event("tool_execution_skipped", tool_name, {
+                    "reason": "circuit_breaker_open",
+                    "consecutive_failures": metrics.consecutive_failures,
+                    "last_failure_time": metrics.last_failure_time.isoformat() if metrics.last_failure_time else None
+                })
                 raise Exception(f"Circuit breaker OPEN for {tool_name}")
         
         # Execute with retry logic
         start_time = time.time()
         last_exception = None
+        
+        # Emit tool execution started event
+        await self._emit_tool_event("tool_execution_started", tool_name, {
+            "args": tool_call.get("args", {}),
+            "attempt": 1,
+            "max_retries": self.retry_config['max_retries']
+        })
         
         for attempt in range(self.retry_config['max_retries']):
             try:
@@ -211,13 +227,27 @@ class EnhancedToolNode(ToolNode):
                 metrics.consecutive_failures = 0
                 
                 # Close circuit if in half-open state
+                circuit_recovered = False
                 if metrics.circuit_state == CircuitState.HALF_OPEN:
                     metrics.circuit_state = CircuitState.CLOSED
+                    circuit_recovered = True
                     logger.info(f"Circuit breaker for {tool_name} CLOSED after successful recovery")
                 
                 # Warn if slow
+                performance_warning = None
                 if elapsed > self.performance_threshold:
+                    performance_warning = f"Tool execution exceeded threshold: {elapsed:.2f}s > {self.performance_threshold}s"
                     logger.warning(f"Tool {tool_name} took {elapsed:.2f}s (threshold: {self.performance_threshold}s)")
+                
+                # Emit successful completion event
+                await self._emit_tool_event("tool_execution_completed", tool_name, {
+                    "result": str(result)[:1000] if result else None,  # Truncate large results
+                    "execution_time": f"{elapsed:.3f}s",
+                    "attempt": attempt + 1,
+                    "success_rate": f"{metrics.success_rate * 100:.1f}%",
+                    "circuit_recovered": circuit_recovered,
+                    "performance_warning": performance_warning
+                })
                 
                 return result
                 
@@ -239,9 +269,24 @@ class EnhancedToolNode(ToolNode):
                     metrics.last_failure_time = datetime.now()
                     
                     # Check if circuit should open
+                    circuit_opened = False
                     if metrics.consecutive_failures >= self.circuit_config['failure_threshold']:
                         metrics.circuit_state = CircuitState.OPEN
+                        circuit_opened = True
                         logger.error(f"Circuit breaker OPEN for {tool_name} after {metrics.consecutive_failures} failures")
+                    
+                    # Emit failure event
+                    await self._emit_tool_event("tool_execution_failed", tool_name, {
+                        "error": str(e),
+                        "error_type": type(e).__name__,
+                        "execution_time": f"{elapsed:.3f}s",
+                        "final_attempt": attempt + 1,
+                        "max_retries": self.retry_config['max_retries'],
+                        "is_retryable": is_retryable,
+                        "consecutive_failures": metrics.consecutive_failures,
+                        "circuit_opened": circuit_opened,
+                        "success_rate": f"{metrics.success_rate * 100:.1f}%"
+                    })
                     
                     raise
                 
@@ -399,6 +444,59 @@ class ToolHealthManager:
             return sum(latencies) / len(latencies) if latencies else 0.0
         
         return sorted(tools, key=get_avg_latency)
+    
+    async def _emit_tool_event(self, event_type: str, tool_name: str, event_data: Dict[str, Any]):
+        """
+        Emit tool execution event via WebSocket and event handlers.
+        
+        Args:
+            event_type: Type of event (started, completed, failed, skipped)
+            tool_name: Name of the tool
+            event_data: Additional event data
+        """
+        event = {
+            "type": event_type,
+            "tool_name": tool_name,
+            "timestamp": datetime.now().isoformat(),
+            "investigation_id": self.investigation_id,
+            "data": event_data
+        }
+        
+        # Emit to registered event handlers
+        for handler in _tool_event_handlers:
+            try:
+                await handler(event)
+            except Exception as e:
+                logger.warning(f"Tool event handler failed: {e}")
+        
+        # Emit via WebSocket if investigation_id is available
+        if self.investigation_id:
+            try:
+                from app.router.handlers.websocket_handler import notify_websocket_connections
+                await notify_websocket_connections(self.investigation_id, {
+                    "type": "tool_execution_event",
+                    "event": event
+                })
+            except ImportError:
+                logger.debug("WebSocket handler not available for tool events")
+            except Exception as e:
+                logger.warning(f"Failed to emit tool event via WebSocket: {e}")
+
+
+def register_tool_event_handler(handler):
+    """
+    Register a handler for tool execution events.
+    
+    Args:
+        handler: Async function that takes event dict as parameter
+    """
+    _tool_event_handlers.append(handler)
+
+
+def clear_tool_event_handlers():
+    """Clear all registered tool event handlers."""
+    global _tool_event_handlers
+    _tool_event_handlers = []
     
     def record_performance(self, tool_name: str, latency: float):
         """
