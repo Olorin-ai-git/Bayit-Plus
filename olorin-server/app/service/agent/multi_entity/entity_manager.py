@@ -94,6 +94,48 @@ class EntityType(Enum):
     # Processing status entities
     TX_UPLOADED_TO_SNOWFLAKE = "tx_uploaded_to_snowflake"  # TX_UPLOADED_TO_SNOWFLAKE
     IS_SENT_FOR_NSURE_REVIEW = "is_sent_for_nsure_review"  # IS_SENT_FOR_NSURE_REVIEW
+    TX_TIMESTAMP_MS = "tx_timestamp_ms"  # TX_TIMESTAMP_MS - Millisecond precision transaction timestamp
+    
+    # Extended user identity entities
+    LAST_NAME = "last_name"  # LAST_NAME
+    PHONE_COUNTRY_CODE = "phone_country_code"  # PHONE_COUNTRY_CODE
+    DATE_OF_BIRTH = "date_of_birth"  # DATE_OF_BIRTH
+    PERSONAL_INFO_ADDITIONAL_DATA = "personal_info_additional_data"  # PERSONAL_INFO_ADDITIONAL_DATA
+    CARD_HOLDER_NAME = "card_holder_name"  # CARD_HOLDER_NAME
+    
+    # Merchant and business entities
+    MERCHANT_SEGMENT_ID = "merchant_segment_id"  # MERCHANT_SEGMENT_ID
+    PROCESSOR = "processor"  # PROCESSOR
+    PROCESSOR_MERCHANT_IDENTIFIER = "processor_merchant_identifier"  # PROCESSOR_MERCHANT_IDENTIFIER
+    PRODUCT = "product"  # PRODUCT
+    
+    # Address and location entities
+    BILLING_ADDRESS = "billing_address"  # BILLING_ADDRESS
+    
+    # Shopping cart entities
+    CART = "cart"  # CART
+    CART_ITEMS_TYPES = "cart_items_types"  # CART_ITEMS_TYPES
+    CART_SKUS = "cart_skus"  # CART_SKUS
+    CART_BRANDS = "cart_brands"  # CART_BRANDS
+    CART_ITEMS_ARE_GIFTS = "cart_items_are_gifts"  # CART_ITEMS_ARE_GIFTS
+    CART_ITEMS_FULFILLMENT = "cart_items_fulfillment"  # CART_ITEMS_FULFILLMENT
+    
+    # Financial entities
+    CREDIT_USE = "credit_use"  # CREDIT_USE
+    PAID_AMOUNT_CURRENCY = "paid_amount_currency"  # PAID_AMOUNT_CURRENCY
+    PAID_AMOUNT_VALUE_IN_CURRENCY = "paid_amount_value_in_currency"  # PAID_AMOUNT_VALUE_IN_CURRENCY
+    PROCESSING_FEE_CURRENCY = "processing_fee_currency"  # PROCESSING_FEE_CURRENCY
+    PROCESSING_FEE_VALUE_IN_CURRENCY = "processing_fee_value_in_currency"  # PROCESSING_FEE_VALUE_IN_CURRENCY
+    
+    # Payment method entities (extended)
+    BIN = "bin"  # BIN - Bank Identification Number
+    LAST_FOUR = "last_four"  # LAST_FOUR - Last 4 digits of card
+    PAYMENT_METHOD_TOKEN = "payment_method_token"  # PAYMENT_METHOD_TOKEN
+    PAYMENT_METHOD_INTERNAL_IDENTIFIER = "payment_method_internal_identifier"  # PAYMENT_METHOD_INTERNAL_IDENTIFIER
+    
+    # Security and verification entities
+    IS_THREE_D_SECURE_VERIFIED = "is_three_d_secure_verified"  # IS_THREE_D_SECURE_VERIFIED
+    THREE_D_SECURE_RESULT = "three_d_secure_result"  # THREE_D_SECURE_RESULT
 
 
 @dataclass

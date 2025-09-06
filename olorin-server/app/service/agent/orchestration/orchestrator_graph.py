@@ -271,7 +271,7 @@ async def create_orchestrator_driven_graph(
         builder.add_node("autonomous_orchestrator", autonomous_orchestrator_node)
         
         # Add orchestration decision processing node
-        builder.add_node("orchestration_decision", orchestration_decision_node)
+        builder.add_node("orchestration_processor", orchestration_decision_node)
         
         # Add autonomous agent nodes
         builder.add_node("network_agent", autonomous_network_agent)
@@ -309,11 +309,11 @@ async def create_orchestrator_driven_graph(
         builder.add_edge("fraud_investigation", "autonomous_orchestrator")
         
         # Orchestrator decision processing
-        builder.add_edge("autonomous_orchestrator", "orchestration_decision")
+        builder.add_edge("autonomous_orchestrator", "orchestration_processor")
         
         # AI-driven conditional routing from orchestrator
         builder.add_conditional_edges(
-            "orchestration_decision",
+            "orchestration_processor",
             orchestrator_conditional_routing,
             {
                 "network_agent": "network_agent",
@@ -379,7 +379,7 @@ async def create_hybrid_orchestration_graph(
         
         # Dual orchestration nodes
         builder.add_node("autonomous_orchestrator", autonomous_orchestrator_node)
-        builder.add_node("orchestration_decision", orchestration_decision_node)
+        builder.add_node("orchestration_processor", orchestration_decision_node)
         
         # Agent nodes
         builder.add_node("network_agent", autonomous_network_agent)
@@ -410,11 +410,11 @@ async def create_hybrid_orchestration_graph(
         
         # Hybrid orchestration decision point
         builder.add_edge("fraud_investigation", "autonomous_orchestrator")
-        builder.add_edge("autonomous_orchestrator", "orchestration_decision")
+        builder.add_edge("autonomous_orchestrator", "orchestration_processor")
         
         # Dynamic routing based on orchestration mode
         builder.add_conditional_edges(
-            "orchestration_decision",
+            "orchestration_processor",
             orchestrator_conditional_routing,
             {
                 "network_agent": "network_agent",

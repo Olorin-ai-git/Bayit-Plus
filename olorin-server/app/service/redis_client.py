@@ -50,11 +50,12 @@ class RedisCloudClient:
         Returns:
             Configured Redis client instance
         """
-        # Get Redis API key from Firebase secrets
-        api_key = get_redis_api_key(self.settings)
+        # Get Redis password from Firebase secrets
+        from app.service.database_config import get_redis_password
+        redis_password = get_redis_password(self.settings)
         
-        if not api_key:
-            logger.warning("Redis API key not found, attempting connection without authentication")
+        if not redis_password:
+            logger.warning("Redis password not found, attempting connection without authentication")
         
         # Use Redis Cloud connection parameters
         host = getattr(self.settings, 'redis_host', 'redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com')
@@ -72,10 +73,10 @@ class RedisCloudClient:
             'health_check_interval': 30,
         }
         
-        # Add authentication if API key is available
-        if api_key:
+        # Add authentication if password is available
+        if redis_password:
             client_params['username'] = username
-            client_params['password'] = api_key
+            client_params['password'] = redis_password
             logger.info(f"Connecting to Redis Cloud at {host}:{port} with authentication")
         else:
             logger.info(f"Connecting to Redis at {host}:{port} without authentication")

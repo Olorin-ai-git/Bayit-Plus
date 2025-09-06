@@ -73,14 +73,25 @@ def get_redis_api_key(settings: SvcSettings) -> Optional[str]:
 
 
 def get_redis_password(settings: SvcSettings) -> Optional[str]:
-    """Legacy compatibility function - redirects to get_redis_api_key
+    """Get Redis password from Firebase Secrets
     
     Args:
         settings: Application settings configuration
         
     Returns:
-        Redis API key string or None if not configured
+        Redis password string or None if not configured
     """
+    # Try to get the specific Redis password from Firebase Secrets first
+    try:
+        redis_password = get_app_secret('REDIS_PASSWORD')
+        if redis_password:
+            logger.debug("Retrieved Redis password from Firebase Secrets Manager")
+            return redis_password
+    except Exception as e:
+        logger.debug(f"Failed to retrieve Redis password from Firebase: {e}")
+    
+    # Fallback to API key for backward compatibility
+    logger.debug("Falling back to Redis API key as password")
     return get_redis_api_key(settings)
 
 
@@ -230,16 +241,16 @@ def build_redis_url(settings: SvcSettings,
     port = redis_port or int(os.getenv("REDIS_PORT", "13848"))
     db = redis_db or int(os.getenv("REDIS_DB", "0"))
     
-    # Get API key with Firebase secrets integration
-    api_key = get_redis_api_key(settings)
+    # Get password with Firebase secrets integration
+    redis_password = get_redis_password(settings)
     
     # Use Redis Cloud connection parameters from settings
     user = getattr(settings, 'redis_username', 'default')
     
-    if api_key:
-        # URL-encode API key to handle special characters
-        encoded_api_key = quote_plus(api_key)
-        redis_url = f"redis://{user}:{encoded_api_key}@{host}:{port}/{db}"
+    if redis_password:
+        # URL-encode password to handle special characters
+        encoded_password = quote_plus(redis_password)
+        redis_url = f"redis://{user}:{encoded_password}@{host}:{port}/{db}"
         logger.info(f"Built Redis URL for {host}:{port}/{db} with authentication")
     else:
         redis_url = f"redis://{host}:{port}/{db}"

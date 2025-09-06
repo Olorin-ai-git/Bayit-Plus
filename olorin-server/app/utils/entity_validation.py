@@ -76,18 +76,35 @@ def get_entity_type_categories() -> Dict[str, List[str]]:
             EntityType.IP_ADDRESS.value,
             EntityType.BIOMETRIC.value,
             EntityType.API_KEY.value,
-            EntityType.CERTIFICATE.value
+            EntityType.CERTIFICATE.value,
+            EntityType.LAST_NAME.value,
+            EntityType.PHONE_COUNTRY_CODE.value,
+            EntityType.DATE_OF_BIRTH.value,
+            EntityType.PERSONAL_INFO_ADDITIONAL_DATA.value,
+            EntityType.CARD_HOLDER_NAME.value
         ],
         "payment": [
             EntityType.PAYMENT_METHOD.value,
-            EntityType.MERCHANT.value
+            EntityType.MERCHANT.value,
+            EntityType.BIN.value,
+            EntityType.LAST_FOUR.value,
+            EntityType.PAYMENT_METHOD_TOKEN.value,
+            EntityType.PAYMENT_METHOD_INTERNAL_IDENTIFIER.value,
+            EntityType.CREDIT_USE.value,
+            EntityType.PAID_AMOUNT_CURRENCY.value,
+            EntityType.PAID_AMOUNT_VALUE_IN_CURRENCY.value,
+            EntityType.PROCESSING_FEE_CURRENCY.value,
+            EntityType.PROCESSING_FEE_VALUE_IN_CURRENCY.value,
+            EntityType.IS_THREE_D_SECURE_VERIFIED.value,
+            EntityType.THREE_D_SECURE_RESULT.value
         ],
         "temporal": [
             EntityType.TIMESTAMP.value,
             EntityType.RECORD_CREATED.value,
             EntityType.RECORD_UPDATED.value,
             EntityType.TX_DATETIME.value,
-            EntityType.TX_RECEIVED.value
+            EntityType.TX_RECEIVED.value,
+            EntityType.TX_TIMESTAMP_MS.value
         ],
         "technical": [
             EntityType.SESSION.value,
@@ -101,7 +118,22 @@ def get_entity_type_categories() -> Dict[str, List[str]]:
             EntityType.STORE_ID.value,
             EntityType.APP_ID.value,
             EntityType.EVENT_TYPE.value,
-            EntityType.AUTHORIZATION_STAGE.value
+            EntityType.AUTHORIZATION_STAGE.value,
+            EntityType.TX_UPLOADED_TO_SNOWFLAKE.value,
+            EntityType.IS_SENT_FOR_NSURE_REVIEW.value,
+            EntityType.MERCHANT_SEGMENT_ID.value,
+            EntityType.PROCESSOR.value,
+            EntityType.PROCESSOR_MERCHANT_IDENTIFIER.value,
+            EntityType.PRODUCT.value
+        ],
+        "commerce": [
+            EntityType.CART.value,
+            EntityType.CART_ITEMS_TYPES.value,
+            EntityType.CART_SKUS.value,
+            EntityType.CART_BRANDS.value,
+            EntityType.CART_ITEMS_ARE_GIFTS.value,
+            EntityType.CART_ITEMS_FULFILLMENT.value,
+            EntityType.BILLING_ADDRESS.value
         ],
         "meta": [
             EntityType.INVESTIGATION.value,
