@@ -227,7 +227,6 @@ class EntityType(Enum):
     # Rule and policy entities
     TRIGGERED_RULES = "triggered_rules"  # TRIGGERED_RULES
     COUNT_TRIGGERED_RULES = "count_triggered_rules"  # COUNT_TRIGGERED_RULES
-    RULE = "rule"  # RULE
     RULE_DECISION = "rule_decision"  # RULE_DECISION
     RULE_DESCRIPTION = "rule_description"  # RULE_DESCRIPTION
     IS_RULE_PARTICIPATING_IN_LFS_PO = "is_rule_participating_in_lfs_po"  # IS_RULE_PARTICIPATING_IN_LFS_PO
