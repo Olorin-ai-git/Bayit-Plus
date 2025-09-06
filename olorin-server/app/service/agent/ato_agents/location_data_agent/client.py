@@ -12,7 +12,7 @@ from app.service.agent.tools.vector_search_tool import VectorSearchTool
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
-logger.warning("=== LOCATION_DATA_CLIENT MODULE LOADED ===")
+logger.debug("Location data client module loaded")
 
 
 @dataclass

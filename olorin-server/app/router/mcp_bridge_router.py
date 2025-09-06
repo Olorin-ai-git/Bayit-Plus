@@ -74,7 +74,7 @@ class ToolInfo(BaseModel):
     display_name: str = Field(..., description="User-friendly display name")
     description: str
     category: str
-    schema: Dict[str, Any]
+    tool_schema: Dict[str, Any]
 
 
 class ServerStatus(BaseModel):

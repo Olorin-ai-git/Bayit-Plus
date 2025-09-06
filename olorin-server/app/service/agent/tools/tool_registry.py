@@ -151,7 +151,7 @@ class ToolRegistry:
             api_default_headers: Default headers for API tools
         """
         if self._initialized:
-            logger.warning("Tool registry already initialized")
+            logger.info("Tool registry already initialized")
             return
 
         try:

@@ -35,7 +35,7 @@ class QueryValidationMetrics(BaseModel):
     estimated_execution_time_ms: float = Field(description="Estimated execution time in milliseconds")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "entity_count": 5,
                 "operator_count": 4,
@@ -55,7 +55,7 @@ class QueryValidationErrorResponse(BaseModel):
     complexity_metrics: QueryValidationMetrics = Field(description="Query complexity analysis")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "detail": "Query validation failed: Too many entities: 60 (max: 50)",
                 "validation_errors": ["Too many entities: 60 (max: 50)"],
@@ -83,7 +83,7 @@ class InvestigationStatusSummary(BaseModel):
     total_duration_ms: Optional[int] = Field(description="Total execution duration in milliseconds")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "status": "completed",
@@ -107,7 +107,7 @@ class MultiEntityMetricsResponse(BaseModel):
     complexity_distribution: Dict[str, int] = Field(description="Distribution of query complexity levels")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "total_investigations": 1247,
                 "active_investigations": 3,
@@ -132,7 +132,7 @@ class EntityTypeInfo(BaseModel):
     example_ids: List[str] = Field(description="Example entity IDs of this type")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "user_id",
                 "description": "User identifier for account-based entities",
@@ -151,7 +151,7 @@ class EnhancedEntityTypesResponse(BaseModel):
     type_descriptions: Dict[str, EntityTypeInfo] = Field(description="Detailed descriptions for each type")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "core_entity_types": ["device", "location", "network", "user"],
                 "transaction_entity_types": [
@@ -184,7 +184,7 @@ class HealthCheckResponse(BaseModel):
     features: List[str] = Field(description="List of available features")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "status": "healthy",
                 "active_investigations_count": 5,
@@ -211,7 +211,7 @@ class MultiEntityInvestigationRequestSchema(MultiEntityInvestigationRequest):
     """Multi-entity investigation request with enhanced documentation"""
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "entities": [
@@ -241,7 +241,7 @@ class MultiEntityInvestigationResultSchema(MultiEntityInvestigationResult):
     """Multi-entity investigation result with enhanced documentation"""
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "status": "completed",

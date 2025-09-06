@@ -8,9 +8,8 @@ from langchain.tools import BaseTool
 from pydantic import BaseModel, Field, validator
 
 from ..base_threat_tool import BaseThreatIntelligenceTool
-from .models import VirusTotalDomainResponse
+from .models import VirusTotalDomainResponse, VirusTotalConfig
 from .virustotal_client import VirusTotalClient
-from .virustotal_config import VirusTotalConfig
 from app.service.logging import get_bridge_logger
 
 
@@ -147,17 +146,35 @@ class VirusTotalDomainAnalysisTool(BaseTool):
         """Build comprehensive domain analysis result."""
         
         # Basic domain information
+        # Calculate risk level based on reputation and votes
+        risk_level = "UNKNOWN"
+        if domain_response.reputation is not None:
+            if domain_response.reputation < -50:
+                risk_level = "HIGH"
+            elif domain_response.reputation < -10:
+                risk_level = "MEDIUM"
+            elif domain_response.reputation < 10:
+                risk_level = "LOW"
+            else:
+                risk_level = "VERY_LOW"
+        elif domain_response.malicious_votes > domain_response.harmless_votes:
+            risk_level = "HIGH"
+        elif domain_response.harmless_votes > domain_response.malicious_votes:
+            risk_level = "LOW"
+
         domain_info = {
             "domain": domain,
             "analysis_timestamp": datetime.now().isoformat(),
             "source": "VirusTotal",
             "reputation_score": domain_response.reputation,
-            "risk_level": domain_response.risk_level
+            "risk_level": risk_level,
+            "harmless_votes": domain_response.harmless_votes,
+            "malicious_votes": domain_response.malicious_votes
         }
         
         # Detection statistics
-        if domain_response.last_analysis_stats:
-            stats = domain_response.last_analysis_stats
+        if domain_response.analysis_stats:
+            stats = domain_response.analysis_stats
             domain_info["detection_summary"] = {
                 "total_engines": stats.total_engines,
                 "malicious_detections": stats.malicious,

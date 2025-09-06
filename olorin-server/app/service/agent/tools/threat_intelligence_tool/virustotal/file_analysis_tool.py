@@ -8,9 +8,8 @@ from langchain.tools import BaseTool
 from pydantic import BaseModel, Field, validator
 
 from ..base_threat_tool import BaseThreatIntelligenceTool
-from .models import VirusTotalFileResponse
+from .models import VirusTotalFileResponse, VirusTotalConfig
 from .virustotal_client import VirusTotalClient
-from .virustotal_config import VirusTotalConfig
 from app.service.logging import get_bridge_logger
 
 

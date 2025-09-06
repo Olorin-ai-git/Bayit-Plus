@@ -99,7 +99,7 @@ class OpusVerifier:
             "original_prompt": redact_text(ctx.original_prompt or ""),
             "original_response_text": redact_text(ctx.original_response_text),
             "schema_id": ctx.schema_id,
-            "schema_json": ctx.schema_json or None,
+            "schema_json": ctx.schema_data or None,
         }
         messages = [
             {

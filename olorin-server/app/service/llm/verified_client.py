@@ -49,7 +49,7 @@ class VerifiedOpenAIClient:
                 original_prompt=prompt,
                 original_response_text=response_text,
                 schema_id='risk_analysis.v1' if (task_type == 'risk_analysis' and self._risk_schema) else None,
-                schema_json=self._risk_schema if (task_type == 'risk_analysis') else None,
+                schema_data=self._risk_schema if (task_type == 'risk_analysis') else None,
             )
             t0 = time.perf_counter()
             report = await self.verifier.verify(ctx)

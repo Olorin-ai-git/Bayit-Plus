@@ -193,7 +193,7 @@ class ConnectionPoolManager:
             return True
             
         except Exception as e:
-            logger.warning(f"Redis not available, continuing without Redis caching: {e}")
+            logger.info(f"Redis not available, continuing without Redis caching: {e}")
             self.redis_pool = None
             return False
     
