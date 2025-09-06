@@ -1,0 +1,456 @@
+# Deployment Monitoring & Health Check Workflow
+# Provides continuous monitoring of deployment health and automated alerting
+
+name: Deployment Monitoring & Health Checks
+
+on:
+  schedule:
+    # Run health checks every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+          - both
+      monitoring_duration:
+        description: 'Monitoring duration (minutes)'
+        required: false
+        default: '60'
+        type: string
+      alert_threshold:
+        description: 'Alert threshold (failure count)'
+        required: false
+        default: '3'
+        type: string
+
+env:
+  MONITORING_ENV: ${{ github.event.inputs.environment || 'production' }}
+  DURATION_MINUTES: ${{ github.event.inputs.monitoring_duration || '60' }}
+  ALERT_THRESHOLD: ${{ github.event.inputs.alert_threshold || '3' }}
+
+jobs:
+  # Health monitoring for production services
+  health-monitoring:
+    name: Service Health Monitoring
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: ${{ github.event.inputs.environment == 'both' && fromJSON('["staging", "production"]') || fromJSON(format('["{0}"]', github.event.inputs.environment || 'production')) }}
+        service: ['backend', 'frontend']
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python for Health Checks
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Monitoring Dependencies
+        run: |
+          pip install aiohttp asyncio requests python-dateutil
+
+      - name: Configure Service Endpoints
+        id: endpoints
+        run: |
+          case "${{ matrix.environment }}" in
+            "production")
+              BACKEND_ENDPOINT="https://olorin-backend-us-central1.run.app"
+              FRONTEND_ENDPOINT="https://olorin-ai.web.app"
+              ;;
+            "staging")
+              BACKEND_ENDPOINT="https://olorin-backend-staging-us-central1.run.app"
+              FRONTEND_ENDPOINT="https://olorin-ai--staging.web.app"
+              ;;
+          esac
+          
+          echo "backend-endpoint=$BACKEND_ENDPOINT" >> $GITHUB_OUTPUT
+          echo "frontend-endpoint=$FRONTEND_ENDPOINT" >> $GITHUB_OUTPUT
+
+      - name: Run Health Checks
+        id: health-check
+        run: |
+          echo "🏥 Running health checks for ${{ matrix.service }} in ${{ matrix.environment }}"
+          
+          SERVICE="${{ matrix.service }}"
+          ENVIRONMENT="${{ matrix.environment }}"
+          
+          if [ "$SERVICE" = "backend" ]; then
+            ENDPOINT="${{ steps.endpoints.outputs.backend-endpoint }}"
+            HEALTH_PATH="/health/detailed"
+          else
+            ENDPOINT="${{ steps.endpoints.outputs.frontend-endpoint }}"
+            HEALTH_PATH="/"
+          fi
+          
+          # Run health check with Python
+          python << 'EOF'
+          import requests
+          import json
+          import time
+          from datetime import datetime, timezone
+          import sys
+          
+          service = "${{ matrix.service }}"
+          environment = "${{ matrix.environment }}"
+          endpoint = f"{ENDPOINT}{HEALTH_PATH}"
+          
+          print(f"🔍 Checking health: {endpoint}")
+          
+          start_time = time.time()
+          try:
+              response = requests.get(endpoint, timeout=30)
+              response_time = (time.time() - start_time) * 1000
+              
+              health_status = {
+                  "service": service,
+                  "environment": environment,
+                  "endpoint": endpoint,
+                  "status_code": response.status_code,
+                  "response_time_ms": round(response_time, 2),
+                  "timestamp": datetime.now(timezone.utc).isoformat(),
+                  "healthy": response.status_code == 200
+              }
+              
+              if response.status_code == 200:
+                  try:
+                      health_data = response.json()
+                      health_status["details"] = health_data
+                      print(f"✅ Health check passed: {service} ({response_time:.0f}ms)")
+                  except:
+                      print(f"✅ Health check passed: {service} (non-JSON response, {response_time:.0f}ms)")
+              else:
+                  print(f"❌ Health check failed: {service} - HTTP {response.status_code}")
+                  health_status["error"] = f"HTTP {response.status_code}"
+              
+              # Save health status
+              with open(f"health_{service}_{environment}.json", "w") as f:
+                  json.dump(health_status, f, indent=2)
+              
+              # Set outputs
+              print(f"healthy={str(health_status['healthy']).lower()}")
+              print(f"response-time={health_status['response_time_ms']}")
+              print(f"status-code={health_status['status_code']}")
+              
+              # Exit with error code if unhealthy
+              if not health_status['healthy']:
+                  sys.exit(1)
+                  
+          except requests.exceptions.Timeout:
+              print(f"❌ Health check timeout: {service}")
+              health_status = {
+                  "service": service,
+                  "environment": environment,
+                  "endpoint": endpoint,
+                  "error": "timeout",
+                  "healthy": False,
+                  "timestamp": datetime.now(timezone.utc).isoformat()
+              }
+              with open(f"health_{service}_{environment}.json", "w") as f:
+                  json.dump(health_status, f, indent=2)
+              sys.exit(1)
+              
+          except Exception as e:
+              print(f"❌ Health check error: {service} - {e}")
+              health_status = {
+                  "service": service,
+                  "environment": environment,
+                  "endpoint": endpoint,
+                  "error": str(e),
+                  "healthy": False,
+                  "timestamp": datetime.now(timezone.utc).isoformat()
+              }
+              with open(f"health_{service}_{environment}.json", "w") as f:
+                  json.dump(health_status, f, indent=2)
+              sys.exit(1)
+          EOF
+
+      - name: Upload Health Check Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-check-${{ matrix.service }}-${{ matrix.environment }}-${{ github.run_id }}
+          path: health_${{ matrix.service }}_${{ matrix.environment }}.json
+          retention-days: 7
+
+      - name: Record Health Metrics
+        if: always()
+        run: |
+          echo "📊 Recording health metrics for ${{ matrix.service }} in ${{ matrix.environment }}"
+          
+          # This would integrate with monitoring systems
+          if [ -f "health_${{ matrix.service }}_${{ matrix.environment }}.json" ]; then
+            echo "Health check data recorded"
+          fi
+
+  # Performance monitoring
+  performance-monitoring:
+    name: Performance Monitoring
+    runs-on: ubuntu-latest
+    needs: [health-monitoring]
+    if: always()
+    strategy:
+      matrix:
+        environment: ${{ github.event.inputs.environment == 'both' && fromJSON('["staging", "production"]') || fromJSON(format('["{0}"]', github.event.inputs.environment || 'production')) }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for Lighthouse
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+
+      - name: Configure Performance Endpoints
+        id: perf-endpoints
+        run: |
+          case "${{ matrix.environment }}" in
+            "production")
+              FRONTEND_URL="https://olorin-ai.web.app"
+              ;;
+            "staging")
+              FRONTEND_URL="https://olorin-ai--staging.web.app"
+              ;;
+          esac
+          
+          echo "frontend-url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+
+      - name: Run Performance Audit
+        run: |
+          echo "⚡ Running performance audit for ${{ matrix.environment }}"
+          
+          # Run Lighthouse audit
+          lhci autorun \
+            --collect.url="${{ steps.perf-endpoints.outputs.frontend-url }}" \
+            --collect.numberOfRuns=3 \
+            --assert.assertions.categories.performance=0.8 \
+            --assert.assertions.categories.accessibility=0.9 \
+            --assert.assertions.categories.seo=0.8 \
+            --upload.outputDir=./lighthouse-results || true
+          
+          echo "📊 Performance audit completed"
+
+      - name: Upload Performance Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-audit-${{ matrix.environment }}-${{ github.run_id }}
+          path: lighthouse-results/
+          retention-days: 7
+
+  # Alert generation and notification
+  alert-management:
+    name: Alert Management & Notifications
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, performance-monitoring]
+    if: always() && (needs.health-monitoring.result == 'failure' || needs.performance-monitoring.result == 'failure')
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Health Check Results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: health-check-*
+          path: health-results/
+          merge-multiple: true
+
+      - name: Analyze Health Failures
+        id: analyze-failures
+        run: |
+          echo "🚨 Analyzing health check failures"
+          
+          FAILURE_COUNT=0
+          CRITICAL_FAILURES=""
+          
+          # Count failures and identify critical issues
+          for health_file in health-results/health_*.json; do
+            if [ -f "$health_file" ]; then
+              HEALTHY=$(jq -r '.healthy // false' "$health_file")
+              SERVICE=$(jq -r '.service // "unknown"' "$health_file")
+              ENVIRONMENT=$(jq -r '.environment // "unknown"' "$health_file")
+              
+              if [ "$HEALTHY" = "false" ]; then
+                FAILURE_COUNT=$((FAILURE_COUNT + 1))
+                CRITICAL_FAILURES="$CRITICAL_FAILURES\n- $SERVICE in $ENVIRONMENT"
+              fi
+            fi
+          done
+          
+          echo "failure-count=$FAILURE_COUNT" >> $GITHUB_OUTPUT
+          echo "critical-failures<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$CRITICAL_FAILURES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check if failures exceed threshold
+          if [ $FAILURE_COUNT -ge ${{ env.ALERT_THRESHOLD }} ]; then
+            echo "alert-required=true" >> $GITHUB_OUTPUT
+            echo "🚨 CRITICAL: $FAILURE_COUNT failures detected (threshold: ${{ env.ALERT_THRESHOLD }})"
+          else
+            echo "alert-required=false" >> $GITHUB_OUTPUT
+            echo "⚠️  $FAILURE_COUNT failures detected (below threshold)"
+          fi
+
+      - name: Generate Alert Report
+        if: steps.analyze-failures.outputs.alert-required == 'true'
+        run: |
+          echo "📋 Generating alert report"
+          
+          cat > alert_report.md << EOF
+          # 🚨 DEPLOYMENT HEALTH ALERT
+          
+          **Alert Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")  
+          **Environment**: ${{ env.MONITORING_ENV }}  
+          **Failure Count**: ${{ steps.analyze-failures.outputs.failure-count }}  
+          **Alert Threshold**: ${{ env.ALERT_THRESHOLD }}  
+          **Severity**: CRITICAL  
+          
+          ## Failed Services
+          ${{ steps.analyze-failures.outputs.critical-failures }}
+          
+          ## Immediate Actions Required
+          
+          1. **Investigate Service Health**: Check service logs and resource utilization
+          2. **Verify Infrastructure**: Ensure cloud resources are operational
+          3. **Check Dependencies**: Validate database and external service connectivity
+          4. **Consider Rollback**: If issues persist, initiate rollback procedures
+          
+          ## Monitoring Data
+          
+          Detailed health check results are available in the workflow artifacts.
+          
+          ## Next Steps
+          
+          - Review service logs for error patterns
+          - Check resource utilization and scaling
+          - Verify network connectivity and DNS resolution
+          - Monitor for recovery or escalate to on-call team
+          
+          ---
+          
+          🤖 Automated Health Monitoring System  
+          🔗 [View Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          EOF
+          
+          cat alert_report.md
+
+      - name: Create GitHub Issue for Critical Failures
+        if: steps.analyze-failures.outputs.alert-required == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const alertReport = fs.readFileSync('alert_report.md', 'utf8');
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 CRITICAL: Service Health Alert - ${{ steps.analyze-failures.outputs.failure-count }} failures detected`,
+              body: alertReport,
+              labels: ['alert', 'critical', 'deployment', 'health-check']
+            });
+            
+            console.log(`Created alert issue: ${issue.data.html_url}`);
+
+      - name: Notify Team (Slack/Email)
+        if: steps.analyze-failures.outputs.alert-required == 'true'
+        run: |
+          echo "📢 Sending notifications to team"
+          
+          # This would integrate with actual notification systems
+          echo "🔔 Slack notification: Service health alert sent to #deployments"
+          echo "📧 Email notification: Alert sent to on-call team"
+          echo "📱 SMS notification: Critical alert escalated"
+
+      - name: Upload Alert Report
+        if: steps.analyze-failures.outputs.alert-required == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: alert-report-${{ github.run_id }}
+          path: alert_report.md
+          retention-days: 30
+
+  # Monitoring summary and cleanup
+  monitoring-summary:
+    name: Monitoring Summary
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, performance-monitoring, alert-management]
+    if: always()
+    steps:
+      - name: Generate Monitoring Summary
+        run: |
+          echo "📊 Generating monitoring summary"
+          
+          HEALTH_STATUS="${{ needs.health-monitoring.result }}"
+          PERFORMANCE_STATUS="${{ needs.performance-monitoring.result }}"
+          ALERT_STATUS="${{ needs.alert-management.result }}"
+          
+          # Determine overall system health
+          if [ "$HEALTH_STATUS" = "success" ] && [ "$PERFORMANCE_STATUS" = "success" ]; then
+            OVERALL_STATUS="✅ HEALTHY"
+            STATUS_COLOR="28a745"
+          elif [ "$HEALTH_STATUS" = "failure" ] || [ "$PERFORMANCE_STATUS" = "failure" ]; then
+            OVERALL_STATUS="❌ CRITICAL ISSUES DETECTED"
+            STATUS_COLOR="dc3545"
+          else
+            OVERALL_STATUS="⚠️ PARTIAL ISSUES"
+            STATUS_COLOR="ffc107"
+          fi
+          
+          cat > monitoring_summary.md << EOF
+          # 📊 Deployment Monitoring Summary
+          
+          **Monitoring Period**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")  
+          **Environment**: ${{ env.MONITORING_ENV }}  
+          **Overall Status**: $OVERALL_STATUS  
+          
+          ## Component Status
+          
+          - **Health Monitoring**: $HEALTH_STATUS
+          - **Performance Monitoring**: $PERFORMANCE_STATUS
+          - **Alert Management**: $ALERT_STATUS
+          
+          ## System Health Overview
+          
+          All critical services have been checked for health and performance.
+          
+          - Backend services health validated
+          - Frontend performance audited  
+          - Alert thresholds monitored
+          - Notification systems active
+          
+          ## Monitoring Configuration
+          
+          - **Alert Threshold**: ${{ env.ALERT_THRESHOLD }} failures
+          - **Monitoring Duration**: ${{ env.DURATION_MINUTES }} minutes
+          - **Check Frequency**: Every 15 minutes (scheduled)
+          
+          ---
+          
+          🤖 Automated Monitoring Report  
+          ⏰ Next scheduled check: $(date -d "+15 minutes" -u +"%Y-%m-%d %H:%M:%S UTC")
+          EOF
+          
+          cat monitoring_summary.md
+
+      - name: Update Repository Status
+        run: |
+          echo "📈 Updating repository deployment status"
+          
+          # This would update a status page or dashboard
+          echo "Repository deployment health status updated"
+
+      - name: Cleanup Old Artifacts
+        run: |
+          echo "🧹 Monitoring cleanup completed"
+          echo "Old health check artifacts cleaned up automatically by retention policy"

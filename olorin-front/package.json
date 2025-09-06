@@ -36,19 +36,36 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "build:staging": "NODE_ENV=production REACT_APP_ENV=staging npm run build",
+    "build:production": "NODE_ENV=production REACT_APP_ENV=production npm run build",
+    "build:optimized": "NODE_ENV=production npm run build:clean && npm run build:analyze",
+    "build:check": "npm run build && npm run bundle:check && npm run lighthouse:check",
     "build:clean": "rm -rf build && npm run build",
     "build:analyze": "ANALYZE=true npm run build",
     "test": "react-app-rewired test",
+    "test:coverage": "react-app-rewired test --coverage --watchAll=false",
+    "test:ci": "CI=true npm run test:coverage",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "bundle:check": "npx bundle-analyzer build/static/js/*.js --json > bundle-analysis.json",
+    "bundle:visualize": "npx webpack-bundle-analyzer build/static/js/*.js",
+    "lighthouse:check": "npx lighthouse http://localhost:3000 --output json --output-path lighthouse-report.json",
+    "precommit": "npm run lint && npm run format:check && npm run test:ci",
     "webhook": "node webhookServer.js",
     "deploy": "./scripts/deploy.sh",
     "deploy:firebase": "npm run build && firebase deploy --only hosting",
+    "deploy:staging": "npm run build:staging && firebase hosting:channel:deploy staging --expires 7d",
+    "deploy:production": "npm run build:production && firebase deploy --only hosting:olorin-frontend",
+    "deploy:preview": "npm run build:staging && firebase hosting:channel:deploy preview-$(date +%s) --expires 1d",
     "serve:local": "npx serve -s build",
+    "serve:test": "npx serve -s build -l 3001",
     "firebase:login": "firebase login",
-    "firebase:projects": "firebase projects:list"
+    "firebase:projects": "firebase projects:list",
+    "health:check": "curl -f http://localhost:3000 || exit 1",
+    "performance:audit": "npm run build && npm run serve:test & sleep 5 && npm run lighthouse:check && pkill -f serve"
   },
   "eslintConfig": {
     "extends": [
@@ -102,6 +119,18 @@
     "terser-webpack-plugin": "^5.3.9",
     "thread-loader": "^3.0.4",
     "webpack-bundle-analyzer": "^4.9.0",
-    "workbox-webpack-plugin": "^6.6.0"
+    "workbox-webpack-plugin": "^6.6.0",
+    "bundle-analyzer": "^4.10.0",
+    "lighthouse": "^11.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "config": {
+    "build": {
+      "maxAssetSize": 512000,
+      "maxBundleSize": 512000
+    }
   }
 }

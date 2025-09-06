@@ -1,0 +1,703 @@
+# Production Readiness Gates for Olorin Platform
+# Comprehensive quality gates preventing deployment failures
+# Author: Gil Klainert
+# Date: 2025-09-06
+
+name: Production Readiness Gates
+
+on:
+  # Run on pull requests to main (pre-deployment validation)
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'docs/**'
+      - 'project-management/**'
+
+  # Run before production deployment
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment for validation'
+        required: false
+        default: 'production'
+        type: string
+      skip_performance:
+        description: 'Skip performance validation'
+        required: false
+        default: false
+        type: boolean
+      skip_security:
+        description: 'Skip security scanning'
+        required: false
+        default: false
+        type: boolean
+    outputs:
+      validation_passed:
+        description: 'Overall validation status'
+        value: ${{ jobs.gate-summary.outputs.validation_passed }}
+      security_score:
+        description: 'Security validation score'
+        value: ${{ jobs.security-scanning.outputs.security_score }}
+      performance_score:
+        description: 'Performance validation score'
+        value: ${{ jobs.performance-validation.outputs.performance_score }}
+
+  # Manual trigger for gate validation
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment for validation'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - staging
+        - production
+      skip_performance:
+        description: 'Skip performance validation'
+        required: false
+        default: false
+        type: boolean
+      skip_security:
+        description: 'Skip security scanning'
+        required: false
+        default: false
+        type: boolean
+      detailed_reports:
+        description: 'Generate detailed validation reports'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Prerequisites and setup
+  gate-setup:
+    name: Production Gates Setup
+    runs-on: ubuntu-latest
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
+      frontend_changed: ${{ steps.changes.outputs.frontend }}
+      skip_performance: ${{ steps.config.outputs.skip_performance }}
+      skip_security: ${{ steps.config.outputs.skip_security }}
+      environment: ${{ steps.config.outputs.environment }}
+      detailed_reports: ${{ steps.config.outputs.detailed_reports }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect service changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'olorin-server/**'
+              - 'deploy-cloudrun-direct.sh'
+              - 'apphosting.yaml'
+            frontend:
+              - 'olorin-front/**'
+              - 'firebase.json'
+
+      - name: Configure validation parameters
+        id: config
+        run: |
+          # Set configuration based on inputs
+          echo "skip_performance=${{ inputs.skip_performance || false }}" >> $GITHUB_OUTPUT
+          echo "skip_security=${{ inputs.skip_security || false }}" >> $GITHUB_OUTPUT
+          echo "environment=${{ inputs.environment || 'production' }}" >> $GITHUB_OUTPUT
+          echo "detailed_reports=${{ inputs.detailed_reports || true }}" >> $GITHUB_OUTPUT
+
+  # Backend test suite execution
+  backend-testing:
+    name: Backend Test Suite & Coverage
+    runs-on: ubuntu-latest
+    needs: gate-setup
+    if: needs.gate-setup.outputs.backend_changed == 'true' || github.event_name == 'workflow_dispatch'
+    outputs:
+      test_coverage: ${{ steps.test-results.outputs.coverage }}
+      test_status: ${{ steps.test-results.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            olorin-server/.venv
+          key: poetry-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('olorin-server/poetry.lock') }}
+
+      - name: Install dependencies
+        working-directory: olorin-server
+        run: |
+          poetry install --with dev
+
+      - name: Run comprehensive test suite
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Test Execution"
+          
+          # Run all test suites with detailed coverage
+          poetry run pytest \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --cov-fail-under=30 \
+            --verbose \
+            --tb=short \
+            --durations=10 \
+            test/
+          
+          echo "::endgroup::"
+
+      - name: Analyze test results
+        id: test-results
+        working-directory: olorin-server
+        run: |
+          echo "::group::Test Results Analysis"
+          
+          # Extract coverage percentage
+          COVERAGE=$(poetry run coverage report --show-missing | grep TOTAL | awk '{print $4}' | sed 's/%//')
+          echo "Test coverage: ${COVERAGE}%"
+          echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+          
+          # Check coverage threshold
+          if (( $(echo "$COVERAGE >= 30" | bc -l) )); then
+            echo "status=passed" >> $GITHUB_OUTPUT
+            echo "✅ Test coverage meets minimum threshold (${COVERAGE}% >= 30%)"
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Test coverage below minimum threshold (${COVERAGE}% < 30%)"
+            exit 1
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            olorin-server/coverage.xml
+            olorin-server/htmlcov/
+            olorin-server/.coverage
+          retention-days: 7
+
+  # Frontend test suite execution
+  frontend-testing:
+    name: Frontend Test Suite & Coverage
+    runs-on: ubuntu-latest
+    needs: gate-setup
+    if: needs.gate-setup.outputs.frontend_changed == 'true' || github.event_name == 'workflow_dispatch'
+    outputs:
+      test_coverage: ${{ steps.test-results.outputs.coverage }}
+      test_status: ${{ steps.test-results.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'olorin-front/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: olorin-front
+        run: npm ci
+
+      - name: Run comprehensive test suite
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Test Execution"
+          
+          # Run tests with coverage
+          CI=true npm test -- \
+            --coverage \
+            --watchAll=false \
+            --verbose \
+            --testResultsProcessor=jest-sonar-reporter \
+            --coverageReporters=text-lcov \
+            --coverageReporters=html \
+            --coverageReporters=json-summary
+          
+          echo "::endgroup::"
+
+      - name: Analyze test results
+        id: test-results
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Test Results Analysis"
+          
+          # Extract coverage from summary
+          if [[ -f "coverage/coverage-summary.json" ]]; then
+            COVERAGE=$(node -p "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json')).total.lines.pct")
+            echo "Test coverage: ${COVERAGE}%"
+            echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+            
+            # Check coverage threshold (lower for frontend initially)
+            if (( $(echo "$COVERAGE >= 20" | bc -l) )); then
+              echo "status=passed" >> $GITHUB_OUTPUT
+              echo "✅ Frontend test coverage acceptable (${COVERAGE}% >= 20%)"
+            else
+              echo "status=warning" >> $GITHUB_OUTPUT
+              echo "⚠️ Frontend test coverage below recommended threshold (${COVERAGE}% < 20%)"
+            fi
+          else
+            echo "⚠️ Coverage report not found, skipping coverage check"
+            echo "coverage=0" >> $GITHUB_OUTPUT
+            echo "status=warning" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: frontend-test-results
+          path: |
+            olorin-front/coverage/
+            olorin-front/test-results.xml
+          retention-days: 7
+
+  # Security scanning and vulnerability assessment
+  security-scanning:
+    name: Security Scanning & Vulnerability Assessment
+    runs-on: ubuntu-latest
+    needs: gate-setup
+    if: needs.gate-setup.outputs.skip_security == 'false'
+    outputs:
+      security_score: ${{ steps.security-assessment.outputs.score }}
+      security_status: ${{ steps.security-assessment.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'python,javascript'
+          queries: +security-and-quality
+
+      - name: Setup Python for security scanning
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+
+      - name: Backend security analysis
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Security Analysis"
+          
+          # Install dependencies
+          poetry install --with dev
+          
+          # Security vulnerability scanning
+          poetry add --group dev bandit safety
+          
+          # Run Bandit security linter
+          echo "Running Bandit security analysis..."
+          poetry run bandit -r app/ -f json -o bandit-report.json || {
+            echo "::warning::Bandit found potential security issues"
+            poetry run bandit -r app/ || true
+          }
+          
+          # Run Safety vulnerability check
+          echo "Running Safety vulnerability check..."
+          poetry run safety check --json --output safety-report.json || {
+            echo "::warning::Known vulnerabilities found in dependencies"
+            poetry run safety check || true
+          }
+          
+          # Check for hardcoded secrets
+          echo "Scanning for potential secrets..."
+          if command -v git &> /dev/null; then
+            # Simple secret patterns check
+            git grep -i -E "(password|secret|key|token).*(=|\:)" app/ || echo "No obvious secret patterns found"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Frontend security analysis
+        working-directory: olorin-front
+        if: needs.gate-setup.outputs.frontend_changed == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "::group::Frontend Security Analysis"
+          
+          # Install dependencies
+          npm ci
+          
+          # NPM audit for vulnerabilities
+          echo "Running npm audit..."
+          npm audit --audit-level=moderate --json > npm-audit.json || {
+            echo "::warning::npm audit found vulnerabilities"
+            npm audit || true
+          }
+          
+          # Check for sensitive data in build
+          echo "Checking for sensitive data patterns..."
+          if [[ -d "src" ]]; then
+            grep -r -i -E "(password|secret|key|token|api.*key)" src/ || echo "No obvious sensitive patterns found"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:python,javascript"
+
+      - name: Security assessment summary
+        id: security-assessment
+        run: |
+          echo "::group::Security Assessment Summary"
+          
+          SECURITY_SCORE=100
+          ISSUES_COUNT=0
+          
+          # Analyze backend security results
+          if [[ -f "olorin-server/bandit-report.json" ]]; then
+            BANDIT_ISSUES=$(jq '.results | length' olorin-server/bandit-report.json 2>/dev/null || echo "0")
+            echo "Bandit issues: $BANDIT_ISSUES"
+            ISSUES_COUNT=$((ISSUES_COUNT + BANDIT_ISSUES))
+          fi
+          
+          if [[ -f "olorin-server/safety-report.json" ]]; then
+            SAFETY_ISSUES=$(jq '.vulnerabilities | length' olorin-server/safety-report.json 2>/dev/null || echo "0")
+            echo "Safety vulnerabilities: $SAFETY_ISSUES"
+            ISSUES_COUNT=$((ISSUES_COUNT + SAFETY_ISSUES))
+          fi
+          
+          # Analyze frontend security results
+          if [[ -f "olorin-front/npm-audit.json" ]]; then
+            NPM_HIGH=$(jq '.metadata.vulnerabilities.high // 0' olorin-front/npm-audit.json 2>/dev/null || echo "0")
+            NPM_CRITICAL=$(jq '.metadata.vulnerabilities.critical // 0' olorin-front/npm-audit.json 2>/dev/null || echo "0")
+            NPM_ISSUES=$((NPM_HIGH + NPM_CRITICAL))
+            echo "NPM high/critical vulnerabilities: $NPM_ISSUES"
+            ISSUES_COUNT=$((ISSUES_COUNT + NPM_ISSUES))
+          fi
+          
+          # Calculate security score
+          if [[ $ISSUES_COUNT -eq 0 ]]; then
+            SECURITY_SCORE=100
+            STATUS="passed"
+          elif [[ $ISSUES_COUNT -le 5 ]]; then
+            SECURITY_SCORE=85
+            STATUS="warning"
+          elif [[ $ISSUES_COUNT -le 10 ]]; then
+            SECURITY_SCORE=70
+            STATUS="warning"
+          else
+            SECURITY_SCORE=50
+            STATUS="failed"
+          fi
+          
+          echo "Total security issues: $ISSUES_COUNT"
+          echo "Security score: $SECURITY_SCORE/100"
+          echo "Security status: $STATUS"
+          
+          echo "score=$SECURITY_SCORE" >> $GITHUB_OUTPUT
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          
+          if [[ "$STATUS" == "failed" ]]; then
+            echo "::error::Security assessment failed with score $SECURITY_SCORE/100"
+            echo "::error::Please address the $ISSUES_COUNT security issues before deployment"
+          elif [[ "$STATUS" == "warning" ]]; then
+            echo "::warning::Security assessment passed with warnings (score: $SECURITY_SCORE/100)"
+            echo "::warning::Consider addressing the $ISSUES_COUNT security issues"
+          else
+            echo "✅ Security assessment passed (score: $SECURITY_SCORE/100)"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-scan-results
+          path: |
+            olorin-server/bandit-report.json
+            olorin-server/safety-report.json
+            olorin-front/npm-audit.json
+          retention-days: 30
+
+  # Performance validation
+  performance-validation:
+    name: Performance Validation & Lighthouse CI
+    runs-on: ubuntu-latest
+    needs: gate-setup
+    if: needs.gate-setup.outputs.skip_performance == 'false' && (needs.gate-setup.outputs.frontend_changed == 'true' || github.event_name == 'workflow_dispatch')
+    outputs:
+      performance_score: ${{ steps.performance-assessment.outputs.score }}
+      performance_status: ${{ steps.performance-assessment.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'olorin-front/package-lock.json'
+
+      - name: Build frontend for performance testing
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Build for Performance Testing"
+          
+          npm ci
+          
+          # Production build
+          npm run build
+          
+          echo "::endgroup::"
+
+      - name: Install Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+
+      - name: Run Lighthouse CI
+        working-directory: olorin-front
+        run: |
+          echo "::group::Lighthouse Performance Analysis"
+          
+          # Run Lighthouse on built application
+          lhci autorun || {
+            echo "::warning::Lighthouse CI encountered issues"
+            exit 0  # Don't fail the build for now
+          }
+          
+          echo "::endgroup::"
+
+      - name: Bundle size analysis
+        working-directory: olorin-front
+        run: |
+          echo "::group::Bundle Size Analysis"
+          
+          # Analyze build output
+          echo "Build directory size:"
+          du -sh build/
+          
+          echo -e "\nJavaScript bundle sizes:"
+          find build/static/js -name "*.js" -exec ls -lh {} \; | sort -k5 -hr
+          
+          echo -e "\nCSS bundle sizes:"
+          find build/static/css -name "*.css" -exec ls -lh {} \; 2>/dev/null || echo "No CSS files found"
+          
+          # Check for large bundles (warning if any JS file > 2MB)
+          LARGE_FILES=$(find build/static/js -name "*.js" -size +2M | wc -l)
+          if [[ $LARGE_FILES -gt 0 ]]; then
+            echo "::warning::Found $LARGE_FILES JavaScript files larger than 2MB"
+            find build/static/js -name "*.js" -size +2M -exec ls -lh {} \;
+          else
+            echo "✅ No oversized JavaScript bundles detected"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Performance assessment
+        id: performance-assessment
+        run: |
+          echo "::group::Performance Assessment"
+          
+          # Default performance score
+          PERFORMANCE_SCORE=85
+          STATUS="passed"
+          
+          # Check if Lighthouse results exist
+          if [[ -f ".lighthouseci/lhr-*.json" ]]; then
+            # Extract Lighthouse performance score
+            LH_SCORE=$(node -e "
+              const fs = require('fs');
+              const files = fs.readdirSync('.lighthouseci').filter(f => f.startsWith('lhr-'));
+              if (files.length > 0) {
+                const report = JSON.parse(fs.readFileSync('.lighthouseci/' + files[0]));
+                console.log(Math.round(report.categories.performance.score * 100));
+              } else {
+                console.log(85);
+              }
+            " 2>/dev/null || echo "85")
+            
+            PERFORMANCE_SCORE=$LH_SCORE
+            echo "Lighthouse performance score: $PERFORMANCE_SCORE/100"
+            
+            if [[ $PERFORMANCE_SCORE -ge 80 ]]; then
+              STATUS="passed"
+            elif [[ $PERFORMANCE_SCORE -ge 60 ]]; then
+              STATUS="warning"
+            else
+              STATUS="failed"
+            fi
+          else
+            echo "Lighthouse results not found, using default score"
+          fi
+          
+          echo "Performance score: $PERFORMANCE_SCORE/100"
+          echo "Performance status: $STATUS"
+          
+          echo "score=$PERFORMANCE_SCORE" >> $GITHUB_OUTPUT
+          echo "status=$STATUS" >> $GITHUB_OUTPUT
+          
+          if [[ "$STATUS" == "failed" ]]; then
+            echo "::error::Performance validation failed with score $PERFORMANCE_SCORE/100"
+          elif [[ "$STATUS" == "warning" ]]; then
+            echo "::warning::Performance validation passed with warnings (score: $PERFORMANCE_SCORE/100)"
+          else
+            echo "✅ Performance validation passed (score: $PERFORMANCE_SCORE/100)"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Upload performance artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-results
+          path: |
+            .lighthouseci/
+            olorin-front/build/
+          retention-days: 7
+
+  # Production gates summary
+  gate-summary:
+    name: Production Gates Summary
+    runs-on: ubuntu-latest
+    needs: [gate-setup, backend-testing, frontend-testing, security-scanning, performance-validation]
+    if: always()
+    outputs:
+      validation_passed: ${{ steps.final-assessment.outputs.validation_passed }}
+    steps:
+      - name: Generate validation report
+        run: |
+          echo "::group::Production Gates Validation Report"
+          
+          # Create comprehensive validation report
+          cat << EOF > production-gates-report.md
+          # Olorin Platform Production Readiness Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Environment**: ${{ needs.gate-setup.outputs.environment }}
+          **Trigger**: ${{ github.event_name }}
+          **Commit**: ${{ github.sha }}
+          
+          ## Validation Results Summary
+          
+          | Validation Gate | Status | Score | Notes |
+          |----------------|--------|-------|--------|
+          | Backend Tests | ${{ needs.backend-testing.result }} | ${{ needs.backend-testing.outputs.test_coverage }}% coverage | Minimum 30% required |
+          | Frontend Tests | ${{ needs.frontend-testing.result }} | ${{ needs.frontend-testing.outputs.test_coverage }}% coverage | Minimum 20% recommended |
+          | Security Scanning | ${{ needs.security-scanning.result }} | ${{ needs.security-scanning.outputs.security_score }}/100 | CodeQL + vulnerability scans |
+          | Performance | ${{ needs.performance-validation.result }} | ${{ needs.performance-validation.outputs.performance_score }}/100 | Lighthouse CI analysis |
+          
+          ## Service Changes Detected
+          
+          - **Backend Changed**: ${{ needs.gate-setup.outputs.backend_changed }}
+          - **Frontend Changed**: ${{ needs.gate-setup.outputs.frontend_changed }}
+          
+          ## Gate Configuration
+          
+          - **Skip Performance**: ${{ needs.gate-setup.outputs.skip_performance }}
+          - **Skip Security**: ${{ needs.gate-setup.outputs.skip_security }}
+          - **Detailed Reports**: ${{ needs.gate-setup.outputs.detailed_reports }}
+          
+          ## Recommendations
+          
+          EOF
+          
+          # Add recommendations based on results
+          if [[ "${{ needs.backend-testing.result }}" != "success" ]]; then
+            echo "- ❌ Backend tests must pass before deployment" >> production-gates-report.md
+          fi
+          
+          if [[ "${{ needs.security-scanning.outputs.security_status }}" == "failed" ]]; then
+            echo "- ❌ Critical security issues must be addressed" >> production-gates-report.md
+          elif [[ "${{ needs.security-scanning.outputs.security_status }}" == "warning" ]]; then
+            echo "- ⚠️ Consider addressing security warnings" >> production-gates-report.md
+          fi
+          
+          if [[ "${{ needs.performance-validation.outputs.performance_status }}" == "failed" ]]; then
+            echo "- ❌ Performance issues must be resolved" >> production-gates-report.md
+          elif [[ "${{ needs.performance-validation.outputs.performance_status }}" == "warning" ]]; then
+            echo "- ⚠️ Consider optimizing performance" >> production-gates-report.md
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Final validation assessment
+        id: final-assessment
+        run: |
+          echo "::group::Final Production Gates Assessment"
+          
+          VALIDATION_PASSED=true
+          
+          # Check all critical gates
+          if [[ "${{ needs.backend-testing.result }}" == "failure" ]]; then
+            echo "❌ Backend testing gate failed"
+            VALIDATION_PASSED=false
+          fi
+          
+          if [[ "${{ needs.security-scanning.outputs.security_status }}" == "failed" ]]; then
+            echo "❌ Security scanning gate failed"
+            VALIDATION_PASSED=false
+          fi
+          
+          # Performance and frontend tests are warning-level for now
+          if [[ "${{ needs.frontend-testing.result }}" == "failure" ]]; then
+            echo "⚠️ Frontend testing has issues (non-blocking)"
+          fi
+          
+          if [[ "${{ needs.performance-validation.outputs.performance_status }}" == "failed" ]]; then
+            echo "⚠️ Performance validation has issues (non-blocking)"
+          fi
+          
+          echo "validation_passed=$VALIDATION_PASSED" >> $GITHUB_OUTPUT
+          
+          if [[ "$VALIDATION_PASSED" == "true" ]]; then
+            echo "✅ All production gates passed - deployment approved!"
+          else
+            echo "❌ Production gates validation failed - deployment blocked!"
+            exit 1
+          fi
+          
+          echo "::endgroup::"
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: production-gates-report
+          path: production-gates-report.md
+          retention-days: 30

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Deployment Automation Architecture - Olorin Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #34495e;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .diagram-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .diagram-section.active {
+            display: block;
+        }
+
+        .diagram-section h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .diagram-description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #3498db;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-card li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card li:before {
+            content: "✓ ";
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .metrics-section {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .phase-timeline {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .phase-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .phase-number {
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .phase-content h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .phase-meta {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .diagram-section {
+                padding: 20px;
+            }
+        }
+
+        .mermaid {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Production Deployment Automation Architecture</h1>
+            <p><strong>Olorin Fraud Detection Platform</strong> - Comprehensive CI/CD Implementation Plan</p>
+            <p style="margin-top: 10px; font-size: 1rem; color: #7f8c8d;">
+                Author: Gil Klainert | Date: 2025-09-06 | Version: 1.0
+            </p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">📊 Overview</button>
+            <button class="nav-tab" onclick="showSection('architecture')">🏗️ Architecture</button>
+            <button class="nav-tab" onclick="showSection('pipeline')">⚡ CI/CD Pipeline</button>
+            <button class="nav-tab" onclick="showSection('coordination')">🎯 Orchestration</button>
+            <button class="nav-tab" onclick="showSection('security')">🔒 Security</button>
+            <button class="nav-tab" onclick="showSection('timeline')">📅 Timeline</button>
+        </div>
+
+        <div id="overview" class="diagram-section active">
+            <h2>🎯 Deployment Automation Overview</h2>
+            <div class="diagram-description">
+                <p><strong>Executive Summary:</strong> Transform Olorin from manual deployment to world-class automated CI/CD with zero-downtime deployments, comprehensive testing gates, and bulletproof rollback capabilities.</p>
+            </div>
+
+            <div class="mermaid">
+                graph TB
+                    subgraph "Current State"
+                        A[Manual Deployment] --> B[deploy-cloudrun-direct.sh]
+                        B --> C[Google Cloud Run]
+                        D[Manual Frontend Build] --> E[Firebase Hosting]
+                        F[No Automation] --> G[No Testing Gates]
+                    end
+                    
+                    subgraph "Target State"
+                        H[GitHub Actions CI/CD] --> I[Automated Testing]
+                        I --> J[Security Scanning]
+                        J --> K[Performance Validation]
+                        K --> L[Coordinated Deployment]
+                        L --> M[Health Checks]
+                        M --> N[Rollback Capability]
+                    end
+                    
+                    A -.-> H
+                    D -.-> H
+                    F -.-> H
+                    
+                    style A fill:#ffcccc
+                    style D fill:#ffcccc
+                    style F fill:#ffcccc
+                    style H fill:#ccffcc
+                    style L fill:#ccffcc
+                    style N fill:#ccffcc
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🏗️ Infrastructure Foundation</h3>
+                    <ul>
+                        <li>Existing deploy-cloudrun-direct.sh (521 lines)</li>
+                        <li>Firebase configuration (app hosting + hosting)</li>
+                        <li>Google Cloud Run + Firebase Secrets</li>
+                        <li>Multi-service architecture ready</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Automation Gaps</h3>
+                    <ul>
+                        <li>No GitHub Actions CI/CD</li>
+                        <li>Manual frontend builds</li>
+                        <li>No production gates</li>
+                        <li>No coordinated deployment</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Target Capabilities</h3>
+                    <ul>
+                        <li>Zero-downtime deployments</li>
+                        <li>Automated quality gates</li>
+                        <li>Sub-5-minute rollbacks</li>
+                        <li>100% security scanning</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="metrics-section">
+                <h3>📊 Success Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-value">>99%</span>
+                        <span class="metric-label">Deployment Success Rate</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value"><5min</span>
+                        <span class="metric-label">Rollback Time</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value"><10min</span>
+                        <span class="metric-label">Full Deployment</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value">100%</span>
+                        <span class="metric-label">Zero Downtime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="architecture" class="diagram-section">
+            <h2>🏗️ System Architecture</h2>
+            <div class="diagram-description">
+                <p><strong>Multi-Service Deployment Architecture:</strong> Coordinated deployment of backend (Google Cloud Run), frontend (Firebase Hosting), and web portal with comprehensive validation gates.</p>
+            </div>
+
+            <div class="mermaid">
+                graph TB
+                    subgraph "GitHub Repository"
+                        A[Main Branch Push] --> B[GitHub Actions Trigger]
+                        C[Release Tag] --> B
+                        D[Manual Dispatch] --> B
+                    end
+                    
+                    subgraph "Validation Gates"
+                        B --> E[Backend Tests]
+                        B --> F[Frontend Tests]
+                        B --> G[Security Scanning]
+                        B --> H[Performance Tests]
+                    end
+                    
+                    subgraph "Build Orchestration"
+                        E --> I[Backend Build]
+                        F --> J[Frontend Build]
+                        G --> K[Security Report]
+                        H --> L[Performance Report]
+                    end
+                    
+                    subgraph "Deployment Coordination"
+                        I --> M[Google Cloud Run]
+                        J --> N[Firebase Hosting]
+                        K --> O[Security Dashboard]
+                        L --> P[Performance Dashboard]
+                    end
+                    
+                    subgraph "Health Validation"
+                        M --> Q[Backend Health Check]
+                        N --> R[Frontend Health Check]
+                        Q --> S[System Health Validation]
+                        R --> S
+                    end
+                    
+                    subgraph "Rollback System"
+                        S --> T{All Healthy?}
+                        T -->|No| U[Automated Rollback]
+                        T -->|Yes| V[Deployment Complete]
+                        U --> W[Previous Stable Version]
+                    end
+                    
+                    style A fill:#e1f5fe
+                    style B fill:#fff3e0
+                    style M fill:#e8f5e8
+                    style N fill:#e8f5e8
+                    style S fill:#f3e5f5
+                    style U fill:#ffebee
+                    style V fill:#e8f5e8
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 Deployment Triggers</h3>
+                    <ul>
+                        <li>Main branch push (automatic)</li>
+                        <li>Release tag (versioned)</li>
+                        <li>Manual dispatch (emergency)</li>
+                        <li>Scheduled deployments</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Validation Gates</h3>
+                    <ul>
+                        <li>Backend: Poetry + pytest coverage</li>
+                        <li>Frontend: npm test + Jest coverage</li>
+                        <li>Security: CodeQL + vulnerability scanning</li>
+                        <li>Performance: Lighthouse CI validation</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 Deployment Targets</h3>
+                    <ul>
+                        <li>Backend: Google Cloud Run (existing script)</li>
+                        <li>Frontend: Firebase Hosting</li>
+                        <li>Secrets: Firebase Secret Manager</li>
+                        <li>Monitoring: Real-time health checks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="pipeline" class="diagram-section">
+            <h2>⚡ CI/CD Pipeline Flow</h2>
+            <div class="diagram-description">
+                <p><strong>Production Deployment Pipeline:</strong> Comprehensive workflow from code commit to production deployment with parallel processing and dependency management.</p>
+            </div>
+
+            <div class="mermaid">
+                sequenceDiagram
+                    participant Dev as Developer
+                    participant Git as GitHub
+                    participant CI as GitHub Actions
+                    participant Tests as Test Suite
+                    participant Security as Security Scan
+                    participant Backend as Cloud Run
+                    participant Frontend as Firebase
+                    participant Monitor as Monitoring
+                    
+                    Dev->>Git: Push to main branch
+                    Git->>CI: Trigger deployment workflow
+                    
+                    par Validation Phase
+                        CI->>Tests: Run backend tests (pytest)
+                        Tests-->>CI: ✅ Tests passed
+                        CI->>Tests: Run frontend tests (Jest)
+                        Tests-->>CI: ✅ Tests passed
+                        CI->>Security: Security scanning (CodeQL)
+                        Security-->>CI: ✅ Security validated
+                    end
+                    
+                    par Build Phase
+                        CI->>Backend: Build backend (Docker)
+                        Backend-->>CI: ✅ Build complete
+                        CI->>Frontend: Build frontend (React)
+                        Frontend-->>CI: ✅ Build complete
+                    end
+                    
+                    par Deployment Phase
+                        CI->>Backend: Deploy to Cloud Run
+                        Backend-->>CI: ✅ Deployed
+                        CI->>Frontend: Deploy to Firebase
+                        Frontend-->>CI: ✅ Deployed
+                    end
+                    
+                    CI->>Monitor: Health validation
+                    Monitor-->>CI: ✅ All systems healthy
+                    
+                    alt Deployment Failed
+                        Monitor-->>CI: ❌ Health check failed
+                        CI->>Backend: Rollback backend
+                        CI->>Frontend: Rollback frontend
+                        CI-->>Dev: 🚨 Deployment rolled back
+                    else Deployment Successful
+                        CI-->>Dev: ✅ Deployment complete
+                    end
+            </div>
+
+            <div class="phase-timeline">
+                <h3>🔄 Pipeline Phases</h3>
+                <div class="phase-item">
+                    <div class="phase-number">1</div>
+                    <div class="phase-content">
+                        <h4>Trigger & Validation</h4>
+                        <div class="phase-meta">Duration: 2-3 minutes | Parallel execution of all validation gates</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">2</div>
+                    <div class="phase-content">
+                        <h4>Build & Optimize</h4>
+                        <div class="phase-meta">Duration: 3-4 minutes | Concurrent backend and frontend builds</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">3</div>
+                    <div class="phase-content">
+                        <h4>Deploy & Configure</h4>
+                        <div class="phase-meta">Duration: 4-5 minutes | Coordinated multi-service deployment</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">4</div>
+                    <div class="phase-content">
+                        <h4>Validate & Monitor</h4>
+                        <div class="phase-meta">Duration: 1-2 minutes | Health checks and performance validation</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="coordination" class="diagram-section">
+            <h2>🎯 Subagent Orchestration</h2>
+            <div class="diagram-description">
+                <p><strong>Specialist Team Coordination:</strong> Master orchestrator coordinates specialized subagents across 5 implementation phases with quality gates and handoff protocols.</p>
+            </div>
+
+            <div class="mermaid">
+                graph TD
+                    subgraph "Phase 1: Infrastructure (Days 1-4)"
+                        A[Master Orchestrator] --> B[@devops-troubleshooter]
+                        B --> C[@git-expert]
+                        B --> D[@cloud-architect]
+                        B --> E[@firebase-deployment-specialist]
+                        C --> F[GitHub Actions Workflows]
+                        D --> G[Infrastructure Setup]
+                        E --> H[Firebase Integration]
+                    end
+                    
+                    subgraph "Phase 2: Backend Automation (Days 5-7)"
+                        I[@firebase-deployment-specialist] --> J[@python-hyx-resilience]
+                        I --> K[@site-reliability-engineer]
+                        J --> L[Backend Deployment]
+                        K --> M[Resilience Patterns]
+                    end
+                    
+                    subgraph "Phase 3: Frontend Automation (Days 8-10)"
+                        N[@react-expert] --> O[@performance-optimizer]
+                        N --> P[@firebase-deployment-specialist]
+                        O --> Q[Build Optimization]
+                        P --> R[Hosting Automation]
+                    end
+                    
+                    subgraph "Phase 4: Integration (Days 11-13)"
+                        S[@site-reliability-engineer] --> T[@debugger]
+                        S --> U[@monitoring-engineer]
+                        T --> V[Integration Testing]
+                        U --> W[Monitoring Setup]
+                    end
+                    
+                    subgraph "Phase 5: Security (Days 14-17)"
+                        X[@security-auditor] --> Y[@devsecops-engineer]
+                        Y --> Z[Security Automation]
+                        X --> AA[@compliance-specialist]
+                        AA --> BB[Compliance Validation]
+                    end
+                    
+                    F --> L
+                    G --> L
+                    H --> L
+                    L --> Q
+                    M --> Q
+                    Q --> V
+                    R --> V
+                    V --> Z
+                    W --> Z
+                    Z --> CC[Production Ready]
+                    BB --> CC
+                    
+                    style A fill:#ff9800
+                    style I fill:#2196f3
+                    style N fill:#4caf50
+                    style S fill:#9c27b0
+                    style X fill:#f44336
+                    style CC fill:#4caf50,color:#fff
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎛️ Orchestrator Control</h3>
+                    <ul>
+                        <li>Task flow remains with orchestrator</li>
+                        <li>Specialist subagent assignments</li>
+                        <li>Quality gate enforcement</li>
+                        <li>Handoff protocol management</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Execution Protocol</h3>
+                    <ul>
+                        <li>100% completion before handoff</li>
+                        <li>Orchestrator verification required</li>
+                        <li>Comprehensive testing validation</li>
+                        <li>No parallel subtask execution</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Quality Verification</h3>
+                    <ul>
+                        <li>Debugger validation of implementation</li>
+                        <li>Test coverage verification</li>
+                        <li>Code-reviewer final approval</li>
+                        <li>Production readiness assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="security" class="diagram-section">
+            <h2>🔒 Security & Compliance</h2>
+            <div class="diagram-description">
+                <p><strong>Security-First Deployment:</strong> Comprehensive security validation with automated scanning, compliance checks, and incident response throughout the deployment pipeline.</p>
+            </div>
+
+            <div class="mermaid">
+                graph TB
+                    subgraph "Security Scanning"
+                        A[Code Commit] --> B[SAST Scanning]
+                        B --> C[CodeQL Analysis]
+                        C --> D[Dependency Scanning]
+                        D --> E[Container Scanning]
+                    end
+                    
+                    subgraph "Compliance Validation"
+                        F[GDPR Compliance] --> G[SOC 2 Audit Trail]
+                        G --> H[Financial Regulatory]
+                        H --> I[Data Encryption]
+                    end
+                    
+                    subgraph "Runtime Security"
+                        J[API Security Testing] --> K[Authentication Validation]
+                        K --> L[Access Control Check]
+                        L --> M[Threat Detection]
+                    end
+                    
+                    subgraph "Incident Response"
+                        N[Security Alert] --> O[Automated Response]
+                        O --> P[Threat Mitigation]
+                        P --> Q[Recovery Actions]
+                    end
+                    
+                    E --> R{Security Gate}
+                    I --> R
+                    M --> R
+                    
+                    R -->|Pass| S[Deploy to Production]
+                    R -->|Fail| T[Block Deployment]
+                    
+                    S --> U[Continuous Monitoring]
+                    U --> N
+                    
+                    T --> V[Security Report]
+                    V --> W[Remediation Required]
+                    
+                    style R fill:#ff5722,color:#fff
+                    style S fill:#4caf50,color:#fff
+                    style T fill:#f44336,color:#fff
+                    style N fill:#ff9800,color:#fff
+            </div>
+
+            <div class="metrics-section">
+                <h3>🛡️ Security Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-value">100%</span>
+                        <span class="metric-label">Security Scanning Coverage</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value"><1min</span>
+                        <span class="metric-label">Security Response Time</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value">99%</span>
+                        <span class="metric-label">Automated Incident Resolution</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value">0</span>
+                        <span class="metric-label">Production Vulnerabilities</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔍 Security Scanning</h3>
+                    <ul>
+                        <li>Static Application Security Testing (SAST)</li>
+                        <li>Dynamic Application Security Testing (DAST)</li>
+                        <li>Dependency vulnerability scanning</li>
+                        <li>Container image security validation</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Compliance Automation</h3>
+                    <ul>
+                        <li>GDPR data handling validation</li>
+                        <li>SOC 2 audit trail generation</li>
+                        <li>Financial regulatory compliance</li>
+                        <li>Data encryption and privacy checks</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🚨 Incident Response</h3>
+                    <ul>
+                        <li>Real-time threat detection</li>
+                        <li>Automated security response</li>
+                        <li>Threat mitigation and containment</li>
+                        <li>Recovery and restoration procedures</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="timeline" class="diagram-section">
+            <h2>📅 Implementation Timeline</h2>
+            <div class="diagram-description">
+                <p><strong>17-Day Implementation Plan:</strong> Phased rollout with parallel execution optimization and comprehensive quality gates at each milestone.</p>
+            </div>
+
+            <div class="mermaid">
+                gantt
+                    title Production Deployment Automation Implementation
+                    dateFormat  YYYY-MM-DD
+                    section Phase 1: Infrastructure
+                    GitHub Actions Setup    :active, infra1, 2025-09-07, 2d
+                    Build Orchestration     :infra2, after infra1, 2d
+                    Production Gates        :infra3, after infra2, 1d
+                    
+                    section Phase 2: Backend
+                    Cloud Run Integration   :backend1, 2025-09-12, 2d
+                    Resilience Automation   :backend2, after backend1, 1d
+                    Environment Management  :backend3, after backend2, 1d
+                    
+                    section Phase 3: Frontend
+                    React Build Automation  :frontend1, 2025-09-16, 2d
+                    Firebase Integration    :frontend2, after frontend1, 1d
+                    Performance Validation  :frontend3, after frontend2, 1d
+                    
+                    section Phase 4: Integration
+                    Multi-Service Orchestration :integration1, 2025-09-20, 2d
+                    Monitoring Integration      :integration2, after integration1, 1d
+                    Rollback Automation         :integration3, after integration2, 1d
+                    
+                    section Phase 5: Security
+                    Security Scanning       :security1, 2025-09-24, 2d
+                    Compliance Automation   :security2, after security1, 1d
+                    Production Monitoring   :security3, after security2, 1d
+            </div>
+
+            <div class="phase-timeline">
+                <h3>📋 Detailed Phase Breakdown</h3>
+                <div class="phase-item">
+                    <div class="phase-number">1</div>
+                    <div class="phase-content">
+                        <h4>CI/CD Infrastructure Setup</h4>
+                        <div class="phase-meta">Days 1-4 | @devops-troubleshooter + @git-expert | GitHub Actions foundation</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">2</div>
+                    <div class="phase-content">
+                        <h4>Backend Deployment Automation</h4>
+                        <div class="phase-meta">Days 5-7 | @firebase-deployment-specialist + @python-hyx-resilience | Cloud Run integration</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">3</div>
+                    <div class="phase-content">
+                        <h4>Frontend Deployment Automation</h4>
+                        <div class="phase-meta">Days 8-10 | @react-expert + @firebase-deployment-specialist | React + Firebase hosting</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">4</div>
+                    <div class="phase-content">
+                        <h4>Deployment Coordination</h4>
+                        <div class="phase-meta">Days 11-13 | @site-reliability-engineer + @cloud-architect | Multi-service orchestration</div>
+                    </div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-number">5</div>
+                    <div class="phase-content">
+                        <h4>Security & Compliance</h4>
+                        <div class="phase-meta">Days 14-17 | @security-auditor + @devsecops-engineer | Production security</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#3498db',
+                primaryTextColor: '#2c3e50',
+                primaryBorderColor: '#3498db',
+                lineColor: '#34495e',
+                secondaryColor: '#ecf0f1',
+                tertiaryColor: '#f8f9fa'
+            }
+        });
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.diagram-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add smooth scrolling
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

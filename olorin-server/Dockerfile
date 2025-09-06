@@ -1,63 +1,97 @@
-# Multi-stage build for Olorin Backend Service
-FROM python:3.11-slim AS poetry-deps
+# Multi-stage Docker build for Olorin Backend Service - Optimized for Production
+# Build arguments for flexible configuration
+ARG PYTHON_VERSION=3.11
+ARG POETRY_VERSION=1.8.0
+ARG APP_ENV=production
+ARG WORKERS=1
 
-# Install system dependencies required for Python packages
-RUN apt-get update && apt-get install -y \
+# Stage 1: Base image with common system dependencies
+FROM python:${PYTHON_VERSION}-slim AS base
+ARG POETRY_VERSION
+
+# Set environment variables for build optimization
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Install system dependencies in single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libpq-dev \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install Poetry
-RUN pip install poetry==1.8.0
+# Stage 2: Poetry dependency resolver and installer
+FROM base AS poetry-deps
+ARG POETRY_VERSION
+ARG APP_ENV
+
+# Install Poetry with specific version
+RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
+
+# Configure Poetry for production builds
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VENV_IN_PROJECT=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+
+# Copy dependency files (separate layer for better caching)
 COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-root
 
-# Production stage
-FROM python:3.11-slim AS runner
+# Install dependencies based on environment
+RUN if [ "$APP_ENV" = "development" ]; then \
+        poetry install --no-root; \
+    else \
+        poetry install --no-dev --no-root; \
+    fi && \
+    rm -rf /tmp/poetry_cache
 
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y \
+# Stage 3: Application runtime image
+FROM python:${PYTHON_VERSION}-slim AS runner
+ARG APP_ENV
+ARG WORKERS
+
+# Install only runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     curl \
-    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && groupadd -r olorin \
-    && useradd -r -g olorin -s /bin/bash olorin
+    && useradd -r -g olorin -s /bin/bash -m olorin
 
 # Copy Python packages from poetry-deps stage
 COPY --from=poetry-deps /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=poetry-deps /usr/local/bin /usr/local/bin
 
-# Set working directory
+# Create application directory with proper permissions
 WORKDIR /app
+RUN mkdir -p /app/logs /app/uploads /app/reports /usr/share/fonts/truetype/ \
+    && chown -R olorin:olorin /app /usr/share/fonts/truetype/
 
-# Copy application code
-COPY --chown=olorin:olorin . .
+# Copy application code with proper ownership
+COPY --chown=olorin:olorin app/ /app/app/
+COPY --chown=olorin:olorin main.py simple_main.py /app/
 
-# Create fonts directory (PDF fonts will be installed if needed at runtime)
-RUN mkdir -p /usr/share/fonts/truetype/
-
-# Create necessary directories
-RUN mkdir -p /app/logs /app/uploads /app/reports \
-    && chown -R olorin:olorin /app
-
-# Switch to non-root user
+# Switch to non-root user for security
 USER olorin
 
-# Set Python path and environment variables
-ENV PYTHONPATH="/app:$PYTHONPATH"
-ENV PYTHONUNBUFFERED=1
-ENV ENVIRONMENT=production
+# Set optimized environment variables
+ENV PYTHONPATH="/app" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    ENVIRONMENT=${APP_ENV} \
+    WORKERS=${WORKERS}
 
-# Expose port (will be set by Cloud Run via PORT env var, defaults to 8090)
-EXPOSE ${PORT:-8090}
+# Expose port (configurable via Cloud Run)
+EXPOSE 8090
 
-# Health check (use PORT env var, default to 8090)
+# Enhanced health check with timeout and proper error handling
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8090}/health || exit 1
 
-# Command to run the application (use PORT env var, default to 8090)
-# Start with single worker for debugging startup issues
-CMD ["sh", "-c", "echo 'Starting on port ${PORT:-8090}' && python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers 1 --log-level info"]
+# Optimized startup command with configurable workers
+CMD ["sh", "-c", "exec python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8090} --workers ${WORKERS:-1} --access-log --log-level info"]

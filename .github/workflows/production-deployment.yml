@@ -1,0 +1,431 @@
+# Production Deployment Workflow for Olorin Platform
+# Comprehensive CI/CD pipeline for multi-service deployment automation
+# Author: Gil Klainert
+# Date: 2025-09-06
+
+name: Production Deployment
+
+on:
+  # Main branch push triggers for automatic deployment
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'docs/**'
+      - 'project-management/**'
+  
+  # Manual workflow dispatch for emergency deployments
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - staging
+        - production
+      force_deploy:
+        description: 'Force deployment even if validation fails'
+        required: false
+        default: false
+        type: boolean
+      backend_only:
+        description: 'Deploy backend services only'
+        required: false
+        default: false
+        type: boolean
+      frontend_only:
+        description: 'Deploy frontend services only'
+        required: false
+        default: false
+        type: boolean
+
+  # Release tag triggers for versioned deployments
+  release:
+    types: [published]
+
+env:
+  PROJECT_ID: olorin-ai
+  REGION: us-central1
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Environment setup and validation
+  setup:
+    name: Environment Setup & Validation
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_backend: ${{ steps.deployment_matrix.outputs.deploy_backend }}
+      deploy_frontend: ${{ steps.deployment_matrix.outputs.deploy_frontend }}
+      environment: ${{ steps.deployment_matrix.outputs.environment }}
+      force_deploy: ${{ steps.deployment_matrix.outputs.force_deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine deployment matrix
+        id: deployment_matrix
+        run: |
+          # Determine deployment configuration based on trigger
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "deploy_backend=${{ !inputs.frontend_only }}" >> $GITHUB_OUTPUT
+            echo "deploy_frontend=${{ !inputs.backend_only }}" >> $GITHUB_OUTPUT
+            echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "force_deploy=${{ inputs.force_deploy }}" >> $GITHUB_OUTPUT
+          else
+            # Automatic deployment on main branch or release
+            echo "deploy_backend=true" >> $GITHUB_OUTPUT
+            echo "deploy_frontend=true" >> $GITHUB_OUTPUT
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "force_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate project structure
+        run: |
+          echo "::group::Project Structure Validation"
+          
+          # Check multi-service project structure
+          if [[ ! -d "olorin-server" ]]; then
+            echo "::error::Backend directory 'olorin-server' not found"
+            exit 1
+          fi
+          
+          if [[ ! -d "olorin-front" ]]; then
+            echo "::error::Frontend directory 'olorin-front' not found"
+            exit 1
+          fi
+          
+          # Check Firebase configuration
+          if [[ ! -f "firebase.json" ]]; then
+            echo "::error::Firebase configuration 'firebase.json' not found"
+            exit 1
+          fi
+          
+          # Check deployment script
+          if [[ ! -f "deploy-cloudrun-direct.sh" ]]; then
+            echo "::error::Deployment script 'deploy-cloudrun-direct.sh' not found"
+            exit 1
+          fi
+          
+          # Check backend structure
+          if [[ ! -f "olorin-server/pyproject.toml" ]]; then
+            echo "::error::Backend pyproject.toml not found"
+            exit 1
+          fi
+          
+          if [[ ! -f "olorin-server/Dockerfile" ]]; then
+            echo "::error::Backend Dockerfile not found"
+            exit 1
+          fi
+          
+          # Check frontend structure
+          if [[ ! -f "olorin-front/package.json" ]]; then
+            echo "::error::Frontend package.json not found"
+            exit 1
+          fi
+          
+          echo "✅ All project structure validations passed"
+          echo "::endgroup::"
+
+  # Backend deployment job
+  deploy-backend:
+    name: Deploy Backend to Cloud Run
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.deploy_backend == 'true'
+    environment: ${{ needs.setup.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Validate backend dependencies
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Dependency Validation"
+          
+          # Install dependencies
+          poetry install --no-dev
+          
+          # Check for security vulnerabilities
+          poetry run pip check || echo "::warning::Dependency issues detected"
+          
+          # Verify critical dependencies
+          poetry run python -c "
+          import sys
+          critical_deps = ['fastapi', 'uvicorn', 'langchain', 'anthropic', 'openai']
+          for dep in critical_deps:
+              try:
+                  __import__(dep)
+                  print(f'✅ {dep} imported successfully')
+              except ImportError as e:
+                  print(f'::error::{dep} import failed: {e}')
+                  sys.exit(1)
+          "
+          
+          echo "::endgroup::"
+
+      - name: Execute production deployment
+        run: |
+          echo "::group::Backend Cloud Run Deployment"
+          
+          # Make deployment script executable
+          chmod +x deploy-cloudrun-direct.sh
+          
+          # Set deployment parameters
+          DEPLOY_ARGS=""
+          if [[ "${{ needs.setup.outputs.force_deploy }}" == "true" ]]; then
+            DEPLOY_ARGS="$DEPLOY_ARGS --force"
+          fi
+          
+          # Execute deployment using proven script
+          ./deploy-cloudrun-direct.sh $DEPLOY_ARGS \
+            --project "${{ env.PROJECT_ID }}" \
+            --region "${{ env.REGION }}" \
+            --verbose
+          
+          echo "::endgroup::"
+
+      - name: Verify backend deployment
+        run: |
+          echo "::group::Backend Deployment Verification"
+          
+          # Get service URL
+          SERVICE_URL=$(gcloud run services describe olorin-backend \
+            --region="${{ env.REGION }}" \
+            --project="${{ env.PROJECT_ID }}" \
+            --format="value(status.url)")
+          
+          echo "Service URL: $SERVICE_URL"
+          
+          # Wait for service to be ready
+          echo "Waiting for service to be ready..."
+          sleep 30
+          
+          # Test health endpoint
+          if curl -f -s "${SERVICE_URL}/health" > /dev/null; then
+            echo "✅ Health endpoint responding correctly"
+          else
+            echo "::warning::Health endpoint not responding (may still be starting)"
+          fi
+          
+          # Test API documentation
+          if curl -f -s "${SERVICE_URL}/docs" > /dev/null; then
+            echo "✅ API documentation endpoint accessible"
+          else
+            echo "::warning::API docs not accessible (may still be starting)"
+          fi
+          
+          # Set output for other jobs
+          echo "backend_url=$SERVICE_URL" >> $GITHUB_OUTPUT
+          
+          echo "::endgroup::"
+
+      - name: Update deployment status
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "::notice::Backend deployment completed successfully"
+          else
+            echo "::error::Backend deployment failed"
+          fi
+
+  # Frontend deployment job
+  deploy-frontend:
+    name: Deploy Frontend to Firebase Hosting
+    runs-on: ubuntu-latest
+    needs: [setup, deploy-backend]
+    if: always() && needs.setup.outputs.deploy_frontend == 'true'
+    environment: ${{ needs.setup.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'olorin-front/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Dependency Installation"
+          npm ci
+          echo "::endgroup::"
+
+      - name: Build frontend application
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Build Process"
+          
+          # Set backend URL if backend was deployed
+          if [[ "${{ needs.deploy-backend.result }}" == "success" ]]; then
+            export REACT_APP_BACKEND_URL="${{ needs.deploy-backend.outputs.backend_url }}"
+            echo "Using backend URL: $REACT_APP_BACKEND_URL"
+          fi
+          
+          # Build with TypeScript error tolerance for production
+          TSC_COMPILE_ON_ERROR=true npm run build
+          
+          # Verify build output
+          if [[ ! -d "build" ]]; then
+            echo "::error::Frontend build directory not created"
+            exit 1
+          fi
+          
+          echo "✅ Frontend build completed successfully"
+          echo "::endgroup::"
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OLORIN_AI }}
+          channelId: live
+          projectId: ${{ env.PROJECT_ID }}
+          entrypoint: './olorin-front'
+
+      - name: Verify frontend deployment
+        run: |
+          echo "::group::Frontend Deployment Verification"
+          
+          # Test deployed frontend
+          FRONTEND_URL="https://${{ env.PROJECT_ID }}.web.app"
+          echo "Frontend URL: $FRONTEND_URL"
+          
+          # Wait for deployment to propagate
+          echo "Waiting for deployment to propagate..."
+          sleep 15
+          
+          # Test frontend accessibility
+          if curl -f -s "$FRONTEND_URL" > /dev/null; then
+            echo "✅ Frontend accessible at $FRONTEND_URL"
+          else
+            echo "::warning::Frontend not immediately accessible (CDN propagation may be in progress)"
+          fi
+          
+          echo "::endgroup::"
+
+  # Post-deployment validation and reporting
+  post-deployment:
+    name: Post-Deployment Validation & Reporting
+    runs-on: ubuntu-latest
+    needs: [setup, deploy-backend, deploy-frontend]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate deployment report
+        run: |
+          echo "::group::Deployment Report Generation"
+          
+          # Create deployment summary
+          cat << EOF > deployment-report.md
+          # Olorin Platform Deployment Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Trigger**: ${{ github.event_name }}
+          **Environment**: ${{ needs.setup.outputs.environment }}
+          **Commit**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
+          
+          ## Deployment Status
+          
+          | Service | Status | Notes |
+          |---------|--------|-------|
+          | Backend | ${{ needs.deploy-backend.result }} | Cloud Run deployment |
+          | Frontend | ${{ needs.deploy-frontend.result }} | Firebase Hosting deployment |
+          
+          ## Configuration
+          
+          - **Force Deploy**: ${{ needs.setup.outputs.force_deploy }}
+          - **Backend Only**: ${{ github.event.inputs.backend_only || 'false' }}
+          - **Frontend Only**: ${{ github.event.inputs.frontend_only || 'false' }}
+          
+          ## Service URLs
+          
+          - **Frontend**: https://${{ env.PROJECT_ID }}.web.app
+          - **Backend**: [Cloud Run Service URL]
+          - **API Docs**: [Backend URL]/docs
+          
+          ## Deployment Commands
+          
+          View logs:
+          \`\`\`bash
+          gcloud run logs tail olorin-backend --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
+          \`\`\`
+          
+          Service info:
+          \`\`\`bash
+          gcloud run services describe olorin-backend --region=${{ env.REGION }} --project=${{ env.PROJECT_ID }}
+          \`\`\`
+          EOF
+          
+          echo "::endgroup::"
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: deployment-report
+          path: deployment-report.md
+          retention-days: 30
+
+      - name: Final deployment status
+        run: |
+          echo "::group::Final Deployment Status"
+          
+          OVERALL_STATUS="success"
+          
+          if [[ "${{ needs.deploy-backend.result }}" != "success" && "${{ needs.setup.outputs.deploy_backend }}" == "true" ]]; then
+            echo "::error::Backend deployment failed"
+            OVERALL_STATUS="failure"
+          fi
+          
+          if [[ "${{ needs.deploy-frontend.result }}" != "success" && "${{ needs.setup.outputs.deploy_frontend }}" == "true" ]]; then
+            echo "::error::Frontend deployment failed"
+            OVERALL_STATUS="failure"
+          fi
+          
+          if [[ "$OVERALL_STATUS" == "success" ]]; then
+            echo "::notice::🎉 Olorin Platform deployment completed successfully!"
+          else
+            echo "::error::❌ Deployment completed with failures. Check individual job logs."
+            exit 1
+          fi
+          
+          echo "::endgroup::"
