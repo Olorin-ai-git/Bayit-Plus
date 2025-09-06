@@ -9,9 +9,14 @@ import re
 import hashlib
 import base64
 import json
+import unicodedata
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import unquote
 import ipaddress
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SecurityValidationRules:
@@ -19,26 +24,58 @@ class SecurityValidationRules:
     Advanced security validation rules for threat detection and prevention.
     """
     
-    # XSS prevention patterns
+    # Enhanced XSS prevention patterns with Unicode normalization protection
     XSS_PATTERNS = [
-        re.compile(r'<\s*script[^>]*>.*?<\s*/\s*script\s*>', re.IGNORECASE | re.DOTALL),
-        re.compile(r'javascript\s*:', re.IGNORECASE),
-        re.compile(r'on\w+\s*=', re.IGNORECASE),
-        re.compile(r'<\s*iframe[^>]*>', re.IGNORECASE),
-        re.compile(r'<\s*object[^>]*>', re.IGNORECASE),
-        re.compile(r'<\s*embed[^>]*>', re.IGNORECASE),
-        re.compile(r'expression\s*\(', re.IGNORECASE),
-        re.compile(r'vbscript\s*:', re.IGNORECASE)
+        # Script tags with Unicode normalization handling
+        re.compile(r'<\s*[Ss\u00df\u1e9e]*[Cc\u00c7\u0107\u010d]*[Rr\u0280\u027d]*[Ii\u00ce\u012b]*[Pp\u03c1\u0440]*[Tt\u0442\u03c4]*[^>]*>.*?<\s*/\s*[Ss]*[Cc]*[Rr]*[Ii]*[Pp]*[Tt]*\s*>', re.IGNORECASE | re.DOTALL | re.UNICODE),
+        # JavaScript protocol with Unicode variations  
+        re.compile(r'[Jj\u0458\u029d]*[Aa\u00e0\u00c0]*[Vv\u03bd\u0432]*[Aa\u00e0]*[Ss\u015f]*[Cc\u00c7]*[Rr\u0280]*[Ii\u012b]*[Pp\u03c1]*[Tt\u0442]*\s*:', re.IGNORECASE | re.UNICODE),
+        # Event handlers with Unicode normalization (more specific)
+        re.compile(r'[Oo\u00f6\u043e]*[Nn\u00f1\u043d]+[a-zA-Z_][a-zA-Z0-9_]*\s*=', re.IGNORECASE | re.UNICODE),
+        # Dangerous HTML elements
+        re.compile(r'<\s*[Ii]*[Ff]*[Rr]*[Aa]*[Mm]*[Ee]*[^>]*>', re.IGNORECASE | re.UNICODE),
+        re.compile(r'<\s*[Oo]*[Bb]*[Jj]*[Ee]*[Cc]*[Tt]*[^>]*>', re.IGNORECASE | re.UNICODE),
+        re.compile(r'<\s*[Ee]*[Mm]*[Bb]*[Ee]*[Dd]*[^>]*>', re.IGNORECASE | re.UNICODE),
+        # CSS expressions
+        re.compile(r'[Ee\u00e8\u0435]*[Xx\u0445]*[Pp\u03c1]*[Rr\u0440]*[Ee\u0435]*[Ss\u015f]*[Ss\u015f]*[Ii\u0456]*[Oo\u043e]*[Nn\u043d]*\s*\(', re.IGNORECASE | re.UNICODE),
+        # VBScript protocol
+        re.compile(r'[Vv\u03bd]*[Bb\u0432]*[Ss\u015f]*[Cc\u00c7]*[Rr\u0440]*[Ii\u0456]*[Pp\u03c1]*[Tt\u0442]*\s*:', re.IGNORECASE | re.UNICODE),
+        # Data URI schemes
+        re.compile(r'data\s*:\s*[^,]*script', re.IGNORECASE | re.UNICODE),
+        # Encoded script tags
+        re.compile(r'%3[Cc]script', re.IGNORECASE),
+        re.compile(r'&lt;script', re.IGNORECASE),
+        re.compile(r'&#x3c;script', re.IGNORECASE)
     ]
     
-    # SQL injection patterns
+    # Enhanced SQL injection patterns with comment variations and NoSQL protection
     SQL_INJECTION_PATTERNS = [
-        re.compile(r'\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b', re.IGNORECASE),
-        re.compile(r'[\'";].*?(\-\-|\#)', re.IGNORECASE),
+        # Standard SQL keywords with Unicode normalization
+        re.compile(r'\b(union|select|insert|update|delete|drop|create|alter|exec|execute|grant|revoke)\b', re.IGNORECASE | re.UNICODE),
+        # Comment variations (SQL and NoSQL)
+        re.compile(r'[\'";].*?(\-\-|\#|/\*.*?\*/)', re.IGNORECASE | re.DOTALL),
+        re.compile(r'/\*[^*]*\*+(?:[^/*][^*]*\*+)*/', re.IGNORECASE),  # Block comments
+        re.compile(r'--[^\r\n]*', re.IGNORECASE),  # Line comments
+        re.compile(r'\#[^\r\n]*', re.IGNORECASE),  # MySQL comments
+        # Boolean-based injection patterns
         re.compile(r'\'\s*(or|and)\s*\'\w*\'\s*=\s*\'\w*', re.IGNORECASE),
         re.compile(r'\d+\s*(or|and)\s*\d+\s*=\s*\d+', re.IGNORECASE),
-        re.compile(r'(sleep|benchmark|waitfor)\s*\(', re.IGNORECASE),
-        re.compile(r'\b(load_file|outfile|dumpfile)\b', re.IGNORECASE)
+        re.compile(r'(true|false)\s*(and|or)\s*(true|false)', re.IGNORECASE),
+        # Time-based injection
+        re.compile(r'(sleep|benchmark|waitfor|pg_sleep)\s*\(', re.IGNORECASE),
+        # File operations
+        re.compile(r'\b(load_file|outfile|dumpfile|into\s+outfile)\b', re.IGNORECASE),
+        # UNION-based with variations
+        re.compile(r'union\s+(all\s+)?select', re.IGNORECASE),
+        re.compile(r'union.*select.*from', re.IGNORECASE | re.DOTALL),
+        # NoSQL injection patterns (MongoDB, etc.)
+        re.compile(r'\{\s*\$[a-zA-Z_][a-zA-Z0-9_]*\s*:', re.IGNORECASE),  # MongoDB operators
+        re.compile(r'\[\s*\$[a-zA-Z_][a-zA-Z0-9_]*\s*\]', re.IGNORECASE),  # Array operators
+        re.compile(r'(\$where|\$regex|\$ne|\$gt|\$lt|\$in|\$nin)', re.IGNORECASE),
+        # Error-based injection
+        re.compile(r'(extractvalue|updatexml|exp|floor|rand)\s*\(', re.IGNORECASE),
+        # Stacked queries
+        re.compile(r';\s*(select|insert|update|delete|drop)', re.IGNORECASE)
     ]
     
     # Command injection patterns
@@ -102,6 +139,9 @@ class SecurityValidationRules:
         """Initialize security validation rules"""
         self.threat_score_cache = {}
         self.validation_cache = {}
+        # Memory management settings
+        self.cache_max_size = 1000  # Maximum cache entries
+        self.cache_cleanup_threshold = 0.8  # Cleanup when cache is 80% full
     
     def validate_input_security(self, input_value: str, field_name: str = "") -> Tuple[bool, Optional[str], Dict[str, Any]]:
         """
@@ -117,16 +157,25 @@ class SecurityValidationRules:
         if not input_value:
             return True, None, {'threat_score': 0.0, 'threats': []}
         
+        # Check cache first
+        cached_result = self._get_cached_validation_result(input_value)
+        if cached_result is not None:
+            return cached_result
+        
         threats = []
         threat_score = 0.0
         
         # URL decode if necessary
         decoded_value = unquote(input_value)
         
-        # XSS detection
+        # Unicode normalization to prevent bypass attacks
+        normalized_value = unicodedata.normalize('NFKC', decoded_value)
+        
+        # XSS detection on both original and normalized values
         xss_threats = self._detect_xss(decoded_value)
-        if xss_threats:
-            threats.extend(xss_threats)
+        xss_threats_normalized = self._detect_xss(normalized_value)
+        if xss_threats or xss_threats_normalized:
+            threats.extend(xss_threats + xss_threats_normalized)
             threat_score += 0.8
         
         # SQL injection detection
@@ -166,7 +215,11 @@ class SecurityValidationRules:
             'field_context': field_name
         }
         
-        return is_safe, error_message, security_analysis
+        # Cache the result for future use
+        result = (is_safe, error_message, security_analysis)
+        self._cache_validation_result(input_value, result)
+        
+        return result
     
     def validate_fraud_indicators(self, user_data: Dict[str, Any]) -> Tuple[bool, Optional[str], Dict[str, Any]]:
         """
@@ -351,14 +404,25 @@ class SecurityValidationRules:
         if url_encoded_count > 10:
             threats.append("Excessive URL encoding detected")
         
-        # Check for base64 patterns in suspicious contexts
-        if len(value) > 50 and re.search(r'[A-Za-z0-9+/=]{20,}', value):
+        # Check for base64 patterns with proper bounds checking (DoS prevention)
+        base64_pattern = re.search(r'[A-Za-z0-9+/=]{20,}', value)
+        if base64_pattern and 50 < len(value) < 10000:  # Prevent DoS with size limits
             try:
-                decoded = base64.b64decode(value + '==')  # Add padding
-                if b'<script' in decoded or b'javascript:' in decoded:
-                    threats.append("Suspicious base64-encoded content")
-            except:
-                pass
+                # Extract only the base64 portion to prevent memory exhaustion
+                base64_content = base64_pattern.group(0)[:1000]  # Limit to 1KB
+                decoded = base64.b64decode(base64_content + '==')  # Add padding
+                
+                # Limit decoded size check to prevent DoS
+                if len(decoded) < 5000:  # Max 5KB decoded content
+                    decoded_lower = decoded.lower()
+                    if (b'<script' in decoded_lower or 
+                        b'javascript:' in decoded_lower or
+                        b'<iframe' in decoded_lower or
+                        b'<object' in decoded_lower):
+                        threats.append("Suspicious base64-encoded content")
+            except (ValueError, TypeError):
+                # Invalid base64, potentially malicious
+                threats.append("Invalid base64 encoding detected")
         
         return threats
     
@@ -537,3 +601,69 @@ class SecurityValidationRules:
                 recommendations.append("Enable multi-factor authentication")
         
         return list(set(recommendations))  # Remove duplicates
+    
+    def _cleanup_cache(self) -> None:
+        """
+        Clean up validation cache to prevent memory exhaustion.
+        Removes oldest 20% of entries when cache exceeds threshold.
+        """
+        # Cleanup validation cache
+        if len(self.validation_cache) > self.cache_max_size * self.cache_cleanup_threshold:
+            # Remove oldest 20% of entries
+            remove_count = int(len(self.validation_cache) * 0.2)
+            oldest_keys = list(self.validation_cache.keys())[:remove_count]
+            for key in oldest_keys:
+                del self.validation_cache[key]
+            logger.info(f"Cleaned up {remove_count} validation cache entries")
+        
+        # Cleanup threat score cache
+        if len(self.threat_score_cache) > self.cache_max_size * self.cache_cleanup_threshold:
+            # Remove oldest 20% of entries
+            remove_count = int(len(self.threat_score_cache) * 0.2)
+            oldest_keys = list(self.threat_score_cache.keys())[:remove_count]
+            for key in oldest_keys:
+                del self.threat_score_cache[key]
+            logger.info(f"Cleaned up {remove_count} threat score cache entries")
+    
+    def _cache_validation_result(self, input_value: str, result: Tuple[bool, Optional[str], Dict[str, Any]]) -> None:
+        """
+        Cache validation result with automatic cleanup.
+        
+        Args:
+            input_value: The input that was validated
+            result: The validation result to cache
+        """
+        # Perform cleanup if needed before adding new entry
+        self._cleanup_cache()
+        
+        # Create cache key (hash for privacy and space efficiency)
+        cache_key = hashlib.sha256(input_value.encode('utf-8')).hexdigest()[:16]
+        
+        # Cache the result with timestamp
+        self.validation_cache[cache_key] = {
+            'result': result,
+            'timestamp': datetime.now().timestamp()
+        }
+    
+    def _get_cached_validation_result(self, input_value: str) -> Optional[Tuple[bool, Optional[str], Dict[str, Any]]]:
+        """
+        Get cached validation result if available and not expired.
+        
+        Args:
+            input_value: The input to check cache for
+            
+        Returns:
+            Cached validation result or None if not available/expired
+        """
+        cache_key = hashlib.sha256(input_value.encode('utf-8')).hexdigest()[:16]
+        
+        if cache_key in self.validation_cache:
+            cached_data = self.validation_cache[cache_key]
+            # Check if cache entry is less than 1 hour old
+            if datetime.now().timestamp() - cached_data['timestamp'] < 3600:
+                return cached_data['result']
+            else:
+                # Remove expired entry
+                del self.validation_cache[cache_key]
+        
+        return None

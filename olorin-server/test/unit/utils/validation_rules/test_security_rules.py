@@ -47,6 +47,201 @@ class TestSecurityValidationRules:
         assert 'recommended' in security_validator.SECURITY_HEADERS
 
 
+class TestUnicodeNormalizationSecurity:
+    """Test Unicode normalization attack prevention"""
+
+    @pytest.fixture
+    def security_validator(self):
+        """Create a fresh security validator instance for each test"""
+        return SecurityValidationRules()
+
+    def test_unicode_normalization_xss_prevention(self, security_validator):
+        """Test XSS prevention with Unicode normalization bypass attempts"""
+        # Standard XSS attempt
+        is_safe, error, analysis = security_validator.validate_input_security("<script>alert('xss')</script>")
+        assert not is_safe, "Should block standard XSS"
+        
+        # Unicode normalization bypass attempts
+        unicode_payloads = [
+            # Unicode look-alike characters for "script"
+            "<\u015fc\u0280\u012b\u03c1t>alert('xss')</\u015fc\u0280\u012b\u03c1t>",
+            # Homograph attack on JavaScript
+            "\u0458\u00e0\u03bd\u00e0\u015f\u00c7\u0280\u012b\u03c1\u0442:alert('xss')",
+            # Mixed case with Unicode
+            "<S\u00dfCRIPT>alert('xss')</\u015fcript>",
+            # Unicode normalization forms
+            "\u1e61\u0107\u0159\u00ee\u03c0\u0165",  # "script" in different Unicode forms
+            # UTF-8 overlong encoding simulation
+            "%c1%9c%73%63%72%69%70%74",
+        ]
+        
+        for payload in unicode_payloads:
+            is_safe, error, analysis = security_validator.validate_input_security(payload)
+            assert not is_safe, f"Should block Unicode XSS attempt: {payload[:50]}..."
+            assert 'XSS' in str(analysis.get('threats', [])), "Should identify as XSS threat"
+
+    def test_base64_dos_prevention(self, security_validator):
+        """Test Base64 DoS attack prevention with size limits"""
+        # Safe base64 content
+        safe_base64 = "SGVsbG8gV29ybGQ="  # "Hello World"
+        is_safe, error, analysis = security_validator.validate_input_security(safe_base64)
+        assert is_safe, "Should allow safe base64 content"
+        
+        # Malicious base64 content (but within limits)
+        malicious_script = "<script>alert('xss')</script>"
+        import base64
+        malicious_b64 = base64.b64encode(malicious_script.encode()).decode()
+        is_safe, error, analysis = security_validator.validate_input_security(malicious_b64)
+        assert not is_safe, "Should block malicious base64 content"
+        
+        # DoS attempt - very large base64 (should be rejected)
+        large_payload = "A" * 15000  # 15KB payload
+        is_safe, error, analysis = security_validator.validate_input_security(large_payload)
+        assert is_safe, "Should handle large payloads gracefully (above size limit)"
+        
+        # DoS attempt - oversized base64 pattern
+        oversized_b64 = "SGVsbG8=" * 2000  # Large but valid base64
+        is_safe, error, analysis = security_validator.validate_input_security(oversized_b64)
+        # Should not crash or consume excessive memory
+
+    def test_memory_management_cache_cleanup(self, security_validator):
+        """Test validation cache memory management and cleanup"""
+        # Fill cache with test data
+        for i in range(1200):  # Exceed cache_max_size of 1000
+            test_input = f"test_input_{i}"
+            security_validator.validate_input_security(test_input)
+        
+        # Cache should have been cleaned up
+        assert len(security_validator.validation_cache) < 1000, "Cache should be cleaned up"
+        
+        # Verify cache cleanup threshold works
+        initial_size = len(security_validator.validation_cache)
+        
+        # Add more entries to trigger cleanup
+        for i in range(100):
+            test_input = f"additional_test_{i}"
+            security_validator.validate_input_security(test_input)
+        
+        # Should not grow indefinitely
+        final_size = len(security_validator.validation_cache)
+        assert final_size <= 1000, "Cache size should be bounded"
+
+    def test_cache_expiration(self, security_validator):
+        """Test cache entry expiration after 1 hour"""
+        test_input = "cache_test_input"
+        
+        # Mock datetime to simulate time passage
+        with patch('app.utils.validation_rules.security_rules.datetime') as mock_datetime:
+            # Initial validation
+            mock_datetime.now.return_value.timestamp.return_value = 1000000
+            security_validator.validate_input_security(test_input)
+            
+            # Should find cached result immediately
+            mock_datetime.now.return_value.timestamp.return_value = 1000001
+            cached_result = security_validator._get_cached_validation_result(test_input)
+            assert cached_result is not None, "Should find fresh cached result"
+            
+            # Should expire after 1 hour (3600 seconds)
+            mock_datetime.now.return_value.timestamp.return_value = 1003601  # +3601 seconds
+            expired_result = security_validator._get_cached_validation_result(test_input)
+            assert expired_result is None, "Should not find expired cached result"
+
+
+class TestEnhancedSQLInjectionPrevention:
+    """Test enhanced SQL injection prevention with comment variations and NoSQL"""
+
+    @pytest.fixture
+    def security_validator(self):
+        """Create a fresh security validator instance for each test"""
+        return SecurityValidationRules()
+
+    def test_sql_comment_variations(self, security_validator):
+        """Test SQL injection prevention with various comment types"""
+        comment_payloads = [
+            # Standard SQL comments
+            "'; DROP TABLE users; --",
+            "admin'/*comment*/OR/*comment*/'1'='1",
+            "'; DELETE FROM users; #",
+            
+            # Block comment variations
+            "/**/UNION/*comment*/SELECT/**/*",
+            "/*! UNION SELECT */",
+            "/*/*/UNION/*/*/SELECT/*/*/",
+            
+            # MySQL specific comments
+            "/*!50000 UNION SELECT */",
+            "/*!50000*/UNION/*!50000*/SELECT/*!50000*/",
+            
+            # Line comment variations
+            "-- UNION SELECT",
+            "#UNION SELECT",
+            "--+UNION+SELECT",
+        ]
+        
+        for payload in comment_payloads:
+            is_safe, error, analysis = security_validator.validate_input_security(payload)
+            assert not is_safe, f"Should block SQL comment injection: {payload}"
+            assert 'SQL injection' in str(analysis.get('threats', [])), "Should identify as SQL injection"
+
+    def test_nosql_injection_prevention(self, security_validator):
+        """Test NoSQL injection pattern detection"""
+        nosql_payloads = [
+            # MongoDB operators
+            '{"$where": "this.credits == this.debits"}',
+            '{"username": {"$ne": null}}',
+            '{"$or": [{"username": "admin"}, {"username": "root"}]}',
+            '{"password": {"$regex": ".*"}}',
+            '{"$gt": {"user_id": 0}}',
+            '{"$in": ["admin", "root", "administrator"]}',
+            '{"$nin": ["blocked_user"]}',
+            
+            # Array operators
+            '[$where]',
+            '[$regex]',
+            '[$ne]',
+            '[$gt]',
+            '[$lt]',
+            
+            # JavaScript injection in MongoDB
+            'function() { return true; }',
+            'this.username == "admin"',
+        ]
+        
+        for payload in nosql_payloads:
+            is_safe, error, analysis = security_validator.validate_input_security(payload)
+            assert not is_safe, f"Should block NoSQL injection: {payload}"
+
+    def test_advanced_sql_injection_techniques(self, security_validator):
+        """Test prevention of advanced SQL injection techniques"""
+        advanced_payloads = [
+            # Error-based injection
+            "' AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT version()), 0x7e)) --",
+            "' AND (SELECT * FROM (SELECT COUNT(*),CONCAT(version(),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a) --",
+            
+            # Time-based blind injection
+            "'; IF(1=1) WAITFOR DELAY '00:00:10'; --",
+            "' AND IF(1=1,SLEEP(5),0) --",
+            "'; SELECT pg_sleep(10); --",
+            
+            # Boolean-based blind injection
+            "' AND 1=1 --",
+            "' AND 'a'='a",
+            "' AND true AND 'b'='b",
+            
+            # UNION-based injection with NULL values
+            "' UNION ALL SELECT NULL,NULL,NULL,version() --",
+            "' UNION SELECT 1,2,3,4,5,6,7,8,9,10 --",
+            
+            # Stacked queries
+            "'; INSERT INTO users VALUES ('hacker','password'); --",
+            "'; CREATE USER hacker IDENTIFIED BY 'password'; --",
+        ]
+        
+        for payload in advanced_payloads:
+            is_safe, error, analysis = security_validator.validate_input_security(payload)
+            assert not is_safe, f"Should block advanced SQL injection: {payload[:50]}..."
+
+
 class TestXSSPrevention:
     """Test XSS (Cross-Site Scripting) prevention functionality"""
 

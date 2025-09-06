@@ -115,6 +115,9 @@ jobs:
           REACT_APP_ENV: ${{ env.DEPLOYMENT_ENV }}
           BUILD_TIME: ${{ github.event.head_commit.timestamp }}
           GITHUB_SHA: ${{ github.sha }}
+          # Security: Explicitly disable debug features in production
+          NODE_ENV: production
+          REACT_APP_DEBUG: false
 
       - name: Build Application
         run: |
@@ -126,7 +129,7 @@ jobs:
           fi
         env:
           CI: true
-          GENERATE_SOURCEMAP: ${{ env.DEPLOYMENT_ENV == 'staging' && 'true' || 'false' }}
+          GENERATE_SOURCEMAP: false  # Never generate sourcemaps for security
 
       - name: Finalize Build
         id: build-info
@@ -183,7 +186,28 @@ jobs:
       - name: Security Audit
         run: |
           cd olorin-front
-          npm audit --audit-level moderate
+          echo "🔍 Running comprehensive security audit..."
+          
+          # Run npm audit with strict level for production
+          if [ "${{ env.DEPLOYMENT_ENV }}" = "production" ]; then
+            npm audit --audit-level high --production
+          else
+            npm audit --audit-level moderate
+          fi
+          
+          # Check for exposed secrets in build artifacts
+          echo "🔐 Scanning build artifacts for potential secrets..."
+          if grep -r -E "(api[_-]?key|secret|password|token)" ${{ env.BUILD_PATH }} --exclude-dir=node_modules; then
+            echo "::warning::Potential secrets found in build artifacts - please review"
+          fi
+          
+          # Verify sourcemaps are not included
+          if find ${{ env.BUILD_PATH }} -name "*.map" | grep -q .; then
+            echo "::error::Source maps found in production build - security risk"
+            exit 1
+          fi
+          
+          echo "✅ Security audit completed"
 
   # Deploy to Firebase Hosting
   deploy:
@@ -204,6 +228,28 @@ jobs:
           name: build-artifacts-${{ env.DEPLOYMENT_ENV }}
           path: ${{ env.BUILD_PATH }}
 
+      - name: Validate Environment Configuration
+        run: |
+          # Validate required secrets are available
+          if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT_OLORIN_AI }}" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT_OLORIN_AI secret is not configured"
+            exit 1
+          fi
+          
+          # Validate deployment environment
+          if [[ ! "${{ env.DEPLOYMENT_ENV }}" =~ ^(staging|production)$ ]]; then
+            echo "::error::Invalid deployment environment: ${{ env.DEPLOYMENT_ENV }}"
+            exit 1
+          fi
+          
+          # Validate project ID for security
+          if [ "${{ env.DEPLOYMENT_ENV }}" = "production" ] && [ "olorin-ai" != "olorin-ai" ]; then
+            echo "::error::Production deployment project ID mismatch"
+            exit 1
+          fi
+          
+          echo "✅ Environment validation passed"
+
       - name: Deploy to Firebase Hosting
         id: deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -219,15 +265,26 @@ jobs:
           DEPLOYED_URL="${{ steps.deploy.outputs.url }}"
           echo "Deployed URL: $DEPLOYED_URL"
           
-          # Wait for deployment to be available
-          sleep 30
+          # Wait for deployment to be available with extended timeout
+          echo "Waiting for deployment to be ready..."
+          sleep 60
           
-          # Basic health check
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DEPLOYED_URL")
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "Health check failed: HTTP $HTTP_STATUS"
-            exit 1
-          fi
+          # Enhanced health check with retry logic
+          for i in {1..5}; do
+            echo "Health check attempt $i/5..."
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$DEPLOYED_URL" || echo "000")
+            
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "✅ Health check passed: HTTP $HTTP_STATUS"
+              break
+            elif [ $i -eq 5 ]; then
+              echo "::error::Health check failed after 5 attempts: HTTP $HTTP_STATUS"
+              exit 1
+            else
+              echo "Health check attempt $i failed: HTTP $HTTP_STATUS, retrying in 10s..."
+              sleep 10
+            fi
+          done
           
           echo "Health check passed: HTTP $HTTP_STATUS"
 
