@@ -97,23 +97,37 @@ def enhance_config_with_secrets(config_instance):
     #     config_instance.sumo_logic_access_key = sumo_config["access_key"]
     #     logger.debug("Loaded SumoLogic access key from Secret Manager")
     
-    # Snowflake configuration - UNUSED: Mock implementation only
-    # snowflake_config = secrets.get("snowflake", {})
-    # if not config_instance.snowflake_account and snowflake_config.get("account"):
-    #     config_instance.snowflake_account = snowflake_config["account"]
-    #     logger.debug("Loaded Snowflake account from Secret Manager")
-    # 
-    # if not config_instance.snowflake_user and snowflake_config.get("user"):
-    #     config_instance.snowflake_user = snowflake_config["user"]
-    #     logger.debug("Loaded Snowflake user from Secret Manager")
-    # 
-    # if not config_instance.snowflake_password and snowflake_config.get("password"):
-    #     config_instance.snowflake_password = snowflake_config["password"]
-    #     logger.debug("Loaded Snowflake password from Secret Manager")
-    # 
-    # if not config_instance.snowflake_private_key and snowflake_config.get("private_key"):
-    #     config_instance.snowflake_private_key = snowflake_config["private_key"]
-    #     logger.debug("Loaded Snowflake private key from Secret Manager")
+    # Snowflake configuration - ENABLED for POC
+    snowflake_config = secrets.get("snowflake", {})
+    if not hasattr(config_instance, 'snowflake_account'):
+        config_instance.snowflake_account = snowflake_config.get("account")
+        if config_instance.snowflake_account:
+            logger.debug("Loaded Snowflake account from configuration")
+    
+    if not hasattr(config_instance, 'snowflake_user'):
+        config_instance.snowflake_user = snowflake_config.get("user")
+        if config_instance.snowflake_user:
+            logger.debug("Loaded Snowflake user from configuration")
+    
+    if not hasattr(config_instance, 'snowflake_password'):
+        config_instance.snowflake_password = snowflake_config.get("password")
+        if config_instance.snowflake_password:
+            logger.debug("Loaded Snowflake password from configuration")
+    
+    if not hasattr(config_instance, 'snowflake_database'):
+        config_instance.snowflake_database = snowflake_config.get("database")
+        if config_instance.snowflake_database:
+            logger.debug("Loaded Snowflake database from configuration")
+    
+    if not hasattr(config_instance, 'snowflake_warehouse'):
+        config_instance.snowflake_warehouse = snowflake_config.get("warehouse")
+        if config_instance.snowflake_warehouse:
+            logger.debug("Loaded Snowflake warehouse from configuration")
+    
+    if not hasattr(config_instance, 'snowflake_schema'):
+        config_instance.snowflake_schema = snowflake_config.get("schema")
+        if config_instance.snowflake_schema:
+            logger.debug("Loaded Snowflake schema from configuration")
     
     # App secret - UNUSED: Not referenced in codebase
     # if secrets.get("app_secret"):
@@ -160,13 +174,14 @@ def validate_required_secrets(config_instance) -> bool:
                 ("splunk_password", "Splunk Password"),
             ])
         
-        # DISABLED: Snowflake is mock implementation only, not required
-        # if hasattr(config_instance, 'enabled_data_sources') and "snowflake" in config_instance.enabled_data_sources:
-        #     required_secrets.extend([
-        #         ("snowflake_account", "Snowflake Account"),
-        #         ("snowflake_user", "Snowflake User"),
-        #         ("snowflake_password", "Snowflake Password"),
-        #     ])
+        # Check Snowflake if enabled via .env
+        if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
+            required_secrets.extend([
+                ("snowflake_account", "Snowflake Account"),
+                ("snowflake_user", "Snowflake User"),
+                ("snowflake_password", "Snowflake Password"),
+                ("snowflake_database", "Snowflake Database"),
+            ])
     
     # Validate required secrets
     for secret_attr, secret_name in required_secrets:

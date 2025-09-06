@@ -3,6 +3,7 @@ Snowflake database client for secure query execution.
 Handles connection, query validation, and result processing.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 import asyncio
 from .schema_info import SNOWFLAKE_SCHEMA_INFO
@@ -10,16 +11,35 @@ from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
+# Determine which client to use based on environment
+USE_REAL_SNOWFLAKE = os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true'
+
+if USE_REAL_SNOWFLAKE:
+    try:
+        from .real_client import RealSnowflakeClient
+        logger.info("Using REAL Snowflake client (USE_SNOWFLAKE=true)")
+    except ImportError as e:
+        logger.warning(f"Failed to import RealSnowflakeClient: {e}")
+        logger.warning("Falling back to mock client. Install snowflake-connector-python to use real client.")
+        USE_REAL_SNOWFLAKE = False
+
 
 class SnowflakeClient:
     """Client for interacting with Snowflake data warehouse."""
     
-    def __init__(self, account: str, user: str, password: str, warehouse: str):
-        self.account = account
-        self.user = user
-        self.password = password
-        self.warehouse = warehouse
-        self.connection = None
+    def __init__(self, account: str = None, user: str = None, password: str = None, warehouse: str = None):
+        # If real Snowflake is enabled, delegate to real client
+        if USE_REAL_SNOWFLAKE:
+            self._real_client = RealSnowflakeClient()
+            self.is_real = True
+        else:
+            # Mock client attributes
+            self.account = account or "mock_account"
+            self.user = user or "mock_user"
+            self.password = password or "mock_password"
+            self.warehouse = warehouse or "mock_warehouse"
+            self.connection = None
+            self.is_real = False
         
     async def connect(self, database: str = "FRAUD_DB", schema: str = "PUBLIC"):
         """Establish connection to Snowflake."""

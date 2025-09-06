@@ -1,5 +1,6 @@
 """Tool registry for LangGraph agents - centralized access to all available tools."""
 
+import os
 from typing import Any, Dict, List, Optional
 
 from langchain_core.tools import BaseTool
@@ -193,24 +194,33 @@ class ToolRegistry:
             # Search Tools
             self._register_tool(VectorSearchTool(), "search")
 
-            # Olorin-specific Tools
-            try:
-                self._register_tool(SplunkQueryTool(), "olorin")
-                logger.info("Splunk tool registered")
-            except Exception as e:
-                logger.warning(f"Failed to register Splunk tool: {e}")
+            # Olorin-specific Tools - Check environment variables for enablement
+            if os.getenv('USE_SPLUNK', 'false').lower() == 'true':
+                try:
+                    self._register_tool(SplunkQueryTool(), "olorin")
+                    logger.info("Splunk tool registered (enabled via USE_SPLUNK=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Splunk tool: {e}")
+            else:
+                logger.debug("Splunk tool disabled (USE_SPLUNK=false)")
 
-            try:
-                self._register_tool(SumoLogicQueryTool(), "olorin")
-                logger.info("SumoLogic tool registered")
-            except Exception as e:
-                logger.warning(f"Failed to register SumoLogic tool: {e}")
+            if os.getenv('USE_SUMO_LOGIC', 'false').lower() == 'true':
+                try:
+                    self._register_tool(SumoLogicQueryTool(), "olorin")
+                    logger.info("SumoLogic tool registered (enabled via USE_SUMO_LOGIC=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register SumoLogic tool: {e}")
+            else:
+                logger.debug("SumoLogic tool disabled (USE_SUMO_LOGIC=false)")
 
-            try:
-                self._register_tool(SnowflakeQueryTool(), "olorin")
-                logger.info("Snowflake tool registered")
-            except Exception as e:
-                logger.warning(f"Failed to register Snowflake tool: {e}")
+            if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
+                try:
+                    self._register_tool(SnowflakeQueryTool(), "olorin")
+                    logger.info("Snowflake tool registered (enabled via USE_SNOWFLAKE=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Snowflake tool: {e}")
+            else:
+                logger.debug("Snowflake tool disabled (USE_SNOWFLAKE=false)")
 
             # MCP Client Tools (connect to external MCP servers)
             if MCP_CLIENTS_AVAILABLE:
