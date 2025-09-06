@@ -19,6 +19,13 @@ Apply the following rules **universally and consistently** across ALL coding tas
    - **NO EXCEPTIONS**: This rule applies to all code, tests, examples, documentation, and any other content.
    - **ENFORCEMENT**: Any violation of this rule is considered a critical failure.
 
+1.1. 🚫 **ABSOLUTE PROHIBITION: Never add "demo" indicators without explicit user approval - EVER!**
+   - **ZERO TOLERANCE**: Do not add demo flags, demo modes, demo headers, or any "demo" indicators without explicit user consent.
+   - **MANDATORY**: Always request explicit user approval before adding ANY indication of "demo" mode or testing state.
+   - **NO EXCEPTIONS**: This applies to JWT tokens, API headers, configuration flags, database fields, UI elements, and ALL code.
+   - **ENFORCEMENT**: Any unauthorized "demo" indicator is considered a critical failure and security violation.
+   - **EXAMPLES PROHIBITED**: demo=true, X-Demo-Mode, isDemoMode, demo_enabled, test_mode, etc.
+
 2. 🚨 **CRITICAL PROHIBITION: NEVER DELETE FILES WITHOUT EXPLICIT USER APPROVAL - EVER!**
    - **ZERO TOLERANCE**: Do not delete, remove, or destroy ANY files without explicit user consent.
    - **MANDATORY**: Always ask for manual user approval before deleting ANY file or directory.
