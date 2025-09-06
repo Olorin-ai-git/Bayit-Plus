@@ -20,6 +20,11 @@ from app.service.agent.agent_communication import (
     _get_or_create_autonomous_context,
     _create_error_response,
 )
+from app.service.agent.orchestrator_prompts import (
+    OrchestratorPromptSystem,
+    PromptContext,
+    PromptStrategy
+)
 from app.service.logging import get_bridge_logger
 from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.journey_tracker import (
@@ -79,6 +84,7 @@ class AutonomousOrchestrator:
         self.active_agents = {}
         self.handoff_history = []
         self.orchestration_state = {}
+        self.prompt_system = OrchestratorPromptSystem()
         
     async def orchestrate_investigation(
         self, 
@@ -264,52 +270,37 @@ class AutonomousOrchestrator:
         entity_id: str, 
         context
     ) -> str:
-        """Create comprehensive AI orchestration prompt"""
+        """Create comprehensive AI orchestration prompt using sophisticated prompt system"""
         
-        return f"""
-You are the Master Orchestrator for autonomous fraud investigations. Your role is to analyze investigation requirements and make intelligent decisions about agent coordination.
-
-INVESTIGATION CONTEXT:
-- Investigation ID: {investigation_id}
-- Entity Type: {entity_type}
-- Entity ID: {entity_id}
-- Available Context: {json.dumps(context.__dict__ if context else {}, default=str)}
-
-AVAILABLE AGENTS:
-1. Network Agent - Network patterns, IP analysis, geolocation
-2. Device Agent - Device fingerprinting, behavioral analysis
-3. Location Agent - Geographic validation, travel patterns
-4. Logs Agent - Activity logs, pattern detection
-5. Risk Agent - Risk scoring, anomaly detection
-
-ORCHESTRATION STRATEGIES:
-- COMPREHENSIVE: All agents in parallel (high thoroughness, higher resource usage)
-- FOCUSED: Single domain deep dive (specific threat focus, efficient)
-- ADAPTIVE: Dynamic strategy based on findings (intelligent, responsive)
-- SEQUENTIAL: One agent at a time (resource efficient, slower)
-- CRITICAL_PATH: Priority-based execution (risk-driven, optimized)
-
-DECISION CRITERIA:
-- Entity type and risk profile
-- Available investigation context
-- Resource optimization requirements
-- Expected investigation complexity
-- Time sensitivity requirements
-
-REQUIRED OUTPUT FORMAT (JSON):
-{{
-    "strategy": "comprehensive|focused|adaptive|sequential|critical_path",
-    "agents_to_activate": ["agent1", "agent2", ...],
-    "execution_order": ["agent1", "agent2", ...],
-    "confidence_score": 0.0-1.0,
-    "reasoning": "Detailed explanation of decision logic",
-    "estimated_duration": duration_in_seconds,
-    "risk_assessment": "low|medium|high|critical",
-    "bulletproof_requirements": ["circuit_breaker", "retry_logic", "fail_soft", ...]
-}}
-
-Analyze the investigation requirements and provide your orchestration decision with clear reasoning.
-"""
+        try:
+            # Create prompt context for dynamic generation
+            prompt_context = PromptContext(
+                investigation_id=investigation_id,
+                entity_type=entity_type,
+                entity_id=entity_id,
+                risk_level=self._assess_risk_level(context),
+                available_data=self._extract_available_data(context),
+                service_health=self._assess_service_health(),
+                investigation_history=self._get_investigation_history(investigation_id),
+                time_constraints=self._get_time_constraints(context)
+            )
+            
+            # Generate sophisticated orchestration prompt
+            sophisticated_prompt = self.prompt_system.generate_orchestration_prompt(
+                context=prompt_context,
+                strategy_hint=self._determine_prompt_strategy(prompt_context)
+            )
+            
+            logger.info(f"🧠 Generated sophisticated orchestration prompt for {entity_type} {entity_id}")
+            return sophisticated_prompt
+            
+        except Exception as e:
+            logger.warning(f"⚠️ Sophisticated prompt generation failed: {str(e)}, using fallback")
+            
+            # Bulletproof fallback to original simple prompt
+            return self._create_fallback_orchestration_prompt(
+                investigation_id, entity_type, entity_id, context
+            )
     
     def _parse_orchestrator_response(self, response_content: str) -> OrchestrationDecision:
         """Parse AI orchestrator response into structured decision"""
@@ -699,6 +690,180 @@ Analyze the investigation requirements and provide your orchestration decision w
                 "Check system resource availability"
             ]
         }
+    
+    def _assess_risk_level(self, context) -> str:
+        """Assess investigation risk level based on context"""
+        
+        try:
+            if not context:
+                return "medium"
+                
+            # Check for high-risk indicators
+            context_data = context.__dict__ if hasattr(context, '__dict__') else {}
+            context_str = json.dumps(context_data, default=str).lower()
+            
+            high_risk_indicators = ["fraud", "suspicious", "anomaly", "threat", "critical"]
+            medium_risk_indicators = ["unusual", "irregular", "warning", "alert"]
+            
+            if any(indicator in context_str for indicator in high_risk_indicators):
+                return "high"
+            elif any(indicator in context_str for indicator in medium_risk_indicators):
+                return "medium"
+            else:
+                return "low"
+                
+        except Exception:
+            return "medium"  # Safe fallback
+    
+    def _extract_available_data(self, context) -> Dict[str, Any]:
+        """Extract available data from investigation context"""
+        
+        try:
+            if not context:
+                return {}
+                
+            available_data = {}
+            context_dict = context.__dict__ if hasattr(context, '__dict__') else {}
+            
+            # Extract key data categories
+            for key, value in context_dict.items():
+                if value is not None and str(value).strip():
+                    available_data[key] = str(value)
+            
+            return available_data
+            
+        except Exception:
+            return {}  # Safe fallback
+    
+    def _assess_service_health(self) -> Dict[str, bool]:
+        """Assess health of dependent services"""
+        
+        try:
+            # In a real implementation, this would check actual service health
+            # For now, assume all services are healthy unless we have evidence otherwise
+            return {
+                "network_service": True,
+                "device_service": True, 
+                "location_service": True,
+                "logs_service": True,
+                "risk_service": True,
+                "llm_service": True,
+                "database_service": True
+            }
+            
+        except Exception:
+            # If service health check fails, assume degraded mode
+            return {
+                "network_service": False,
+                "device_service": False,
+                "location_service": False, 
+                "logs_service": True,  # Assume logs always available
+                "risk_service": True,  # Assume risk assessment always possible
+                "llm_service": True,
+                "database_service": True
+            }
+    
+    def _get_investigation_history(self, investigation_id: str) -> List[str]:
+        """Get investigation history for context"""
+        
+        try:
+            # Check if we have state for this investigation
+            if investigation_id in self.orchestration_state:
+                state = self.orchestration_state[investigation_id]
+                history = []
+                
+                # Add previous agent activations
+                if self.handoff_history:
+                    recent_handoffs = [h for h in self.handoff_history 
+                                     if hasattr(h, 'context_data') and 
+                                     h.context_data.get('investigation_id') == investigation_id]
+                    history.extend([f"agent_{h.to_agent}_executed" for h in recent_handoffs[-5:]])
+                
+                return history
+            
+            return []
+            
+        except Exception:
+            return []  # Safe fallback
+    
+    def _get_time_constraints(self, context) -> Optional[int]:
+        """Extract time constraints from context"""
+        
+        try:
+            if not context:
+                return None
+                
+            context_dict = context.__dict__ if hasattr(context, '__dict__') else {}
+            
+            # Look for time-related constraints
+            for key, value in context_dict.items():
+                if 'timeout' in str(key).lower() or 'deadline' in str(key).lower():
+                    if isinstance(value, (int, float)):
+                        return int(value)
+                    elif isinstance(value, str) and value.isdigit():
+                        return int(value)
+            
+            return None
+            
+        except Exception:
+            return None  # Safe fallback
+    
+    def _determine_prompt_strategy(self, prompt_context: PromptContext) -> Optional[PromptStrategy]:
+        """Determine optimal prompt strategy based on context"""
+        
+        try:
+            # High-risk scenarios
+            if prompt_context.risk_level in ["high", "critical"]:
+                return PromptStrategy.HIGH_RISK
+                
+            # Service degradation
+            if not all(prompt_context.service_health.values()):
+                return PromptStrategy.DEGRADED
+                
+            # Emergency time constraints
+            if prompt_context.time_constraints and prompt_context.time_constraints < 60:
+                return PromptStrategy.EMERGENCY
+                
+            # Multi-entity detection
+            if "multi_entity" in str(prompt_context.available_data).lower():
+                return PromptStrategy.MULTI_ENTITY
+                
+            # Default to standard strategy
+            return PromptStrategy.STANDARD
+            
+        except Exception:
+            return PromptStrategy.STANDARD  # Safe fallback
+    
+    def _create_fallback_orchestration_prompt(
+        self,
+        investigation_id: str,
+        entity_type: str,
+        entity_id: str,
+        context
+    ) -> str:
+        """Create bulletproof fallback orchestration prompt"""
+        
+        return f"""You are the Master Orchestrator for autonomous fraud investigations. 
+
+INVESTIGATION CONTEXT:
+- Investigation ID: {investigation_id}
+- Entity Type: {entity_type}
+- Entity ID: {entity_id}
+- Available Context: {json.dumps(context.__dict__ if context else {}, default=str)}
+
+AVAILABLE AGENTS: network, device, location, logs, risk
+
+REQUIRED JSON OUTPUT:
+{{
+    "strategy": "comprehensive",
+    "agents_to_activate": ["network", "device", "location", "logs", "risk"],
+    "execution_order": ["risk", "network", "device", "location", "logs"],
+    "confidence_score": 0.7,
+    "reasoning": "Fallback comprehensive strategy for thorough investigation",
+    "estimated_duration": 240,
+    "risk_assessment": "medium",
+    "bulletproof_requirements": ["circuit_breaker", "retry_logic", "fail_soft"]
+}}"""
 
 
 # LangGraph Integration Functions

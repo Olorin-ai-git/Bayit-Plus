@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Investigation Orchestrator Architecture - 2025-09-06</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 300;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin: 20px 0 15px 0;
+        }
+
+        .diagram-container {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+            text-align: center;
+        }
+
+        .mermaid {
+            background: white !important;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .feature-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .phase-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .phase-item {
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .phase-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+        }
+
+        .phase-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .phase-content h4 {
+            margin: 0 0 5px 0;
+            color: #667eea;
+        }
+
+        .phase-content p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .integration-flow {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .integration-step {
+            background: #667eea;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .integration-step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .integration-step:last-child::after {
+            display: none;
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .section {
+                padding: 20px;
+                margin: 15px 0;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .integration-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .integration-step::after {
+                content: '↓';
+                right: 50%;
+                transform: translateX(50%);
+                bottom: -15px;
+            }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            margin-left: 10px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Autonomous Investigation Orchestrator Architecture</h1>
+        <p>LangGraph Implementation with Bulletproof Resilience - September 6, 2025</p>
+        <p><strong>Author:</strong> Gil Klainert | <strong>Status:</strong> Planning Phase</p>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🏗️</span>System Architecture Overview</h2>
+        <p>The Autonomous Investigation Orchestrator Node represents the evolution of Olorin's investigation system from bulletproof tool execution to intelligent autonomous investigation management.</p>
+        
+        <div class="diagram-container">
+            <h3>Master Orchestrator Architecture</h3>
+            <div class="mermaid">
+graph TB
+    subgraph "LangGraph Investigation Flow"
+        Start([Investigation Started]) --> OrcNode[Orchestrator Node]
+        
+        OrcNode --> Strategy{Determine<br/>Strategy}
+        Strategy --> |Parallel| ParallelAgents[Parallel Agent<br/>Coordination]
+        Strategy --> |Sequential| SequentialAgents[Sequential Agent<br/>Execution]
+        
+        subgraph "Agent Coordination Layer"
+            ParallelAgents --> NetworkAgent[Network Security<br/>Analyst]
+            ParallelAgents --> DeviceAgent[Device Fraud<br/>Detector]  
+            ParallelAgents --> TxnAgent[Transaction Monitor<br/>Specialist]
+            ParallelAgents --> BehaviorAgent[Behavioral Pattern<br/>Analyst]
+            
+            SequentialAgents --> NetworkAgent
+            NetworkAgent --> DeviceAgent
+            DeviceAgent --> TxnAgent
+            TxnAgent --> BehaviorAgent
+        end
+        
+        subgraph "Bulletproof Tool Layer"
+            NetworkAgent --> EnhancedToolNode1[Enhanced Tool Node<br/>Circuit Breakers]
+            DeviceAgent --> EnhancedToolNode2[Enhanced Tool Node<br/>Retry Logic]
+            TxnAgent --> EnhancedToolNode3[Enhanced Tool Node<br/>Fail-soft Responses]
+            BehaviorAgent --> EnhancedToolNode4[Enhanced Tool Node<br/>Health Monitoring]
+        end
+        
+        NetworkAgent --> Synthesis[Investigation<br/>Synthesis]
+        DeviceAgent --> Synthesis
+        TxnAgent --> Synthesis
+        BehaviorAgent --> Synthesis
+        
+        Synthesis --> RiskAssessment[Risk Assessment<br/>& Scoring]
+        RiskAssessment --> Complete([Investigation<br/>Complete])
+        
+        subgraph "Exception Handling"
+            ErrorNode[Exception Handler]
+            ErrorNode --> Fallback[Fallback Assessment]
+            Fallback --> Complete
+        end
+        
+        OrcNode -.->|Any Failure| ErrorNode
+        Strategy -.->|Tool Failure| ErrorNode
+        ParallelAgents -.->|Agent Failure| ErrorNode
+        SequentialAgents -.->|Service Outage| ErrorNode
+    end
+    
+    subgraph "Real-time Monitoring"
+        WebSocket[WebSocket Events]
+        Dashboard[Investigation Dashboard]
+        Metrics[Performance Metrics]
+    end
+    
+    OrcNode --> WebSocket
+    Synthesis --> Dashboard
+    RiskAssessment --> Metrics
+    
+    classDef orchestrator fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
+    classDef agents fill:#764ba2,stroke:#333,stroke-width:2px,color:#fff
+    classDef bulletproof fill:#f093fb,stroke:#333,stroke-width:2px,color:#fff
+    classDef monitoring fill:#f5576c,stroke:#333,stroke-width:2px,color:#fff
+    
+    class OrcNode,Strategy orchestrator
+    class NetworkAgent,DeviceAgent,TxnAgent,BehaviorAgent agents
+    class EnhancedToolNode1,EnhancedToolNode2,EnhancedToolNode3,EnhancedToolNode4,ErrorNode bulletproof
+    class WebSocket,Dashboard,Metrics monitoring
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🎭</span>Orchestrator Decision Framework</h2>
+        <p>The orchestrator uses AI-driven decision making with comprehensive context awareness and bulletproof resilience patterns.</p>
+        
+        <div class="diagram-container">
+            <h3>Decision Flow & Agent Coordination</h3>
+            <div class="mermaid">
+flowchart TD
+    subgraph "Orchestrator Decision Engine"
+        Context[Investigation Context<br/>Analysis]
+        Context --> Assessment{Risk Assessment<br/>& Complexity}
+        
+        Assessment --> |High Risk| HighRiskFlow[High Risk Protocol<br/>• Parallel Execution<br/>• All Agents Active<br/>• Enhanced Monitoring]
+        
+        Assessment --> |Medium Risk| MediumRiskFlow[Standard Protocol<br/>• Sequential + Parallel<br/>• Core Agents<br/>• Normal Monitoring]
+        
+        Assessment --> |Low Risk| LowRiskFlow[Efficient Protocol<br/>• Sequential Only<br/>• Essential Agents<br/>• Basic Monitoring]
+    end
+    
+    subgraph "Agent Coordination Intelligence"
+        HighRiskFlow --> CoordEngine[Coordination Engine]
+        MediumRiskFlow --> CoordEngine
+        LowRiskFlow --> CoordEngine
+        
+        CoordEngine --> AgentSelect{Agent Selection<br/>Logic}
+        
+        AgentSelect --> |Network Anomaly| NetworkPriority[Network-First<br/>Strategy]
+        AgentSelect --> |Device Issues| DevicePriority[Device-First<br/>Strategy]
+        AgentSelect --> |Transaction Pattern| TxnPriority[Transaction-First<br/>Strategy]
+        AgentSelect --> |Behavior Anomaly| BehaviorPriority[Behavior-First<br/>Strategy]
+    end
+    
+    subgraph "Bulletproof Execution Layer"
+        NetworkPriority --> ExecLayer[Execution Layer]
+        DevicePriority --> ExecLayer
+        TxnPriority --> ExecLayer  
+        BehaviorPriority --> ExecLayer
+        
+        ExecLayer --> ToolExec[Enhanced Tool<br/>Execution]
+        ToolExec --> |Success| ResultSynth[Result Synthesis]
+        ToolExec --> |Failure| FallbackExec[Fallback Execution]
+        FallbackExec --> ResultSynth
+        
+        ResultSynth --> QualityCheck[Quality Assurance<br/>& Confidence Scoring]
+        QualityCheck --> FinalResult[Final Investigation<br/>Result]
+    end
+    
+    subgraph "Adaptive Strategy Engine"
+        Monitor[Real-time Monitoring]
+        Monitor --> Adapt{Strategy<br/>Adaptation}
+        Adapt --> |Performance Issue| OptimizeFlow[Optimize Flow]
+        Adapt --> |Service Outage| DegradeFlow[Graceful Degradation]  
+        Adapt --> |Data Quality Issue| EnhanceFlow[Enhance Analysis]
+        
+        OptimizeFlow --> CoordEngine
+        DegradeFlow --> CoordEngine
+        EnhanceFlow --> CoordEngine
+    end
+    
+    ExecLayer --> Monitor
+    
+    classDef orchestrator fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
+    classDef coordination fill:#764ba2,stroke:#333,stroke-width:2px,color:#fff
+    classDef execution fill:#f093fb,stroke:#333,stroke-width:2px,color:#fff
+    classDef adaptive fill:#f5576c,stroke:#333,stroke-width:2px,color:#fff
+    
+    class Context,Assessment,CoordEngine orchestrator
+    class AgentSelect,NetworkPriority,DevicePriority,TxnPriority,BehaviorPriority coordination
+    class ExecLayer,ToolExec,ResultSynth,QualityCheck execution
+    class Monitor,Adapt,OptimizeFlow,DegradeFlow,EnhanceFlow adaptive
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🛡️</span>Bulletproof Resilience Integration</h2>
+        <p>Integration with existing bulletproof infrastructure ensures 100% investigation completion regardless of failures.</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🔄 Enhanced Tool Node Integration</h4>
+                <ul>
+                    <li>Circuit breaker patterns</li>
+                    <li>Exponential backoff retry logic</li>
+                    <li>Fail-soft response generation</li>
+                    <li>Tool health monitoring</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>⚡ Exception Prevention</h4>
+                <ul>
+                    <li>Universal exception transformation</li>
+                    <li>Service degradation handling</li>
+                    <li>Graceful degradation patterns</li>
+                    <li>Recovery state management</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>🎯 Flow Continuity</h4>
+                <ul>
+                    <li>Investigation checkpoints</li>
+                    <li>Adaptive strategy adjustment</li>
+                    <li>Partial result synthesis</li>
+                    <li>Guaranteed completion</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>📡 Real-time Monitoring</h4>
+                <ul>
+                    <li>Orchestrator decision events</li>
+                    <li>Agent coordination tracking</li>
+                    <li>Performance metrics</li>
+                    <li>WebSocket streaming</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="diagram-container">
+            <h3>Bulletproof Exception Flow</h3>
+            <div class="mermaid">
+graph TD
+    subgraph "Exception Detection Layer"
+        ToolCall[Tool Execution]
+        ToolCall --> ExceptionCheck{Exception<br/>Detected?}
+        
+        ExceptionCheck --> |Network Error| NetworkException[Network Exception<br/>Handler]
+        ExceptionCheck --> |Service Error| ServiceException[Service Exception<br/>Handler]
+        ExceptionCheck --> |Auth Error| AuthException[Auth Exception<br/>Handler]
+        ExceptionCheck --> |Timeout Error| TimeoutException[Timeout Exception<br/>Handler]
+        ExceptionCheck --> |Success| SuccessPath[Normal Flow<br/>Continues]
+    end
+    
+    subgraph "Exception Transformation Layer"
+        NetworkException --> NetworkTransform[Transform to<br/>Network Unavailable Response]
+        ServiceException --> ServiceTransform[Transform to<br/>Service Degraded Response]
+        AuthException --> AuthTransform[Transform to<br/>Auth Issue Response]
+        TimeoutException --> TimeoutTransform[Transform to<br/>Timeout Response]
+    end
+    
+    subgraph "Adaptive Response Layer"
+        NetworkTransform --> AdaptiveEngine[Adaptive Response<br/>Engine]
+        ServiceTransform --> AdaptiveEngine
+        AuthTransform --> AdaptiveEngine
+        TimeoutTransform --> AdaptiveEngine
+        
+        AdaptiveEngine --> AlternativeTools[Try Alternative<br/>Tools]
+        AdaptiveEngine --> CachedData[Use Cached<br/>Data]
+        AdaptiveEngine --> DegradedAnalysis[Degraded Analysis<br/>Mode]
+        AdaptiveEngine --> PartialResults[Partial Results<br/>Synthesis]
+    end
+    
+    subgraph "Result Synthesis Layer"
+        SuccessPath --> ResultSynthesis[Result Synthesis]
+        AlternativeTools --> ResultSynthesis
+        CachedData --> ResultSynthesis
+        DegradedAnalysis --> ResultSynthesis
+        PartialResults --> ResultSynthesis
+        
+        ResultSynthesis --> QualityScore[Quality & Confidence<br/>Scoring]
+        QualityScore --> InvestigationResult[Investigation Result<br/>✅ ALWAYS COMPLETED]
+    end
+    
+    subgraph "Monitoring & Learning"
+        MonitoringLayer[Real-time Monitoring]
+        LearningEngine[Pattern Learning<br/>Engine]
+        
+        MonitoringLayer --> LearningEngine
+        LearningEngine --> AdaptiveEngine
+    end
+    
+    ExceptionCheck --> MonitoringLayer
+    AdaptiveEngine --> MonitoringLayer
+    
+    classDef success fill:#10b981,stroke:#333,stroke-width:2px,color:#fff
+    classDef exception fill:#f59e0b,stroke:#333,stroke-width:2px,color:#fff
+    classDef transform fill:#8b5cf6,stroke:#333,stroke-width:2px,color:#fff
+    classDef adaptive fill:#ec4899,stroke:#333,stroke-width:2px,color:#fff
+    classDef result fill:#06b6d4,stroke:#333,stroke-width:3px,color:#fff
+    
+    class SuccessPath,InvestigationResult success
+    class NetworkException,ServiceException,AuthException,TimeoutException exception
+    class NetworkTransform,ServiceTransform,AuthTransform,TimeoutTransform transform
+    class AdaptiveEngine,AlternativeTools,CachedData,DegradedAnalysis,PartialResults adaptive
+    class ResultSynthesis,QualityScore result
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">⚡</span>Implementation Phases</h2>
+        <p>Five-phase implementation approach with parallel execution and coordinated integration points.</p>
+        
+        <div class="phase-timeline">
+            <div class="phase-item">
+                <div class="phase-number">1</div>
+                <div class="phase-content">
+                    <h4>Orchestrator Core Implementation <span class="status-badge">⏳ PENDING</span></h4>
+                    <p>3-4 days | Master orchestrator node, prompts, and LangGraph integration</p>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-number">2</div>
+                <div class="phase-content">
+                    <h4>Agent Coordination & Flow Control <span class="status-badge">⏳ PENDING</span></h4>
+                    <p>2-3 days | Intelligent handoffs, continuity guarantees, state management</p>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-number">3</div>
+                <div class="phase-content">
+                    <h4>Exception Prevention & Resilience <span class="status-badge">⏳ PENDING</span></h4>
+                    <p>2-3 days | Universal exception handling, service resilience, quality assurance</p>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-number">4</div>
+                <div class="phase-content">
+                    <h4>Real-time Progress & Monitoring <span class="status-badge">⏳ PENDING</span></h4>
+                    <p>2 days | Enhanced WebSocket events, dashboard integration, monitoring</p>
+                </div>
+            </div>
+            <div class="phase-item">
+                <div class="phase-number">5</div>
+                <div class="phase-content">
+                    <h4>Testing & Production Readiness <span class="status-badge">⏳ PENDING</span></h4>
+                    <p>3-4 days | Comprehensive testing, integration validation, deployment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">📊</span>Success Metrics & Performance Targets</h2>
+        <p>Comprehensive metrics to measure orchestrator effectiveness and system performance.</p>
+        
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <span class="metric-value">>98%</span>
+                <span class="metric-label">Investigation Success Rate</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value"><45s</span>
+                <span class="metric-label">Average Completion Time</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">85/100</span>
+                <span class="metric-label">Quality Score Target</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">>99%</span>
+                <span class="metric-label">Failure Recovery Rate</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value"><5%</span>
+                <span class="metric-label">Orchestrator Overhead</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-value">100+</span>
+                <span class="metric-label">Concurrent Investigations</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🔄</span>Integration Strategy</h2>
+        <p>Seamless integration with existing bulletproof infrastructure while maintaining full backward compatibility.</p>
+        
+        <div class="integration-flow">
+            <div class="integration-step">EnhancedToolNode Integration</div>
+            <div class="integration-step">Multi-Entity Orchestrator Enhancement</div>
+            <div class="integration-step">WebSocket Event Extension</div>
+            <div class="integration-step">State Management Enhancement</div>
+            <div class="integration-step">Production Deployment</div>
+        </div>
+        
+        <div class="diagram-container">
+            <h3>System Integration Flow</h3>
+            <div class="mermaid">
+graph LR
+    subgraph "Existing Infrastructure"
+        A[EnhancedToolNode<br/>95% Complete]
+        B[Multi-Entity<br/>Orchestrator]
+        C[WebSocket<br/>Events]
+        D[LangGraph<br/>StateGraph]
+    end
+    
+    subgraph "New Orchestrator Layer"
+        E[Master Orchestrator<br/>Node]
+        F[Decision Engine]
+        G[Agent Coordination]
+        H[Flow Control]
+    end
+    
+    subgraph "Enhanced Capabilities"
+        I[AI-Driven<br/>Decisions]
+        J[Bulletproof<br/>Resilience]
+        K[Real-time<br/>Monitoring]
+        L[Quality<br/>Assurance]
+    end
+    
+    A --> E
+    B --> G
+    C --> K
+    D --> H
+    
+    E --> I
+    F --> I
+    G --> J
+    H --> J
+    
+    I --> K
+    J --> L
+    
+    classDef existing fill:#e5e7eb,stroke:#6b7280,stroke-width:2px,color:#374151
+    classDef orchestrator fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
+    classDef enhanced fill:#f093fb,stroke:#333,stroke-width:2px,color:#fff
+    
+    class A,B,C,D existing
+    class E,F,G,H orchestrator
+    class I,J,K,L enhanced
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🎯</span>Key Implementation Details</h2>
+        
+        <h3>Master Orchestrator Node Structure</h3>
+        <div class="code-block">
+class AutonomousInvestigationOrchestrator:
+    """
+    Master orchestrator node for autonomous investigation management.
+    Integrates with existing bulletproof infrastructure for maximum resilience.
+    """
+    
+    def __init__(self, investigation_id: str, tools: List[BaseTool]):
+        self.investigation_id = investigation_id
+        self.enhanced_tool_node = EnhancedToolNode(tools, investigation_id)
+        self.orchestrator_llm = ChatAnthropic(
+            model="claude-opus-4-1-20250805",
+            temperature=0.1,  # Low temperature for consistent decisions
+            max_tokens=8000,  # Large context for comprehensive reasoning
+        )
+        
+    async def orchestrate_investigation(
+        self, 
+        state: InvestigationState
+    ) -> InvestigationState:
+        """
+        Main orchestrator node that coordinates entire investigation flow.
+        Guaranteed to complete through bulletproof resilience patterns.
+        """
+        </div>
+        
+        <h3>Bulletproof Exception Handling</h3>
+        <div class="code-block">
+try:
+    # AI-driven investigation strategy determination
+    strategy = await orchestrator.determine_investigation_strategy(state)
+    
+    # Intelligent agent coordination with bulletproof handoffs
+    results = await orchestrator.coordinate_specialized_agents(strategy, state)
+    
+    # Synthesize findings with confidence scoring
+    final_assessment = await orchestrator.synthesize_investigation_results(results)
+    
+    return state.update(status="completed", final_assessment=final_assessment)
+    
+except Exception as e:
+    # Bulletproof exception handling - investigation continues
+    logger.warning(f"Orchestrator adapting to issue: {str(e)}")
+    
+    # Provide degraded but actionable results
+    fallback_results = await orchestrator.provide_fallback_assessment(state, str(e))
+    
+    return state.update(
+        status="completed_with_degradation",
+        fallback_assessment=fallback_results,
+        orchestrator_notes=f"Adapted to system issue: {str(e)}"
+    )
+        </div>
+    </div>
+
+    <div class="section">
+        <h2><span class="icon">🎉</span>Expected Outcomes</h2>
+        <p>The Autonomous Investigation Orchestrator Node will transform Olorin from a bulletproof investigation system to a truly autonomous investigation platform.</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🎯 True Autonomous Management</h4>
+                <ul>
+                    <li>AI-driven investigation coordination</li>
+                    <li>Adaptive strategy selection</li>
+                    <li>Real-time decision transparency</li>
+                    <li>Comprehensive quality assurance</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>🛡️ Enhanced Bulletproof Resilience</h4>
+                <ul>
+                    <li>Zero investigation failures</li>
+                    <li>Graceful service degradation</li>
+                    <li>Guaranteed completion patterns</li>
+                    <li>Comprehensive recovery systems</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>⚡ Superior Performance</h4>
+                <ul>
+                    <li>45-second average investigations</li>
+                    <li>Minimal orchestrator overhead</li>
+                    <li>Horizontal scaling capability</li>
+                    <li>Resource optimization</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>🔄 Seamless Integration</h4>
+                <ul>
+                    <li>Full backward compatibility</li>
+                    <li>Enhanced existing capabilities</li>
+                    <li>Zero-downtime deployment</li>
+                    <li>Progressive enhancement</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#333',
+                lineColor: '#667eea',
+                secondaryColor: '#764ba2',
+                tertiaryColor: '#f093fb',
+                background: '#ffffff',
+                mainBkg: '#ffffff',
+                secondBkg: '#f8f9ff',
+                tertiaryTextColor: '#333'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 10
+            },
+            graph: {
+                curve: 'basis',
+                padding: 10
+            }
+        });
+
+        // Add interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to phase items
+            const phaseItems = document.querySelectorAll('.phase-item');
+            phaseItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.25)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.15)';
+                });
+            });
+            
+            // Add click functionality to expand sections
+            const sections = document.querySelectorAll('.section h2');
+            sections.forEach(header => {
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', function() {
+                    const section = this.parentElement;
+                    const content = section.querySelector('.diagram-container, .feature-grid, .phase-timeline, .metrics-grid');
+                    if (content) {
+                        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                    }
+                });
+            });
+            
+            console.log('🎯 Autonomous Investigation Orchestrator Architecture loaded successfully!');
+            console.log('📊 Interactive features enabled: hover effects, expandable sections');
+            console.log('🛡️ Bulletproof resilience patterns documented and visualized');
+        });
+    </script>
+</body>
+</html>
