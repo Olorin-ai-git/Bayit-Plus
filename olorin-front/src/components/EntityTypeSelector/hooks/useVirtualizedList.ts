@@ -34,6 +34,10 @@ interface UseVirtualizedListReturn<T = any> {
   totalHeight: number;
   visibleRange: { start: number; end: number };
   isVirtualized: boolean;
+  setContainerRef: (element: HTMLElement | null) => void;
+  scrollProgress: number;
+  canScrollUp: boolean;
+  canScrollDown: boolean;
 }
 
 export const useVirtualizedList = <T = any>({
@@ -169,8 +173,8 @@ export const useVirtualizedList = <T = any>({
       index,
       data: item,
       style: {
-        position: 'relative' as const,
-        top: 0,
+        position: 'absolute' as const,
+        top: index * itemHeight,
         left: 0,
         right: 0,
         height: itemHeight

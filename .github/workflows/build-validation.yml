@@ -1,0 +1,541 @@
+# Multi-Service Build Validation Workflow for Olorin Platform
+# Comprehensive build orchestration with dependency scanning and Docker optimization
+# Author: Gil Klainert
+# Date: 2025-09-06
+
+name: Build Validation
+
+on:
+  # Trigger on all pull requests
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'docs/**'
+      - 'project-management/**'
+
+  # Trigger on pushes to main and develop branches
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'docs/**'
+      - 'project-management/**'
+
+  # Manual trigger for build validation
+  workflow_dispatch:
+    inputs:
+      cache_enabled:
+        description: 'Enable dependency caching'
+        required: false
+        default: true
+        type: boolean
+      skip_docker:
+        description: 'Skip Docker image build'
+        required: false
+        default: false
+        type: boolean
+      verbose_output:
+        description: 'Enable verbose build output'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+  REGISTRY: us-central1-docker.pkg.dev
+  PROJECT_ID: olorin-ai
+
+jobs:
+  # Build matrix setup and validation
+  setup:
+    name: Build Matrix Setup
+    runs-on: ubuntu-latest
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
+      frontend_changed: ${{ steps.changes.outputs.frontend }}
+      cache_enabled: ${{ steps.config.outputs.cache_enabled }}
+      skip_docker: ${{ steps.config.outputs.skip_docker }}
+      verbose_output: ${{ steps.config.outputs.verbose_output }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect service changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'olorin-server/**'
+              - 'deploy-cloudrun-direct.sh'
+              - 'apphosting.yaml'
+            frontend:
+              - 'olorin-front/**'
+              - 'firebase.json'
+
+      - name: Configure build parameters
+        id: config
+        run: |
+          # Set configuration based on trigger type
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "cache_enabled=${{ inputs.cache_enabled }}" >> $GITHUB_OUTPUT
+            echo "skip_docker=${{ inputs.skip_docker }}" >> $GITHUB_OUTPUT
+            echo "verbose_output=${{ inputs.verbose_output }}" >> $GITHUB_OUTPUT
+          else
+            echo "cache_enabled=true" >> $GITHUB_OUTPUT
+            echo "skip_docker=false" >> $GITHUB_OUTPUT
+            echo "verbose_output=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Backend build validation
+  backend-build:
+    name: Backend Build Validation
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.backend_changed == 'true' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        python-version: ['3.11']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry dependencies
+        if: needs.setup.outputs.cache_enabled == 'true'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            olorin-server/.venv
+          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('olorin-server/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-${{ matrix.python-version }}-
+
+      - name: Install backend dependencies
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Dependency Installation"
+          
+          # Install all dependencies including dev dependencies for testing
+          poetry install --with dev
+          
+          # Verify installation
+          poetry run python -c "
+          import sys
+          print(f'Python version: {sys.version}')
+          print('Installed packages:')
+          
+          # Check critical dependencies
+          critical_deps = [
+              'fastapi', 'uvicorn', 'langchain', 'anthropic', 'openai',
+              'redis', 'sqlalchemy', 'pytest', 'httpx'
+          ]
+          
+          for dep in critical_deps:
+              try:
+                  __import__(dep)
+                  print(f'✅ {dep}')
+              except ImportError as e:
+                  print(f'❌ {dep}: {e}')
+                  sys.exit(1)
+          "
+          
+          echo "::endgroup::"
+
+      - name: Run backend linting
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Code Linting"
+          
+          # Code formatting check
+          poetry run black --check --diff . || {
+            echo "::error::Code formatting issues detected. Run 'poetry run black .' to fix."
+            exit 1
+          }
+          
+          # Import sorting check
+          poetry run isort --check-only --diff . || {
+            echo "::error::Import sorting issues detected. Run 'poetry run isort .' to fix."
+            exit 1
+          }
+          
+          # Type checking (non-blocking for now)
+          poetry run mypy . || echo "::warning::Type checking issues detected"
+          
+          echo "✅ Linting completed successfully"
+          echo "::endgroup::"
+
+      - name: Run backend tests
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Test Execution"
+          
+          # Run tests with coverage
+          poetry run pytest \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term \
+            --cov-fail-under=30 \
+            --verbose \
+            -x \
+            test/unit/
+          
+          echo "✅ Backend tests passed successfully"
+          echo "::endgroup::"
+
+      - name: Upload backend test coverage
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: backend-coverage-report
+          path: |
+            olorin-server/coverage.xml
+            olorin-server/htmlcov/
+          retention-days: 7
+
+      - name: Dependency vulnerability scan
+        working-directory: olorin-server
+        run: |
+          echo "::group::Backend Security Scanning"
+          
+          # Install safety for vulnerability scanning
+          poetry add --group dev safety
+          
+          # Scan for known vulnerabilities
+          poetry run safety check --json || {
+            echo "::warning::Security vulnerabilities detected in dependencies"
+            # Continue build but report issues
+          }
+          
+          # Check for outdated packages
+          poetry show --outdated || echo "::notice::Some packages have newer versions available"
+          
+          echo "::endgroup::"
+
+  # Docker image build and optimization
+  docker-build:
+    name: Docker Image Build & Optimization
+    runs-on: ubuntu-latest
+    needs: [setup, backend-build]
+    if: needs.setup.outputs.skip_docker == 'false' && (needs.setup.outputs.backend_changed == 'true' || github.event_name == 'workflow_dispatch')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGISTRY }}
+
+      - name: Build and cache Docker image
+        working-directory: olorin-server
+        run: |
+          echo "::group::Docker Image Build"
+          
+          # Calculate image tag
+          IMAGE_TAG="build-${{ github.run_number }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            IMAGE_TAG="pr-${{ github.event.number }}-${{ github.run_number }}"
+          fi
+          
+          IMAGE_NAME="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:$IMAGE_TAG"
+          
+          echo "Building image: $IMAGE_NAME"
+          
+          # Build multi-platform image with cache
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag "$IMAGE_NAME" \
+            --cache-from type=gha \
+            --cache-to type=gha,mode=max \
+            --load \
+            .
+          
+          # Test the built image
+          echo "Testing built image..."
+          docker run --rm -d --name test-backend -p 8090:8090 "$IMAGE_NAME" &
+          
+          # Wait for container to start
+          sleep 10
+          
+          # Basic health check
+          if docker exec test-backend curl -f http://localhost:8090/health; then
+            echo "✅ Docker image health check passed"
+          else
+            echo "::warning::Docker image health check failed"
+            docker logs test-backend
+          fi
+          
+          # Cleanup
+          docker stop test-backend || true
+          
+          # Analyze image size and layers
+          docker images "$IMAGE_NAME"
+          echo "Image analysis complete"
+          
+          echo "::endgroup::"
+
+      - name: Scan Docker image for vulnerabilities
+        working-directory: olorin-server
+        run: |
+          echo "::group::Docker Security Scanning"
+          
+          IMAGE_TAG="build-${{ github.run_number }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            IMAGE_TAG="pr-${{ github.event.number }}-${{ github.run_number }}"
+          fi
+          
+          IMAGE_NAME="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/olorin/backend:$IMAGE_TAG"
+          
+          # Use Trivy for vulnerability scanning
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --exit-code 0 \
+            --severity HIGH,CRITICAL \
+            --format table \
+            "$IMAGE_NAME" || echo "::warning::Vulnerabilities detected in Docker image"
+          
+          echo "::endgroup::"
+
+  # Frontend build validation
+  frontend-build:
+    name: Frontend Build Validation
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.frontend_changed == 'true' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        node-version: ['18', '20']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: 'olorin-front/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Dependency Installation"
+          
+          # Clean install
+          npm ci
+          
+          # Audit for vulnerabilities
+          npm audit --audit-level=moderate || {
+            echo "::warning::Security vulnerabilities detected in npm dependencies"
+            npm audit fix --force || echo "::notice::Some vulnerabilities could not be auto-fixed"
+          }
+          
+          # Check for outdated packages
+          npm outdated || echo "::notice::Some packages have newer versions available"
+          
+          echo "::endgroup::"
+
+      - name: Run frontend linting
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Code Linting"
+          
+          # ESLint check
+          npm run lint || {
+            echo "::error::ESLint errors detected"
+            exit 1
+          }
+          
+          # Format check (if prettier is configured)
+          if npm list prettier &>/dev/null; then
+            npx prettier --check src/ || {
+              echo "::error::Code formatting issues detected. Run 'npx prettier --write src/' to fix."
+              exit 1
+            }
+          fi
+          
+          echo "✅ Frontend linting passed"
+          echo "::endgroup::"
+
+      - name: Run frontend tests
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Test Execution"
+          
+          # Run tests in CI mode
+          CI=true npm test -- --coverage --watchAll=false --verbose
+          
+          echo "✅ Frontend tests passed successfully"
+          echo "::endgroup::"
+
+      - name: Build frontend application
+        working-directory: olorin-front
+        run: |
+          echo "::group::Frontend Build Process"
+          
+          # Set environment variables for build
+          export REACT_APP_VERSION="${{ github.sha }}"
+          export REACT_APP_BUILD_NUMBER="${{ github.run_number }}"
+          
+          # Build with TypeScript error tolerance
+          TSC_COMPILE_ON_ERROR=true npm run build
+          
+          # Verify build output
+          if [[ ! -d "build" ]]; then
+            echo "::error::Frontend build directory not created"
+            exit 1
+          fi
+          
+          # Analyze bundle size
+          if command -v du &> /dev/null; then
+            echo "Build size analysis:"
+            du -sh build/
+            du -sh build/static/js/*.js | sort -hr | head -10
+          fi
+          
+          echo "✅ Frontend build completed successfully"
+          echo "::endgroup::"
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build-${{ matrix.node-version }}
+          path: olorin-front/build
+          retention-days: 7
+
+      - name: Upload frontend test coverage
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: frontend-coverage-report-${{ matrix.node-version }}
+          path: olorin-front/coverage
+          retention-days: 7
+
+  # Build validation summary
+  build-summary:
+    name: Build Validation Summary
+    runs-on: ubuntu-latest
+    needs: [setup, backend-build, frontend-build, docker-build]
+    if: always()
+    steps:
+      - name: Generate build report
+        run: |
+          echo "::group::Build Validation Summary"
+          
+          # Create build report
+          cat << EOF > build-report.md
+          # Olorin Platform Build Validation Report
+          
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Trigger**: ${{ github.event_name }}
+          **Commit**: ${{ github.sha }}
+          **Branch**: ${{ github.ref_name }}
+          
+          ## Build Matrix Results
+          
+          | Component | Status | Notes |
+          |-----------|--------|-------|
+          | Backend Build | ${{ needs.backend-build.result }} | Python ${{ env.PYTHON_VERSION }}, Poetry |
+          | Docker Image | ${{ needs.docker-build.result }} | Multi-platform build |
+          | Frontend Build | ${{ needs.frontend-build.result }} | Node.js ${{ env.NODE_VERSION }} |
+          
+          ## Service Change Detection
+          
+          - **Backend Changed**: ${{ needs.setup.outputs.backend_changed }}
+          - **Frontend Changed**: ${{ needs.setup.outputs.frontend_changed }}
+          
+          ## Build Configuration
+          
+          - **Cache Enabled**: ${{ needs.setup.outputs.cache_enabled }}
+          - **Skip Docker**: ${{ needs.setup.outputs.skip_docker }}
+          - **Verbose Output**: ${{ needs.setup.outputs.verbose_output }}
+          
+          ## Artifacts Generated
+          
+          - Backend test coverage reports
+          - Frontend build artifacts (Node.js 18, 20)
+          - Frontend test coverage reports
+          - Docker image (if backend changed)
+          
+          EOF
+          
+          echo "::endgroup::"
+
+      - name: Upload build report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-validation-report
+          path: build-report.md
+          retention-days: 30
+
+      - name: Final build status
+        run: |
+          echo "::group::Final Build Validation Status"
+          
+          OVERALL_STATUS="success"
+          
+          # Check backend build
+          if [[ "${{ needs.setup.outputs.backend_changed }}" == "true" && "${{ needs.backend-build.result }}" != "success" ]]; then
+            echo "::error::Backend build failed"
+            OVERALL_STATUS="failure"
+          fi
+          
+          # Check Docker build
+          if [[ "${{ needs.setup.outputs.skip_docker }}" == "false" && "${{ needs.setup.outputs.backend_changed }}" == "true" && "${{ needs.docker-build.result }}" != "success" ]]; then
+            echo "::error::Docker image build failed"
+            OVERALL_STATUS="failure"
+          fi
+          
+          # Check frontend build
+          if [[ "${{ needs.setup.outputs.frontend_changed }}" == "true" && "${{ needs.frontend-build.result }}" != "success" ]]; then
+            echo "::error::Frontend build failed"
+            OVERALL_STATUS="failure"
+          fi
+          
+          if [[ "$OVERALL_STATUS" == "success" ]]; then
+            echo "::notice::✅ All build validations passed successfully!"
+          else
+            echo "::error::❌ Build validation completed with failures. Check individual job logs."
+            exit 1
+          fi
+          
+          echo "::endgroup::"

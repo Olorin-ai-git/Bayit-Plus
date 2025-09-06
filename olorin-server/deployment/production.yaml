@@ -1,0 +1,141 @@
+# Olorin Backend - Production Environment Configuration
+# Google Cloud Run deployment configuration for production environment
+
+# Environment Variables for Production
+env_vars:
+  APP_ENV: "prd"
+  FIREBASE_PROJECT_ID: "olorin-ai"
+  LOG_LEVEL: "INFO"
+  PYTHONPATH: "/app"
+  CORS_ORIGINS: "https://olorin-ai.web.app,https://olorin-ai.firebaseapp.com"
+  
+  # Database Configuration
+  DB_HOST: "localhost"
+  DB_PORT: "3306"
+  DB_NAME: "fraud_detection"
+  DB_USER: "olorin_user"
+  DB_POOL_SIZE: "10"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com"
+  REDIS_PORT: "13848"
+  REDIS_USERNAME: "default"
+  REDIS_DB: "0"
+  REDIS_POOL_SIZE: "10"
+  
+  # JWT Configuration
+  JWT_ALGORITHM: "HS256"
+  JWT_EXPIRE_HOURS: "2"
+  
+  # Rate Limiting
+  RATE_LIMIT_REQUESTS: "1000"
+  RATE_LIMIT_WINDOW: "3600"
+  
+  # MCP Server Configuration
+  MCP_SERVER_HOST: "0.0.0.0"
+  MCP_SERVER_PORT: "8091"
+
+# Cloud Run Service Configuration
+service:
+  name: "olorin-backend"
+  region: "us-central1"
+  
+  # Resource Allocation for Production Load
+  memory: "4Gi"
+  cpu: "2"
+  
+  # Scaling Configuration for High Availability
+  min_instances: 2
+  max_instances: 100
+  
+  # Timeout and Concurrency for Production
+  timeout: 900
+  concurrency: 100
+  
+  # Service Account
+  service_account: "olorin-backend@olorin-ai.iam.gserviceaccount.com"
+  
+  # Traffic Configuration
+  allow_unauthenticated: true
+  
+  # Execution Environment
+  execution_environment: "gen2"
+  cpu_throttling: true
+
+# Secrets Configuration (Firebase Secrets Manager)
+secrets:
+  - name: "ANTHROPIC_API_KEY"
+    version: "latest"
+  - name: "OPENAI_API_KEY"
+    version: "latest"
+  - name: "DATABASE_PASSWORD"
+    version: "latest"
+  - name: "REDIS_PASSWORD"
+    version: "latest"
+  - name: "REDIS_API_KEY"
+    version: "latest"
+  - name: "JWT_SECRET_KEY"
+    version: "latest"
+  - name: "SPLUNK_USERNAME"
+    version: "latest"
+  - name: "SPLUNK_PASSWORD"
+    version: "latest"
+  - name: "OLORIN_API_KEY"
+    version: "latest"
+  - name: "ABUSEIPDB_API_KEY"
+    version: "latest"
+
+# Health Check Configuration
+health_check:
+  path: "/health"
+  interval: 30
+  timeout: 10
+  retries: 3
+  start_period: 60
+
+# Build Configuration
+build:
+  dockerfile: "Dockerfile"
+  args:
+    APP_ENV: "production"
+    WORKERS: "4"
+    PYTHON_VERSION: "3.11"
+    POETRY_VERSION: "1.8.0"
+
+# Monitoring and Logging for Production
+monitoring:
+  enable_cloud_monitoring: true
+  enable_cloud_logging: true
+  enable_error_reporting: true
+  enable_cloud_trace: true
+  log_level: "INFO"
+  
+# Performance Optimization
+performance:
+  enable_cpu_boost: true
+  startup_cpu_boost: true
+  
+# Security Configuration
+security:
+  vpc_connector: "projects/olorin-ai/locations/us-central1/connectors/olorin-vpc"
+  ingress: "all"
+  
+# IAM Configuration
+iam:
+  roles:
+    - "roles/secretmanager.secretAccessor"
+    - "roles/cloudsql.client"
+    - "roles/logging.logWriter"
+    - "roles/monitoring.metricWriter"
+    - "roles/errorreporting.writer"
+    - "roles/cloudtrace.agent"
+
+# Blue-Green Deployment Configuration
+deployment:
+  strategy: "blue-green"
+  traffic_split:
+    new_revision: 100
+    previous_revision: 0
+  rollback_threshold:
+    error_rate: 5.0
+    latency_p99: 2000

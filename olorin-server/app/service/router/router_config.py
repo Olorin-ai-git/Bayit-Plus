@@ -29,7 +29,7 @@ def configure_routes(app: FastAPI, config: SvcSettings) -> None:
     # Register error handlers
     _register_error_handlers(app)
     
-    # Add health and actuator endpoints
+    # Add legacy health and actuator endpoints (enhanced health via router)
     _add_health_endpoints(app)
     
     # Add metrics if enabled
@@ -43,9 +43,11 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.mcp_bridge_router import router as mcp_bridge_router
     from app.router.performance_router import router as performance_router
     from app.router.autonomous_investigation_router import router as autonomous_router
+    from app.router.health_router import router as health_router
     from .. import example
 
     # Include routers in order of dependency
+    app.include_router(health_router)  # Enhanced health endpoints (no auth required)
     app.include_router(auth_router)  # Authentication routes (no auth required)
     app.include_router(example.router)
     app.include_router(agent_router.router)
@@ -67,13 +69,7 @@ def _register_error_handlers(app: FastAPI) -> None:
 
 
 def _add_health_endpoints(app: FastAPI) -> None:
-    """Add health check and actuator endpoints."""
-    
-    # Add a simple health endpoint for Cloud Run
-    @app.get("/health")
-    async def health():
-        """Simple health check endpoint for Cloud Run."""
-        return {"status": "healthy", "service": "olorin-backend"}
+    """Add legacy health check and root endpoints for backward compatibility."""
     
     @app.get("/")
     async def root():
@@ -85,7 +81,7 @@ def _add_health_endpoints(app: FastAPI) -> None:
         add_health_endpoint(app)
         logger.info("pskhealth endpoints added successfully")
     except ImportError:
-        logger.info("pskhealth not available, using simple health endpoints")
+        logger.info("pskhealth not available, using enhanced health router")
     
     # Add actuator endpoints
     _add_actuator_endpoints(app)

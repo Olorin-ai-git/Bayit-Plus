@@ -146,19 +146,19 @@ export const EntityTypeSelector: React.FC<EntityTypeSelectorProps> = ({
     
     // Apply advanced filters
     if (filterCriteria.riskLevel?.length) {
-      filtered = filtered.filter(entity => 
+      filtered = filtered.filter((entity: EntityType) => 
         filterCriteria.riskLevel?.includes(entity.riskLevel || 'low')
       );
     }
     
     if (filterCriteria.dataType?.length) {
-      filtered = filtered.filter(entity => 
+      filtered = filtered.filter((entity: EntityType) => 
         filterCriteria.dataType?.includes(entity.dataType || 'string')
       );
     }
     
     if (filterCriteria.required !== undefined) {
-      filtered = filtered.filter(entity => 
+      filtered = filtered.filter((entity: EntityType) => 
         entity.isRequired === filterCriteria.required
       );
     }
@@ -406,7 +406,7 @@ export const EntityTypeSelector: React.FC<EntityTypeSelectorProps> = ({
               </Typography>
               
               {/* Entity Cards */}
-              {(enableVirtualization ? virtualizedItems : filteredEntities).map((entity, index) => (
+              {(enableVirtualization ? virtualizedItems : filteredEntities).map((entity: any) => (
                 <EntityTypeCard
                   key={entity.id}
                   entity={entity}
