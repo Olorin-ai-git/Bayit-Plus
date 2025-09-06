@@ -133,7 +133,7 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
     summary_suffix = f" (RAG: {rag_stats['knowledge_retrieval_count']} queries)" if rag_enabled and rag_stats['knowledge_retrieval_count'] > 0 else ""
     
     return {
-        "location_risk_assessment": {
+        "risk_assessment": {
             "risk_level": findings.risk_score,
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,

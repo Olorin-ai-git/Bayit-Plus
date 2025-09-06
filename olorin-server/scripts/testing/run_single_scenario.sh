@@ -32,7 +32,7 @@ echo "✅ API key retrieved successfully"
 
 # Set up environment
 export ANTHROPIC_API_KEY="$API_KEY"
-export PYTHONPATH="/Users/gklainert/Documents/olorin/olorin-server"
+export PYTHONPATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export OLORIN_USE_DEMO_DATA=true
 
 echo "📝 Using demo data for Splunk connections (OLORIN_USE_DEMO_DATA=true)"

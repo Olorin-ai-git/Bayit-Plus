@@ -6,7 +6,9 @@ journeys, capturing every node execution, state transition, and agent coordinati
 to provide complete visibility into autonomous investigation workflows.
 """
 
+import asyncio
 import json
+import threading
 from typing import Dict, List, Any, Optional, Tuple, Set
 from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
@@ -112,9 +114,11 @@ class LangGraphJourneyTracker:
         self.output_directory = output_directory or Path("logs/journey_tracking")
         self.output_directory.mkdir(parents=True, exist_ok=True)
         
-        # Active journey tracking
+        # Thread-safe active journey tracking
         self._active_journeys: Dict[str, InvestigationJourney] = {}
         self._journey_graphs: Dict[str, Any] = {}  # nx.DiGraph if networkx available
+        self._journey_locks: Dict[str, threading.RLock] = {}
+        self._global_lock = threading.RLock()
         
         # Callback for real-time monitoring
         self._monitoring_callbacks: List[callable] = []
@@ -122,26 +126,33 @@ class LangGraphJourneyTracker:
         logger.info(f"Initialized LangGraphJourneyTracker with output: {self.output_directory}")
     
     def start_journey_tracking(self, investigation_id: str, initial_state: Dict[str, Any]) -> None:
-        """Initialize journey tracking for a new investigation"""
-        journey = InvestigationJourney(
-            investigation_id=investigation_id,
-            start_timestamp=datetime.now(timezone.utc).isoformat(),
-            end_timestamp=None,
-            status="in_progress",
-            node_executions=[],
-            state_transitions=[],
-            agent_coordinations=[],
-            final_state={},
-            journey_metadata={
-                "initial_state": initial_state,
-                "started_at": datetime.now(timezone.utc).isoformat()
-            }
-        )
-        
-        self._active_journeys[investigation_id] = journey
-        self._journey_graphs[investigation_id] = nx.DiGraph() if nx else {}
-        
-        logger.info(f"Started journey tracking for investigation: {investigation_id}")
+        """Initialize journey tracking for a new investigation with thread-safety"""
+        with self._global_lock:
+            # Don't recreate if already exists
+            if investigation_id in self._active_journeys:
+                logger.debug(f"Journey tracking already active for investigation: {investigation_id}")
+                return
+                
+            journey = InvestigationJourney(
+                investigation_id=investigation_id,
+                start_timestamp=datetime.now(timezone.utc).isoformat(),
+                end_timestamp=None,
+                status="in_progress",
+                node_executions=[],
+                state_transitions=[],
+                agent_coordinations=[],
+                final_state={},
+                journey_metadata={
+                    "initial_state": initial_state,
+                    "started_at": datetime.now(timezone.utc).isoformat()
+                }
+            )
+            
+            self._active_journeys[investigation_id] = journey
+            self._journey_graphs[investigation_id] = nx.DiGraph() if nx else {}
+            self._journey_locks[investigation_id] = threading.RLock()
+            
+            logger.info(f"Started journey tracking for investigation: {investigation_id}")
     
     def track_node_execution(
         self,
@@ -158,11 +169,30 @@ class LangGraphJourneyTracker:
         error_message: Optional[str] = None,
         retry_count: int = 0
     ) -> str:
-        """Track execution of a single LangGraph node"""
+        """Track execution of a single LangGraph node with thread-safety and resilience"""
         
-        if investigation_id not in self._active_journeys:
-            logger.warning(f"No active journey for investigation: {investigation_id}")
-            return None
+        # Get or create journey lock
+        with self._global_lock:
+            if investigation_id not in self._journey_locks:
+                self._journey_locks[investigation_id] = threading.RLock()
+            journey_lock = self._journey_locks[investigation_id]
+        
+        with journey_lock:
+            if investigation_id not in self._active_journeys:
+                logger.warning(
+                    f"No active journey for investigation: {investigation_id}. "
+                    f"Creating emergency journey for node tracking."
+                )
+                # Create emergency journey to prevent data loss
+                self.start_journey_tracking(investigation_id, {
+                    "emergency_created": True,
+                    "first_node": node_name,
+                    "agent_name": agent_name
+                })
+                
+            if investigation_id not in self._active_journeys:
+                logger.error(f"Failed to create journey for investigation: {investigation_id}")
+                return None
         
         execution_id = str(uuid.uuid4())
         state_changes = self._calculate_state_changes(input_state, output_state)
@@ -215,11 +245,29 @@ class LangGraphJourneyTracker:
         transition_reason: str,
         condition_result: Optional[Dict[str, Any]] = None
     ) -> str:
-        """Track state transitions between nodes"""
+        """Track state transitions between nodes with thread-safety"""
         
-        if investigation_id not in self._active_journeys:
-            logger.warning(f"No active journey for investigation: {investigation_id}")
-            return None
+        # Get or create journey lock
+        with self._global_lock:
+            if investigation_id not in self._journey_locks:
+                self._journey_locks[investigation_id] = threading.RLock()
+            journey_lock = self._journey_locks[investigation_id]
+        
+        with journey_lock:
+            if investigation_id not in self._active_journeys:
+                logger.warning(
+                    f"No active journey for investigation: {investigation_id}. "
+                    f"Creating emergency journey for state tracking."
+                )
+                # Create emergency journey
+                self.start_journey_tracking(investigation_id, {
+                    "emergency_created": True,
+                    "first_transition": f"{from_node} -> {to_node}"
+                })
+                
+            if investigation_id not in self._active_journeys:
+                logger.error(f"Failed to create journey for state transition: {investigation_id}")
+                return None
         
         transition_id = str(uuid.uuid4())
         
@@ -259,11 +307,29 @@ class LangGraphJourneyTracker:
         reasoning: str,
         coordination_type: str = "handoff"
     ) -> str:
-        """Track agent handoffs and coordination events"""
+        """Track agent handoffs and coordination events with thread-safety"""
         
-        if investigation_id not in self._active_journeys:
-            logger.warning(f"No active journey for investigation: {investigation_id}")
-            return None
+        # Get or create journey lock
+        with self._global_lock:
+            if investigation_id not in self._journey_locks:
+                self._journey_locks[investigation_id] = threading.RLock()
+            journey_lock = self._journey_locks[investigation_id]
+        
+        with journey_lock:
+            if investigation_id not in self._active_journeys:
+                logger.warning(
+                    f"No active journey for investigation: {investigation_id}. "
+                    f"Creating emergency journey for agent coordination."
+                )
+                # Create emergency journey
+                self.start_journey_tracking(investigation_id, {
+                    "emergency_created": True,
+                    "first_coordination": f"{from_agent} -> {to_agent}"
+                })
+                
+            if investigation_id not in self._active_journeys:
+                logger.error(f"Failed to create journey for agent coordination: {investigation_id}")
+                return None
         
         coordination_id = str(uuid.uuid4())
         
@@ -287,13 +353,21 @@ class LangGraphJourneyTracker:
         return coordination_id
     
     def complete_journey(self, investigation_id: str, final_state: Dict[str, Any]) -> InvestigationJourney:
-        """Complete journey tracking and generate final journey record"""
+        """Complete journey tracking and generate final journey record with thread-safety"""
         
-        if investigation_id not in self._active_journeys:
-            logger.warning(f"No active journey for investigation: {investigation_id}")
-            return None
+        # Get journey lock
+        with self._global_lock:
+            if investigation_id not in self._journey_locks:
+                logger.warning(f"No journey lock for investigation: {investigation_id}")
+                return None
+            journey_lock = self._journey_locks[investigation_id]
         
-        journey = self._active_journeys[investigation_id]
+        with journey_lock:
+            if investigation_id not in self._active_journeys:
+                logger.warning(f"No active journey for investigation: {investigation_id}")
+                return None
+            
+            journey = self._active_journeys[investigation_id]
         journey.end_timestamp = datetime.now(timezone.utc).isoformat()
         journey.status = "completed"
         journey.final_state = final_state
@@ -317,6 +391,11 @@ class LangGraphJourneyTracker:
         
         # Remove from active tracking
         del self._active_journeys[investigation_id]
+        # Clean up journey graph and lock
+        if investigation_id in self._journey_graphs:
+            del self._journey_graphs[investigation_id]
+        if investigation_id in self._journey_locks:
+            del self._journey_locks[investigation_id]
         
         logger.info(f"Completed journey tracking for investigation: {investigation_id} "
                    f"({total_duration}ms, {len(journey.node_executions)} nodes)")
@@ -324,10 +403,17 @@ class LangGraphJourneyTracker:
         return journey
     
     def get_journey_status(self, investigation_id: str) -> Dict[str, Any]:
-        """Get current status of an active journey"""
+        """Get current status of an active journey with thread-safety"""
         
-        if investigation_id not in self._active_journeys:
-            return {"error": f"No active journey for investigation: {investigation_id}"}
+        # Get journey lock if exists
+        with self._global_lock:
+            if investigation_id not in self._journey_locks:
+                return {"error": f"No active journey for investigation: {investigation_id}"}
+            journey_lock = self._journey_locks[investigation_id]
+        
+        with journey_lock:
+            if investigation_id not in self._active_journeys:
+                return {"error": f"No active journey for investigation: {investigation_id}"}
         
         journey = self._active_journeys[investigation_id]
         graph = self._journey_graphs[investigation_id]
@@ -369,7 +455,7 @@ class LangGraphJourneyTracker:
         tools_selected: int,
         strategy: str = "unknown"
     ) -> None:
-        """Track tool selection performance metrics.
+        """Track tool selection performance metrics with thread-safety.
         
         Args:
             investigation_id: Investigation identifier
@@ -379,45 +465,59 @@ class LangGraphJourneyTracker:
             strategy: Selection strategy used (rag_enhanced, static, etc.)
         """
         try:
-            # Create a pseudo node execution for tool selection tracking
-            execution = NodeExecution(
-                execution_id=str(uuid.uuid4()),
-                investigation_id=investigation_id,
-                node_name=f"tool_selection_{domain}",
-                node_type=NodeType.TOOL,
-                timestamp=datetime.now(timezone.utc).isoformat(),
-                duration_ms=int(selection_time_ms),
-                status=NodeStatus.COMPLETED,
-                input_state={"domain": domain, "strategy": strategy},
-                output_state={
-                    "tools_selected": tools_selected, 
-                    "selection_time_ms": selection_time_ms,
-                    "performance_target_met": selection_time_ms <= 100
-                },
-                metadata={
-                    "tracking_type": "tool_selection",
-                    "domain": domain,
-                    "strategy": strategy,
-                    "tools_count": tools_selected,
-                    "performance_ms": selection_time_ms,
-                    "target_met": selection_time_ms <= 100
-                },
-                agent_name=f"ToolSelector-{strategy.title()}"
-            )
+            # Get or create journey lock
+            with self._global_lock:
+                if investigation_id not in self._journey_locks:
+                    self._journey_locks[investigation_id] = threading.RLock()
+                journey_lock = self._journey_locks[investigation_id]
             
-            # Store the execution in active journey
-            if investigation_id in self._active_journeys:
-                self._active_journeys[investigation_id].node_executions.append(execution)
-            else:
-                # Create new journey if needed
-                journey = InvestigationJourney(
+            with journey_lock:
+                # Create a pseudo node execution for tool selection tracking
+                execution = NodeExecution(
+                    execution_id=str(uuid.uuid4()),
                     investigation_id=investigation_id,
-                    start_timestamp=datetime.now(timezone.utc).isoformat(),
-                    node_executions=[execution],
-                    state_transitions=[],
-                    agent_coordinations=[]
+                    node_name=f"tool_selection_{domain}",
+                    node_type=NodeType.TOOL,
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    duration_ms=int(selection_time_ms),
+                    status=NodeStatus.COMPLETED,
+                    input_state={"domain": domain, "strategy": strategy},
+                    output_state={
+                        "tools_selected": tools_selected, 
+                        "selection_time_ms": selection_time_ms,
+                        "performance_target_met": selection_time_ms <= 100
+                    },
+                    metadata={
+                        "tracking_type": "tool_selection",
+                        "domain": domain,
+                        "strategy": strategy,
+                        "tools_count": tools_selected,
+                        "performance_ms": selection_time_ms,
+                        "target_met": selection_time_ms <= 100
+                    },
+                    agent_name=f"ToolSelector-{strategy.title()}"
                 )
-                self._active_journeys[investigation_id] = journey
+            
+                # Store the execution in active journey
+                if investigation_id in self._active_journeys:
+                    self._active_journeys[investigation_id].node_executions.append(execution)
+                else:
+                    # Create new journey if needed
+                    journey = InvestigationJourney(
+                        investigation_id=investigation_id,
+                        start_timestamp=datetime.now(timezone.utc).isoformat(),
+                        end_timestamp=None,
+                        status="in_progress", 
+                        node_executions=[execution],
+                        state_transitions=[],
+                        agent_coordinations=[],
+                        final_state={},
+                        journey_metadata={
+                            "created_for_tool_tracking": True,
+                            "domain": domain
+                        }
+                    )
+                    self._active_journeys[investigation_id] = journey
             
             logger.debug(
                 f"🚀 Tool selection tracked for {domain}: {tools_selected} tools selected "

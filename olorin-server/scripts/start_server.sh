@@ -47,8 +47,22 @@ check_firebase_cli() {
 # Function to retrieve a secret from Firebase
 get_secret() {
     local secret_name=$1
-    local secret_value=$(firebase functions:secrets:access "$secret_name" --project "$PROJECT_ID" 2>/dev/null)
-    echo "$secret_value"
+    local secret_value
+    
+    # Check if Firebase CLI is authenticated
+    if ! firebase projects:list &>/dev/null; then
+        print_error "Firebase CLI not authenticated. Run: firebase login"
+        return 1
+    fi
+    
+    # Attempt to retrieve secret with timeout
+    if secret_value=$(timeout 30 firebase functions:secrets:access "$secret_name" --project "$PROJECT_ID" 2>/dev/null); then
+        echo "$secret_value"
+        return 0
+    else
+        print_warning "Failed to retrieve secret: $secret_name"
+        return 1
+    fi
 }
 
 # Function to retrieve all required secrets
@@ -139,6 +153,18 @@ start_server() {
     export LOG_LEVEL=$LOG_LEVEL
     export ENVIRONMENT="local"
     
+    # Check Poetry installation and dependencies
+    if ! command -v poetry &> /dev/null; then
+        print_error "Poetry not found. Please install Poetry first."
+        exit 1
+    fi
+    
+    print_status "Checking Poetry dependencies..."
+    if ! poetry check &> /dev/null; then
+        print_warning "Poetry dependencies may need updating. Installing..."
+        poetry install
+    fi
+    
     # Start the server
     print_success "Server starting..."
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
@@ -147,8 +173,11 @@ start_server() {
     echo -e "${GREEN}   Health: http://localhost:$PORT/health${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     
-    # Run the server
-    poetry run python -m app.local_server
+    # Run the server with error handling
+    if ! poetry run python -m app.local_server; then
+        print_error "Server failed to start. Check logs above for details."
+        exit 1
+    fi
 }
 
 # Function to display usage

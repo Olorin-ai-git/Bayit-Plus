@@ -12,6 +12,7 @@ from app.service.agent.agent_communication import (
     _extract_investigation_info,
     _get_or_create_autonomous_context,
     _create_error_response,
+    get_context_with_retry,
 )
 from app.service.logging import get_bridge_logger
 from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
@@ -66,10 +67,12 @@ async def autonomous_network_agent(state, config) -> dict:
         metadata=start_metadata
     )
     
-    # Create or get autonomous context
-    autonomous_context = _get_or_create_autonomous_context(
-        investigation_id, entity_id, investigation_type="fraud_investigation"
-    )
+    # Create or get autonomous context with retry logic
+    autonomous_context = await get_context_with_retry(investigation_id, entity_id)
+    if not autonomous_context:
+        logger.error(f"Failed to get investigation context after retries: {investigation_id}")
+        return _create_error_response("Unable to access investigation context - race condition")
+    
     autonomous_context.start_domain_analysis("network")
     
     # Emit progress update

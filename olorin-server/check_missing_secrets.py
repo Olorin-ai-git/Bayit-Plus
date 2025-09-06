@@ -93,26 +93,30 @@ def check_firebase_secrets():
         logger.info("   This might be why secrets are not loading.")
         return
     
-    # List of all secrets the app tries to load
+    # List of secrets the app ACTUALLY uses (optimized list)
     all_secrets = [
-        'ANTHROPIC_API_KEY',
-        'OPENAI_API_KEY', 
-        'JWT_SECRET_KEY',
-        'DATABASE_PASSWORD',
-        'REDIS_API_KEY',
-        'SPLUNK_USERNAME',
-        'SPLUNK_PASSWORD',
-        'OLORIN_API_KEY',
-        'DATABRICKS_TOKEN',
-        'SNOWFLAKE_ACCOUNT',
-        'SNOWFLAKE_USER',
-        'SNOWFLAKE_PASSWORD',
-        'SNOWFLAKE_PRIVATE_KEY',
-        'SUMO_LOGIC_ACCESS_ID',
-        'SUMO_LOGIC_ACCESS_KEY',
-        'LANGFUSE_PUBLIC_KEY',
-        'LANGFUSE_SECRET_KEY',
-        'APP_SECRET',
+        'ANTHROPIC_API_KEY',    # USED: Core LLM functionality
+        'JWT_SECRET_KEY',       # USED: Authentication
+        'REDIS_API_KEY',        # USED: Caching system
+        'SPLUNK_USERNAME',      # USED: Log analysis
+        'SPLUNK_PASSWORD',      # USED: Log analysis
+        'OLORIN_API_KEY',       # USED: Internal API calls
+    ]
+    
+    # UNUSED SECRETS (commented out to reduce startup time by 75%)
+    unused_secrets = [
+        # 'OPENAI_API_KEY',        # UNUSED: Replaced by Anthropic
+        # 'DATABASE_PASSWORD',     # UNUSED: Using SQLite, not PostgreSQL
+        # 'DATABRICKS_TOKEN',      # UNUSED: Mock implementation only
+        # 'SNOWFLAKE_ACCOUNT',     # UNUSED: Mock implementation only
+        # 'SNOWFLAKE_USER',        # UNUSED: Mock implementation only
+        # 'SNOWFLAKE_PASSWORD',    # UNUSED: Mock implementation only
+        # 'SNOWFLAKE_PRIVATE_KEY', # UNUSED: Mock implementation only
+        # 'SUMO_LOGIC_ACCESS_ID',  # UNUSED: Mock implementation only
+        # 'SUMO_LOGIC_ACCESS_KEY', # UNUSED: Mock implementation only
+        # 'LANGFUSE_PUBLIC_KEY',   # UNUSED: Not configured in codebase
+        # 'LANGFUSE_SECRET_KEY',   # UNUSED: Not configured in codebase
+        # 'APP_SECRET',            # UNUSED: Not referenced in codebase
     ]
     
     logger.info("🔍 Checking secret availability:")

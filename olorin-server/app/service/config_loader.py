@@ -84,48 +84,40 @@ class ConfigLoader:
     def load_database_config(self) -> dict:
         """
         Load database configuration from secrets.
+        UNUSED: Application uses SQLite, not PostgreSQL.
         
         Returns:
-            Dictionary with database configuration
-            
-        Raises:
-            ValueError: If critical database password is missing in production
+            Dictionary with database configuration (hardcoded defaults)
         """
-        password = self.load_secret("DATABASE_PASSWORD")
-        
-        # Validate password exists for non-local environments
-        if not password and self.env not in ["local", "development"]:
-            raise ValueError(
-                f"CRITICAL: Database password not found for environment '{self.env}'. "
-                "Cannot start safely without database credentials."
-            )
-        
+        # Using SQLite - no secrets needed, return hardcoded defaults
         return {
-            "host": self.load_secret("DB_HOST") or "localhost",
-            "port": int(self.load_secret("DB_PORT") or "3306"),
-            "name": self.load_secret("DB_NAME") or "fraud_detection",
-            "user": self.load_secret("DB_USER") or "root",
-            "password": password,
-            "pool_size": int(self.load_secret("DB_POOL_SIZE") or "10")  # Increased from 5 for production load
+            "host": "localhost",
+            "port": 3306,
+            "name": "fraud_detection",
+            "user": "root",
+            "password": None,  # Not needed for SQLite
+            "pool_size": 10
         }
     
     def load_redis_config(self) -> dict:
         """
         Load Redis configuration from secrets.
+        Only fetch the API key from secrets, use hardcoded defaults for connection params.
         
         Returns:
             Dictionary with Redis configuration
         """
         return {
-            "host": self.load_secret("REDIS_HOST") or "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com",
-            "port": int(self.load_secret("REDIS_PORT") or "13848"),
-            "username": self.load_secret("REDIS_USERNAME") or "default",
-            "api_key": self.load_secret("REDIS_API_KEY")
+            "host": "redis-13848.c253.us-central1-1.gce.redns.redis-cloud.com",  # Use hardcoded default
+            "port": 13848,  # Use hardcoded default
+            "username": "default",  # Use hardcoded default
+            "api_key": self.load_secret("REDIS_API_KEY")  # Only this needs to be fetched from secrets
         }
     
     def load_jwt_config(self) -> dict:
         """
         Load JWT configuration from secrets.
+        Only fetch the secret key from secrets, use hardcoded defaults for other params.
         
         Returns:
             Dictionary with JWT configuration
@@ -144,8 +136,8 @@ class ConfigLoader:
         
         return {
             "secret_key": secret_key,
-            "algorithm": self.load_secret("JWT_ALGORITHM") or "HS256",
-            "expire_hours": int(self.load_secret("JWT_EXPIRE_HOURS") or "2")  # Reduced from 24 to 2 hours for security
+            "algorithm": "HS256",  # Use hardcoded default
+            "expire_hours": 2  # Use hardcoded default (reduced from 24 to 2 hours for security)
         }
     
     def load_splunk_config(self) -> dict:
@@ -199,22 +191,22 @@ class ConfigLoader:
             Dictionary with all loaded secrets
         """
         return {
-            # API Keys
-            "anthropic_api_key": self.load_api_key("anthropic_api_key"),
-            "openai_api_key": self.load_api_key("openai_api_key"),
-            "olorin_api_key": self.load_api_key("olorin_api_key"),
-            "databricks_token": self.load_api_key("databricks_token"),
+            # API Keys - USED
+            "anthropic_api_key": self.load_api_key("anthropic_api_key"),  # USED: Core LLM functionality
+            # "openai_api_key": self.load_api_key("openai_api_key"),  # UNUSED: Replaced by Anthropic
+            "olorin_api_key": self.load_api_key("olorin_api_key"),  # USED: Internal API calls
+            # "databricks_token": self.load_api_key("databricks_token"),  # UNUSED: Mock implementation only
             
-            # Service Configurations
-            "database": self.load_database_config(),
-            "redis": self.load_redis_config(),
-            "jwt": self.load_jwt_config(),
-            "splunk": self.load_splunk_config(),
-            "sumo_logic": self.load_sumo_logic_config(),
-            "snowflake": self.load_snowflake_config(),
+            # Service Configurations - Only load configs that actually fetch secrets
+            # "database": self.load_database_config(),  # UNUSED: Using SQLite, not PostgreSQL
+            "redis": self.load_redis_config(),  # USED: Caching system (only api_key from secrets)
+            "jwt": self.load_jwt_config(),  # USED: Authentication (only secret_key from secrets)
+            "splunk": self.load_splunk_config(),  # USED: Log analysis
+            # "sumo_logic": self.load_sumo_logic_config(),  # UNUSED: Mock implementation only
+            # "snowflake": self.load_snowflake_config(),  # UNUSED: Mock implementation only
             
             # App Secret
-            "app_secret": self.load_secret("APP_SECRET")
+            # "app_secret": self.load_secret("APP_SECRET")  # UNUSED: Not referenced in codebase
         }
 
 
