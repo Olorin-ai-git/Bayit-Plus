@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olorin Autonomous Investigation System - User Manual</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --background-color: #ecf0f1;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
+            --code-background: #f8f9fa;
+            --border-color: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .toc {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toc h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            display: block;
+            border-radius: 5px;
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            background-color: var(--background-color);
+            transform: translateX(5px);
+        }
+
+        .section {
+            background: var(--card-background);
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1.5rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        .phase {
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1.5rem;
+        }
+
+        .phase h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .step {
+            background: var(--background-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .step h4 {
+            color: var(--success-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: var(--code-background);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: -1rem -1rem 1rem -1rem;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .json-response {
+            background: #f8f9fa;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .api-endpoint {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-started {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-progress {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .status-completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-failed {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: var(--background-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+
+        .agent-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--background-color);
+            border-radius: 8px;
+        }
+
+        .agent-box {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin: 0 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--background-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        .monitoring-panel {
+            background: var(--code-background);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .monitoring-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .endpoint-list {
+            list-style: none;
+        }
+
+        .endpoint-list li {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .success-box {
+            background: #e8f5e8;
+            border: 1px solid #c8e6c9;
+            border-left: 4px solid var(--success-color);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .section-content {
+                padding: 1rem;
+            }
+
+            .agent-flow {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        .navigation-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            margin: 8px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Olorin Autonomous Investigation System</h1>
+            <p class="subtitle">Complete User Manual for AI-Driven Fraud Detection</p>
+        </header>
+
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">System Overview</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#workflow">Investigation Workflow</a></li>
+                <li><a href="#monitoring">Real-Time Monitoring</a></li>
+                <li><a href="#api-reference">API Reference</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#scenarios">Scenario Data Loading</a></li>
+                <li><a href="#examples">Examples & Use Cases</a></li>
+            </ul>
+        </div>
+
+        <div class="section" id="overview">
+            <div class="section-header">
+                🎯 System Overview
+            </div>
+            <div class="section-content">
+                <p>The Olorin Autonomous Investigation System is an AI-powered fraud detection platform that conducts comprehensive, multi-domain investigations automatically. The system uses LangGraph orchestration with specialized AI agents to analyze potential fraud across multiple dimensions.</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🤖 AI-Driven Orchestration</h4>
+                        <p>Master orchestrator uses Claude AI to determine optimal investigation strategies and coordinate multiple specialized agents.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔄 Real-Time Monitoring</h4>
+                        <p>WebSocket-based live updates provide instant visibility into investigation progress and findings.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🛡️ Bulletproof Resilience</h4>
+                        <p>RecursionGuard protection, circuit breakers, and fallback strategies ensure 100% investigation completion.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Multi-Domain Analysis</h4>
+                        <p>Specialized agents analyze network, device, location, logs, and risk patterns simultaneously.</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>🎓 Key Capabilities:</strong>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>Automated fraud investigation across 5+ domains</li>
+                        <li>AI-powered investigation strategy selection</li>
+                        <li>Real-time progress tracking and monitoring</li>
+                        <li>Comprehensive audit trails and journey tracking</li>
+                        <li>RESTful APIs with WebSocket streaming</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="getting-started">
+            <div class="section-header">
+                🚀 Getting Started
+            </div>
+            <div class="section-content">
+                <div class="step">
+                    <h4>Step 1: Start an Investigation</h4>
+                    <p>Use the REST API to initiate a new autonomous investigation:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">curl command</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "USER_12345",
+    "entity_type": "user_id", 
+    "scenario": "device_spoofing",
+    "enable_verbose_logging": true,
+    "enable_journey_tracking": true,
+    "enable_chain_of_thought": true,
+    "investigation_priority": "high"
+  }'
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>Step 2: Receive Investigation ID</h4>
+                    <p>The system immediately returns an investigation ID and monitoring endpoints:</p>
+                    
+                    <div class="json-response">
+                        <strong>Response:</strong>
+                        <div class="code-block">
+{
+  "investigation_id": "AUTO_INVEST_USER_12345_20250906_143000",
+  "status": "started",
+  "message": "Autonomous investigation started for user_id: USER_12345",
+  "monitoring_endpoints": {
+    "status": "http://localhost:8090/autonomous/investigation/{id}/status",
+    "logs": "http://localhost:8090/autonomous/investigation/{id}/logs", 
+    "journey": "http://localhost:8090/autonomous/investigation/{id}/journey",
+    "websocket": "ws://localhost:8090/autonomous/investigation/{id}/monitor"
+  },
+  "estimated_completion_time_ms": 180900
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>Step 3: Monitor Progress</h4>
+                    <p>Use the provided endpoints to track investigation progress in real-time.</p>
+                    
+                    <div class="monitoring-panel">
+                        <div class="monitoring-title">Available Monitoring Options:</div>
+                        <ul class="endpoint-list">
+                            <li><strong>HTTP Status:</strong> <code>/investigation/{id}/status</code></li>
+                            <li><strong>Detailed Logs:</strong> <code>/investigation/{id}/logs</code></li>
+                            <li><strong>Journey Tracking:</strong> <code>/investigation/{id}/journey</code></li>
+                            <li><strong>WebSocket Stream:</strong> <code>ws://.../monitor</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Important Notes:</strong>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>Investigations run asynchronously in the background</li>
+                        <li>Average completion time is 3-5 minutes</li>
+                        <li>WebSocket provides real-time updates every 2 seconds</li>
+                        <li>All investigations are automatically logged and tracked</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="workflow">
+            <div class="section-header">
+                🔄 Investigation Workflow
+            </div>
+            <div class="section-content">
+                <div class="phase">
+                    <h3>Phase 1: Investigation Initiation (0-5%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 5%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>🎯 Request Processing</h4>
+                        <ul>
+                            <li>Generate unique investigation ID with timestamp</li>
+                            <li>Load investigation scenario or create context</li>
+                            <li>Initialize logging and journey tracking systems</li>
+                            <li>Queue background task for execution</li>
+                        </ul>
+                    </div>
+
+                    <div class="step">
+                        <h4>🛡️ Security Setup</h4>
+                        <ul>
+                            <li>Create RecursionGuard context to prevent infinite loops</li>
+                            <li>Set investigation limits (max depth: 15, max duration: 10 min)</li>
+                            <li>Initialize authentication context for agent execution</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase">
+                    <h3>Phase 2: Agent Initialization (5-15%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>🏗️ LangGraph Compilation</h4>
+                        <p>The system compiles both parallel and sequential agent graphs with Redis state persistence:</p>
+                        
+                        <div class="agent-flow">
+                            <div class="agent-box">START</div>
+                            <div class="arrow">→</div>
+                            <div class="agent-box">Orchestrator</div>
+                            <div class="arrow">→</div>
+                            <div class="agent-box">Agent Graph</div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>⚙️ Tool Configuration</h4>
+                        <ul>
+                            <li>Enhanced tool executor with circuit breaker patterns</li>
+                            <li>Tool health management and automatic failover</li>
+                            <li>Domain-specific tool selection and validation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase">
+                    <h3>Phase 3: Context Preparation (15-25%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>📋 Investigation Query Creation</h4>
+                        <div class="code-block">
+                            <div class="code-header">Investigation Query Template</div>
+AUTONOMOUS FRAUD INVESTIGATION REQUEST
+
+Investigation ID: {investigation_id}
+Entity Type: {entity_type}
+Entity ID: {entity_id}
+
+INSTRUCTIONS:
+Conduct comprehensive fraud investigation analyzing:
+1. Device fingerprinting and anomalies
+2. Location patterns and impossible travel  
+3. Network analysis including VPN/proxy detection
+4. Activity logs and behavioral patterns
+5. Cross-agent correlation and risk assessment
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>🎛️ Agent Context Setup</h4>
+                        <ul>
+                            <li>Create AgentContext with authentication headers</li>
+                            <li>Configure LangGraph runnable with investigation metadata</li>
+                            <li>Set up thread ID for state tracking: <code>{investigation_id}-None</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase">
+                    <h3>Phase 4: AI Agent Execution (25-80%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>🧠 Master Orchestrator Decision</h4>
+                        <p>The AI orchestrator analyzes the investigation context and selects the optimal strategy:</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h4>📊 Comprehensive</h4>
+                                <p>All agents execute in parallel for maximum coverage</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🎯 Focused</h4>
+                                <p>Single domain deep dive based on risk indicators</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>⚡ Sequential</h4>
+                                <p>Step-by-step execution with agent handoffs</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🔄 Adaptive</h4>
+                                <p>Dynamic strategy adjustment based on findings</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h4>🤖 Domain Agent Execution</h4>
+                        
+                        <div class="agent-flow">
+                            <div class="agent-box">Network Agent</div>
+                            <div class="agent-box">Device Agent</div>
+                            <div class="agent-box">Location Agent</div>
+                            <div class="agent-box">Logs Agent</div>
+                            <div class="agent-box">Risk Agent</div>
+                        </div>
+
+                        <p><strong>Each domain agent performs:</strong></p>
+                        <ul style="margin-left: 1rem;">
+                            <li><strong>Network Agent:</strong> VPN detection, IP reputation, impossible travel</li>
+                            <li><strong>Device Agent:</strong> Fingerprint analysis, device spoofing detection</li>
+                            <li><strong>Location Agent:</strong> Geographic anomalies, location consistency</li>
+                            <li><strong>Logs Agent:</strong> Activity patterns, behavioral anomalies</li>
+                            <li><strong>Risk Agent:</strong> Final synthesis and comprehensive risk scoring</li>
+                        </ul>
+                    </div>
+
+                    <div class="step">
+                        <h4>🔧 AI-Driven Tool Selection</h4>
+                        <p>Each agent uses Claude AI to intelligently select appropriate tools:</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">Tool Selection Process</div>
+async def autonomous_network_agent(state, config):
+    # AI analyzes investigation context
+    network_agent = await create_agent_with_intelligent_tools(
+        domain="network",
+        categories=["threat_intelligence", "web", "blockchain"]
+    )
+    
+    # Execute with LLM-driven tool selection
+    result = await network_agent.ainvoke(investigation_query)
+    return {"messages": [AIMessage(content=result)]}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase">
+                    <h3>Phase 5: Results Processing (80-95%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>📊 Risk Score Extraction</h4>
+                        <ul>
+                            <li>Parse final risk assessment from aggregated agent results</li>
+                            <li>Extract domain-specific risk scores and findings</li>
+                            <li>Categorize investigation outcome (high-risk, suspicious, clean)</li>
+                        </ul>
+                    </div>
+
+                    <div class="step">
+                        <h4>📋 Findings Synthesis</h4>
+                        <ul>
+                            <li>Combine all domain agent findings into comprehensive report</li>
+                            <li>Cross-reference findings for correlation analysis</li>
+                            <li>Generate actionable recommendations and next steps</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase">
+                    <h3>Phase 6: Investigation Completion (95-100%)</h3>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h4>✅ Finalization</h4>
+                        <ul>
+                            <li>Complete journey tracker with comprehensive results</li>
+                            <li>Update investigation status to "completed"</li>
+                            <li>Clean up RecursionGuard context and resources</li>
+                            <li>Archive investigation data for audit trail</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="monitoring">
+            <div class="section-header">
+                📡 Real-Time Monitoring
+            </div>
+            <div class="section-content">
+                <div class="step">
+                    <h4>📊 Status Monitoring</h4>
+                    <p>Check investigation progress using the status endpoint:</p>
+                    
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/status</div>
+                    
+                    <div class="code-block">
+                        <div class="code-header">curl command</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250906_143000/status"
+                    </div>
+
+                    <div class="json-response">
+                        <strong>Example Response:</strong>
+                        <div class="code-block">
+{
+  "investigation_id": "AUTO_INVEST_USER_12345_20250906_143000",
+  "status": "in_progress",
+  "current_phase": "agent_execution",
+  "progress_percentage": 45.0,
+  "agent_status": {
+    "network_agent": "completed",
+    "device_agent": "in_progress", 
+    "location_agent": "pending",
+    "logs_agent": "pending",
+    "risk_agent": "pending"
+  },
+  "findings_summary": {
+    "network_risk_score": 7.2,
+    "device_anomalies": ["fingerprint_mismatch", "vpn_usage"],
+    "preliminary_risk_level": "medium"
+  },
+  "performance_metrics": {
+    "start_time": "2025-09-06T14:30:00Z",
+    "elapsed_time_ms": 45000,
+    "estimated_completion_ms": 120000
+  }
+}
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Status Values:</strong>
+                        <span class="status-badge status-started">Started</span>
+                        <span class="status-badge status-progress">In Progress</span>
+                        <span class="status-badge status-completed">Completed</span>
+                        <span class="status-badge status-failed">Failed</span>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🔍 Detailed Logs</h4>
+                    <p>Access comprehensive investigation logs:</p>
+                    
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/logs</div>
+                    
+                    <div class="code-block">
+                        <div class="code-header">curl command</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250906_143000/logs"
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🗺️ Journey Tracking</h4>
+                    <p>View detailed LangGraph execution trace:</p>
+                    
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{id}/journey</div>
+                    
+                    <div class="json-response">
+                        <strong>Journey Response includes:</strong>
+                        <ul style="margin-left: 1rem;">
+                            <li>Node execution timeline with precise timing</li>
+                            <li>State transitions between LangGraph nodes</li>
+                            <li>Agent decision points and reasoning chains</li>
+                            <li>Tool usage and execution results</li>
+                            <li>Error handling and recovery events</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>⚡ WebSocket Live Updates</h4>
+                    <p>Connect to the WebSocket endpoint for real-time streaming updates:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">WebSocket Connection</div>
+const ws = new WebSocket('ws://localhost:8090/v1/autonomous/investigation/{id}/monitor');
+
+ws.onmessage = (event) => {
+  const update = JSON.parse(event.data);
+  
+  switch(update.type) {
+    case 'status_update':
+      console.log('Progress:', update.data.progress_percentage + '%');
+      console.log('Phase:', update.data.current_phase);
+      break;
+      
+    case 'phase_update':
+      console.log('Phase change:', update.phase);
+      console.log('Description:', update.description);
+      break;
+      
+    case 'journey_update':
+      console.log('Agent activity:', update.data.current_nodes);
+      break;
+  }
+};
+                    </div>
+
+                    <div class="info-box">
+                        <strong>💡 WebSocket Features:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li>Updates every 2 seconds during investigation</li>
+                            <li>Automatic connection cleanup on completion</li>
+                            <li>Phase transition notifications</li>
+                            <li>Real-time agent status changes</li>
+                            <li>Live journey tracking updates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="api-reference">
+            <div class="section-header">
+                📖 API Reference
+            </div>
+            <div class="section-content">
+                <div class="step">
+                    <h4>🚀 Start Investigation</h4>
+                    <div class="api-endpoint">POST /v1/autonomous/start_investigation</div>
+                    
+                    <strong>Request Body Parameters:</strong>
+                    <div class="code-block">
+{
+  "entity_id": "string",              // Required: Entity to investigate
+  "entity_type": "string",            // Required: user_id, transaction_id, etc.
+  "scenario": "string",               // Optional: Predefined scenario
+  "investigation_priority": "string", // Optional: low, medium, high, critical
+  "enable_verbose_logging": boolean,  // Optional: Default true
+  "enable_journey_tracking": boolean, // Optional: Default true  
+  "enable_chain_of_thought": boolean, // Optional: Default true
+  "investigation_id": "string",       // Optional: Auto-generated if not provided
+  "metadata": {}                      // Optional: Additional context
+}
+                    </div>
+
+                    <strong>Response:</strong>
+                    <div class="code-block">
+{
+  "investigation_id": "string",
+  "status": "started",
+  "message": "string", 
+  "investigation_context": {},
+  "monitoring_endpoints": {
+    "status": "string",
+    "logs": "string", 
+    "journey": "string",
+    "websocket": "string"
+  },
+  "estimated_completion_time_ms": number,
+  "created_at": "string"
+}
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📊 Get Investigation Status</h4>
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/status</div>
+                    
+                    <strong>Response:</strong>
+                    <div class="code-block">
+{
+  "investigation_id": "string",
+  "status": "started|in_progress|completed|failed", 
+  "current_phase": "string",
+  "progress_percentage": number,
+  "agent_status": {
+    "network_agent": "pending|in_progress|completed|failed",
+    "device_agent": "pending|in_progress|completed|failed",
+    "location_agent": "pending|in_progress|completed|failed", 
+    "logs_agent": "pending|in_progress|completed|failed",
+    "risk_agent": "pending|in_progress|completed|failed"
+  },
+  "findings_summary": {},
+  "performance_metrics": {
+    "start_time": "string",
+    "elapsed_time_ms": number,
+    "estimated_completion_ms": number
+  },
+  "created_at": "string",
+  "last_updated": "string"
+}
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📝 Get Investigation Logs</h4>
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/logs</div>
+                    
+                    <strong>Query Parameters:</strong>
+                    <ul style="margin-left: 1rem;">
+                        <li><code>limit</code>: Maximum number of log entries (default: 100)</li>
+                        <li><code>offset</code>: Skip N log entries (default: 0)</li>
+                        <li><code>level</code>: Filter by log level (debug, info, warn, error)</li>
+                        <li><code>agent</code>: Filter by specific agent name</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <h4>🗺️ Get Journey Tracking</h4>
+                    <div class="api-endpoint">GET /v1/autonomous/investigation/{investigation_id}/journey</div>
+                    
+                    <strong>Response includes:</strong>
+                    <ul style="margin-left: 1rem;">
+                        <li>Complete LangGraph execution timeline</li>
+                        <li>Node-by-node execution details with timing</li>
+                        <li>State transitions and decision points</li>
+                        <li>Tool execution results and performance metrics</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <h4>🌐 WebSocket Monitoring</h4>
+                    <div class="api-endpoint">WS /v1/autonomous/investigation/{investigation_id}/monitor</div>
+                    
+                    <strong>Message Types:</strong>
+                    <ul style="margin-left: 1rem;">
+                        <li><code>status_update</code>: Investigation progress and phase changes</li>
+                        <li><code>phase_update</code>: Phase transition notifications</li>
+                        <li><code>journey_update</code>: LangGraph node execution updates</li>
+                        <li><code>error_notification</code>: Error alerts and recovery actions</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Rate Limits:</strong>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                        <li>Maximum 10 concurrent investigations per instance</li>
+                        <li>API rate limit: 100 requests per minute</li>
+                        <li>WebSocket updates: Maximum 1 per 2 seconds</li>
+                        <li>Log queries: Maximum 1000 entries per request</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="troubleshooting">
+            <div class="section-header">
+                🔧 Troubleshooting
+            </div>
+            <div class="section-content">
+                <div class="step">
+                    <h4>❌ Common Error Scenarios</h4>
+                    
+                    <div class="warning-box">
+                        <strong>Investigation Failed to Start</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Cause:</strong> Invalid entity_type or missing required fields</li>
+                            <li><strong>Solution:</strong> Verify request format and required parameters</li>
+                            <li><strong>Status Code:</strong> 400 Bad Request</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>Investigation Timeout</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Cause:</strong> Investigation exceeded maximum duration (10 minutes)</li>
+                            <li><strong>Solution:</strong> Check system load and retry with simpler scenario</li>
+                            <li><strong>Recovery:</strong> Automatic timeout handling with partial results</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>Agent Execution Failure</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Cause:</strong> LLM service unavailable or tool execution failure</li>
+                            <li><strong>Solution:</strong> System automatically retries with fallback strategies</li>
+                            <li><strong>Monitoring:</strong> Check logs for detailed error information</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🔍 Diagnostic Commands</h4>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Check System Health</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+# Check if investigation service is running
+curl -X GET "http://localhost:8090/health"
+
+# List all active investigations
+curl -X GET "http://localhost:8090/v1/autonomous/investigations/active"
+
+# Get detailed system metrics
+curl -X GET "http://localhost:8090/v1/autonomous/system/metrics"
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📊 Performance Monitoring</h4>
+                    
+                    <strong>Key Metrics to Monitor:</strong>
+                    <ul style="margin-left: 1rem;">
+                        <li><strong>Investigation Duration:</strong> Average 3-5 minutes</li>
+                        <li><strong>Agent Success Rate:</strong> Should be > 95%</li>
+                        <li><strong>Memory Usage:</strong> Monitor Redis state persistence</li>
+                        <li><strong>API Response Times:</strong> Status calls < 100ms</li>
+                        <li><strong>WebSocket Connection Health:</strong> Active connections count</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <h4>🛠️ Recovery Procedures</h4>
+                    
+                    <div class="success-box">
+                        <strong>Automatic Recovery Features:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>RecursionGuard:</strong> Prevents infinite loops and runaway investigations</li>
+                            <li><strong>Circuit Breakers:</strong> Tool failure protection with automatic fallback</li>
+                            <li><strong>State Persistence:</strong> Redis checkpointing enables investigation recovery</li>
+                            <li><strong>Graceful Degradation:</strong> Partial results when some agents fail</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📞 Support Information</h4>
+                    
+                    <div class="info-box">
+                        <strong>🆘 When to Contact Support:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li>Investigation success rate drops below 90%</li>
+                            <li>Average investigation time exceeds 8 minutes</li>
+                            <li>WebSocket connections frequently disconnect</li>
+                            <li>Recurring agent execution failures</li>
+                            <li>Redis persistence errors</li>
+                        </ul>
+                        
+                        <strong>Include in Support Requests:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li>Investigation ID and timestamp</li>
+                            <li>Complete error logs from the logs endpoint</li>
+                            <li>Journey tracking data</li>
+                            <li>System metrics and performance data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="scenarios">
+            <div class="section-header">
+                📋 Scenario Data Loading System
+            </div>
+            <div class="section-content">
+                <div class="info-box">
+                    <strong>🎯 Understanding Investigation Data Sources:</strong><br>
+                    The autonomous investigation system supports two distinct data paths: predefined realistic scenarios for testing/demonstration, and real entity investigations using production data.
+                </div>
+
+                <div class="step">
+                    <h4>🔄 Two Investigation Data Paths</h4>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>📁 Path 1: Predefined Scenarios</h4>
+                            <p><strong>Used when:</strong> <code>scenario</code> parameter is provided</p>
+                            <p><strong>Data source:</strong> JSON files with comprehensive fraud patterns</p>
+                            <p><strong>Purpose:</strong> Testing, demonstration, training</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🏭 Path 2: Real Entity Investigation</h4>
+                            <p><strong>Used when:</strong> No <code>scenario</code> parameter</p>
+                            <p><strong>Data source:</strong> Production systems and databases</p>
+                            <p><strong>Purpose:</strong> Live fraud investigation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📊 Predefined Scenario Structure</h4>
+                    <p>When you specify a scenario like <code>"device_spoofing"</code>, the system loads comprehensive JSON data:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Scenario Data Structure</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+{
+  "scenario_name": "device_spoofing",
+  "description": "Fraudster using spoofed device fingerprint...",
+  "investigation_complexity": "high",
+  
+  "transaction": {
+    "transaction_id": "TXN_SPOOF_001",
+    "amount": 1249.99,
+    "timestamp": "2025-08-29T14:32:17Z",
+    "merchant": {
+      "name": "Electronics Plus Store",
+      "category": "electronics",
+      "location": "New York, NY"
+    }
+  },
+  
+  "user": {
+    "user_id": "USER_12345",
+    "account_age_days": 1247,
+    "historical_patterns": {
+      "avg_transaction_amount": 87.50,
+      "common_locations": ["San Francisco, CA"],
+      "typical_spending_categories": ["grocery", "gas", "restaurants"]
+    }
+  },
+  
+  "device": {
+    "device_id": "DEV_SPOOFED_999",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0...)",
+      "platform": "Win32",
+      "timezone": "America/New_York"
+    },
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [
+        "User historically uses macOS, but current session shows Windows"
+      ]
+    }
+  },
+  
+  "location": {
+    "city": "New York", "state": "NY",
+    "fraud_indicators": {
+      "impossible_travel": {
+        "detected": true,
+        "travel_time_required_hours": 5.5,
+        "actual_time_elapsed_hours": 0.78
+      }
+    }
+  },
+  
+  "network": {
+    "ip_address": "198.51.100.42",
+    "vpn_detected": true,
+    "fraud_indicators": {
+      "vpn_usage": {
+        "detected": true,
+        "provider": "NordVPN",
+        "suspicious_for_user": true
+      }
+    }
+  },
+  
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 3,
+      "fraud_flags": {
+        "high_velocity": true,
+        "multiple_devices": true
+      }
+    }
+  }
+}
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🤖 What AI Agents Receive vs. Don't Receive</h4>
+                    
+                    <div class="success-box">
+                        <strong>✅ Agents Get (Investigation Data):</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Transaction Details:</strong> Amount, merchant, timestamp, payment method</li>
+                            <li><strong>User Profile:</strong> Account age, historical spending patterns, typical locations</li>
+                            <li><strong>Device Information:</strong> Fingerprint data, browser details, OS information</li>
+                            <li><strong>Location Data:</strong> Current location, IP geolocation, travel patterns</li>
+                            <li><strong>Network Information:</strong> IP address, VPN/proxy detection, ISP details</li>
+                            <li><strong>Behavioral Signals:</strong> Session info, velocity indicators, authentication patterns</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>❌ Agents Don't Get (Hidden Expected Outcomes):</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Expected Agent Findings:</strong> What each agent should discover</li>
+                            <li><strong>Investigation Verdict:</strong> Final risk score and fraud classification</li>
+                            <li><strong>Recommended Action:</strong> What the system should decide</li>
+                            <li><strong>Confidence Level:</strong> How certain the verdict should be</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📁 Available Scenarios</h4>
+                    
+                    <div class="monitoring-panel">
+                        <div class="monitoring-title">Current Predefined Scenarios:</div>
+                        <ul class="endpoint-list">
+                            <li><strong>device_spoofing:</strong> Account takeover with device fingerprint manipulation</li>
+                            <li><strong>impossible_travel:</strong> Location-based fraud with unrealistic travel patterns</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>🏗️ Scenario Categories:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Fraud Scenarios:</strong> High-risk cases with confirmed fraud indicators</li>
+                            <li><strong>Legitimate Scenarios:</strong> Clean transactions that should pass investigation</li>
+                            <li><strong>Edge Cases:</strong> Borderline scenarios testing AI decision boundaries</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🔍 Context Generation Process</h4>
+                    <p>The system transforms scenario data into investigation context through intelligent filtering:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Context Generation Logic</div>
+def generate_investigation_context(scenario_name: str):
+    scenario = load_scenario_from_json(scenario_name)
+    
+    # Create investigation context WITHOUT revealing expected outcomes
+    investigation_context = {
+        "investigation_id": f"AUTO_INVEST_{scenario_name.upper()}_{timestamp}",
+        "entity_id": scenario.user["user_id"],
+        "entity_type": "user_id",
+        
+        "trigger_event": {
+            "type": "transaction",
+            "transaction_id": scenario.transaction["transaction_id"],
+            "amount": scenario.transaction["amount"]
+        },
+        
+        "investigation_data": {
+            "transaction": scenario.transaction,      # ✅ Include
+            "user": scenario.user,                   # ✅ Include  
+            "device": scenario.device,               # ✅ Include
+            "location": scenario.location,           # ✅ Include
+            "network": scenario.network,             # ✅ Include
+            "behavioral_signals": scenario.behavioral_signals # ✅ Include
+            
+            # ❌ Exclude: expected_agent_findings
+            # ❌ Exclude: investigation_verdict  
+            # ❌ Exclude: recommended_action
+        }
+    }
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🎯 Realistic vs. Mock Data Distinction</h4>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>✅ What Makes It Realistic</h4>
+                            <ul style="margin-left: 1rem;">
+                                <li>Based on actual fraud patterns</li>
+                                <li>Comprehensive multi-domain coverage</li>
+                                <li>Blind AI analysis (agents don't know expected outcomes)</li>
+                                <li>Production-quality data structure</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card">
+                            <h4>❌ What Makes It Mock</h4>
+                            <ul style="margin-left: 1rem;">
+                                <li>Pre-written JSON files</li>
+                                <li>Not dynamically generated</li>
+                                <li>Expected outcomes defined in advance</li>
+                                <li>Limited scenario variety</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🏭 Production vs Testing Usage</h4>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Testing/Demo Usage (With Scenarios)</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST ".../start_investigation" \
+  -d '{
+    "entity_id": "USER_12345",
+    "entity_type": "user_id", 
+    "scenario": "device_spoofing"  # <-- Triggers scenario loading
+  }'
+
+# System loads /fraud_scenarios/device_spoofing.json
+# Rich, comprehensive fraud data with all domains covered
+# Realistic patterns based on actual fraud cases
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">Production Usage (Without Scenarios)</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST ".../start_investigation" \
+  -d '{
+    "entity_id": "USER_REAL_789",
+    "entity_type": "user_id"
+    # No scenario parameter - uses real data
+  }'
+
+# System creates minimal context from entity info
+# Agents fetch real data from production systems  
+# True investigation of actual user/transaction
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🧠 AI Agent Analysis Process</h4>
+                    <p>Each domain agent analyzes scenario data independently without knowing expected outcomes:</p>
+                    
+                    <div class="agent-flow">
+                        <div class="agent-box">Device Agent</div>
+                        <div class="arrow">→</div>
+                        <div class="agent-box">Location Agent</div>
+                        <div class="arrow">→</div>
+                        <div class="agent-box">Network Agent</div>
+                        <div class="arrow">→</div>
+                        <div class="agent-box">Logs Agent</div>
+                        <div class="arrow">→</div>
+                        <div class="agent-box">Risk Agent</div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>🔬 Agent Analysis Examples:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Device Agent:</strong> Compares current fingerprint with user history, identifies inconsistencies</li>
+                            <li><strong>Location Agent:</strong> Calculates travel distance/time, detects impossible travel</li>
+                            <li><strong>Network Agent:</strong> Examines VPN usage against user patterns, checks IP reputation</li>
+                            <li><strong>Logs Agent:</strong> Reviews session behavior, analyzes transaction velocity</li>
+                            <li><strong>Risk Agent:</strong> Synthesizes all findings into comprehensive risk assessment</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>✅ Benefits of Scenario-Based Testing</h4>
+                    
+                    <div class="success-box">
+                        <strong>🎯 Key Advantages:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Realistic Testing:</strong> Scenarios based on actual fraud patterns provide meaningful validation</li>
+                            <li><strong>Blind Analysis:</strong> AI agents make genuine decisions without knowing expected outcomes</li>
+                            <li><strong>Comprehensive Coverage:</strong> All investigation domains have realistic, interconnected data</li>
+                            <li><strong>Validation Framework:</strong> Expected outcomes enable performance measurement and quality assessment</li>
+                            <li><strong>Reproducible Results:</strong> Same scenario always provides consistent test conditions</li>
+                            <li><strong>Training Data:</strong> Scenarios serve as training examples for new fraud patterns</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Important Considerations:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li>Scenarios are currently designed for testing and demonstration purposes</li>
+                            <li>Production usage requires integration with real data sources</li>
+                            <li>Limited scenario variety means comprehensive testing needs multiple scenarios</li>
+                            <li>Scenario outcomes are predetermined, unlike dynamic production investigations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="examples">
+            <div class="section-header">
+                💡 Examples & Use Cases
+            </div>
+            <div class="section-content">
+                <div class="step">
+                    <h4>🎯 Device Spoofing Investigation</h4>
+                    <p>Investigate a user suspected of device fingerprint manipulation:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Request</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "USER_SUSPICIOUS_789",
+    "entity_type": "user_id",
+    "scenario": "device_spoofing", 
+    "investigation_priority": "high",
+    "enable_verbose_logging": true,
+    "metadata": {
+      "alert_source": "device_fingerprint_anomaly",
+      "risk_indicators": ["multiple_devices", "rapid_location_changes"]
+    }
+  }'
+                    </div>
+
+                    <div class="json-response">
+                        <strong>Expected Investigation Flow:</strong>
+                        <ul style="margin-left: 1rem;">
+                            <li><strong>Device Agent:</strong> Analyzes fingerprint inconsistencies</li>
+                            <li><strong>Location Agent:</strong> Checks for impossible travel patterns</li>
+                            <li><strong>Network Agent:</strong> Examines VPN/proxy usage</li>
+                            <li><strong>Logs Agent:</strong> Reviews authentication patterns</li>
+                            <li><strong>Risk Agent:</strong> Provides comprehensive fraud score</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>💳 Transaction Fraud Investigation</h4>
+                    <p>Investigate suspicious financial transactions:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Request</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "TXN_20250906_123456",
+    "entity_type": "transaction_id",
+    "investigation_priority": "critical",
+    "enable_chain_of_thought": true,
+    "metadata": {
+      "transaction_amount": 50000,
+      "merchant_category": "high_risk",
+      "time_since_account_creation": "2_hours"
+    }
+  }'
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>🌍 Account Takeover Investigation</h4>
+                    <p>Investigate potential account compromise:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">Request</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_id": "USER_COMPROMISED_456",
+    "entity_type": "user_id",
+    "scenario": "account_takeover",
+    "investigation_priority": "high",
+    "metadata": {
+      "login_from_new_country": true,
+      "password_reset_requests": 3,
+      "failed_auth_attempts": 15
+    }
+  }'
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📊 Batch Investigation Monitoring</h4>
+                    <p>Monitor multiple investigations simultaneously:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">JavaScript Example</div>
+                        <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+class InvestigationMonitor {
+  constructor() {
+    this.activeInvestigations = new Map();
+  }
+
+  async startInvestigation(entityId, entityType, scenario) {
+    const response = await fetch('/v1/autonomous/start_investigation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        entity_id: entityId,
+        entity_type: entityType,
+        scenario: scenario,
+        enable_verbose_logging: true
+      })
+    });
+    
+    const investigation = await response.json();
+    this.monitorInvestigation(investigation.investigation_id);
+    return investigation;
+  }
+
+  monitorInvestigation(investigationId) {
+    const ws = new WebSocket(`ws://localhost:8090/v1/autonomous/investigation/${investigationId}/monitor`);
+    
+    ws.onmessage = (event) => {
+      const update = JSON.parse(event.data);
+      this.handleUpdate(investigationId, update);
+    };
+
+    this.activeInvestigations.set(investigationId, ws);
+  }
+
+  handleUpdate(investigationId, update) {
+    console.log(`Investigation ${investigationId}:`, update);
+    
+    if (update.type === 'status_update' && update.data.status === 'completed') {
+      this.completeInvestigation(investigationId);
+    }
+  }
+
+  completeInvestigation(investigationId) {
+    const ws = this.activeInvestigations.get(investigationId);
+    if (ws) {
+      ws.close();
+      this.activeInvestigations.delete(investigationId);
+    }
+  }
+}
+
+// Usage
+const monitor = new InvestigationMonitor();
+monitor.startInvestigation('USER_123', 'user_id', 'device_spoofing');
+                    </div>
+                </div>
+
+                <div class="step">
+                    <h4>📈 Performance Optimization Tips</h4>
+                    
+                    <div class="success-box">
+                        <strong>🚀 Best Practices for Optimal Performance:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Use Specific Scenarios:</strong> Predefined scenarios reduce investigation time</li>
+                            <li><strong>Set Appropriate Priority:</strong> High priority investigations get more resources</li>
+                            <li><strong>Enable Journey Tracking:</strong> Provides detailed debugging information</li>
+                            <li><strong>Monitor WebSocket Health:</strong> Implement reconnection logic for reliability</li>
+                            <li><strong>Batch Similar Investigations:</strong> Group related entity investigations</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>📊 Performance Expectations:</strong>
+                        <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                            <li><strong>Average Investigation Time:</strong> 3-5 minutes</li>
+                            <li><strong>Success Rate:</strong> > 95% completion rate</li>
+                            <li><strong>Concurrent Investigations:</strong> Up to 10 simultaneous</li>
+                            <li><strong>API Response Time:</strong> < 100ms for status queries</li>
+                            <li><strong>WebSocket Latency:</strong> < 2 second update frequency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--primary-color); color: white; border-radius: 10px;">
+            <h3>🔍 Olorin Autonomous Investigation System</h3>
+            <p>AI-Powered Fraud Detection Platform</p>
+            <p style="margin-top: 1rem; opacity: 0.8;">Version 2.1 | Generated: September 2025</p>
+        </footer>
+    </div>
+
+    <div class="navigation-dots">
+        <div class="nav-dot active" onclick="scrollToSection('overview')"></div>
+        <div class="nav-dot" onclick="scrollToSection('getting-started')"></div>
+        <div class="nav-dot" onclick="scrollToSection('workflow')"></div>
+        <div class="nav-dot" onclick="scrollToSection('monitoring')"></div>
+        <div class="nav-dot" onclick="scrollToSection('api-reference')"></div>
+        <div class="nav-dot" onclick="scrollToSection('troubleshooting')"></div>
+        <div class="nav-dot" onclick="scrollToSection('scenarios')"></div>
+        <div class="nav-dot" onclick="scrollToSection('examples')"></div>
+    </div>
+
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard(button) {
+            const codeBlock = button.parentElement;
+            const text = codeBlock.textContent.replace('Copy', '').trim();
+            
+            navigator.clipboard.writeText(text).then(function() {
+                button.textContent = 'Copied!';
+                setTimeout(function() {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Navigation dots functionality
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Update active navigation dot on scroll
+        window.addEventListener('scroll', function() {
+            const sections = ['overview', 'getting-started', 'workflow', 'monitoring', 'api-reference', 'troubleshooting', 'scenarios', 'examples'];
+            const navDots = document.querySelectorAll('.nav-dot');
+            
+            let currentSection = 0;
+            sections.forEach((sectionId, index) => {
+                const element = document.getElementById(sectionId);
+                if (element && window.scrollY >= element.offsetTop - 200) {
+                    currentSection = index;
+                }
+            });
+
+            navDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSection);
+            });
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add loading animation for progress bars
+        window.addEventListener('load', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+
+        // Add interactive elements
+        document.querySelectorAll('.api-endpoint').forEach(endpoint => {
+            endpoint.addEventListener('click', function() {
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

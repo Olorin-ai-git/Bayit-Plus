@@ -1,0 +1,13 @@
+{
+  "name": "olorin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd olorin-front && npm install && npm run build",
+    "build:portal": "cd olorin-web-portal && npm ci && npm run build",
+    "install:front": "cd olorin-front && npm install",
+    "install:portal": "cd olorin-web-portal && npm install --legacy-peer-deps",
+    "start": "npm run olorin",
+    "olorin": "./scripts/development/start_olorin.sh"
+  }
+}

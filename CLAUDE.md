@@ -117,6 +117,57 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - **NO EXCEPTIONS**: This applies to deployment scripts, automation, manual operations, and any other git interactions.
     - **MANDATORY FEATURE BRANCH**: When implementing ANY NEW plan or feature, you MUST create a feature branch using git-expert subagent BEFORE starting implementation.
 
+14.1. 🎫 **MANDATORY: JIRA INTEGRATION FOR ALL DEVELOPMENT WORK - NEVER SKIP!**
+    - **ZERO TOLERANCE**: Every feature, task, bug fix, and subtask MUST have a corresponding Jira ticket BEFORE any work begins.
+    - **MANDATORY JIRA TICKET CREATION**: You MUST create Jira tickets for ALL work items:
+      - **Epic**: For major features or initiatives (e.g., "Multi-Entity Investigation System")
+      - **Story**: For user-facing features and functionality (e.g., "Entity Type Validation Enhancement")
+      - **Task**: For technical work and infrastructure (e.g., "Create Validation Utilities")
+      - **Sub-task**: For granular work items under stories/tasks (e.g., "Implement SQL Injection Protection")
+      - **Bug**: For all bug fixes and defects (e.g., "Fix Entity Validation Performance Issue")
+    - **JIRA TICKET REQUIREMENTS**:
+      - **Title**: Clear, descriptive title that explains the work
+      - **Description**: Detailed description with acceptance criteria
+      - **Priority**: Set appropriate priority (Critical, High, Medium, Low)
+      - **Assignee**: Assign to appropriate team member
+      - **Epic Link**: Link to parent epic if applicable
+      - **Labels**: Add relevant labels (e.g., "backend", "security", "performance", "validation")
+      - **Story Points**: Estimate effort using Fibonacci sequence (1, 2, 3, 5, 8, 13, 21)
+    - **MANDATORY BRANCH NAMING WITH JIRA TAGS**:
+      - **Format**: `{ticket-type}/{JIRA-KEY}-{short-description}`
+      - **Examples**:
+        - `feature/OLORIN-123-entity-type-validation`
+        - `bugfix/OLORIN-456-sql-injection-fix`
+        - `task/OLORIN-789-security-audit`
+        - `hotfix/OLORIN-101-critical-validation-bug`
+      - **NEVER create branches without Jira ticket reference**
+    - **MANDATORY COMMIT MESSAGE FORMAT WITH JIRA TAGS**:
+      - **Format**: `{type}({scope}): {description} - {JIRA-KEY}`
+      - **Examples**:
+        - `feat(validation): Add comprehensive entity type validation - OLORIN-123`
+        - `fix(security): Prevent SQL injection in entity validation - OLORIN-456`
+        - `refactor(models): Optimize validation performance - OLORIN-789`
+        - `test(validation): Add comprehensive security test suite - OLORIN-123`
+        - `docs(validation): Update entity type documentation - OLORIN-123`
+      - **Commit Types**: feat, fix, refactor, test, docs, style, chore, perf, security
+    - **JIRA WORKFLOW INTEGRATION**:
+      - **In Progress**: Move ticket to "In Progress" when starting work
+      - **Code Review**: Move to "Code Review" when creating pull request
+      - **Testing**: Move to "Testing" when deployed to staging/test environment
+      - **Done**: Move to "Done" only when work is fully complete and deployed
+    - **PULL REQUEST INTEGRATION**:
+      - **Title Format**: `{type}: {description} - {JIRA-KEY}`
+      - **Description**: Must include link to Jira ticket and summary of changes
+      - **Auto-linking**: Ensure Jira ticket is automatically linked to PR
+    - **GIT-EXPERT INTEGRATION**:
+      - **git-expert subagent MUST**:
+        - Verify Jira ticket exists before creating branches
+        - Enforce proper branch naming with Jira tags
+        - Enforce proper commit message format with Jira references
+        - Update Jira ticket status during git operations
+        - Link pull requests to Jira tickets
+    - **ENFORCEMENT**: Any branch or commit without proper Jira integration is considered a critical compliance violation
+
 15. ✅ **When creating a document, always place in an appropriate subfolder under /docs**
     - Before creating a new document, scan the codebase and make sure there are no loose documents not under /docs and that the document you are about to create does not exist already.
     - Every Planning document MUST be accompanied by interactive HTML visualization files with embedded Mermaid diagrams that will be placed under /docs/diagrams/.
@@ -200,15 +251,28 @@ Apply the following rules **universally and consistently** across ALL coding tas
       - "Gil Klainert" listed as the Author
       - Link to accompanying Mermaid diagram in `/docs/diagrams/`
     - **MANDATORY PLAN EXECUTION PROTOCOL**:
+      - **JIRA TICKET CREATION**: BEFORE any implementation, create comprehensive Jira tickets:
+        - **Epic**: For the overall plan/feature (e.g., "Entity Type Validation System")
+        - **Stories/Tasks**: For each major phase of the plan
+        - **Sub-tasks**: For granular implementation steps within each phase
+        - All tickets must include acceptance criteria, story points, and proper labeling
       - **FEATURE BRANCH**: ALWAYS create a feature branch BEFORE starting ANY plan implementation using git-expert subagent
+        - **MUST follow Jira branch naming**: `feature/{JIRA-KEY}-{short-description}`
+        - **NEVER use generic names** like `feature/plan-{YYYY-MM-DD}-{short-description}`
       - **PHASE COMMITS**: Commit after EVERY successful phase completion using git-expert subagent
-      - **PROGRESS DOCUMENTATION**: Update the plan document with progress status after each phase:
-        - Add "✅ COMPLETED" marker to finished phases
-        - Add "🔄 IN PROGRESS" marker to current phase
-        - Add "⏳ PENDING" marker to upcoming phases
+        - **MUST follow Jira commit format**: `{type}({scope}): {description} - {JIRA-KEY}`
+        - **MUST reference plan document** and Jira ticket in every commit message
+      - **JIRA WORKFLOW UPDATES**: Update Jira ticket status throughout execution:
+        - Move to "In Progress" when starting implementation
+        - Move to "Code Review" when creating pull request
+        - Move to "Testing" when deployed for testing
+        - Move to "Done" only when fully complete
+      - **PROGRESS DOCUMENTATION**: Update both plan document AND Jira tickets with progress:
+        - Add "✅ COMPLETED" marker to finished phases in plan document
+        - Add "🔄 IN PROGRESS" marker to current phase in plan document
+        - Add "⏳ PENDING" marker to upcoming phases in plan document
         - Include timestamp and any relevant notes for each phase completion
-      - **BRANCH NAMING**: Use format `feature/plan-{YYYY-MM-DD}-{short-description}`
-      - **COMMIT MESSAGES**: Reference the plan document in every commit message
+        - Update Jira ticket descriptions with progress notes and completion details
 
 26. 🚀 **MANDATORY: Always use deployment subagents for Firebase deployments.**
     - **WHENEVER user requests deployment to Firebase, use the firebase-deployment-specialist subagent**
@@ -264,14 +328,23 @@ Apply the following rules **universally and consistently** across ALL coding tas
 0.1. **MANDATORY: Read all documentation for project context** - Read ALL content in `/docs` folder and subfolders to understand current project status, architecture, plans, and implementation details before starting any work.
 1. Run file compliance check script (ensure all files < 200 lines).
 2. **MANDATORY: Create comprehensive plan with OpusPlan (Opus 4.1) BEFORE any code implementation.**
-3. Generate a TodoList based on the plan.
-4. Assign tasks to subagents.
-5. Execute with Sonnet (implementing ONLY the approved plan).
-6. Test thoroughly.
-7. Fix iteratively.
-8. Build the project and fix any build errors.
-9. **MANDATORY: Use code-reviewer subagent as final step of ANY implementation task.**
-10. **For Firebase deployments: ALWAYS use firebase-deployment-specialist subagent with the Intelligent Firebase Deployment System.**
+2.1. **MANDATORY: Create comprehensive Jira tickets IMMEDIATELY after plan approval:**
+   - Create Epic for the overall feature/initiative
+   - Create Stories/Tasks for each major phase of the plan
+   - Create Sub-tasks for granular implementation steps
+   - Set proper priorities, story points, assignees, and labels
+   - Link all tickets to the Epic appropriately
+   - **NO CODE WORK can begin without Jira tickets in place**
+3. Generate a TodoList based on the plan and Jira tickets.
+4. **MANDATORY: Create feature branch with Jira key using git-expert subagent** (format: `feature/{JIRA-KEY}-{description}`)
+5. Assign tasks to subagents.
+6. Execute with Sonnet (implementing ONLY the approved plan with Jira-tagged commits).
+7. Test thoroughly.
+8. Fix iteratively.
+9. Build the project and fix any build errors.
+10. **MANDATORY: Use code-reviewer subagent as final step of ANY implementation task.**
+11. **MANDATORY: Create pull request with Jira integration** - Title must include Jira key, description must link to tickets.
+12. **For Firebase deployments: ALWAYS use firebase-deployment-specialist subagent with the Intelligent Firebase Deployment System.**
 
 ### Additional Standards
 
