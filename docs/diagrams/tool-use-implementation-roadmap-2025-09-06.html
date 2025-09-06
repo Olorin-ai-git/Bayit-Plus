@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Use Implementation Roadmap - Olorin Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .diagram-container {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            z-index: 0;
+        }
+        
+        .timeline-item {
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .timeline-item:hover {
+            transform: scale(1.2);
+        }
+        
+        .timeline-item.completed {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .timeline-item.current {
+            background: #4299e1;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(66, 153, 225, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0); }
+        }
+        
+        .timeline-label {
+            position: absolute;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 0.85em;
+            width: 100px;
+        }
+        
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .phase-card {
+            background: linear-gradient(135deg, #f6f8fb, #e9ecef);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .phase-card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phase-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+        }
+        
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .task-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .task-checkbox.checked {
+            background: #667eea;
+            color: white;
+        }
+        
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            color: #718096;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .metric-change {
+            color: #48bb78;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .risk-cell {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .risk-low { background: #48bb78; }
+        .risk-medium { background: #ed8936; }
+        .risk-high { background: #f56565; }
+        
+        .implementation-code {
+            background: #2d3748;
+            color: #4ade80;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .code-line {
+            margin: 5px 0;
+        }
+        
+        .code-comment {
+            color: #94a3b8;
+        }
+        
+        .code-keyword {
+            color: #f472b6;
+        }
+        
+        .code-string {
+            color: #fbbf24;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .timeline {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .timeline::before {
+                width: 4px;
+                height: 100%;
+                top: 0;
+                left: 50%;
+            }
+            
+            .phase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Tool Use Implementation Roadmap</h1>
+        <p class="subtitle">Transforming Olorin's Tool Architecture - 13 Week Journey</p>
+        
+        <div class="section">
+            <h2>📅 Implementation Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item current">
+                    <span>W1-2</span>
+                    <div class="timeline-label">Foundation</div>
+                </div>
+                <div class="timeline-item">
+                    <span>W3-4</span>
+                    <div class="timeline-label">Fraud Tools</div>
+                </div>
+                <div class="timeline-item">
+                    <span>W5-6</span>
+                    <div class="timeline-label">Orchestration</div>
+                </div>
+                <div class="timeline-item">
+                    <span>W7-8</span>
+                    <div class="timeline-label">AI Selection</div>
+                </div>
+                <div class="timeline-item">
+                    <span>W9-10</span>
+                    <div class="timeline-label">Monitoring</div>
+                </div>
+                <div class="timeline-item">
+                    <span>W11-13</span>
+                    <div class="timeline-label">Deployment</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔧 Phase 1: Foundation Enhancement (Weeks 1-2)</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                        subgraph "Week 1: Core Architecture"
+                            BT[BaseTool Class]
+                            TM[Tool Metadata]
+                            TC[Tool Context]
+                            TR[Tool Result]
+                            
+                            BT --> TM
+                            BT --> TC
+                            BT --> TR
+                        end
+                        
+                        subgraph "Week 2: Resilience"
+                            RE[Resilient Executor]
+                            RP[Retry Policy]
+                            FB[Fallback Registry]
+                            ER[Error Recovery]
+                            
+                            RE --> RP
+                            RE --> FB
+                            RE --> ER
+                        end
+                        
+                        BT --> RE
+                        
+                        style BT fill:#48bb78,stroke:#333,stroke-width:2px,color:#fff
+                        style RE fill:#4299e1,stroke:#333,stroke-width:2px,color:#fff
+                </div>
+            </div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3><span class="phase-number">1</span> BaseTool Architecture</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox">✓</div>
+                            <span>Create abstract BaseTool class</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Implement ToolMetadata schema</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Build execution context system</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Add parameter validation</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><span class="phase-number">2</span> Resilient Execution</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Implement retry strategies</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Build fallback mechanism</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Add circuit breaker pattern</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Create error recovery system</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Phase 2: Fraud-Specific Tools (Weeks 3-4)</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph LR
+                        subgraph "Detection Tools"
+                            PDT[Pattern Detector]
+                            ADT[Anomaly Detector]
+                            VDT[Velocity Detector]
+                        end
+                        
+                        subgraph "Analysis Tools"
+                            NAT[Network Analyzer]
+                            TAT[Timeline Analyzer]
+                            ECT[Evidence Correlator]
+                        end
+                        
+                        subgraph "Assessment Tools"
+                            RST[Risk Scorer]
+                            PRT[Priority Ranker]
+                            RGT[Report Generator]
+                        end
+                        
+                        PDT --> RST
+                        ADT --> RST
+                        VDT --> RST
+                        NAT --> ECT
+                        TAT --> ECT
+                        ECT --> RGT
+                        RST --> PRT
+                        PRT --> RGT
+                        
+                        style PDT fill:#68d391,stroke:#333
+                        style NAT fill:#4299e1,stroke:#333
+                        style RST fill:#9f7aea,stroke:#333
+                        style RGT fill:#f6ad55,stroke:#333
+                </div>
+            </div>
+            
+            <div class="implementation-code">
+                <div class="code-line"><span class="code-comment"># Pattern Detection Tool Implementation</span></div>
+                <div class="code-line"><span class="code-keyword">class</span> PatternDetectionTool(BaseTool):</div>
+                <div class="code-line">    <span class="code-keyword">async def</span> _execute_impl(self, params, context):</div>
+                <div class="code-line">        patterns = []</div>
+                <div class="code-line">        patterns.extend(<span class="code-keyword">await</span> self._detect_velocity_patterns())</div>
+                <div class="code-line">        patterns.extend(<span class="code-keyword">await</span> self._detect_amount_patterns())</div>
+                <div class="code-line">        patterns.extend(<span class="code-keyword">await</span> self._detect_geographic_patterns())</div>
+                <div class="code-line">        <span class="code-keyword">return</span> {<span class="code-string">"patterns"</span>: patterns, <span class="code-string">"risk_score"</span>: self._calculate_risk()}</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>⚙️ Phase 3: Tool Orchestration (Weeks 5-6)</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant User
+                        participant ChainManager
+                        participant Tool1
+                        participant Tool2
+                        participant Tool3
+                        participant Monitor
+                        
+                        User->>ChainManager: Execute Investigation Chain
+                        ChainManager->>Tool1: Execute Data Collection
+                        Tool1-->>ChainManager: Data Result
+                        
+                        ChainManager->>Tool2: Execute Pattern Detection
+                        Tool2->>Monitor: Record Metrics
+                        Tool2-->>ChainManager: Patterns Result
+                        
+                        ChainManager->>Tool3: Execute Risk Assessment
+                        Tool3->>Monitor: Record Metrics
+                        Tool3-->>ChainManager: Risk Result
+                        
+                        ChainManager-->>User: Investigation Complete
+                        Monitor-->>ChainManager: Performance Report
+                </div>
+            </div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3><span class="phase-number">3</span> Chain Management</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Build ToolChain class</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Implement ChainContext</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Add execution modes</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Create workflow engine</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><span class="phase-number">4</span> Investigation Workflows</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Quick investigation chain</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Comprehensive chain</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Parallel analysis chain</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox"></div>
+                            <span>Adaptive chain</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🤖 Phase 4: Intelligent Tool Selection (Weeks 7-8)</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                        subgraph "AI Selection System"
+                            TD[Task Description]
+                            LLM[GPT-4 Analysis]
+                            TS[Tool Selection]
+                            TO[Tool Ordering]
+                            TC[Tool Configuration]
+                        end
+                        
+                        TD --> LLM
+                        LLM --> TS
+                        LLM --> TO
+                        LLM --> TC
+                        
+                        subgraph "Optimization Engine"
+                            PM[Performance Metrics]
+                            OA[Optimization Algorithm]
+                            CS[Chain Suggestions]
+                        end
+                        
+                        PM --> OA
+                        OA --> CS
+                        CS --> LLM
+                        
+                        style LLM fill:#9f7aea,stroke:#333,stroke-width:2px,color:#fff
+                        style OA fill:#4299e1,stroke:#333,stroke-width:2px,color:#fff
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Phase 5: Monitoring & Analytics (Weeks 9-10)</h2>
+            <div class="metrics-dashboard">
+                <div class="metric-card">
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">Success Rate</div>
+                    <div class="metric-change">↑ 15% from baseline</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">1.8s</div>
+                    <div class="metric-label">Avg Response Time</div>
+                    <div class="metric-change">↓ 40% improvement</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">92%</div>
+                    <div class="metric-label">Chain Completion</div>
+                    <div class="metric-change">↑ 22% from baseline</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">85%</div>
+                    <div class="metric-label">Error Recovery</div>
+                    <div class="metric-change">New capability</div>
+                </div>
+            </div>
+            
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph LR
+                        subgraph "Metrics Collection"
+                            EC[Execution Counter]
+                            ED[Duration Histogram]
+                            AE[Active Executions]
+                            ER[Error Rate]
+                        end
+                        
+                        subgraph "Storage"
+                            PR[Prometheus]
+                            RD[Redis]
+                            ES[Elasticsearch]
+                        end
+                        
+                        subgraph "Visualization"
+                            GR[Grafana]
+                            KB[Kibana]
+                            CD[Custom Dashboard]
+                        end
+                        
+                        EC --> PR
+                        ED --> PR
+                        AE --> PR
+                        ER --> RD
+                        
+                        PR --> GR
+                        RD --> CD
+                        ES --> KB
+                        
+                        style PR fill:#48bb78,stroke:#333
+                        style GR fill:#4299e1,stroke:#333
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🚢 Deployment Strategy (Weeks 11-13)</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    gantt
+                        title Deployment Timeline
+                        dateFormat YYYY-MM-DD
+                        section Phase 1
+                        Deploy Foundation    :2025-03-01, 7d
+                        Monitor & Validate   :7d
+                        
+                        section Phase 2
+                        Deploy Fraud Tools   :2025-03-15, 7d
+                        Beta Testing        :7d
+                        
+                        section Phase 3
+                        Full Rollout        :2025-03-29, 7d
+                        Production Monitor  :7d
+                </div>
+            </div>
+            
+            <div class="risk-matrix">
+                <div class="risk-cell risk-low">Low Risk<br>Documentation</div>
+                <div class="risk-cell risk-low">Low Risk<br>Unit Tests</div>
+                <div class="risk-cell risk-medium">Medium Risk<br>Integration</div>
+                <div class="risk-cell risk-medium">Medium Risk<br>Performance</div>
+                <div class="risk-cell risk-high">High Risk<br>LLM Costs</div>
+                <div class="risk-cell risk-high">High Risk<br>Complexity</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>💯 Expected Outcomes</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    graph TB
+                        subgraph "Before Implementation"
+                            B1[4 Basic Tools]
+                            B2[No Orchestration]
+                            B3[Simple Try-Catch]
+                            B4[Static Selection]
+                            B5[No Monitoring]
+                        end
+                        
+                        subgraph "After Implementation"
+                            A1[15+ Specialized Tools]
+                            A2[Advanced Orchestration]
+                            A3[Resilient Execution]
+                            A4[AI-Driven Selection]
+                            A5[Comprehensive Analytics]
+                        end
+                        
+                        B1 -.->|Transform| A1
+                        B2 -.->|Transform| A2
+                        B3 -.->|Transform| A3
+                        B4 -.->|Transform| A4
+                        B5 -.->|Transform| A5
+                        
+                        style B1 fill:#fed7d7,stroke:#333
+                        style B2 fill:#fed7d7,stroke:#333
+                        style B3 fill:#fed7d7,stroke:#333
+                        style B4 fill:#fed7d7,stroke:#333
+                        style B5 fill:#fed7d7,stroke:#333
+                        
+                        style A1 fill:#c6f6d5,stroke:#333
+                        style A2 fill:#c6f6d5,stroke:#333
+                        style A3 fill:#c6f6d5,stroke:#333
+                        style A4 fill:#c6f6d5,stroke:#333
+                        style A5 fill:#c6f6d5,stroke:#333
+                </div>
+            </div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>🎯 Business Impact</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>40% faster investigations</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>25% better accuracy</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>50% less manual work</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>30% fewer false positives</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3>🔧 Technical Benefits</h3>
+                    <ul class="task-list">
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>95% tool success rate</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>80% error recovery</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>Scalable architecture</span>
+                        </li>
+                        <li class="task-item">
+                            <div class="task-checkbox checked">✓</div>
+                            <span>Real-time monitoring</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Success Criteria</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+                    pie title Success Metrics Distribution
+                        "Tool Execution Success" : 25
+                        "Investigation Speed" : 20
+                        "Detection Accuracy" : 20
+                        "Error Recovery" : 15
+                        "User Satisfaction" : 10
+                        "Cost Efficiency" : 10
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#5a67d8',
+                lineColor: '#5a67d8',
+                secondaryColor: '#48bb78',
+                tertiaryColor: '#4299e1',
+                background: '#f7fafc',
+                mainBkg: '#667eea',
+                secondBkg: '#48bb78',
+                tertiaryBkg: '#4299e1'
+            }
+        });
+        
+        // Add interactivity to timeline items
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove current class from all items
+                document.querySelectorAll('.timeline-item').forEach(i => i.classList.remove('current'));
+                // Add current class to clicked item
+                this.classList.add('current');
+            });
+        });
+        
+        // Add interactivity to task checkboxes
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                if (this.textContent === '✓') {
+                    this.textContent = '';
+                    this.classList.remove('checked');
+                } else {
+                    this.textContent = '✓';
+                    this.classList.add('checked');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

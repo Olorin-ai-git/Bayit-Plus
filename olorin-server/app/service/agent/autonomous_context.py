@@ -484,6 +484,28 @@ Failed: {', '.join(self.progress.failed_domains) or 'None'}
   Best Used For: {capability.typical_usage}
 """)
         
+        # Data sources with entity attributes
+        if self.data_sources:
+            context_parts.append("=== AVAILABLE DATA SOURCES ===")
+            for source_name, source_data in self.data_sources.items():
+                if isinstance(source_data, dict):
+                    # Extract key fields like IP addresses for threat intelligence tools
+                    important_fields = []
+                    if 'ip_address' in source_data:
+                        important_fields.append(f"IP Address: {source_data['ip_address']}")
+                    if 'email' in source_data:
+                        important_fields.append(f"Email: {source_data['email']}")
+                    if 'user_id' in source_data:
+                        important_fields.append(f"User ID: {source_data['user_id']}")
+                    if 'entity_id' in source_data:
+                        important_fields.append(f"Entity ID: {source_data['entity_id']}")
+                    
+                    if important_fields:
+                        context_parts.append(f"""
+{source_name.upper()} DATA:
+  {chr(10).join(f"  {field}" for field in important_fields)}
+""")
+        
         # Investigation objectives
         context_parts.append("=== INVESTIGATION OBJECTIVES ===")
         for obj in sorted(self.objectives, key=lambda x: x.priority, reverse=True):
@@ -602,3 +624,92 @@ Key principles:
             "cross_domain_correlations": self.cross_domain_correlations,
             "investigation_notes": self.investigation_notes
         }
+    
+    def get_ip_addresses(self) -> List[str]:
+        """
+        Extract all IP addresses from the investigation context.
+        
+        Returns:
+            List of unique IP addresses found in data sources
+        """
+        ip_addresses = set()
+        
+        # Check all data sources for IP addresses
+        for source_name, source_data in self.data_sources.items():
+            if isinstance(source_data, dict):
+                # Look for common IP address fields
+                ip_fields = ['ip_address', 'ip', 'source_ip', 'dest_ip', 'client_ip', 
+                            'server_ip', 'remote_ip', 'local_ip', 'public_ip', 'private_ip']
+                
+                for field in ip_fields:
+                    if field in source_data:
+                        ip_value = source_data[field]
+                        if isinstance(ip_value, str) and self._is_valid_ip(ip_value):
+                            ip_addresses.add(ip_value)
+                        elif isinstance(ip_value, list):
+                            for ip in ip_value:
+                                if isinstance(ip, str) and self._is_valid_ip(ip):
+                                    ip_addresses.add(ip)
+                
+                # Also check nested structures
+                if 'network' in source_data and isinstance(source_data['network'], dict):
+                    network_data = source_data['network']
+                    for field in ip_fields:
+                        if field in network_data:
+                            ip_value = network_data[field]
+                            if isinstance(ip_value, str) and self._is_valid_ip(ip_value):
+                                ip_addresses.add(ip_value)
+                            elif isinstance(ip_value, list):
+                                for ip in ip_value:
+                                    if isinstance(ip, str) and self._is_valid_ip(ip):
+                                        ip_addresses.add(ip)
+        
+        # If no IPs found but entity_type is IP_ADDRESS, use entity_id if it's a valid IP
+        if not ip_addresses and self.entity_type == EntityType.IP_ADDRESS:
+            if self._is_valid_ip(self.entity_id):
+                ip_addresses.add(self.entity_id)
+        
+        # Log what we found
+        if ip_addresses:
+            logger.info(f"Extracted {len(ip_addresses)} IP addresses from context: {list(ip_addresses)[:5]}...")
+        else:
+            logger.warning(f"No IP addresses found in context for entity {self.entity_id}")
+            # Add a test IP for development/testing purposes if needed
+            # This should be removed in production
+            if self.data_sources:
+                logger.info("Data sources available but no IPs found - may need to check data structure")
+        
+        return list(ip_addresses)
+    
+    def _is_valid_ip(self, ip_str: str) -> bool:
+        """
+        Validate if a string is a valid IP address.
+        
+        Args:
+            ip_str: String to validate
+            
+        Returns:
+            True if valid IP address, False otherwise
+        """
+        if not ip_str or not isinstance(ip_str, str):
+            return False
+        
+        # Check if it's not an entity ID pattern
+        import re
+        entity_patterns = [
+            r'^[A-Z0-9]{16}$',  # 16-character alphanumeric (like K1F6HIIGBVHH20TX)
+            r'^[a-f0-9\-]{36}$',  # UUID format
+            r'^[a-zA-Z0-9_\-]+::[a-f0-9\-]{36}$',  # Entity ID with UUID
+        ]
+        
+        for pattern in entity_patterns:
+            if re.match(pattern, ip_str):
+                return False
+        
+        # Validate IP address format
+        import ipaddress
+        try:
+            ipaddress.ip_address(ip_str)
+            return True
+        except ValueError:
+            return False

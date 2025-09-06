@@ -55,7 +55,7 @@ class VirusTotalClient:
         """Get API key from Firebase secrets."""
         if self._api_key is None:
             try:
-                self._api_key = await get_firebase_secret(self.config.api_key_secret)
+                self._api_key = get_firebase_secret(self.config.api_key_secret)
                 if not self._api_key:
                     raise VirusTotalAuthError(f"VirusTotal API key not found: {self.config.api_key_secret}")
             except Exception as e:

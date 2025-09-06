@@ -6,7 +6,7 @@ domain analysis, file analysis, and URL scanning for threat intelligence.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 
@@ -89,7 +89,7 @@ class VirusTotalIPResponse(BaseModel):
     malicious_votes: int = Field(default=0, description="Malicious community votes")
     
     # Additional metadata
-    whois_info: Optional[Dict[str, Any]] = Field(None, description="WHOIS information")
+    whois_info: Optional[Union[Dict[str, Any], str]] = Field(None, description="WHOIS information")
     last_analysis_date: Optional[datetime] = Field(None, description="Last analysis timestamp")
     
     # API response metadata
@@ -123,8 +123,14 @@ class VirusTotalDomainResponse(BaseModel):
     subdomains: List[str] = Field(default_factory=list, description="Known subdomains")
     
     # Additional metadata
-    whois_info: Optional[Dict[str, Any]] = Field(None, description="WHOIS information")
+    whois_info: Optional[Union[Dict[str, Any], str]] = Field(None, description="WHOIS information")
     last_analysis_date: Optional[datetime] = Field(None, description="Last analysis timestamp")
+    last_modification_date: Optional[datetime] = Field(None, description="Last modification timestamp")
+    last_analysis_stats: Optional[VirusTotalAnalysisStats] = Field(None, description="Last analysis statistics")
+    last_analysis_results: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="Detailed analysis results from vendors")
+    tags: List[str] = Field(default_factory=list, description="Tags associated with the domain")
+    popularity_ranks: Dict[str, int] = Field(default_factory=dict, description="Popularity rankings")
+    total_votes: Dict[str, int] = Field(default_factory=dict, description="Total community votes")
     
     # API response metadata
     response_time_ms: int = Field(default=0, description="Response time in milliseconds")

@@ -59,21 +59,22 @@ def get_network_objectives(rag_enabled: bool = False) -> List[str]:
     """Get network analysis objectives with optional RAG enhancement."""
     
     objectives = [
-        "Analyze network patterns for suspicious connections and anomalies using domain knowledge",
-        "PRIORITY: Check ALL IP addresses against AbuseIPDB for reputation scores and abuse confidence levels",
-        "PRIORITY: Use Shodan to gather infrastructure intelligence about any suspicious or external IPs",
-        "Query VirusTotal for IP reputation and malicious activity indicators",
-        "Use the unified threat intelligence tool to correlate findings across multiple sources",
+        "STEP 1: CHECK if context.data_sources['user'] contains an 'ip_address' field",
+        "STEP 2: If NO 'ip_address' field exists, DO NOT USE these tools: abuseipdb_ip_reputation, shodan_infrastructure_analysis, virustotal (for IP)",
+        "STEP 3: If 'ip_address' field EXISTS and contains a valid IP (like 192.168.1.1), then use IP-based tools",
+        "CRITICAL WARNING: Entity IDs (like 'K1F6HIIGBVHH20TX' or 'TESTUSER123456') are NOT IP addresses - NEVER pass them to IP tools",
+        "When NO IP is available, focus on: log analysis, behavioral patterns, transaction analysis, user activity patterns",
+        "Analyze network patterns for suspicious connections and anomalies using available data",
         "Leverage historical network patterns and threat intelligence from knowledge base",
         "Apply known network topology analysis techniques from domain expertise",
-        "Identify geographic anomalies, impossible travel, and VPN/proxy usage patterns",
-        "Detect command and control (C2) server connections and botnet activity using threat patterns",
-        "Check for connections to known malicious domains using VirusTotal domain analysis",
-        "Analyze port scanning attempts and unusual network protocols with historical context",
+        "Identify geographic anomalies and impossible travel patterns from available location data",
+        "Detect command and control (C2) server connections and botnet activity patterns",
+        "Check for connections to known malicious domains if domain names are available",
+        "Analyze unusual network protocols and communication patterns",
         "Identify data exfiltration patterns and suspicious outbound connections",
         "Detect network-based fraud indicators including account takeover attempts",
         "Cross-reference findings with known fraud indicator patterns from knowledge base",
-        "Apply advanced network forensics techniques from domain expertise repository"
+        "Apply advanced network forensics techniques based on available data"
     ]
     
     # Add RAG-specific objectives if enabled

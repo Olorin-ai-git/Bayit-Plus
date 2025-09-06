@@ -92,6 +92,24 @@ class VirusTotalFileAnalysisTool(BaseTool):
         """Get current timestamp in ISO format."""
         return datetime.utcnow().isoformat()
     
+    def _calculate_risk_level_from_stats(self, stats) -> str:
+        """Calculate risk level based on VirusTotal analysis stats."""
+        if not stats or stats.total_engines == 0:
+            return "UNKNOWN"
+        
+        # Calculate detection rate
+        detection_rate = ((stats.malicious + stats.suspicious) / stats.total_engines) * 100
+        
+        # Calculate risk level based on detection rate
+        if detection_rate >= 50:
+            return "HIGH"
+        elif detection_rate >= 20:
+            return "MEDIUM"
+        elif detection_rate >= 5:
+            return "LOW"
+        else:
+            return "VERY_LOW"
+    
     def _run(self, **kwargs) -> str:
         """Execute file analysis synchronously."""
         import asyncio
@@ -178,8 +196,8 @@ class VirusTotalFileAnalysisTool(BaseTool):
                 "clean_detections": stats.harmless,
                 "undetected": stats.undetected,
                 "detection_ratio": f"{stats.malicious + stats.suspicious}/{stats.total_engines}",
-                "threat_verdict": stats.threat_verdict,
-                "risk_level": stats.risk_level
+                "threat_verdict": getattr(stats, 'threat_verdict', 'unknown'),
+                "risk_level": self._calculate_risk_level_from_stats(stats)
             }
         
         # Hash values

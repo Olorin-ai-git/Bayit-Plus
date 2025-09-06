@@ -90,9 +90,10 @@ async def enhanced_autonomous_network_agent(state, config) -> dict:
         # Enhanced objectives that guide the agent to use threat intelligence
         enhanced_objectives = [
             "Analyze network patterns for suspicious connections and anomalies",
-            "Check IP addresses against threat intelligence databases (AbuseIPDB, VirusTotal)",
-            "Use Shodan to gather infrastructure intelligence about suspicious IPs",
-            "Identify IP reputation scores and abuse confidence levels",
+            "CRITICAL: Extract actual IP addresses from the investigation context data sources (look for ip_address, source_ip, dest_ip fields) - DO NOT use entity IDs like K1F6HIIGBVHH20TX",
+            "Check extracted IP addresses (NOT entity IDs) against threat intelligence databases (AbuseIPDB, VirusTotal)",
+            "Use Shodan to gather infrastructure intelligence about extracted IP addresses (NOT entity IDs)",
+            "Identify IP reputation scores and abuse confidence levels for actual IP addresses",
             "Detect VPN, proxy, and TOR exit nodes using threat intelligence",
             "Correlate network indicators across multiple threat intelligence sources",
             "Analyze geographic anomalies and impossible travel patterns",

@@ -166,7 +166,7 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
         
         # Step 3: Execute investigation with enhanced prompt
         findings = await self._execute_enhanced_investigation(
-            enhanced_prompt, context, config, knowledge_context
+            enhanced_prompt, context, config, knowledge_context, specific_objectives
         )
         
         # Step 4: Augment findings with knowledge metadata
@@ -240,7 +240,8 @@ Remember: The knowledge context provides expert domain knowledge to enhance your
         enhanced_prompt: str,
         context: AutonomousInvestigationContext,
         config: RunnableConfig,
-        knowledge_context: KnowledgeContext
+        knowledge_context: KnowledgeContext,
+        specific_objectives: List[str] = None
     ) -> DomainFindings:
         """
         Execute investigation with enhanced prompt using the base class method

@@ -54,7 +54,7 @@ class IPReputationInput(BaseModel):
         
         for pattern in entity_patterns:
             if re.match(pattern, v):
-                raise ValueError(f"Entity ID detected where IP address expected: {v}. Please provide a valid IPv4 or IPv6 address.")
+                raise ValueError(f"Entity ID detected where IP address expected: {v}. Please extract actual IP addresses from the investigation context data sources.")
         
         try:
             ipaddress.ip_address(v)

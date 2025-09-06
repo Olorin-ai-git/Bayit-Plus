@@ -133,7 +133,7 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
         """Get API key from Firebase secrets."""
         if self._api_key is None:
             try:
-                self._api_key = await get_firebase_secret(self.config.api_key_secret_name)
+                self._api_key = get_firebase_secret(self.config.api_key_secret_name)
                 if not self._api_key:
                     raise ValueError(f"API key not found in Firebase secrets: {self.config.api_key_secret_name}")
             except Exception as e:

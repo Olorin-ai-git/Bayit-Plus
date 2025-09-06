@@ -967,6 +967,9 @@ class UnifiedAutonomousTestRunner:
                 "transaction_count": csv_user['transaction_count'],
                 "latest_activity": csv_user['latest_tx_datetime']
             }
+            # Only add IP address if it exists in CSV data
+            if 'ip_address' in csv_user:
+                user_data['ip_address'] = csv_user['ip_address']
             entity_data = {
                 "entity_id": csv_user['user_id'],
                 "entity_type": "user_id",
@@ -985,6 +988,7 @@ class UnifiedAutonomousTestRunner:
                     "email": "test@example.com",
                     "first_name": "Test",
                     "app_id": "test_app"
+                    # NO mock IP address - agents should skip IP tools if not available
                 }
                 entity_data = {
                     "entity_id": user_data["user_id"],

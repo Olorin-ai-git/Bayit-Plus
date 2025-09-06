@@ -74,7 +74,8 @@ class RealInvestigationRunner:
                 # Real API call to Anthropic Claude
                 finding = await agent.autonomous_investigate(
                     context=context,
-                    config={"configurable": {"thread_id": f"{entity_id}-{agent_name}"}}
+                    config={"configurable": {"thread_id": f"{entity_id}-{agent_name}"}},
+                    specific_objectives=None
                 )
                 
                 # Track API call

@@ -14,6 +14,22 @@ from .virustotal_client import VirusTotalClient
 from app.service.logging import get_bridge_logger
 
 
+def _calculate_risk_level_from_stats(stats) -> str:
+    """Calculate risk level based on VirusTotal analysis stats."""
+    if not stats or stats.total_engines == 0:
+        return "UNKNOWN"
+    
+    detection_rate = stats.detection_rate
+    if detection_rate >= 50:
+        return "HIGH"
+    elif detection_rate >= 20:
+        return "MEDIUM"
+    elif detection_rate >= 5:
+        return "LOW"
+    else:
+        return "VERY_LOW"
+
+
 class URLAnalysisInput(BaseModel):
     """Input schema for URL analysis."""
     
@@ -179,8 +195,8 @@ class VirusTotalURLAnalysisTool(BaseTool):
                 "undetected": stats.undetected,
                 "timeout_engines": getattr(stats, 'timeout', 0),
                 "detection_ratio": f"{stats.malicious + stats.suspicious}/{stats.total_engines}",
-                "threat_verdict": stats.threat_verdict,
-                "risk_level": stats.risk_level
+                "threat_verdict": getattr(stats, 'threat_verdict', 'unknown'),
+                "risk_level": _calculate_risk_level_from_stats(stats)
             }
         
         # URL categories and reputation

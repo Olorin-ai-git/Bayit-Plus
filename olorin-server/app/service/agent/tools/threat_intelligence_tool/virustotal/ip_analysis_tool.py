@@ -76,13 +76,24 @@ class VirusTotalIPAnalysisTool(BaseTool):
             return {"error": response.error or "VirusTotal IP analysis failed"}
         
         # Risk assessment
+        # Calculate risk level based on detection stats
         risk_level = "UNKNOWN"
         risk_score = 0.0
         
         if response.analysis_stats:
             stats = response.analysis_stats
-            risk_level = stats.risk_level
-            risk_score = stats.detection_rate / 100.0  # Normalize to 0-1
+            detection_rate = stats.detection_rate
+            risk_score = detection_rate / 100.0  # Normalize to 0-1
+            
+            # Calculate risk level based on detection rate
+            if detection_rate >= 50:
+                risk_level = "HIGH"
+            elif detection_rate >= 20:
+                risk_level = "MEDIUM"
+            elif detection_rate >= 5:
+                risk_level = "LOW"
+            else:
+                risk_level = "VERY_LOW"
         
         # Generate threat summary
         threat_summary = {

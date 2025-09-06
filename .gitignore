@@ -366,3 +366,6 @@ site-packages/
 *.csv
 transaction_dataset*.csv
 .firebase/hosting.b2xvcmluLWZyb250L2J1aWxk.cache
+scripts/set-firebase-secrets.sh
+scripts/add-abuseipdb-key.sh
+scripts/setup-threat-intel-secrets.sh

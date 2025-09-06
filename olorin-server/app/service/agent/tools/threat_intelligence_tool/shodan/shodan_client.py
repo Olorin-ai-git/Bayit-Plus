@@ -53,7 +53,7 @@ class ShodanClient:
         """Get API key from Firebase secrets if not provided."""
         if self._api_key is None:
             try:
-                self._api_key = await get_firebase_secret("SHODAN_API_KEY")
+                self._api_key = get_firebase_secret("SHODAN_API_KEY")
                 if not self._api_key:
                     raise ValueError("Shodan API key not found in Firebase secrets")
             except Exception as e:
@@ -151,10 +151,11 @@ class ShodanClient:
         Returns:
             Host information
         """
-        params = {
-            "history": history,
-            "minify": minify
-        }
+        params = {}
+        if history:
+            params["history"] = "true"
+        if minify:
+            params["minify"] = "true"
         
         data = await self._make_request("GET", f"/shodan/host/{ip}", params)
         
