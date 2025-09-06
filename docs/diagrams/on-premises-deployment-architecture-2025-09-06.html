@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olorin On-Premises Deployment Architecture - 2025-09-06</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.0/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        
+        .section {
+            margin: 40px 0;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            border: 2px solid #e8f4fd;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section h2 {
+            color: #2980b9;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .diagram-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+        
+        .phase-timeline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .phase {
+            flex: 1;
+            min-width: 200px;
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .phase.completed {
+            background: #27ae60;
+        }
+        
+        .phase.in-progress {
+            background: #f39c12;
+        }
+        
+        .phase.pending {
+            background: #95a5a6;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .metric .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .risk {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .risk.low {
+            background: #27ae60;
+        }
+        
+        .risk.medium {
+            background: #f39c12;
+        }
+        
+        .risk.high {
+            background: #e74c3c;
+        }
+        
+        .deployment-steps {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .deployment-steps ol {
+            padding-left: 20px;
+        }
+        
+        .deployment-steps li {
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .phase-timeline {
+                flex-direction: column;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 Olorin On-Premises Deployment Architecture</h1>
+        <div class="subtitle">Complete Self-Contained Fraud Detection Platform - September 6, 2025</div>
+        
+        <div class="section">
+            <h2>🏗️ Complete System Architecture Overview</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+graph TB
+    subgraph "External World"
+        LLM[🧠 LLM APIs<br/>OpenAI/Anthropic<br/>ONLY External Calls]
+    end
+    
+    subgraph "On-Premises Infrastructure"
+        subgraph "Network Security Layer"
+            FW[🔥 Firewall<br/>Isolated Network<br/>LLM APIs Only]
+        end
+        
+        subgraph "Application Layer"
+            PROXY[🔄 Nginx Proxy<br/>Load Balancer<br/>SSL Termination]
+            BACKEND[⚙️ Olorin Backend<br/>FastAPI Python<br/>LangChain Agents]
+            FRONTEND[🖥️ React Frontend<br/>TypeScript<br/>Investigation UI]
+            PORTAL[🌐 Web Portal<br/>Marketing Site<br/>Static Assets]
+        end
+        
+        subgraph "Data Sources Layer"
+            subgraph "Analytics & Logs"
+                ES[🔍 Elasticsearch<br/>SumoLogic Alternative<br/>Log Analytics]
+                LS[📊 Logstash<br/>Log Processing<br/>Data Pipeline]
+                KB[📈 Kibana<br/>Log Visualization<br/>Dashboards]
+            end
+            
+            subgraph "Data Warehouse"
+                CH[📊 ClickHouse<br/>Snowflake Alternative<br/>Analytics DB]
+            end
+        end
+        
+        subgraph "Core Data Layer"
+            PG[🗄️ PostgreSQL<br/>Primary Database<br/>PgVector Extensions]
+            RD[⚡ Redis<br/>Cache & Sessions<br/>Real-time Data]
+        end
+        
+        subgraph "Security Layer"
+            VAULT[🔐 HashiCorp Vault<br/>Secret Management<br/>Encrypted Storage]
+            SECRETS[🗝️ Local Secrets<br/>163 Migrated Secrets<br/>Encrypted Files]
+        end
+        
+        subgraph "Monitoring Layer"
+            PROM[📊 Prometheus<br/>Metrics Collection<br/>Performance Data]
+            GRAF[📈 Grafana<br/>Visualization<br/>Alerting]
+        end
+    end
+    
+    subgraph "Storage Layer"
+        VOL_PG[(💾 PostgreSQL Data)]
+        VOL_ES[(💾 Elasticsearch Data)]
+        VOL_CH[(💾 ClickHouse Data)]
+        VOL_RD[(💾 Redis Data)]
+        VOL_VAULT[(💾 Vault Data)]
+        VOL_LOGS[(💾 Application Logs)]
+    end
+    
+    %% External connections
+    BACKEND -.->|HTTPS Only| LLM
+    FW -.->|Controlled Access| LLM
+    
+    %% Application flow
+    PROXY --> FRONTEND
+    PROXY --> BACKEND
+    PROXY --> PORTAL
+    FRONTEND --> BACKEND
+    BACKEND --> PG
+    BACKEND --> RD
+    BACKEND --> ES
+    BACKEND --> CH
+    
+    %% Data processing
+    LS --> ES
+    ES --> KB
+    
+    %% Security
+    BACKEND --> VAULT
+    BACKEND --> SECRETS
+    
+    %% Monitoring
+    PROM --> GRAF
+    BACKEND --> PROM
+    ES --> PROM
+    CH --> PROM
+    PG --> PROM
+    
+    %% Storage
+    PG --> VOL_PG
+    ES --> VOL_ES
+    CH --> VOL_CH
+    RD --> VOL_RD
+    VAULT --> VOL_VAULT
+    BACKEND --> VOL_LOGS
+    
+    %% Styling
+    classDef external fill:#ff6b6b,stroke:#d63031,color:#fff
+    classDef app fill:#74b9ff,stroke:#0984e3,color:#fff
+    classDef data fill:#55a3ff,stroke:#2d3436,color:#fff
+    classDef security fill:#a29bfe,stroke:#6c5ce7,color:#fff
+    classDef storage fill:#fd79a8,stroke:#e84393,color:#fff
+    classDef monitoring fill:#fdcb6e,stroke:#e17055,color:#fff
+    
+    class LLM external
+    class PROXY,BACKEND,FRONTEND,PORTAL app
+    class PG,RD,ES,LS,KB,CH data
+    class VAULT,SECRETS,FW security
+    class VOL_PG,VOL_ES,VOL_CH,VOL_RD,VOL_VAULT,VOL_LOGS storage
+    class PROM,GRAF monitoring
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🔄 Data Migration Architecture</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+graph LR
+    subgraph "Cloud Sources (Current)"
+        FB[🔥 Firebase Secrets<br/>163 Secrets]
+        SUMO[☁️ SumoLogic<br/>Cloud Logs]
+        SNOW[❄️ Snowflake<br/>Cloud DW]
+        GCP[☁️ GCP/Firebase<br/>Hosting]
+    end
+    
+    subgraph "Migration Layer"
+        EXPORT[📤 Export Tools<br/>Data Extraction<br/>Validation]
+        TRANSFORM[🔄 Transform<br/>Format Conversion<br/>Compatibility]
+        VALIDATE[✅ Validation<br/>Integrity Checks<br/>Testing]
+    end
+    
+    subgraph "Local Targets (On-Premises)"
+        VAULT_LOCAL[🔐 Local Vault<br/>163 Secrets<br/>Encrypted]
+        ES_LOCAL[🔍 Elasticsearch<br/>Local Logs<br/>Same Queries]
+        CH_LOCAL[📊 ClickHouse<br/>Local Analytics<br/>SQL Compatible]
+        DOCKER_LOCAL[🐳 Docker Stack<br/>Complete Deployment<br/>Self-Contained]
+    end
+    
+    %% Migration flow
+    FB --> EXPORT
+    SUMO --> EXPORT
+    SNOW --> EXPORT
+    GCP --> EXPORT
+    
+    EXPORT --> TRANSFORM
+    TRANSFORM --> VALIDATE
+    
+    VALIDATE --> VAULT_LOCAL
+    VALIDATE --> ES_LOCAL
+    VALIDATE --> CH_LOCAL
+    VALIDATE --> DOCKER_LOCAL
+    
+    %% Styling
+    classDef cloud fill:#ff7675,stroke:#d63031,color:#fff
+    classDef migration fill:#fdcb6e,stroke:#e17055,color:#fff
+    classDef local fill:#00b894,stroke:#00a085,color:#fff
+    
+    class FB,SUMO,SNOW,GCP cloud
+    class EXPORT,TRANSFORM,VALIDATE migration
+    class VAULT_LOCAL,ES_LOCAL,CH_LOCAL,DOCKER_LOCAL local
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🛡️ Security Architecture</h2>
+            <div class="diagram-container">
+                <div class="mermaid">
+graph TB
+    subgraph "Security Layers"
+        subgraph "Network Security"
+            ISOLATION[🔒 Network Isolation<br/>Docker Internal Networks<br/>No Internet Access]
+            FIREWALL[🔥 Firewall Rules<br/>LLM APIs Only<br/>Strict Ingress/Egress]
+        end
+        
+        subgraph "Application Security"
+            AUTH[🔐 Authentication<br/>JWT Tokens<br/>Service-to-Service]
+            AUTHZ[🛡️ Authorization<br/>Role-Based Access<br/>Permission Matrix]
+            VALID[✅ Input Validation<br/>XSS Prevention<br/>SQL Injection Protection]
+        end
+        
+        subgraph "Data Security"
+            ENCRYPT_REST[🔒 Encryption at Rest<br/>Database Encryption<br/>File System Encryption]
+            ENCRYPT_TRANSIT[🔐 Encryption in Transit<br/>TLS 1.3<br/>Internal Service Mesh]
+            SECRET_MGMT[🗝️ Secret Management<br/>Vault/Encrypted Files<br/>Access Logging]
+        end
+        
+        subgraph "Monitoring Security"
+            AUDIT[📋 Audit Logging<br/>Access Logs<br/>Security Events]
+            INTRUSION[🚨 Intrusion Detection<br/>Anomaly Detection<br/>Alert System]
+            COMPLIANCE[📊 Compliance<br/>Security Policies<br/>Regular Audits]
+        end
+    end
+    
+    subgraph "Threat Mitigation"
+        DDOS[🛡️ DDoS Protection<br/>Rate Limiting<br/>Load Balancing]
+        MALWARE[🦠 Malware Protection<br/>Container Scanning<br/>Vulnerability Assessment]
+        BACKUP[💾 Backup Security<br/>Encrypted Backups<br/>Offsite Storage]
+    end
+    
+    %% Security flow
+    ISOLATION --> AUTH
+    FIREWALL --> AUTH
+    AUTH --> AUTHZ
+    AUTHZ --> VALID
+    VALID --> ENCRYPT_REST
+    ENCRYPT_REST --> ENCRYPT_TRANSIT
+    ENCRYPT_TRANSIT --> SECRET_MGMT
+    SECRET_MGMT --> AUDIT
+    AUDIT --> INTRUSION
+    INTRUSION --> COMPLIANCE
+    
+    %% Threat protection
+    DDOS -.-> FIREWALL
+    MALWARE -.-> VALID
+    BACKUP -.-> ENCRYPT_REST
+    
+    classDef security fill:#a29bfe,stroke:#6c5ce7,color:#fff
+    classDef protection fill:#fd79a8,stroke:#e84393,color:#fff
+    
+    class ISOLATION,FIREWALL,AUTH,AUTHZ,VALID,ENCRYPT_REST,ENCRYPT_TRANSIT,SECRET_MGMT,AUDIT,INTRUSION,COMPLIANCE security
+    class DDOS,MALWARE,BACKUP protection
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📅 Implementation Timeline</h2>
+            <div class="phase-timeline">
+                <div class="phase pending">
+                    <h3>Phase 1</h3>
+                    <p><strong>Infrastructure Foundation</strong></p>
+                    <p>Days 1-2</p>
+                    <p>Audit, Analysis, Planning</p>
+                </div>
+                <div class="phase pending">
+                    <h3>Phase 2</h3>
+                    <p><strong>Data Sources</strong></p>
+                    <p>Days 3-5</p>
+                    <p>ELK Stack, ClickHouse</p>
+                </div>
+                <div class="phase pending">
+                    <h3>Phase 3</h3>
+                    <p><strong>Secret Management</strong></p>
+                    <p>Days 6-7</p>
+                    <p>Vault, Migration</p>
+                </div>
+                <div class="phase pending">
+                    <h3>Phase 4</h3>
+                    <p><strong>Integration & Testing</strong></p>
+                    <p>Days 8-9</p>
+                    <p>Validation, Performance</p>
+                </div>
+                <div class="phase pending">
+                    <h3>Phase 5</h3>
+                    <p><strong>Production Package</strong></p>
+                    <p>Days 10-11</p>
+                    <p>Documentation, Delivery</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>✨ Key Features & Capabilities</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🔒 Complete Network Isolation</h3>
+                    <p>All services run on internal Docker networks with no external access except controlled LLM API calls. Firewall rules ensure strict security.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Local Data Sources</h3>
+                    <p>Elasticsearch replaces SumoLogic, ClickHouse replaces Snowflake, maintaining full API compatibility and query functionality.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🗝️ Secure Secret Management</h3>
+                    <p>163 Firebase secrets migrated to HashiCorp Vault or encrypted file storage with audit logging and access controls.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🐳 Complete Containerization</h3>
+                    <p>All services containerized with health checks, dependencies, and automated deployment scripts for offline installation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Performance Optimized</h3>
+                    <p>Local networking reduces latency, optimized configurations for on-premises hardware, intelligent caching and connection pooling.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 Comprehensive Monitoring</h3>
+                    <p>Prometheus and Grafana provide complete observability with custom dashboards for fraud detection metrics and system health.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Success Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <h4>Deployment Time</h4>
+                    <div class="value">&lt; 30 min</div>
+                    <p>Complete installation time</p>
+                </div>
+                <div class="metric">
+                    <h4>API Response</h4>
+                    <div class="value">&lt; 2 sec</div>
+                    <p>Average response time</p>
+                </div>
+                <div class="metric">
+                    <h4>Security Compliance</h4>
+                    <div class="value">100%</div>
+                    <p>Network isolation achieved</p>
+                </div>
+                <div class="metric">
+                    <h4>System Uptime</h4>
+                    <div class="value">99.9%</div>
+                    <p>Reliability target</p>
+                </div>
+                <div class="metric">
+                    <h4>Data Migration</h4>
+                    <div class="value">100%</div>
+                    <p>Successful migration rate</p>
+                </div>
+                <div class="metric">
+                    <h4>Performance</h4>
+                    <div class="value">&lt; 5 sec</div>
+                    <p>Analytics query time</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>⚠️ Risk Assessment</h2>
+            <div class="risk-matrix">
+                <div class="risk low">
+                    <h4>Network Security</h4>
+                    <p>LOW RISK</p>
+                    <p>Isolated networks</p>
+                </div>
+                <div class="risk medium">
+                    <h4>Data Migration</h4>
+                    <p>MEDIUM RISK</p>
+                    <p>Automated validation</p>
+                </div>
+                <div class="risk medium">
+                    <h4>Performance</h4>
+                    <p>MEDIUM RISK</p>
+                    <p>Load testing planned</p>
+                </div>
+                <div class="risk low">
+                    <h4>Secret Security</h4>
+                    <p>LOW RISK</p>
+                    <p>Multi-layer encryption</p>
+                </div>
+                <div class="risk medium">
+                    <h4>Hardware Failure</h4>
+                    <p>MEDIUM RISK</p>
+                    <p>Backup procedures</p>
+                </div>
+                <div class="risk low">
+                    <h4>Data Integrity</h4>
+                    <p>LOW RISK</p>
+                    <p>Comprehensive validation</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🚀 Quick Deployment Steps</h2>
+            <div class="deployment-steps">
+                <ol>
+                    <li><strong>Extract Package:</strong> <code>tar -xzf olorin-onpremise-*.tar.gz</code></li>
+                    <li><strong>Load Images:</strong> <code>./scripts/install-onpremise.sh</code></li>
+                    <li><strong>Configure Secrets:</strong> <code>./scripts/setup-vault.sh</code></li>
+                    <li><strong>Start Services:</strong> <code>docker-compose -f docker-compose.onpremise.yml up -d</code></li>
+                    <li><strong>Verify Deployment:</strong> <code>./scripts/verify-onpremise-deployment.sh</code></li>
+                    <li><strong>Access Application:</strong> Frontend: http://localhost:3000, API: http://localhost:8090</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Component Summary</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🔧 Backend Services</h3>
+                    <ul>
+                        <li>FastAPI Python backend</li>
+                        <li>LangChain fraud detection agents</li>
+                        <li>PostgreSQL with PgVector</li>
+                        <li>Redis caching layer</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🖥️ Frontend Applications</h3>
+                    <ul>
+                        <li>React TypeScript investigation UI</li>
+                        <li>Marketing web portal</li>
+                        <li>Nginx reverse proxy</li>
+                        <li>Static asset serving</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Data & Analytics</h3>
+                    <ul>
+                        <li>Elasticsearch (SumoLogic alternative)</li>
+                        <li>ClickHouse (Snowflake alternative)</li>
+                        <li>Kibana dashboards</li>
+                        <li>Logstash processing</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔐 Security & Monitoring</h3>
+                    <ul>
+                        <li>HashiCorp Vault</li>
+                        <li>Prometheus monitoring</li>
+                        <li>Grafana visualization</li>
+                        <li>Network isolation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#764ba2',
+                lineColor: '#333',
+                sectionBkgColor: '#f8f9fa',
+                altSectionBkgColor: '#e9ecef',
+                gridColor: '#ddd',
+                secondaryColor: '#ff6b6b',
+                tertiaryColor: '#55a3ff'
+            }
+        });
+    </script>
+</body>
+</html>
