@@ -1,187 +1,77 @@
 /**
- * Build Configuration Manager for Olorin Frontend
- * Manages environment-specific build configurations and validation
+ * Main Build Configuration Manager for Olorin Frontend
+ * Orchestrates modular build configuration components
+ * Compliant with 200-line architecture standard
  */
 
-const fs = require('fs');
-const path = require('path');
+const BuildConfigCore = require('./build-config-core');
+const BuildMetadataManager = require('./build-config-metadata');
 
-class BuildConfigManager {
+class BuildConfigManager extends BuildMetadataManager {
   constructor() {
-    this.environment = process.env.REACT_APP_ENV || 'development';
-    this.nodeEnv = process.env.NODE_ENV || 'development';
-    this.rootDir = path.resolve(__dirname, '..');
-    this.buildDir = path.join(this.rootDir, 'build');
+    super();
+    console.log('🔧 Build Config Manager initialized');
   }
 
   /**
-   * Load environment-specific configuration
+   * Complete build initialization and validation
    */
-  loadEnvironmentConfig() {
-    const envFile = path.join(this.rootDir, `.env.${this.environment}`);
-    
-    if (fs.existsSync(envFile)) {
-      console.log(`📁 Loading environment config: ${envFile}`);
-      const envConfig = fs.readFileSync(envFile, 'utf8');
-      
-      // Parse environment variables
-      const envVars = {};
-      envConfig.split('\n').forEach(line => {
-        const [key, ...valueParts] = line.split('=');
-        if (key && !key.startsWith('#') && valueParts.length > 0) {
-          envVars[key.trim()] = valueParts.join('=').trim();
-        }
-      });
-      
-      // Set environment variables
-      Object.keys(envVars).forEach(key => {
-        if (!process.env[key]) {
-          process.env[key] = envVars[key];
-        }
-      });
-      
-      return envVars;
-    } else {
-      console.warn(`⚠️  Environment file not found: ${envFile}`);
-      return {};
-    }
-  }
-
-  /**
-   * Validate build configuration
-   */
-  validateBuildConfig() {
-    const requiredVars = [
-      'REACT_APP_ENVIRONMENT',
-      'REACT_APP_API_BASE_URL',
-      'REACT_APP_FIREBASE_PROJECT_ID'
-    ];
-
-    const missing = requiredVars.filter(varName => !process.env[varName]);
-    
-    if (missing.length > 0) {
-      console.error('❌ Missing required environment variables:', missing);
+  fullInitialization() {
+    try {
+      const optimizations = this.initializeBuild();
+      console.log('✨ Full initialization completed successfully');
+      return optimizations;
+    } catch (error) {
+      console.error('❌ Initialization failed:', error.message);
       process.exit(1);
     }
-
-    console.log('✅ Build configuration validated successfully');
   }
 
   /**
-   * Get build optimization settings
+   * Complete build finalization with all checks
    */
-  getBuildOptimizations() {
-    const isProduction = this.nodeEnv === 'production';
-    
-    return {
-      generateSourceMap: process.env.GENERATE_SOURCEMAP !== 'false',
-      inlineRuntimeChunk: process.env.INLINE_RUNTIME_CHUNK === 'true',
-      bundleAnalysis: process.env.ANALYZE === 'true',
-      compression: isProduction,
-      minification: isProduction,
-      treeShaking: isProduction,
-      codeSplitting: isProduction,
-      lazyLoading: process.env.REACT_APP_LAZY_LOADING !== 'false'
-    };
-  }
-
-  /**
-   * Generate build metadata
-   */
-  generateBuildMetadata() {
-    const metadata = {
-      buildTime: new Date().toISOString(),
-      environment: this.environment,
-      nodeEnv: this.nodeEnv,
-      gitCommit: process.env.GITHUB_SHA || 'unknown',
-      buildVersion: process.env.REACT_APP_BUILD_VERSION || '1.0.0',
-      optimizations: this.getBuildOptimizations()
-    };
-
-    const metadataPath = path.join(this.buildDir, 'build-metadata.json');
-    
-    // Ensure build directory exists
-    if (!fs.existsSync(this.buildDir)) {
-      fs.mkdirSync(this.buildDir, { recursive: true });
-    }
-
-    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    console.log('📊 Build metadata generated:', metadataPath);
-    
-    return metadata;
-  }
-
-  /**
-   * Validate bundle size
-   */
-  validateBundleSize() {
-    if (!fs.existsSync(this.buildDir)) {
-      console.warn('⚠️  Build directory not found, skipping bundle size validation');
-      return;
-    }
-
-    const maxBundleSize = parseInt(process.env.REACT_APP_BUNDLE_SIZE_LIMIT) || 512000; // 500KB
-    const staticJsDir = path.join(this.buildDir, 'static', 'js');
-    
-    if (!fs.existsSync(staticJsDir)) {
-      console.warn('⚠️  JS bundle directory not found');
-      return;
-    }
-
-    const jsFiles = fs.readdirSync(staticJsDir)
-      .filter(file => file.endsWith('.js') && !file.includes('.map'))
-      .map(file => {
-        const filePath = path.join(staticJsDir, file);
-        const stats = fs.statSync(filePath);
-        return { file, size: stats.size };
-      });
-
-    const totalSize = jsFiles.reduce((sum, file) => sum + file.size, 0);
-    
-    console.log('📦 Bundle Analysis:');
-    jsFiles.forEach(file => {
-      const sizeKB = (file.size / 1024).toFixed(2);
-      console.log(`  ${file.file}: ${sizeKB} KB`);
-    });
-    
-    const totalSizeKB = (totalSize / 1024).toFixed(2);
-    console.log(`📊 Total bundle size: ${totalSizeKB} KB`);
-    
-    if (totalSize > maxBundleSize) {
-      console.error(`❌ Bundle size (${totalSizeKB} KB) exceeds limit (${(maxBundleSize/1024).toFixed(2)} KB)`);
+  fullFinalization() {
+    try {
+      this.finalizeBuild();
+      console.log('✨ Full finalization completed successfully');
+    } catch (error) {
+      console.error('❌ Finalization failed:', error.message);
       process.exit(1);
-    } else {
-      console.log('✅ Bundle size within acceptable limits');
     }
   }
 
   /**
-   * Initialize build process
+   * Run comprehensive build validation
    */
-  initializeBuild() {
-    console.log('🚀 Initializing Olorin Frontend Build');
-    console.log(`📍 Environment: ${this.environment}`);
-    console.log(`📍 Node Environment: ${this.nodeEnv}`);
-    
-    this.loadEnvironmentConfig();
-    this.validateBuildConfig();
+  comprehensiveValidation() {
+    try {
+      this.validateBuildConfig();
+      console.log('✨ Comprehensive validation completed successfully');
+    } catch (error) {
+      console.error('❌ Validation failed:', error.message);
+      process.exit(1);
+    }
+  }
+
+  /**
+   * Display build configuration summary
+   */
+  displaySummary() {
+    console.log('\n📋 Build Configuration Summary');
+    console.log('================================');
+    console.log(`Environment: ${this.environment}`);
+    console.log(`Node Environment: ${this.nodeEnv}`);
+    console.log(`Root Directory: ${this.rootDir}`);
+    console.log(`Build Directory: ${this.buildDir}`);
     
     const optimizations = this.getBuildOptimizations();
-    console.log('⚙️  Build Optimizations:', optimizations);
+    console.log('\n⚙️  Optimizations:');
+    Object.entries(optimizations).forEach(([key, value]) => {
+      console.log(`  ${key}: ${value}`);
+    });
+    console.log('================================\n');
     
     return optimizations;
-  }
-
-  /**
-   * Finalize build process
-   */
-  finalizeBuild() {
-    console.log('🏁 Finalizing Olorin Frontend Build');
-    
-    this.generateBuildMetadata();
-    this.validateBundleSize();
-    
-    console.log('✅ Build process completed successfully');
   }
 }
 
@@ -195,13 +85,16 @@ if (require.main === module) {
   
   switch (command) {
     case 'init':
-      configManager.initializeBuild();
+      configManager.fullInitialization();
       break;
     case 'finalize':
-      configManager.finalizeBuild();
+      configManager.fullFinalization();
       break;
     case 'validate':
-      configManager.validateBuildConfig();
+      configManager.comprehensiveValidation();
+      break;
+    case 'summary':
+      configManager.displaySummary();
       break;
     case 'metadata':
       configManager.generateBuildMetadata();
@@ -210,7 +103,14 @@ if (require.main === module) {
       configManager.validateBundleSize();
       break;
     default:
-      console.log('Usage: node build-config.js [init|finalize|validate|metadata|bundle-check]');
+      console.log('Usage: node build-config.js [init|finalize|validate|summary|metadata|bundle-check]');
+      console.log('\nCommands:');
+      console.log('  init        - Initialize build with full configuration');
+      console.log('  finalize    - Finalize build with validation');
+      console.log('  validate    - Run configuration validation');
+      console.log('  summary     - Display configuration summary');
+      console.log('  metadata    - Generate build metadata');
+      console.log('  bundle-check - Validate bundle size');
       process.exit(1);
   }
 }
