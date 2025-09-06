@@ -46,6 +46,67 @@ from app.service.agent.orchestration.enhanced_routing import raw_data_or_investi
 logger = get_bridge_logger(__name__)
 
 
+async def create_resilient_memory():
+    """
+    Create a resilient memory saver with bulletproof fallback handling.
+    
+    Attempts to use Redis for persistence but falls back to MemorySaver if
+    Redis is unavailable. This ensures investigations continue even when
+    external services fail.
+    
+    Returns:
+        Either Redis-based saver (preferred) or MemorySaver (fallback)
+    """
+    from app.service.config import get_settings_for_env
+    from app.service.redis_client import test_redis_connection
+    
+    settings = get_settings_for_env()
+    
+    # First, try to use a proper LangGraph Redis saver if available
+    try:
+        # Test Redis connection first
+        if test_redis_connection(settings):
+            logger.info("🛡️ Redis connection successful - using Redis for persistence")
+            # Use LangGraph's built-in RedisSaver if available
+            from langgraph.checkpoint.redis import RedisSaver
+            from app.service.redis_client import get_redis_client
+            
+            redis_client = get_redis_client(settings).get_client()
+            memory = RedisSaver(redis_client)
+            logger.info("🛡️ Using LangGraph RedisSaver with Redis Cloud")
+            return memory
+            
+        else:
+            logger.warning("🛡️ Redis connection failed - falling back to MemorySaver")
+            from langgraph.checkpoint.memory import MemorySaver
+            return MemorySaver()
+            
+    except ImportError:
+        logger.info("🛡️ LangGraph RedisSaver not available - trying AsyncRedisSaver with mock")
+        
+        # Fallback to AsyncRedisSaver with mock IPS cache
+        try:
+            from app.persistence.async_ips_redis import AsyncRedisSaver
+            import os
+            
+            # Force use of mock client to avoid non-existent ipscache-qal.api.olorin.com
+            os.environ["USE_MOCK_IPS_CACHE"] = "true"
+            memory = AsyncRedisSaver()
+            
+            logger.info("🛡️ Using AsyncRedisSaver with MockIPSCacheClient - bulletproof resilience enabled")
+            return memory
+            
+        except Exception as e:
+            logger.warning(f"🛡️ AsyncRedisSaver failed ({str(e)}) - falling back to MemorySaver")
+            from langgraph.checkpoint.memory import MemorySaver
+            return MemorySaver()
+            
+    except Exception as e:
+        logger.warning(f"🛡️ Redis unavailable ({str(e)}) - falling back to MemorySaver for bulletproof operation")
+        from langgraph.checkpoint.memory import MemorySaver
+        return MemorySaver()
+
+
 class OrchestratorState(TypedDict):
     """Extended state for orchestrator-driven investigations"""
     messages: Annotated[List[BaseMessage], add_messages]
@@ -272,8 +333,7 @@ async def create_orchestrator_driven_graph(
         builder.add_edge("tools", "fraud_investigation")
         
         # Compile graph with persistence and bulletproof configuration
-        from app.persistence.async_ips_redis import AsyncRedisSaver
-        memory = AsyncRedisSaver()
+        memory = await create_resilient_memory()
         
         # Compile with orchestrator-specific configuration
         graph = builder.compile(
@@ -382,8 +442,7 @@ async def create_hybrid_orchestration_graph(
         builder.add_edge("tools", "fraud_investigation")
         
         # Compile with enhanced configuration
-        from app.persistence.async_ips_redis import AsyncRedisSaver
-        memory = AsyncRedisSaver()
+        memory = await create_resilient_memory()
         
         graph = builder.compile(
             checkpointer=memory,
