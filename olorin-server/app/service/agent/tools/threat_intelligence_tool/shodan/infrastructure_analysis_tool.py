@@ -36,11 +36,24 @@ class InfrastructureAnalysisInput(BaseModel):
     def validate_ip(cls, v):
         """Validate IP address format."""
         import ipaddress
+        import re
+        
+        # Check for common entity ID patterns that might be passed incorrectly
+        entity_patterns = [
+            r'^[A-Z0-9]{16}$',  # 16-character alphanumeric (like K1F6HIIGBVHH20TX)
+            r'^[a-f0-9\-]{36}$',  # UUID format
+            r'^[a-zA-Z0-9_\-]+::[a-f0-9\-]{36}$',  # Entity ID with UUID
+        ]
+        
+        for pattern in entity_patterns:
+            if re.match(pattern, v):
+                raise ValueError(f"Entity ID detected where IP address expected: {v}. Please provide a valid IPv4 or IPv6 address.")
+        
         try:
             ipaddress.ip_address(v)
             return v
         except ValueError:
-            raise ValueError(f"Invalid IP address format: {v}")
+            raise ValueError(f"Invalid IP address format: {v}. Expected IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., 2001:db8::1) address.")
 
 
 class ShodanInfrastructureAnalysisTool(BaseTool):

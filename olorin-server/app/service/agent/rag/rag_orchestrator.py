@@ -170,11 +170,12 @@ class RAGOrchestrator:
         # Metrics
         self.metrics = RAGMetrics()
         
+        # Use explicit logger name to avoid undefined __name__ issues
+        self.logger = get_bridge_logger("app.service.agent.rag.rag_orchestrator")
+        
         # LLM client placeholder
         self.llm_client = None
         self._initialize_llm_client()
-        
-        self.logger = get_bridge_logger(f"{__name__}.rag_orchestrator")
     
     def _initialize_llm_client(self) -> None:
         """Initialize LLM client"""

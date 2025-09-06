@@ -59,6 +59,7 @@ except ImportError as e:
     FIXES_AVAILABLE = False
 import logging
 import time
+import random
 import argparse
 import csv
 import webbrowser
@@ -125,6 +126,14 @@ except ImportError as e:
     sys.exit(1)
 
 from langchain_core.runnables.config import RunnableConfig
+
+# Import mock LLM system for MOCK mode testing
+try:
+    from mock_llm_responses import generate_mock_response
+    MOCK_SYSTEM_AVAILABLE = True
+except ImportError:
+    MOCK_SYSTEM_AVAILABLE = False
+    logger.warning("Mock LLM response system not available")
 
 # Configuration Constants
 DEFAULT_SERVER_URL = "http://localhost:8090"
@@ -269,10 +278,25 @@ class AdvancedMonitoringSystem:
                     self.log_monitoring_warning("WebSocket", "websocket-client library not installed - install with 'poetry add websocket-client'")
                     return
                 
-                # Connect to WebSocket endpoint
-                ws_url = self.config.server_url.replace('http://', 'ws://').replace('https://', 'wss://')
-                if not ws_url.endswith('/ws/investigation'):
-                    ws_url += '/ws/investigation'
+                # Create authenticated WebSocket connection
+                try:
+                    # Use WebSocket authentication system to prevent 403 Forbidden errors
+                    ws_config = create_websocket_connection_config(
+                        server_url=self.config.server_url,
+                        investigation_id='investigation_monitor',
+                        demo_mode=True,
+                        parallel=False
+                    )
+                    ws_url = ws_config['url']
+                    ws_headers = ws_config['headers']
+                    self.log_monitoring_success("WebSocket", "Created authenticated WebSocket configuration")
+                except Exception as auth_error:
+                    # Fallback to basic WebSocket URL if authentication setup fails
+                    self.log_monitoring_warning("WebSocket", f"Authentication setup failed ({auth_error}), using basic connection")
+                    ws_url = self.config.server_url.replace('http://', 'ws://').replace('https://', 'wss://')
+                    if not ws_url.endswith('/ws/investigation'):
+                        ws_url += '/ws/investigation'
+                    ws_headers = None
                 
                 def on_message(ws, message):
                     try:
@@ -294,7 +318,12 @@ class AdvancedMonitoringSystem:
                         self.log_monitoring_warning("WebSocket", f"Error processing message: {e}")
                 
                 def on_error(ws, error):
-                    self.log_monitoring_error("WebSocket", f"Connection error: {error}")
+                    error_msg = str(error)
+                    if "403" in error_msg or "Forbidden" in error_msg:
+                        self.log_monitoring_error("WebSocket", f"Authentication failed (403 Forbidden) - JWT token may be invalid or missing")
+                        self.log_monitoring_warning("WebSocket", "Try running with --show-websocket to see WebSocket authentication details")
+                    else:
+                        self.log_monitoring_error("WebSocket", f"Connection error: {error}")
                 
                 def on_close(ws, close_status_code, close_msg):
                     if self.monitoring_active:
@@ -303,13 +332,27 @@ class AdvancedMonitoringSystem:
                 def on_open(ws):
                     self.log_monitoring_success("WebSocket", f"Connected to investigation stream at {ws_url}")
                 
-                self.websocket_client = websocket.WebSocketApp(
-                    ws_url,
-                    on_message=on_message,
-                    on_error=on_error,
-                    on_close=on_close,
-                    on_open=on_open
-                )
+                # Create WebSocket client with authentication headers
+                if ws_headers:
+                    self.websocket_client = websocket.WebSocketApp(
+                        ws_url,
+                        header=ws_headers,
+                        on_message=on_message,
+                        on_error=on_error,
+                        on_close=on_close,
+                        on_open=on_open
+                    )
+                    self.log_monitoring_success("WebSocket", "WebSocket client created with JWT authentication")
+                else:
+                    # Fallback without headers
+                    self.websocket_client = websocket.WebSocketApp(
+                        ws_url,
+                        on_message=on_message,
+                        on_error=on_error,
+                        on_close=on_close,
+                        on_open=on_open
+                    )
+                    self.log_monitoring_warning("WebSocket", "WebSocket client created without authentication (may fail with 403)")
                 
                 # Run forever with automatic reconnection
                 self.websocket_client.run_forever(
@@ -337,7 +380,16 @@ class AdvancedMonitoringSystem:
         # Set up environment variables for LLM tracing
         os.environ['LANGCHAIN_VERBOSE'] = 'true'
         os.environ['OLORIN_LOG_LLM_INTERACTIONS'] = 'true'
-        os.environ['LANGCHAIN_TRACING_V2'] = 'true'
+        
+        # Only enable LangSmith tracing if LANGSMITH_API_KEY is available
+        # This prevents 401 authentication spam when running in demo mode
+        if 'LANGSMITH_API_KEY' in os.environ:
+            os.environ['LANGCHAIN_TRACING_V2'] = 'true'
+            self.log_monitoring_success("LLM", "LangSmith tracing enabled with API key")
+        else:
+            # Keep LangSmith tracing disabled to prevent 401 errors
+            os.environ['LANGCHAIN_TRACING_V2'] = 'false'
+            self.log_monitoring_warning("LLM", "LangSmith tracing disabled (no API key - prevents 401 errors)")
         
         # Set up LangChain callback handler for monitoring
         try:
@@ -1013,8 +1065,22 @@ class UnifiedAutonomousTestRunner:
             start_time = time.time()
             
             try:
-                findings = await agent_func(context, config)
-                duration = time.time() - start_time
+                # Use mock responses in MOCK mode only
+                if self.config.mode == TestMode.MOCK and MOCK_SYSTEM_AVAILABLE:
+                    self.logger.info(f"🎭 Using mock response for {agent_name} agent in MOCK mode")
+                    # Generate realistic mock response for this agent type
+                    findings = generate_mock_response(
+                        agent_type=agent_name,
+                        scenario=context.data_sources.get("scenario", {}).get("name", "default"),
+                        investigation_id=context.investigation_id
+                    )
+                    # Add small delay to simulate processing time
+                    await asyncio.sleep(random.uniform(0.1, 0.3))
+                    duration = time.time() - start_time
+                else:
+                    # Use real agent function
+                    findings = await agent_func(context, config)
+                    duration = time.time() - start_time
                 
                 agent_results[agent_name] = {
                     "findings": findings,
@@ -1076,8 +1142,29 @@ class UnifiedAutonomousTestRunner:
         
         start_time = time.time()
         try:
-            final_risk = await autonomous_risk_agent(context, config)
-            duration = time.time() - start_time
+            # Use mock response for risk aggregation in MOCK mode
+            if self.config.mode == TestMode.MOCK and MOCK_SYSTEM_AVAILABLE:
+                self.logger.info("🎭 Using mock response for risk aggregation agent in MOCK mode")
+                # Collect all previous agent responses for context
+                context_data = {
+                    "device_analysis": agent_results.get("device", {}).get("findings", "[No device analysis available]"),
+                    "location_analysis": agent_results.get("location", {}).get("findings", "[No location analysis available]"),
+                    "network_analysis": agent_results.get("network", {}).get("findings", "[No network analysis available]"),
+                    "logs_analysis": agent_results.get("logs", {}).get("findings", "[No logs analysis available]")
+                }
+                final_risk = generate_mock_response(
+                    agent_type="risk",
+                    scenario=context.data_sources.get("scenario", {}).get("name", "default"),
+                    investigation_id=context.investigation_id,
+                    context_data=context_data
+                )
+                # Add small delay to simulate processing time
+                await asyncio.sleep(random.uniform(0.2, 0.5))
+                duration = time.time() - start_time
+            else:
+                # Use real risk aggregation agent
+                final_risk = await autonomous_risk_agent(context, config)
+                duration = time.time() - start_time
             
             agent_results["risk_aggregation"] = {
                 "findings": final_risk,
@@ -1117,6 +1204,9 @@ class UnifiedAutonomousTestRunner:
             "performance_score": 0,
             "logging_score": 0,
             "journey_score": 0,
+            "quality_score": 0,
+            "correlation_score": 0,
+            "business_logic_score": 0,
             "details": {}
         }
         
@@ -1141,9 +1231,9 @@ class UnifiedAutonomousTestRunner:
             validation_results["performance_score"] = performance_score
             validation_results["details"]["total_duration"] = total_duration
             
-            # Validate accuracy (risk score reasonableness)
+            # Enhanced accuracy validation (risk score quality)
             final_risk = result.agent_results.get("risk_aggregation", {}).get("risk_score", 0)
-            accuracy_score = 100 if 0 <= final_risk <= 1 else 50
+            accuracy_score = self._validate_risk_score_accuracy(final_risk, context.investigation_type if context else "unknown")
             
             validation_results["accuracy_score"] = accuracy_score
             validation_results["details"]["final_risk_score"] = final_risk
@@ -1156,13 +1246,28 @@ class UnifiedAutonomousTestRunner:
             journey_score = 100 if hasattr(self.journey_tracker, 'active_journeys') else 0
             validation_results["journey_score"] = journey_score
             
-            # Calculate overall score
+            # Enhanced validation: Agent response quality
+            quality_score = self._validate_agent_response_quality(result.agent_results)
+            validation_results["quality_score"] = quality_score
+            
+            # Enhanced validation: Cross-domain correlation
+            correlation_score = self._validate_cross_domain_correlation(result.agent_results)
+            validation_results["correlation_score"] = correlation_score
+            
+            # Enhanced validation: Business logic consistency
+            business_logic_score = self._validate_business_logic(result.agent_results, context.investigation_type if context else "unknown")
+            validation_results["business_logic_score"] = business_logic_score
+            
+            # Calculate enhanced overall score with comprehensive criteria
             validation_results["overall_score"] = (
-                completion_score * 0.3 +
-                performance_score * 0.2 +
-                accuracy_score * 0.2 +
-                logging_score * 0.15 +
-                journey_score * 0.15
+                completion_score * 0.20 +      # Reduced weight - completion is basic
+                performance_score * 0.15 +     # Reduced weight
+                accuracy_score * 0.20 +        # Same weight - important
+                quality_score * 0.15 +         # NEW - Agent response quality
+                correlation_score * 0.10 +     # NEW - Cross-domain correlation
+                business_logic_score * 0.10 +  # NEW - Business logic consistency
+                logging_score * 0.05 +         # Reduced weight
+                journey_score * 0.05          # Reduced weight
             )
             
         except Exception as e:
@@ -1170,6 +1275,159 @@ class UnifiedAutonomousTestRunner:
             validation_results["details"]["validation_error"] = str(e)
         
         return validation_results
+
+    def _validate_risk_score_accuracy(self, risk_score: float, scenario_type: str) -> float:
+        """Enhanced risk score accuracy validation"""
+        
+        if not isinstance(risk_score, (int, float)):
+            return 20  # Major penalty for non-numeric scores
+        
+        # Basic range validation
+        if not (0 <= risk_score <= 1):
+            return 30  # Major penalty for out-of-range scores
+        
+        # Scenario-specific expectations (these would be based on domain knowledge)
+        expected_ranges = {
+            "velocity_abuse": (0.6, 0.9),      # Should be high risk
+            "impossible_travel": (0.7, 1.0),   # Should be very high risk  
+            "device_spoofing": (0.5, 0.8),     # Should be medium-high risk
+            "account_takeover": (0.7, 0.95),   # Should be high risk
+            "synthetic_identity": (0.6, 0.9),  # Should be high risk
+        }
+        
+        expected_range = expected_ranges.get(scenario_type, (0.3, 0.8))  # Default range
+        min_expected, max_expected = expected_range
+        
+        # Score based on how well it matches expectations
+        if min_expected <= risk_score <= max_expected:
+            return 100  # Perfect match to expectations
+        elif min_expected - 0.2 <= risk_score <= max_expected + 0.2:
+            return 80   # Close to expectations
+        elif 0 < risk_score < 1:
+            return 60   # Valid range but not ideal for scenario
+        else:
+            return 40   # Valid but concerning
+    
+    def _validate_agent_response_quality(self, agent_results: Dict[str, Any]) -> float:
+        """Validate the quality of agent responses"""
+        
+        total_score = 0
+        agent_count = 0
+        
+        for agent_name, data in agent_results.items():
+            if agent_name == "risk_aggregation":
+                continue  # Skip aggregation agent
+                
+            agent_count += 1
+            agent_score = 0
+            
+            # Check if agent provided findings
+            findings = data.get("findings", "")
+            if findings and len(str(findings)) > 50:  # Substantial findings
+                agent_score += 40
+            elif findings:
+                agent_score += 20  # Some findings
+            
+            # Check if agent provided risk score
+            if "risk_score" in data and isinstance(data["risk_score"], (int, float)):
+                if 0 <= data["risk_score"] <= 1:
+                    agent_score += 30
+                else:
+                    agent_score += 10  # Invalid range
+            
+            # Check if agent completed successfully
+            if data.get("status") == "success":
+                agent_score += 20
+            
+            # Check response time (reasonable performance)
+            duration = data.get("duration", 0)
+            if duration < 10:  # Fast response
+                agent_score += 10
+            elif duration < 30:  # Acceptable response
+                agent_score += 5
+            
+            total_score += agent_score
+        
+        return (total_score / (agent_count * 100)) * 100 if agent_count > 0 else 50
+    
+    def _validate_cross_domain_correlation(self, agent_results: Dict[str, Any]) -> float:
+        """Validate correlation between different agent domains"""
+        
+        # Extract risk scores from different agents
+        agent_scores = {}
+        for agent_name, data in agent_results.items():
+            if agent_name != "risk_aggregation" and "risk_score" in data:
+                agent_scores[agent_name] = data.get("risk_score", 0)
+        
+        if len(agent_scores) < 2:
+            return 50  # Can't validate correlation with < 2 agents
+        
+        scores = list(agent_scores.values())
+        
+        # Check for reasonable score variation (not all identical)
+        score_range = max(scores) - min(scores)
+        if score_range < 0.05:  # Too similar - likely mock or error
+            return 40
+        elif score_range > 0.8:  # Too different - inconsistent analysis
+            return 60
+        
+        # Check for reasonable aggregation
+        avg_individual = sum(scores) / len(scores)
+        aggregated_score = agent_results.get("risk_aggregation", {}).get("risk_score", 0)
+        
+        if abs(aggregated_score - avg_individual) < 0.15:  # Close to average
+            return 90
+        elif abs(aggregated_score - avg_individual) < 0.25:  # Reasonably close
+            return 75
+        else:
+            return 55  # Significant deviation
+    
+    def _validate_business_logic(self, agent_results: Dict[str, Any], scenario_type: str) -> float:
+        """Validate business logic consistency for fraud detection"""
+        
+        score = 100
+        
+        # Check that findings mention relevant fraud indicators for the scenario
+        scenario_keywords = {
+            "velocity_abuse": ["velocity", "rapid", "frequency", "rate"],
+            "impossible_travel": ["travel", "location", "geographic", "distance"],
+            "device_spoofing": ["device", "fingerprint", "spoofing", "virtual"],
+            "account_takeover": ["account", "credential", "unauthorized", "suspicious"],
+            "synthetic_identity": ["identity", "synthetic", "profile", "fabricated"]
+        }
+        
+        expected_keywords = scenario_keywords.get(scenario_type, [])
+        if expected_keywords:
+            keyword_found = False
+            for agent_name, data in agent_results.items():
+                findings_text = str(data.get("findings", "")).lower()
+                if any(keyword in findings_text for keyword in expected_keywords):
+                    keyword_found = True
+                    break
+            
+            if not keyword_found:
+                score -= 30  # Penalty for missing scenario-specific indicators
+        
+        # Check for reasonable confidence levels
+        confidences = []
+        for agent_name, data in agent_results.items():
+            if "confidence" in data:
+                confidences.append(data["confidence"])
+        
+        if confidences:
+            avg_confidence = sum(confidences) / len(confidences)
+            if avg_confidence < 0.5:  # Very low confidence
+                score -= 20
+            elif avg_confidence > 0.95:  # Unrealistically high confidence
+                score -= 10
+        
+        # Check for error handling evidence
+        error_count = sum(1 for data in agent_results.values() 
+                         if data.get("status") == "error")
+        if error_count > len(agent_results) * 0.5:  # More than half failed
+            score -= 25
+        
+        return max(0, score)
 
     async def _collect_performance_metrics(
         self,
@@ -1230,35 +1488,100 @@ class UnifiedAutonomousTestRunner:
         return performance_data
 
     def _extract_risk_score_from_response(self, response) -> float:
-        """Extract risk score from agent response"""
+        """
+        UPDATED: Extract risk score from agent response - handles unified schema format
+        This prevents 0.00 scores by properly extracting overall_risk_score from new format
+        """
         if response is None:
             return 0.0
         
-        # Handle DomainFindings object
-        if hasattr(response, 'risk_score'):
-            return response.risk_score or 0.0
-        
-        # Handle dict response
+        # PRIORITY 1: Handle unified schema format (NEW - prevents 0.00 scores)
         if isinstance(response, dict):
-            if 'error' in response:
-                return 0.0
-                
-            # Extract from LangChain message format
+            # Check for unified schema fields first
+            if 'overall_risk_score' in response:
+                score = response['overall_risk_score']
+                if isinstance(score, (int, float)) and score > 0:
+                    return float(score)
+            
+            # Extract from LangChain message format with unified schema
             if 'messages' in response:
                 for message in response['messages']:
                     if hasattr(message, 'content'):
                         try:
                             content = json.loads(message.content)
+                            
+                            # UNIFIED SCHEMA: Look for overall_risk_score first
+                            if 'overall_risk_score' in content:
+                                score = content['overall_risk_score']
+                                if isinstance(score, (int, float)) and score > 0:
+                                    return float(score)
+                                    
+                            # Legacy compatibility: old risk_assessment format
                             if 'risk_assessment' in content:
                                 risk_level = content['risk_assessment'].get('risk_level', 0.0)
-                                return float(risk_level) if risk_level is not None else 0.0
-                        except (json.JSONDecodeError, KeyError, ValueError):
-                            pass
-                            
-            # Direct risk_score field
+                                if isinstance(risk_level, (int, float)) and risk_level > 0:
+                                    return float(risk_level)
+                                    
+                        except (json.JSONDecodeError, KeyError, ValueError) as e:
+                            self.logger.debug(f"JSON parsing failed for message content: {e}")
+                            continue
+            
+            # Handle error responses gracefully
+            if 'error' in response:
+                return 0.0
+                
+            # Legacy: Direct risk_score field
             if 'risk_score' in response:
-                return float(response['risk_score']) if response['risk_score'] is not None else 0.0
+                score = response['risk_score']
+                if isinstance(score, (int, float)):
+                    return float(score) if score is not None else 0.0
         
+        # Handle DomainFindings object (legacy)
+        if hasattr(response, 'risk_score'):
+            return response.risk_score or 0.0
+        
+        # Handle string response using improved validation
+        if isinstance(response, str) and response.strip():
+            try:
+                # Try parsing as JSON first (unified schema format)
+                try:
+                    json_content = json.loads(response)
+                    if isinstance(json_content, dict) and 'overall_risk_score' in json_content:
+                        score = json_content['overall_risk_score']
+                        if isinstance(score, (int, float)) and score > 0:
+                            return float(score)
+                except json.JSONDecodeError:
+                    pass  # Not JSON, continue to text extraction
+                
+                # Use UnifiedSchemaValidator for text extraction
+                from app.service.agent.schema_validator_fix import AgentType, get_unified_validator
+                validator = get_unified_validator()
+                
+                # Try to extract risk score from text using the unified validator
+                result = validator.extract_risk_score(response, AgentType.RISK, debug=False)
+                if result and result.risk_level > 0:
+                    return float(result.risk_level)
+                    
+                # Enhanced regex patterns for better extraction
+                import re
+                score_patterns = [
+                    r'overall_risk_score[:\s]*([0-1]?\.\d+|\d+\.?\d*)',  # Unified schema format
+                    r'(?:overall_)?risk_score[:\s]*([0-1]?\.\d+|\d+\.?\d*)',
+                    r'(?:overall_)?risk_score\s*=\s*([0-1]?\.\d+|\d+\.?\d*)',
+                    r'Risk Score[:\s]*([0-1]?\.\d+|\d+\.?\d*)',
+                    r'risk_level[:\s]*([0-1]?\.\d+|\d+\.?\d*)'  # Legacy compatibility
+                ]
+                
+                for pattern in score_patterns:
+                    match = re.search(pattern, response, re.IGNORECASE)
+                    if match:
+                        score = float(match.group(1))
+                        # Ensure score is in valid range
+                        return min(max(score, 0.0), 1.0)
+                        
+            except Exception as e:
+                self.logger.debug(f"Error extracting risk score from string response: {e}")
+                
         return 0.0
 
     def _extract_confidence_from_response(self, response) -> float:
@@ -1287,6 +1610,27 @@ class UnifiedAutonomousTestRunner:
             # Direct confidence field
             if 'confidence' in response:
                 return float(response['confidence']) if response['confidence'] is not None else 0.0
+        
+        # Handle string response (LLM text output)
+        if isinstance(response, str) and response.strip():
+            try:
+                import re
+                # Look for confidence patterns
+                confidence_patterns = [
+                    r'confidence\s*score:\s*(\d+)',
+                    r'confidence:\s*(\d+)',
+                    r'Confidence Score:\s*(\d+)'
+                ]
+                
+                for pattern in confidence_patterns:
+                    match = re.search(pattern, response, re.IGNORECASE)
+                    if match:
+                        confidence = float(match.group(1))
+                        # Ensure confidence is in valid range (0-100)
+                        return min(max(confidence, 0.0), 100.0)
+                        
+            except Exception as e:
+                self.logger.debug(f"Error extracting confidence from string response: {e}")
         
         return 0.0
 
@@ -1574,7 +1918,7 @@ class UnifiedAutonomousTestRunner:
         logger.info(f"   Pass Rate: {summary['pass_rate']:.1f}%")
         logger.info(f"   Average Score: {summary['average_score']:.1f}/100")
         logger.info(f"   Total Duration: {summary['total_duration']:.2f}s")
-        logger.info()
+        logger.info("")
         
         # CSV info if available
         if report_data.get("csv_metadata"):
@@ -1583,7 +1927,7 @@ class UnifiedAutonomousTestRunner:
             logger.info(f"   Transactions: {csv_meta['transaction_count']}")
             logger.info(f"   Unique Users: {csv_meta['unique_users']}")
             logger.info(f"   Date Range: {csv_meta.get('date_range', 'N/A')}")
-            logger.info()
+            logger.info("")
         
         # Individual results
         logger.info(f"🧪 INDIVIDUAL RESULTS")
@@ -1600,7 +1944,7 @@ class UnifiedAutonomousTestRunner:
                 for error in result_data["errors"]:
                     logger.error(f"      ⚠️  {error}")
         
-        logger.info()
+        logger.info("")
         
         # Performance analysis
         perf = report_data.get("performance_analysis", {})
@@ -1609,7 +1953,7 @@ class UnifiedAutonomousTestRunner:
             logger.info(f"   Average Duration: {summary['average_duration']:.2f}s")
             logger.info(f"   Fastest Test: {perf.get('fastest_test', 0):.2f}s")
             logger.info(f"   Slowest Test: {perf.get('slowest_test', 0):.2f}s")
-            logger.info()
+            logger.info("")
         
         # Recommendations
         recommendations = report_data.get("recommendations", [])
@@ -1617,7 +1961,7 @@ class UnifiedAutonomousTestRunner:
             logger.info(f"💡 RECOMMENDATIONS")
             for rec in recommendations:
                 logger.info(f"   • {rec}")
-            logger.info()
+            logger.info("")
         
         logger.info("=" * 80)
 
@@ -1912,6 +2256,17 @@ async def main():
         show_agents=getattr(args, 'show_agents', False),
         follow_logs=getattr(args, 'follow_logs', False)
     )
+    
+    # Apply LangSmith fixes to prevent 401 authentication spam
+    if FIXES_AVAILABLE:
+        try:
+            langsmith_result = apply_langsmith_fix(demo_mode=True)
+            if langsmith_result.get('langsmith_disabled'):
+                print("✅ LangSmith tracing disabled to prevent 401 errors")
+            else:
+                print("⚠️  LangSmith tracing could not be fully disabled")
+        except Exception as e:
+            print(f"⚠️  Error applying LangSmith fixes: {e}")
     
     # Create and run test runner
     test_runner = UnifiedAutonomousTestRunner(config)

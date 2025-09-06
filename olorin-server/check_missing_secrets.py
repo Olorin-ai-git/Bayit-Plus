@@ -75,7 +75,7 @@ def check_firebase_secrets():
     logger.info("=" * 60)
     logger.info("FIREBASE SECRET MANAGER - SECRET STATUS CHECK")
     logger.info("=" * 60)
-    logger.info()
+    logger.info("Checking secrets configuration...")
     
     # Try to import the secret manager
     try:
@@ -86,7 +86,7 @@ def check_firebase_secrets():
         
         logger.info("✅ Firebase Secret Manager initialized successfully")
         logger.info(f"📁 Project ID: olorin-ai")
-        logger.info()
+        logger.info("Operation completed successfully")
         
     except Exception as e:
         logger.error(f"❌ Failed to initialize Firebase Secret Manager: {e}")
@@ -143,34 +143,34 @@ def check_firebase_secrets():
             else:
                 logger.error(f"⚠️  {secret_name}: ERROR - {error_msg[:50]}...")
     
-    logger.info()
+    logger.info("Error handling completed")
     logger.info("=" * 60)
     logger.info("SUMMARY")
     logger.info("=" * 60)
     logger.info(f"✅ Found secrets: {len(found_secrets)}")
     logger.info(f"❌ Missing secrets: {len(missing_secrets)}")
-    logger.info()
+    logger.info("Configuration check completed")
     
     if missing_secrets:
         logger.warning("🔴 MISSING SECRETS (These are causing the warnings):")
         logger.info("-" * 40)
         for secret in missing_secrets:
             logger.info(f"  • {secret}")
-        logger.info()
+        logger.info("Operation status update")
         logger.warning("💡 To fix these warnings, you need to:")
         logger.info("   1. Add these secrets to Firebase Secret Manager, OR")
         logger.info("   2. Set them as environment variables, OR")
         logger.info("   3. Add them to a .env file")
     
     if found_secrets:
-        logger.info()
+        logger.info("Configuration check completed")
         logger.info("🟢 AVAILABLE SECRETS:")
         logger.info("-" * 40)
         for secret in found_secrets:
             logger.info(f"  • {secret}")
     
     # Check environment variables as fallback
-    logger.info()
+    logger.info("Checking secrets configuration...")
     logger.info("=" * 60)
     logger.info("ENVIRONMENT VARIABLE FALLBACK CHECK")
     logger.info("=" * 60)
@@ -187,11 +187,11 @@ def check_firebase_secrets():
             logger.info(f"❌ {secret}: Not in environment")
     
     if env_found:
-        logger.info()
+        logger.info("Configuration check completed")
         logger.info(f"💡 {len(env_found)} missing secrets have environment variable fallbacks")
     
     if env_missing:
-        logger.info()
+        logger.info("Configuration check completed")
         logger.info("🔴 COMPLETELY MISSING (No Firebase secret, no env var):")
         logger.info("-" * 40)
         for secret in env_missing:
@@ -209,7 +209,7 @@ def check_firebase_secrets():
 
 def check_config_loading():
     """Check how the configuration is loading secrets."""
-    logger.info()
+    logger.info("Checking secrets configuration...")
     logger.info("=" * 60)
     logger.info("CONFIGURATION LOADING ANALYSIS")
     logger.info("=" * 60)
@@ -255,7 +255,7 @@ def main():
     logger.info("\n" + "=" * 60)
     logger.info("🔍 OLORIN SECRET CONFIGURATION DIAGNOSTIC")
     logger.info("=" * 60)
-    logger.info()
+    logger.info("Operation status update")
     
     # Check Firebase secrets
     check_firebase_secrets()
@@ -263,23 +263,23 @@ def main():
     # Check configuration loading
     check_config_loading()
     
-    logger.info()
+    logger.info("Loading configuration...")
     logger.info("=" * 60)
     logger.info("📝 RECOMMENDATIONS")
     logger.info("=" * 60)
-    logger.info()
+    logger.info("Operation status update")
     logger.info("1. For local development, create a .env file with missing secrets")
     logger.info("2. For production, add secrets to Firebase Secret Manager")
     logger.info("3. Critical secrets that must be set:")
     logger.info("   - JWT_SECRET_KEY (for authentication)")
     logger.info("   - Database credentials (if using external DB)")
     logger.info("   - API keys for external services you're using")
-    logger.info()
+    logger.info("Operation status update")
     logger.info("4. Optional secrets (can be omitted if not using the service):")
     logger.info("   - Snowflake credentials (only if using Snowflake)")
     logger.info("   - Splunk credentials (only if using Splunk)")
     logger.info("   - Langfuse keys (only if using Langfuse)")
-    logger.info()
+    logger.info("Operation status update")
 
 if __name__ == "__main__":
     main()

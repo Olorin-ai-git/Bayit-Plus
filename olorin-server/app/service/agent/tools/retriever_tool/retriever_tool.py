@@ -203,47 +203,5 @@ class RetrieverTool(BaseTool):
         return ", ".join(output)
 
 
-class QBRetrieverTool(RetrieverTool):
-    name: str = Field(
-        "qbo_knowledgebase_retriever",
-        description="Olorin RAG paved path tool which can be used to search any index",
-    )
-    description: str = Field(
-        "This tool helps find relevant help content about Quickbooks",
-    )
-    index_name: str | list[str] = Field(
-        "aimqa_qbo_payrollqa",
-        description="The name of the index to search.",
-    )
-    args_schema: type[BaseModel] = RetrieverToolArgs
-
-    def _run(self, state: RAGInputState, config: RunnableConfig, **kwargs) -> str:
-        return super().retrieve_run(state, config, **kwargs)
-
-    async def _arun(
-        self, state: RAGInputState, config: RunnableConfig, **kwargs
-    ) -> str:
-        return await super().aretrieve_arun(state, config, **kwargs)
 
 
-class TTRetrieverTool(RetrieverTool):
-    name: str = Field(
-        "tto_knowledgebase_retriever",
-        description="Olorin RAG paved path tool which can be used to search any index",
-    )
-    description: str = Field(
-        "This tool helps find relevant help content about Turbotax and Tax.",
-    )
-    index_name: str | list[str] = Field(
-        "aimqa_incomet_dnaragusecasemodel",
-        description="The name of the index to search.",
-    )
-    args_schema: type[BaseModel] = RetrieverToolArgs
-
-    def _run(self, state: RAGInputState, config: RunnableConfig, **kwargs) -> str:
-        return super().retrieve_run(state, config, **kwargs)
-
-    async def _arun(
-        self, state: RAGInputState, config: RunnableConfig, **kwargs
-    ) -> str:
-        return await super().aretrieve_arun(state, config, **kwargs)

@@ -7,6 +7,8 @@ These prompts provide structured output formats for consistent risk assessment.
 
 from typing import Dict, Any
 from app.service.logging import get_bridge_logger
+from app.service.agent.schema_validator_fix import get_unified_validator, AgentType, extract_overall_risk_score
+
 
 logger = get_bridge_logger(__name__)
 

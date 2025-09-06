@@ -25,30 +25,34 @@ class WebSocketAuthFixer:
     def generate_demo_jwt_token(self, user_id: str = "autonomous_test_runner") -> str:
         """Generate a demo JWT token for WebSocket authentication"""
         
-        # Get JWT secret (use demo secret in demo mode)
-        if self.demo_mode:
-            secret_key = self.demo_jwt_secret
-        else:
-            # Try to get real JWT secret from environment or Firebase
-            secret_key = os.environ.get('JWT_SECRET_KEY')
-            if not secret_key:
-                try:
-                    from app.utils.firebase_secrets import get_firebase_secret
-                    from app.service.config import get_settings_for_env
-                    settings = get_settings_for_env()
-                    secret_key = get_firebase_secret(settings.jwt_secret_key_secret)
-                except:
-                    logger.warning("Could not get real JWT secret, using demo secret")
-                    secret_key = self.demo_jwt_secret
+        # Always try to get the same secret key that the server uses
+        secret_key = None
+        try:
+            # Use the same method as the server to get JWT secret
+            from app.service.config_loader import get_config_loader
+            config_loader = get_config_loader()
+            jwt_config = config_loader.load_jwt_config()
+            secret_key = jwt_config.get("secret_key")
+            logger.info("Successfully retrieved JWT secret from config loader")
+        except Exception as e:
+            logger.warning(f"Could not get server JWT secret: {e}")
         
-        # Create JWT payload
+        # If server secret failed, try environment variable
+        if not secret_key:
+            secret_key = os.environ.get('JWT_SECRET_KEY')
+            if secret_key:
+                logger.info("Using JWT secret from environment variable")
+        
+        # Final fallback to demo secret 
+        if not secret_key:
+            secret_key = self.demo_jwt_secret
+            logger.warning("Using demo JWT secret as fallback")
+        
+        # Create JWT payload (minimal to match server expectations)
         payload = {
-            "sub": user_id,  # Subject (user identifier)
+            "sub": user_id,  # Subject (user identifier) - required by server
             "iat": datetime.utcnow(),  # Issued at
-            "exp": datetime.utcnow() + timedelta(hours=24),  # Expires in 24 hours
-            "aud": "olorin-autonomous-investigation",  # Audience
-            "iss": "olorin-test-runner",  # Issuer
-            "demo": self.demo_mode
+            "exp": datetime.utcnow() + timedelta(hours=24)  # Expires in 24 hours
         }
         
         # Generate JWT token
@@ -94,7 +98,8 @@ class WebSocketAuthFixer:
         
         headers = {
             'User-Agent': 'Olorin-Autonomous-Investigation-Runner/1.0',
-            'Origin': 'http://localhost:8090',  # Add origin for CORS
+            # Remove Origin header to prevent duplicate Origin header error
+            # The websocket-client library will add this automatically
         }
         
         # Add demo mode indicator
@@ -106,16 +111,26 @@ class WebSocketAuthFixer:
     def validate_jwt_token(self, token: str) -> bool:
         """Validate a JWT token (for testing purposes)"""
         try:
-            # Use demo secret in demo mode
-            secret_key = self.demo_jwt_secret if self.demo_mode else os.environ.get('JWT_SECRET_KEY', self.demo_jwt_secret)
+            # Get the same secret key that the server uses
+            secret_key = None
+            try:
+                from app.service.config_loader import get_config_loader
+                config_loader = get_config_loader()
+                jwt_config = config_loader.load_jwt_config()
+                secret_key = jwt_config.get("secret_key")
+            except:
+                pass
             
-            # Decode and verify token
+            if not secret_key:
+                secret_key = os.environ.get('JWT_SECRET_KEY', self.demo_jwt_secret)
+            
+            # Decode and verify token (same as server does)
             payload = jwt.decode(token, secret_key, algorithms=["HS256"])
             
-            # Check expiration
-            exp = payload.get('exp')
-            if exp and datetime.fromtimestamp(exp) < datetime.utcnow():
-                logger.warning("JWT token has expired")
+            # Check that subject exists (same as server check)
+            username = payload.get("sub")
+            if username is None:
+                logger.warning("JWT token missing subject")
                 return False
             
             logger.info("JWT token validation passed")
@@ -176,9 +191,8 @@ def patch_websocket_client_with_auth(websocket_app_class):
         if header is None:
             header = {}
         
-        # Add Origin header for CORS
-        if 'Origin' not in header:
-            header['Origin'] = 'http://localhost:8090'
+        # Remove Origin header logic to prevent duplicate headers
+        # The websocket-client library will handle Origin automatically
         
         # Add demo mode header
         if 'X-Olorin-Mode' not in header:

@@ -54,7 +54,7 @@ def patched_start_websocket_monitoring(self):
                 if not ws_url.endswith('/ws/investigation'):
                     ws_url += '/ws/investigation'
                 ws_headers = {
-                    'Origin': 'http://localhost:8090',
+                    # Removed Origin header to prevent duplicate header error
                     'X-Olorin-Mode': 'demo'
                 }
                 self.log_monitoring_warning("WebSocket", "Using basic WebSocket connection (may fail with 403)")
@@ -191,7 +191,7 @@ def apply_websocket_auth_patch():
                     if not ws_url.endswith('/ws/investigation'):
                         ws_url += '/ws/investigation'
                     ws_headers = {
-                        'Origin': 'http://localhost:8090',
+                        # Removed Origin header to prevent duplicate header error
                         'X-Olorin-Mode': 'demo'
                     }
                     self.log_monitoring_warning("WebSocket", "Using basic WebSocket connection (may fail with 403)")

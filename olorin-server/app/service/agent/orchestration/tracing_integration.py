@@ -1,5 +1,5 @@
 """
-LangSmith Tracing Integration - Complete tracing for performance analysis.
+Performance Tracing Integration - Complete tracing for performance analysis.
 
 This module implements Phase 3 of the LangGraph enhancement plan, providing:
 - Complete investigation execution visibility
@@ -21,23 +21,10 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.base import BaseCallbackHandler
 from app.service.logging import get_bridge_logger
 
-# Optional LangSmith imports (graceful fallback if not available)
-try:
-    from langsmith import Client, trace
-    from langsmith.run_trees import RunTree
-    LANGSMITH_AVAILABLE = True
-except ImportError:
-    LANGSMITH_AVAILABLE = False
-    logger = get_bridge_logger(__name__)
-    logger.warning("LangSmith not available. Tracing will use fallback implementation.")
-    
-    # Create mock decorators for compatibility
-    def trace(func):
-        return func
-    
-    class Client:
-        def __init__(self, *args, **kwargs):
-            pass
+# Simple trace decorator for performance monitoring
+def trace(func):
+    """Simple trace decorator that passes through the function unchanged."""
+    return func
 
 logger = get_bridge_logger(__name__)
 
@@ -63,29 +50,20 @@ class TraceMetrics:
 
 
 class TracedInvestigationGraph:
-    """Investigation graph with complete LangSmith tracing integration."""
+    """Investigation graph with complete performance tracing integration."""
     
-    def __init__(self, graph_builder_func: Callable, langsmith_project: Optional[str] = None):
+    def __init__(self, graph_builder_func: Callable, project: Optional[str] = None):
         """
         Initialize traced investigation graph.
         
         Args:
             graph_builder_func: Function to build the graph
-            langsmith_project: Optional LangSmith project name
+            project: Optional project name for tracing
         """
         self.graph_builder_func = graph_builder_func
-        self.langsmith_client = None
-        self.langsmith_project = langsmith_project or os.getenv("LANGSMITH_PROJECT", "olorin-investigations")
-        
-        if LANGSMITH_AVAILABLE:
-            try:
-                self.langsmith_client = Client()
-                logger.info(f"✅ LangSmith tracing initialized for project: {self.langsmith_project}")
-            except Exception as e:
-                logger.warning(f"Failed to initialize LangSmith client: {e}")
-                self.langsmith_client = None
-        
+        self.project = project or os.getenv("TRACING_PROJECT", "olorin-investigations")
         self.metrics_collector = MetricsCollector()
+        logger.info(f"✅ Performance tracing initialized for project: {self.project}")
         
     @trace
     async def execute_investigation(self, input_data: Dict[str, Any], config: Optional[RunnableConfig] = None) -> Dict[str, Any]:
@@ -133,9 +111,8 @@ class TracedInvestigationGraph:
                 "recommendations": recommendations
             }
             
-            # Log to LangSmith if available
-            if self.langsmith_client:
-                self._log_to_langsmith(trace_id, metrics, result)
+            # Log performance metrics
+            self._log_performance_metrics(trace_id, metrics, result)
             
             return result
             
@@ -144,9 +121,8 @@ class TracedInvestigationGraph:
             metrics.error_count += 1
             metrics.finalize()
             
-            # Log error to LangSmith
-            if self.langsmith_client:
-                self._log_error_to_langsmith(trace_id, e, metrics)
+            # Log error metrics
+            self._log_error_metrics(trace_id, e, metrics)
             
             raise
     
@@ -161,9 +137,7 @@ class TracedInvestigationGraph:
         # Add performance callback
         callbacks.append(PerformanceCallback(self.metrics_collector, trace_id))
         
-        # Add LangSmith callback if available
-        if LANGSMITH_AVAILABLE and self.langsmith_client:
-            callbacks.append(LangSmithCallback(self.langsmith_client, self.langsmith_project))
+        # Performance callbacks are handled by PerformanceCallback
         
         config["callbacks"] = callbacks
         config["tags"] = config.get("tags", []) + [trace_id, "traced_investigation"]
@@ -256,55 +230,41 @@ class TracedInvestigationGraph:
         
         return recommendations
     
-    def _log_to_langsmith(self, trace_id: str, metrics: TraceMetrics, result: Dict[str, Any]):
-        """Log trace data to LangSmith."""
-        if not self.langsmith_client:
-            return
-        
+    def _log_performance_metrics(self, trace_id: str, metrics: TraceMetrics, result: Dict[str, Any]):
+        """Log performance metrics for analysis."""
         try:
-            # Create run data
-            run_data = {
-                "name": f"Investigation_{trace_id}",
-                "run_type": "chain",
-                "inputs": {"trace_id": trace_id},
-                "outputs": {"duration": metrics.duration, "success": True},
-                "tags": ["investigation", "traced"],
-                "extra": {
-                    "agent_metrics": metrics.agent_metrics,
-                    "tool_metrics": metrics.tool_metrics,
-                    "cache_stats": {
-                        "hits": metrics.cache_hits,
-                        "misses": metrics.cache_misses
-                    }
+            # Create performance log data
+            performance_data = {
+                "trace_id": trace_id,
+                "duration": metrics.duration,
+                "success": True,
+                "agent_metrics": metrics.agent_metrics,
+                "tool_metrics": metrics.tool_metrics,
+                "cache_stats": {
+                    "hits": metrics.cache_hits,
+                    "misses": metrics.cache_misses
                 }
             }
             
-            # Log to LangSmith
-            # Note: Actual LangSmith API call would go here
-            logger.debug(f"Logged trace {trace_id} to LangSmith")
+            logger.info(f"Performance metrics logged for trace {trace_id}", extra=performance_data)
             
         except Exception as e:
-            logger.error(f"Failed to log to LangSmith: {e}")
+            logger.error(f"Failed to log performance metrics: {e}")
     
-    def _log_error_to_langsmith(self, trace_id: str, error: Exception, metrics: TraceMetrics):
-        """Log error trace to LangSmith."""
-        if not self.langsmith_client:
-            return
-        
+    def _log_error_metrics(self, trace_id: str, error: Exception, metrics: TraceMetrics):
+        """Log error metrics for analysis."""
         try:
-            run_data = {
-                "name": f"Investigation_{trace_id}",
-                "run_type": "chain",
+            error_data = {
+                "trace_id": trace_id,
                 "error": str(error),
-                "tags": ["investigation", "error"],
-                "extra": {"metrics": metrics.__dict__}
+                "error_type": type(error).__name__,
+                "metrics": metrics.__dict__
             }
             
-            # Log error to LangSmith
-            logger.debug(f"Logged error trace {trace_id} to LangSmith")
+            logger.error(f"Investigation error logged for trace {trace_id}", extra=error_data)
             
         except Exception as e:
-            logger.error(f"Failed to log error to LangSmith: {e}")
+            logger.error(f"Failed to log error metrics: {e}")
 
 
 class MetricsCollector:
@@ -423,16 +383,6 @@ class PerformanceCallback(BaseCallbackHandler):
         self.metrics_collector.record_error(str(error))
 
 
-class LangSmithCallback(BaseCallbackHandler):
-    """Callback handler for LangSmith integration."""
-    
-    def __init__(self, client: Client, project: str):
-        """Initialize LangSmith callback."""
-        self.client = client
-        self.project = project
-        
-    # LangSmith-specific callback implementations would go here
-    # These are handled automatically by the LangSmith client when properly configured
 
 
 @asynccontextmanager

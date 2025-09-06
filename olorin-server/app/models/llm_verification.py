@@ -38,7 +38,7 @@ class VerificationContext(BaseModel):
     original_prompt: Optional[str] = None
     original_response_text: str
     schema_id: Optional[str] = None
-    schema_json: Optional[Dict[str, Any]] = None
+    schema_data: Optional[Dict[str, Any]] = None
 
 
 class VerificationPolicy(BaseModel):

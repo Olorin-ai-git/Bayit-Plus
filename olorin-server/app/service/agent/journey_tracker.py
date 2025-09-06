@@ -487,6 +487,11 @@ class LangGraphJourneyTracker:
                         "selection_time_ms": selection_time_ms,
                         "performance_target_met": selection_time_ms <= 100
                     },
+                    state_changes={
+                        "tools_selected": tools_selected,
+                        "selection_completed": True,
+                        "performance_delta": selection_time_ms - 100  # Difference from target
+                    },
                     metadata={
                         "tracking_type": "tool_selection",
                         "domain": domain,

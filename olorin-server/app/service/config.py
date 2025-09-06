@@ -340,9 +340,6 @@ class SvcSettings(BaseSettings):
     )
 
     enabled_tool_list: List[str] = [
-        "QBRetrieverTool",
-        "TTRetrieverTool",
-        "ListCustomersTool",
         "CdcUserTool",
         "CdcCompanyTool",
         "OIITool",

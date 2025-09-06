@@ -250,7 +250,9 @@ class UnifiedThreatIntelligenceTool(BaseTool):
 
     async def _execute_provider_query(self, tool: Any, target: str, query_type: str) -> Any:
         """Execute query on specific provider tool."""
-        # Prepare tool-specific arguments
+        # Prepare tool-specific arguments based on provider and tool
+        
+        # AbuseIPDB tool handling
         if "abuseipdb" in tool.name:
             if "bulk" in tool.name:
                 return await tool._arun(ip_addresses=target)
@@ -259,10 +261,48 @@ class UnifiedThreatIntelligenceTool(BaseTool):
             else:
                 return await tool._arun(ip_address=target)
         
-        # Add more provider-specific logic as tools are implemented
+        # VirusTotal tool handling
+        elif "virustotal" in tool.name:
+            if "domain" in tool.name or self._is_domain(target):
+                # Domain analysis requires 'domain' parameter
+                return await tool._arun(domain=target)
+            elif "file" in tool.name or self._is_file_hash(target):
+                # File analysis requires 'file_hash' parameter
+                return await tool._arun(file_hash=target)
+            elif "url" in tool.name:
+                # URL analysis requires 'url' parameter
+                return await tool._arun(url=target)
+            else:
+                # Try domain as default for VirusTotal
+                return await tool._arun(domain=target)
+        
+        # Shodan tool handling  
+        elif "shodan" in tool.name:
+            if self._is_ip_address(target):
+                # IP analysis requires 'ip_address' parameter
+                return await tool._arun(ip_address=target)
+            else:
+                # For non-IP targets, try to convert or use as query
+                return await tool._arun(query=target)
+        
+        # Generic fallback - try common parameter names
         else:
-            # Generic execution
-            return await tool._arun(target=target)
+            # Try common parameter patterns
+            try:
+                return await tool._arun(target=target)
+            except TypeError as e:
+                if "missing" in str(e) and "positional argument" in str(e):
+                    # Try alternative parameter names
+                    try:
+                        return await tool._arun(query=target)
+                    except TypeError:
+                        try:
+                            return await tool._arun(input=target)
+                        except TypeError:
+                            # Re-raise original error
+                            raise e
+                else:
+                    raise e
 
     def _correlate_results(self, provider_results: List[Dict[str, Any]], correlation_level: str) -> Dict[str, Any]:
         """Correlate results from multiple providers."""

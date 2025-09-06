@@ -1,3 +1,10 @@
+
+# Disable LangSmith to prevent authentication errors
+import os
+os.environ['LANGCHAIN_TRACING_V2'] = 'false'
+os.environ.pop('LANGCHAIN_API_KEY', None)
+os.environ.pop('LANGSMITH_API_KEY', None)
+
 """
 Autonomous Domain Agents
 

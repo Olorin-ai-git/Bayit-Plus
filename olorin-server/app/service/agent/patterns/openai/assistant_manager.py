@@ -162,8 +162,6 @@ You are an expert fraud detection analyst for Olorin's investigation system. You
 **Available Tools**:
 - SplunkQueryTool: Query security logs and transaction data from Splunk SIEM
 - SumoLogicQueryTool: Query application logs and performance metrics
-- QBRetrieverTool: Retrieve additional context and data points
-- TTRetrieverTool: Access transaction tracking information
 
 **Investigation Process**:
 1. Start with initial transaction analysis using Splunk data

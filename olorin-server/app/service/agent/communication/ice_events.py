@@ -331,7 +331,8 @@ class ICEEventBus:
         # Event correlation tracking
         self.correlation_chains: Dict[str, List[str]] = defaultdict(list)
         
-        self.logger = logging.getLogger(f"{__name__}.event_bus")
+        # Use get_bridge_logger instead of logging.getLogger to avoid import issues
+        self.logger = get_bridge_logger("app.service.agent.communication.ice_events")
         
         # Start processing
         self.start()

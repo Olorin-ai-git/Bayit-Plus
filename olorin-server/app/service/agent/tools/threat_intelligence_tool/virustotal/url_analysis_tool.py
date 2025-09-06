@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, validator
 from ..base_threat_tool import BaseThreatIntelligenceTool
 from .models import VirusTotalURLResponse
 from .virustotal_client import VirusTotalClient
+from .virustotal_config import VirusTotalConfig
 from app.service.logging import get_bridge_logger
 
 
@@ -87,13 +88,19 @@ class VirusTotalURLAnalysisTool(BaseTool):
         """Initialize the VirusTotal URL analysis tool."""
         super().__init__()
         self._client: Optional[VirusTotalClient] = None
+        self._virustotal_config: Optional[VirusTotalConfig] = None
     
     @property
     def client(self) -> VirusTotalClient:
         """Get or create VirusTotal client instance."""
         if self._client is None:
-            self._client = VirusTotalClient()
+            self._virustotal_config = VirusTotalConfig()
+            self._client = VirusTotalClient(self._virustotal_config)
         return self._client
+    
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp in ISO format."""
+        return datetime.utcnow().isoformat()
     
     def _run(self, **kwargs) -> str:
         """Execute URL analysis synchronously."""
