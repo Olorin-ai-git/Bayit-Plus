@@ -1,0 +1,283 @@
+# Cost Management Configuration for Olorin Server
+# This file provides configuration for the API cost management system
+# Author: Gil Klainert
+# Date: 2025-09-07
+# Plan: /docs/plans/2025-09-07-api-cost-management-system-plan.md
+
+# Anthropic API Credit Monitor Configuration
+credit_monitor:
+  # API configuration
+  api_timeout_seconds: 30.0
+  cache_duration_minutes: 5
+  
+  # Budget thresholds (USD)
+  budget_limits:
+    daily: 500.0
+    weekly: 2000.0
+    monthly: 8000.0
+    minimum_balance: 50.0
+    
+  # Alert thresholds (percentage of budget)
+  alert_thresholds:
+    warning: 0.8   # 80%
+    critical: 0.95  # 95%
+  
+  # Model cost tracking (per 1K tokens)
+  model_costs:
+    claude-opus-4-1-20250805:
+      input: 0.015
+      output: 0.075
+    claude-3-opus-20240229:
+      input: 0.015
+      output: 0.075
+    claude-3-sonnet-20240229:
+      input: 0.003
+      output: 0.015
+    claude-3-haiku-20240307:
+      input: 0.00025
+      output: 0.00125
+
+# Model Tier Fallback Configuration
+model_fallback:
+  # Default model preferences by task complexity
+  model_tiers:
+    efficient:
+      models:
+        - claude-3-haiku-20240307
+      max_tokens: 4096
+      quality_score: 0.75
+      suitable_for: [simple, moderate, complex, critical]
+      default: true
+      
+    standard:
+      models:
+        - claude-3-sonnet-20240229
+      max_tokens: 4096
+      quality_score: 0.85
+      suitable_for: [moderate, complex]
+      
+    premium:
+      models:
+        - claude-opus-4-1-20250805
+        - claude-3-opus-20240229
+      max_tokens: 8192
+      quality_score: 0.95
+      suitable_for: [complex, critical]
+  
+  # Task complexity mapping for investigation components
+  task_complexity:
+    # Agent-specific tasks
+    device_analysis: moderate
+    location_analysis: simple
+    network_analysis: complex
+    logs_analysis: complex
+    risk_assessment: critical
+    
+    # Investigation types
+    device_spoofing: complex
+    impossible_travel: moderate
+    synthetic_identity: critical
+    account_takeover: complex
+    first_party_fraud: critical
+    money_laundering: critical
+    social_engineering: complex
+    insider_fraud: critical
+    
+    # Generic tasks
+    data_extraction: simple
+    pattern_recognition: moderate
+    correlation_analysis: complex
+    decision_making: critical
+    report_generation: simple
+  
+  # Fallback configuration
+  economy_mode: false
+  quality_threshold: 0.8
+  cost_optimization_enabled: true
+
+# Circuit Breaker Configuration
+circuit_breaker:
+  # Default configuration for all breakers
+  default_config:
+    failure_threshold: 5
+    recovery_timeout_seconds: 60.0
+    success_threshold: 3
+    request_timeout_seconds: 30.0
+    sliding_window_size: 10
+    minimum_requests: 5
+    failure_rate_threshold: 0.5
+    slow_request_threshold_seconds: 10.0
+    slow_request_rate_threshold: 0.5
+  
+  # Service-specific breakers
+  breakers:
+    anthropic_api:
+      failure_threshold: 3
+      recovery_timeout_seconds: 120.0
+      expected_exceptions:
+        - "RateLimitError"
+        - "ServiceUnavailableError"
+        - "InsufficientCreditsError"
+    
+    investigation_agent:
+      failure_threshold: 5
+      recovery_timeout_seconds: 60.0
+      
+    risk_assessment:
+      failure_threshold: 2
+      recovery_timeout_seconds: 180.0
+
+# Cost Optimization Framework Configuration
+cost_optimization:
+  # Global optimization settings
+  optimization_enabled: true
+  
+  # Active optimization strategies
+  active_strategies:
+    - batch_requests
+    - cache_responses
+    - token_compression
+    - model_downgrade
+    - request_deduplication
+  
+  # Cache configuration
+  cache_settings:
+    enabled: true
+    max_entries: 1000
+    default_ttl_seconds: 3600  # 1 hour
+    cleanup_interval_minutes: 15
+  
+  # Batch processing
+  batch_settings:
+    enabled: true
+    max_batch_size: 5
+    batch_timeout_seconds: 2.0
+    
+  # Token compression settings
+  compression_settings:
+    enabled: true
+    minimum_compression_ratio: 0.1  # At least 10% reduction
+    aggressive_mode: false
+    
+  # Budget management
+  budget_limits:
+    hourly: 25.0     # $25/hour
+    daily: 500.0     # $500/day
+    weekly: 2000.0   # $2000/week
+    monthly: 8000.0  # $8000/month
+    
+  budget_thresholds:
+    warning: 0.8   # 80%
+    critical: 0.95 # 95%
+
+# Real-Time Cost Tracking Configuration
+cost_tracking:
+  # Tracking intervals
+  update_intervals:
+    credit_balance: 300      # 5 minutes
+    usage_summary: 60       # 1 minute
+    budget_alerts: 30       # 30 seconds
+    performance_metrics: 120 # 2 minutes
+  
+  # WebSocket integration
+  websocket:
+    enabled: true
+    broadcast_updates: true
+    update_channels:
+      - cost_alerts
+      - budget_status
+      - optimization_stats
+      
+  # Alerting configuration
+  alerts:
+    enabled: true
+    channels:
+      - log
+      - websocket
+      - webhook  # Optional external webhook
+      
+  # Performance monitoring
+  performance:
+    track_response_times: true
+    track_token_usage: true
+    track_model_performance: true
+    generate_reports: true
+
+# Integration Configuration
+integration:
+  # FastAPI integration
+  fastapi:
+    add_middleware: true
+    track_endpoint_costs: true
+    add_cost_headers: true
+    
+  # Agent system integration  
+  agents:
+    wrap_llm_calls: true
+    track_agent_costs: true
+    enable_fallback: true
+    
+  # Investigation system integration
+  investigation:
+    cost_aware_routing: true
+    budget_based_prioritization: true
+    quality_vs_cost_optimization: true
+
+# Logging Configuration for Cost Management
+logging:
+  # Cost management specific logging
+  cost_management:
+    level: INFO
+    format: structured
+    outputs:
+      - console
+      - structured_file
+    file_path: logs/cost_management.log
+    
+  # Component-specific logging levels
+  components:
+    credit_monitor: INFO
+    model_fallback: INFO
+    circuit_breaker: WARNING
+    cost_optimization: INFO
+    cost_tracking: DEBUG
+
+# Emergency Configuration
+emergency:
+  # Emergency mode settings
+  low_credit_threshold: 10.0  # $10 minimum balance
+  emergency_model: claude-3-haiku-20240307
+  disable_non_critical: true
+  
+  # Fallback actions when credits exhausted
+  fallback_actions:
+    - enable_economy_mode
+    - disable_caching_writes
+    - prioritize_critical_only
+    - send_admin_alerts
+    
+  # Recovery settings
+  recovery:
+    auto_resume_threshold: 100.0  # Resume normal ops at $100 balance
+    gradual_ramp_up: true
+    test_period_minutes: 30
+
+# Development and Testing Configuration
+development:
+  # Development mode overrides
+  dev_mode: false
+  mock_api_calls: false
+  
+  # Testing configuration
+  testing:
+    use_test_budgets: false
+    test_budget_limits:
+      daily: 50.0
+      weekly: 200.0
+      monthly: 800.0
+      
+  # Debug settings
+  debug:
+    verbose_logging: false
+    detailed_cost_breakdown: false
+    track_all_optimizations: false
