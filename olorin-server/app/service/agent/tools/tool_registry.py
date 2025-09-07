@@ -157,42 +157,52 @@ class ToolRegistry:
 
         try:
             # Database Tools
-            if database_connection_string:
+            if database_connection_string and os.getenv('USE_DATABASE_QUERY', 'false').lower() == 'true':
                 self._register_tool(
                     DatabaseQueryTool(connection_string=database_connection_string),
                     "database",
                 )
+            if database_connection_string and os.getenv('USE_DATABASE_SCHEMA', 'false').lower() == 'true':
                 self._register_tool(
                     DatabaseSchemaTool(connection_string=database_connection_string),
                     "database",
                 )
 
             # Web Tools
-            self._register_tool(WebSearchTool(user_agent=web_search_user_agent), "web")
-            self._register_tool(WebScrapeTool(user_agent=web_search_user_agent), "web")
+            if os.getenv('USE_WEB_SEARCH', 'false').lower() == 'true':
+                self._register_tool(WebSearchTool(user_agent=web_search_user_agent), "web")
+            if os.getenv('USE_WEB_SCRAPE', 'false').lower() == 'true':
+                self._register_tool(WebScrapeTool(user_agent=web_search_user_agent), "web")
 
             # File System Tools
-            self._register_tool(
-                FileReadTool(base_path=file_system_base_path), "file_system"
-            )
-            self._register_tool(
-                FileWriteTool(base_path=file_system_base_path), "file_system"
-            )
-            self._register_tool(
-                DirectoryListTool(base_path=file_system_base_path), "file_system"
-            )
-            self._register_tool(
-                FileSearchTool(base_path=file_system_base_path), "file_system"
-            )
+            if os.getenv('USE_FILE_READ', 'false').lower() == 'true':
+                self._register_tool(
+                    FileReadTool(base_path=file_system_base_path), "file_system"
+                )
+            if os.getenv('USE_FILE_WRITE', 'false').lower() == 'true':
+                self._register_tool(
+                    FileWriteTool(base_path=file_system_base_path), "file_system"
+                )
+            if os.getenv('USE_DIRECTORY_LIST', 'false').lower() == 'true':
+                self._register_tool(
+                    DirectoryListTool(base_path=file_system_base_path), "file_system"
+                )
+            if os.getenv('USE_FILE_SEARCH', 'false').lower() == 'true':
+                self._register_tool(
+                    FileSearchTool(base_path=file_system_base_path), "file_system"
+                )
 
             # API Tools
-            self._register_tool(
-                HTTPRequestTool(default_headers=api_default_headers), "api"
-            )
-            self._register_tool(JSONAPITool(), "api")
+            if os.getenv('USE_HTTP_REQUEST', 'false').lower() == 'true':
+                self._register_tool(
+                    HTTPRequestTool(default_headers=api_default_headers), "api"
+                )
+            if os.getenv('USE_JSON_API', 'false').lower() == 'true':
+                self._register_tool(JSONAPITool(), "api")
 
             # Search Tools
-            self._register_tool(VectorSearchTool(), "search")
+            if os.getenv('USE_VECTOR_SEARCH', 'false').lower() == 'true':
+                self._register_tool(VectorSearchTool(), "search")
 
             # Olorin-specific Tools - Check environment variables for enablement
             if os.getenv('USE_SPLUNK', 'false').lower() == 'true':
@@ -224,233 +234,269 @@ class ToolRegistry:
 
             # MCP Client Tools (connect to external MCP servers)
             if MCP_CLIENTS_AVAILABLE:
-                try:
-                    self._register_tool(blockchain_mcp_client, "mcp_clients")
-                    logger.info("Blockchain MCP client registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register Blockchain MCP client: {e}")
+                if os.getenv('USE_BLOCKCHAIN_MCP_CLIENT', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(blockchain_mcp_client, "mcp_clients")
+                        logger.info("Blockchain MCP client registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Blockchain MCP client: {e}")
                 
-                try:
-                    self._register_tool(intelligence_mcp_client, "mcp_clients")
-                    logger.info("Intelligence MCP client registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register Intelligence MCP client: {e}")
+                if os.getenv('USE_INTELLIGENCE_MCP_CLIENT', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(intelligence_mcp_client, "mcp_clients")
+                        logger.info("Intelligence MCP client registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Intelligence MCP client: {e}")
                 
-                try:
-                    self._register_tool(ml_ai_mcp_client, "mcp_clients")
-                    logger.info("ML/AI MCP client registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register ML/AI MCP client: {e}")
+                if os.getenv('USE_ML_AI_MCP_CLIENT', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(ml_ai_mcp_client, "mcp_clients")
+                        logger.info("ML/AI MCP client registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register ML/AI MCP client: {e}")
             
             # Threat Intelligence Tools
             if THREAT_INTEL_AVAILABLE:
                 # AbuseIPDB tools
-                try:
-                    self._register_tool(SimpleIPReputationTool(), "threat_intelligence")
-                    logger.info("AbuseIPDB IP reputation tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register AbuseIPDB IP reputation tool: {e}")
+                if os.getenv('USE_ABUSEIPDB_IP_REPUTATION', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(SimpleIPReputationTool(), "threat_intelligence")
+                        logger.info("AbuseIPDB IP reputation tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register AbuseIPDB IP reputation tool: {e}")
                 
-                try:
-                    self._register_tool(BulkIPAnalysisTool(), "threat_intelligence")
-                    logger.info("AbuseIPDB bulk IP analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register AbuseIPDB bulk IP analysis tool: {e}")
+                if os.getenv('USE_ABUSEIPDB_BULK_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(BulkIPAnalysisTool(), "threat_intelligence")
+                        logger.info("AbuseIPDB bulk IP analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register AbuseIPDB bulk IP analysis tool: {e}")
                 
-                try:
-                    self._register_tool(CIDRBlockAnalysisTool(), "threat_intelligence")
-                    logger.info("AbuseIPDB CIDR block analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register AbuseIPDB CIDR block analysis tool: {e}")
+                if os.getenv('USE_ABUSEIPDB_CIDR_BLOCK', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(CIDRBlockAnalysisTool(), "threat_intelligence")
+                        logger.info("AbuseIPDB CIDR block analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register AbuseIPDB CIDR block analysis tool: {e}")
                 
-                try:
-                    self._register_tool(AbuseReportingTool(), "threat_intelligence")
-                    logger.info("AbuseIPDB abuse reporting tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register AbuseIPDB abuse reporting tool: {e}")
+                if os.getenv('USE_ABUSEIPDB_ABUSE_REPORTING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(AbuseReportingTool(), "threat_intelligence")
+                        logger.info("AbuseIPDB abuse reporting tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register AbuseIPDB abuse reporting tool: {e}")
                 
                 # VirusTotal tools
-                try:
-                    self._register_tool(VirusTotalIPAnalysisTool(), "threat_intelligence")
-                    logger.info("VirusTotal IP analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register VirusTotal IP analysis tool: {e}")
+                if os.getenv('USE_VIRUSTOTAL_IP_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(VirusTotalIPAnalysisTool(), "threat_intelligence")
+                        logger.info("VirusTotal IP analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register VirusTotal IP analysis tool: {e}")
                 
-                try:
-                    self._register_tool(VirusTotalDomainAnalysisTool(), "threat_intelligence")
-                    logger.info("VirusTotal domain analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register VirusTotal domain analysis tool: {e}")
+                if os.getenv('USE_VIRUSTOTAL_DOMAIN_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(VirusTotalDomainAnalysisTool(), "threat_intelligence")
+                        logger.info("VirusTotal domain analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register VirusTotal domain analysis tool: {e}")
                 
-                try:
-                    self._register_tool(VirusTotalFileAnalysisTool(), "threat_intelligence")
-                    logger.info("VirusTotal file analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register VirusTotal file analysis tool: {e}")
+                if os.getenv('USE_VIRUSTOTAL_FILE_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(VirusTotalFileAnalysisTool(), "threat_intelligence")
+                        logger.info("VirusTotal file analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register VirusTotal file analysis tool: {e}")
                 
-                try:
-                    self._register_tool(VirusTotalURLAnalysisTool(), "threat_intelligence")
-                    logger.info("VirusTotal URL analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register VirusTotal URL analysis tool: {e}")
+                if os.getenv('USE_VIRUSTOTAL_URL_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(VirusTotalURLAnalysisTool(), "threat_intelligence")
+                        logger.info("VirusTotal URL analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register VirusTotal URL analysis tool: {e}")
                 
                 # Shodan tools
-                try:
-                    self._register_tool(ShodanInfrastructureAnalysisTool(), "threat_intelligence")
-                    logger.info("Shodan infrastructure analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register Shodan infrastructure analysis tool: {e}")
+                if os.getenv('USE_SHODAN_INFRASTRUCTURE', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(ShodanInfrastructureAnalysisTool(), "threat_intelligence")
+                        logger.info("Shodan infrastructure analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Shodan infrastructure analysis tool: {e}")
                 
-                try:
-                    self._register_tool(ShodanSearchTool(), "threat_intelligence")
-                    logger.info("Shodan search tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register Shodan search tool: {e}")
+                if os.getenv('USE_SHODAN_SEARCH', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(ShodanSearchTool(), "threat_intelligence")
+                        logger.info("Shodan search tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Shodan search tool: {e}")
                 
-                try:
-                    self._register_tool(ShodanExploitSearchTool(), "threat_intelligence")
-                    logger.info("Shodan exploit search tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register Shodan exploit search tool: {e}")
+                if os.getenv('USE_SHODAN_EXPLOIT_SEARCH', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(ShodanExploitSearchTool(), "threat_intelligence")
+                        logger.info("Shodan exploit search tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Shodan exploit search tool: {e}")
                 
                 # Unified threat intelligence tool
-                try:
-                    self._register_tool(UnifiedThreatIntelligenceTool(), "threat_intelligence")
-                    logger.info("Unified threat intelligence tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register unified threat intelligence tool: {e}")
+                if os.getenv('USE_UNIFIED_THREAT_INTEL', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(UnifiedThreatIntelligenceTool(), "threat_intelligence")
+                        logger.info("Unified threat intelligence tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register unified threat intelligence tool: {e}")
             
             # Blockchain Tools
             if BLOCKCHAIN_TOOLS_AVAILABLE:
-                try:
-                    self._register_tool(BlockchainWalletAnalysisTool(), "blockchain")
-                    logger.info("Blockchain wallet analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register blockchain wallet analysis tool: {e}")
+                if os.getenv('USE_BLOCKCHAIN_WALLET_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(BlockchainWalletAnalysisTool(), "blockchain")
+                        logger.info("Blockchain wallet analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register blockchain wallet analysis tool: {e}")
                 
-                try:
-                    self._register_tool(CryptocurrencyTracingTool(), "blockchain")
-                    logger.info("Cryptocurrency tracing tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register cryptocurrency tracing tool: {e}")
+                if os.getenv('USE_CRYPTOCURRENCY_TRACING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(CryptocurrencyTracingTool(), "blockchain")
+                        logger.info("Cryptocurrency tracing tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register cryptocurrency tracing tool: {e}")
                 
-                try:
-                    self._register_tool(DeFiProtocolAnalysisTool(), "blockchain")
-                    logger.info("DeFi protocol analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register DeFi protocol analysis tool: {e}")
+                if os.getenv('USE_DEFI_PROTOCOL_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(DeFiProtocolAnalysisTool(), "blockchain")
+                        logger.info("DeFi protocol analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register DeFi protocol analysis tool: {e}")
                 
-                try:
-                    self._register_tool(NFTFraudDetectionTool(), "blockchain")
-                    logger.info("NFT fraud detection tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register NFT fraud detection tool: {e}")
+                if os.getenv('USE_NFT_FRAUD_DETECTION', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(NFTFraudDetectionTool(), "blockchain")
+                        logger.info("NFT fraud detection tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register NFT fraud detection tool: {e}")
                 
-                try:
-                    self._register_tool(BlockchainForensicsTool(), "blockchain")
-                    logger.info("Blockchain forensics tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register blockchain forensics tool: {e}")
+                if os.getenv('USE_BLOCKCHAIN_FORENSICS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(BlockchainForensicsTool(), "blockchain")
+                        logger.info("Blockchain forensics tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register blockchain forensics tool: {e}")
                 
-                try:
-                    self._register_tool(CryptoExchangeAnalysisTool(), "blockchain")
-                    logger.info("Crypto exchange analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register crypto exchange analysis tool: {e}")
+                if os.getenv('USE_CRYPTO_EXCHANGE_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(CryptoExchangeAnalysisTool(), "blockchain")
+                        logger.info("Crypto exchange analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register crypto exchange analysis tool: {e}")
                 
-                try:
-                    self._register_tool(DarkWebCryptoMonitorTool(), "blockchain")
-                    logger.info("Dark web crypto monitor tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register dark web crypto monitor tool: {e}")
+                if os.getenv('USE_DARKWEB_CRYPTO_MONITOR', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(DarkWebCryptoMonitorTool(), "blockchain")
+                        logger.info("Dark web crypto monitor tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register dark web crypto monitor tool: {e}")
                 
-                try:
-                    self._register_tool(CryptocurrencyComplianceTool(), "blockchain")
-                    logger.info("Cryptocurrency compliance tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register cryptocurrency compliance tool: {e}")
+                if os.getenv('USE_CRYPTOCURRENCY_COMPLIANCE', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(CryptocurrencyComplianceTool(), "blockchain")
+                        logger.info("Cryptocurrency compliance tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register cryptocurrency compliance tool: {e}")
             
             # Intelligence Tools
             if INTELLIGENCE_TOOLS_AVAILABLE:
-                try:
-                    self._register_tool(SocialMediaProfilingTool(), "intelligence")
-                    logger.info("Social media profiling tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register social media profiling tool: {e}")
+                if os.getenv('USE_SOCIAL_MEDIA_PROFILING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(SocialMediaProfilingTool(), "intelligence")
+                        logger.info("Social media profiling tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register social media profiling tool: {e}")
                 
-                try:
-                    self._register_tool(SocialNetworkAnalysisTool(), "intelligence")
-                    logger.info("Social network analysis tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register social network analysis tool: {e}")
+                if os.getenv('USE_SOCIAL_NETWORK_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(SocialNetworkAnalysisTool(), "intelligence")
+                        logger.info("Social network analysis tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register social network analysis tool: {e}")
                 
-                try:
-                    self._register_tool(SocialMediaMonitoringTool(), "intelligence")
-                    logger.info("Social media monitoring tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register social media monitoring tool: {e}")
+                if os.getenv('USE_SOCIAL_MEDIA_MONITORING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(SocialMediaMonitoringTool(), "intelligence")
+                        logger.info("Social media monitoring tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register social media monitoring tool: {e}")
                 
-                try:
-                    self._register_tool(OSINTDataAggregatorTool(), "intelligence")
-                    logger.info("OSINT data aggregator tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register OSINT data aggregator tool: {e}")
+                if os.getenv('USE_OSINT_DATA_AGGREGATOR', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(OSINTDataAggregatorTool(), "intelligence")
+                        logger.info("OSINT data aggregator tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register OSINT data aggregator tool: {e}")
                 
-                try:
-                    self._register_tool(PeopleSearchTool(), "intelligence")
-                    logger.info("People search tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register people search tool: {e}")
+                if os.getenv('USE_PEOPLE_SEARCH', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(PeopleSearchTool(), "intelligence")
+                        logger.info("People search tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register people search tool: {e}")
                 
-                try:
-                    self._register_tool(BusinessIntelligenceTool(), "intelligence")
-                    logger.info("Business intelligence tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register business intelligence tool: {e}")
+                if os.getenv('USE_BUSINESS_INTELLIGENCE', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(BusinessIntelligenceTool(), "intelligence")
+                        logger.info("Business intelligence tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register business intelligence tool: {e}")
                 
-                try:
-                    self._register_tool(DarkWebMonitoringTool(), "intelligence")
-                    logger.info("Dark web monitoring tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register dark web monitoring tool: {e}")
+                if os.getenv('USE_DARKWEB_MONITORING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(DarkWebMonitoringTool(), "intelligence")
+                        logger.info("Dark web monitoring tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register dark web monitoring tool: {e}")
                 
-                try:
-                    self._register_tool(DeepWebSearchTool(), "intelligence")
-                    logger.info("Deep web search tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register deep web search tool: {e}")
+                if os.getenv('USE_DEEPWEB_SEARCH', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(DeepWebSearchTool(), "intelligence")
+                        logger.info("Deep web search tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register deep web search tool: {e}")
             
             # ML/AI Tools
             if ML_AI_TOOLS_AVAILABLE:
-                try:
-                    self._register_tool(BehavioralAnalysisTool(), "ml_ai")
-                    logger.info("Behavioral analysis ML tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register behavioral analysis ML tool: {e}")
+                if os.getenv('USE_BEHAVIORAL_ANALYSIS', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(BehavioralAnalysisTool(), "ml_ai")
+                        logger.info("Behavioral analysis ML tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register behavioral analysis ML tool: {e}")
                 
-                try:
-                    self._register_tool(AnomalyDetectionTool(), "ml_ai")
-                    logger.info("Anomaly detection ML tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register anomaly detection ML tool: {e}")
+                if os.getenv('USE_ANOMALY_DETECTION', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(AnomalyDetectionTool(), "ml_ai")
+                        logger.info("Anomaly detection ML tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register anomaly detection ML tool: {e}")
                 
-                try:
-                    self._register_tool(PatternRecognitionTool(), "ml_ai")
-                    logger.info("Pattern recognition ML tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register pattern recognition ML tool: {e}")
+                if os.getenv('USE_PATTERN_RECOGNITION', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(PatternRecognitionTool(), "ml_ai")
+                        logger.info("Pattern recognition ML tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register pattern recognition ML tool: {e}")
                 
-                try:
-                    self._register_tool(FraudDetectionTool(), "ml_ai")
-                    logger.info("Fraud detection ML tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register fraud detection ML tool: {e}")
+                if os.getenv('USE_FRAUD_DETECTION', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(FraudDetectionTool(), "ml_ai")
+                        logger.info("Fraud detection ML tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register fraud detection ML tool: {e}")
                 
-                try:
-                    self._register_tool(RiskScoringTool(), "ml_ai")
-                    logger.info("Risk scoring ML tool registered")
-                except Exception as e:
-                    logger.warning(f"Failed to register risk scoring ML tool: {e}")
+                if os.getenv('USE_RISK_SCORING', 'false').lower() == 'true':
+                    try:
+                        self._register_tool(RiskScoringTool(), "ml_ai")
+                        logger.info("Risk scoring ML tool registered")
+                    except Exception as e:
+                        logger.warning(f"Failed to register risk scoring ML tool: {e}")
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")

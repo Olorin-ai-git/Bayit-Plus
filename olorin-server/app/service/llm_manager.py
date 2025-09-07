@@ -44,6 +44,18 @@ class ModelConfig:
 # Available models configuration
 AVAILABLE_MODELS = {
     # Anthropic models
+    "claude-opus-4-1-20250805": ModelConfig(
+        provider=ModelProvider.ANTHROPIC,
+        model_name="claude-opus-4-1-20250805",
+        display_name="Claude Opus 4.1",
+        max_tokens=8192
+    ),
+    "claude-opus-4-1-20250805-thinking": ModelConfig(
+        provider=ModelProvider.ANTHROPIC,
+        model_name="claude-opus-4-1-20250805-thinking",
+        display_name="Claude Opus 4.1 (Thinking)",
+        max_tokens=8192
+    ),
     "claude-3-opus-20240229": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
         model_name="claude-3-opus-20240229",
@@ -64,6 +76,30 @@ AVAILABLE_MODELS = {
     ),
     
     # OpenAI models
+    "gpt-5-chat-latest": ModelConfig(
+        provider=ModelProvider.OPENAI,
+        model_name="gpt-5-chat-latest",
+        display_name="GPT-5 Chat",
+        max_tokens=8192
+    ),
+    "gpt-5": ModelConfig(
+        provider=ModelProvider.OPENAI,
+        model_name="gpt-5",
+        display_name="GPT-5",
+        max_tokens=8192
+    ),
+    "gpt-5-mini": ModelConfig(
+        provider=ModelProvider.OPENAI,
+        model_name="gpt-5-mini",
+        display_name="GPT-5 Mini",
+        max_tokens=8192
+    ),
+    "gpt-5-nano": ModelConfig(
+        provider=ModelProvider.OPENAI,
+        model_name="gpt-5-nano",
+        display_name="GPT-5 Nano",
+        max_tokens=4096
+    ),
     "gpt-4-turbo-preview": ModelConfig(
         provider=ModelProvider.OPENAI,
         model_name="gpt-4-turbo-preview",
@@ -200,7 +236,10 @@ class LLMManager:
     def _try_fallback_model(self):
         """Try to initialize a fallback model if primary fails."""
         fallback_order = [
+            'claude-opus-4-1-20250805',
+            'gpt-5-chat-latest',
             'claude-3-opus-20240229',
+            'gpt-5',
             'gpt-4-turbo-preview',
             'gemini-pro',
             'gpt-3.5-turbo'
