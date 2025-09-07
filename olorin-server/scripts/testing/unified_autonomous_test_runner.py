@@ -1,6 +1,3 @@
-from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
-
 #!/usr/bin/env python3
 """
 Unified Autonomous Investigation Test Runner
@@ -80,6 +77,10 @@ from contextlib import asynccontextmanager
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Import logger 
+from app.service.logging import get_bridge_logger
+logger = get_bridge_logger(__name__)
+
 try:
     # Import existing test infrastructure
     from app.service.agent.autonomous_agents import (
@@ -133,7 +134,7 @@ try:
     MOCK_SYSTEM_AVAILABLE = True
 except ImportError:
     MOCK_SYSTEM_AVAILABLE = False
-    logger.warning("Mock LLM response system not available")
+    logging.warning("Mock LLM response system not available")
 
 # Configuration Constants
 DEFAULT_SERVER_URL = "http://localhost:8090"
@@ -184,7 +185,7 @@ class TestConfiguration:
     server_url: str = DEFAULT_SERVER_URL
     timeout: int = DEFAULT_TIMEOUT
     log_level: str = DEFAULT_LOG_LEVEL
-    mode: TestMode = TestMode.DEMO
+    mode: TestMode = TestMode.LIVE
     html_report: bool = False
     open_report: bool = False
     use_mock_ips_cache: bool = DEFAULT_USE_MOCK_IPS  # Now true by default
@@ -281,10 +282,12 @@ class AdvancedMonitoringSystem:
                 # Create authenticated WebSocket connection
                 try:
                     # Use WebSocket authentication system to prevent 403 Forbidden errors
+                    # Use dynamic demo_mode based on test configuration
+                    is_demo_mode = self.config.mode == TestMode.DEMO
                     ws_config = create_websocket_connection_config(
                         server_url=self.config.server_url,
                         investigation_id='investigation_monitor',
-                        demo_mode=True,
+                        demo_mode=is_demo_mode,
                         parallel=False
                     )
                     ws_url = ws_config['url']
@@ -294,8 +297,8 @@ class AdvancedMonitoringSystem:
                     # Fallback to basic WebSocket URL if authentication setup fails
                     self.log_monitoring_warning("WebSocket", f"Authentication setup failed ({auth_error}), using basic connection")
                     ws_url = self.config.server_url.replace('http://', 'ws://').replace('https://', 'wss://')
-                    if not ws_url.endswith('/ws/investigation'):
-                        ws_url += '/ws/investigation'
+                    # Use the correct WebSocket endpoint path
+                    ws_url += '/investigation/investigation_monitor/monitor'
                     ws_headers = None
                 
                 def on_message(ws, message):
@@ -660,9 +663,10 @@ class UnifiedAutonomousTestRunner:
         self.investigation_logger = AutonomousInvestigationLogger()
         self.scenario_generator = RealScenarioGenerator() if RealScenarioGenerator else None
         
-        # CSV data
-        self.csv_transactions: List[Dict] = []
-        self.csv_users: List[Dict] = []
+        # Data from Snowflake or CSV
+        self.snowflake_entities: List[Dict] = []  # High-risk entities from Snowflake
+        self.csv_transactions: List[Dict] = []  # Deprecated - for backward compatibility
+        self.csv_users: List[Dict] = []  # Deprecated - for backward compatibility
         
         self.logger.info(f"Initialized Unified Test Runner with config: {config}")
         
@@ -765,8 +769,60 @@ class UnifiedAutonomousTestRunner:
             self.logger.error(f"❌ Failed to start server: {e}")
             return False
 
+    async def load_snowflake_data(self) -> bool:
+        """Load top risk entities from Snowflake"""
+        from app.service.analytics.risk_analyzer import get_risk_analyzer
+        
+        self.logger.info("❄️ Loading top risk entities from Snowflake...")
+        
+        try:
+            # Get the risk analyzer
+            analyzer = get_risk_analyzer()
+            
+            # Fetch top 10% risk entities by IP address
+            results = await analyzer.get_top_risk_entities(
+                time_window='24h',
+                group_by='ip_address',
+                top_percentage=10,
+                force_refresh=False
+            )
+            
+            if results.get('status') == 'success':
+                entities = results.get('entities', [])
+                
+                if entities:
+                    # Store Snowflake entities for investigation
+                    self.snowflake_entities = []
+                    for entity in entities:
+                        # Each entity is a high-risk IP address
+                        entity_data = {
+                            'ip_address': entity.get('entity'),  # Actual IP address
+                            'risk_score': float(entity.get('risk_score', 0)),
+                            'risk_weighted_value': float(entity.get('risk_weighted_value', 0)),
+                            'transaction_count': entity.get('transaction_count', 0),
+                            'fraud_count': entity.get('fraud_count', 0),
+                            'source': 'snowflake'
+                        }
+                        self.snowflake_entities.append(entity_data)
+                    
+                    self.logger.info(f"✅ Loaded {len(self.snowflake_entities)} high-risk IP addresses from Snowflake")
+                    for i, entity in enumerate(self.snowflake_entities[:5], 1):
+                        self.logger.info(f"  {i}. IP: {entity['ip_address']}, Risk Score: {entity['risk_score']:.4f}")
+                    
+                    return True
+                else:
+                    self.logger.warning("⚠️  No high-risk entities found in Snowflake")
+                    return False
+            else:
+                self.logger.error(f"❌ Failed to fetch from Snowflake: {results.get('error')}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"❌ Error loading Snowflake data: {e}")
+            return False
+    
     def load_csv_data(self) -> bool:
-        """Load transaction data from CSV file"""
+        """Load transaction data from CSV file (deprecated - use Snowflake instead)"""
         if not self.config.csv_file:
             return True
             
@@ -953,12 +1009,38 @@ class UnifiedAutonomousTestRunner:
         
         return result
 
-    async def _create_test_context(self, investigation_id: str, scenario_name: str) -> AutonomousInvestigationContext:
-        """Create test context for investigation"""
+    async def _create_test_context(self, investigation_id: str, scenario_name: str, entity_index: int = 0) -> AutonomousInvestigationContext:
+        """Create test context for investigation using Snowflake data"""
         
-        # Use CSV data if available, otherwise generate synthetic data
-        if self.csv_users:
-            csv_user = self.csv_users[0]  # Use first available user
+        # Prefer Snowflake data over CSV
+        if self.snowflake_entities:
+            # Use the specified entity index (for iterating through all IPs)
+            if entity_index >= len(self.snowflake_entities):
+                entity_index = 0
+            
+            snowflake_entity = self.snowflake_entities[entity_index]
+            
+            # Create user data from Snowflake entity
+            user_data = {
+                "ip_address": snowflake_entity['ip_address'],  # This is the actual IP address
+                "risk_score": snowflake_entity['risk_score'],
+                "risk_weighted_value": snowflake_entity['risk_weighted_value'],
+                "transaction_count": snowflake_entity['transaction_count'],
+                "fraud_count": snowflake_entity['fraud_count'],
+                "source": "snowflake"
+            }
+            
+            # Entity data for investigation - using IP address as the entity
+            entity_data = {
+                "entity_id": snowflake_entity['ip_address'],  # Use IP address as entity ID
+                "entity_type": "ip_address",
+                "source": "snowflake"
+            }
+            
+            self.logger.info(f"Using Snowflake IP address: {snowflake_entity['ip_address']} (Risk Score: {snowflake_entity['risk_score']:.4f})")
+        elif self.csv_users:
+            # Fallback to CSV (deprecated)
+            csv_user = self.csv_users[0]
             user_data = {
                 "user_id": csv_user['user_id'],
                 "email": csv_user['email'],
@@ -967,9 +1049,9 @@ class UnifiedAutonomousTestRunner:
                 "transaction_count": csv_user['transaction_count'],
                 "latest_activity": csv_user['latest_tx_datetime']
             }
-            # Only add IP address if it exists in CSV data
             if 'ip_address' in csv_user:
                 user_data['ip_address'] = csv_user['ip_address']
+            
             entity_data = {
                 "entity_id": csv_user['user_id'],
                 "entity_type": "user_id",
@@ -998,10 +1080,16 @@ class UnifiedAutonomousTestRunner:
             self.logger.info("Using synthetic test data")
         
         # Create investigation context
+        # Use appropriate entity type based on what we're investigating
+        if entity_data.get("entity_type") == "ip_address":
+            entity_type = EntityType.IP_ADDRESS
+        else:
+            entity_type = EntityType.USER_ID
+            
         context = AutonomousInvestigationContext(
             investigation_id=investigation_id,
             entity_id=entity_data["entity_id"],
-            entity_type=EntityType.USER_ID,
+            entity_type=entity_type,
             investigation_type="fraud_investigation"
         )
         
@@ -1033,6 +1121,14 @@ class UnifiedAutonomousTestRunner:
         if self.config.use_mock_ips_cache:
             os.environ["USE_MOCK_IPS_CACHE"] = "true"
             self.logger.info("🎭 Using mocked IPS Cache for testing")
+        
+        # Configure Snowflake integration for LIVE mode
+        if self.config.mode == TestMode.LIVE:
+            os.environ["USE_SNOWFLAKE"] = "true"
+            self.logger.info("❄️ Enabling real Snowflake integration for LIVE mode")
+        else:
+            os.environ["USE_SNOWFLAKE"] = "false"
+            self.logger.info(f"🎭 Using mock Snowflake client for {self.config.mode.value.upper()} mode")
         
         config = RunnableConfig(
             tags=["test", "unified_runner"],
@@ -1687,10 +1783,18 @@ class UnifiedAutonomousTestRunner:
         
         self.metrics.start_time = time.time()
         
-        # Load CSV data if specified
-        if self.config.csv_file:
-            if not self.load_csv_data():
-                return {"error": "Failed to load CSV data"}
+        # Always try to load data from Snowflake first (for all modes)
+        snowflake_loaded = await self.load_snowflake_data()
+        
+        if not snowflake_loaded:
+            self.logger.warning("⚠️  Failed to load Snowflake data, falling back to CSV if available")
+            # Fall back to CSV if Snowflake fails
+            if self.config.csv_file:
+                if not self.load_csv_data():
+                    self.logger.error("❌ Failed to load data from both Snowflake and CSV")
+                    # Continue anyway with synthetic data
+            else:
+                self.logger.info("📊 Will use synthetic data for testing")
         
         # Get test scenarios
         if self.config.all_scenarios:
@@ -2139,8 +2243,8 @@ Examples:
     parser.add_argument(
         "--mode", "-m",
         choices=[mode.value for mode in TestMode],
-        default=TestMode.DEMO.value,
-        help=f"Test execution mode (default: {TestMode.DEMO.value})"
+        default=TestMode.LIVE.value,
+        help=f"Test execution mode (default: {TestMode.LIVE.value})"
     )
     
     # Output options
@@ -2264,7 +2368,9 @@ async def main():
     # Apply LangSmith fixes to prevent 401 authentication spam
     if FIXES_AVAILABLE:
         try:
-            langsmith_result = apply_langsmith_fix(demo_mode=True)
+            # Use dynamic demo_mode based on test configuration
+            is_demo_mode = config.mode == TestMode.DEMO
+            langsmith_result = apply_langsmith_fix(demo_mode=is_demo_mode)
             if langsmith_result.get('langsmith_disabled'):
                 print("✅ LangSmith tracing disabled to prevent 401 errors")
             else:

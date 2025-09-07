@@ -338,10 +338,14 @@ Remember: You have full autonomy to choose tools and analyze data, now enhanced 
                     
                     logger.info(f"🔧🧠 Executing RAG-enhanced tool: {tool_name}")
                     
+                    # Fix tool parameters to ensure correct naming
+                    from app.service.agent.tools.tool_parameter_mapper import ToolParameterMapper
+                    fixed_args = ToolParameterMapper.fix_tool_parameters(tool_name, tool_args)
+                    
                     try:
                         if tool_name in self.tool_map:
                             tool = self.tool_map[tool_name]
-                            tool_result = await tool.ainvoke(tool_args)
+                            tool_result = await tool.ainvoke(fixed_args)
                             
                             tool_message = ToolMessage(
                                 content=str(tool_result),

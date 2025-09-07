@@ -52,13 +52,24 @@ try:
     from app.service.agent.tools.tool_registry import initialize_tools
     initialize_tools()
     
-    # Get essential tools for fraud investigation including threat intelligence
-    # Categories will load ALL tools from those categories
-    # tool_names will additionally ensure these specific tools are included
+    # Get ALL available tools for comprehensive fraud investigation
+    # Load all categories to ensure agents have access to the full suite of 45+ tools
     tools = get_tools_for_agent(
-        categories=["olorin", "search", "database", "threat_intelligence"]
-        # Note: Removed tool_names parameter to load ALL tools from the categories
-        # This ensures all threat intelligence tools are loaded, not just the 3 named ones
+        categories=[
+            "olorin",           # Snowflake, Splunk, SumoLogic
+            "threat_intelligence",  # AbuseIPDB, VirusTotal, Shodan
+            "database",         # Database query and schema tools
+            "search",           # Vector search
+            "blockchain",       # Crypto and blockchain analysis
+            "intelligence",     # OSINT, social media, dark web
+            "ml_ai",           # ML-powered analysis tools
+            "web",             # Web search and scraping
+            "file_system",     # File operations
+            "api",             # HTTP and JSON API tools
+            "mcp_clients",     # External MCP server connections
+            "utility"          # Utility tools
+        ]
+        # Loading ALL categories ensures agents have access to all 45+ enabled tools
     )
     threat_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name])
     logger.info(f"Initialized {len(tools)} tools for autonomous agents (including {threat_count} threat intelligence tools)")

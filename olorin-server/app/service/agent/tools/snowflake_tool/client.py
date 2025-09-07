@@ -70,9 +70,9 @@ class SnowflakeClient:
             query = query.strip()
             query_upper = query.upper()
             
-            # Only allow SELECT statements for security
-            if not query_upper.startswith('SELECT'):
-                raise ValueError("Only SELECT queries are allowed for security reasons")
+            # Only allow SELECT and WITH (CTE) statements for security
+            if not (query_upper.startswith('SELECT') or query_upper.startswith('WITH')):
+                raise ValueError("Only SELECT queries and CTEs (WITH) are allowed for security reasons")
             
             # Check for dangerous keywords
             dangerous_keywords = ['DELETE', 'DROP', 'INSERT', 'UPDATE', 'CREATE', 'ALTER', 'TRUNCATE']
@@ -123,7 +123,32 @@ class SnowflakeClient:
             mock_results = []
             query_lower = safe_query.lower()
             
-            if 'count(' in query_lower:
+            # Check for risk entity queries (CTEs)
+            if 'risk_calculations' in query_lower and 'ip_address' in query_lower:
+                # Return mock high-risk IP addresses
+                mock_results = [
+                    {"ENTITY": "67.76.8.209", "RISK_SCORE": 0.9234, "RISK_WEIGHTED_VALUE": 15678.90, 
+                     "TRANSACTION_COUNT": 45, "FRAUD_COUNT": 12, "REJECTED_COUNT": 8},
+                    {"ENTITY": "24.3.212.202", "RISK_SCORE": 0.8912, "RISK_WEIGHTED_VALUE": 12456.78,
+                     "TRANSACTION_COUNT": 38, "FRAUD_COUNT": 9, "REJECTED_COUNT": 6},
+                    {"ENTITY": "198.51.100.42", "RISK_SCORE": 0.8567, "RISK_WEIGHTED_VALUE": 9876.54,
+                     "TRANSACTION_COUNT": 32, "FRAUD_COUNT": 7, "REJECTED_COUNT": 5},
+                    {"ENTITY": "203.0.113.99", "RISK_SCORE": 0.8234, "RISK_WEIGHTED_VALUE": 8765.43,
+                     "TRANSACTION_COUNT": 28, "FRAUD_COUNT": 6, "REJECTED_COUNT": 4},
+                    {"ENTITY": "192.0.2.123", "RISK_SCORE": 0.7890, "RISK_WEIGHTED_VALUE": 7654.32,
+                     "TRANSACTION_COUNT": 25, "FRAUD_COUNT": 5, "REJECTED_COUNT": 3},
+                    {"ENTITY": "172.16.0.55", "RISK_SCORE": 0.7567, "RISK_WEIGHTED_VALUE": 6543.21,
+                     "TRANSACTION_COUNT": 22, "FRAUD_COUNT": 4, "REJECTED_COUNT": 3},
+                    {"ENTITY": "10.0.0.99", "RISK_SCORE": 0.7234, "RISK_WEIGHTED_VALUE": 5432.10,
+                     "TRANSACTION_COUNT": 20, "FRAUD_COUNT": 3, "REJECTED_COUNT": 2},
+                    {"ENTITY": "44.55.66.77", "RISK_SCORE": 0.6890, "RISK_WEIGHTED_VALUE": 4321.98,
+                     "TRANSACTION_COUNT": 18, "FRAUD_COUNT": 3, "REJECTED_COUNT": 2},
+                    {"ENTITY": "88.99.11.22", "RISK_SCORE": 0.6567, "RISK_WEIGHTED_VALUE": 3210.87,
+                     "TRANSACTION_COUNT": 15, "FRAUD_COUNT": 2, "REJECTED_COUNT": 1},
+                    {"ENTITY": "123.45.67.89", "RISK_SCORE": 0.6234, "RISK_WEIGHTED_VALUE": 2109.76,
+                     "TRANSACTION_COUNT": 12, "FRAUD_COUNT": 2, "REJECTED_COUNT": 1}
+                ]
+            elif 'count(' in query_lower:
                 mock_results = [{"COUNT": 1250}]
             elif 'fraud' in query_lower:
                 mock_results = [

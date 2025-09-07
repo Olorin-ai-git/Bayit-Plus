@@ -538,22 +538,14 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
             # Extract content as string for validation (handles lists and objects)
             response_content = extract_content_from_response(result.content)
             
-            if self.domain in get_supported_olorin_domains():
-                is_olorin_format = validate_investigation_response(response_content, self.domain)
-                if is_olorin_format:
-                    logger.info(f"✅ OLORIN FORMAT VALIDATED: Response follows Olorin format for {self.domain}")
-                    logger.info(f"        ✅ Olorin format validated for {self.domain.title()} response")
-                else:
-                    logger.warning(f"⚠️ OLORIN FORMAT WARNING: Response may not follow Olorin format for {self.domain}")
-                    logger.warning(f"        ⚠️ Olorin format warning for {self.domain.title()} response")
-            elif self.domain in get_supported_domains():
-                is_gaia_format = validate_investigation_response(response_content, self.domain)
-                if is_gaia_format:
-                    logger.info(f"✅ GAIA FORMAT VALIDATED: Response follows Gaia format for {self.domain}")
-                    logger.info(f"        ✅ Gaia format validated for {self.domain.title()} response")
-                else:
-                    logger.warning(f"⚠️ GAIA FORMAT WARNING: Response may not follow Gaia format for {self.domain}")
-                    logger.warning(f"        ⚠️ Gaia format warning for {self.domain.title()} response")
+            # Validate response format using unified validation
+            is_valid_format = validate_investigation_response(response_content, self.domain)
+            if is_valid_format:
+                logger.info(f"✅ FORMAT VALIDATED: Response follows expected format for {self.domain}")
+                logger.info(f"        ✅ Format validated for {self.domain.title()} response")
+            else:
+                logger.warning(f"⚠️ FORMAT WARNING: Response may not follow expected format for {self.domain}")
+                logger.warning(f"        ⚠️ Format validation warning for {self.domain.title()} response")
             
             # Parse and structure the autonomous analysis result
             findings = parse_autonomous_result(result, context, self.domain)
@@ -564,11 +556,8 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
             logger.info(f"           Risk Score: {risk_display} | Confidence: {findings.confidence:.2f}")
             logger.info(f"           Findings: {len(findings.key_findings)} | Quality: {findings.data_quality}")
             
-            # Additional prompt system logging
-            if self.domain in get_supported_olorin_domains():
-                logger.info(f"🔥 OLORIN ANALYSIS COMPLETE: {self.domain} domain analysis using Olorin prompts completed successfully")
-            elif self.domain in get_supported_domains():
-                logger.info(f"🔥 GAIA ANALYSIS COMPLETE: {self.domain} domain analysis using Gaia prompts completed successfully")
+            # Log analysis completion
+            logger.info(f"🔥 ANALYSIS COMPLETE: {self.domain} domain analysis using unified prompts completed successfully")
             
             # Log comprehensive interaction summary
             logger.info(f"🔥 COMPREHENSIVE LLM INTERACTION SUMMARY for {self.domain.title()} Agent:")

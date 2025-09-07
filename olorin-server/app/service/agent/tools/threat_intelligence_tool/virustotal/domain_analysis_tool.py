@@ -1,6 +1,8 @@
 """VirusTotal Domain Analysis Tool for comprehensive domain threat intelligence."""
 
+import ipaddress
 import json
+import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -11,12 +13,13 @@ from ..base_threat_tool import BaseThreatIntelligenceTool
 from .models import VirusTotalDomainResponse, VirusTotalConfig
 from .virustotal_client import VirusTotalClient
 from app.service.logging import get_bridge_logger
+from app.service.analytics.ip_domain_mapper import get_ip_domain_mapper
 
 
 class DomainAnalysisInput(BaseModel):
     """Input schema for domain analysis."""
     
-    domain: str = Field(..., description="Domain name to analyze (e.g., 'example.com')")
+    domain: str = Field(..., description="Domain name to analyze (e.g., 'example.com'). IP addresses are not supported - use IP analysis tools instead.")
     include_subdomains: bool = Field(
         default=False, 
         description="Whether to include subdomain analysis in the report"
@@ -32,9 +35,13 @@ class DomainAnalysisInput(BaseModel):
     
     @validator('domain')
     def validate_domain(cls, v):
-        """Validate domain format."""
+        """Validate domain format and handle IP addresses."""
         if not v or len(v.strip()) == 0:
             raise ValueError("Domain cannot be empty")
+        
+        # Handle bytes input that might come from external sources
+        if isinstance(v, bytes):
+            v = v.decode('utf-8', errors='ignore')
         
         domain = v.strip().lower()
         
@@ -46,9 +53,43 @@ class DomainAnalysisInput(BaseModel):
         if '/' in domain:
             domain = domain.split('/', 1)[0]
         
+        # Check if input is an IP address and fetch associated domain
+        try:
+            ipaddress.ip_address(domain)
+            # It's an IP address, try to get associated domain from Snowflake
+            logger = get_bridge_logger(__name__)
+            logger.info(f"IP address {domain} detected, fetching associated domain from Snowflake")
+            
+            # Get the domain mapper and fetch domain
+            mapper = get_ip_domain_mapper()
+            associated_domain = asyncio.run(mapper.get_domain_for_ip(domain))
+            
+            if associated_domain:
+                logger.info(f"Found domain {associated_domain} for IP {domain}")
+                return associated_domain
+            else:
+                raise ValueError(f"No domain found for IP address '{domain}'. Skipping domain analysis.")
+                
+        except ipaddress.AddressValueError:
+            # Not an IP address, continue with normal domain validation
+            pass
+        except ValueError as e:
+            # Re-raise ValueError from domain lookup
+            if "No domain found" in str(e):
+                raise e
+            pass
+        
         # Basic domain validation
         if '.' not in domain or len(domain) > 253:
-            raise ValueError("Invalid domain format")
+            raise ValueError(f"Domain '{domain}' is not a valid domain pattern")
+        
+        # Additional domain format checks
+        if domain.startswith('.') or domain.endswith('.'):
+            raise ValueError(f"Domain '{domain}' cannot start or end with a dot")
+        
+        # Check for consecutive dots
+        if '..' in domain:
+            raise ValueError(f"Domain '{domain}' cannot contain consecutive dots")
         
         return domain
     
@@ -69,7 +110,8 @@ class VirusTotalDomainAnalysisTool(BaseTool):
         "Provides comprehensive domain analysis including reputation scores, "
         "detection results from multiple security vendors, WHOIS information, "
         "and subdomain discovery. Use this for investigating suspicious domains "
-        "in fraud detection workflows."
+        "in fraud detection workflows. NOTE: This tool is for domain names only "
+        "(e.g., 'example.com'), not IP addresses. Use IP analysis tools for IP addresses."
     )
     args_schema: type = DomainAnalysisInput
     
@@ -124,15 +166,34 @@ class VirusTotalDomainAnalysisTool(BaseTool):
             result_json = json.dumps(analysis_result, indent=2, default=str)
             return result_json
             
+        except ValueError as ve:
+            # Handle validation errors (like IP address detection) differently
+            if "IP address" in str(ve):
+                error_msg = str(ve)
+                logger = get_bridge_logger(__name__)
+                logger.warning(f"Domain analysis validation failed: {error_msg}")
+                return json.dumps({
+                    "error": error_msg,
+                    "error_type": "validation_error",
+                    "suggestion": "Use an IP analysis tool (like virustotal_ip_analysis) for IP address investigation",
+                    "input": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
+            else:
+                # Re-raise other validation errors
+                raise ve
+                
         except Exception as e:
             error_msg = f"VirusTotal domain analysis failed for {domain}: {str(e)}"
             logger = get_bridge_logger(__name__)
             logger.error(error_msg, exc_info=True)
             return json.dumps({
                 "error": error_msg,
+                "error_type": "analysis_error",
                 "domain": domain,
                 "timestamp": self._get_current_timestamp(),
-                "source": "VirusTotal"
+                "source": "VirusTotal Domain Analysis"
             }, indent=2)
     
     async def _build_domain_analysis(

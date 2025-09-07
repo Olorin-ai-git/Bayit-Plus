@@ -76,7 +76,8 @@ class WebSocketAuthFixer:
         ws_url = base_server_url.replace('http://', 'ws://').replace('https://', 'wss://')
         
         # Build WebSocket endpoint with investigation ID
-        ws_endpoint = f"{ws_url}/ws/{investigation_id}"
+        # Use the correct endpoint path: /investigation/{investigation_id}/monitor
+        ws_endpoint = f"{ws_url}/investigation/{investigation_id}/monitor"
         
         # Add query parameters for authentication and configuration
         params = {

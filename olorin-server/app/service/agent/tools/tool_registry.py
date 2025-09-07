@@ -2,8 +2,32 @@
 
 import os
 from typing import Any, Dict, List, Optional
+from pathlib import Path
+from dotenv import load_dotenv
 
 from langchain_core.tools import BaseTool
+
+# Load .env file to ensure all tool configuration is available
+# The .env file is at: /Users/gklainert/Documents/olorin/olorin-server/.env
+# This file is at: /Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/tool_registry.py
+# So we need to go up 4 levels from tools/ to get to olorin-server/
+env_path = Path(__file__).parent.parent.parent.parent.parent / '.env'
+if env_path.exists():
+    load_dotenv(env_path, override=True)
+    # Verify some key variables are loaded
+    tool_count = sum(1 for k in os.environ if k.startswith('USE_') and os.getenv(k) == 'true')
+    if tool_count > 0:
+        print(f"✅ Loaded .env file with {tool_count} enabled tools")
+else:
+    # Try alternate path
+    alt_env_path = Path('/Users/gklainert/Documents/olorin/olorin-server/.env')
+    if alt_env_path.exists():
+        load_dotenv(alt_env_path, override=True)
+        tool_count = sum(1 for k in os.environ if k.startswith('USE_') and os.getenv(k) == 'true')
+        if tool_count > 0:
+            print(f"✅ Loaded .env file from alternate path with {tool_count} enabled tools")
+    else:
+        print(f"⚠️ No .env file found at {env_path} or {alt_env_path}")
 
 from .api_tool import HTTPRequestTool, JSONAPITool
 

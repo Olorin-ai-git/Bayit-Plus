@@ -263,9 +263,16 @@ class UnifiedThreatIntelligenceTool(BaseTool):
         
         # VirusTotal tool handling
         elif "virustotal" in tool.name:
-            if "domain" in tool.name or self._is_domain(target):
-                # Domain analysis requires 'domain' parameter
-                return await tool._arun(domain=target)
+            if "ip" in tool.name and self._is_ip_address(target):
+                # IP analysis requires 'ip_address' parameter
+                return await tool._arun(ip_address=target)
+            elif "domain" in tool.name:
+                # For domain tool, check if target is IP and convert to domain if needed
+                if self._is_ip_address(target):
+                    # If it's an IP, the domain tool should handle the conversion internally
+                    return await tool._arun(domain=target)
+                else:
+                    return await tool._arun(domain=target)
             elif "file" in tool.name or self._is_file_hash(target):
                 # File analysis requires 'file_hash' parameter
                 return await tool._arun(file_hash=target)
@@ -273,8 +280,14 @@ class UnifiedThreatIntelligenceTool(BaseTool):
                 # URL analysis requires 'url' parameter
                 return await tool._arun(url=target)
             else:
-                # Try domain as default for VirusTotal
-                return await tool._arun(domain=target)
+                # Determine appropriate parameter based on target type
+                if self._is_ip_address(target):
+                    return await tool._arun(ip_address=target)
+                elif self._is_domain(target):
+                    return await tool._arun(domain=target)
+                else:
+                    # Default to treating as domain
+                    return await tool._arun(domain=target)
         
         # Shodan tool handling  
         elif "shodan" in tool.name:
