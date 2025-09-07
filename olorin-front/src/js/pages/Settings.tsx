@@ -41,6 +41,7 @@ import {
   Security as SecurityIcon,
   Extension as ExtensionIcon,
 } from '@mui/icons-material';
+import { ModelSelector } from '../components/ModelSelector';
 
 /** Settings page for default investigation preferences */
 const SettingsPage: React.FC = () => {
@@ -331,6 +332,11 @@ const SettingsPage: React.FC = () => {
       </Box>
 
       <Grid container spacing={4}>
+        {/* LLM Model Selection - Full Width */}
+        <Grid item xs={12}>
+          <ModelSelector />
+        </Grid>
+
         {/* Default Entity Type */}
         <Grid item xs={12} md={6}>
           <Card

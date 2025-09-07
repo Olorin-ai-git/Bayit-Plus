@@ -132,6 +132,7 @@ from .mcp_http_router import router as mcp_http_router
 from .network_router import router as network_router
 from .risk_assessment_router import risk_assessment_router
 from .settings_router import router as settings_router
+from app.api.v1.llm_models import router as llm_models_router
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -144,6 +145,7 @@ router.include_router(mcp_http_router)
 router.include_router(settings_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
+router.include_router(llm_models_router)
 
 # Include analytics router if Snowflake is enabled
 if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
