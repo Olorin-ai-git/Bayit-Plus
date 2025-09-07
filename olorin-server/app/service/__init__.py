@@ -130,6 +130,32 @@ async def on_startup(app: FastAPI):
     from .agent_init import initialize_agent
     await initialize_agent(app)
     
+    # Load top risk entities if Snowflake is enabled
+    if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
+        try:
+            logger.info("Loading top risk entities from Snowflake...")
+            from app.service.analytics.risk_analyzer import get_risk_analyzer
+            
+            analyzer = get_risk_analyzer()
+            results = await analyzer.get_top_risk_entities()
+            
+            if results.get('status') == 'success':
+                entity_count = len(results.get('entities', []))
+                logger.info(f"Successfully loaded {entity_count} top risk entities")
+                
+                # Store in app state for quick access
+                app.state.top_risk_entities = results
+                app.state.risk_entities_loaded_at = results.get('timestamp')
+            else:
+                logger.warning(f"Failed to load risk entities: {results.get('error', 'Unknown error')}")
+                app.state.top_risk_entities = None
+        except Exception as e:
+            logger.error(f"Error loading risk entities on startup: {e}")
+            app.state.top_risk_entities = None
+    else:
+        logger.info("Snowflake disabled, skipping risk entity loading")
+        app.state.top_risk_entities = None
+    
     logger.info("Olorin application startup completed")
 
 

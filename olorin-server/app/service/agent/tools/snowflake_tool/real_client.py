@@ -135,9 +135,9 @@ class RealSnowflakeClient:
         query = query.strip()
         query_upper = query.upper()
         
-        # Only allow SELECT statements for security
-        if not query_upper.startswith('SELECT'):
-            raise ValueError("Only SELECT queries are allowed for security reasons")
+        # Only allow SELECT statements and CTEs (WITH) for security
+        if not (query_upper.startswith('SELECT') or query_upper.startswith('WITH')):
+            raise ValueError("Only SELECT queries and CTEs are allowed for security reasons")
         
         # Check for dangerous keywords
         dangerous_keywords = ['DELETE', 'DROP', 'INSERT', 'UPDATE', 'CREATE', 'ALTER', 'TRUNCATE', 'MERGE']

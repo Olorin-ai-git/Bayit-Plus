@@ -145,6 +145,12 @@ router.include_router(settings_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
 
+# Include analytics router if Snowflake is enabled
+if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
+    from app.api.routes.analytics import router as analytics_router
+    router.include_router(analytics_router)
+    logger.info("Analytics router included (USE_SNOWFLAKE=true)")
+
 
 @router.get("/oii/{user_id}")
 async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, Any]:
