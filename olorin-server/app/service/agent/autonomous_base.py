@@ -111,6 +111,42 @@ class AutonomousInvestigationAgent:
             logger.error(f"Failed to bind tools to {domain} agent: {e}")
             self.llm_with_tools = get_autonomous_llm()
     
+    def _format_tool_summary(self) -> str:
+        """Format a summary of available tools by category."""
+        categories = {
+            "Threat Intelligence": [],
+            "ML/AI Analysis": [],
+            "Database/Logs": [],
+            "Blockchain": [],
+            "OSINT": [],
+            "Web/Network": [],
+            "Other": []
+        }
+        
+        for tool_name in self.tool_map.keys():
+            tool_lower = tool_name.lower()
+            if any(x in tool_lower for x in ['abuse', 'virus', 'shodan', 'threat']):
+                categories["Threat Intelligence"].append(tool_name)
+            elif any(x in tool_lower for x in ['ml', 'anomaly', 'pattern', 'behavioral', 'risk_scoring', 'fraud']):
+                categories["ML/AI Analysis"].append(tool_name)
+            elif any(x in tool_lower for x in ['snowflake', 'splunk', 'sumo', 'database', 'query']):
+                categories["Database/Logs"].append(tool_name)
+            elif any(x in tool_lower for x in ['blockchain', 'crypto', 'nft', 'defi', 'wallet']):
+                categories["Blockchain"].append(tool_name)
+            elif any(x in tool_lower for x in ['osint', 'social', 'people', 'dark', 'deep']):
+                categories["OSINT"].append(tool_name)
+            elif any(x in tool_lower for x in ['web', 'http', 'scrape']):
+                categories["Web/Network"].append(tool_name)
+            else:
+                categories["Other"].append(tool_name)
+        
+        summary = []
+        for cat, tools in categories.items():
+            if tools:
+                summary.append(f"- {cat}: {', '.join(tools[:5])}{'...' if len(tools) > 5 else ''}")
+        
+        return '\n'.join(summary)
+    
     def enable_tool_refresh(self, refresh_callback):
         """Enable dynamic tool refresh with callback function.
         
@@ -198,49 +234,42 @@ class AutonomousInvestigationAgent:
         # Generate rich investigation context for LLM
         llm_context = context.generate_llm_context(self.domain)
         
-        # Create autonomous investigation prompt
+        # Create autonomous investigation prompt with available tools
         investigation_prompt = create_investigation_prompt(
-            self.domain, context, llm_context, specific_objectives
+            self.domain, context, llm_context, specific_objectives, available_tools=self.tools
         )
         
-        # Log Olorin/Gaia prompt usage information
-        from app.service.agent.prompts.olorin_prompts import get_supported_olorin_domains
-        from app.service.agent.prompts.gaia_prompts import get_supported_domains
-        
-        if self.domain in get_supported_olorin_domains():
-            logger.info(f"🔥 OLORIN PROMPTS ENABLED: Using exact Olorin prompts for {self.domain} domain")
-            logger.info(f"        🔥 Using Olorin prompts for {self.domain.title()} analysis")
-        elif self.domain in get_supported_domains():
-            logger.info(f"🔥 GAIA PROMPTS ENABLED: Using exact Gaia prompts for {self.domain} domain")
-            logger.info(f"        🔥 Using Gaia prompts for {self.domain.title()} analysis")
+        # Log unified prompt usage
+        logger.info(f"🔥 UNIFIED PROMPTS: Using comprehensive investigation prompt for {self.domain} domain")
+        logger.info(f"        📊 {len(self.tools)} tools available for comprehensive {self.domain.title()} analysis")
         
         # Create system message for autonomous agent
         system_msg = SystemMessage(content=f"""
-You are an intelligent fraud investigation agent specializing in {self.domain.upper()} ANALYSIS.
+You are an ADVANCED fraud investigation agent specializing in {self.domain.upper()} ANALYSIS.
 
-SYSTEM INTEGRATION: You are now enhanced with Gaia prompts for structured fraud detection analysis.
-The investigation prompt will specify the exact format required for your response.
+⚠️ CRITICAL REQUIREMENT: COMPREHENSIVE TOOL USAGE
+You have {len(self.tools)} specialized tools at your disposal. YOU MUST USE AS MANY AS RELEVANT.
 
 Your capabilities:
-- Autonomous tool selection based on investigation needs
-- Advanced reasoning and pattern recognition  
-- Cross-domain correlation and analysis
-- Evidence-based risk assessment
-- Structured Gaia-format output for consistent analysis
+- COMPREHENSIVE tool utilization - USE ALL relevant tools, not just 1-2
+- Advanced multi-tool correlation and cross-validation
+- Deep pattern recognition across multiple data sources
+- Evidence synthesis from diverse tool outputs
+- Risk assessment based on COMPREHENSIVE evidence
 
-Your mission: Conduct a thorough {self.domain} analysis for fraud investigation {context.investigation_id}.
+Your mission: Conduct an EXHAUSTIVE {self.domain} analysis for fraud investigation {context.investigation_id}.
 
-Key principles:
-1. SELECT TOOLS AUTONOMOUSLY based on investigation needs, NOT predetermined patterns
-2. Use your reasoning to determine which tools provide the best data for current objectives
-3. Call multiple tools if needed to gather comprehensive evidence
-4. Focus on detecting fraud indicators, anomalies, and suspicious patterns
-5. MANDATORY: Follow the exact output format specified in the investigation prompt
-6. MANDATORY: Calculate and provide a numerical risk_score from 0.0 to 1.0 based on evidence
-7. Provide confidence scores and reasoning for all findings
-8. Document your tool selection rationale
+MANDATORY PRINCIPLES:
+1. USE MULTIPLE TOOLS - Minimum 10+ tools unless you can justify why fewer are sufficient
+2. CROSS-VALIDATE - Use multiple tools to verify each finding
+3. BE EXHAUSTIVE - If a tool might provide relevant data, USE IT
+4. EXPLORE ALL CATEGORIES - Use tools from different categories for diverse perspectives
+5. DOCUMENT EVERYTHING - List every tool used and why
+6. MANDATORY: Provide numerical risk_score (0.0-1.0) based on ALL evidence
+7. Quality = Quantity × Depth - More tools with deep analysis = better investigation
 
-Available tools: {', '.join(self.tool_map.keys())}
+You have access to {len(self.tools)} tools including:
+{self._format_tool_summary()}
 
 IMPORTANT: The investigation prompt will contain exact format requirements from the Gaia system.
 Follow these requirements precisely while maintaining your autonomous tool selection capability.
@@ -327,11 +356,16 @@ Let the investigation context guide your decisions, not fixed workflows.
                     
                     logger.info(f"🔧 Executing tool: {tool_name} with args: {tool_args}")
                     
+                    # Fix tool parameters to ensure correct naming
+                    from app.service.agent.tools.tool_parameter_mapper import ToolParameterMapper
+                    fixed_args = ToolParameterMapper.fix_tool_parameters(tool_name, tool_args)
+                    logger.debug(f"📝 Fixed tool args for {tool_name}: {tool_args} -> {fixed_args}")
+                    
                     try:
                         # Find and execute the tool
                         if tool_name in self.tool_map:
                             tool = self.tool_map[tool_name]
-                            tool_result = await tool.ainvoke(tool_args)
+                            tool_result = await tool.ainvoke(fixed_args)
                             
                             # Create tool message with the result
                             tool_message = ToolMessage(

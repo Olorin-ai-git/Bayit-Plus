@@ -56,7 +56,7 @@ TIMEOUT="$DEFAULT_TIMEOUT"
 SERVER_URL=""
 SERVER_PORT="$DEFAULT_SERVER_PORT"
 PROJECT_ID="$DEFAULT_PROJECT_ID"
-MODE="demo"
+MODE="live"
 OUTPUT_FORMAT="terminal"
 OUTPUT_DIR="."
 HTML_REPORT=""
@@ -69,13 +69,18 @@ MOCK_IPS_CACHE="true"
 AUTO_START_SERVER="true"
 SKIP_SECRETS=""
 
-# Advanced monitoring options
-SHOW_WEBSOCKET=""
-SHOW_LLM=""
-SHOW_LANGGRAPH=""
-SHOW_AGENTS=""
+# Snowflake configuration
+USE_SNOWFLAKE="true"
+SNOWFLAKE_TIME_WINDOW="24h"
+SNOWFLAKE_TOP_PERCENT="10"
+
+# Advanced monitoring options - all ON by default
+SHOW_WEBSOCKET="true"
+SHOW_LLM="true"
+SHOW_LANGGRAPH="true"
+SHOW_AGENTS="true"
 SHOW_ALL=""
-FOLLOW_LOGS=""
+FOLLOW_LOGS="true"
 MONITORING_PIDS=""
 
 # Banner function
@@ -111,8 +116,12 @@ show_usage() {
     echo "                              money_laundering, insider_threat, advanced_persistent_fraud"
     echo "  -a, --all                   Test all available scenarios"
     echo ""
-    echo -e "${WHITE}CSV DATA OPTIONS:${NC}"
-    echo "  --csv-file PATH             Path to CSV transaction data file"
+    echo -e "${WHITE}DATA SOURCE OPTIONS:${NC}"
+    echo "  --use-snowflake             Use Snowflake for top risk entities (default: enabled)"
+    echo "  --no-snowflake              Disable Snowflake, use CSV data instead"
+    echo "  --snowflake-time-window     Time window for Snowflake data: 1h, 6h, 24h, 7d, 30d (default: 24h)"
+    echo "  --snowflake-top-percent     Top percentage of risk entities (default: 10)"
+    echo "  --csv-file PATH             Path to CSV transaction data file (when not using Snowflake)"
     echo "  --csv-limit N               Number of CSV rows to process (default: $DEFAULT_CSV_LIMIT)"
     echo ""
     echo -e "${WHITE}SERVER OPTIONS:${NC}"
@@ -126,7 +135,7 @@ show_usage() {
     echo -e "${WHITE}EXECUTION OPTIONS:${NC}"
     echo "  -c, --concurrent N          Concurrent tests (default: $DEFAULT_CONCURRENT)"
     echo "  -t, --timeout SECONDS       Test timeout (default: $DEFAULT_TIMEOUT)"
-    echo "  -m, --mode MODE             Test mode: mock, demo, live (default: demo)"
+    echo "  -m, --mode MODE             Test mode: mock, demo, live (default: live)"
     echo "  --mock-ips-cache            Use mocked threat intelligence (default: enabled)"
     echo "  --no-mock-ips-cache         Use real threat intelligence APIs"
     echo ""
@@ -244,50 +253,66 @@ validate_environment() {
     return 0
 }
 
-# Retrieve Firebase secrets
+# Retrieve secrets from .env file
 retrieve_secrets() {
     if [[ "$SKIP_SECRETS" == "true" ]]; then
-        show_warning "Skipping Firebase secrets retrieval"
+        show_warning "Skipping secrets retrieval"
         return 0
     fi
     
-    show_progress "Retrieving secrets from Firebase project: $PROJECT_ID"
+    # Path to .env file
+    local env_file="$BACKEND_ROOT/.env"
     
-    # Core secrets
-    local anthropic_key
-    local jwt_key
-    local openai_key
-    local olorin_key
-    
-    anthropic_key=$(firebase functions:secrets:access ANTHROPIC_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    jwt_key=$(firebase functions:secrets:access JWT_SECRET_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    openai_key=$(firebase functions:secrets:access OPENAI_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    olorin_key=$(firebase functions:secrets:access OLORIN_API_KEY --project "$PROJECT_ID" 2>/dev/null || echo "")
-    
-    # Export retrieved secrets
-    if [[ -n "$anthropic_key" ]]; then
-        export ANTHROPIC_API_KEY="$anthropic_key"
-        show_success "Anthropic API key retrieved"
-    else
-        show_warning "Anthropic API key not found - some features may not work"
+    # Check if .env file exists
+    if [[ ! -f "$env_file" ]]; then
+        show_error ".env file not found at $env_file"
+        return 1
     fi
     
-    if [[ -n "$jwt_key" ]]; then
-        export JWT_SECRET_KEY="$jwt_key"
-        show_success "JWT secret key retrieved"
+    show_progress "Loading secrets from .env file: $env_file"
+    
+    # Load environment variables from .env file
+    # Export all variables for child processes
+    set -a
+    source "$env_file"
+    set +a
+    
+    # Verify core secrets were loaded
+    if [[ -n "$ANTHROPIC_API_KEY" ]]; then
+        show_success "Anthropic API key loaded from .env"
     else
-        show_warning "JWT secret key not found - generating temporary key"
+        show_warning "Anthropic API key not found in .env - some features may not work"
+    fi
+    
+    if [[ -n "$JWT_SECRET_KEY" ]]; then
+        show_success "JWT secret key loaded from .env"
+    else
+        show_warning "JWT secret key not found in .env - generating temporary key"
         export JWT_SECRET_KEY=$(openssl rand -base64 64)
     fi
     
-    if [[ -n "$openai_key" ]]; then
-        export OPENAI_API_KEY="$openai_key"
-        show_success "OpenAI API key retrieved"
+    if [[ -n "$OPENAI_API_KEY" ]]; then
+        show_success "OpenAI API key loaded from .env"
+    else
+        show_warning "OpenAI API key not found in .env"
     fi
     
-    if [[ -n "$olorin_key" ]]; then
-        export OLORIN_API_KEY="$olorin_key"
-        show_success "Olorin API key retrieved"
+    if [[ -n "$OLORIN_API_KEY" ]]; then
+        show_success "Olorin API key loaded from .env"
+    else
+        show_warning "Olorin API key not found in .env"
+    fi
+    
+    # Verify Snowflake configuration if enabled
+    if [[ "$USE_SNOWFLAKE" == "true" ]]; then
+        if [[ -n "$SNOWFLAKE_ACCOUNT" ]] && [[ -n "$SNOWFLAKE_USER" ]] && [[ -n "$SNOWFLAKE_PASSWORD" ]]; then
+            show_success "Snowflake configuration loaded from .env"
+            show_success "Snowflake integration enabled (time window: $SNOWFLAKE_TIME_WINDOW, top: $SNOWFLAKE_TOP_PERCENT%)"
+        else
+            show_warning "Snowflake enabled but configuration incomplete in .env"
+        fi
+    else
+        show_warning "Snowflake disabled in .env, using CSV data"
     fi
     
     # Additional environment setup
@@ -295,7 +320,7 @@ retrieve_secrets() {
     export OLORIN_USE_DEMO_DATA=true
     export SECRET_MANAGER_LOG_LEVEL=SILENT
     
-    show_success "Secrets configuration completed"
+    show_success "Secrets configuration completed from .env file"
     return 0
 }
 
@@ -514,8 +539,14 @@ show_configuration() {
     echo -e "${WHITE}🔧 INVESTIGATION CONFIGURATION${NC}"
     echo -e "   Test Mode: ${CYAN}$(if [[ -n "$SCENARIO" ]]; then echo "Single Scenario ($SCENARIO)"; else echo "All Scenarios"; fi)${NC}"
     
-    if [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
-        echo -e "   CSV Data: ${CYAN}$CSV_FILE${NC} (limit: $CSV_LIMIT rows)"
+    if [[ "$USE_SNOWFLAKE" == "true" ]]; then
+        echo -e "   Data Source: ${CYAN}Snowflake Top Risk Entities${NC}"
+        echo -e "   Time Window: ${CYAN}$SNOWFLAKE_TIME_WINDOW${NC}"
+        echo -e "   Top Risk %: ${CYAN}$SNOWFLAKE_TOP_PERCENT%${NC}"
+    elif [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
+        echo -e "   Data Source: ${CYAN}CSV File${NC}"
+        echo -e "   CSV Path: ${CYAN}$CSV_FILE${NC}"
+        echo -e "   CSV Limit: ${CYAN}$CSV_LIMIT rows${NC}"
     else
         echo -e "   Data Source: ${CYAN}Synthetic Test Data${NC}"
     fi
@@ -688,6 +719,22 @@ parse_arguments() {
             --follow-logs)
                 FOLLOW_LOGS="true"
                 shift
+                ;;
+            --use-snowflake)
+                USE_SNOWFLAKE="true"
+                shift
+                ;;
+            --no-snowflake)
+                USE_SNOWFLAKE="false"
+                shift
+                ;;
+            --snowflake-time-window)
+                SNOWFLAKE_TIME_WINDOW="$2"
+                shift 2
+                ;;
+            --snowflake-top-percent)
+                SNOWFLAKE_TOP_PERCENT="$2"
+                shift 2
                 ;;
             -h|--help)
                 show_usage
