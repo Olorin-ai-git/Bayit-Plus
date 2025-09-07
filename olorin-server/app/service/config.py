@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import List, Optional
 
 from fastapi import Request
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 from app.service.logging import get_bridge_logger
 
@@ -25,23 +25,78 @@ class SvcSettings(BaseSettings):
     asset_id: str = "3825825476777495228"
     olorin_originating_assetalias: Optional[str] = "Olorin.cas.hri.olorin"
 
-    # Verification service flags
+    # Verification service flags - mapped from .env
     verification_enabled: bool = Field(
-        default=False, description="Enable Opus verification gating"
+        default=False, 
+        description="Enable Opus verification gating",
+        env="VERIFICATION_ENABLED"
     )
     verification_mode: str = Field(
-        default="shadow", description="shadow|blocking"
+        default="shadow", 
+        description="shadow|blocking",
+        env="VERIFICATION_MODE"
     )
     verification_sample_percent: float = Field(
-        default=1.0, description="0.0-1.0 sampling rate for verification"
+        default=1.0, 
+        description="0.0-1.0 sampling rate for verification (env var is 0-100)",
+        env="VERIFICATION_SAMPLE_PERCENT"
     )
-    verification_opus_model: str = Field(
-        default="claude-opus-4.1", description="Opus model name"
+    verification_model_name: str = Field(
+        default="claude-opus-4.1", 
+        description="Model name for verification (can be any supported model)",
+        env="VERIFICATION_MODEL_NAME"
     )
-    verification_threshold_default: float = Field(default=0.85)
-    verification_max_retries_default: int = Field(default=1)
+    verification_threshold_default: float = Field(
+        default=0.85,
+        description="Pass/fail threshold for verification score (0.0-1.0, env var is 0-100)",
+        env="VERIFICATION_THRESHOLD_DEFAULT"
+    )
+    verification_max_retries_default: int = Field(
+        default=1,
+        env="VERIFICATION_MAX_RETRIES"
+    )
     verification_task_policy_risk_analysis_threshold: float = Field(default=0.9)
     verification_task_policy_risk_analysis_max_retries: int = Field(default=2)
+    
+    @field_validator('verification_sample_percent', mode='before')
+    @classmethod
+    def convert_sample_percent(cls, v):
+        """Convert percentage (0-100) from env to decimal (0.0-1.0) for internal use."""
+        if v is None:
+            return 1.0
+        # If it's a string from env var
+        if isinstance(v, str):
+            val = float(v)
+            # If value is > 1, assume it's a percentage and convert
+            if val > 1:
+                return val / 100.0
+            return val
+        # If it's already a number
+        if isinstance(v, (int, float)):
+            if v > 1:
+                return v / 100.0
+            return v
+        return 1.0
+    
+    @field_validator('verification_threshold_default', mode='before')
+    @classmethod
+    def convert_threshold_percent(cls, v):
+        """Convert percentage (0-100) from env to decimal (0.0-1.0) for internal use."""
+        if v is None:
+            return 0.85
+        # If it's a string from env var
+        if isinstance(v, str):
+            val = float(v)
+            # If value is > 1, assume it's a percentage and convert
+            if val > 1:
+                return val / 100.0
+            return val
+        # If it's already a number
+        if isinstance(v, (int, float)):
+            if v > 1:
+                return v / 100.0
+            return v
+        return 0.85
 
     # Anthropic API - stored in Firebase Secrets Manager ONLY
     anthropic_api_key_secret: str = Field(

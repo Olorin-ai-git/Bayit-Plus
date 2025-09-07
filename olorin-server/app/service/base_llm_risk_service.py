@@ -237,9 +237,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 )
                 verified_client = VerifiedOpenAIClient(openai_caller=_openai_caller)
                 # Inject verifier with configured API key
-                verified_client.verifier = OpusVerifier(
-                    model_name=getattr(self.settings, "verification_opus_model", "claude-opus-4.1"),
-                    api_key=getattr(self.settings, "anthropic_api_key", None),
+                from app.service.llm.verification.model_verifier import ModelVerifier
+                verified_client.verifier = ModelVerifier(
+                    model_name=getattr(self.settings, "verification_model_name", "claude-opus-4.1"),
+                    api_key=None,  # Will use Firebase secrets based on model type
                 )
                 raw_llm_response_str = await verified_client.complete_with_verification(
                     request_id=agent_context.metadata.interaction_group_id,
@@ -251,9 +252,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 raw_llm_response_str, _ = await ainvoke_agent(request, agent_context)
 
                 if should_verify and verification_mode == "shadow":
-                    verifier = OpusVerifier(
-                        model_name=getattr(self.settings, "verification_opus_model", "claude-opus-4.1"),
-                        api_key=getattr(self.settings, "anthropic_api_key", None),
+                    from app.service.llm.verification.model_verifier import ModelVerifier
+                    verifier = ModelVerifier(
+                        model_name=getattr(self.settings, "verification_model_name", "claude-opus-4.1"),
+                        api_key=None,  # Will use Firebase secrets based on model type
                     )
                     ctx_for_shadow = {
                         "request_id": agent_context.metadata.interaction_group_id,

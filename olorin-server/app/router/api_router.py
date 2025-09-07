@@ -707,7 +707,7 @@ async def verification_stats():
             "enabled": bool(getattr(settings, "verification_enabled", False)),
             "mode": getattr(settings, "verification_mode", "shadow"),
             "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
-            "opus_model": getattr(settings, "verification_opus_model", "claude-opus-4.1"),
+            "verification_model_name": getattr(settings, "verification_model_name", "claude-opus-4.1"),
             "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
             "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
             "task_policies": {
@@ -719,3 +719,92 @@ async def verification_stats():
             "metrics": snapshot,
         }
     )
+
+
+@router.get("/api/health")
+async def api_health():
+    """
+    API health check endpoint that includes verification settings.
+    Used by the frontend to fetch system status and configuration.
+    """
+    from app.service.config import get_settings_for_env
+    
+    settings = get_settings_for_env()
+    
+    # Get verification configuration
+    verification_config = {
+        "enabled": bool(getattr(settings, "verification_enabled", False)),
+        "mode": getattr(settings, "verification_mode", "shadow"),
+        "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
+        "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
+    }
+    
+    # Get model configuration
+    from app.service.llm_manager import get_llm_manager
+    llm_manager = get_llm_manager()
+    
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "service": "olorin-backend",
+            "timestamp": datetime.now().isoformat(),
+            "verification": verification_config,
+            "models": {
+                "selected": llm_manager.selected_model_id,
+                "verification_model": llm_manager.verification_model_id,
+            }
+        }
+    )
+
+
+@router.post("/api/v1/verification/settings")
+async def update_verification_settings(request: Request):
+    """
+    Update verification settings dynamically.
+    Note: These changes are runtime-only and don't persist to .env file.
+    """
+    try:
+        body = await request.json()
+        settings = get_settings_for_env()
+        
+        # Update settings dynamically (runtime only)
+        if 'enabled' in body:
+            settings.verification_enabled = bool(body['enabled'])
+        if 'mode' in body:
+            settings.verification_mode = str(body['mode'])
+        if 'sample_percent' in body:
+            # Convert from decimal (0.0-1.0) if needed
+            val = float(body['sample_percent'])
+            settings.verification_sample_percent = val if val <= 1.0 else val / 100.0
+        if 'threshold_default' in body:
+            # Convert from decimal (0.0-1.0) if needed
+            val = float(body['threshold_default'])
+            settings.verification_threshold_default = val if val <= 1.0 else val / 100.0
+        
+        # Log the changes
+        logger.info(f"Verification settings updated: enabled={settings.verification_enabled}, "
+                   f"mode={settings.verification_mode}, "
+                   f"sample_percent={settings.verification_sample_percent}, "
+                   f"threshold={settings.verification_threshold_default}")
+        
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": "Verification settings updated successfully",
+                "settings": {
+                    "enabled": settings.verification_enabled,
+                    "mode": settings.verification_mode,
+                    "sample_percent": settings.verification_sample_percent,
+                    "threshold_default": settings.verification_threshold_default,
+                }
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error updating verification settings: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "message": f"Failed to update verification settings: {str(e)}"
+            }
+        )

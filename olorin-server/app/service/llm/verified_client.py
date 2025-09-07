@@ -6,7 +6,7 @@ from typing import Optional
 
 from app.models.llm_verification import VerificationContext, VerificationPolicy
 from app.service.llm.verification.log_store import verification_log_store
-from app.service.llm.verification.opus_verifier import OpusVerifier
+from app.service.llm.verification.model_verifier import ModelVerifier
 from app.utils.json_schema import validate_json_against_schema
 
 
@@ -23,11 +23,11 @@ class VerifiedOpenAIClient:
     def __init__(
         self,
         openai_caller,
-        verifier: Optional[OpusVerifier] = None,
+        verifier: Optional[ModelVerifier] = None,
         policy: Optional[VerificationPolicy] = None,
     ):
         self.openai_caller = openai_caller
-        self.verifier = verifier or OpusVerifier()
+        self.verifier = verifier or ModelVerifier()
         self.policy = policy or VerificationPolicy(
             threshold=0.85, max_retries=1, min_adherence=0.8, min_safety=0.9
         )

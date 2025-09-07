@@ -42,6 +42,7 @@ import {
   Extension as ExtensionIcon,
 } from '@mui/icons-material';
 import { ModelSelector } from '../components/ModelSelector';
+import { VerificationSettings } from '../components/VerificationSettings';
 
 /** Settings page for default investigation preferences */
 const SettingsPage: React.FC = () => {
@@ -335,6 +336,11 @@ const SettingsPage: React.FC = () => {
         {/* LLM Model Selection - Full Width */}
         <Grid item xs={12}>
           <ModelSelector />
+        </Grid>
+
+        {/* LLM Verification Settings - Full Width */}
+        <Grid item xs={12}>
+          <VerificationSettings />
         </Grid>
 
         {/* Default Entity Type */}

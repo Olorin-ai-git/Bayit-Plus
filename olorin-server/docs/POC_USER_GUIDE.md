@@ -18,11 +18,12 @@ This Proof of Concept (POC) demonstrates fraud detection capabilities using Snow
 1. [Quick Start](#quick-start)
 2. [Getting the Top 10% Risk Entities](#getting-the-top-10-risk-entities)
 3. [Configuration via .env File](#configuration-via-env-file)
-4. [Advanced Configuration Options](#advanced-configuration-options)
-5. [API Endpoints](#api-endpoints)
-6. [SQL Queries](#sql-queries)
-7. [Troubleshooting](#troubleshooting)
-8. [Best Practices](#best-practices)
+4. [LLM Verification System](#llm-verification-system)
+5. [Advanced Configuration Options](#advanced-configuration-options)
+6. [API Endpoints](#api-endpoints)
+7. [SQL Queries](#sql-queries)
+8. [Troubleshooting](#troubleshooting)
+9. [Best Practices](#best-practices)
 
 ---
 
@@ -629,6 +630,47 @@ curl "http://localhost:8090/api/v1/analytics/risk/top-entities?time_window=30d&g
 
 The `.env` file controls all aspects of the Snowflake POC. Here's what you can configure:
 
+### LLM Model Configuration
+
+```bash
+# ============================================
+# LLM MODEL SELECTION
+# ============================================
+
+# Primary model for investigations and analysis
+SELECTED_MODEL=claude-opus-4-1-20250805
+
+# Verification model for dual-model verification system
+VERIFICATION_MODEL=gpt-5-chat-latest
+
+# ============================================
+# LLM VERIFICATION SYSTEM
+# ============================================
+
+# Master switch for verification system (true/false)
+VERIFICATION_ENABLED=true
+
+# Verification mode
+# - blocking: Synchronous verification with automatic retries on failure
+# - shadow: Asynchronous monitoring without blocking the main flow
+VERIFICATION_MODE=blocking
+
+# Percentage of requests to verify (0-100)
+# Useful for gradual rollout or sampling
+VERIFICATION_SAMPLE_PERCENT=100
+
+# Pass/fail threshold for verification score (0-100)
+# Higher values mean stricter verification
+VERIFICATION_THRESHOLD_DEFAULT=85
+
+# Maximum retry attempts for failed verifications
+VERIFICATION_MAX_RETRIES=1
+
+# Model to use for verification (can be any supported model)
+# Examples: claude-opus-4.1, gpt-4-turbo, gpt-5-chat-latest
+VERIFICATION_MODEL_NAME=claude-opus-4.1
+```
+
 ### Essential Snowflake Configuration
 
 ```bash
@@ -782,6 +824,153 @@ SNOWFLAKE_OCSP_FAIL_OPEN=false
 ```
 
 ---
+
+## LLM Verification System
+
+### Overview
+
+The LLM Verification System provides dual-model verification for enhanced reliability and accuracy. It uses a secondary model to independently verify the primary model's responses, ensuring high-quality outputs for fraud investigations.
+
+### How It Works
+
+1. **Primary Model** generates risk assessments and investigation findings
+2. **Verification Model** independently validates the response across 5 dimensions:
+   - **Correctness** (0.9 weight): Factual accuracy and logical consistency
+   - **Completeness** (0.9 weight): All required information present
+   - **Adherence** (0.9 weight): Follows instructions and schema requirements
+   - **Grounding** (0.9 weight): Based on provided data, not hallucinated
+   - **Safety** (0.95 weight): No harmful or inappropriate content
+
+3. **Verification Decision**:
+   - Pass: Weighted score ≥ threshold (default 85%)
+   - Fail: Score below threshold or hard gate failures
+
+4. **Action on Failure**:
+   - **Blocking mode**: Automatic retry with improved prompts
+   - **Shadow mode**: Log for monitoring, don't block
+
+### Configuration Guide
+
+#### Basic Setup
+```bash
+# Enable verification with default settings
+VERIFICATION_ENABLED=true
+VERIFICATION_MODE=blocking
+```
+
+#### Production Configuration
+```bash
+# High-reliability production setup
+VERIFICATION_ENABLED=true
+VERIFICATION_MODE=blocking
+VERIFICATION_SAMPLE_PERCENT=100    # Verify all requests
+VERIFICATION_THRESHOLD_DEFAULT=90   # Strict threshold
+VERIFICATION_MAX_RETRIES=2          # Allow 2 retry attempts
+```
+
+#### Testing/Development Configuration
+```bash
+# Shadow mode for monitoring without blocking
+VERIFICATION_ENABLED=true
+VERIFICATION_MODE=shadow
+VERIFICATION_SAMPLE_PERCENT=10     # Sample 10% of requests
+VERIFICATION_THRESHOLD_DEFAULT=75  # Lower threshold for testing
+```
+
+#### Gradual Rollout Configuration
+```bash
+# Start with shadow mode and low sampling
+VERIFICATION_ENABLED=true
+VERIFICATION_MODE=shadow
+VERIFICATION_SAMPLE_PERCENT=5      # Start with 5%
+
+# Then increase sampling
+VERIFICATION_SAMPLE_PERCENT=25     # Increase to 25%
+VERIFICATION_SAMPLE_PERCENT=50     # Then 50%
+
+# Finally switch to blocking mode
+VERIFICATION_MODE=blocking
+VERIFICATION_SAMPLE_PERCENT=100    # Full coverage
+```
+
+### UI Settings Management
+
+The verification system can also be configured through the Olorin UI:
+
+1. Navigate to **Settings** page
+2. Find **LLM Verification System** section
+3. Configure:
+   - Toggle verification on/off
+   - Select verification mode (blocking/shadow)
+   - Adjust sample rate with slider (0-100%)
+   - Set pass threshold with slider (50-100%)
+4. Click **Save Settings** to apply changes
+
+**Note**: UI changes are runtime-only and don't persist to the `.env` file. For permanent changes, update the `.env` file.
+
+### Monitoring and Metrics
+
+#### API Endpoints
+
+```bash
+# Get verification statistics
+curl http://localhost:8090/admin/verification/stats
+
+# Get health status including verification config
+curl http://localhost:8090/api/health
+
+# Update verification settings (runtime only)
+curl -X POST http://localhost:8090/api/v1/verification/settings \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enabled": true,
+    "mode": "blocking",
+    "sample_percent": 1.0,
+    "threshold_default": 0.85
+  }'
+```
+
+#### Verification Metrics
+
+The system tracks:
+- Total verifications performed
+- Pass/fail rates
+- Average verification time
+- Retry statistics
+- Performance impact metrics
+
+### Best Practices
+
+1. **Start with Shadow Mode**: Begin with shadow mode to understand verification behavior without impacting users
+2. **Gradual Rollout**: Increase sampling percentage gradually while monitoring metrics
+3. **Threshold Tuning**: Adjust threshold based on your accuracy requirements:
+   - 70-80%: Lenient (catches major errors)
+   - 80-90%: Balanced (recommended)
+   - 90-95%: Strict (highest quality)
+4. **Model Selection**: Choose verification models that complement your primary model:
+   - Different provider (e.g., Claude primary, GPT verification)
+   - Different capabilities (e.g., reasoning vs. accuracy focused)
+5. **Monitor Performance**: Watch for:
+   - Increased latency in blocking mode
+   - High retry rates indicating threshold issues
+   - Consistent failures suggesting prompt problems
+
+### Troubleshooting
+
+**Issue**: High verification failure rate
+- Check threshold setting (may be too strict)
+- Review prompt quality and clarity
+- Ensure schema requirements are reasonable
+
+**Issue**: Increased latency
+- Consider using shadow mode for non-critical paths
+- Reduce sampling percentage
+- Check verification model response times
+
+**Issue**: Verification always passes
+- Verify that VERIFICATION_ENABLED=true
+- Check API keys are configured correctly
+- Review threshold (may be too lenient)
 
 ## Advanced Configuration Options
 

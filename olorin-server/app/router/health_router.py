@@ -104,6 +104,16 @@ async def detailed_health():
     metrics = get_service_metrics()
     metrics["uptime_seconds"] = uptime
     
+    # Get verification settings
+    from app.service.config import get_settings_for_env
+    settings = get_settings_for_env()
+    verification_config = {
+        "enabled": bool(getattr(settings, "verification_enabled", False)),
+        "mode": getattr(settings, "verification_mode", "shadow"),
+        "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
+        "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
+    }
+    
     # Determine overall status
     all_dependencies_healthy = all(
         isinstance(dep, bool) and dep for dep in dependencies.values()
@@ -129,5 +139,6 @@ async def detailed_health():
         uptime_seconds=uptime,
         dependencies=dependencies,
         checks=checks,
-        metrics=metrics
+        metrics=metrics,
+        verification=verification_config
     )

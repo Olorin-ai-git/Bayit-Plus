@@ -6,7 +6,7 @@ Provides Pydantic models for health status responses, probes, and metrics.
 
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from pydantic import BaseModel
 
@@ -35,6 +35,7 @@ class DetailedHealthStatus(BaseModel):
     dependencies: Dict[str, Any]
     checks: Dict[str, bool]
     metrics: Dict[str, Any]
+    verification: Optional[Dict[str, Any]] = None
 
 
 class LivenessProbe(BaseModel):
