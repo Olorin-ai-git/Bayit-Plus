@@ -178,13 +178,22 @@ class MockLLMResponseGenerator:
             }
         }
     
-    def generate_network_response(self, scenario: ScenarioType, investigation_id: str) -> str:
+    def generate_network_response(self, scenario: ScenarioType, investigation_id: str, entity_risk_score: Optional[float] = None) -> str:
         """Generate mock network analysis response"""
+        self.logger.warning("⚠️ ⚠️ ⚠️  USING MOCK LLM - NOT REAL CLAUDE/GPT ANALYSIS ⚠️ ⚠️ ⚠️")
+        self.logger.warning("    This is a MOCK response for testing only - NO actual LLM reasoning")
+        
         profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
         templates = self.response_templates["network"]
         
-        # Add realistic variance
-        risk_score = profile.network_risk + random.uniform(-0.05, 0.05)
+        # Use entity's actual risk score if provided, otherwise use profile
+        if entity_risk_score is not None:
+            # Network agent should detect high network risk for high-risk entities
+            risk_score = entity_risk_score * 0.85 + random.uniform(-0.05, 0.05)
+            self.logger.warning(f"    Using entity risk score from Snowflake: {entity_risk_score:.4f} -> Network risk: {risk_score:.4f}")
+        else:
+            risk_score = profile.network_risk + random.uniform(-0.05, 0.05)
+            self.logger.warning(f"    Using hardcoded profile risk: {risk_score:.4f}")
         risk_score = max(0.0, min(1.0, risk_score))  # Clamp to valid range
         confidence = profile.confidence_base + random.randint(-8, 8)
         
@@ -211,12 +220,19 @@ Additional Analysis:
         self.logger.info(f"Generated mock network response for {scenario.value}: risk={risk_score:.2f}")
         return response
     
-    def generate_device_response(self, scenario: ScenarioType, investigation_id: str) -> str:
+    def generate_device_response(self, scenario: ScenarioType, investigation_id: str, entity_risk_score: Optional[float] = None) -> str:
         """Generate mock device analysis response"""
+        self.logger.warning("⚠️ ⚠️ ⚠️  USING MOCK LLM - NOT REAL CLAUDE/GPT ANALYSIS ⚠️ ⚠️ ⚠️")
+        
         profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
         templates = self.response_templates["device"]
         
-        risk_score = profile.device_risk + random.uniform(-0.05, 0.05)
+        if entity_risk_score is not None:
+            # Device agent should detect device anomalies for high-risk entities
+            risk_score = entity_risk_score * 0.75 + random.uniform(-0.05, 0.05)
+            self.logger.warning(f"    Device risk adjusted for entity risk {entity_risk_score:.4f} -> {risk_score:.4f}")
+        else:
+            risk_score = profile.device_risk + random.uniform(-0.05, 0.05)
         risk_score = max(0.0, min(1.0, risk_score))
         confidence = profile.confidence_base + random.randint(-8, 8)
         
@@ -242,12 +258,19 @@ Device Fingerprint Analysis:
         self.logger.info(f"Generated mock device response for {scenario.value}: risk={risk_score:.2f}")
         return response
     
-    def generate_location_response(self, scenario: ScenarioType, investigation_id: str) -> str:
+    def generate_location_response(self, scenario: ScenarioType, investigation_id: str, entity_risk_score: Optional[float] = None) -> str:
         """Generate mock location analysis response"""
+        self.logger.warning("⚠️ ⚠️ ⚠️  USING MOCK LLM - NOT REAL CLAUDE/GPT ANALYSIS ⚠️ ⚠️ ⚠️")
+        
         profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
         templates = self.response_templates["location"]
         
-        risk_score = profile.location_risk + random.uniform(-0.05, 0.05)
+        if entity_risk_score is not None:
+            # Location agent should detect location anomalies for high-risk entities
+            risk_score = entity_risk_score * 0.70 + random.uniform(-0.05, 0.05)
+            self.logger.warning(f"    Location risk adjusted for entity risk {entity_risk_score:.4f} -> {risk_score:.4f}")
+        else:
+            risk_score = profile.location_risk + random.uniform(-0.05, 0.05)
         risk_score = max(0.0, min(1.0, risk_score))
         confidence = profile.confidence_base + random.randint(-8, 8)
         
@@ -273,12 +296,19 @@ Geographic Analysis Details:
         self.logger.info(f"Generated mock location response for {scenario.value}: risk={risk_score:.2f}")
         return response
     
-    def generate_logs_response(self, scenario: ScenarioType, investigation_id: str) -> str:
+    def generate_logs_response(self, scenario: ScenarioType, investigation_id: str, entity_risk_score: Optional[float] = None) -> str:
         """Generate mock logs analysis response"""
+        self.logger.warning("⚠️ ⚠️ ⚠️  USING MOCK LLM - NOT REAL CLAUDE/GPT ANALYSIS ⚠️ ⚠️ ⚠️")
+        
         profile = self.risk_profiles.get(scenario, self.risk_profiles[ScenarioType.DEFAULT])
         templates = self.response_templates["logs"]
         
-        risk_score = profile.logs_risk + random.uniform(-0.05, 0.05)
+        if entity_risk_score is not None:
+            # Logs agent should detect suspicious patterns for high-risk entities
+            risk_score = entity_risk_score * 0.80 + random.uniform(-0.05, 0.05)
+            self.logger.warning(f"    Logs risk adjusted for entity risk {entity_risk_score:.4f} -> {risk_score:.4f}")
+        else:
+            risk_score = profile.logs_risk + random.uniform(-0.05, 0.05)
         risk_score = max(0.0, min(1.0, risk_score))
         confidence = profile.confidence_base + random.randint(-8, 8)
         
@@ -424,7 +454,8 @@ confirming the validity of the risk assessment."""
 mock_response_generator = MockLLMResponseGenerator()
 
 def generate_mock_response(agent_type: str, scenario: str, investigation_id: str, 
-                          context_data: Optional[Dict[str, Any]] = None) -> str:
+                          context_data: Optional[Dict[str, Any]] = None,
+                          entity_risk_score: Optional[float] = None) -> str:
     """
     Generate mock response for specified agent type and scenario.
     
@@ -435,22 +466,33 @@ def generate_mock_response(agent_type: str, scenario: str, investigation_id: str
         scenario: Investigation scenario name
         investigation_id: Unique investigation identifier
         context_data: Additional context for risk assessment (contains other agent responses)
+        entity_risk_score: Actual risk score from Snowflake for the entity being investigated
         
     Returns:
         Realistic mock response following Olorin prompt format
     """
-    logger.info(f"🎭 Generating mock {agent_type} response for scenario: {scenario}")
+    logger.warning("="*80)
+    logger.warning("🚨🚨🚨 MOCK LLM MODE ACTIVE - NOT USING REAL AI/LLM 🚨🚨🚨")
+    logger.warning(f"    Agent Type: {agent_type}")
+    logger.warning(f"    Scenario: {scenario}")
+    logger.warning("    This is MOCK data for testing - NO chain of thought, NO tool reasoning")
+    logger.warning("    To use REAL LLM: Remove --mode mock from test command")
+    logger.warning("="*80)
+    
+    if entity_risk_score is not None:
+        logger.warning(f"📊 Entity has REAL risk score from Snowflake: {entity_risk_score:.4f}")
+        logger.warning(f"    Mock responses will be adjusted to reflect this high risk")
     
     scenario_type = mock_response_generator.get_scenario_type(scenario)
     
     if agent_type == "network":
-        return mock_response_generator.generate_network_response(scenario_type, investigation_id)
+        return mock_response_generator.generate_network_response(scenario_type, investigation_id, entity_risk_score)
     elif agent_type == "device":
-        return mock_response_generator.generate_device_response(scenario_type, investigation_id)
+        return mock_response_generator.generate_device_response(scenario_type, investigation_id, entity_risk_score)
     elif agent_type == "location":
-        return mock_response_generator.generate_location_response(scenario_type, investigation_id)
+        return mock_response_generator.generate_location_response(scenario_type, investigation_id, entity_risk_score)
     elif agent_type == "logs":
-        return mock_response_generator.generate_logs_response(scenario_type, investigation_id)
+        return mock_response_generator.generate_logs_response(scenario_type, investigation_id, entity_risk_score)
     elif agent_type == "risk":
         # Risk assessment requires other agent responses
         if context_data:
