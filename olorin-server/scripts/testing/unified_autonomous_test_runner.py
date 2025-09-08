@@ -134,13 +134,14 @@ try:
         get_test_scenarios = None
         get_scenario_by_type = None
 
-    # Import HTML report generator
+    # Import unified HTML report generator
     try:
-        from scripts.reporting.html_report_generator import AutonomousInvestigationHTMLReporter
+        from app.service.reporting.unified import UnifiedHTMLReportGenerator, DataSourceType
         HTML_REPORTER_AVAILABLE = True
     except ImportError:
         HTML_REPORTER_AVAILABLE = False
-        AutonomousInvestigationHTMLReporter = None
+        UnifiedHTMLReportGenerator = None
+        DataSourceType = None
 
 except ImportError as e:
     # Import logger before using it
@@ -1041,6 +1042,11 @@ class UnifiedAutonomousTestRunner:
             
             # Update log file location to be inside the investigation folder
             self._update_log_file_location(str(investigation_folder))
+            
+            # Update chain of thought logger to save files in investigation folder
+            self.chain_of_thought_logger.output_directory = Path(investigation_folder)
+            self.chain_of_thought_logger.output_directory.mkdir(parents=True, exist_ok=True)
+            self.logger.info(f"🧠 Chain of thought logger updated to use: {investigation_folder}")
             
             # Start unified journey tracking
             self.unified_journey_tracker.start_journey_tracking(
@@ -2366,49 +2372,81 @@ class UnifiedAutonomousTestRunner:
         return report_data
 
     async def _generate_html_report(self, report_data: Dict[str, Any], timestamp: str) -> Optional[str]:
-        """Generate comprehensive HTML report"""
+        """Generate comprehensive HTML report using unified system"""
         try:
-            html_reporter = AutonomousInvestigationHTMLReporter(
-                report_title="Unified Autonomous Investigation Test Report"
-            )
+            if not HTML_REPORTER_AVAILABLE:
+                self.logger.warning("Unified HTML reporter not available, skipping report generation")
+                return None
+                
+            # Create unified HTML report generator
+            unified_generator = UnifiedHTMLReportGenerator()
             
-            # Transform data for HTML reporter
+            # Transform data for unified reporter - include comprehensive investigation data
             test_results = {}
+            investigation_folder = None
+            
             for i, result_data in enumerate(report_data["results"]):
                 test_results[result_data["scenario_name"]] = {
                     "status": "PASSED" if result_data["status"] == "completed" else "FAILED",
                     "duration": result_data["duration"],
                     "overall_score": result_data.get("validation_results", {}).get("overall_score", 0),
                     "final_risk_score": result_data["final_risk_score"],
+                    "confidence": result_data.get("confidence", 0),
                     "phases": result_data.get("agent_results", {}),
-                    "errors": result_data.get("errors", [])
+                    "errors": result_data.get("errors", []),
+                    # Include comprehensive investigation data
+                    "journey_data": result_data.get("journey_data", {}),
+                    "logging_data": result_data.get("logging_data", {}),
+                    "performance_data": result_data.get("performance_data", {}),
+                    "validation_results": result_data.get("validation_results", {}),
+                    "websocket_events": result_data.get("websocket_events", []),
+                    "investigation_id": result_data.get("investigation_id", ""),
+                    "start_time": result_data.get("start_time", ""),
+                    "end_time": result_data.get("end_time", ""),
+                    "investigation_folder": result_data.get("investigation_folder", "")
                 }
+                
+                # Capture investigation folder from first result (if available)
+                if i == 0 and result_data.get("investigation_folder"):
+                    investigation_folder = result_data["investigation_folder"]
             
-            # Determine output directory - use centralized reports folder under logs
-            if self.config.output_dir == ".":
-                # Create centralized reports directory under logs
+            # Determine output directory - prefer investigation folder over default
+            if investigation_folder and Path(investigation_folder).exists():
+                # Use the investigation folder for HTML report
+                output_dir = Path(investigation_folder)
+                self.logger.info(f"📁 Using investigation folder for HTML report: {output_dir}")
+            elif self.config.output_dir == ".":
+                # Create centralized reports directory under logs (fallback)
                 reports_dir = Path("logs/reports")
                 reports_dir.mkdir(parents=True, exist_ok=True)
                 output_dir = reports_dir
+                self.logger.info(f"📁 Using fallback reports directory: {output_dir}")
             else:
                 # Use user-specified output directory
                 output_dir = Path(self.config.output_dir)
                 output_dir.mkdir(parents=True, exist_ok=True)
+                self.logger.info(f"📁 Using user-specified directory: {output_dir}")
             
             html_filename = f"unified_test_report_{timestamp}.html"
             html_path = output_dir / html_filename
             
-            html_reporter.generate_html_report(
-                test_results=test_results,
-                csv_metadata=report_data.get("csv_metadata"),
-                output_path=str(html_path)
+            # Generate report using unified system
+            generated_path = unified_generator.generate_report(
+                data_source=test_results,
+                data_type=DataSourceType.TEST_RESULTS,
+                output_path=html_path,
+                title="Unified Autonomous Investigation Test Report",
+                theme="professional"
             )
             
-            self.logger.info(f"📊 HTML report generated: {html_path}")
-            return str(html_path.absolute())
+            self.logger.info(f"📊 Unified HTML report generated: {generated_path}")
+            return str(Path(generated_path).absolute())
             
         except Exception as e:
-            self.logger.error(f"Failed to generate HTML report: {e}")
+            self.logger.error(f"Failed to generate unified HTML report: {e}")
+            # Import traceback for detailed error information
+            import traceback
+            self.logger.error(f"Traceback: {traceback.format_exc()}")
             return None
 
     async def _generate_markdown_report(self, report_data: Dict[str, Any], timestamp: str) -> str:

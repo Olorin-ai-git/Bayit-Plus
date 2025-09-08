@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Report Generator Unification Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .diagram-section {
+            margin-bottom: 50px;
+        }
+        
+        .diagram-section h2 {
+            color: #4a5568;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .diagram-section p {
+            color: #6b7280;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .system-card {
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .system-1 {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        }
+        
+        .system-2 {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+        
+        .system-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .benefit-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .benefit-card h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .phases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .phase {
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd3a5 0%, #fd9853 100%);
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .phase h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>HTML Report Generator Unification</h1>
+        <p>Architectural Analysis and Unified Design for Olorin Investigation Platform</p>
+    </div>
+
+    <div class="container">
+        <div class="diagram-section">
+            <h2>Current Architecture Comparison</h2>
+            <p>Visual comparison of the two existing HTML generation systems showing their different approaches and capabilities.</p>
+            
+            <div class="mermaid">
+                graph TB
+                    subgraph "System 1: Simple HTML Generator"
+                        TR[Test Runner Data] --> S1[AutonomousInvestigationHTMLReporter]
+                        S1 --> H1[Monolithic HTML Generation<br/>928 lines]
+                        H1 --> R1[Basic HTML Report<br/>Test Results Focus]
+                    end
+                    
+                    subgraph "System 2: Enhanced HTML Generator" 
+                        IF[Investigation Folder] --> S2[EnhancedHTMLReportGenerator]
+                        S2 --> C1[Component 1: Timeline]
+                        S2 --> C2[Component 2: Flow Graph]
+                        S2 --> C3[Component 3: Tools Analysis]
+                        S2 --> C4[Component 4: Risk Dashboard]
+                        S2 --> C5[Component 5: Explanations]
+                        S2 --> C6[Component 6: Journey Viz]
+                        S2 --> C7[Component 7: LangGraph]
+                        C1 --> R2[Interactive HTML Report<br/>Investigation Focus]
+                        C2 --> R2
+                        C3 --> R2
+                        C4 --> R2
+                        C5 --> R2
+                        C6 --> R2
+                        C7 --> R2
+                    end
+                    
+                    style S1 fill:#ffeaa7
+                    style H1 fill:#fab1a0
+                    style S2 fill:#74b9ff
+                    style C1 fill:#81ecec
+                    style C2 fill:#81ecec
+                    style C3 fill:#81ecec
+                    style C4 fill:#81ecec
+                    style C5 fill:#81ecec
+                    style C6 fill:#81ecec
+                    style C7 fill:#81ecec
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="system-card system-1">
+                    <h3>System 1: Simple HTML Generator</h3>
+                    <ul class="feature-list">
+                        <li>Test runner integration</li>
+                        <li>Monolithic architecture (928 lines)</li>
+                        <li>Embedded HTML templates</li>
+                        <li>Basic visualizations</li>
+                        <li>Chain of thought support</li>
+                        <li>Journey tracking</li>
+                        <li>CSV data integration</li>
+                    </ul>
+                </div>
+                
+                <div class="system-card system-2">
+                    <h3>System 2: Enhanced HTML Generator</h3>
+                    <ul class="feature-list">
+                        <li>Investigation folder analysis</li>
+                        <li>Modular component system</li>
+                        <li>7 visualization components</li>
+                        <li>Chart.js & Mermaid.js integration</li>
+                        <li>Professional responsive design</li>
+                        <li>Theme support</li>
+                        <li>Complex data processing (2,284 lines)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Unified Architecture Design</h2>
+            <p>Proposed unified architecture that consolidates capabilities from both systems into a modular, extensible design.</p>
+            
+            <div class="mermaid">
+                graph TB
+                    subgraph "Data Sources"
+                        DS1[Test Runner Data]
+                        DS2[Investigation Folder]
+                        DS3[Future Data Sources]
+                    end
+                    
+                    subgraph "Data Adapters"
+                        A1[TestResultsAdapter]
+                        A2[InvestigationFolderAdapter]
+                        A3[Custom Adapters]
+                    end
+                    
+                    subgraph "Unified Core"
+                        UG[UnifiedHTMLReportGenerator]
+                        URD[UnifiedReportData]
+                        TE[TemplateEngine]
+                        CR[ComponentRegistry]
+                    end
+                    
+                    subgraph "Component System"
+                        BC[BaseComponent]
+                        C1[Executive Summary]
+                        C2[Risk Dashboard]
+                        C3[Timeline Visualization]
+                        C4[Flow Graph]
+                        C5[Tools Analysis]
+                        C6[Explanations]
+                        C7[Performance Metrics]
+                    end
+                    
+                    subgraph "Output"
+                        HTML[Interactive HTML Report]
+                        RESP[Responsive Design]
+                        CHART[Chart.js Integration]
+                        MERM[Mermaid.js Integration]
+                    end
+                    
+                    DS1 --> A1
+                    DS2 --> A2
+                    DS3 --> A3
+                    
+                    A1 --> URD
+                    A2 --> URD
+                    A3 --> URD
+                    
+                    URD --> UG
+                    UG --> TE
+                    UG --> CR
+                    
+                    CR --> BC
+                    BC --> C1
+                    BC --> C2
+                    BC --> C3
+                    BC --> C4
+                    BC --> C5
+                    BC --> C6
+                    BC --> C7
+                    
+                    TE --> HTML
+                    C1 --> HTML
+                    C2 --> HTML
+                    C3 --> HTML
+                    C4 --> HTML
+                    C5 --> HTML
+                    C6 --> HTML
+                    C7 --> HTML
+                    
+                    HTML --> RESP
+                    HTML --> CHART
+                    HTML --> MERM
+                    
+                    style UG fill:#a8e6cf
+                    style URD fill:#88d8a3
+                    style TE fill:#78d982
+                    style CR fill:#68ca62
+                    style BC fill:#58bb42
+                    style HTML fill:#fdcb6e
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Component Architecture Detail</h2>
+            <p>Detailed view of the modular component system showing how each component processes unified data.</p>
+            
+            <div class="mermaid">
+                graph LR
+                    subgraph "UnifiedReportData Structure"
+                        URD[UnifiedReportData]
+                        SUM[Summary Data]
+                        TL[Timeline Events]
+                        RA[Risk Analysis]
+                        AG[Agent Data]
+                        TL2[Tools Data]
+                        FL[Flow Data]
+                        PM[Performance Metrics]
+                        EX[Explanations]
+                        JD[Journey Data]
+                    end
+                    
+                    subgraph "Component Processing"
+                        C1[Executive Summary<br/>Component]
+                        C2[Risk Dashboard<br/>Component]
+                        C3[Timeline<br/>Component]
+                        C4[Flow Graph<br/>Component]
+                        C5[Tools Analysis<br/>Component]
+                        C6[Explanations<br/>Component]
+                        C7[Performance<br/>Component]
+                    end
+                    
+                    URD --> SUM
+                    URD --> TL
+                    URD --> RA
+                    URD --> AG
+                    URD --> TL2
+                    URD --> FL
+                    URD --> PM
+                    URD --> EX
+                    URD --> JD
+                    
+                    SUM --> C1
+                    RA --> C2
+                    TL --> C3
+                    FL --> C4
+                    AG --> C5
+                    TL2 --> C5
+                    EX --> C6
+                    PM --> C7
+                    
+                    C1 --> HTML1[HTML Output]
+                    C2 --> HTML2[Interactive Charts]
+                    C3 --> HTML3[Timeline Visualization]
+                    C4 --> HTML4[Mermaid Diagrams]
+                    C5 --> HTML5[Analysis Tables]
+                    C6 --> HTML6[Explanation Cards]
+                    C7 --> HTML7[Performance Graphs]
+                    
+                    style URD fill:#74b9ff
+                    style C1 fill:#fdcb6e
+                    style C2 fill:#e17055
+                    style C3 fill:#00b894
+                    style C4 fill:#00cec9
+                    style C5 fill:#6c5ce7
+                    style C6 fill:#a29bfe
+                    style C7 fill:#fd79a8
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Implementation Phases</h2>
+            <p>Six-phase implementation approach to ensure smooth migration and backward compatibility.</p>
+            
+            <div class="phases">
+                <div class="phase">
+                    <h4>Phase 1: Core Architecture</h4>
+                    <p>Build unified generator, data structures, and base interfaces</p>
+                    <small>2-3 days</small>
+                </div>
+                
+                <div class="phase">
+                    <h4>Phase 2: Data Adapters</h4>
+                    <p>Create adapters for test results and investigation folders</p>
+                    <small>2-3 days</small>
+                </div>
+                
+                <div class="phase">
+                    <h4>Phase 3: Component Migration</h4>
+                    <p>Extract and modularize components from both systems</p>
+                    <small>3-4 days</small>
+                </div>
+                
+                <div class="phase">
+                    <h4>Phase 4: Template System</h4>
+                    <p>Create responsive templates and CSS framework</p>
+                    <small>2-3 days</small>
+                </div>
+                
+                <div class="phase">
+                    <h4>Phase 5: Integration & Testing</h4>
+                    <p>Update integrations and comprehensive testing</p>
+                    <small>3-4 days</small>
+                </div>
+                
+                <div class="phase">
+                    <h4>Phase 6: Migration & Cleanup</h4>
+                    <p>Deprecate old systems and final documentation</p>
+                    <small>2-3 days</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Key Benefits</h2>
+            <p>Advantages of the unified architecture approach for developers, users, and system maintainability.</p>
+            
+            <div class="benefit-grid">
+                <div class="benefit-card">
+                    <h4>🔧 Developer Benefits</h4>
+                    <p>Single codebase, modular components, consistent API, better code reuse</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>👥 User Benefits</h4>
+                    <p>Consistent quality, more visualizations, responsive design, better performance</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>🏗️ System Benefits</h4>
+                    <p>Reduced complexity, better maintainability, extensibility, compliance</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <h4>🔄 Backward Compatibility</h4>
+                    <p>Existing integrations continue working with enhanced capabilities</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-section">
+            <h2>Data Flow Visualization</h2>
+            <p>Complete data flow from multiple sources through adapters to unified components and final HTML output.</p>
+            
+            <div class="mermaid">
+                sequenceDiagram
+                    participant TR as Test Runner
+                    participant IF as Investigation Folder
+                    participant A1 as TestResultsAdapter
+                    participant A2 as InvestigationFolderAdapter
+                    participant UG as UnifiedGenerator
+                    participant URD as UnifiedReportData
+                    participant CR as ComponentRegistry
+                    participant C as Components
+                    participant TE as TemplateEngine
+                    participant HTML as HTML Report
+                    
+                    TR->>A1: Test Results Dict
+                    IF->>A2: Folder Path
+                    
+                    A1->>URD: Standardized Data
+                    A2->>URD: Standardized Data
+                    
+                    UG->>URD: Request Data
+                    URD->>UG: Unified Format
+                    
+                    UG->>CR: Get Components
+                    CR->>C: Component List
+                    
+                    loop For Each Component
+                        UG->>C: Generate Content
+                        C->>URD: Read Required Data
+                        URD->>C: Component Data
+                        C->>UG: HTML Fragment
+                    end
+                    
+                    UG->>TE: Compile Template
+                    TE->>HTML: Final Report
+                    
+                    Note over HTML: Interactive, Responsive,<br/>Professional Quality
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            }
+        });
+    </script>
+</body>
+</html>

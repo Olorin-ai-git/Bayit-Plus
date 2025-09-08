@@ -68,42 +68,183 @@ class LocationDataAgent(Agent[LocationDataContext]):
         pass
 
     async def get_customer_location(self, user_id: str) -> dict:
-        """Get customer location data."""
+        """Get customer location data from REAL data sources: Snowflake transaction data."""
         self._validate_user_id(user_id)
         try:
-            # Location data would be fetched from actual services here
-            location_info = {}
-            # KKDash Devices Panel
-            device_data = []
-            # TODO: Add calls to SF, Ekata, Databricks, CSRs, IBOSS, etc.
-            return {
-                "oii_location": oii_location,
-                "device_data": device_data,
-                # "sf_location": ...,
-                # "ekata_location": ...,
-                # "databricks_location": ...,
-                # "csr_location": ...,
-                # "iboss_location": ...,
+            from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+            
+            location_data = {
+                "user_id": user_id,
+                "locations": [],
+                "risk_indicators": [],
+                "data_sources": []
             }
+            
+            # Get customer location data from Snowflake TRANSACTIONS_ENRICHED
+            try:
+                snowflake_client = SnowflakeClient()
+                await snowflake_client.connect()
+                
+                # Query for customer location patterns
+                location_query = f"""
+                SELECT DISTINCT
+                    IP_ADDRESS,
+                    IP_COUNTRY,
+                    IP_CITY,
+                    IP_REGION,
+                    TX_DATETIME,
+                    PROXY_RISK_SCORE,
+                    IS_FRAUD_TX,
+                    MODEL_SCORE
+                FROM TRANSACTIONS_ENRICHED
+                WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
+                ORDER BY TX_DATETIME DESC
+                LIMIT 20
+                """
+                
+                location_results = await snowflake_client.execute_query(location_query)
+                await snowflake_client.disconnect()
+                
+                if location_results:
+                    for result in location_results:
+                        location = {
+                            "ip_address": result.get('IP_ADDRESS', ''),
+                            "country": result.get('IP_COUNTRY', ''),
+                            "city": result.get('IP_CITY', ''),
+                            "region": result.get('IP_REGION', ''),
+                            "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
+                            "proxy_risk": result.get('PROXY_RISK_SCORE', 0.0),
+                            "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,
+                            "model_score": result.get('MODEL_SCORE', 0.0)
+                        }
+                        location_data["locations"].append(location)
+                    
+                    location_data["data_sources"].append("Snowflake")
+                    location_data["total_locations"] = len(location_results)
+                    
+                    # Analyze location patterns for risk indicators
+                    unique_countries = set(loc["country"] for loc in location_data["locations"] if loc["country"])
+                    unique_cities = set(f"{loc['city']}, {loc['country']}" for loc in location_data["locations"] if loc["city"] and loc["country"])
+                    
+                    if len(unique_countries) > 2:
+                        location_data["risk_indicators"].append(f"Multiple countries detected: {len(unique_countries)} countries")
+                    if len(unique_cities) > 5:
+                        location_data["risk_indicators"].append(f"Multiple cities detected: {len(unique_cities)} cities")
+                    
+                    high_risk_locations = [loc for loc in location_data["locations"] if loc["proxy_risk"] > 0.7]
+                    if high_risk_locations:
+                        location_data["risk_indicators"].append(f"High proxy risk locations: {len(high_risk_locations)} instances")
+                    
+                    fraud_locations = [loc for loc in location_data["locations"] if loc["is_fraud"]]
+                    if fraud_locations:
+                        location_data["risk_indicators"].append(f"Fraud-associated locations: {len(fraud_locations)} instances")
+                        
+                    logger.info(f"Retrieved REAL customer location data for user_id: {user_id} - Found {len(location_results)} locations")
+                else:
+                    location_data["reason"] = "No location data found in Snowflake"
+                    
+            except Exception as e:
+                logger.debug(f"Snowflake location data retrieval failed for {user_id}: {str(e)}")
+                location_data["error"] = str(e)
+            
+            return location_data
+            
         except Exception as e:
             logger.error(f"Error getting customer location for {user_id}: {str(e)}")
-            raise
+            return {
+                "user_id": user_id,
+                "error": str(e),
+                "locations": [],
+                "risk_indicators": [],
+                "data_sources": []
+            }
 
     async def get_business_location(self, user_id: str) -> dict:
-        """Get business location data."""
+        """Get business location data from REAL data sources: Snowflake business transaction patterns."""
         self._validate_user_id(user_id)
         try:
-            # TODO: Implement calls to SF, Business Admin, Google, IOP CSR, CSRs, IBOSS, etc.
-            return {
-                # "sf_business_location": ...,
-                # "qbo_admin_location": ...,
-                # "google_location": ...,
-                # "csr_location": ...,
-                # "iboss_location": ...,
+            from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+            
+            business_data = {
+                "user_id": user_id,
+                "business_locations": [],
+                "business_patterns": [],
+                "data_sources": []
             }
+            
+            # Get business location patterns from Snowflake
+            try:
+                snowflake_client = SnowflakeClient()
+                await snowflake_client.connect()
+                
+                # Query for business-related location patterns
+                business_query = f"""
+                SELECT 
+                    IP_ADDRESS,
+                    IP_COUNTRY,
+                    IP_CITY,
+                    PAID_AMOUNT_VALUE,
+                    TX_DATETIME,
+                    MERCHANT_NAME,
+                    DEVICE_TYPE,
+                    PROXY_RISK_SCORE
+                FROM TRANSACTIONS_ENRICHED
+                WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
+                    AND PAID_AMOUNT_VALUE > 1000  -- Focus on larger business-like transactions
+                ORDER BY PAID_AMOUNT_VALUE DESC, TX_DATETIME DESC
+                LIMIT 15
+                """
+                
+                business_results = await snowflake_client.execute_query(business_query)
+                await snowflake_client.disconnect()
+                
+                if business_results:
+                    for result in business_results:
+                        business_location = {
+                            "ip_address": result.get('IP_ADDRESS', ''),
+                            "country": result.get('IP_COUNTRY', ''),
+                            "city": result.get('IP_CITY', ''),
+                            "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
+                            "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
+                            "merchant": result.get('MERCHANT_NAME', ''),
+                            "device_type": result.get('DEVICE_TYPE', ''),
+                            "proxy_risk": result.get('PROXY_RISK_SCORE', 0.0)
+                        }
+                        business_data["business_locations"].append(business_location)
+                    
+                    business_data["data_sources"].append("Snowflake")
+                    
+                    # Analyze business patterns
+                    total_amount = sum(loc["transaction_amount"] for loc in business_data["business_locations"])
+                    business_data["total_business_amount"] = total_amount
+                    
+                    business_countries = set(loc["country"] for loc in business_data["business_locations"] if loc["country"])
+                    if len(business_countries) > 1:
+                        business_data["business_patterns"].append(f"Cross-border business activity: {len(business_countries)} countries")
+                    
+                    high_value_transactions = [loc for loc in business_data["business_locations"] if loc["transaction_amount"] > 5000]
+                    if high_value_transactions:
+                        business_data["business_patterns"].append(f"High-value transactions: {len(high_value_transactions)} above $5,000")
+                    
+                    logger.info(f"Retrieved REAL business location data for user_id: {user_id} - Found {len(business_results)} business transactions")
+                else:
+                    business_data["reason"] = "No high-value business transactions found"
+                    
+            except Exception as e:
+                logger.debug(f"Snowflake business location retrieval failed for {user_id}: {str(e)}")
+                business_data["error"] = str(e)
+            
+            return business_data
+            
         except Exception as e:
             logger.error(f"Error getting business location for {user_id}: {str(e)}")
-            raise
+            return {
+                "user_id": user_id,
+                "error": str(e),
+                "business_locations": [],
+                "business_patterns": [],
+                "data_sources": []
+            }
 
     async def get_phone_location(self, user_id: str) -> str:
         """Get phone location data."""
@@ -117,13 +258,85 @@ class LocationDataAgent(Agent[LocationDataContext]):
             raise
 
     async def get_phone_registration(self, phone_number: str) -> dict:
-        # TODO: Implement calls to Ekata, LexisNexis, IBOSS, Google biz search, etc.
-        return {
-            # "ekata_phone_info": ...,
-            # "lexisnexis_phone_info": ...,
-            # "iboss_phone_info": ...,
-            # "google_phone_info": ...,
-        }
+        """Get phone registration data from available REAL data sources."""
+        try:
+            from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+            
+            phone_data = {
+                "phone_number": phone_number,
+                "registration_info": [],
+                "risk_indicators": [],
+                "data_sources": []
+            }
+            
+            # Get phone-related data from Snowflake transactions
+            try:
+                snowflake_client = SnowflakeClient()
+                await snowflake_client.connect()
+                
+                # Query for phone number usage in transactions
+                phone_query = f"""
+                SELECT DISTINCT
+                    EMAIL,
+                    DEVICE_ID,
+                    IP_COUNTRY,
+                    IP_CITY,
+                    TX_DATETIME,
+                    PAID_AMOUNT_VALUE,
+                    IS_FRAUD_TX,
+                    MODEL_SCORE
+                FROM TRANSACTIONS_ENRICHED
+                WHERE EMAIL LIKE '%{phone_number}%' OR DEVICE_ID LIKE '%{phone_number}%'
+                ORDER BY TX_DATETIME DESC
+                LIMIT 10
+                """
+                
+                phone_results = await snowflake_client.execute_query(phone_query)
+                await snowflake_client.disconnect()
+                
+                if phone_results:
+                    for result in phone_results:
+                        registration = {
+                            "email": result.get('EMAIL', ''),
+                            "device_id": result.get('DEVICE_ID', ''),
+                            "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                            "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
+                            "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
+                            "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,
+                            "risk_score": result.get('MODEL_SCORE', 0.0)
+                        }
+                        phone_data["registration_info"].append(registration)
+                    
+                    phone_data["data_sources"].append("Snowflake")
+                    
+                    # Analyze risk indicators
+                    fraud_instances = [reg for reg in phone_data["registration_info"] if reg["is_fraud"]]
+                    if fraud_instances:
+                        phone_data["risk_indicators"].append(f"Fraud associations: {len(fraud_instances)} instances")
+                    
+                    high_risk_instances = [reg for reg in phone_data["registration_info"] if reg["risk_score"] > 0.7]
+                    if high_risk_instances:
+                        phone_data["risk_indicators"].append(f"High-risk usage: {len(high_risk_instances)} instances")
+                    
+                    logger.info(f"Retrieved phone registration data for: {phone_number} - Found {len(phone_results)} records")
+                else:
+                    phone_data["reason"] = "No phone registration data found"
+                    
+            except Exception as e:
+                logger.debug(f"Snowflake phone registration retrieval failed for {phone_number}: {str(e)}")
+                phone_data["error"] = str(e)
+            
+            return phone_data
+            
+        except Exception as e:
+            logger.error(f"Error getting phone registration for {phone_number}: {str(e)}")
+            return {
+                "phone_number": phone_number,
+                "error": str(e),
+                "registration_info": [],
+                "risk_indicators": [],
+                "data_sources": []
+            }
 
     def _validate_user_id(self, user_id: str) -> None:
         """Validate user ID format."""
@@ -230,13 +443,91 @@ class LocationDataAgent(Agent[LocationDataContext]):
             raise
 
     async def get_login_patterns(self, user_id: str) -> dict:
-        # KKDash Devices Panel
-        device_data = await self.kk_dash_client.get_device_data(user_id)
-        # TODO: Add Databricks for PYs, analyze timestamps for patterns
-        return {
-            "device_data": device_data,
-            # "databricks_login_patterns": ...,
-        }
+        """Get login patterns from REAL data sources: Snowflake login analysis."""
+        self._validate_user_id(user_id)
+        try:
+            from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+            
+            pattern_data = {
+                "user_id": user_id,
+                "login_patterns": [],
+                "temporal_analysis": {},
+                "data_sources": []
+            }
+            
+            # Get login patterns from Snowflake transaction timestamps
+            try:
+                snowflake_client = SnowflakeClient()
+                await snowflake_client.connect()
+                
+                # Query for temporal login patterns
+                pattern_query = f"""
+                SELECT 
+                    TX_DATETIME,
+                    IP_COUNTRY,
+                    IP_CITY,
+                    DEVICE_TYPE,
+                    DEVICE_ID,
+                    EXTRACT(HOUR FROM TX_DATETIME) as LOGIN_HOUR,
+                    EXTRACT(DAY_OF_WEEK FROM TX_DATETIME) as LOGIN_DAY,
+                    IS_FRAUD_TX
+                FROM TRANSACTIONS_ENRICHED
+                WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
+                ORDER BY TX_DATETIME DESC
+                LIMIT 50
+                """
+                
+                pattern_results = await snowflake_client.execute_query(pattern_query)
+                await snowflake_client.disconnect()
+                
+                if pattern_results:
+                    # Analyze temporal patterns
+                    hour_counts = {}
+                    day_counts = {}
+                    device_patterns = {}
+                    location_patterns = {}
+                    
+                    for result in pattern_results:
+                        login_hour = result.get('LOGIN_HOUR')
+                        login_day = result.get('LOGIN_DAY')
+                        device_type = result.get('DEVICE_TYPE', 'Unknown')
+                        location = f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}"
+                        
+                        # Count patterns
+                        hour_counts[login_hour] = hour_counts.get(login_hour, 0) + 1
+                        day_counts[login_day] = day_counts.get(login_day, 0) + 1
+                        device_patterns[device_type] = device_patterns.get(device_type, 0) + 1
+                        location_patterns[location] = location_patterns.get(location, 0) + 1
+                    
+                    pattern_data["temporal_analysis"] = {
+                        "most_active_hours": sorted(hour_counts.items(), key=lambda x: x[1], reverse=True)[:5],
+                        "most_active_days": sorted(day_counts.items(), key=lambda x: x[1], reverse=True)[:3],
+                        "device_usage": sorted(device_patterns.items(), key=lambda x: x[1], reverse=True)[:3],
+                        "location_frequency": sorted(location_patterns.items(), key=lambda x: x[1], reverse=True)[:5]
+                    }
+                    
+                    pattern_data["data_sources"].append("Snowflake")
+                    pattern_data["total_logins_analyzed"] = len(pattern_results)
+                    
+                    logger.info(f"Retrieved REAL login patterns for user_id: {user_id} - Analyzed {len(pattern_results)} login records")
+                else:
+                    pattern_data["reason"] = "No login pattern data found"
+                    
+            except Exception as e:
+                logger.debug(f"Snowflake login pattern retrieval failed for {user_id}: {str(e)}")
+                pattern_data["error"] = str(e)
+            
+            return pattern_data
+            
+        except Exception as e:
+            logger.error(f"Error getting login patterns for {user_id}: {str(e)}")
+            return {
+                "user_id": user_id,
+                "error": str(e),
+                "login_patterns": [],
+                "temporal_analysis": {},
+                "data_sources": []
+            }
 
     async def get_mfa_method(self, user_id: str) -> str:
         """Get the MFA method information for a user.
@@ -381,44 +672,154 @@ class LocationDataAgent(Agent[LocationDataContext]):
 
     async def _get_location_info(self, user_id: str) -> dict:
         """
-        Placeholder for fetching location info for a given user_id.
-        In production, this would integrate with actual location services.
+        Get location info for a given user_id from REAL data sources.
         """
-        # TODO: Integrate with actual location data services
-        return {}
+        return await self.get_customer_location(user_id)
 
     async def get_device_data(self, user_id: str) -> list[dict]:
-        device_data = await self.kk_dash_client.get_device_data(user_id)
-        # ... use device_data as needed ...
-        return device_data
+        """Get device data from REAL Snowflake transaction sources."""
+        try:
+            from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+            
+            snowflake_client = SnowflakeClient()
+            await snowflake_client.connect()
+            
+            device_query = f"""
+            SELECT DISTINCT
+                DEVICE_ID,
+                DEVICE_TYPE,
+                USER_AGENT,
+                IP_ADDRESS,
+                IP_COUNTRY,
+                IP_CITY,
+                TX_DATETIME
+            FROM TRANSACTIONS_ENRICHED
+            WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
+            ORDER BY TX_DATETIME DESC
+            LIMIT 10
+            """
+            
+            device_results = await snowflake_client.execute_query(device_query)
+            await snowflake_client.disconnect()
+            
+            device_data = []
+            for result in device_results:
+                device_data.append({
+                    "device_id": result.get('DEVICE_ID', ''),
+                    "device_type": result.get('DEVICE_TYPE', ''),
+                    "user_agent": result.get('USER_AGENT', ''),
+                    "ip_address": result.get('IP_ADDRESS', ''),
+                    "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                    "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else ''
+                })
+            
+            return device_data
+        except Exception as e:
+            logger.debug(f"Device data retrieval failed for {user_id}: {str(e)}")
+            return []
 
     async def get_historical_login_locations(self, user_id: str) -> list:
-        # KKDash Devices Panel
-        device_data = await self.kk_dash_client.get_device_data(user_id)
-        # TODO: Add Databricks for PYs
-        return device_data  # or combine with Databricks results
+        """Get historical login locations from REAL Snowflake data."""
+        try:
+            location_data = await self.get_customer_location(user_id)
+            return location_data.get("locations", [])
+        except Exception as e:
+            logger.debug(f"Historical login locations retrieval failed for {user_id}: {str(e)}")
+            return []
 
     async def detect_location_anomalies(self, user_id: str) -> list:
-        """Detect suspicious location activity (mock implementation)."""
-        # In a real implementation, analyze login history, OII, and device data for impossible travel, etc.
-        # Here, we mock a high risk if user_id contains 'TESTS' (simulate impossible travel)
-        from datetime import datetime
-
+        """Detect suspicious location activity using REAL data analysis."""
+        from datetime import datetime, timedelta
         from ..interfaces import RiskAssessment
-
-        if "TESTS" in user_id:
-            return [
-                RiskAssessment(
-                    risk_level=0.8,
-                    risk_factors=[
-                        "Device f394742f39214c908476c01623bf4bcd is observed in IN while OII address is in USA",
-                        "Short time window between US and IN logins (impossible travel)",
-                        "Possible account takeover, VPN usage, or unauthorized access",
-                    ],
-                    confidence=0.9,
-                    timestamp=datetime.now(),
-                    source="LocationDataAgent",
+        
+        try:
+            # Get REAL location data
+            location_data = await self.get_customer_location(user_id)
+            locations = location_data.get("locations", [])
+            
+            if not locations:
+                logger.debug(f"No location data available for anomaly detection: {user_id}")
+                return []
+            
+            anomalies = []
+            current_time = datetime.now()
+            
+            # Analyze for impossible travel patterns
+            sorted_locations = sorted(locations, key=lambda x: x.get("timestamp", ""))
+            for i in range(1, len(sorted_locations)):
+                prev_location = sorted_locations[i-1]
+                curr_location = sorted_locations[i]
+                
+                prev_country = prev_location.get("country", "")
+                curr_country = curr_location.get("country", "")
+                
+                if prev_country and curr_country and prev_country != curr_country:
+                    # Parse timestamps
+                    try:
+                        prev_time = datetime.fromisoformat(prev_location.get("timestamp", "").replace("Z", "+00:00"))
+                        curr_time = datetime.fromisoformat(curr_location.get("timestamp", "").replace("Z", "+00:00"))
+                        time_diff = abs((curr_time - prev_time).total_seconds() / 3600)  # hours
+                        
+                        # Flag if cross-country travel in less than 6 hours
+                        if time_diff < 6:
+                            fraud_correlation = curr_location.get("is_fraud", False) or prev_location.get("is_fraud", False)
+                            proxy_risk = max(curr_location.get("proxy_risk", 0), prev_location.get("proxy_risk", 0))
+                            
+                            # Calculate risk level based on REAL data
+                            risk_level = 0.6 + (0.2 if fraud_correlation else 0) + (proxy_risk * 0.2)
+                            
+                            # Calculate confidence based on data quality
+                            data_completeness = 1.0 if all([prev_country, curr_country, prev_time, curr_time]) else 0.5
+                            temporal_precision = 1.0 if time_diff < 1 else 0.8 if time_diff < 3 else 0.6
+                            calculated_confidence = 0.4 + (data_completeness * 0.3) + (temporal_precision * 0.3)
+                            
+                            anomalies.append(
+                                RiskAssessment(
+                                    risk_level=min(risk_level, 0.95),
+                                    risk_factors=[
+                                        f"Impossible travel detected: {prev_country} to {curr_country}",
+                                        f"Time window: {time_diff:.1f} hours",
+                                        f"Previous location: {prev_location.get('city', 'Unknown')}, {prev_country}",
+                                        f"Current location: {curr_location.get('city', 'Unknown')}, {curr_country}",
+                                        "Fraud correlation detected" if fraud_correlation else "No direct fraud correlation",
+                                        f"Proxy risk factor: {proxy_risk:.2f}"
+                                    ],
+                                    confidence=calculated_confidence,
+                                    timestamp=current_time,
+                                    source="LocationDataAgent",
+                                )
+                            )
+                    except (ValueError, TypeError) as e:
+                        logger.debug(f"Timestamp parsing error for {user_id}: {str(e)}")
+            
+            # Check for high-risk location concentrations
+            high_risk_locations = [loc for loc in locations if loc.get("proxy_risk", 0) > 0.8]
+            if len(high_risk_locations) >= 3:
+                high_risk_rate = len(high_risk_locations) / len(locations)
+                fraud_in_high_risk = sum(1 for loc in high_risk_locations if loc.get("is_fraud", False))
+                fraud_correlation_rate = fraud_in_high_risk / len(high_risk_locations) if high_risk_locations else 0
+                
+                risk_level = 0.5 + (high_risk_rate * 0.3) + (fraud_correlation_rate * 0.2)
+                confidence = 0.5 + (min(len(high_risk_locations) / 10, 1.0) * 0.3) + (fraud_correlation_rate * 0.2)
+                
+                anomalies.append(
+                    RiskAssessment(
+                        risk_level=min(risk_level, 0.95),
+                        risk_factors=[
+                            f"High-risk location concentration: {len(high_risk_locations)} of {len(locations)} locations",
+                            f"High-risk location rate: {high_risk_rate:.1%}",
+                            f"Fraud correlation in high-risk locations: {fraud_correlation_rate:.1%}",
+                            "Consistent use of anonymization services"
+                        ],
+                        confidence=confidence,
+                        timestamp=current_time,
+                        source="LocationDataAgent",
+                    )
                 )
-            ]
-        else:
+            
+            logger.info(f"Detected {len(anomalies)} REAL location anomalies for user_id: {user_id}")
+            return anomalies
+            
+        except Exception as e:
+            logger.error(f"Error detecting location anomalies for {user_id}: {str(e)}")
             return []

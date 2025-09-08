@@ -152,20 +152,42 @@ class IPReputationTool(BaseThreatIntelligenceTool):
                 )
                 
         except AbuseIPDBError as e:
-            logger.error(f"AbuseIPDB API error: {e}")
-            return ThreatIntelligenceResponse(
-                success=False,
-                error=f"AbuseIPDB API error: {str(e)}",
-                source="AbuseIPDB",
-                timestamp=datetime.utcnow()
-            )
+            # Handle specific subscription errors gracefully
+            if e.status_code == 402:
+                logger.debug(f"AbuseIPDB analysis skipped for {ip_address}: subscription required")
+                return ThreatIntelligenceResponse(
+                    success=False,
+                    error="AbuseIPDB subscription required for this endpoint",
+                    source="AbuseIPDB", 
+                    timestamp=datetime.utcnow(),
+                    status="subscription_required"
+                )
+            elif "subscription" in str(e).lower():
+                logger.debug(f"AbuseIPDB analysis limited for {ip_address}: subscription required")
+                return ThreatIntelligenceResponse(
+                    success=False,
+                    error=str(e),
+                    source="AbuseIPDB",
+                    timestamp=datetime.utcnow(),
+                    status="subscription_required"
+                )
+            else:
+                logger.warning(f"AbuseIPDB analysis failed for {ip_address}: {type(e).__name__}")
+                return ThreatIntelligenceResponse(
+                    success=False,
+                    error=f"AbuseIPDB API error: {str(e)}",
+                    source="AbuseIPDB",
+                    timestamp=datetime.utcnow(),
+                    status="api_error"
+                )
         except Exception as e:
-            logger.error(f"IP reputation check failed: {e}")
+            logger.warning(f"AbuseIPDB analysis unavailable for {ip_address}: {type(e).__name__}")
             return ThreatIntelligenceResponse(
                 success=False,
-                error=f"Internal error: {str(e)}",
+                error=f"Service temporarily unavailable ({type(e).__name__})",
                 source="AbuseIPDB",
-                timestamp=datetime.utcnow()
+                timestamp=datetime.utcnow(),
+                status="unavailable"
             )
 
     def _generate_threat_analysis(self, response: IPReputationResponse) -> Dict[str, Any]:
