@@ -91,11 +91,9 @@ def assistant(state: MessagesState, config: RunnableConfig):
 
 
 def _get_llm_with_tools():
-    """Get configured LLM with tools."""
+    """Get configured LLM with tools for graph-based tool execution."""
     from app.service.config import get_settings_for_env
     from langchain_anthropic import ChatAnthropic
-    from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
-    from app.utils.class_utils import create_instance
     from app.utils.firebase_secrets import get_firebase_secret
     
     settings = get_settings_for_env()
@@ -114,29 +112,17 @@ def _get_llm_with_tools():
         timeout=60,
     )
     
-    # Initialize tools
-    tools = []
-    for tool in settings.enabled_tool_list:
-        try:
-            tools.append(create_instance(globals(), tool))
-        except Exception as e:
-            logger.error(f"Failed to initialize tool {tool}: {e}")
-
-    # Ensure SplunkQueryTool is available
-    if not any(isinstance(t, SplunkQueryTool) for t in tools):
-        tools.append(SplunkQueryTool())
-
-    # Bind tools to LLM (removed strict=True parameter for compatibility)
+    # Get tools from the graph configuration - these are already configured
+    from app.service.agent.orchestration.graph_builder import _get_configured_tools
+    tools = _get_configured_tools()
+    
+    # Bind tools to LLM for graph-based execution
+    # The graph's tools node will handle actual tool execution
     try:
         return llm.bind_tools(tools)
     except Exception as e:
         logger.error(f"Failed to bind tools to LLM: {str(e)}")
         # Filter to working tools
-        working_tools = []
-        for tool in tools:
-            try:
-                llm.bind_tools([tool])
-                working_tools.append(tool)
-            except Exception:
-                pass
+        from app.service.agent.orchestration.graph_builder import _filter_working_tools
+        working_tools = _filter_working_tools(tools)
         return llm.bind_tools(working_tools) if working_tools else llm

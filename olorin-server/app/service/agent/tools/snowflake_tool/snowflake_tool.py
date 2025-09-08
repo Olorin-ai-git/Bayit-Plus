@@ -27,14 +27,14 @@ class _SnowflakeQueryArgs(BaseModel):
             "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
             "Key columns include: TX_ID_KEY (transaction ID), EMAIL (user email), "
             "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
-            "NSURE_LAST_DECISION (approval/reject decision), GMV (gross merchandise value), "
+            "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount), "
             "TX_DATETIME (transaction timestamp), PAYMENT_METHOD, CARD_BRAND, etc. "
             "Use LIMIT clause for large result sets."
         )
     )
     database: str = Field(
-        "FRAUD_DB", 
-        description="The Snowflake database to query (default: FRAUD_DB)."
+        "FRAUD_ANALYTICS", 
+        description="The Snowflake database to query (default: FRAUD_ANALYTICS)."
     )
     db_schema: str = Field(
         "PUBLIC", 
@@ -76,12 +76,12 @@ class SnowflakeQueryTool(BaseTool):
         description="Snowflake warehouse for query execution"
     )
     
-    def _run(self, query: str, database: str = "FRAUD_DB", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    def _run(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Synchronous execution wrapper."""
         import asyncio
         return asyncio.run(self._arun(query, database, db_schema, limit))
     
-    async def _arun(self, query: str, database: str = "FRAUD_DB", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    async def _arun(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Async execution of the Snowflake query."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret

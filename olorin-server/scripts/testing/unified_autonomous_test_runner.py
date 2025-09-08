@@ -88,9 +88,12 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 try:
-    # Import orchestration system - the proper entry point
-    from app.service.agent.orchestration.graph_builder import create_and_get_agent_graph
-    from app.service.agent.orchestration.investigation_coordinator import start_investigation
+    # Import orchestration system - using clean implementation
+    from app.service.agent.orchestration.clean_graph_builder import (
+        build_clean_investigation_graph,
+        run_investigation
+    )
+    from app.service.agent.orchestration.state_schema import create_initial_state
     from langchain_core.messages import HumanMessage
     
     # Import existing test infrastructure  
@@ -1299,12 +1302,8 @@ class UnifiedAutonomousTestRunner:
         
         # CRITICAL FIX: Use proper LangGraph orchestration instead of calling agents directly
         try:
-            # Create LangGraph with proper orchestration
-            graph = await create_and_get_agent_graph(
-                parallel=True,  # Use parallel execution for comprehensive testing
-                use_enhanced_tools=True,
-                use_subgraphs=False
-            )
+            # Create clean investigation graph
+            graph = build_clean_investigation_graph()
             
             # Create proper AgentContext for orchestration system
             from app.models.agent_context import AgentContext
@@ -1365,41 +1364,37 @@ class UnifiedAutonomousTestRunner:
             if self.config.verbose and hasattr(self, 'llm_callback'):
                 config["callbacks"] = [self.llm_callback]
             
-            # Create investigation message - this will go through start_investigation()
-            investigation_message = HumanMessage(
-                content=f"Start comprehensive fraud investigation for {context.entity_type.value} {context.entity_id}",
-                additional_kwargs={
-                    'investigation_id': context.investigation_id,
-                    'entity_id': context.entity_id,
-                    'entity_type': context.entity_type.value,
-                    'scenario': result.scenario_name
-                }
+            # Create initial state for clean graph
+            initial_state = create_initial_state(
+                investigation_id=context.investigation_id,
+                entity_id=context.entity_id,
+                entity_type=context.entity_type.value,
+                parallel_execution=True,
+                max_tools=52
             )
             
-            self.logger.info("🔄 Using proper LangGraph orchestration system...")
+            self.logger.info("🔄 Using clean graph orchestration system...")
             start_time = time.time()
             
-            # Execute through proper orchestration - this will call start_investigation() first
+            # Execute clean graph with initial state
             langgraph_result = await graph.ainvoke(
-                {"messages": [investigation_message]},
-                config=config
+                initial_state,
+                config={"recursion_limit": 50}  # Allow up to 50 iterations
             )
             
             duration = time.time() - start_time
-            self.logger.info(f"✅ LangGraph orchestration completed in {duration:.2f}s")
+            self.logger.info(f"✅ Clean graph orchestration completed in {duration:.2f}s")
             
-            # Debug: Log what LangGraph returned
-            self.logger.info(f"🔍 LangGraph result keys: {langgraph_result.keys()}")
-            messages = langgraph_result.get("messages", [])
-            self.logger.info(f"🔍 Number of messages in result: {len(messages)}")
-            if messages:
-                for i, msg in enumerate(messages[:5]):  # Log first 5 messages
-                    msg_type = type(msg).__name__
-                    content_preview = str(msg.content)[:100] if hasattr(msg, 'content') else str(msg)[:100]
-                    self.logger.info(f"  Message {i}: Type={msg_type}, Content={content_preview}...")
+            # Debug: Log what clean graph returned
+            self.logger.info(f"🔍 Clean graph result keys: {list(langgraph_result.keys())[:10]}...")  # Show first 10 keys
+            self.logger.info(f"🔍 Final risk score: {langgraph_result.get('risk_score', 0.0):.2f}")
+            self.logger.info(f"🔍 Confidence score: {langgraph_result.get('confidence_score', 0.0):.2f}")
+            self.logger.info(f"🔍 Tools used: {len(langgraph_result.get('tools_used', []))}")
+            self.logger.info(f"🔍 Domains completed: {langgraph_result.get('domains_completed', [])}")
+            self.logger.info(f"🔍 Current phase: {langgraph_result.get('current_phase', 'unknown')}")
             
-            # Extract agent results from LangGraph execution
-            agent_results = self._extract_agent_results_from_langgraph(langgraph_result, duration)
+            # Extract agent results from clean graph execution
+            agent_results = self._extract_agent_results_from_clean_graph(langgraph_result, duration)
             
             return agent_results
             
@@ -1453,6 +1448,71 @@ class UnifiedAutonomousTestRunner:
                     "risk_score": 0.0,
                     "confidence": 0.0
                 }
+        
+        return agent_results
+    
+    def _extract_agent_results_from_clean_graph(self, graph_result: Dict, total_duration: float) -> Dict[str, Any]:
+        """Extract individual agent results from clean graph execution"""
+        agent_results = {}
+        
+        # Extract domain findings from the clean graph state
+        domain_findings = graph_result.get("domain_findings", {})
+        domains_completed = graph_result.get("domains_completed", [])
+        
+        # Map clean graph domains to expected agent names
+        domain_mapping = {
+            "network": "network",
+            "device": "device",
+            "location": "location",
+            "logs": "logs",
+            "risk": "risk_aggregation"
+        }
+        
+        # Process each domain's findings
+        for domain, agent_name in domain_mapping.items():
+            if domain in domain_findings:
+                findings = domain_findings[domain]
+                agent_results[agent_name] = {
+                    "findings": findings,
+                    "duration": total_duration / len(domain_mapping),  # Approximate duration
+                    "status": "success" if domain in domains_completed else "partial",
+                    "risk_score": findings.get("risk_score", 0.0),
+                    "confidence": findings.get("confidence", 0.0)
+                }
+            else:
+                # Add default result if domain wasn't analyzed
+                agent_results[agent_name] = {
+                    "findings": {"messages": [{"content": f"No {domain} analysis available"}]},
+                    "duration": 0.0,
+                    "status": "no_results",
+                    "risk_score": 0.0,
+                    "confidence": 0.0
+                }
+        
+        # Add overall risk aggregation if available
+        if "risk_aggregation" not in agent_results:
+            agent_results["risk_aggregation"] = {
+                "findings": {
+                    "risk_score": graph_result.get("risk_score", 0.0),
+                    "confidence": graph_result.get("confidence_score", 0.0),
+                    "tools_used": len(graph_result.get("tools_used", [])),
+                    "investigation_complete": graph_result.get("current_phase") == "complete"
+                },
+                "duration": total_duration,
+                "status": "success" if graph_result.get("current_phase") == "complete" else "partial",
+                "risk_score": graph_result.get("risk_score", 0.0),
+                "confidence": graph_result.get("confidence_score", 0.0)
+            }
+        
+        # Add Snowflake data if available
+        if graph_result.get("snowflake_completed"):
+            agent_results["snowflake"] = {
+                "findings": graph_result.get("snowflake_data", {}),
+                "duration": 2.0,  # Typical Snowflake query time
+                "status": "success",
+                "risk_score": 0.0,
+                "confidence": 1.0
+            }
         
         return agent_results
     

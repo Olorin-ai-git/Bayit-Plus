@@ -39,7 +39,7 @@ SNOWFLAKE_SCHEMA_INFO = {
         "paid_amount": "PAID_AMOUNT_VALUE_IN_CURRENCY",
         "paid_currency": "PAID_AMOUNT_CURRENCY", 
         "processing_fee": "PROCESSING_FEE_VALUE_IN_CURRENCY",
-        "gmv": "GMV",
+        "paid_amount_value": "PAID_AMOUNT_VALUE",
         
         # Location & Session Data
         "ip_address": "IP",
@@ -86,7 +86,7 @@ SNOWFLAKE_SCHEMA_INFO = {
     "common_queries": {
         "fraud_transactions": """
             SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX, 
-                   TX_DATETIME, GMV, TRIGGERED_RULES
+                   TX_DATETIME, PAID_AMOUNT_VALUE, TRIGGERED_RULES
             FROM TRANSACTIONS_ENRICHED 
             WHERE IS_FRAUD_TX = 1 
             ORDER BY TX_DATETIME DESC
@@ -94,7 +94,7 @@ SNOWFLAKE_SCHEMA_INFO = {
         
         "high_risk_scores": """
             SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE, 
-                   NSURE_LAST_DECISION, TX_DATETIME, GMV
+                   NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
             FROM TRANSACTIONS_ENRICHED 
             WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
             ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
@@ -102,14 +102,14 @@ SNOWFLAKE_SCHEMA_INFO = {
         
         "disputed_transactions": """
             SELECT TX_ID_KEY, EMAIL, COUNT_DISPUTES, LAST_DISPUTE_STATUS,
-                   LAST_DISPUTE_REASON, GMV, TX_DATETIME
+                   LAST_DISPUTE_REASON, PAID_AMOUNT_VALUE, TX_DATETIME
             FROM TRANSACTIONS_ENRICHED 
             WHERE COUNT_DISPUTES > 0
             ORDER BY COUNT_DISPUTES DESC, TX_DATETIME DESC
         """,
         
         "user_transaction_history": """
-            SELECT TX_ID_KEY, TX_DATETIME, GMV, NSURE_LAST_DECISION,
+            SELECT TX_ID_KEY, TX_DATETIME, PAID_AMOUNT_VALUE, NSURE_LAST_DECISION,
                    MODEL_SCORE, PAYMENT_METHOD, IS_FRAUD_TX
             FROM TRANSACTIONS_ENRICHED 
             WHERE EMAIL = '{email}' OR UNIQUE_USER_ID = '{user_id}'
@@ -121,7 +121,7 @@ SNOWFLAKE_SCHEMA_INFO = {
                    COUNT(*) as transaction_count,
                    AVG(MODEL_SCORE) as avg_risk_score,
                    SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
-                   SUM(GMV) as total_gmv
+                   SUM(PAID_AMOUNT_VALUE) as total_amount
             FROM TRANSACTIONS_ENRICHED 
             WHERE TX_DATETIME >= DATEADD(day, -30, CURRENT_DATE())
             GROUP BY PAYMENT_METHOD, CARD_BRAND, CARD_ISSUER, BIN_COUNTRY_CODE

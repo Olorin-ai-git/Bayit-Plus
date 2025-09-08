@@ -55,11 +55,15 @@ YOU MUST USE AS MANY OF THESE TOOLS AS RELEVANT to conduct a THOROUGH investigat
 {_format_tools_by_category(available_tools, tool_categories)}
 
 ⚠️ CRITICAL REQUIREMENTS:
-1. USE MULTIPLE TOOLS - Do NOT rely on just 1-2 tools. A comprehensive investigation requires using MANY tools.
-2. MAXIMIZE COVERAGE - Use tools from DIFFERENT CATEGORIES to get diverse perspectives.
-3. CROSS-VALIDATE - Use multiple tools to verify findings (e.g., use BOTH VirusTotal AND AbuseIPDB for IPs).
-4. EXPLORE DEEPLY - Don't stop at surface-level checks. Use advanced tools for deeper analysis.
-5. BE EXHAUSTIVE - If a tool might provide relevant information, USE IT.
+1. 🔴 START WITH SNOWFLAKE - ALWAYS begin by querying snowflake_query_tool for 30 DAYS of historical data:
+   - Search for ALL records related to the seed entity (IP address, user_id, device_id, etc.)
+   - Look for patterns, anomalies, and related entities over the FULL 30-DAY PERIOD
+   - Each domain should query relevant Snowflake columns for their analysis area
+2. USE MULTIPLE TOOLS - After Snowflake analysis, use MANY other tools for comprehensive investigation.
+3. MAXIMIZE COVERAGE - Use tools from DIFFERENT CATEGORIES to get diverse perspectives.
+4. CROSS-VALIDATE - Use multiple tools to verify Snowflake findings (e.g., use VirusTotal AND AbuseIPDB).
+5. EXPLORE DEEPLY - Don't stop at surface-level checks. Use advanced tools for deeper analysis.
+6. BE EXHAUSTIVE - If a tool might provide relevant information, USE IT.
 
 🎯 INVESTIGATION OBJECTIVES FOR {domain.upper()}:
 {_format_objectives(objectives)}
@@ -69,12 +73,18 @@ Based on the entity type and available data, you should:
 {_get_tool_usage_strategy(domain, tool_categories)}
 
 ⚡ INVESTIGATION WORKFLOW:
-1. START BROAD - Use multiple reconnaissance tools to gather initial data
-2. IDENTIFY PATTERNS - Use ML/AI tools to detect anomalies and patterns
-3. VERIFY THREATS - Use ALL relevant threat intelligence tools
-4. DEEP DIVE - Use specialized tools for detailed analysis
-5. CORRELATE - Use database and search tools to find connections
-6. ASSESS RISK - Synthesize findings from ALL tools used
+1. 🔴 SNOWFLAKE FIRST (30-DAY ANALYSIS):
+   - Network Agent: Query IP_ADDRESS, GEO_IP_COUNTRY, ISP_NAME, VPN_INDICATOR fields
+   - Device Agent: Query DEVICE_ID, USER_AGENT, BROWSER_NAME, OS_NAME fields  
+   - Location Agent: Query GEO_IP_CITY, GEO_IP_COUNTRY, IMPOSSIBLE_TRAVEL indicators
+   - Logs Agent: Query TX_DATETIME, EVENT_TYPE, ERROR_CODES, SESSION_DATA fields
+   - Risk Agent: Query MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, DISPUTE_STATUS
+2. START BROAD - Use multiple reconnaissance tools to gather initial data
+3. IDENTIFY PATTERNS - Use ML/AI tools to detect anomalies and patterns
+4. VERIFY THREATS - Use ALL relevant threat intelligence tools
+5. DEEP DIVE - Use specialized tools for detailed analysis
+6. CORRELATE - Use database and search tools to find connections
+7. ASSESS RISK - Synthesize findings from ALL tools used
 
 📝 EXPECTED OUTPUT:
 Your investigation MUST include:

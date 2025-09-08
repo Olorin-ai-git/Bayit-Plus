@@ -13,8 +13,13 @@ logger = get_bridge_logger(__name__)
 
 # Determine which client to use based on environment
 USE_REAL_SNOWFLAKE = os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true'
+TEST_MODE = os.getenv('TEST_MODE', '').lower() == 'mock'
 
-if USE_REAL_SNOWFLAKE:
+# Force mock mode if TEST_MODE is set
+if TEST_MODE:
+    USE_REAL_SNOWFLAKE = False
+    logger.info("Using MOCK Snowflake client (TEST_MODE=mock)")
+elif USE_REAL_SNOWFLAKE:
     try:
         from .real_client import RealSnowflakeClient
         logger.info("Using REAL Snowflake client (USE_SNOWFLAKE=true)")
@@ -30,6 +35,8 @@ class SnowflakeClient:
     def __init__(self, account: str = None, user: str = None, password: str = None, warehouse: str = None):
         # If real Snowflake is enabled, delegate to real client
         if USE_REAL_SNOWFLAKE:
+            # Import only when needed to avoid configuration loading
+            from .real_client import RealSnowflakeClient
             self._real_client = RealSnowflakeClient()
             self.is_real = True
         else:
@@ -41,7 +48,7 @@ class SnowflakeClient:
             self.connection = None
             self.is_real = False
         
-    async def connect(self, database: str = "FRAUD_DB", schema: str = "PUBLIC"):
+    async def connect(self, database: str = "FRAUD_ANALYTICS", schema: str = "PUBLIC"):
         """Establish connection to Snowflake."""
         if self.is_real:
             return await self._real_client.connect(database, schema)

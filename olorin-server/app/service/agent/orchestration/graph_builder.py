@@ -127,7 +127,7 @@ async def create_resilient_memory():
         return MemorySaver()
 
 
-async def create_parallel_agent_graph(use_enhanced_tools=True):
+async def create_parallel_agent_graph(use_enhanced_tools=False):
     """Create autonomous agent graph for parallel execution with RecursionGuard protection."""
     guard = get_recursion_guard()
     logger.info("Creating parallel graph with autonomous agents and RecursionGuard protection")
@@ -158,8 +158,9 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
             logger.error(f"Error creating ToolNode: {e}")
             tool_node = ToolNode(_filter_working_tools(tools))
     
-    # Add tool node to graph
-    # builder.add_node("tools", tool_node)  # Temporarily disabled to fix agent execution
+    # Add tool node to graph - REQUIRED for agent tool usage
+    builder.add_node("tools", tool_node)
+    logger.info(f"✅ Added tools node with {len(tools)} tools to graph")
 
     # Define edges for parallel execution
     builder.add_edge(START, "start_investigation")
@@ -177,16 +178,48 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
     # Raw data processing flows back to fraud investigation
     builder.add_edge("raw_data_node", "fraud_investigation")
     
-    # COMMENTED OUT: Tool selection conflicts with agent routing
-    # builder.add_conditional_edges("fraud_investigation", tools_condition)
-    # builder.add_edge("tools", "fraud_investigation")
+    # Enable tool selection from assistant
+    # The fraud_investigation node can call tools, which will be executed by the tools node
+    # After tool execution, control returns to fraud_investigation
+    # Only when fraud_investigation is done with tools does it proceed to agents
     
-    # Parallel domain agents - direct routing from fraud_investigation
-    builder.add_edge("fraud_investigation", "network_agent")
-    builder.add_edge("fraud_investigation", "location_agent")
-    builder.add_edge("fraud_investigation", "logs_agent")
-    builder.add_edge("fraud_investigation", "device_agent")
-    builder.add_edge("fraud_investigation", "risk_agent")
+    # Define a routing function that checks if we should go to tools or agents
+    def route_from_fraud_investigation(state):
+        """Route from fraud_investigation to either tools or parallel agents."""
+        messages = state.get("messages", [])
+        if not messages:
+            # No messages, go to agents
+            return ["network_agent", "location_agent", "logs_agent", "device_agent", "risk_agent"]
+        
+        last_message = messages[-1]
+        # Check if the last message has tool calls
+        if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+            # Has tool calls, route to tools node for execution
+            return "tools"
+        else:
+            # No tool calls, proceed to parallel agent execution
+            return ["network_agent", "location_agent", "logs_agent", "device_agent", "risk_agent"]
+    
+    # Use conditional edges for proper routing
+    builder.add_conditional_edges(
+        "fraud_investigation",
+        route_from_fraud_investigation,
+        {
+            "tools": "tools",
+            "network_agent": "network_agent",
+            "location_agent": "location_agent", 
+            "logs_agent": "logs_agent",
+            "device_agent": "device_agent",
+            "risk_agent": "risk_agent"
+        }
+    )
+    
+    # Tools node returns to fraud_investigation for further processing
+    builder.add_edge("tools", "fraud_investigation")
+    
+    # NOTE: Agents have tools bound directly to their LLMs
+    # They invoke tools internally within their autonomous_investigate method
+    # This avoids circular reference issues with the graph-level tools node
 
     # Compile with memory
     memory = await create_resilient_memory()
@@ -196,7 +229,7 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
     return graph
 
 
-async def create_sequential_agent_graph(use_enhanced_tools=True):
+async def create_sequential_agent_graph(use_enhanced_tools=False):
     """Create agent graph with sequential execution for controlled fraud investigations."""
     logger.info("Creating sequential graph with controlled agent execution")
     
@@ -225,8 +258,9 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
             logger.error(f"Error creating ToolNode: {e}")
             tool_node = ToolNode(_filter_working_tools(tools))
     
-    # Add tool node to graph
-    # builder.add_node("tools", tool_node)  # Temporarily disabled to fix agent execution
+    # Add tool node to graph - REQUIRED for agent tool usage
+    builder.add_node("tools", tool_node)
+    logger.info(f"✅ Added tools node with {len(tools)} tools to graph")
 
     # Sequential execution flow
     builder.add_edge(START, "start_investigation")
@@ -243,11 +277,39 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
     
     # Raw data processing flows back to fraud investigation
     builder.add_edge("raw_data_node", "fraud_investigation")
-    builder.add_conditional_edges("fraud_investigation", tools_condition)
+    
+    # Enable tool selection from assistant - same routing logic as parallel
+    # Define a routing function that checks if we should go to tools or first agent
+    def route_from_fraud_investigation_sequential(state):
+        """Route from fraud_investigation to either tools or first agent in sequence."""
+        messages = state.get("messages", [])
+        if not messages:
+            # No messages, go to first agent
+            return "network_agent"
+        
+        last_message = messages[-1]
+        # Check if the last message has tool calls
+        if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+            # Has tool calls, route to tools node for execution
+            return "tools"
+        else:
+            # No tool calls, proceed to first agent in sequence
+            return "network_agent"
+    
+    # Use conditional edges for proper routing
+    builder.add_conditional_edges(
+        "fraud_investigation",
+        route_from_fraud_investigation_sequential,
+        {
+            "tools": "tools",
+            "network_agent": "network_agent"
+        }
+    )
+    
+    # Tools node returns to fraud_investigation for further processing
     builder.add_edge("tools", "fraud_investigation")
     
-    # Sequential domain execution
-    builder.add_edge("fraud_investigation", "network_agent")
+    # Sequential domain execution - agents execute one after another
     builder.add_edge("network_agent", "location_agent")
     builder.add_edge("location_agent", "logs_agent")
     builder.add_edge("logs_agent", "device_agent")
@@ -379,6 +441,7 @@ def _get_configured_tools():
     from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
+    from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool
     
     try:
         # Initialize the tool registry if not already initialized
@@ -390,6 +453,16 @@ def _get_configured_tools():
             categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients", "blockchain", "intelligence", "ml_ai", "web"]
             # All tools from these categories will be loaded
         )
+        
+        # CRITICAL: Ensure Snowflake is the FIRST tool for primary data analysis
+        has_snowflake = any(isinstance(t, SnowflakeQueryTool) for t in tools)
+        if not has_snowflake:
+            try:
+                snowflake_tool = SnowflakeQueryTool()
+                tools.insert(0, snowflake_tool)  # Add Snowflake as FIRST tool
+                logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool for 30-day analysis")
+            except Exception as e:
+                logger.error(f"Could not add Snowflake tool: {e}")
         
         # Ensure essential SIEM tools are available as fallback
         has_splunk = any(isinstance(t, SplunkQueryTool) for t in tools)
