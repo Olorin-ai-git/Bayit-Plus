@@ -58,7 +58,7 @@ async def autonomous_device_agent(state, config) -> dict:
     start_time = time.perf_counter()
     
     # Track device agent node execution start with RAG metadata
-    start_metadata = create_device_agent_metadata(RAG_AVAILABLE, rag_stats)
+    start_metadata = create_device_agent_metadata(RAG_AVAILABLE, rag_stats, False)  # MCP not yet initialized
     journey_tracker.track_node_execution(
         investigation_id=investigation_id,
         node_name="device_agent",
@@ -96,8 +96,20 @@ async def autonomous_device_agent(state, config) -> dict:
         if rag_config:
             rag_stats = update_rag_stats_on_success(rag_stats)
         
-        # Create agent with intelligent tool selection and RAG enhancement
-        if RAG_AVAILABLE and rag_config:
+        # Check if enhanced MCP infrastructure is available
+        MCP_ENHANCED = False
+        try:
+            from .enhanced_agent_factory import create_enhanced_device_agent
+            MCP_ENHANCED = True
+            logger.info("🔗 Enhanced MCP infrastructure available for device agent")
+        except ImportError:
+            logger.info("🔗 Enhanced MCP infrastructure not available, using standard agent")
+        
+        # Create agent with MCP enhancement if available, otherwise fallback to RAG/standard
+        if MCP_ENHANCED:
+            device_agent = await create_enhanced_device_agent()
+            logger.info("🔧 Created MCP-enhanced device agent with connection pooling, caching, and circuit breakers")
+        elif RAG_AVAILABLE and rag_config:
             device_agent = await create_agent_with_intelligent_tools(
                 domain="device",
                 investigation_context=autonomous_context,
@@ -112,8 +124,11 @@ async def autonomous_device_agent(state, config) -> dict:
             device_agent = create_autonomous_agent("device", tools)
             logger.info("🔧 Created standard device agent (RAG not available)")
         
-        # Get enhanced objectives with RAG-augmented threat intelligence focus
-        device_objectives = get_device_objectives(rag_enabled=(RAG_AVAILABLE and rag_config is not None))
+        # Get enhanced objectives with MCP/RAG-augmented threat intelligence focus
+        device_objectives = get_device_objectives(
+            rag_enabled=(RAG_AVAILABLE and rag_config is not None),
+            mcp_enhanced=MCP_ENHANCED
+        )
         
         findings = await device_agent.autonomous_investigate(
             context=autonomous_context,
@@ -141,7 +156,8 @@ async def autonomous_device_agent(state, config) -> dict:
             rag_enabled=(RAG_AVAILABLE and rag_config is not None),
             findings_count=len(findings.key_findings),
             risk_score=findings.risk_score,
-            rag_stats=rag_stats
+            rag_stats=rag_stats,
+            mcp_enhanced=MCP_ENHANCED
         )
         
         await websocket_manager.broadcast_agent_result(
@@ -152,7 +168,7 @@ async def autonomous_device_agent(state, config) -> dict:
         )
         
         # Track device agent completion with RAG metrics
-        completion_metadata = create_device_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats)
+        completion_metadata = create_device_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats, MCP_ENHANCED)
         completion_metadata.update({
             "findings_generated": len(findings.key_findings), 
             "risk_level": findings.risk_score, 
@@ -186,7 +202,8 @@ async def autonomous_device_agent(state, config) -> dict:
         result = create_result_structure(
             findings=findings,
             rag_enabled=(RAG_AVAILABLE and rag_config is not None),
-            rag_stats=rag_stats
+            rag_stats=rag_stats,
+            mcp_enhanced=MCP_ENHANCED
         )
         
         return {"messages": [AIMessage(content=json.dumps(result))]}
@@ -201,7 +218,7 @@ async def autonomous_device_agent(state, config) -> dict:
         autonomous_context.fail_domain_analysis("device", str(e))
         
         # Track failure with RAG metadata
-        error_metadata = create_device_agent_metadata(RAG_AVAILABLE, rag_stats)
+        error_metadata = create_device_agent_metadata(RAG_AVAILABLE, rag_stats, MCP_ENHANCED)
         error_metadata.update({"error_type": "execution_failure"})
         
         journey_tracker.track_node_execution(

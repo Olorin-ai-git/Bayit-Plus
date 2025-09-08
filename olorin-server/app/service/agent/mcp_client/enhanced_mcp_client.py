@@ -18,23 +18,18 @@ from contextlib import asynccontextmanager
 from typing import Dict, List, Optional, Any, Union, AsyncGenerator
 from dataclasses import dataclass, asdict
 from enum import Enum
-# Handle Redis import gracefully - defer actual import until needed
-REDIS_AVAILABLE = False
-aioredis = None
-
-def _import_redis():
-    """Lazy import of Redis to handle version compatibility issues."""
-    global REDIS_AVAILABLE, aioredis
-    if aioredis is None:
-        try:
-            import aioredis as _aioredis
-            aioredis = _aioredis
-            REDIS_AVAILABLE = True
-        except (ImportError, TypeError) as e:
-            # TypeError can occur due to Redis version compatibility issues
-            REDIS_AVAILABLE = False
-            aioredis = None
-    return REDIS_AVAILABLE
+# Import the existing Redis client infrastructure
+try:
+    from app.service.redis_client import RedisCloudClient, get_redis_client
+    from app.service.config import SvcSettings
+    REDIS_AVAILABLE = True
+    logger.info("Using existing RedisCloudClient for MCP caching")
+except ImportError as e:
+    logger.warning(f"Redis client not available: {e}")
+    REDIS_AVAILABLE = False
+    RedisCloudClient = None
+    get_redis_client = None
+    SvcSettings = None
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
@@ -272,31 +267,46 @@ class MCPCache:
     Distributed caching system for MCP responses using Redis.
     """
     
-    def __init__(self, redis_url: str = "redis://localhost:6379", ttl: int = 300):
-        self.redis_url = redis_url
+    def __init__(self, settings: Optional[SvcSettings] = None, ttl: int = 300):
+        self.settings = settings
         self.default_ttl = ttl
-        self.redis: Optional[Any] = None  # Use Any instead of aioredis.Redis for compatibility
+        self.redis_client: Optional[RedisCloudClient] = None
         self.cache_prefix = "olorin:mcp:"
         
     async def initialize(self):
-        """Initialize Redis connection."""
-        if not _import_redis():
-            logger.warning("Redis not available, cache disabled")
-            self.redis = None
+        """Initialize Redis connection using existing RedisCloudClient."""
+        if not REDIS_AVAILABLE:
+            logger.warning("Redis not available, MCP cache disabled")
+            self.redis_client = None
             return
             
         try:
-            self.redis = aioredis.from_url(self.redis_url, encoding="utf-8", decode_responses=True)
-            await self.redis.ping()
-            logger.info("MCP cache initialized with Redis")
+            # Use existing settings or get from environment
+            if self.settings is None:
+                from app.service.config import get_settings
+                self.settings = get_settings()
+            
+            # Get the global Redis client
+            self.redis_client = get_redis_client(self.settings)
+            
+            # Test connection
+            test_key = f"{self.cache_prefix}test"
+            self.redis_client.set(test_key, "test", ex=10)
+            retrieved = self.redis_client.get(test_key)
+            if retrieved == "test":
+                self.redis_client.delete(test_key)
+                logger.info("MCP cache initialized with RedisCloudClient")
+            else:
+                raise Exception("Redis test failed")
+                
         except Exception as e:
-            logger.warning(f"Failed to connect to Redis, cache disabled: {e}")
-            self.redis = None
+            logger.warning(f"Failed to initialize MCP cache with Redis, cache disabled: {e}")
+            self.redis_client = None
             
     async def shutdown(self):
         """Shutdown Redis connection."""
-        if self.redis:
-            await self.redis.close()
+        if self.redis_client:
+            self.redis_client.close()
             logger.info("MCP cache shutdown complete")
             
     def _generate_cache_key(self, server_name: str, method: str, params: Dict[str, Any]) -> str:
@@ -308,12 +318,12 @@ class MCPCache:
         
     async def get(self, server_name: str, method: str, params: Dict[str, Any]) -> Optional[MCPResponse]:
         """Get cached MCP response."""
-        if not self.redis:
+        if not self.redis_client:
             return None
             
         try:
             cache_key = self._generate_cache_key(server_name, method, params)
-            cached_data = await self.redis.get(cache_key)
+            cached_data = self.redis_client.get(cache_key)
             
             if cached_data:
                 response_data = json.loads(cached_data)
@@ -337,7 +347,7 @@ class MCPCache:
     async def set(self, server_name: str, method: str, params: Dict[str, Any], 
                   response: MCPResponse, ttl: Optional[int] = None) -> bool:
         """Cache MCP response."""
-        if not self.redis or not response.success:
+        if not self.redis_client or not response.success:
             return False
             
         try:
@@ -351,14 +361,16 @@ class MCPCache:
                 "cached_at": time.time()
             }
             
-            await self.redis.setex(
+            # Use the existing Redis client set method with expiration
+            success = self.redis_client.set(
                 cache_key, 
-                ttl or self.default_ttl,
-                json.dumps(cache_data)
+                json.dumps(cache_data),
+                ex=ttl or self.default_ttl
             )
             
-            logger.debug(f"Cached response for {server_name}:{method}")
-            return True
+            if success:
+                logger.debug(f"Cached response for {server_name}:{method}")
+            return success
             
         except Exception as e:
             logger.warning(f"Cache set error: {e}")
@@ -366,20 +378,20 @@ class MCPCache:
             
     async def invalidate(self, server_name: str, method: str = None, params: Dict[str, Any] = None):
         """Invalidate cached responses."""
-        if not self.redis:
+        if not self.redis_client:
             return
             
         try:
             if method and params:
                 # Invalidate specific cache entry
                 cache_key = self._generate_cache_key(server_name, method, params)
-                await self.redis.delete(cache_key)
+                self.redis_client.delete(cache_key)
             else:
-                # Invalidate all entries for server
-                pattern = f"{self.cache_prefix}*{server_name}*"
-                keys = await self.redis.keys(pattern)
-                if keys:
-                    await self.redis.delete(*keys)
+                # Invalidate all entries for server - implement basic pattern matching
+                # Note: RedisCloudClient doesn't have keys() method, so we'll track keys differently
+                # For now, just log the invalidation request
+                logger.info(f"Server-wide cache invalidation requested for {server_name}")
+                # TODO: Implement pattern-based invalidation if needed
                     
             logger.debug(f"Cache invalidated for {server_name}")
             
@@ -388,23 +400,17 @@ class MCPCache:
             
     async def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics."""
-        if not self.redis:
+        if not self.redis_client:
             return {"status": "disabled"}
             
         try:
-            info = await self.redis.info()
-            pattern = f"{self.cache_prefix}*"
-            keys = await self.redis.keys(pattern)
-            
+            # RedisCloudClient doesn't expose info() method, so provide basic stats
             return {
                 "status": "enabled",
-                "total_keys": len(keys),
-                "redis_info": {
-                    "connected_clients": info.get("connected_clients", 0),
-                    "used_memory_human": info.get("used_memory_human", "0B"),
-                    "keyspace_hits": info.get("keyspace_hits", 0),
-                    "keyspace_misses": info.get("keyspace_misses", 0)
-                }
+                "cache_prefix": self.cache_prefix,
+                "default_ttl": self.default_ttl,
+                "backend": "RedisCloudClient",
+                "note": "Using existing RedisCloudClient - detailed stats not available"
             }
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -415,11 +421,11 @@ class EnhancedMCPClient:
     Enhanced MCP Client with connection pooling, caching, and resilience.
     """
     
-    def __init__(self, redis_url: str = "redis://localhost:6379"):
+    def __init__(self, settings: Optional[SvcSettings] = None):
         self.servers: Dict[str, MCPServerEndpoint] = {}
         self.circuit_breakers: Dict[str, MCPCircuitBreaker] = {}
         self.connection_pool = MCPConnectionPool()
-        self.cache = MCPCache(redis_url)
+        self.cache = MCPCache(settings)
         self.metrics: Dict[str, Dict[str, int]] = {}
         self._initialized = False
         

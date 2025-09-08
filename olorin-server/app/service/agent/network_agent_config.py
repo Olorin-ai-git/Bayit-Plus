@@ -55,7 +55,7 @@ def create_network_rag_config() -> Optional['ContextAugmentationConfig']:
         return None
 
 
-def get_network_objectives(rag_enabled: bool = False) -> List[str]:
+def get_network_objectives(rag_enabled: bool = False, mcp_enhanced: bool = False) -> List[str]:
     """Get network analysis objectives with optional RAG enhancement."""
     
     objectives = [
@@ -84,6 +84,16 @@ def get_network_objectives(rag_enabled: bool = False) -> List[str]:
             "Apply historical case patterns and threat intelligence from knowledge base"
         ])
     
+    # Add MCP-specific objectives if enhanced mode is enabled
+    if mcp_enhanced:
+        objectives.extend([
+            "Leverage MCP intelligence gathering services for comprehensive threat data collection",
+            "Use MCP machine learning models for advanced network anomaly detection and classification",
+            "Apply MCP blockchain analysis tools for cryptocurrency-related network investigations",
+            "Utilize MCP caching and circuit breaker patterns for reliable threat intelligence retrieval",
+            "Implement parallel MCP service calls for enhanced network investigation performance"
+        ])
+    
     return objectives
 
 
@@ -104,34 +114,49 @@ def update_rag_stats_on_success(rag_stats: Dict[str, Any]) -> Dict[str, Any]:
     return rag_stats
 
 
-def create_network_agent_metadata(rag_enabled: bool, rag_stats: Dict[str, Any]) -> Dict[str, Any]:
+def create_network_agent_metadata(rag_enabled: bool, rag_stats: Dict[str, Any], mcp_enhanced: bool = False) -> Dict[str, Any]:
     """Create metadata for network agent tracking."""
+    base_objectives = 15
+    rag_objectives = 2 if rag_enabled else 0
+    mcp_objectives = 5 if mcp_enhanced else 0
+    total_objectives = base_objectives + rag_objectives + mcp_objectives
+    
+    analysis_type = "mcp_enhanced_llm_driven" if mcp_enhanced else ("rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven")
+    enhancement_type = "mcp_enhanced" if mcp_enhanced else ("rag_enhanced" if rag_enabled else "standard")
+    
     return {
         "domain": "network",
-        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven",
-        "objectives_count": 17 if rag_enabled else 15,
+        "analysis_type": analysis_type,
+        "objectives_count": total_objectives,
         "rag_available": RAG_AVAILABLE,
         "rag_enabled": rag_enabled,
+        "mcp_enhanced": mcp_enhanced,
         "rag_performance": rag_stats,
-        "enhancement_type": "rag_enhanced" if rag_enabled else "standard",
+        "enhancement_type": enhancement_type,
         "domain_knowledge_utilized": rag_stats.get("context_augmentation_success", False)
     }
 
 
-def format_completion_message(rag_enabled: bool, findings_count: int, risk_score: float, rag_stats: Dict[str, Any]) -> str:
-    """Format agent completion message with RAG information."""
-    base_message = f"{'RAG-enhanced' if rag_enabled else 'Standard'} network analysis completed: {findings_count} findings, risk={risk_score:.2f}"
+def format_completion_message(rag_enabled: bool, findings_count: int, risk_score: float, rag_stats: Dict[str, Any], mcp_enhanced: bool = False) -> str:
+    """Format agent completion message with RAG and MCP information."""
+    analysis_type = "MCP-enhanced" if mcp_enhanced else ("RAG-enhanced" if rag_enabled else "Standard")
+    base_message = f"{analysis_type} network analysis completed: {findings_count} findings, risk={risk_score:.2f}"
     
     if rag_enabled and rag_stats.get("knowledge_retrieval_count", 0) > 0:
         base_message += f", knowledge retrieval: {rag_stats['knowledge_retrieval_count']} queries"
     
+    if mcp_enhanced:
+        base_message += ", MCP services: intelligence gathering, ML models, caching"
+    
     return base_message
 
 
-def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, Any]) -> Dict[str, Any]:
-    """Create structured result with RAG enhancement metadata."""
-    analysis_type = "RAG-enhanced LLM-driven" if rag_enabled else "LLM-driven"
+def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, Any], mcp_enhanced: bool = False) -> Dict[str, Any]:
+    """Create structured result with RAG and MCP enhancement metadata."""
+    analysis_type = "MCP-enhanced LLM-driven" if mcp_enhanced else ("RAG-enhanced LLM-driven" if rag_enabled else "LLM-driven")
     summary_suffix = f" (RAG: {rag_stats['knowledge_retrieval_count']} queries)" if rag_enabled and rag_stats['knowledge_retrieval_count'] > 0 else ""
+    if mcp_enhanced:
+        summary_suffix += " (MCP: enhanced intelligence & reliability)" if summary_suffix else " (MCP: enhanced intelligence & reliability)"
     
     return {
         "risk_assessment": {
@@ -139,18 +164,25 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,
             "suspicious_indicators": findings.suspicious_indicators,
-            "summary": f"{'RAG-enhanced' if rag_enabled else 'Autonomous'} network analysis: {len(findings.key_findings)} findings{summary_suffix}",
+            "summary": f"{'MCP-enhanced' if mcp_enhanced else ('RAG-enhanced' if rag_enabled else 'Autonomous')} network analysis: {len(findings.key_findings)} findings{summary_suffix}",
             "thoughts": f"Used {analysis_type} tool selection for network analysis with domain knowledge integration",
             "timestamp": findings.timestamp.isoformat(),
             "autonomous_execution": True,
             "domain": "network",
-            "enhancement_type": "rag_enhanced" if rag_enabled else "standard",
+            "enhancement_type": "mcp_enhanced" if mcp_enhanced else ("rag_enhanced" if rag_enabled else "standard"),
             "rag_performance": rag_stats,
             "knowledge_augmentation": {
                 "enabled": rag_enabled,
                 "retrieval_count": rag_stats["knowledge_retrieval_count"],
                 "context_success": rag_stats["context_augmentation_success"],
                 "domain_categories": rag_stats["domain_knowledge_categories"]
+            },
+            "mcp_enhancement": {
+                "enabled": mcp_enhanced,
+                "intelligence_gathering": mcp_enhanced,
+                "ml_models": mcp_enhanced,
+                "connection_pooling": mcp_enhanced,
+                "circuit_breakers": mcp_enhanced
             }
         }
     }
