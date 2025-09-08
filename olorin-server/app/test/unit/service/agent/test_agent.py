@@ -27,7 +27,6 @@ from app.service.agent.agent import (
 def mock_agent_context():
     from app.models.agent_context import AgentContext
     from app.models.agent_headers import OlorinHeader
-<<<<<<< HEAD:back/app/test/unit/service/agent/test_agent.py
     from app.models.upi_response import Metadata
 
     context = MagicMock(spec=AgentContext)
@@ -35,11 +34,6 @@ def mock_agent_context():
     metadata = MagicMock(spec=Metadata)
     metadata.additional_metadata = {"test": "value"}
 
-=======
-
-    context = MagicMock(spec=AgentContext)
-    header = MagicMock(spec=OlorinHeader)
->>>>>>> restructure-projects:olorin-server/app/test/unit/service/agent/test_agent.py
     context.get_header.return_value = {
         "Authorization": "Bearer sample_token",
         "olorin-tid": "sample_tid",

@@ -5,6 +5,7 @@ Network domain autonomous investigation agent using LLM-driven tool selection.
 """
 
 import json
+import time
 
 from langchain_core.messages import AIMessage
 
@@ -40,6 +41,9 @@ journey_tracker = get_journey_tracker()
 
 async def autonomous_network_agent(state, config) -> dict:
     """Autonomous network analysis using LLM-driven tool selection with optional RAG enhancement"""
+    
+    # Track execution start time
+    start_time = time.perf_counter()
     
     # Get investigation context
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
@@ -167,7 +171,7 @@ async def autonomous_network_agent(state, config) -> dict:
                 "rag_enhancement": "completed" if RAG_AVAILABLE else "unavailable",
                 "knowledge_retrievals": rag_stats["knowledge_retrieval_count"]
             },
-            duration_ms=0,  # TODO: Calculate actual duration
+            duration_ms=int((time.perf_counter() - start_time) * 1000),
             status=NodeStatus.COMPLETED,
             agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "AutonomousNetworkAgent",
             metadata=completion_metadata

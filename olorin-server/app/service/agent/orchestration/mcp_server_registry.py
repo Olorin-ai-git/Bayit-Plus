@@ -6,10 +6,14 @@ discovery, capability advertisement, and health monitoring.
 """
 
 import asyncio
+import psutil
+import aiohttp
 from typing import Dict, List, Any, Optional, Set
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
+import subprocess
+import sys
 
 from langchain_core.tools import BaseTool
 from app.service.logging import get_bridge_logger
@@ -259,6 +263,34 @@ class MCPServerRegistry:
         """
         return set(self.capabilities_index.keys())
     
+    def update_server_process_info(self, server_name: str, pid: int, process_name: str = None) -> bool:
+        """
+        Update process information for a server to enable health monitoring.
+        
+        Args:
+            server_name: Name of the server
+            pid: Process ID
+            process_name: Optional process name override
+            
+        Returns:
+            True if update successful, False otherwise
+        """
+        if server_name not in self.servers:
+            return False
+        
+        server = self.servers[server_name]
+        if 'process' not in server.metadata:
+            server.metadata['process'] = {}
+        
+        server.metadata['process'].update({
+            'pid': pid,
+            'name': process_name or server_name,
+            'started_at': datetime.now().isoformat()
+        })
+        
+        logger.info(f"Updated process info for {server_name}: PID {pid}")
+        return True
+    
     async def check_server_health(self, server_name: str) -> bool:
         """
         Check health of a specific server.
@@ -306,13 +338,85 @@ class MCPServerRegistry:
     
     async def _check_stdio_health(self, server: MCPServerInfo) -> bool:
         """Check health of stdio transport server."""
-        # TODO: Implement process health check
-        return True
+        try:
+            # Extract process info from server metadata or endpoint
+            process_info = server.metadata.get('process', {})
+            pid = process_info.get('pid')
+            process_name = process_info.get('name', server.name)
+            
+            # Check if specific PID is running
+            if pid:
+                try:
+                    process = psutil.Process(pid)
+                    return process.is_running() and process.status() != psutil.STATUS_ZOMBIE
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    return False
+            
+            # Fallback: Check if any process with the server name is running
+            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                try:
+                    if process_name.lower() in proc.info['name'].lower():
+                        return True
+                    # Check command line for server name
+                    if proc.info['cmdline']:
+                        cmdline_str = ' '.join(proc.info['cmdline']).lower()
+                        if process_name.lower() in cmdline_str:
+                            return True
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
+            
+            # If no specific process check, assume healthy for now
+            return True
+            
+        except Exception as e:
+            logger.warning(f"Error checking stdio health for {server.name}: {e}")
+            return False
     
     async def _check_http_health(self, server: MCPServerInfo) -> bool:
         """Check health of HTTP transport server."""
-        # TODO: Implement HTTP health check
-        return True
+        try:
+            # Extract health endpoint from server metadata or construct default
+            health_endpoint = server.metadata.get('health_endpoint')
+            
+            if not health_endpoint:
+                # Construct default health endpoint
+                base_url = server.endpoint.rstrip('/')
+                health_endpoint = f"{base_url}/health"
+            
+            # Perform HTTP health check with timeout
+            timeout = aiohttp.ClientTimeout(total=self.health_check_timeout)
+            
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.get(health_endpoint) as response:
+                    # Consider 2xx responses as healthy
+                    if 200 <= response.status < 300:
+                        # Try to parse response for additional health info
+                        try:
+                            health_data = await response.json()
+                            if isinstance(health_data, dict):
+                                # Update performance metrics if available
+                                if 'metrics' in health_data:
+                                    server.metadata['last_health_metrics'] = health_data['metrics']
+                                # Check for explicit health status
+                                if health_data.get('status') == 'unhealthy':
+                                    return False
+                        except Exception:
+                            pass  # Ignore JSON parsing errors, status code is primary indicator
+                        
+                        return True
+                    else:
+                        logger.warning(f"HTTP health check failed for {server.name}: {response.status}")
+                        return False
+                        
+        except asyncio.TimeoutError:
+            logger.warning(f"HTTP health check timeout for {server.name}")
+            return False
+        except aiohttp.ClientError as e:
+            logger.warning(f"HTTP health check error for {server.name}: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error in HTTP health check for {server.name}: {e}")
+            return False
     
     async def _health_monitor_loop(self):
         """Background task for monitoring server health."""

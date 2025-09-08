@@ -27,6 +27,8 @@ export const useWebSocketIntegration = ({
 }: UseWebSocketIntegrationProps) => {
   const clientRef = useRef<AutonomousInvestigationClient | null>(null);
   const isConnectedRef = useRef(false);
+  const connectionAttemptsRef = useRef(0);
+  const lastAttemptTimeRef = useRef<number | null>(null);
 
   // Map log levels to terminal log types
   const mapLogLevelToType = useCallback((level: LogLevel): LogType => {
@@ -205,6 +207,18 @@ export const useWebSocketIntegration = ({
       return;
     }
 
+    // Increment connection attempts counter
+    connectionAttemptsRef.current += 1;
+    lastAttemptTimeRef.current = Date.now();
+    
+    // Log connection attempt
+    onLogAdd({
+      timestamp: new Date().toISOString(),
+      type: 'info',
+      message: `🔄 Connection attempt #${connectionAttemptsRef.current} for investigation ${investigationId}`,
+      agent: 'CLIENT'
+    });
+
     try {
       // Create new client instance
       const client = new AutonomousInvestigationClient({
@@ -226,11 +240,11 @@ export const useWebSocketIntegration = ({
 
       isConnectedRef.current = true;
 
-      // Add connection log
+      // Add connection success log with attempt info
       onLogAdd({
         timestamp: new Date().toISOString(),
         type: 'success',
-        message: `🔗 Connected to investigation: ${investigationId}`,
+        message: `🔗 Connected to investigation: ${investigationId} (attempt #${connectionAttemptsRef.current})`,
         agent: 'CLIENT'
       });
 
@@ -240,11 +254,17 @@ export const useWebSocketIntegration = ({
       onLogAdd({
         timestamp: new Date().toISOString(),
         type: 'error',
-        message: `❌ Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        message: `❌ Connection failed (attempt #${connectionAttemptsRef.current}): ${error instanceof Error ? error.message : 'Unknown error'}`,
         agent: 'CLIENT'
       });
     }
   }, [investigationId, isActive, createEventHandlers, onLogAdd]);
+
+  // Reset connection state (for new investigations)
+  const resetConnectionState = useCallback(() => {
+    connectionAttemptsRef.current = 0;
+    lastAttemptTimeRef.current = null;
+  }, []);
 
   // Cleanup connection
   const cleanupConnection = useCallback(() => {
@@ -256,7 +276,7 @@ export const useWebSocketIntegration = ({
       onLogAdd({
         timestamp: new Date().toISOString(),
         type: 'info',
-        message: '🔌 WebSocket connection closed',
+        message: `🔌 WebSocket connection closed (${connectionAttemptsRef.current} attempts made)`,
         agent: 'CLIENT'
       });
     }
@@ -265,6 +285,8 @@ export const useWebSocketIntegration = ({
   // Effect to manage connection lifecycle
   useEffect(() => {
     if (isActive && investigationId) {
+      // Reset connection state for new investigations
+      resetConnectionState();
       initializeConnection();
     } else {
       cleanupConnection();
@@ -272,7 +294,7 @@ export const useWebSocketIntegration = ({
 
     // Cleanup on unmount
     return cleanupConnection;
-  }, [isActive, investigationId, initializeConnection, cleanupConnection]);
+  }, [isActive, investigationId, initializeConnection, cleanupConnection, resetConnectionState]);
 
   // Return connection utilities and status
   return {
@@ -281,6 +303,8 @@ export const useWebSocketIntegration = ({
     reconnect: initializeConnection,
     disconnect: cleanupConnection,
     investigationId,
-    connectionAttempts: 0 // TODO: Track actual connection attempts
+    connectionAttempts: connectionAttemptsRef.current,
+    lastAttemptTime: lastAttemptTimeRef.current,
+    resetConnectionState
   };
 };

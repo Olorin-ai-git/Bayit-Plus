@@ -5,6 +5,7 @@ Device domain autonomous investigation agent using LLM-driven tool selection.
 """
 
 import json
+import time
 
 from langchain_core.messages import AIMessage
 
@@ -52,6 +53,9 @@ async def autonomous_device_agent(state, config) -> dict:
         create_device_agent_metadata, get_device_objectives
     )
     rag_stats = initialize_rag_stats()
+    
+    # Track execution start time
+    start_time = time.perf_counter()
     
     # Track device agent node execution start with RAG metadata
     start_metadata = create_device_agent_metadata(RAG_AVAILABLE, rag_stats)
@@ -155,6 +159,10 @@ async def autonomous_device_agent(state, config) -> dict:
             "confidence": findings.confidence
         })
         
+        # Calculate actual execution duration
+        end_time = time.perf_counter()
+        duration_ms = int((end_time - start_time) * 1000)
+        
         journey_tracker.track_node_execution(
             investigation_id=investigation_id,
             node_name="device_agent",
@@ -167,7 +175,7 @@ async def autonomous_device_agent(state, config) -> dict:
                 "rag_enhancement": "completed" if RAG_AVAILABLE else "unavailable",
                 "knowledge_retrievals": rag_stats["knowledge_retrieval_count"]
             },
-            duration_ms=0,  # TODO: Calculate actual duration
+            duration_ms=duration_ms,
             status=NodeStatus.COMPLETED,
             agent_name="RAG-Enhanced-DeviceAgent" if RAG_AVAILABLE else "AutonomousDeviceAgent",
             metadata=completion_metadata

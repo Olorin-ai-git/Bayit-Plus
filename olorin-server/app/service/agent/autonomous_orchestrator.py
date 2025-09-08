@@ -7,6 +7,7 @@ Implements bulletproof resilience patterns and intelligent agent orchestration.
 
 import json
 import asyncio
+import time
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
@@ -110,6 +111,9 @@ class AutonomousOrchestrator:
             Dict with orchestration results and next actions
         """
         try:
+            # Track execution start time
+            start_time = time.perf_counter()
+            
             # Track orchestrator node execution start
             journey_tracker.track_node_execution(
                 investigation_id=investigation_id,
@@ -162,6 +166,10 @@ class AutonomousOrchestrator:
                 investigation_id, orchestration_results, orchestration_decision
             )
             
+            # Calculate actual execution duration
+            end_time = time.perf_counter()
+            duration_ms = int((end_time - start_time) * 1000)
+            
             # Track successful orchestrator completion
             journey_tracker.track_node_execution(
                 investigation_id=investigation_id,
@@ -179,7 +187,7 @@ class AutonomousOrchestrator:
                     "strategy_executed": orchestration_decision.strategy.value,
                     "confidence_score": orchestration_decision.confidence_score
                 },
-                duration_ms=0,  # TODO: Calculate actual duration
+                duration_ms=duration_ms,
                 status=NodeStatus.COMPLETED,
                 agent_name="AutonomousOrchestrator",
                 metadata={

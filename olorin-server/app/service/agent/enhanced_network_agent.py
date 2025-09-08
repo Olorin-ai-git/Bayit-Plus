@@ -6,6 +6,7 @@ for comprehensive fraud investigation.
 """
 
 import json
+import time
 from typing import List, Dict, Any, Optional
 
 from langchain_core.messages import AIMessage
@@ -210,6 +211,9 @@ async def enhanced_autonomous_network_agent(state, config) -> dict:
     - Multi-source threat correlation
     """
     
+    # Track execution start time
+    start_time = time.perf_counter()
+    
     # Get investigation context
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
     if not investigation_id or not entity_id:
@@ -329,7 +333,7 @@ async def enhanced_autonomous_network_agent(state, config) -> dict:
                 "risk_score": findings.risk_score,
                 "threat_intel_sources": threat_intel_summary['sources_used']
             },
-            duration_ms=0,  # TODO: Calculate actual duration
+            duration_ms=int((time.perf_counter() - start_time) * 1000),
             status=NodeStatus.COMPLETED,
             agent_name="EnhancedAutonomousNetworkAgent",
             metadata={

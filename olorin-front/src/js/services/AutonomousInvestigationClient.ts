@@ -1,6 +1,7 @@
 import { LogLevel } from '../types/RiskAssessment';
 import { isDemoModeActive } from '../hooks/useDemoMode';
 import { RAGEventData, RAGPerformanceData } from '../types/RAGTypes';
+import { AuthService } from './AuthService';
 
 export interface AutonomousInvestigationOptions {
   apiBaseUrl?: string;
@@ -147,9 +148,9 @@ export class AutonomousInvestigationClient {
       {
         method: 'POST',
         headers: {
-          Authorization: 'Bearer your-jwt-token',
+          ...AuthService.getAuthHeader(),
           'Content-Type': 'application/json',
-          olorin_tid: 'your-transaction-id',
+          olorin_tid: `investigation-${Date.now()}`,
         },
         body: JSON.stringify(requestBody)
       },
@@ -200,8 +201,11 @@ export class AutonomousInvestigationClient {
       return Promise.resolve();
     }
 
-    // Get JWT token (in production this should come from auth service)
-    const token = 'your-jwt-token'; // TODO: Get from authentication service
+    // Get JWT token from authentication service
+    const token = AuthService.getToken();
+    if (!token) {
+      throw new Error('No authentication token available. Please login first.');
+    }
     const wsUrl = `${this.wsBaseUrl}/ws/${this.investigationId}?token=${token}&parallel=${this.parallel}`;
 
     return new Promise((resolve, reject) => {
