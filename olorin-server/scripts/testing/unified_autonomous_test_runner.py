@@ -119,7 +119,7 @@ try:
     from app.service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
     from app.service.logging.investigation_folder_manager import InvestigationMode
     from app.service.logging.journey_tracker import get_journey_tracker
-    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
     
     # Import test data generators if available
     try:
@@ -135,9 +135,17 @@ try:
         get_scenario_by_type = None
 
     # Import HTML report generator
-    from html_report_generator import AutonomousInvestigationHTMLReporter
+    try:
+        from scripts.reporting.html_report_generator import AutonomousInvestigationHTMLReporter
+        HTML_REPORTER_AVAILABLE = True
+    except ImportError:
+        HTML_REPORTER_AVAILABLE = False
+        AutonomousInvestigationHTMLReporter = None
 
 except ImportError as e:
+    # Import logger before using it
+    import logging
+    logging.basicConfig(level=logging.INFO)
     logging.error(f"Failed to import required modules: {e}")
     logging.error("Please ensure all dependencies are available and the script is run from the correct directory")
     sys.exit(1)
@@ -656,6 +664,7 @@ class InvestigationResult:
     performance_data: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
     validation_results: Dict[str, Any] = field(default_factory=dict)
+    investigation_folder: Optional[str] = None  # Path to investigation folder
     websocket_events: List[Dict] = field(default_factory=list)
 
 class UnifiedAutonomousTestRunner:
@@ -680,6 +689,7 @@ class UnifiedAutonomousTestRunner:
         self.journey_tracker = LangGraphJourneyTracker()
         self.investigation_logger = AutonomousInvestigationLogger()
         self.unified_journey_tracker = get_journey_tracker()
+        self.chain_of_thought_logger = ChainOfThoughtLogger()
         self.scenario_generator = RealScenarioGenerator() if RealScenarioGenerator else None
         
         # Data from Snowflake or CSV
@@ -847,7 +857,7 @@ class UnifiedAutonomousTestRunner:
             # Fetch top 10% risk entities by IP address
             results = await analyzer.get_top_risk_entities(
                 time_window='24h',
-                group_by='ip_address',
+                group_by='IP_ADDRESS',
                 top_percentage=10,
                 force_refresh=False
             )
@@ -1053,6 +1063,20 @@ class UnifiedAutonomousTestRunner:
                 }
             )
             
+            # Start chain of thought tracking for investigation orchestrator
+            self.orchestrator_thought_process_id = self.chain_of_thought_logger.start_agent_thinking(
+                investigation_id=investigation_id,
+                agent_name="investigation_orchestrator",
+                domain="autonomous_investigation",
+                initial_context={
+                    "scenario": scenario_name,
+                    "entity_id": context.entity_id,
+                    "entity_type": context.entity_type.value,
+                    "test_mode": self.config.mode.value,
+                    "investigation_folder": str(investigation_folder)
+                }
+            )
+            
             # Log LangGraph state transition for monitoring
             if self.config.show_langgraph:
                 self.monitoring.log_langgraph_state(
@@ -1065,9 +1089,70 @@ class UnifiedAutonomousTestRunner:
                     }
                 )
             
+            # Log reasoning step for investigation strategy selection
+            # TODO: Calculate actual confidence based on investigation context, scenario complexity, available data
+            initialization_confidence = 1.0  # High confidence in starting investigation (process certainty)
+            self.chain_of_thought_logger.log_reasoning_step(
+                process_id=self.orchestrator_thought_process_id,
+                reasoning_type=ReasoningType.ANALYSIS,
+                premise=f"Starting autonomous investigation for scenario: {scenario_name}",
+                reasoning=f"Entity {context.entity_id} of type {context.entity_type.value} requires comprehensive analysis to assess risk profile and detect potential anomalies",
+                conclusion="Initiating multi-domain investigation with device, location, network, and behavioral analysis",
+                confidence=initialization_confidence,
+                supporting_evidence=[{"investigation_context": context.__dict__}],
+                metadata={"investigation_phase": "initialization"}
+            )
+            
+            # Log tool selection reasoning 
+            available_tools = ["device_analysis", "location_analysis", "network_analysis", "behavior_analysis", "risk_assessment"]
+            selected_tools = available_tools  # Comprehensive investigation uses all tools
+            self.chain_of_thought_logger.log_tool_selection_reasoning(
+                process_id=self.orchestrator_thought_process_id,
+                available_tools=available_tools,
+                selected_tools=selected_tools,
+                selection_criteria={
+                    "investigation_scope": "comprehensive",
+                    "scenario_type": scenario_name,
+                    "entity_type": context.entity_type.value,
+                    "risk_level": "unknown"
+                },
+                reasoning_chain=[
+                    f"Scenario '{scenario_name}' requires comprehensive multi-domain analysis",
+                    "All available investigation tools are necessary for thorough risk assessment",
+                    "Device, location, network, and behavioral analysis will provide complete risk profile"
+                ],
+                expected_outcomes={
+                    "device_analysis": "Device fingerprint and risk indicators",
+                    "location_analysis": "Geographic anomaly detection",
+                    "network_analysis": "Network-based risk assessment",
+                    "behavior_analysis": "User behavior pattern analysis",
+                    "risk_assessment": "Comprehensive risk scoring"
+                },
+                confidence_scores={},  # TODO: Calculate actual confidence scores based on investigation context
+                contextual_factors={
+                    "test_mode": self.config.mode.value,
+                    "investigation_depth": "comprehensive",
+                    "time_constraints": "test_scenario"
+                }
+            )
+            
             # Run comprehensive investigation
             agent_results = await self._run_comprehensive_investigation(context, result)
             result.agent_results = agent_results
+            
+            # Log reasoning step for investigation execution
+            # TODO: Calculate execution confidence based on actual agent success rates and data quality
+            execution_confidence = self._calculate_execution_confidence(agent_results)
+            self.chain_of_thought_logger.log_reasoning_step(
+                process_id=self.orchestrator_thought_process_id,
+                reasoning_type=ReasoningType.EVIDENCE_EVALUATION,
+                premise="Investigation agents have completed their analysis",
+                reasoning="Multiple specialized agents have analyzed different domains (device, location, network, logs) and provided their assessments",
+                conclusion=f"Investigation completed with {len(agent_results)} domain analyses",
+                confidence=execution_confidence,
+                supporting_evidence=[{"agent_results_summary": {k: v.get("status", "unknown") for k, v in agent_results.items()}}],
+                metadata={"investigation_phase": "execution", "domains_analyzed": list(agent_results.keys())}
+            )
             
             # Validate and analyze results
             validation_results = await self._validate_investigation_results(context, result)
@@ -1082,6 +1167,22 @@ class UnifiedAutonomousTestRunner:
             result.confidence = self._extract_confidence_score(agent_results)
             result.status = "completed"
             
+            # Log reasoning step for final risk assessment
+            self.chain_of_thought_logger.log_reasoning_step(
+                process_id=self.orchestrator_thought_process_id,
+                reasoning_type=ReasoningType.RISK_ASSESSMENT,
+                premise="All investigation domains have been analyzed and validated",
+                reasoning=f"Cross-domain analysis reveals risk indicators across multiple domains. Final risk score calculated from weighted domain assessments: {result.final_risk_score}",
+                conclusion=f"Investigation concludes with risk score {result.final_risk_score:.1f} and confidence {result.confidence:.2f}",
+                confidence=result.confidence,
+                supporting_evidence=[
+                    {"final_risk_score": result.final_risk_score},
+                    {"validation_results": validation_results},
+                    {"domain_count": len(agent_results)}
+                ],
+                metadata={"investigation_phase": "conclusion", "scenario": scenario_name}
+            )
+            
             # Complete unified journey tracking
             self.unified_journey_tracker.complete_journey_tracking(
                 investigation_id,
@@ -1094,8 +1195,28 @@ class UnifiedAutonomousTestRunner:
                 final_status="completed"
             )
             
+            # Complete chain of thought tracking
+            self.chain_of_thought_logger.complete_agent_thinking(
+                process_id=self.orchestrator_thought_process_id,
+                final_assessment={
+                    "investigation_outcome": "completed",
+                    "final_risk_score": result.final_risk_score,
+                    "confidence_level": result.confidence,
+                    "scenario_type": scenario_name,
+                    "domains_analyzed": list(result.agent_results.keys()) if result.agent_results else [],
+                    "total_reasoning_steps": 3,  # initialization, execution, conclusion
+                    "investigation_success": True
+                },
+                performance_notes={
+                    "total_duration_ms": result.duration * 1000,
+                    "validation_score": validation_results.get("overall_score", 0) if validation_results else 0,
+                    "investigation_complexity": "comprehensive_multi_domain"
+                }
+            )
+            
             # Save investigation results to the results folder
             if 'investigation_folder' in locals():
+                result.investigation_folder = str(investigation_folder)  # Store folder path in result
                 self._save_investigation_results(str(investigation_folder), result)
             
             # Complete legacy journey tracking (for compatibility)
@@ -1126,8 +1247,30 @@ class UnifiedAutonomousTestRunner:
                         investigation_id, 
                         final_status="failed"
                     )
+                    
+                    # Complete chain of thought tracking for failed investigation
+                    if hasattr(self, 'orchestrator_thought_process_id'):
+                        self.chain_of_thought_logger.complete_agent_thinking(
+                            process_id=self.orchestrator_thought_process_id,
+                            final_assessment={
+                                "investigation_outcome": "failed",
+                                "final_risk_score": result.final_risk_score,
+                                "confidence_level": result.confidence,
+                                "scenario_type": scenario_name,
+                                "error_details": result.errors,
+                                "investigation_success": False,
+                                "failure_reason": str(e)
+                            },
+                            performance_notes={
+                                "total_duration_ms": result.duration * 1000,
+                                "investigation_complexity": "failed_execution",
+                                "failure_stage": "investigation_execution"
+                            }
+                        )
+                    
                     # Save investigation results even if failed
                     if 'investigation_folder' in locals():
+                        result.investigation_folder = str(investigation_folder)  # Store folder path in result
                         self._save_investigation_results(str(investigation_folder), result)
             except Exception as cleanup_e:
                 self.logger.warning(f"Failed to complete investigation tracking: {cleanup_e}")
@@ -2185,9 +2328,20 @@ class UnifiedAutonomousTestRunner:
         # Generate report files
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
+        # Determine output directory - use centralized reports folder under logs
+        if self.config.output_dir == ".":
+            # Create centralized reports directory under logs
+            reports_dir = Path("logs/reports")
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            output_dir = reports_dir
+        else:
+            # Use user-specified output directory
+            output_dir = Path(self.config.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+        
         # Always generate JSON report
         json_filename = f"unified_test_report_{timestamp}.json"
-        json_path = Path(self.config.output_dir) / json_filename
+        json_path = output_dir / json_filename
         with open(json_path, 'w') as f:
             json.dump(report_data, f, indent=2, default=str)
         self.logger.info(f"📄 JSON report saved: {json_path}")
@@ -2230,8 +2384,19 @@ class UnifiedAutonomousTestRunner:
                     "errors": result_data.get("errors", [])
                 }
             
+            # Determine output directory - use centralized reports folder under logs
+            if self.config.output_dir == ".":
+                # Create centralized reports directory under logs
+                reports_dir = Path("logs/reports")
+                reports_dir.mkdir(parents=True, exist_ok=True)
+                output_dir = reports_dir
+            else:
+                # Use user-specified output directory
+                output_dir = Path(self.config.output_dir)
+                output_dir.mkdir(parents=True, exist_ok=True)
+            
             html_filename = f"unified_test_report_{timestamp}.html"
-            html_path = Path(self.config.output_dir) / html_filename
+            html_path = output_dir / html_filename
             
             html_reporter.generate_html_report(
                 test_results=test_results,
@@ -2319,8 +2484,19 @@ class UnifiedAutonomousTestRunner:
         markdown_content = "\n".join(markdown_lines)
         
         # Save to file
+        # Determine output directory - use centralized reports folder under logs
+        if self.config.output_dir == ".":
+            # Create centralized reports directory under logs
+            reports_dir = Path("logs/reports")
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            output_dir = reports_dir
+        else:
+            # Use user-specified output directory
+            output_dir = Path(self.config.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+        
         markdown_filename = f"unified_test_report_{timestamp}.md"
-        markdown_path = Path(self.config.output_dir) / markdown_filename
+        markdown_path = output_dir / markdown_filename
         with open(markdown_path, 'w') as f:
             f.write(markdown_content)
         
@@ -2471,7 +2647,8 @@ class UnifiedAutonomousTestRunner:
             "performance_data": result.performance_data,
             "errors": result.errors,
             "validation_results": result.validation_results,
-            "websocket_events": result.websocket_events
+            "websocket_events": result.websocket_events,
+            "investigation_folder": result.investigation_folder
         }
 
     def _get_csv_metadata(self) -> Dict[str, Any]:

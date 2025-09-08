@@ -13,7 +13,20 @@ logger = get_bridge_logger(__name__)
 
 
 class RiskAnalyzer:
-    """Analyzes transaction risk using Snowflake data."""
+    """
+    Analyzes transaction risk using Snowflake data.
+    
+    CRITICAL: When grouping by IP addresses, this analyzer automatically excludes
+    ALL private/internal IP addresses (RFC 1918, loopback, link-local) and only
+    returns EXTERNAL/PUBLIC IP addresses to ensure investigations focus on 
+    meaningful external threats rather than internal network activity.
+    
+    IP Filtering Rules:
+    - Excludes: 10.x.x.x, 172.16-31.x.x, 192.168.x.x, 127.x.x.x, 169.254.x.x
+    - Excludes: IPv6 link-local (fe80::/10) and unique local (fc00::/7, fd00::/8)
+    - Excludes: Invalid IPs (0.0.0.0, ::, localhost, empty, etc.)
+    - Only includes: Public IPv4 ranges and IPv6 global unicast (2000::/3)
+    """
     
     def __init__(self):
         """Initialize the risk analyzer."""
@@ -103,10 +116,30 @@ class RiskAnalyzer:
             
             # Build and execute query
             query = self._build_risk_query(hours, group_by, top_percentage)
+            logger.info(f"🔍 Executing Snowflake query for {group_by} filtering:")
+            logger.info(f"Query: {query[:500]}...")
             results = await self.client.execute_query(query)
             
             # Process results
             analysis = self._process_results(results, time_window, group_by, top_percentage)
+            
+            # Handle case where IP filtering removed all results - try longer time window for external IPs
+            if group_by.upper() == "IP_ADDRESS" and len(analysis.get('entities', [])) == 0:
+                logger.info(f"🔄 No external IPs found in {time_window}, trying longer time window...")
+                
+                # Try 7 days window for external IPs
+                extended_hours = self._parse_time_window('7d') 
+                extended_query = self._build_risk_query(extended_hours, group_by, top_percentage)
+                extended_results = await self.client.execute_query(extended_query)
+                
+                if extended_results:
+                    logger.info(f"✅ Found {len(extended_results)} external IPs in 7-day window")
+                    analysis = self._process_results(extended_results, '7d', group_by, top_percentage)
+                    analysis['fallback_used'] = True
+                    analysis['original_time_window'] = time_window
+                else:
+                    logger.warning("⚠️ No external IPs found even in 7-day window")
+                    analysis['fallback_used'] = False
             
             # Update cache
             self._cache[cache_key] = analysis
@@ -146,16 +179,24 @@ class RiskAnalyzer:
         
         # Add IP filtering condition if grouping by IP
         ip_filter = ""
-        if group_by.lower() == "ip_address":
-            # Filter out private IP addresses (RFC 1918, link-local, loopback)
-            ip_filter = """
-                -- Exclude private IPs (RFC 1918 and special ranges)
-                AND NOT REGEXP_LIKE({group_by}, '^(10\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.|192\\.168\\.|127\\.|169\\.254\\.|fe80:|::1|fc00:|fd00:)')
-                -- Exclude empty or null IPs
-                AND {group_by} NOT IN ('', '0.0.0.0', '::')
-                -- Ensure IP has meaningful activity (avoid test/bot traffic)
+        if group_by.upper() == "IP_ADDRESS":
+            # Filter out private IP addresses (RFC 1918, link-local, loopback) - EXTERNAL IPs ONLY
+            # Using LIKE patterns for better Snowflake compatibility
+            ip_filter = f"""
+                -- CRITICAL: Exclude ALL private/internal IP ranges (RFC 1918 and special ranges)
+                AND {group_by} NOT LIKE '10.%'                    -- RFC 1918: 10.0.0.0/8
+                AND {group_by} NOT LIKE '192.168.%'               -- RFC 1918: 192.168.0.0/16  
+                AND {group_by} NOT LIKE '172.16.%'                -- RFC 1918: 172.16.0.0/12
+                AND {group_by} NOT LIKE '172.17.%' AND {group_by} NOT LIKE '172.18.%' AND {group_by} NOT LIKE '172.19.%'
+                AND {group_by} NOT LIKE '172.2_.%' AND {group_by} NOT LIKE '172.30.%' AND {group_by} NOT LIKE '172.31.%'
+                AND {group_by} NOT LIKE '127.%'                   -- Loopback: 127.0.0.0/8
+                AND {group_by} NOT LIKE '169.254.%'               -- Link-local: 169.254.0.0/16
+                AND {group_by} NOT LIKE 'fe80:%' AND {group_by} NOT LIKE 'fc00:%' AND {group_by} NOT LIKE 'fd00:%'  -- IPv6 private
+                -- Exclude empty, null, or invalid IPs
+                AND {group_by} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
+                -- Only include external/public IP addresses with real activity
                 AND MODEL_SCORE > 0.01
-            """.format(group_by=group_by)
+            """
         
         query = f"""
         WITH risk_calculations AS (

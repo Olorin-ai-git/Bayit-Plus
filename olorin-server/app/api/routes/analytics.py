@@ -23,7 +23,7 @@ class RiskAnalyticsRequest(BaseModel):
     )
     group_by: Optional[str] = Field(
         None,
-        description="Field to group by (e.g., 'email', 'device_id', 'ip_address')"
+        description="Field to group by (e.g., 'EMAIL', 'DEVICE_ID', 'IP_ADDRESS')"
     )
     top_percentage: Optional[float] = Field(
         None,
@@ -69,7 +69,7 @@ async def analytics_health():
 async def get_top_risk_entities(
     request: Request,
     time_window: Optional[str] = Query(None, description="Time window (e.g., '24h', '7d')"),
-    group_by: Optional[str] = Query(None, description="Group by field (e.g., 'email', 'device_id')"),
+    group_by: Optional[str] = Query(None, description="Group by field (e.g., 'EMAIL', 'DEVICE_ID', 'IP_ADDRESS')"),
     top_percentage: Optional[float] = Query(None, description="Top percentage (1-100)"),
     force_refresh: bool = Query(False, description="Force refresh cache")
 ):
@@ -203,9 +203,9 @@ async def get_analytics_config():
     return {
         "snowflake_enabled": os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true',
         "default_time_window": os.getenv('ANALYTICS_DEFAULT_TIME_WINDOW', '24h'),
-        "default_group_by": os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'email'),
+        "default_group_by": os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'EMAIL'),
         "default_top_percentage": float(os.getenv('ANALYTICS_DEFAULT_TOP_PERCENTAGE', '10')),
         "cache_ttl": int(os.getenv('ANALYTICS_CACHE_TTL', '300')),
-        "available_groupings": ["email", "device_id", "ip_address", "card_bin", "merchant_name"],
+        "available_groupings": ["EMAIL", "DEVICE_ID", "IP_ADDRESS", "BIN", "MERCHANT_NAME"],
         "available_time_windows": ["1h", "6h", "12h", "24h", "7d", "30d"]
     }

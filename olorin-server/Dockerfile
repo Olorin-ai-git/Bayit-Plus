@@ -74,7 +74,7 @@ RUN mkdir -p /app/logs /app/uploads /app/reports /usr/share/fonts/truetype/ \
 
 # Copy application code with proper ownership
 COPY --chown=olorin:olorin app/ /app/app/
-COPY --chown=olorin:olorin main.py simple_main.py /app/
+COPY --chown=olorin:olorin scripts/server/main.py scripts/server/simple_main.py /app/
 
 # Switch to non-root user for security
 USER olorin

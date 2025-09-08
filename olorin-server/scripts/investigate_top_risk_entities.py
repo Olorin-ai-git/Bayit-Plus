@@ -55,7 +55,7 @@ class RiskEntityInvestigator:
         
         Args:
             time_window: Time window to analyze
-            group_by: Field to group by (email, device_id, ip_address)
+            group_by: Field to group by (EMAIL, DEVICE_ID, IP)
             top_percentage: Top percentage to return
             force_refresh: Force refresh bypassing cache
             

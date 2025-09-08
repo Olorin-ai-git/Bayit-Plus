@@ -39,11 +39,11 @@ SNOWFLAKE_SCHEMA_INFO = {
         "paid_amount": "PAID_AMOUNT_VALUE_IN_CURRENCY",
         "paid_currency": "PAID_AMOUNT_CURRENCY", 
         "processing_fee": "PROCESSING_FEE_VALUE_IN_CURRENCY",
-        "paid_amount_value": "PAID_AMOUNT_VALUE",
+        "paid_amount_value": "PAID_AMOUNT_VALUE_IN_CURRENCY",
         
         # Location & Session Data
         "ip_address": "IP",
-        "ip_country": "IP_COUNTRY_CODE",
+        "ip_country": "IP_COUNTRY",
         "user_agent": "USER_AGENT",
         "device_id": "DEVICE_ID",
         "device_type": "DEVICE_TYPE",

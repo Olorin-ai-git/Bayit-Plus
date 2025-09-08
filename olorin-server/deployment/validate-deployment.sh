@@ -240,7 +240,7 @@ validate_integration_with_existing() {
     fi
     
     # Check main application entry points
-    app_files=("$BACKEND_DIR/main.py" "$BACKEND_DIR/app/main.py")
+    app_files=("$BACKEND_DIR/scripts/server/main.py" "$BACKEND_DIR/app/main.py")
     app_found=false
     for app_file in "${app_files[@]}"; do
         if [[ -f "$app_file" ]]; then

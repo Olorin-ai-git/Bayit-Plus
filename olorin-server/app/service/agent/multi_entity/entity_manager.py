@@ -180,7 +180,7 @@ class EntityType(Enum):
     
     # Financial metrics entities
     CART_USD = "cart_usd"  # CART_USD
-    GMV = "gmv"  # GMV - Gross Merchandise Value
+    GMV = "paid_amount_value"  # PAID_AMOUNT_VALUE - Gross Merchandise Value
     
     # Email verification entities
     IS_EMAIL_VERIFIED_BY_THIRD_PARTY = "is_email_verified_by_third_party"  # IS_EMAIL_VERIFIED_BY_THIRD_PARTY
@@ -191,7 +191,7 @@ class EntityType(Enum):
     EMAIL_DATA_THIRD_PARTY_RISK_SCORE = "email_data_third_party_risk_score"  # EMAIL_DATA_THIRD_PARTY_RISK_SCORE
     
     # Network and location entities (extended)
-    IP_COUNTRY_CODE = "ip_country_code"  # IP_COUNTRY_CODE
+    IP_COUNTRY = "ip_country"  # IP_COUNTRY
     IS_DEVICE_ID_AUTHENTICATED = "is_device_id_authenticated"  # IS_DEVICE_ID_AUTHENTICATED
     IS_PAYPAL_ADDRESS_CONFIRMED = "is_paypal_address_confirmed"  # IS_PAYPAL_ADDRESS_CONFIRMED
     
@@ -225,8 +225,8 @@ class EntityType(Enum):
     IS_REASSESSED_TX = "is_reassessed_tx"  # IS_REASSESSED_TX
     
     # Rule and policy entities
-    TRIGGERED_RULES = "triggered_rules"  # TRIGGERED_RULES
-    COUNT_TRIGGERED_RULES = "count_triggered_rules"  # COUNT_TRIGGERED_RULES
+    TRIGGERED_RULES = "fraud_rules_triggered"  # FRAUD_RULES_TRIGGERED
+    COUNT_TRIGGERED_RULES = "count_fraud_rules_triggered"  # COUNT_FRAUD_RULES_TRIGGERED
     RULE_DECISION = "rule_decision"  # RULE_DECISION
     RULE_DESCRIPTION = "rule_description"  # RULE_DESCRIPTION
     IS_RULE_PARTICIPATING_IN_LFS_PO = "is_rule_participating_in_lfs_po"  # IS_RULE_PARTICIPATING_IN_LFS_PO

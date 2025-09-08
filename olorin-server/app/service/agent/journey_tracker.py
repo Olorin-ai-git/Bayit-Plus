@@ -537,8 +537,21 @@ class LangGraphJourneyTracker:
         
         journey = self._active_journeys.get(investigation_id)
         if not journey:
-            # Try to load completed journey
-            journey_file = self.output_directory / f"journey_{investigation_id}.json"
+            # Try to load completed journey from investigation folder first, then fallback
+            journey_file = None
+            try:
+                from app.service.logging.investigation_folder_manager import get_folder_manager
+                folder_manager = get_folder_manager()
+                investigation_folder_path = folder_manager.get_investigation_folder(investigation_id)
+                if investigation_folder_path:
+                    journey_file = investigation_folder_path / f"journey_{investigation_id}.json"
+            except Exception:
+                pass
+            
+            # Fall back to default directory if investigation folder not found
+            if not journey_file or not journey_file.exists():
+                journey_file = self.output_directory / f"journey_{investigation_id}.json"
+            
             if journey_file.exists():
                 with open(journey_file, 'r') as f:
                     journey_data = json.load(f)
@@ -662,7 +675,22 @@ class LangGraphJourneyTracker:
     
     def _save_journey(self, journey: InvestigationJourney) -> None:
         """Save journey to disk for persistence"""
-        journey_file = self.output_directory / f"journey_{journey.investigation_id}.json"
+        # Try to use investigation folder if available
+        investigation_folder = None
+        try:
+            from app.service.logging.investigation_folder_manager import get_folder_manager
+            folder_manager = get_folder_manager()
+            investigation_folder_path = folder_manager.get_investigation_folder(journey.investigation_id)
+            if investigation_folder_path:
+                investigation_folder = investigation_folder_path
+                journey_file = investigation_folder / f"journey_{journey.investigation_id}.json"
+            else:
+                # Fall back to default directory
+                journey_file = self.output_directory / f"journey_{journey.investigation_id}.json"
+        except Exception as e:
+            # Fall back to default directory if investigation folder manager fails
+            logger.debug(f"Could not use investigation folder manager: {e}")
+            journey_file = self.output_directory / f"journey_{journey.investigation_id}.json"
         
         # Convert journey to JSON-serializable format
         journey_dict = asdict(journey)

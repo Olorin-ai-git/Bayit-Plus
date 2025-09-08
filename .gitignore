@@ -369,3 +369,4 @@ transaction_dataset*.csv
 scripts/set-firebase-secrets.sh
 scripts/add-abuseipdb-key.sh
 scripts/setup-threat-intel-secrets.sh
+olorin-server/Tx Table Schema.csv

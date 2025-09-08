@@ -6,7 +6,23 @@ Handles connection, query validation, and result processing.
 import os
 from typing import Any, Dict, List, Optional
 import asyncio
-from .schema_info import SNOWFLAKE_SCHEMA_INFO
+# Common query templates using real column names
+COMMON_QUERIES = {
+    "fraud_transactions": """
+        SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX, 
+               TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
+        FROM TRANSACTIONS_ENRICHED 
+        WHERE IS_FRAUD_TX = 1 
+        ORDER BY TX_DATETIME DESC
+    """,
+    "high_risk_scores": """
+        SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE, 
+               NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
+        FROM TRANSACTIONS_ENRICHED 
+        WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
+        ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
+    """
+}
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -92,18 +108,20 @@ class SnowflakeClient:
                 query = f"{query.rstrip(';')} LIMIT {min(limit, 10000)}"
             
             # Ensure main table reference includes full schema
-            if 'TRANSACTIONS_ENRICHED' in query_upper and f'{self.database}.{self.schema}.' not in query_upper:
-                query = query.replace('TRANSACTIONS_ENRICHED', f'{self.database}.{self.schema}.TRANSACTIONS_ENRICHED')
+            full_table_name = f'{self.database}.{self.schema}.TRANSACTIONS_ENRICHED'
+            if 'TRANSACTIONS_ENRICHED' in query_upper and full_table_name not in query_upper:
+                # Only replace if it's just TRANSACTIONS_ENRICHED without schema prefix
+                query = query.replace('TRANSACTIONS_ENRICHED', full_table_name)
             
             return query
         
     def get_common_query(self, query_type: str, **params) -> str:
         """Get a pre-defined common query with parameters."""
-        if query_type not in SNOWFLAKE_SCHEMA_INFO['common_queries']:
-            available = ', '.join(SNOWFLAKE_SCHEMA_INFO['common_queries'].keys())
+        if query_type not in COMMON_QUERIES:
+            available = ', '.join(COMMON_QUERIES.keys())
             raise ValueError(f"Unknown query type. Available: {available}")
         
-        query = SNOWFLAKE_SCHEMA_INFO['common_queries'][query_type]
+        query = COMMON_QUERIES[query_type]
         
         # Replace parameters in query
         for key, value in params.items():
@@ -146,13 +164,13 @@ class SnowflakeClient:
             query_lower = safe_query.lower()
             
             # Check for risk entity queries (CTEs)
-            if 'risk_calculations' in query_lower and 'ip_address' in query_lower:
+            if 'risk_calculations' in query_lower and ('ip_address' in query_lower or 'group by ip_address' in query_lower):
                 # Return mock high-risk IP addresses from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('ip_address_results', [])
-            elif 'risk_calculations' in query_lower and 'email' in query_lower:
+            elif 'risk_calculations' in query_lower and ('email' in query_lower or 'group by email' in query_lower):
                 # Return mock high-risk emails from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('email_results', [])
-            elif 'where ip_address' in query_lower:
+            elif ('where ip_address' in query_lower or 'where ip_address=' in query_lower):
                 # Entity-specific IP query - return transaction data for that IP
                 mock_results = mock_data.get('entity_queries', {}).get('default_ip_results', [])
             elif 'where email' in query_lower:

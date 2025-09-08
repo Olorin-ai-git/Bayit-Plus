@@ -403,14 +403,28 @@ class ChainOfThoughtLogger:
             if process.investigation_id == investigation_id:
                 investigation_processes.append(process)
         
-        # Also check saved processes
-        for file_path in self.output_directory.glob(f"thought_process_{investigation_id}_*.json"):
-            try:
-                with open(file_path, 'r') as f:
-                    saved_process_data = json.load(f)
-                    investigation_processes.append(AgentThoughtProcess(**saved_process_data))
-            except Exception as e:
-                logger.warning(f"Failed to load saved thought process {file_path}: {e}")
+        # Also check saved processes - first try investigation folder, then fallback
+        search_paths = []
+        try:
+            from app.service.logging.investigation_folder_manager import get_folder_manager
+            folder_manager = get_folder_manager()
+            investigation_folder_path = folder_manager.get_investigation_folder(investigation_id)
+            if investigation_folder_path:
+                search_paths.append(investigation_folder_path)
+        except Exception:
+            pass
+        
+        # Always include default directory as fallback
+        search_paths.append(self.output_directory)
+        
+        for search_path in search_paths:
+            for file_path in search_path.glob(f"thought_process_{investigation_id}_*.json"):
+                try:
+                    with open(file_path, 'r') as f:
+                        saved_process_data = json.load(f)
+                        investigation_processes.append(AgentThoughtProcess(**saved_process_data))
+                except Exception as e:
+                    logger.warning(f"Failed to load saved thought process {file_path}: {e}")
         
         if not investigation_processes:
             return {"error": f"No thought processes found for investigation: {investigation_id}"}
@@ -677,8 +691,25 @@ class ChainOfThoughtLogger:
     def _save_thought_process(self, thought_process: AgentThoughtProcess) -> None:
         """Save completed thought process to disk"""
         
-        filename = f"thought_process_{thought_process.investigation_id}_{thought_process.agent_name}_{int(datetime.now().timestamp())}.json"
-        file_path = self.output_directory / filename
+        # Try to use investigation folder if available
+        investigation_folder = None
+        try:
+            from app.service.logging.investigation_folder_manager import get_folder_manager
+            folder_manager = get_folder_manager()
+            investigation_folder_path = folder_manager.get_investigation_folder(thought_process.investigation_id)
+            if investigation_folder_path:
+                investigation_folder = investigation_folder_path
+                filename = f"thought_process_{thought_process.investigation_id}_{thought_process.agent_name}_{int(datetime.now().timestamp())}.json"
+                file_path = investigation_folder / filename
+            else:
+                # Fall back to default directory
+                filename = f"thought_process_{thought_process.investigation_id}_{thought_process.agent_name}_{int(datetime.now().timestamp())}.json"
+                file_path = self.output_directory / filename
+        except Exception as e:
+            # Fall back to default directory if investigation folder manager fails
+            logger.debug(f"Could not use investigation folder manager: {e}")
+            filename = f"thought_process_{thought_process.investigation_id}_{thought_process.agent_name}_{int(datetime.now().timestamp())}.json"
+            file_path = self.output_directory / filename
         
         # Convert to JSON-serializable format
         process_dict = asdict(thought_process)

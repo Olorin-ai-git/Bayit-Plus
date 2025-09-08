@@ -12,7 +12,14 @@ from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from datetime import datetime
 from .client import SnowflakeClient
-from .schema_info import SNOWFLAKE_SCHEMA_INFO
+# Real column names from Snowflake schema
+REAL_COLUMNS = [
+    'TX_ID_KEY', 'EMAIL', 'MODEL_SCORE', 'IS_FRAUD_TX', 'NSURE_LAST_DECISION',
+    'PAID_AMOUNT_VALUE', 'TX_DATETIME', 'PAYMENT_METHOD', 'CARD_BRAND',
+    'IP_ADDRESS', 'IP_COUNTRY', 'DEVICE_ID', 'USER_AGENT', 'DEVICE_TYPE',
+    'USER_ID', 'FIRST_NAME', 'LAST_NAME', 'PHONE_NUMBER', 'CARD_BIN', 'CARD_LAST4',
+    'CARD_ISSUER', 'PAYMENT_PROCESSOR', 'FRAUD_RULES_TRIGGERED', 'MAXMIND_RISK_SCORE'
+]
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -27,9 +34,9 @@ class _SnowflakeQueryArgs(BaseModel):
             "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
             "IMPORTANT - Use these EXACT column names: TX_ID_KEY (transaction ID), EMAIL (user email), "
             "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
-            "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount NOT GMV), "
-            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS (NOT IP), "
-            "IP_COUNTRY (NOT GEO_IP_COUNTRY), IP_CITY (NOT GEO_IP_CITY), "
+            "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount), "
+            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS (client IP address), "
+            "IP_COUNTRY (country from IP), "
             "DEVICE_ID (NOT SMART_ID), PROXY_RISK_SCORE (NOT IS_PROXY), USER_AGENT, "
             "DEVICE_TYPE, DEVICE_FINGERPRINT. "
             "Use LIMIT clause for large result sets."
@@ -192,8 +199,8 @@ class SnowflakeQueryTool(BaseTool):
                 "query_status": "success",
                 "execution_timestamp": datetime.now().isoformat(),
                 "schema_info": {
-                    "available_columns": list(SNOWFLAKE_SCHEMA_INFO["key_columns"].keys()),
-                    "common_queries": list(SNOWFLAKE_SCHEMA_INFO["common_queries"].keys())
+                    "available_columns": REAL_COLUMNS,
+                    "main_table": "TRANSACTIONS_ENRICHED"
                 }
             }
             
