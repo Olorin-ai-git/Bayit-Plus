@@ -949,7 +949,7 @@ class UnifiedAutonomousTestRunner:
         
         # Try to get scenarios from API if available
         try:
-            async with self.session.get(f"{self.config.server_url}/autonomous/scenarios") as response:
+            async with self.session.get(f"{self.config.server_url}/v1/autonomous/scenarios") as response:
                 if response.status == 200:
                     scenarios_data = await response.json()
                     fraud_scenarios = scenarios_data.get("fraud_scenarios", [])
