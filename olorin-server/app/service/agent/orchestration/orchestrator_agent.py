@@ -220,8 +220,23 @@ class InvestigationOrchestrator:
             logger.info("✅ Snowflake analysis already complete, moving to tool execution")
             return update_phase(state, "tool_execution")
         
-        # Check if we already generated a tool call
+        # CRITICAL FIX: Check if any Snowflake ToolMessage already exists
+        from langchain_core.messages import ToolMessage
         messages = state.get("messages", [])
+        snowflake_result_found = False
+        
+        for msg in messages:
+            if isinstance(msg, ToolMessage) and "snowflake" in msg.name.lower():
+                logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
+                snowflake_result_found = True
+                # Force completion and move to next phase
+                return {
+                    "snowflake_data": msg.content,  # Store the result
+                    "snowflake_completed": True,
+                    "current_phase": "tool_execution"
+                }
+        
+        # Check if we already generated a tool call
         for msg in reversed(messages):
             if hasattr(msg, "tool_calls") and msg.tool_calls:
                 # Check if any are Snowflake calls
@@ -312,37 +327,44 @@ class InvestigationOrchestrator:
         snowflake_data = state.get("snowflake_data", {})
         tools_used = state.get("tools_used", [])
         
-        # Check if we've used enough tools (or skip in mock mode)
+        # ARCHITECTURE FIX: Set reasonable limits to prevent infinite loops
         import os
-        if os.getenv('TEST_MODE') == 'mock' and len(tools_used) >= 1:
+        test_mode = os.getenv('TEST_MODE', '').lower()
+        
+        # In mock mode: Skip additional tools after Snowflake
+        if test_mode == 'mock' and len(tools_used) >= 1:
             logger.info(f"🎭 Mock mode: Skipping to domain analysis after {len(tools_used)} tools")
             return update_phase(state, "domain_analysis")
-        elif len(tools_used) >= 15:
-            logger.info(f"✅ Used {len(tools_used)} tools, moving to domain analysis")
+        
+        # In live mode: Limit tool execution attempts to prevent infinite loops
+        tool_execution_attempts = state.get("tool_execution_attempts", 0) + 1
+        max_attempts = 3  # Maximum 3 attempts at tool execution
+        
+        if tool_execution_attempts >= max_attempts or len(tools_used) >= 10:
+            logger.info(f"✅ Tool execution complete: {len(tools_used)} tools used, {tool_execution_attempts} attempts")
             return update_phase(state, "domain_analysis")
         
-        logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used so far")
+        logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}")
         
         # Analyze Snowflake data to determine which tools to use
         tool_selection_prompt = f"""
-        Based on the Snowflake analysis results, select and use additional tools for deep investigation.
+        Based on the Snowflake analysis results, select and use 2-3 additional tools for investigation.
         
         Snowflake findings summary:
         {self._summarize_snowflake_data(snowflake_data)}
         
         Tools already used: {tools_used}
+        Attempt: {tool_execution_attempts}/{max_attempts}
         
-        You should use AT LEAST 15 different tools for comprehensive analysis. Currently used: {len(tools_used)}
+        IMPORTANT: Select only 2-3 most relevant tools based on findings. Quality over quantity.
         
         Priority tools to consider:
-        1. Threat Intelligence: VirusTotal, AbuseIPDB, Shodan (for IP/domain reputation)
-        2. Database/SIEM: Splunk, SumoLogic (for additional log analysis)
-        3. ML/AI Analysis: Anomaly detection, pattern recognition
-        4. Blockchain: If any crypto-related activity detected
-        5. OSINT: For entity investigation
+        1. Threat Intelligence: VirusTotal, AbuseIPDB (for IP reputation)
+        2. Database/SIEM: Splunk, SumoLogic (if logs indicate suspicious patterns)
+        3. OSINT: For entity investigation (if high-risk patterns detected)
         
-        Select and use tools that will provide the most valuable insights based on the Snowflake findings.
-        Focus on tools that can verify, expand, or contradict the initial findings.
+        Focus on tools that will provide the most valuable insights based on the Snowflake findings.
+        Do NOT select tools unless they are directly relevant to the findings.
         """
         
         human_msg = HumanMessage(content=tool_selection_prompt)
@@ -353,8 +375,8 @@ class InvestigationOrchestrator:
         
         system_msg = SystemMessage(content=f"""
         You are investigating potential fraud. You have {len(self.tools)} tools available.
-        You MUST use multiple tools (at least 15 total) for comprehensive analysis.
-        So far you have used {len(tools_used)} tools.
+        Select 2-3 most relevant tools based on the Snowflake findings.
+        So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}.
         """)
         
         messages = [system_msg] + existing_messages + [human_msg]
@@ -362,7 +384,8 @@ class InvestigationOrchestrator:
         
         return {
             "messages": [response],
-            "current_phase": "tool_execution"  # Stay in this phase until enough tools used
+            "current_phase": "tool_execution",  # Stay in this phase until enough tools used
+            "tool_execution_attempts": tool_execution_attempts  # Track attempts to prevent infinite loops
         }
     
     async def _handle_domain_analysis(self, state: InvestigationState) -> Dict[str, Any]:
@@ -443,12 +466,20 @@ class InvestigationOrchestrator:
             "total_duration_ms": duration_ms
         }
     
-    def _summarize_snowflake_data(self, snowflake_data: Dict[str, Any]) -> str:
-        """Summarize Snowflake data for tool selection."""
+    def _summarize_snowflake_data(self, snowflake_data) -> str:
+        """Summarize Snowflake data for tool selection - handles both string and dict."""
         if not snowflake_data:
             return "No Snowflake data available yet"
         
-        # Extract key metrics
+        # CRITICAL FIX: Handle both string (non-JSON) and dict (JSON) data
+        if isinstance(snowflake_data, str):
+            # Raw string content from Snowflake
+            return f"Snowflake raw result: {snowflake_data[:200]}{'...' if len(snowflake_data) > 200 else ''}"
+        
+        if not isinstance(snowflake_data, dict):
+            return f"Snowflake data type: {type(snowflake_data)} - {str(snowflake_data)[:200]}"
+        
+        # Extract key metrics from JSON data
         summary_parts = []
         
         if "results" in snowflake_data:
@@ -570,10 +601,21 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     Returns:
         State updates
     """
+    # ARCHITECTURE FIX: Track orchestrator loops to prevent infinite recursion
+    orchestrator_loops = state.get("orchestrator_loops", 0) + 1
+    
+    logger.info(f"🎼 Orchestrator node execution #{orchestrator_loops}")
+    
     # Get tools from graph configuration
     from app.service.agent.orchestration.clean_graph_builder import get_all_tools
     
     tools = get_all_tools()
     orchestrator = InvestigationOrchestrator(tools)
     
-    return await orchestrator.orchestrate(state)
+    result = await orchestrator.orchestrate(state)
+    
+    # Add loop counter to result
+    if isinstance(result, dict):
+        result["orchestrator_loops"] = orchestrator_loops
+    
+    return result

@@ -39,21 +39,43 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
     if snowflake_data and "results" in snowflake_data:
         results = snowflake_data["results"]
         
-        # Check for VPN usage
-        vpn_usage = sum(1 for r in results if r.get("VPN_INDICATOR", False))
-        if vpn_usage > 0:
-            network_findings["risk_indicators"].append(f"VPN usage detected in {vpn_usage} transactions")
-            network_findings["risk_score"] += 0.2
-        
-        # Check for multiple countries
-        countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
-        if len(countries) > 3:
-            network_findings["risk_indicators"].append(f"Activity from {len(countries)} different countries")
-            network_findings["risk_score"] += 0.3
-        
-        # Check for suspicious ISPs
-        isps = set(r.get("ISP_NAME") for r in results if r.get("ISP_NAME"))
-        network_findings["analysis"]["unique_isps"] = len(isps)
+        if results:  # Only process if we have results
+            # Check for proxy/VPN indicators (multiple possible column names)
+            vpn_columns = ["VPN_INDICATOR", "PROXY_RISK_SCORE", "IS_VPN", "IS_PROXY"]
+            for r in results:
+                for col in vpn_columns:
+                    if col in r:
+                        value = r[col]
+                        # Check for boolean true or high score
+                        if (isinstance(value, bool) and value) or (isinstance(value, (int, float)) and value > 0.5):
+                            network_findings["risk_indicators"].append(f"VPN/Proxy detected ({col}: {value})")
+                            network_findings["risk_score"] += 0.25
+                            break
+            
+            # Check for multiple countries
+            countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+            if len(countries) > 3:
+                network_findings["risk_indicators"].append(f"Activity from {len(countries)} different countries")
+                network_findings["risk_score"] += 0.3
+            elif len(countries) > 1:
+                network_findings["risk_indicators"].append(f"Cross-border activity ({len(countries)} countries)")
+                network_findings["risk_score"] += 0.15
+            
+            # Use MODEL_SCORE directly if available
+            model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
+            if model_scores:
+                avg_model_score = sum(model_scores) / len(model_scores)
+                # Use the actual model score as the risk score
+                network_findings["risk_score"] = max(network_findings["risk_score"], avg_model_score)
+                network_findings["risk_indicators"].append(f"Model fraud score: {avg_model_score:.3f}")
+            
+            # Check for suspicious ISPs or IPs
+            ips = set(r.get("IP_ADDRESS") for r in results if r.get("IP_ADDRESS"))
+            network_findings["analysis"]["unique_ips"] = len(ips)
+            
+            if len(ips) > 10:
+                network_findings["risk_indicators"].append(f"High IP diversity: {len(ips)} unique IPs")
+                network_findings["risk_score"] += 0.2
     
     # Analyze threat intelligence results
     threat_tools = ["virustotal_tool", "abuseipdb_tool", "shodan_tool"]

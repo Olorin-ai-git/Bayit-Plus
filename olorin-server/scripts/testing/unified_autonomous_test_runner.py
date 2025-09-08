@@ -694,7 +694,7 @@ class UnifiedAutonomousTestRunner:
             self.monitoring.start_monitoring()
 
     def _setup_logging(self):
-        """Setup comprehensive logging with appropriate levels - writes to single investigation log file"""
+        """Setup initial console logging - file logging will be added when investigation folder is created"""
         import logging
         import logging.handlers
         import os
@@ -707,29 +707,10 @@ class UnifiedAutonomousTestRunner:
         # Clear existing handlers to avoid duplicates
         logger.handlers.clear()
         
-        # Generate unique timestamped filename
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        log_filename = f'logs/autonomous_investigation_{timestamp}.log'
+        # Store file handler reference for later update
+        self.file_handler = None
         
-        # Ensure logs directory exists
-        log_dir = os.path.dirname(log_filename)
-        if log_dir:
-            os.makedirs(log_dir, exist_ok=True)
-        
-        # Add file handler for single investigation log with timestamp
-        file_handler = logging.handlers.RotatingFileHandler(
-            log_filename,
-            maxBytes=50*1024*1024,  # 50MB
-            backupCount=10
-        )
-        file_formatter = logging.Formatter(
-            '%(asctime)s [%(levelname)s] [INVESTIGATION] %(name)s: %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-        file_handler.setFormatter(file_formatter)
-        logger.addHandler(file_handler)
-        
-        # Add console handler
+        # Add console handler only initially
         console_handler = logging.StreamHandler(sys.stdout)
         console_formatter = logging.Formatter(
             '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
@@ -739,6 +720,41 @@ class UnifiedAutonomousTestRunner:
         logger.addHandler(console_handler)
         
         return logger
+    
+    def _update_log_file_location(self, investigation_folder: str):
+        """Update the log file location to be inside the investigation folder"""
+        import logging.handlers
+        import os
+        from datetime import datetime
+        
+        # Remove old file handler if it exists
+        if self.file_handler:
+            self.logger.removeHandler(self.file_handler)
+            self.file_handler.close()
+        
+        # Generate unique timestamped filename inside investigation folder
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        log_filename = os.path.join(investigation_folder, f'autonomous_investigation_{timestamp}.log')
+        
+        # Ensure the investigation folder exists
+        os.makedirs(investigation_folder, exist_ok=True)
+        
+        # Add new file handler for investigation log inside the investigation folder
+        self.file_handler = logging.handlers.RotatingFileHandler(
+            log_filename,
+            maxBytes=50*1024*1024,  # 50MB
+            backupCount=10
+        )
+        file_formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] [INVESTIGATION] %(name)s: %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        self.file_handler.setFormatter(file_formatter)
+        self.logger.addHandler(self.file_handler)
+        
+        self.logger.info(f"📝 Log file updated to: {log_filename}")
+        
+        return log_filename
 
     @asynccontextmanager
     async def session_manager(self):
@@ -1013,6 +1029,9 @@ class UnifiedAutonomousTestRunner:
             
             self.logger.info(f"📁 Investigation folder: {investigation_folder}")
             
+            # Update log file location to be inside the investigation folder
+            self._update_log_file_location(str(investigation_folder))
+            
             # Start unified journey tracking
             self.unified_journey_tracker.start_journey_tracking(
                 investigation_id=investigation_id,
@@ -1075,6 +1094,10 @@ class UnifiedAutonomousTestRunner:
                 final_status="completed"
             )
             
+            # Save investigation results to the results folder
+            if 'investigation_folder' in locals():
+                self._save_investigation_results(str(investigation_folder), result)
+            
             # Complete legacy journey tracking (for compatibility)
             self.journey_tracker.complete_journey(
                 investigation_id,
@@ -1103,6 +1126,9 @@ class UnifiedAutonomousTestRunner:
                         investigation_id, 
                         final_status="failed"
                     )
+                    # Save investigation results even if failed
+                    if 'investigation_folder' in locals():
+                        self._save_investigation_results(str(investigation_folder), result)
             except Exception as cleanup_e:
                 self.logger.warning(f"Failed to complete investigation tracking: {cleanup_e}")
             
@@ -1377,9 +1403,11 @@ class UnifiedAutonomousTestRunner:
             start_time = time.time()
             
             # Execute clean graph with initial state
+            # Increase recursion limit for live mode to handle more complex investigations
+            recursion_limit = 100 if self.config.mode == TestMode.LIVE else 50
             langgraph_result = await graph.ainvoke(
                 initial_state,
-                config={"recursion_limit": 50}  # Allow up to 50 iterations
+                config={"recursion_limit": recursion_limit}  # Allow more iterations in live mode
             )
             
             duration = time.time() - start_time
@@ -2361,6 +2389,71 @@ class UnifiedAutonomousTestRunner:
         
         logger.info("=" * 80)
 
+    def _save_investigation_results(self, investigation_folder: str, result: InvestigationResult) -> None:
+        """Save investigation results to the results folder"""
+        try:
+            import os
+            from pathlib import Path
+            
+            # Convert to Path object
+            folder_path = Path(investigation_folder)
+            results_dir = folder_path / "results"
+            
+            # Ensure results directory exists
+            results_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Serialize the result
+            result_data = self._serialize_result(result)
+            
+            # Save main investigation result
+            result_file = results_dir / "investigation_result.json"
+            with open(result_file, 'w') as f:
+                json.dump(result_data, f, indent=2, default=str)
+            
+            # Save agent results separately for easier access
+            if result.agent_results:
+                agent_file = results_dir / "agent_results.json"
+                with open(agent_file, 'w') as f:
+                    json.dump(result.agent_results, f, indent=2, default=str)
+            
+            # Save validation results
+            if result.validation_results:
+                validation_file = results_dir / "validation_results.json"
+                with open(validation_file, 'w') as f:
+                    json.dump(result.validation_results, f, indent=2, default=str)
+            
+            # Save performance metrics
+            if result.performance_data:
+                performance_file = results_dir / "performance_metrics.json"
+                with open(performance_file, 'w') as f:
+                    json.dump(result.performance_data, f, indent=2, default=str)
+            
+            # Save journey data
+            if result.journey_data:
+                journey_file = results_dir / "journey_data.json"
+                with open(journey_file, 'w') as f:
+                    json.dump(result.journey_data, f, indent=2, default=str)
+            
+            # Create a summary file
+            summary = {
+                "investigation_id": result.investigation_id,
+                "scenario": result.scenario_name,
+                "status": result.status,
+                "final_risk_score": result.final_risk_score,
+                "confidence": result.confidence,
+                "duration_seconds": result.duration,
+                "timestamp": result.start_time.isoformat() if result.start_time else None,
+                "errors": result.errors
+            }
+            summary_file = results_dir / "summary.json"
+            with open(summary_file, 'w') as f:
+                json.dump(summary, f, indent=2, default=str)
+            
+            self.logger.info(f"💾 Saved investigation results to {results_dir}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to save investigation results: {e}")
+    
     def _serialize_result(self, result: InvestigationResult) -> Dict[str, Any]:
         """Serialize investigation result to dictionary"""
         return {
@@ -2559,8 +2652,16 @@ Examples:
     )
     parser.add_argument(
         "--html-report",
+        dest="html_report",
         action="store_true",
-        help="Generate HTML report (in addition to specified format)"
+        default=True,
+        help="Generate HTML report (enabled by default)"
+    )
+    parser.add_argument(
+        "--no-html-report",
+        dest="html_report",
+        action="store_false",
+        help="Disable HTML report generation"
     )
     parser.add_argument(
         "--open-report",

@@ -552,7 +552,7 @@ class AutonomousInvestigationLogger:
     
     def _generate_html_report(self, investigation_id: str) -> None:
         """
-        Generate HTML report for investigation.
+        Generate comprehensive HTML report for investigation using EnhancedHTMLReportGenerator.
         
         Args:
             investigation_id: Investigation identifier
@@ -564,16 +564,30 @@ class AutonomousInvestigationLogger:
                 _get_bridge_logger().warning(f"Investigation folder not found for {investigation_id}")
                 return
             
-            # Generate HTML report using simple generator
-            html_content = self._create_investigation_html_report(folder_path)
-            
-            # Save HTML report to investigation folder
-            report_file = folder_path / "investigation_report.html"
-            with open(report_file, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-            
-            _get_bridge_logger().info(f"Generated HTML report: {report_file}")
-            
+            # Try to use the enhanced report generator first
+            try:
+                from ..reporting import generate_report_for_folder
+                
+                # Generate comprehensive HTML report using the enhanced generator
+                report_path = generate_report_for_folder(
+                    folder_path=folder_path,
+                    output_path=folder_path / "investigation_report.html",
+                    title=f"Investigation Report - {investigation_id}"
+                )
+                _get_bridge_logger().info(f"Generated enhanced HTML report: {report_path}")
+                
+            except ImportError as import_error:
+                # Fallback to simple generator if enhanced generator is not available
+                _get_bridge_logger().warning(f"Enhanced report generator not available, using simple generator: {import_error}")
+                html_content = self._create_investigation_html_report(folder_path)
+                
+                # Save HTML report to investigation folder
+                report_file = folder_path / "investigation_report.html"
+                with open(report_file, 'w', encoding='utf-8') as f:
+                    f.write(html_content)
+                
+                _get_bridge_logger().info(f"Generated simple HTML report: {report_file}")
+                
         except Exception as e:
             _get_bridge_logger().error(f"Failed to generate HTML report for {investigation_id}: {e}")
     

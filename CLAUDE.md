@@ -4,29 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Global Claude Code Execution Standards
 
-### ⚠️ CRITICAL MANDATORY PROHIBITION
+### ⚠️ CRITICAL MANDATORY PROHIBITIONS
+
+**🚨💰 YOU ARE NOT ALLOWED TO RUN INVESTIGATIONS IN LIVE MODE WITHOUT EXPLICIT USER APPROVAL!!!!! 💰🚨**
+
 **🚨 YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!! 🚨**
 
-**This is a ZERO-TOLERANCE rule that applies universally across ALL projects, ALL tasks, and ALL circumstances.**
+**These are ZERO-TOLERANCE rules that apply universally across ALL projects, ALL tasks, and ALL circumstances.**
 
 Apply the following rules **universally and consistently** across ALL coding tasks in ALL projects:
 
 ### Core Execution Standards
 
-1. 🚫 **ABSOLUTE PROHIBITION: Never create mock data or use placeholders - EVER!**
+1. 🚫💰 **ABSOLUTE PROHIBITION: Never run LIVE mode investigations without explicit user approval - EVER!**
+   - **ZERO TOLERANCE**: RUNNING LIVE MODE INVESTIGATION COSTS REAL MONEY!
+   - **MANDATORY**: Always get explicit written approval before running ANY investigation in LIVE mode.
+   - **NO EXCEPTIONS**: This applies to all scripts, tests, debugging, demonstrations, and any other execution.
+   - **ENFORCEMENT**: Any unauthorized LIVE mode execution is considered a critical financial violation.
+   - **PROHIBITED COMMANDS**: Never run commands with `--mode live`, `USE_SNOWFLAKE=true`, or any LIVE investigation without explicit approval.
+   - **ALWAYS USE MOCK MODE**: Default to `--mode mock` or `TEST_MODE=mock` for all testing unless explicitly told otherwise.
+
+2. 🚫 **ABSOLUTE PROHIBITION: Never create mock data or use placeholders - EVER!**
    - **ZERO TOLERANCE**: Do not fabricate data under ANY circumstances.
    - **MANDATORY**: Always request real input data sources or clearly flag missing data as a blocking issue.
    - **NO EXCEPTIONS**: This rule applies to all code, tests, examples, documentation, and any other content.
    - **ENFORCEMENT**: Any violation of this rule is considered a critical failure.
 
-1.1. 🚫 **ABSOLUTE PROHIBITION: Never add "demo" indicators without explicit user approval - EVER!**
+3. 🚫 **ABSOLUTE PROHIBITION: Never add "demo" indicators without explicit user approval - EVER!**
    - **ZERO TOLERANCE**: Do not add demo flags, demo modes, demo headers, or any "demo" indicators without explicit user consent.
    - **MANDATORY**: Always request explicit user approval before adding ANY indication of "demo" mode or testing state.
    - **NO EXCEPTIONS**: This applies to JWT tokens, API headers, configuration flags, database fields, UI elements, and ALL code.
    - **ENFORCEMENT**: Any unauthorized "demo" indicator is considered a critical failure and security violation.
    - **EXAMPLES PROHIBITED**: demo=true, X-Demo-Mode, isDemoMode, demo_enabled, test_mode, etc.
 
-2. 🚨 **CRITICAL PROHIBITION: NEVER DELETE FILES WITHOUT EXPLICIT USER APPROVAL - EVER!**
+4. 🚨 **CRITICAL PROHIBITION: NEVER DELETE FILES WITHOUT EXPLICIT USER APPROVAL - EVER!**
    - **ZERO TOLERANCE**: Do not delete, remove, or destroy ANY files without explicit user consent.
    - **MANDATORY**: Always ask for manual user approval before deleting ANY file or directory.
    - **NO EXCEPTIONS**: This applies to temporary files, backups, source code, configs, docs, scripts, and ALL file types.
@@ -34,7 +45,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
    - **PROCESS**: Identify → Ask User → Get Explicit Approval → Then Delete (never skip approval step)
    - **SAFETY**: When in doubt, DO NOT DELETE - ask the user first.
 
-3. 🚨 **CRITICAL PROHIBITION: NEVER MOVE, DELETE, OR DISABLE PRODUCTION CODE WITHOUT EXPLICIT USER APPROVAL - EVER!**
+5. 🚨 **CRITICAL PROHIBITION: NEVER MOVE, DELETE, OR DISABLE PRODUCTION CODE WITHOUT EXPLICIT USER APPROVAL - EVER!**
    - **ZERO TOLERANCE**: Do not move, delete, disable, comment out, or otherwise render inoperative ANY production code without explicit user consent.
    - **MANDATORY**: Always ask for manual user approval before modifying, relocating, or disabling ANY production code or files.
    - **NO EXCEPTIONS**: This applies to source code, configuration files, database schemas, deployment scripts, environment variables, and ALL production-critical files.
@@ -43,14 +54,14 @@ Apply the following rules **universally and consistently** across ALL coding tas
    - **SAFETY**: When in doubt about production impact, DO NOT MODIFY - ask the user first.
    - **PRODUCTION DEFINITION**: Any code, configuration, or file that is deployed to, affects, or supports live/production environments.
 
-4. 🛑 **MANDATORY PLAN APPROVAL: Never implement ANY plan without explicit user approval - EVER!**
+6. 🛑 **MANDATORY PLAN APPROVAL: Never implement ANY plan without explicit user approval - EVER!**
    - **ZERO TOLERANCE**: Do not start implementation before the user has reviewed and approved the plan.
    - **MANDATORY**: Always present the complete plan, get explicit approval, then proceed with implementation.
    - **NO EXCEPTIONS**: This rule applies to all implementations, refactoring, new features, bug fixes, and any code changes.
    - **ENFORCEMENT**: Any implementation without prior plan approval is considered a critical failure.
    - **PROCESS**: Plan → Present → Approval → Implementation (never skip steps)
 
-5. 🔍 **CRITICAL: MANDATORY CODEBASE ANALYSIS BEFORE ANY PLAN CREATION - NEVER SKIP!**
+7. 🔍 **CRITICAL: MANDATORY CODEBASE ANALYSIS BEFORE ANY PLAN CREATION - NEVER SKIP!**
    - **ZERO TOLERANCE**: Before creating ANY design or plan, you MUST scan the codebase to understand what currently exists.
    - **MANDATORY ANALYSIS**: Always check whether some or all of the requested functionality is already implemented.
    - **COMPREHENSIVE SCAN**: Use Read, Glob, Grep, and search tools to examine existing code, components, services, and documentation.
@@ -59,7 +70,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
    - **PROCESS**: Analyze Existing Code → Identify Gaps → Create Plan → Present → Get Approval → Implement
    - **AVOID DUPLICATION**: Prevent recreating existing functionality and ensure plans build upon current implementation.
 
-6. 🧠 **MANDATORY: Always use global subagents for ALL tasks.**
+8. 🧠 **MANDATORY: Always use global subagents for ALL tasks.**
    - **EXCLUSIVELY use subagents from the global collection at `~/.local/share/claude-007-agents/.claude/agents/`**
    - **NEVER use local project subagents** - the global collection is the single source of truth with 158+ specialized subagents
    - Every task (including planning, execution, testing, debugging, etc.) must be handled by an appropriate global subagent
@@ -74,11 +85,11 @@ Apply the following rules **universally and consistently** across ALL coding tas
      - **Orchestration & Management**: orchestration, orchestrators, personalities, choreography
    - Use the Task tool to invoke subagents with their specific expertise areas
 
-7. 📋 **Always generate a TodoList before you begin.**
+9. 📋 **Always generate a TodoList before you begin.**
    - Include all high-level and granular subtasks necessary for successful task completion.
    - Revisit and update the list as needed during execution.
 
-8. 📊 **Use model OpusPlan (Opus 4.1) for planning and task breakdown.**
+10. 📊 **Use model OpusPlan (Opus 4.1) for planning and task breakdown.**
    - Invoke OpusPlan to:
      - Generate project plans.
      - Break complex requests into subproblems.
@@ -88,22 +99,22 @@ Apply the following rules **universally and consistently** across ALL coding tas
    - Execute the individual tasks and subplans using the Sonnet model.
    - Apply Sonnet for code generation, implementation, and testing.
 
-9. ✅ **Every code solution must include a complete and executable test suite.**
+11. ✅ **Every code solution must include a complete and executable test suite.**
    - Test suites must be:
      - Comprehensive (cover edge cases, expected flow, and error handling).
      - Written in the same language as the codebase (e.g., Python → `pytest`, TypeScript → `jest` or `vitest`).
      - Self-contained and reproducible.
 
-10. 🔁 **If any test fails, fix iteratively with a dedicated subagent.**
+12. 🔁 **If any test fails, fix iteratively with a dedicated subagent.**
     - Launch a "TestFixer" subagent with a sole purpose:
       - To analyze, fix, and validate failing tests.
     - This subagent must run iteratively until all tests pass.
 
-11. 🔁 **If there are TypeScript or Python errors (e.g., type-checking, compile-time errors), resolve them iteratively.**
+13. 🔁 **If there are TypeScript or Python errors (e.g., type-checking, compile-time errors), resolve them iteratively.**
     - Use a dedicated "LintFixer" or "TypeFixer" subagent.
     - Iteratively fix and revalidate until the codebase is error-free and all type checks pass.
 
-12. 🔍 **ALWAYS USE code-reviewer subagent AS A FINAL STEP OF ANY IMPLEMENTATION TASK.**
+14. 🔍 **ALWAYS USE code-reviewer subagent AS A FINAL STEP OF ANY IMPLEMENTATION TASK.**
     - **MANDATORY**: Every implementation task MUST end with code-reviewer subagent review
     - Use code-reviewer immediately after completing any code changes
     - Code-reviewer specializes in configuration security, production safety, and quality assurance
@@ -111,12 +122,12 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - This applies to ALL coding tasks: new features, bug fixes, refactoring, configuration changes
     - **CRITICAL**: Code-reviewer has expertise in detecting risky configuration changes that could cause production outages
 
-13. 🏗️ **AFTER completing a coding task, you MUST build the project and iteratively fix any build errors.**
+15. 🏗️ **AFTER completing a coding task, you MUST build the project and iteratively fix any build errors.**
     - Always run the appropriate build command for the project (e.g., `npm run build`, `poetry run build`, etc.).
     - If build errors occur, use a dedicated "BuildFixer" subagent to resolve them iteratively.
     - Continue until the project builds successfully without errors or warnings.
 
-14. 🔀 **MANDATORY: ALL git operations MUST be handled by the git-expert subagent.**
+16. 🔀 **MANDATORY: ALL git operations MUST be handled by the git-expert subagent.**
     - **NEVER perform git operations directly** - Always use the git-expert subagent for ALL git-related tasks.
     - **ALL git commands** including but not limited to: commit, push, pull, merge, rebase, branch, checkout, status, diff, log.
     - **Use Task tool** to invoke git-expert subagent: `Task(subagent_type="git-expert", description="[git operation]", prompt="[detailed request]")`
@@ -124,7 +135,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - **NO EXCEPTIONS**: This applies to deployment scripts, automation, manual operations, and any other git interactions.
     - **MANDATORY FEATURE BRANCH**: When implementing ANY NEW plan or feature, you MUST create a feature branch using git-expert subagent BEFORE starting implementation.
 
-14.1. 🎫 **MANDATORY: JIRA INTEGRATION FOR ALL DEVELOPMENT WORK - NEVER SKIP!**
+16.1. 🎫 **MANDATORY: JIRA INTEGRATION FOR ALL DEVELOPMENT WORK - NEVER SKIP!**
     - **ZERO TOLERANCE**: Every feature, task, bug fix, and subtask MUST have a corresponding Jira ticket BEFORE any work begins.
     - **MANDATORY JIRA TICKET CREATION**: You MUST create Jira tickets for ALL work items:
       - **Epic**: For major features or initiatives (e.g., "Multi-Entity Investigation System")
@@ -175,7 +186,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
         - Link pull requests to Jira tickets
     - **ENFORCEMENT**: Any branch or commit without proper Jira integration is considered a critical compliance violation
 
-15. ✅ **When creating a document, always place in an appropriate subfolder under /docs**
+17. ✅ **When creating a document, always place in an appropriate subfolder under /docs**
     - Before creating a new document, scan the codebase and make sure there are no loose documents not under /docs and that the document you are about to create does not exist already.
     - Every Planning document MUST be accompanied by interactive HTML visualization files with embedded Mermaid diagrams that will be placed under /docs/diagrams/.
     - **HTML VISUALIZATION REQUIREMENTS**: Create comprehensive HTML files with:
@@ -186,16 +197,16 @@ Apply the following rules **universally and consistently** across ALL coding tas
       - Mobile-responsive design
       - Interactive elements where applicable
 
-16. ✅ **When creating a batch script, always place in an appropriate subfolder under /scripts**
+18. ✅ **When creating a batch script, always place in an appropriate subfolder under /scripts**
     - Before creating a new batch script, scan the codebase and make sure there are no loose scripts not under /scripts and that the script you are about to create does not exist already.
 
-17. ✅ **Python environment**: Always use Poetry commands for Python projects. Only Python 3.11 is supported
+19. ✅ **Python environment**: Always use Poetry commands for Python projects. Only Python 3.11 is supported
     - **Never use pip or python directly** - All Python commands must go through Poetry (e.g., `poetry run python`)
 
-18. ✅ **All css must be using Tailwind css** 
+20. ✅ **All css must be using Tailwind css** 
     - Do NOT use material ui.
 
-19. ✅ **All production code files MUST have less than 200 lines of code.**
+21. ✅ **All production code files MUST have less than 200 lines of code.**
     - This applies ONLY to our codebase files (exclude node_modules, build artifacts, dist, .git, vendor, etc.).
     - Scan only our production code.
     - After Claude Code starts, run a script that checks all files compliance.
@@ -206,34 +217,34 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - Each module should have a single, well-defined purpose and clear interface boundaries.
     - Maintain full documentation and comments while achieving modularity through proper design.
 
-20. ✅ **Use centralized MCP server configuration for all projects.**
+22. ✅ **Use centralized MCP server configuration for all projects.**
     - Reference the centralized MCP servers configuration at `~/.claude/mcp-servers.json`
     - Use appropriate presets based on project needs: 'minimal', 'development', 'data-processing', or 'full'
     - For new projects, copy the required MCP servers from the central configuration to project-specific settings
     - Always check the central configuration for updates to MCP server definitions
 
-21. ✅ **Use centralized subagent configuration for all projects.**
+23. ✅ **Use centralized subagent configuration for all projects.**
     - Reference the centralized subagent configuration at `~/.claude/subagents.json`
     - Use appropriate presets based on project needs: 'minimal', 'frontend-development', 'backend-development', 'fullstack-development', 'enterprise'
     - Leverage choreographies for systematic workflows: 'feature-development-dance', 'bug-hunting-tango', 'code-review-waltz'
     - All subagents are located at `~/.local/share/claude-007-agents/.claude/agents/`
     - Always check the central configuration for updates to subagent definitions and new presets
 
-22. ✅ **Use centralized scripts library for all projects.**
+24. ✅ **Use centralized scripts library for all projects.**
     - Reference the centralized scripts configuration at `~/.claude/scripts-library.json`
     - Use appropriate presets based on project needs: 'minimal', 'frontend-project', 'backend-project', 'fullstack-project', 'enterprise', 'ci-cd'
     - All scripts are categorized: 'development', 'deployment', 'testing', 'security', 'database', 'utilities', 'git'
     - Copy required scripts to project `/scripts` directory and customize as needed
     - Always check the central configuration for new scripts and updates
 
-23. ✅ **Use centralized documentation library for all projects.**
+25. ✅ **Use centralized documentation library for all projects.**
     - Reference the centralized documentation configuration at `~/.claude/docs-library.json`
     - Use appropriate presets based on project needs: 'minimal', 'startup', 'enterprise', 'open-source', 'saas-product', 'api-service'
     - All documentation follows standard structure under `/docs` directory
     - Include Mermaid diagrams in `/docs/diagrams/` for planning documents
     - Always check the central configuration for documentation standards and templates
 
-24. ✅ **MANDATORY: Run MCP setup script for every new project.**
+26. ✅ **MANDATORY: Run MCP setup script for every new project.**
     - **ALWAYS execute `~/.claude/scripts/mcp-setup.sh install-deps [preset]` when creating or working with a new project**
     - Choose appropriate preset based on project type: 'minimal', 'development', 'data-processing', 'automation', 'design', or 'full'
     - **The script automatically handles both server registration AND dependency installation:**
@@ -243,7 +254,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - **This is MANDATORY and MUST NOT be skipped** - MCP servers are required for proper Claude Code functionality
     - **No manual registration required** - The script handles everything automatically
 
-25. 📊 **MANDATORY: Always create a plan with model Opus 4.1 BEFORE writing any code for ANY task.**
+27. 📊 **MANDATORY: Always create a plan with model Opus 4.1 BEFORE writing any code for ANY task.**
     - **NO CODE GENERATION without an existing plan.**
     - Use OpusPlan (Opus 4.1) to create comprehensive execution plans BEFORE any implementation.
     - Plans must include:
@@ -281,7 +292,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
         - Include timestamp and any relevant notes for each phase completion
         - Update Jira ticket descriptions with progress notes and completion details
 
-26. 🚀 **MANDATORY: Always use deployment subagents for Firebase deployments.**
+28. 🚀 **MANDATORY: Always use deployment subagents for Firebase deployments.**
     - **WHENEVER user requests deployment to Firebase, use the firebase-deployment-specialist subagent**
     - The subagent has expertise in the Intelligent Firebase Deployment System with:
       - Advanced error handling and recovery (24 recovery strategies)
@@ -298,7 +309,7 @@ Apply the following rules **universally and consistently** across ALL coding tas
     - **Deployment modes**: full, quick, test, batch-only, report-only
     - **Project expertise**: Specialized for CVPlus with 127+ Firebase Functions
 
-27. 🎛️ **MANDATORY: Orchestrator Task Flow Control for Coding Plans and Designs.**
+29. 🎛️ **MANDATORY: Orchestrator Task Flow Control for Coding Plans and Designs.**
     - **When implementing any coding plan or design, the control of the task flow MUST remain with the orchestrator subagent**
     - **Orchestrator subagent responsibilities:**
       - **MANDATORY SUBAGENT TEAM SELECTION**: Review all available subagents .md files and decide which subagent team will be used to execute the plan

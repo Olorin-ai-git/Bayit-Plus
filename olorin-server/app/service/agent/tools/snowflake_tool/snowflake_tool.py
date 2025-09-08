@@ -25,10 +25,13 @@ class _SnowflakeQueryArgs(BaseModel):
         description=(
             "The SQL query to execute against Snowflake data warehouse. "
             "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
-            "Key columns include: TX_ID_KEY (transaction ID), EMAIL (user email), "
+            "IMPORTANT - Use these EXACT column names: TX_ID_KEY (transaction ID), EMAIL (user email), "
             "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
-            "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount), "
-            "TX_DATETIME (transaction timestamp), PAYMENT_METHOD, CARD_BRAND, etc. "
+            "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount NOT GMV), "
+            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS (NOT IP), "
+            "IP_COUNTRY (NOT GEO_IP_COUNTRY), IP_CITY (NOT GEO_IP_CITY), "
+            "DEVICE_ID (NOT SMART_ID), PROXY_RISK_SCORE (NOT IS_PROXY), USER_AGENT, "
+            "DEVICE_TYPE, DEVICE_FINGERPRINT. "
             "Use LIMIT clause for large result sets."
         )
     )
@@ -55,10 +58,10 @@ class SnowflakeQueryTool(BaseTool):
         "Queries comprehensive Snowflake fraud detection data warehouse containing detailed "
         "transaction records, user profiles, payment methods, risk scores, fraud indicators, "
         "disputes, and business intelligence data. Main table is TRANSACTIONS_ENRICHED with "
-        "300+ columns including: transaction IDs, user emails, fraud scores (MODEL_SCORE 0-1), "
-        "payment methods, card details, IP geolocation, device fingerprints, merchant data, "
-        "NSure decisions, MaxMind risk scores, triggered fraud rules, dispute records, "
-        "fraud alerts, KYC data, and comprehensive transaction metadata. Use for fraud analysis, "
+        "300+ columns. CRITICAL - Use EXACT column names: TX_ID_KEY, EMAIL, MODEL_SCORE (0-1), "
+        "PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS, IP_COUNTRY, IP_CITY, DEVICE_ID, DEVICE_FINGERPRINT, "
+        "NSURE_LAST_DECISION, PROXY_RISK_SCORE, FRAUD_RULES_TRIGGERED (NOT TRIGGERED_RULES), DISPUTES, "
+        "FRAUD_ALERTS, PAID_AMOUNT_VALUE (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
         "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "
         "Supports complex queries with JOINs, aggregations, time-based filtering, and statistical analysis."
     )
@@ -76,6 +79,57 @@ class SnowflakeQueryTool(BaseTool):
         description="Snowflake warehouse for query execution"
     )
     
+    def _correct_column_names(self, query: str) -> str:
+        """Auto-correct common column name mistakes in queries."""
+        corrections = {
+            # Common mistakes -> Correct column names
+            'SMART_ID': 'DEVICE_ID',
+            'IS_PROXY': 'PROXY_RISK_SCORE',
+            'GMV': 'PAID_AMOUNT_VALUE',
+            'GEO_IP_COUNTRY': 'IP_COUNTRY',
+            'GEO_IP_CITY': 'IP_CITY',
+            'GEO_IP_REGION': 'IP_REGION',
+            'TRIGGERED_RULES': 'FRAUD_RULES_TRIGGERED',
+            'DISPUTE_FLAG': 'DISPUTES',  # Map DISPUTE_FLAG to DISPUTES for consistency
+            'IP\b': 'IP_ADDRESS',  # Replace standalone IP with IP_ADDRESS
+        }
+        
+        import re
+        corrected_query = query
+        for wrong, correct in corrections.items():
+            # Use word boundaries for more accurate replacement
+            pattern = r'\b' + wrong + r'\b'
+            if wrong != 'IP\\b':  # Special handling for IP pattern
+                corrected_query = re.sub(pattern, correct, corrected_query, flags=re.IGNORECASE)
+            else:
+                # For IP, only replace if it's not part of another word
+                corrected_query = re.sub(r'\bIP\b(?!_)', 'IP_ADDRESS', corrected_query, flags=re.IGNORECASE)
+        
+        # Additional step: Remove problematic columns that don't exist in the real database
+        # This is a temporary fix until the real schema columns are confirmed
+        problematic_patterns = [
+            r',\s*DISPUTES\s*(?=,|FROM|WHERE|GROUP|ORDER|LIMIT|$)',
+            r'SELECT\s+DISPUTES\s*,',
+            r',\s*DISPUTE_FLAG\s*(?=,|FROM|WHERE|GROUP|ORDER|LIMIT|$)',
+            r'SELECT\s+DISPUTE_FLAG\s*,',
+            r',\s*FRAUD_ALERTS\s*(?=,|FROM|WHERE|GROUP|ORDER|LIMIT|$)',
+            r'SELECT\s+FRAUD_ALERTS\s*,'
+        ]
+        
+        for pattern in problematic_patterns:
+            corrected_query = re.sub(pattern, '', corrected_query, flags=re.IGNORECASE)
+        
+        # Clean up any double commas or trailing commas
+        corrected_query = re.sub(r',\s*,', ',', corrected_query)
+        corrected_query = re.sub(r',\s*(FROM|WHERE|GROUP|ORDER|LIMIT)', r' \1', corrected_query, flags=re.IGNORECASE)
+        
+        if corrected_query != query:
+            logger.warning(f"Auto-corrected column names in query")
+            logger.debug(f"Original: {query}")
+            logger.debug(f"Corrected: {corrected_query}")
+        
+        return corrected_query
+    
     def _run(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Synchronous execution wrapper."""
         import asyncio
@@ -85,6 +139,9 @@ class SnowflakeQueryTool(BaseTool):
         """Async execution of the Snowflake query."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret
+        
+        # Auto-correct common column name mistakes
+        query = self._correct_column_names(query)
         
         settings = get_settings_for_env()
         

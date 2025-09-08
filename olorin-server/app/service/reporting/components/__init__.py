@@ -32,10 +32,11 @@ from .risk_dashboard import RiskDashboardComponent
 from .explanations import ExplanationsComponent
 from .journey_visualization import JourneyVisualizationComponent
 from .langgraph_visualization import LangGraphVisualizationComponent
-from .base_component import BaseVisualizationComponent
+from .base_component import BaseVisualizationComponent, ComponentConfig
 
 __all__ = [
     'BaseVisualizationComponent',
+    'ComponentConfig',
     'LLMTimelineComponent',
     'InvestigationFlowComponent', 
     'ToolsAnalysisComponent',

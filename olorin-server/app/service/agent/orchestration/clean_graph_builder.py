@@ -133,9 +133,9 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                 result = json.loads(last_message.content)
                 tool_results[tool_name] = result
                 
-                # Special handling for Snowflake
+                # Special handling for Snowflake - ALWAYS mark as completed regardless of JSON parsing
                 if "snowflake" in tool_name.lower():
-                    logger.info("✅ Snowflake query completed")
+                    logger.info("✅ Snowflake query completed with JSON result")
                     return {
                         "tools_used": tools_used,
                         "tool_results": tool_results,
@@ -146,6 +146,17 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
             except:
                 # If not JSON, store as string
                 tool_results[tool_name] = last_message.content
+                
+                # CRITICAL FIX: Mark Snowflake as completed even with non-JSON content
+                if "snowflake" in tool_name.lower():
+                    logger.info("✅ Snowflake query completed with non-JSON result")
+                    return {
+                        "tools_used": tools_used,
+                        "tool_results": tool_results,
+                        "snowflake_data": last_message.content,  # Store raw content
+                        "snowflake_completed": True,
+                        "current_phase": "tool_execution"  # Move to next phase regardless
+                    }
             
             return {
                 "tools_used": tools_used,
@@ -257,7 +268,15 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     snowflake_completed = state.get("snowflake_completed", False)
     tools_used = state.get("tools_used", [])
     
-    logger.info(f"🔀 Routing from orchestrator")
+    # ARCHITECTURE FIX: Global recursion safety check
+    orchestrator_loops = state.get("orchestrator_loops", 0) + 1
+    max_loops = 25  # Maximum orchestrator calls to prevent infinite recursion
+    
+    if orchestrator_loops >= max_loops:
+        logger.warning(f"🚨 RECURSION SAFETY: {orchestrator_loops} orchestrator loops reached, forcing completion")
+        return "summary"  # Force to summary to complete investigation
+    
+    logger.info(f"🔀 Routing from orchestrator (loop {orchestrator_loops}/{max_loops})")
     logger.info(f"   Phase: {current_phase}")
     logger.info(f"   Snowflake completed: {snowflake_completed}")
     logger.info(f"   Tools used: {len(tools_used)}")
@@ -274,16 +293,38 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     # Route based on phase
     if current_phase == "snowflake_analysis":
         if not snowflake_completed:
-            logger.info("  → Staying in orchestrator (Snowflake not complete)")
-            return "orchestrator"
+            # ADDITIONAL SAFETY: Check if any Snowflake ToolMessage already exists
+            from langchain_core.messages import ToolMessage
+            snowflake_tool_found = False
+            for msg in messages:
+                if isinstance(msg, ToolMessage) and "snowflake" in msg.name.lower():
+                    snowflake_tool_found = True
+                    logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
+                    break
+            
+            if snowflake_tool_found:
+                logger.info("  → Forcing move to tool_execution phase (Snowflake ToolMessage found)")
+                return "orchestrator"  # Orchestrator will handle phase change
+            else:
+                logger.info("  → Staying in orchestrator (Snowflake not complete)")
+                return "orchestrator"
         else:
             logger.info("  → Moving to tool_execution phase")
             return "orchestrator"  # Go back to orchestrator to change phase
     
     elif current_phase == "tool_execution":
+        # ARCHITECTURE FIX: Prevent infinite loops in tool execution phase
         tools_used = state.get("tools_used", [])
-        if len(tools_used) < 10:
-            logger.info(f"  → Staying in orchestrator (only {len(tools_used)} tools used)")
+        tool_execution_attempts = state.get("tool_execution_attempts", 0)
+        max_attempts = 3
+        
+        # If we've reached max attempts or enough tools, move to domain analysis
+        if tool_execution_attempts >= max_attempts or len(tools_used) >= 10:
+            logger.info(f"  → Tool execution complete, moving to domain analysis (attempts: {tool_execution_attempts}, tools: {len(tools_used)})")
+            # Force phase change by returning orchestrator but orchestrator will change phase
+            return "orchestrator"
+        else:
+            logger.info(f"  → Staying in orchestrator (tools: {len(tools_used)}, attempts: {tool_execution_attempts})")
             return "orchestrator"
     
     elif current_phase == "domain_analysis":

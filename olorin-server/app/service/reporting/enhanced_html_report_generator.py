@@ -59,8 +59,10 @@ from .components import (
     LangGraphVisualizationComponent,
     get_all_components,
     get_component,
-    COMPONENT_REGISTRY
+    COMPONENT_REGISTRY,
+    ComponentConfig
 )
+from .components.base_component import ComponentTheme
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +119,7 @@ class EnhancedHTMLReportGenerator:
         self, 
         base_logs_dir: Optional[Path] = None,
         template_dir: Optional[Path] = None,
-        theme: str = "default",
+        theme: Union[str, ComponentTheme] = "default",
         enable_components: Optional[List[str]] = None,
         component_config: Optional[Dict[str, Any]] = None
     ):
@@ -147,9 +149,18 @@ class EnhancedHTMLReportGenerator:
         )
         
         # Configure visualization components
-        self.theme = theme
+        # Convert string theme to ComponentTheme enum
+        if isinstance(theme, str):
+            try:
+                self.theme = ComponentTheme(theme)
+            except ValueError:
+                logger.warning(f"Invalid theme '{theme}', using default")
+                self.theme = ComponentTheme.DEFAULT
+        else:
+            self.theme = theme
+            
         self.component_config = component_config or ComponentConfig(
-            theme=theme,
+            theme=self.theme,
             enable_animations=True,
             enable_tooltips=True,
             responsive=True,
@@ -644,6 +655,136 @@ class EnhancedHTMLReportGenerator:
         
         logger.info(f"Generated HTML report: {output_path}")
         return output_path
+
+    def _generate_all_components(self, processed_data, active_components: List[str]) -> Dict[str, str]:
+        """
+        Generate HTML content for all requested visualization components.
+        
+        Args:
+            processed_data: Processed investigation data (dataclass)
+            active_components: List of component names to generate
+            
+        Returns:
+            Dictionary mapping component names to their HTML content
+        """
+        generated_components = {}
+        
+        # Convert dataclass to dictionary format expected by components
+        # Create a combined activities list from all interaction types
+        combined_activities = []
+        
+        # Add all interactions in chronological order
+        for interaction in processed_data.llm_interactions:
+            combined_activities.append(vars(interaction))
+        for execution in processed_data.tool_executions:
+            combined_activities.append(vars(execution))
+        for decision in processed_data.agent_decisions:
+            combined_activities.append(vars(decision))
+        for node in processed_data.langgraph_nodes:
+            combined_activities.append(vars(node))
+        for phase in processed_data.investigation_phases:
+            combined_activities.append(vars(phase))
+            
+        data_dict = {
+            'investigation_id': processed_data.investigation_id,
+            'mode': processed_data.mode,
+            'scenario': processed_data.scenario,
+            'created_at': processed_data.created_at,
+            'status': processed_data.status,
+            'activities': combined_activities,
+            'llm_interactions': [vars(interaction) for interaction in processed_data.llm_interactions],
+            'tool_executions': [vars(execution) for execution in processed_data.tool_executions],
+            'agent_decisions': [vars(decision) for decision in processed_data.agent_decisions],
+            'langgraph_nodes': [vars(node) for node in processed_data.langgraph_nodes],
+            'investigation_phases': [vars(phase) for phase in processed_data.investigation_phases],
+            'risk_score_entries': [vars(entry) for entry in processed_data.risk_score_entries],
+            'journey_data': processed_data.journey_data,
+            'investigation_results': processed_data.investigation_results,
+            'metrics': {
+                'duration_seconds': processed_data.duration_seconds,
+                'total_tokens': processed_data.total_tokens_used,  # Fixed attribute name
+                'final_risk_score': getattr(processed_data, 'final_risk_score', None),
+                'agents_used': processed_data.agents_used,
+                'tools_used': processed_data.tools_used,
+                'error_count': processed_data.error_count
+            }
+        }
+        
+        for component_name in active_components:
+            if component_name in self.components:
+                try:
+                    component = self.components[component_name]
+                    # Generate HTML for this component using dictionary format
+                    component_html = component.generate_html(data_dict)
+                    generated_components[component_name] = component_html
+                    logger.debug(f"Generated HTML for component: {component_name}")
+                except Exception as e:
+                    logger.warning(f"Failed to generate component {component_name}: {e}")
+                    generated_components[component_name] = f"<div class='error'>Failed to generate {component_name}: {str(e)}</div>"
+            else:
+                logger.warning(f"Component {component_name} not available in initialized components")
+                generated_components[component_name] = f"<div class='error'>Component {component_name} not available</div>"
+        
+        return generated_components
+
+    def _build_integrated_html_report(self, processed_data, generated_components: Dict[str, str], title: str) -> str:
+        """
+        Build complete integrated HTML report using generated components.
+        
+        Args:
+            processed_data: Processed investigation data
+            generated_components: Dictionary of component HTML content
+            title: Report title
+            
+        Returns:
+            Complete HTML report content
+        """
+        # Extract summary information
+        summary = InvestigationSummary(
+            investigation_id=processed_data.investigation_id,
+            mode=processed_data.mode,
+            scenario=processed_data.scenario or "Unknown",
+            created_at=processed_data.created_at if processed_data.created_at else "Unknown",  # It's already a string
+            status=processed_data.status,
+            total_interactions=processed_data.total_interactions,  # Use the existing field
+            duration_seconds=processed_data.duration_seconds,
+            llm_calls=len(processed_data.llm_interactions),  # Count of LLM interactions
+            tool_executions=len(processed_data.tool_executions),  # Count of tool executions 
+            agent_decisions=len(processed_data.agent_decisions),  # Count of agent decisions
+            total_tokens=processed_data.total_tokens_used,  # Fixed attribute name
+            risk_scores=getattr(processed_data, 'risk_scores', []),  # May not exist
+            final_risk_score=getattr(processed_data, 'final_risk_score', None),  # May not exist
+            agents_used=processed_data.agents_used,
+            tools_used=processed_data.tools_used,
+            error_count=processed_data.error_count
+        )
+        
+        # Create combined activities for component data
+        combined_activities = []
+        for interaction in processed_data.llm_interactions:
+            combined_activities.append(vars(interaction))
+        for execution in processed_data.tool_executions:
+            combined_activities.append(vars(execution))
+        for decision in processed_data.agent_decisions:
+            combined_activities.append(vars(decision))
+        for node in processed_data.langgraph_nodes:
+            combined_activities.append(vars(node))
+        for phase in processed_data.investigation_phases:
+            combined_activities.append(vars(phase))
+        
+        # Create component data structure
+        component_data = ComponentData(
+            llm_interactions=combined_activities,
+            investigation_flow=combined_activities,
+            tools_analysis=processed_data.investigation_results.get('tools_analysis', {}),
+            risk_analysis=processed_data.investigation_results.get('risk_analysis', {}),
+            explanations=combined_activities,
+            journey_data=processed_data.journey_data,
+            langgraph_nodes=combined_activities
+        )
+        
+        # Use existing _build_html_report method
+        return self._build_html_report(summary, component_data, title)
 
     def _build_html_report(
         self,
@@ -1143,19 +1284,19 @@ class EnhancedHTMLReportGenerator:
             
             <div class="header-grid">
                 <div class="investigation-badge">
-                    <strong>Mode:</strong> {summary.mode}
+                    <strong>Mode:</strong> {summary.mode or "Unknown"}
                 </div>
                 <div class="investigation-badge">
-                    <strong>Investigation ID:</strong> {summary.investigation_id}
+                    <strong>Investigation ID:</strong> {summary.investigation_id or "Unknown"}
                 </div>
                 <div class="investigation-badge status-{status_class}">
-                    <strong>Status:</strong> {summary.status}
+                    <strong>Status:</strong> {summary.status or "Unknown"}
                 </div>
             </div>
             
             <div style="margin-top: 20px;">
                 <div class="investigation-badge">
-                    <strong>Scenario:</strong> {summary.scenario}
+                    <strong>Scenario:</strong> {summary.scenario or "Unknown"}
                 </div>
             </div>
         </header>
@@ -1163,8 +1304,8 @@ class EnhancedHTMLReportGenerator:
 
     def _generate_executive_summary(self, summary: InvestigationSummary) -> str:
         """Generate executive summary with key metrics."""
-        duration_str = f"{summary.duration_seconds:.1f}s"
-        if summary.duration_seconds > 60:
+        duration_str = f"{summary.duration_seconds:.1f}s" if summary.duration_seconds is not None else "0.0s"
+        if summary.duration_seconds and summary.duration_seconds > 60:
             minutes = int(summary.duration_seconds // 60)
             seconds = summary.duration_seconds % 60
             duration_str = f"{minutes}m {seconds:.1f}s"
@@ -1183,7 +1324,7 @@ class EnhancedHTMLReportGenerator:
             <div class="metrics-grid">
                 <div class="metric-card">
                     <div class="metric-label">Total Interactions</div>
-                    <div class="metric-value">{summary.total_interactions}</div>
+                    <div class="metric-value">{summary.total_interactions if summary.total_interactions is not None else 0}</div>
                     <div class="metric-description">All logged activities</div>
                 </div>
                 
@@ -1195,26 +1336,26 @@ class EnhancedHTMLReportGenerator:
                 
                 <div class="metric-card">
                     <div class="metric-label">LLM Calls</div>
-                    <div class="metric-value">{summary.llm_calls}</div>
+                    <div class="metric-value">{summary.llm_calls if summary.llm_calls is not None else 0}</div>
                     <div class="metric-description">AI model invocations</div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-label">Tool Executions</div>
-                    <div class="metric-value">{summary.tool_executions}</div>
+                    <div class="metric-value">{summary.tool_executions if summary.tool_executions is not None else 0}</div>
                     <div class="metric-description">Tools and functions used</div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-label">Total Tokens</div>
-                    <div class="metric-value">{summary.total_tokens:,}</div>
+                    <div class="metric-value">{(summary.total_tokens if summary.total_tokens else 0):,d}</div>
                     <div class="metric-description">LLM tokens consumed</div>
                 </div>
                 
                 <div class="metric-card">
                     <div class="metric-label">Final Risk Score</div>
                     <div class="metric-value risk-score-{risk_class}">
-                        {summary.final_risk_score:.3f if summary.final_risk_score else "N/A"}
+                        {f"{summary.final_risk_score:.3f}" if summary.final_risk_score is not None else "N/A"}
                     </div>
                     <div class="metric-description">Calculated risk level</div>
                 </div>
@@ -1230,11 +1371,11 @@ class EnhancedHTMLReportGenerator:
                     <div class="stat-label">Unique Tools</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{summary.agent_decisions}</div>
+                    <div class="stat-value">{summary.agent_decisions if summary.agent_decisions is not None else 0}</div>
                     <div class="stat-label">Agent Decisions</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{summary.error_count}</div>
+                    <div class="stat-value">{summary.error_count if summary.error_count is not None else 0}</div>
                     <div class="stat-label">Errors</div>
                 </div>
             </div>
@@ -1477,7 +1618,7 @@ class EnhancedHTMLReportGenerator:
                 <div class="metric-card">
                     <div class="metric-label">Final Risk Score</div>
                     <div class="metric-value risk-score-{final_risk_class}">
-                        {final_risk:.3f if final_risk else "N/A"}
+                        {f"{final_risk:.3f}" if final_risk is not None else "N/A"}
                     </div>
                     <div class="metric-description">Overall calculated risk</div>
                 </div>
@@ -1539,7 +1680,7 @@ class EnhancedHTMLReportGenerator:
             <div class="explanation-item">
                 <div class="explanation-meta">
                     <strong>{agent}</strong> • {timestamp} • {interaction_type}
-                    {f' • Confidence: {confidence:.2f}' if confidence else ''}
+                    {f' • Confidence: {confidence:.2f}' if confidence is not None else ''}
                 </div>
                 <div class="explanation-text">{reasoning}</div>
             </div>
@@ -2085,9 +2226,9 @@ class EnhancedHTMLReportGenerator:
         }});
         
         console.log('Enhanced Investigation Report loaded successfully');
-        console.log('Investigation ID: {summary.investigation_id}');
-        console.log('Total Interactions: {summary.total_interactions}');
-        console.log('Final Risk Score: {summary.final_risk_score or "N/A"}');
+        console.log('Investigation ID: {summary.investigation_id or "Unknown"}');
+        console.log('Total Interactions: {summary.total_interactions if summary.total_interactions is not None else 0}');
+        console.log('Final Risk Score: {summary.final_risk_score if summary.final_risk_score is not None else "N/A"}');
         """
 
 # Convenience functions for easy import and usage

@@ -54,7 +54,7 @@ SNOWFLAKE_SCHEMA_INFO = {
         "model_score": "MODEL_SCORE",
         "model_decision": "MODEL_DECISION",
         "risk_score": "MAXMIND_RISK_SCORE",
-        "triggered_rules": "TRIGGERED_RULES",
+        "triggered_rules": "FRAUD_RULES_TRIGGERED",
         
         # Fraud Indicators
         "is_fraud": "IS_FRAUD_TX",
@@ -86,7 +86,7 @@ SNOWFLAKE_SCHEMA_INFO = {
     "common_queries": {
         "fraud_transactions": """
             SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX, 
-                   TX_DATETIME, PAID_AMOUNT_VALUE, TRIGGERED_RULES
+                   TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
             FROM TRANSACTIONS_ENRICHED 
             WHERE IS_FRAUD_TX = 1 
             ORDER BY TX_DATETIME DESC

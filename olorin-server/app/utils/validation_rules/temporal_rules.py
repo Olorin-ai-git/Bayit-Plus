@@ -19,15 +19,18 @@ class TemporalValidationRules:
     # Supported timestamp formats
     TIMESTAMP_FORMATS = [
         '%Y-%m-%d %H:%M:%S',
-        '%Y-%m-%dT%H:%M:%S',
+        '%Y-%m-%dT%H:%M:%S',  # ISO format without timezone
         '%Y-%m-%dT%H:%M:%SZ',
         '%Y-%m-%dT%H:%M:%S%z',
         '%Y-%m-%d %H:%M:%S.%f',
         '%Y-%m-%dT%H:%M:%S.%f',
         '%Y-%m-%dT%H:%M:%S.%fZ',
+        '%Y-%m-%dT%H:%M:%S.%f%z',
         '%m/%d/%Y %H:%M:%S',
         '%d/%m/%Y %H:%M:%S',
         '%Y%m%d%H%M%S',
+        '%Y/%m/%d %H:%M:%S',
+        '%d-%m-%Y %H:%M:%S',
     ]
     
     # Regex patterns for different timestamp formats

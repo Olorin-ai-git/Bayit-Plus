@@ -1,0 +1,172 @@
+{
+  "entity_queries": {
+    "description": "Mock data for entity-specific queries (WHERE IP_ADDRESS = 'X' or EMAIL = 'X')",
+    "default_ip_results": [
+      {
+        "TX_ID_KEY": "TX_2024_001234",
+        "EMAIL": "john.smith@suspicious-domain.com",
+        "IP_ADDRESS": "192.0.2.123",
+        "IP_COUNTRY": "US",
+        "IP_CITY": "New York",
+        "MODEL_SCORE": 0.7234,
+        "PAID_AMOUNT_VALUE": 1250.00,
+        "IS_FRAUD_TX": 0,
+        "NSURE_LAST_DECISION": "REVIEW",
+        "TX_DATETIME": "2024-11-15T14:30:00Z",
+        "DEVICE_ID": "DEV_ABC123",
+        "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "BROWSER_NAME": "Chrome",
+        "OS_NAME": "Windows",
+        "PROXY_RISK_SCORE": 0.65,
+        "PAYMENT_METHOD": "CREDIT_CARD",
+        "CARD_BRAND": "VISA",
+        "FRAUD_RULES_TRIGGERED": "HIGH_RISK_IP,NEW_DEVICE",
+        "DISPUTES": 0
+      },
+      {
+        "TX_ID_KEY": "TX_2024_001235",
+        "EMAIL": "john.smith@suspicious-domain.com",
+        "IP_ADDRESS": "192.0.2.123",
+        "IP_COUNTRY": "CA",
+        "IP_CITY": "Toronto",
+        "MODEL_SCORE": 0.8567,
+        "PAID_AMOUNT_VALUE": 890.50,
+        "IS_FRAUD_TX": 1,
+        "NSURE_LAST_DECISION": "REJECTED",
+        "TX_DATETIME": "2024-11-15T15:45:00Z",
+        "DEVICE_ID": "DEV_XYZ789",
+        "USER_AGENT": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)",
+        "BROWSER_NAME": "Safari",
+        "OS_NAME": "iOS",
+        "PROXY_RISK_SCORE": 0.82,
+        "PAYMENT_METHOD": "CREDIT_CARD",
+        "CARD_BRAND": "MASTERCARD",
+        "FRAUD_RULES_TRIGGERED": "IMPOSSIBLE_TRAVEL,HIGH_RISK_SCORE",
+        "DISPUTES": 1
+      },
+      {
+        "TX_ID_KEY": "TX_2024_001236",
+        "EMAIL": "john.smith@suspicious-domain.com",
+        "IP_ADDRESS": "192.0.2.123",
+        "IP_COUNTRY": "UK",
+        "IP_CITY": "London",
+        "MODEL_SCORE": 0.9234,
+        "PAID_AMOUNT_VALUE": 2100.00,
+        "IS_FRAUD_TX": 1,
+        "NSURE_LAST_DECISION": "REJECTED",
+        "TX_DATETIME": "2024-11-15T16:20:00Z",
+        "DEVICE_ID": "DEV_NEW456",
+        "USER_AGENT": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+        "BROWSER_NAME": "Firefox",
+        "OS_NAME": "macOS",
+        "PROXY_RISK_SCORE": 0.91,
+        "PAYMENT_METHOD": "CRYPTO",
+        "CARD_BRAND": null,
+        "FRAUD_RULES_TRIGGERED": "MULTIPLE_COUNTRIES,VPN_DETECTED,HIGH_VALUE",
+        "DISPUTES": 1
+      }
+    ],
+    "default_email_results": [
+      {
+        "TX_ID_KEY": "TX_2024_002345",
+        "EMAIL": "suspicious.user@example.com",
+        "IP_ADDRESS": "203.0.113.45",
+        "IP_COUNTRY": "RU",
+        "IP_CITY": "Moscow",
+        "MODEL_SCORE": 0.8912,
+        "PAID_AMOUNT_VALUE": 3500.00,
+        "IS_FRAUD_TX": 1,
+        "NSURE_LAST_DECISION": "REJECTED",
+        "TX_DATETIME": "2024-11-14T22:15:00Z",
+        "DEVICE_ID": "DEV_SPOOFED",
+        "USER_AGENT": "Mozilla/5.0 (Linux; Android 10)",
+        "BROWSER_NAME": "Chrome Mobile",
+        "OS_NAME": "Android",
+        "PROXY_RISK_SCORE": 0.95,
+        "PAYMENT_METHOD": "STOLEN_CARD",
+        "CARD_BRAND": "AMEX",
+        "FRAUD_RULES_TRIGGERED": "BLACKLISTED_COUNTRY,STOLEN_CARD,HIGH_RISK",
+        "DISPUTES": 1
+      },
+      {
+        "TX_ID_KEY": "TX_2024_002346",
+        "EMAIL": "suspicious.user@example.com",
+        "IP_ADDRESS": "198.51.100.67",
+        "IP_COUNTRY": "CN",
+        "IP_CITY": "Beijing",
+        "MODEL_SCORE": 0.7890,
+        "PAID_AMOUNT_VALUE": 1800.00,
+        "IS_FRAUD_TX": 0,
+        "NSURE_LAST_DECISION": "REVIEW",
+        "TX_DATETIME": "2024-11-14T23:30:00Z",
+        "DEVICE_ID": "DEV_SPOOFED",
+        "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0)",
+        "BROWSER_NAME": "Edge",
+        "OS_NAME": "Windows",
+        "PROXY_RISK_SCORE": 0.88,
+        "PAYMENT_METHOD": "WIRE_TRANSFER",
+        "CARD_BRAND": null,
+        "FRAUD_RULES_TRIGGERED": "GEO_MISMATCH,DEVICE_SPOOFING",
+        "DISPUTES": 0
+      }
+    ]
+  },
+  "risk_entity_results": {
+    "description": "Mock data for top risk entity queries",
+    "ip_address_results": [
+      {
+        "ENTITY": "203.0.113.45",
+        "AVG_RISK_SCORE": 0.8912,
+        "RISK_WEIGHTED_VALUE": 15678.90,
+        "TRANSACTION_COUNT": 45,
+        "TOTAL_AMOUNT": 35000.00,
+        "FRAUD_COUNT": 12,
+        "REJECTED_COUNT": 8,
+        "MAX_RISK_SCORE": 0.98,
+        "MIN_RISK_SCORE": 0.45,
+        "RISK_RANK": 1,
+        "PERCENTILE": 0.99,
+        "LAST_TRANSACTION": "2024-11-15T16:30:00Z",
+        "FIRST_TRANSACTION": "2024-10-15T10:00:00Z"
+      },
+      {
+        "ENTITY": "198.51.100.67",
+        "AVG_RISK_SCORE": 0.7890,
+        "RISK_WEIGHTED_VALUE": 12456.78,
+        "TRANSACTION_COUNT": 38,
+        "TOTAL_AMOUNT": 28000.00,
+        "FRAUD_COUNT": 9,
+        "REJECTED_COUNT": 6,
+        "MAX_RISK_SCORE": 0.92,
+        "MIN_RISK_SCORE": 0.38,
+        "RISK_RANK": 2,
+        "PERCENTILE": 0.95,
+        "LAST_TRANSACTION": "2024-11-15T14:00:00Z",
+        "FIRST_TRANSACTION": "2024-10-20T11:00:00Z"
+      }
+    ],
+    "email_results": [
+      {
+        "ENTITY": "suspicious.user@example.com",
+        "AVG_RISK_SCORE": 0.8234,
+        "RISK_WEIGHTED_VALUE": 18500.00,
+        "TRANSACTION_COUNT": 52,
+        "TOTAL_AMOUNT": 42000.00,
+        "FRAUD_COUNT": 15,
+        "REJECTED_COUNT": 10,
+        "MAX_RISK_SCORE": 0.99,
+        "MIN_RISK_SCORE": 0.52,
+        "RISK_RANK": 1,
+        "PERCENTILE": 0.99,
+        "LAST_TRANSACTION": "2024-11-15T17:00:00Z",
+        "FIRST_TRANSACTION": "2024-10-01T08:00:00Z"
+      }
+    ]
+  },
+  "aggregation_results": {
+    "description": "Mock data for aggregation queries (COUNT, SUM, AVG)",
+    "count_results": [{"COUNT": 2847}],
+    "sum_results": [{"TOTAL": 1250000.00}],
+    "avg_results": [{"AVERAGE": 0.6543}]
+  }
+}

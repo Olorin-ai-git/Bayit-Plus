@@ -314,6 +314,34 @@ class VirusTotalIPAnalysisTool(BaseTool):
     ) -> str:
         """Execute VirusTotal IP analysis asynchronously."""
         try:
+            # Check if we're in test/mock mode
+            import os
+            test_mode = os.environ.get('TEST_MODE', '').lower() in ['true', '1', 'yes', 'mock']
+            
+            if test_mode:
+                # Return mock response for test mode
+                logger.info(f"Mock mode active - returning mock response for IP {ip_address}")
+                return json.dumps({
+                    "ip_address": ip_address,
+                    "status": "clean",
+                    "risk_level": "LOW",
+                    "reputation_score": 0,
+                    "detection_stats": {
+                        "malicious": 0,
+                        "suspicious": 0,
+                        "harmless": 70,
+                        "undetected": 0
+                    },
+                    "network_info": {
+                        "asn": 15169,
+                        "as_owner": "GOOGLE",
+                        "country": "US"
+                    },
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "source": "VirusTotal IP Analysis (Mock)",
+                    "mock_mode": True
+                }, indent=2)
+            
             logger.info(f"Starting VirusTotal IP analysis for: {ip_address}")
             
             # Query VirusTotal

@@ -53,29 +53,56 @@ class DomainAnalysisInput(BaseModel):
         if '/' in domain:
             domain = domain.split('/', 1)[0]
         
-        # Check if input is an IP address and fetch associated domain
+        # Check if input is an IP address and try to get email domain from Snowflake
         try:
             ipaddress.ip_address(domain)
-            # It's an IP address, try to get associated domain from Snowflake
+            # It's an IP address, try to get associated email domain from Snowflake
             logger = get_bridge_logger(__name__)
-            logger.info(f"IP address {domain} detected, fetching associated domain from Snowflake")
+            logger.info(f"IP address {domain} detected, fetching associated email domain from Snowflake")
             
-            # Get the domain mapper and fetch domain
-            mapper = get_ip_domain_mapper()
-            associated_domain = asyncio.run(mapper.get_domain_for_ip(domain))
-            
-            if associated_domain:
-                logger.info(f"Found domain {associated_domain} for IP {domain}")
-                return associated_domain
-            else:
-                raise ValueError(f"No domain found for IP address '{domain}'. Skipping domain analysis.")
+            try:
+                # Query Snowflake for email associated with this IP
+                from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+                import asyncio
+                
+                async def get_email_domain():
+                    client = SnowflakeClient()
+                    await client.connect()
+                    query = f"""
+                    SELECT DISTINCT EMAIL
+                    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                    WHERE IP_ADDRESS = '{domain}'
+                    LIMIT 1
+                    """
+                    results = await client.execute_query(query)
+                    await client.disconnect()
+                    
+                    if results and results[0].get('EMAIL'):
+                        email = results[0]['EMAIL']
+                        # Extract domain from email
+                        if '@' in email:
+                            email_domain = email.split('@')[1].lower()
+                            logger.info(f"Found email domain {email_domain} for IP {domain}")
+                            return email_domain
+                    return None
+                
+                email_domain = asyncio.run(get_email_domain())
+                if email_domain:
+                    return email_domain
+                else:
+                    logger.warning(f"No email domain found for IP {domain}")
+                    raise ValueError(f"Domain analysis cannot be performed on IP address '{domain}'. No associated email domain found.")
+                    
+            except Exception as e:
+                logger.error(f"Failed to fetch email domain for IP {domain}: {e}")
+                raise ValueError(f"Domain analysis cannot be performed on IP address '{domain}'. Failed to fetch associated email domain.")
                 
         except ipaddress.AddressValueError:
             # Not an IP address, continue with normal domain validation
             pass
         except ValueError as e:
-            # Re-raise ValueError from domain lookup
-            if "No domain found" in str(e):
+            # Re-raise ValueError for IP addresses
+            if "IP address" in str(e) or "Domain analysis cannot" in str(e):
                 raise e
             pass
         
@@ -148,6 +175,35 @@ class VirusTotalDomainAnalysisTool(BaseTool):
     ) -> str:
         """Execute domain analysis asynchronously."""
         try:
+            # Check if we're in test/mock mode
+            import os
+            test_mode = os.environ.get('TEST_MODE', '').lower() in ['true', '1', 'yes', 'mock']
+            
+            if test_mode:
+                # Return mock response for test mode
+                logger = get_bridge_logger(__name__)
+                logger.info(f"Mock mode active - returning mock response for domain {domain}")
+                return json.dumps({
+                    "domain": domain,
+                    "status": "clean",
+                    "risk_level": "LOW",
+                    "reputation_score": 0,
+                    "detection_stats": {
+                        "malicious": 0,
+                        "suspicious": 0,
+                        "harmless": 70,
+                        "undetected": 0
+                    },
+                    "community_votes": {
+                        "harmless": 5,
+                        "malicious": 0
+                    },
+                    "categories": ["technology"],
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis (Mock)",
+                    "mock_mode": True
+                }, indent=2)
+            
             # Note: Caching would be implemented here in a production system
             
             # Analyze domain with VirusTotal

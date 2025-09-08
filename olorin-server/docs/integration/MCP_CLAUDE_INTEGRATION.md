@@ -3,8 +3,8 @@
 ## Overview
 
 The Olorin MCP (Model Context Protocol) integration allows investigators to interact with Claude Desktop using natural language while having access to all Olorin investigation tools. This creates a powerful AI-assisted investigation workflow where Claude can directly execute Splunk queries, analyze user data, search the web, and more.
-Key tools available via MCP for investigations include:
-- **SplunkQueryTool**: Execute SPL queries against Splunk
+?????against Splunk
+- **SplunkQueryTool**: Execute SPL queries ?against Splunk
 - **OIITool**: Query Olorin Identity Intelligence for user data
 - **DITool**: Access Data Intelligence services
 

@@ -61,7 +61,7 @@ PROJECT_ID="$DEFAULT_PROJECT_ID"
 MODE="live"
 OUTPUT_FORMAT="terminal"
 OUTPUT_DIR="."
-HTML_REPORT=""
+HTML_REPORT="true"  # Default to true
 OPEN_REPORT=""
 VERBOSE=""
 LOG_LEVEL="$DEFAULT_LOG_LEVEL"
@@ -154,7 +154,8 @@ show_usage() {
     echo -e "${WHITE}OUTPUT OPTIONS:${NC}"
     echo "  -f, --format FORMAT         Output: html, json, markdown, terminal (default: terminal)"
     echo "  -o, --output-dir DIR        Output directory (default: current dir)"
-    echo "  --html-report               Generate HTML report"
+    echo "  --html-report               Generate HTML report (enabled by default)"
+    echo "  --no-html-report            Disable HTML report generation"
     echo "  --open-report               Auto-open HTML report in browser"
     echo ""
     echo -e "${WHITE}LOGGING & MONITORING OPTIONS:${NC}"
@@ -510,6 +511,8 @@ build_command_args() {
     
     if [[ "$HTML_REPORT" == "true" ]]; then
         cmd_args+=(--html-report)
+    elif [[ "$HTML_REPORT" == "false" ]]; then
+        cmd_args+=(--no-html-report)
     fi
     
     if [[ "$OPEN_REPORT" == "true" ]]; then
@@ -687,6 +690,10 @@ parse_arguments() {
                 ;;
             --html-report)
                 HTML_REPORT="true"
+                shift
+                ;;
+            --no-html-report)
+                HTML_REPORT="false"
                 shift
                 ;;
             --open-report)

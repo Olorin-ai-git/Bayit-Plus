@@ -359,6 +359,9 @@ class ProcessedInvestigationData:
     # Journey tracking data
     journey_data: Dict[str, Any] = field(default_factory=dict)
     
+    # Investigation results from results folder
+    investigation_results: Dict[str, Any] = field(default_factory=dict)
+    
     # Aggregated statistics
     total_interactions: int = 0
     duration_seconds: float = 0.0
@@ -611,6 +614,20 @@ class InvestigationDataProcessor:
                     processing_errors.append(error_msg)
                     logger.error(error_msg)
             
+            # Process results folder containing investigation results
+            results_dir = folder_path / "results"
+            if results_dir.exists() and results_dir.is_dir():
+                try:
+                    results_data = self._process_results_folder(results_dir)
+                    # Add results data to the processed data
+                    result.investigation_results = results_data
+                    files_processed += len(results_data)
+                    logger.info(f"Processed {len(results_data)} files from results folder")
+                except Exception as e:
+                    error_msg = f"Error processing results folder: {str(e)}"
+                    processing_errors.append(error_msg)
+                    logger.error(error_msg)
+            
             # Calculate aggregated statistics
             self._calculate_aggregated_statistics(result)
             
@@ -849,6 +866,60 @@ class InvestigationDataProcessor:
                 result.duration_seconds = (end_time - start_time).total_seconds()
             except Exception:
                 result.duration_seconds = 0.0
+    
+    def _process_results_folder(self, results_dir: Path) -> Dict[str, Any]:
+        """
+        Process the results folder containing investigation results.
+        
+        Args:
+            results_dir: Path to results directory
+            
+        Returns:
+            Dictionary containing all results data
+        """
+        results_data = {}
+        
+        try:
+            # Process each JSON file in the results directory
+            for result_file in results_dir.glob("*.json"):
+                try:
+                    with open(result_file, 'r') as f:
+                        file_data = json.load(f)
+                        # Use the filename (without extension) as the key
+                        file_key = result_file.stem
+                        results_data[file_key] = file_data
+                        logger.debug(f"Loaded results file: {result_file.name}")
+                except Exception as e:
+                    logger.warning(f"Failed to load results file {result_file}: {e}")
+            
+            # Special handling for key result files
+            if 'summary' in results_data:
+                # Extract key metrics from summary for easy access
+                summary = results_data['summary']
+                results_data['final_risk_score'] = summary.get('final_risk_score', 0.0)
+                results_data['confidence'] = summary.get('confidence', 0.0)
+                results_data['duration_seconds'] = summary.get('duration_seconds', 0.0)
+                results_data['investigation_status'] = summary.get('status', 'unknown')
+            
+            if 'agent_results' in results_data:
+                # Extract agent-specific results
+                agent_results = results_data['agent_results']
+                results_data['agents_executed'] = list(agent_results.keys()) if isinstance(agent_results, dict) else []
+            
+            if 'validation_results' in results_data:
+                # Extract validation scores
+                validation = results_data['validation_results']
+                results_data['validation_score'] = validation.get('overall_score', 0.0)
+            
+            if 'performance_metrics' in results_data:
+                # Extract performance data
+                perf = results_data['performance_metrics']
+                results_data['total_execution_time'] = perf.get('total_duration', 0.0)
+            
+        except Exception as e:
+            logger.error(f"Error processing results folder: {e}")
+        
+        return results_data
     
     def _generate_processing_metrics(self, 
                                    files_processed: int, 

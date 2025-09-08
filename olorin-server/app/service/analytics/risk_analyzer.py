@@ -144,6 +144,19 @@ class RiskAnalyzer:
         # Convert percentage to decimal
         top_decimal = top_percentage / 100.0
         
+        # Add IP filtering condition if grouping by IP
+        ip_filter = ""
+        if group_by.lower() == "ip_address":
+            # Filter out private IP addresses (RFC 1918, link-local, loopback)
+            ip_filter = """
+                -- Exclude private IPs (RFC 1918 and special ranges)
+                AND NOT REGEXP_LIKE({group_by}, '^(10\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.|192\\.168\\.|127\\.|169\\.254\\.|fe80:|::1|fc00:|fd00:)')
+                -- Exclude empty or null IPs
+                AND {group_by} NOT IN ('', '0.0.0.0', '::')
+                -- Ensure IP has meaningful activity (avoid test/bot traffic)
+                AND MODEL_SCORE > 0.01
+            """.format(group_by=group_by)
+        
         query = f"""
         WITH risk_calculations AS (
             SELECT 
@@ -160,7 +173,7 @@ class RiskAnalyzer:
                 MIN(TX_DATETIME) as first_transaction
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
             WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
-                AND {group_by} IS NOT NULL
+                AND {group_by} IS NOT NULL{ip_filter}
             GROUP BY {group_by}
             HAVING COUNT(*) >= 1
         ),
