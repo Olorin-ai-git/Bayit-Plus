@@ -43,10 +43,10 @@ class WebSocketAuthFixer:
             if secret_key:
                 logger.info("Using JWT secret from environment variable")
         
-        # Final fallback to demo secret 
+        # Final fallback to demo secret (must match auth.py fallback)
         if not secret_key:
-            secret_key = self.demo_jwt_secret
-            logger.warning("Using demo JWT secret as fallback")
+            secret_key = "olorin-development-jwt-secret-key-fallback-for-testing-only"
+            logger.warning("Using development JWT secret fallback")
         
         # Create JWT payload (minimal to match server expectations)
         payload = {
@@ -76,8 +76,8 @@ class WebSocketAuthFixer:
         ws_url = base_server_url.replace('http://', 'ws://').replace('https://', 'wss://')
         
         # Build WebSocket endpoint with investigation ID
-        # Use the correct endpoint path: /investigation/{investigation_id}/monitor
-        ws_endpoint = f"{ws_url}/investigation/{investigation_id}/monitor"
+        # Use the correct endpoint path: /ws/{investigation_id} (matches websocket_router.py)
+        ws_endpoint = f"{ws_url}/ws/{investigation_id}"
         
         # Add query parameters for authentication and configuration
         params = {
@@ -123,7 +123,7 @@ class WebSocketAuthFixer:
                 pass
             
             if not secret_key:
-                secret_key = os.environ.get('JWT_SECRET_KEY', self.demo_jwt_secret)
+                secret_key = os.environ.get('JWT_SECRET_KEY', "olorin-development-jwt-secret-key-fallback-for-testing-only")
             
             # Decode and verify token (same as server does)
             payload = jwt.decode(token, secret_key, algorithms=["HS256"])

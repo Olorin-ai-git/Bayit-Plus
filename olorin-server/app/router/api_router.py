@@ -165,25 +165,8 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
     auth_header = request.headers.get("authorization")
     logger.info(f"Authorization header: {auth_header}")
     """Retrieve online identity information directly from the OII Tool."""
-    try:
-        # Create OIITool instance
-        oii_tool = OIITool()
-
-        # Call the tool directly with the user_id
-        response_str = oii_tool._run(user_id=user_id)
-
-        # Parse the response
-        try:
-            oii_resp = OIIResponse.model_validate_json(response_str)
-            return oii_resp.model_dump()
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f"Tool returned invalid format: {str(e)}"
-            )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # TODO: OIITool has been removed - implement alternative or remove this endpoint
+    raise HTTPException(status_code=501, detail="OII Tool functionality not available")
 
 
 @router.get("/logs/{user_id}")

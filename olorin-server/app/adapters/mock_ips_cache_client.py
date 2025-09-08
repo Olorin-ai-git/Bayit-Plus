@@ -87,9 +87,33 @@ class MockIPSCacheClient:
         # Return empty list to simulate no existing checkpoints
         return []
     
-    def pipeline(self):
+    async def pipeline(
+        self, commands: List[Any], olorin_header: dict[str, Any] = None
+    ):
         """Mock pipeline for batch operations."""
-        return MockPipeline(self)
+        logger.debug(f"Mock pipeline: {len(commands) if commands else 0} commands")
+        if not commands:
+            return []
+        
+        # Mock pipeline execution - return success results
+        results = []
+        for command in commands:
+            if isinstance(command, list) and command:
+                cmd_name = command[0]
+                if cmd_name == "HSET":
+                    results.append("OK")
+                elif cmd_name == "EXPIRE":
+                    results.append(1)
+                elif cmd_name == "ZADD":
+                    results.append(1)
+                elif cmd_name == "HGETALL":
+                    results.append({})
+                else:
+                    results.append(None)
+            else:
+                results.append(None)
+        
+        return results
 
 
 class MockPipeline:

@@ -114,6 +114,8 @@ try:
         NodeStatus,
     )
     from app.service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
+    from app.service.logging.investigation_folder_manager import InvestigationMode
+    from app.service.logging.journey_tracker import get_journey_tracker
     from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger
     
     # Import test data generators if available
@@ -187,6 +189,8 @@ class TestConfiguration:
     """Test runner configuration"""
     scenario: Optional[str] = None
     all_scenarios: bool = False
+    entity_id: Optional[str] = None
+    entity_type: Optional[str] = None
     csv_file: Optional[str] = DEFAULT_CSV_FILE  # Use default CSV file
     csv_limit: int = DEFAULT_CSV_LIMIT
     concurrent: int = DEFAULT_CONCURRENT
@@ -672,6 +676,7 @@ class UnifiedAutonomousTestRunner:
         # Initialize test infrastructure
         self.journey_tracker = LangGraphJourneyTracker()
         self.investigation_logger = AutonomousInvestigationLogger()
+        self.unified_journey_tracker = get_journey_tracker()
         self.scenario_generator = RealScenarioGenerator() if RealScenarioGenerator else None
         
         # Data from Snowflake or CSV
@@ -978,7 +983,40 @@ class UnifiedAutonomousTestRunner:
             # Initialize test context
             context = await self._create_test_context(investigation_id, scenario_name)
             
-            # Start journey tracking
+            # Map TestMode to InvestigationMode
+            investigation_mode = InvestigationMode.LIVE
+            if self.config.mode == TestMode.MOCK:
+                investigation_mode = InvestigationMode.MOCK
+            elif self.config.mode == TestMode.DEMO:
+                investigation_mode = InvestigationMode.DEMO
+            
+            # Initialize unified investigation logging with proper mode and scenario
+            investigation_folder = self.investigation_logger.start_investigation_logging(
+                investigation_id=investigation_id,
+                context={
+                    "scenario": scenario_name,
+                    "entity_id": context.entity_id,
+                    "test_mode": self.config.mode.value,
+                    "config": self.config.__dict__
+                },
+                mode=investigation_mode,
+                scenario=scenario_name
+            )
+            
+            self.logger.info(f"📁 Investigation folder: {investigation_folder}")
+            
+            # Start unified journey tracking
+            self.unified_journey_tracker.start_journey_tracking(
+                investigation_id=investigation_id,
+                initial_state={
+                    "scenario": scenario_name,
+                    "entity_id": context.entity_id,
+                    "test_mode": self.config.mode.value,
+                    "investigation_folder": str(investigation_folder)
+                }
+            )
+            
+            # Start legacy journey tracking (for compatibility)
             self.journey_tracker.start_journey_tracking(
                 investigation_id=investigation_id,
                 initial_state={
@@ -1017,7 +1055,19 @@ class UnifiedAutonomousTestRunner:
             result.confidence = self._extract_confidence_score(agent_results)
             result.status = "completed"
             
-            # Complete journey tracking
+            # Complete unified journey tracking
+            self.unified_journey_tracker.complete_journey_tracking(
+                investigation_id,
+                status="completed"
+            )
+            
+            # Complete investigation logging
+            self.investigation_logger.complete_investigation_logging(
+                investigation_id, 
+                final_status="completed"
+            )
+            
+            # Complete legacy journey tracking (for compatibility)
             self.journey_tracker.complete_journey(
                 investigation_id,
                 final_state={
@@ -1033,6 +1083,20 @@ class UnifiedAutonomousTestRunner:
             result.status = "failed"
             result.errors.append(str(e))
             self.logger.error(f"❌ Test failed for {scenario_name}: {e}")
+            
+            # Complete tracking with failed status
+            try:
+                if 'investigation_id' in locals():
+                    self.unified_journey_tracker.complete_journey_tracking(
+                        investigation_id,
+                        status="failed"
+                    )
+                    self.investigation_logger.complete_investigation_logging(
+                        investigation_id, 
+                        final_status="failed"
+                    )
+            except Exception as cleanup_e:
+                self.logger.warning(f"Failed to complete investigation tracking: {cleanup_e}")
             
         finally:
             # Calculate duration
@@ -1051,7 +1115,59 @@ class UnifiedAutonomousTestRunner:
         return result
 
     async def _create_test_context(self, investigation_id: str, scenario_name: str, entity_index: int = 0) -> AutonomousInvestigationContext:
-        """Create test context for investigation using Snowflake data"""
+        """Create test context for investigation using Snowflake data or real entity data"""
+        
+        # Handle real entity investigations (when entity_id and entity_type are provided)
+        if self.config.entity_id and self.config.entity_type:
+            self.logger.info(f"Creating real entity investigation context for {self.config.entity_type}: {self.config.entity_id}")
+            
+            # Create entity data for real investigation
+            entity_data = {
+                "entity_id": self.config.entity_id,
+                "entity_type": self.config.entity_type,
+                "source": "real_investigation",
+                "description": f"Real investigation of {self.config.entity_type}: {self.config.entity_id}"
+            }
+            
+            # Create minimal user data for context (required by investigation framework)
+            user_data = {
+                "entity_id": self.config.entity_id,
+                "entity_type": self.config.entity_type,
+                "source": "real_investigation"
+            }
+            
+            # Determine entity type enum
+            if self.config.entity_type == "ip_address":
+                entity_type_enum = EntityType.IP_ADDRESS
+            elif self.config.entity_type == "user_id":
+                entity_type_enum = EntityType.USER_ID
+            elif self.config.entity_type == "device_id":
+                entity_type_enum = EntityType.DEVICE_ID  
+            elif self.config.entity_type == "transaction_id":
+                entity_type_enum = EntityType.TRANSACTION_ID
+            else:
+                entity_type_enum = EntityType.USER_ID  # Default fallback
+            
+            # Create investigation context for real entity
+            context = AutonomousInvestigationContext(
+                investigation_id=investigation_id,
+                entity_id=self.config.entity_id,
+                entity_type=entity_type_enum,
+                investigation_type="fraud_investigation"
+            )
+            
+            # Add data sources
+            context.data_sources["user"] = user_data
+            context.data_sources["entity"] = entity_data
+            context.data_sources["scenario"] = {
+                "name": f"real_investigation_{self.config.entity_type}", 
+                "test_mode": self.config.mode.value,
+                "investigation_type": "real_entity",
+                "created_at": datetime.utcnow().isoformat()
+            }
+            
+            self.logger.info(f"Real entity investigation context created for {self.config.entity_type}: {self.config.entity_id}")
+            return context
         
         # Prefer Snowflake data over CSV
         if self.snowflake_entities:
@@ -1231,7 +1347,7 @@ class UnifiedAutonomousTestRunner:
                 metadata=agent_metadata
             )
             
-            # Create proper configuration for LangGraph
+            # Create proper configuration for LangGraph with monitoring callbacks
             config = {
                 "configurable": {
                     "thread_id": f"test-{context.investigation_id}",
@@ -1239,6 +1355,10 @@ class UnifiedAutonomousTestRunner:
                     "request": None,
                 }
             }
+            
+            # Add monitoring callbacks if verbose mode is enabled
+            if self.config.verbose and hasattr(self, 'llm_callback'):
+                config["callbacks"] = [self.llm_callback]
             
             # Create investigation message - this will go through start_investigation()
             investigation_message = HumanMessage(
@@ -1883,15 +2003,26 @@ class UnifiedAutonomousTestRunner:
             else:
                 self.logger.info("📊 Will use synthetic data for testing")
         
-        # Get test scenarios
-        if self.config.all_scenarios:
+        # Get test scenarios or handle real entity investigation
+        if self.config.entity_id and self.config.entity_type:
+            # Real entity investigation mode
+            scenarios = [f"real_investigation_{self.config.entity_type}"]
+            self.logger.info(f"🔍 Running real entity investigation for {self.config.entity_type}: {self.config.entity_id}")
+        elif self.config.all_scenarios:
             scenarios = await self.get_available_scenarios()
             self.logger.info(f"📊 Testing all {len(scenarios)} scenarios")
         elif self.config.scenario:
             scenarios = [self.config.scenario]
             self.logger.info(f"🎯 Testing single scenario: {self.config.scenario}")
+        elif self.snowflake_entities and len(self.snowflake_entities) > 0:
+            # Fallback: Use first Snowflake entity when no scenario or entity is specified
+            first_entity = self.snowflake_entities[0]
+            self.config.entity_id = first_entity['ip_address']
+            self.config.entity_type = 'ip_address'
+            scenarios = [f"real_investigation_{self.config.entity_type}"]
+            self.logger.info(f"🎯 No scenario specified, using first Snowflake entity for investigation: {self.config.entity_type} = {self.config.entity_id} (Risk Score: {first_entity['risk_score']:.4f})")
         else:
-            return {"error": "No scenarios specified"}
+            return {"error": "No scenarios specified and no Snowflake entities available"}
         
         # Run tests
         if self.config.concurrent > 1 and len(scenarios) > 1:
@@ -1931,11 +2062,16 @@ class UnifiedAutonomousTestRunner:
     async def generate_comprehensive_report(self) -> Dict[str, Any]:
         """Generate comprehensive test report in specified format"""
         
+        # Create JSON-serializable configuration
+        config_dict = self.config.__dict__.copy()
+        config_dict['output_format'] = self.config.output_format.value
+        config_dict['mode'] = self.config.mode.value
+        
         report_data = {
             "metadata": {
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "test_runner_version": "1.0.0",
-                "configuration": self.config.__dict__,
+                "configuration": config_dict,
                 "server_url": self.config.server_url
             },
             "summary": {
@@ -2285,7 +2421,7 @@ Examples:
     )
     
     # Test selection
-    test_group = parser.add_mutually_exclusive_group(required=True)
+    test_group = parser.add_mutually_exclusive_group(required=False)
     test_group.add_argument(
         "--scenario", "-s",
         help="Test single scenario by name"
@@ -2294,6 +2430,16 @@ Examples:
         "--all", "-a",
         action="store_true",
         help="Test all available scenarios"
+    )
+    
+    # Real investigation options
+    parser.add_argument(
+        "--entity-id",
+        help="Entity ID to investigate (for real investigations)"
+    )
+    parser.add_argument(
+        "--entity-type",
+        help="Entity type: user_id, device_id, ip_address, transaction_id, etc."
     )
     
     # CSV data options
@@ -2437,6 +2583,8 @@ async def main():
     config = TestConfiguration(
         scenario=args.scenario,
         all_scenarios=args.all,
+        entity_id=getattr(args, 'entity_id', None),
+        entity_type=getattr(args, 'entity_type', None),
         csv_file=args.csv_file,
         csv_limit=args.csv_limit,
         concurrent=args.concurrent,
@@ -2457,6 +2605,20 @@ async def main():
         show_agents=getattr(args, 'show_agents', False),
         follow_logs=getattr(args, 'follow_logs', False)
     )
+    
+    # Validate argument combinations
+    # Note: If no scenario, --all, or entity is specified, the script will use Snowflake auto-selection
+    scenario_specified = bool(config.scenario)
+    all_scenarios = bool(config.all_scenarios)
+    entity_specified = bool(config.entity_id)
+    
+    if entity_specified and not config.entity_type:
+        print("❌ Error: When using --entity-id, you must also specify --entity-type")
+        return 1
+    
+    if sum([scenario_specified, all_scenarios, entity_specified]) > 1:
+        print("❌ Error: Cannot combine --scenario, --all, and --entity-id options")
+        return 1
     
     # Apply LangSmith fixes to prevent 401 authentication spam
     if FIXES_AVAILABLE:

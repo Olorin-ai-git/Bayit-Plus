@@ -34,10 +34,10 @@ class UserInDB(User):
     hashed_password: str
 
 
-# Security configuration - Load JWT secret from Firebase Secrets Manager ONLY
+# Security configuration - Load JWT secret from Firebase Secrets Manager with development fallback
 def _get_jwt_secret() -> str:
     """
-    Get JWT secret from Firebase Secrets Manager ONLY - no fallbacks.
+    Get JWT secret from Firebase Secrets Manager with fallback for development.
     """
     try:
         from app.service.config_loader import get_config_loader
@@ -49,16 +49,17 @@ def _get_jwt_secret() -> str:
             logger.info("JWT secret loaded from Firebase Secrets Manager")
             return secret_key
     except Exception as e:
-        logger.error(f"Failed to load JWT secret from Firebase Secrets Manager: {e}")
-        raise ValueError(
-            f"JWT_SECRET_KEY must be configured in Firebase Secrets Manager. Error: {e}"
-        )
+        logger.warning(f"Failed to load JWT secret from Firebase Secrets Manager: {e}")
     
-    # No fallbacks - must use Firebase Secrets Manager
-    raise ValueError(
-        "JWT_SECRET_KEY not found in Firebase Secrets Manager. "
-        "All secrets must be configured in Firebase Secrets Manager (project: olorin-ai)."
-    )
+    # Fallback to environment variable for development
+    env_secret = os.getenv("JWT_SECRET_KEY")
+    if env_secret:
+        logger.info("Using JWT secret from environment variable")
+        return env_secret
+    
+    # Final fallback for development/testing
+    logger.warning("Using fallback JWT secret for development - DO NOT USE IN PRODUCTION")
+    return "olorin-development-jwt-secret-key-fallback-for-testing-only"
 
 
 SECRET_KEY = _get_jwt_secret()

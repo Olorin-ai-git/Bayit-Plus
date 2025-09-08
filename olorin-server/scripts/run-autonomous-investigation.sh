@@ -49,6 +49,8 @@ readonly TEST_RUNNER_SCRIPT="$BACKEND_ROOT/scripts/testing/unified_autonomous_te
 # Global variables for configuration
 SCENARIO=""
 ALL_SCENARIOS=""
+ENTITY_ID=""
+ENTITY_TYPE=""
 CSV_FILE="$DEFAULT_CSV_FILE"
 CSV_LIMIT="$DEFAULT_CSV_LIMIT"
 CONCURRENT="$DEFAULT_CONCURRENT"
@@ -108,13 +110,23 @@ show_usage() {
     echo "  $0 --all --show-all --follow-logs --html-report"
     echo -e "${CYAN}  # Test with CSV data and agent conversations:${NC}"
     echo "  $0 --csv-file ./transactions.csv --csv-limit 50 --show-agents"
+    echo -e "${CYAN}  # Investigate real user entity:${NC}"
+    echo "  $0 --mode live --entity-id USER_12345 --entity-type user_id --verbose"
+    echo -e "${CYAN}  # Investigate IP address with full monitoring:${NC}"
+    echo "  $0 --mode live --entity-id 192.168.1.100 --entity-type ip_address --show-all"
+    echo -e "${CYAN}  # Auto-select first high-risk entity from Snowflake:${NC}"
+    echo "  $0 --mode live --verbose"
     echo ""
-    echo -e "${WHITE}TEST SELECTION (choose one):${NC}"
+    echo -e "${WHITE}TEST SELECTION (choose one, or none for Snowflake auto-selection):${NC}"
     echo "  -s, --scenario SCENARIO     Test single scenario:"
     echo "                              device_spoofing, location_impossible_travel,"
     echo "                              velocity_fraud, account_takeover, synthetic_identity,"
     echo "                              money_laundering, insider_threat, advanced_persistent_fraud"
     echo "  -a, --all                   Test all available scenarios"
+    echo ""
+    echo -e "${WHITE}REAL INVESTIGATION OPTIONS:${NC}"
+    echo "  --entity-id ID              Entity to investigate (e.g., USER_12345, IP_192.168.1.1)"
+    echo "  --entity-type TYPE          Type of entity: user_id, device_id, ip_address, transaction_id, etc."
     echo ""
     echo -e "${WHITE}DATA SOURCE OPTIONS:${NC}"
     echo "  --use-snowflake             Use Snowflake for top risk entities (default: enabled)"
@@ -474,6 +486,12 @@ build_command_args() {
         cmd_args+=(--all)
     fi
     
+    # Entity investigation options
+    if [[ -n "$ENTITY_ID" ]]; then
+        cmd_args+=(--entity-id "$ENTITY_ID")
+        cmd_args+=(--entity-type "$ENTITY_TYPE")
+    fi
+    
     # CSV options
     if [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
         cmd_args+=(--csv-file "$CSV_FILE")
@@ -537,7 +555,18 @@ build_command_args() {
 # Display configuration
 show_configuration() {
     echo -e "${WHITE}🔧 INVESTIGATION CONFIGURATION${NC}"
-    echo -e "   Test Mode: ${CYAN}$(if [[ -n "$SCENARIO" ]]; then echo "Single Scenario ($SCENARIO)"; else echo "All Scenarios"; fi)${NC}"
+    if [[ -n "$ENTITY_ID" ]]; then
+        echo -e "   Investigation Mode: ${CYAN}Real Entity Investigation${NC}"
+        echo -e "   Entity ID: ${CYAN}$ENTITY_ID${NC}"
+        echo -e "   Entity Type: ${CYAN}$ENTITY_TYPE${NC}"
+    elif [[ -n "$SCENARIO" ]]; then
+        echo -e "   Test Mode: ${CYAN}Single Scenario ($SCENARIO)${NC}"
+    elif [[ "$ALL_SCENARIOS" == "true" ]]; then
+        echo -e "   Test Mode: ${CYAN}All Scenarios${NC}"
+    else
+        echo -e "   Investigation Mode: ${CYAN}Snowflake Auto-Selection${NC}"
+        echo -e "   Auto-Select: ${CYAN}First high-risk entity from Snowflake${NC}"
+    fi
     
     if [[ "$USE_SNOWFLAKE" == "true" ]]; then
         echo -e "   Data Source: ${CYAN}Snowflake Top Risk Entities${NC}"
@@ -607,6 +636,14 @@ parse_arguments() {
             -a|--all)
                 ALL_SCENARIOS="true"
                 shift
+                ;;
+            --entity-id)
+                ENTITY_ID="$2"
+                shift 2
+                ;;
+            --entity-type)
+                ENTITY_TYPE="$2"
+                shift 2
                 ;;
             --csv-file)
                 CSV_FILE="$2"
@@ -755,15 +792,24 @@ parse_arguments() {
     fi
     
     # Validate required arguments
-    if [[ -z "$SCENARIO" && "$ALL_SCENARIOS" != "true" ]]; then
-        show_error "Must specify either --scenario or --all"
+    # Note: If no scenario, --all, or entity-id is provided, the script will use the first Snowflake entity as fallback
+    # This validation only ensures that if entity-id is provided, entity-type is also provided
+    
+    if [[ -n "$ENTITY_ID" && -z "$ENTITY_TYPE" ]]; then
+        show_error "When using --entity-id, you must also specify --entity-type"
         echo ""
         show_usage
         exit 1
     fi
     
-    if [[ -n "$SCENARIO" && "$ALL_SCENARIOS" == "true" ]]; then
-        show_error "Cannot specify both --scenario and --all"
+    # Check for mutually exclusive options
+    local option_count=0
+    [[ -n "$SCENARIO" ]] && ((option_count++))
+    [[ "$ALL_SCENARIOS" == "true" ]] && ((option_count++))
+    [[ -n "$ENTITY_ID" ]] && ((option_count++))
+    
+    if [[ $option_count -gt 1 ]]; then
+        show_error "Cannot combine --scenario, --all, and --entity-id options"
         echo ""
         show_usage
         exit 1

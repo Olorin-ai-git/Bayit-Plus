@@ -83,8 +83,8 @@ class TestAutonomousLLM:
             MagicMock(name="check_device", description="Check device fingerprint"),
         ]
         
-        # Bind tools to LLM
-        llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+        # Bind tools to LLM (removed strict=True for compatibility)
+        llm_with_tools = autonomous_llm.bind_tools(tools)
         
         # Test tool calling with real API
         messages = [

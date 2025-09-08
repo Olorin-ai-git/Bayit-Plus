@@ -394,11 +394,7 @@ class SvcSettings(BaseSettings):
         env="PRIMARY_DATA_SOURCE"
     )
 
-    enabled_tool_list: List[str] = [
-        "CdcUserTool",
-        "CdcCompanyTool",
-        "OIITool",
-    ]
+    enabled_tool_list: List[str] = []
 
 
 # see https://fastapi.tiangolo.com/advanced/settings/#settings-in-a-dependency

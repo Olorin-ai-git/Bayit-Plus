@@ -54,14 +54,20 @@ def assistant(state: MessagesState, config: RunnableConfig):
         # Emit progress update for fraud investigation coordination
         if investigation_id:
             try:
-                asyncio.create_task(
-                    websocket_manager.broadcast_progress(
-                        investigation_id,
-                        AgentPhase.ANOMALY_DETECTION,
-                        0.5,
-                        "Coordinating fraud investigation analysis...",
+                # Check if there's an event loop running before creating task
+                try:
+                    loop = asyncio.get_running_loop()
+                    asyncio.create_task(
+                        websocket_manager.broadcast_progress(
+                            investigation_id,
+                            AgentPhase.ANOMALY_DETECTION,
+                            0.5,
+                            "Coordinating fraud investigation analysis...",
+                        )
                     )
-                )
+                except RuntimeError:
+                    # No event loop running, skip progress update
+                    logger.debug(f"No event loop running, skipping progress update for investigation {investigation_id}")
             except Exception as e:
                 logger.error(f"Failed to emit progress update: {e}")
 
@@ -120,17 +126,17 @@ def _get_llm_with_tools():
     if not any(isinstance(t, SplunkQueryTool) for t in tools):
         tools.append(SplunkQueryTool())
 
-    # Bind tools to LLM
+    # Bind tools to LLM (removed strict=True parameter for compatibility)
     try:
-        return llm.bind_tools(tools, strict=True)
+        return llm.bind_tools(tools)
     except Exception as e:
         logger.error(f"Failed to bind tools to LLM: {str(e)}")
         # Filter to working tools
         working_tools = []
         for tool in tools:
             try:
-                llm.bind_tools([tool], strict=True)
+                llm.bind_tools([tool])
                 working_tools.append(tool)
             except Exception:
                 pass
-        return llm.bind_tools(working_tools, strict=True) if working_tools else llm
+        return llm.bind_tools(working_tools) if working_tools else llm
