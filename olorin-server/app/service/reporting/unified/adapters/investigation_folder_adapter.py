@@ -7,8 +7,14 @@ investigation folder workflow.
 """
 
 import json
-import jsonlines
 from typing import Any, Dict, List
+
+try:
+    import jsonlines
+    JSONLINES_AVAILABLE = True
+except ImportError:
+    JSONLINES_AVAILABLE = False
+    jsonlines = None
 from datetime import datetime
 from pathlib import Path
 
@@ -149,11 +155,24 @@ class InvestigationFolderAdapter(BaseAdapter):
         activities_file = folder_path / "autonomous_activities.jsonl"
         activities = []
         
-        if activities_file.exists():
+        if activities_file.exists() and JSONLINES_AVAILABLE:
             try:
                 with jsonlines.open(activities_file, 'r') as reader:
                     activities = list(reader)
             except (jsonlines.InvalidLineError, IOError):
+                pass
+        elif activities_file.exists():
+            # Fallback: try to read as regular JSON lines manually
+            try:
+                with open(activities_file, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line:
+                            try:
+                                activities.append(json.loads(line))
+                            except json.JSONDecodeError:
+                                continue
+            except IOError:
                 pass
         
         return activities

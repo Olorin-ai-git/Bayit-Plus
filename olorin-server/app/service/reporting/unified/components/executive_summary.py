@@ -89,14 +89,14 @@ class ExecutiveSummary(BaseComponent):
                         <span class="label">Started:</span>
                         <span class="value">{summary.start_time.strftime('%Y-%m-%d %H:%M:%S')}</span>
                     </div>
-                    {f'''<div class="info-row">
-                        <span class="label">Completed:</span>
-                        <span class="value">{summary.end_time.strftime('%Y-%m-%d %H:%M:%S')}</span>
-                    </div>''' if summary.end_time else ''}
-                    {f'''<div class="info-row">
-                        <span class="label">Duration:</span>
-                        <span class="value">{summary.duration_seconds:.2f}s</span>
-                    </div>''' if summary.duration_seconds else ''}
+                    {('<div class="info-row">'
+                      '<span class="label">Completed:</span>'
+                      f'<span class="value">{summary.end_time.strftime("%Y-%m-%d %H:%M:%S")}</span>'
+                      '</div>') if summary.end_time else ''}
+                    {('<div class="info-row">'
+                      '<span class="label">Duration:</span>'
+                      f'<span class="value">{summary.duration_seconds:.2f}s</span>'
+                      '</div>') if summary.duration_seconds else ''}
                     <div class="info-row">
                         <span class="label">Progress:</span>
                         <span class="value">{completion_percentage:.1f}%</span>
@@ -137,10 +137,10 @@ class ExecutiveSummary(BaseComponent):
                         <span class="label">Tool Executions:</span>
                         <span class="value">{summary.tool_executions}</span>
                     </div>
-                    {f'''<div class="info-row">
-                        <span class="label">Total Tokens:</span>
-                        <span class="value">{summary.total_tokens:,}</span>
-                    </div>''' if summary.total_tokens else ''}
+                    {('<div class="info-row">'
+                      '<span class="label">Total Tokens:</span>'
+                      f'<span class="value">{summary.total_tokens:,}</span>'
+                      '</div>') if summary.total_tokens else ''}
                 </div>
                 
                 <div class="summary-card agents-tools">
