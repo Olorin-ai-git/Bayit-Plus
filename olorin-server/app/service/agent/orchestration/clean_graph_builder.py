@@ -24,6 +24,7 @@ from app.service.agent.orchestration.domain_agents_clean import (
     device_agent_node,
     location_agent_node,
     logs_agent_node,
+    authentication_agent_node,
     risk_agent_node
 )
 
@@ -332,7 +333,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         
         # Use sequential execution to avoid concurrent updates
         # (parallel execution causes "domain_findings" update conflicts)
-        domain_order = ["network", "device", "location", "logs", "risk"]
+        domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
         for domain in domain_order:
             if domain not in domains_completed:
                 logger.info(f"  → Routing to {domain}_agent (sequential)")
@@ -379,6 +380,7 @@ def build_clean_investigation_graph() -> StateGraph:
     builder.add_node("device_agent", device_agent_node)
     builder.add_node("location_agent", location_agent_node)
     builder.add_node("logs_agent", logs_agent_node)
+    builder.add_node("authentication_agent", authentication_agent_node)
     builder.add_node("risk_agent", risk_agent_node)
     builder.add_node("summary", summary_node)
     

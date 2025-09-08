@@ -1,0 +1,295 @@
+# Mock Data Detection Configuration
+# Enterprise-grade configuration for comprehensive mock data pattern detection
+
+# Severity levels for different violation types
+severity_levels:
+  explicit_mock_variables: 'CRITICAL'      # Variables with mock/fake/demo names
+  explicit_mock_classes: 'CRITICAL'        # Classes with mock/test patterns
+  explicit_mock_functions: 'CRITICAL'      # Functions for generating mock data
+  implicit_email_patterns: 'HIGH'          # Mock email addresses
+  implicit_phone_patterns: 'HIGH'          # Fake phone numbers
+  implicit_name_patterns: 'HIGH'           # Generic test names
+  implicit_address_patterns: 'HIGH'        # Mock addresses
+  implicit_url_patterns: 'HIGH'            # Test/mock URLs
+  implicit_credit_card_patterns: 'CRITICAL' # Test credit card numbers
+  development_api_keys: 'CRITICAL'         # Test API keys and tokens
+  development_passwords: 'CRITICAL'        # Test passwords
+  development_database: 'HIGH'             # Test database connections
+  environment_variables: 'HIGH'            # Test environment variables
+  lorem_ipsum: 'MEDIUM'                    # Lorem ipsum placeholder text
+
+# Performance and scanning settings
+performance:
+  context_lines: 3                         # Lines of context to capture
+  max_file_size_mb: 10                     # Skip files larger than this
+  parallel_workers: 4                      # Number of parallel scanning threads
+  confidence_threshold: 0.7                # Minimum confidence for reporting
+  enable_ml_detection: false               # Enable machine learning patterns
+
+# Custom organization-specific patterns
+custom_patterns:
+  # Add your organization's specific mock data patterns
+  company_specific_mocks:
+    - pattern: '\b(ACME|Acme)[\w_]*\s*[=:]'
+      description: 'ACME placeholder company'
+      severity: 'HIGH'
+    - pattern: '\b(company|Company)[\w_]*[_-]?(test|demo|mock)\b'
+      description: 'Company test data'
+      severity: 'HIGH'
+
+# File type scanning configuration
+file_types:
+  # Code files to scan
+  code_extensions:
+    - '.py'
+    - '.js'
+    - '.ts'
+    - '.jsx'
+    - '.tsx'
+    - '.java'
+    - '.rb'
+    - '.php'
+    - '.go'
+    - '.rs'
+    - '.cpp'
+    - '.c'
+    - '.cs'
+    - '.kt'
+    - '.swift'
+    - '.scala'
+  
+  # Configuration files
+  config_extensions:
+    - '.json'
+    - '.yaml'
+    - '.yml'
+    - '.xml'
+    - '.toml'
+    - '.ini'
+    - '.env'
+    - '.config'
+    - '.conf'
+    - '.cfg'
+  
+  # Documentation files
+  docs_extensions:
+    - '.md'
+    - '.rst'
+    - '.txt'
+    - '.doc'
+    - '.docx'
+  
+  # Data files
+  data_extensions:
+    - '.csv'
+    - '.sql'
+    - '.graphql'
+    - '.gql'
+  
+  # Template files
+  template_extensions:
+    - '.html'
+    - '.hbs'
+    - '.mustache'
+    - '.jinja'
+    - '.ejs'
+    - '.vue'
+
+# Exclusion patterns (regex patterns for paths to exclude)
+exclusions:
+  directories:
+    # Test directories (legitimate test code)
+    - '.*/test/.*'
+    - '.*/tests/.*'
+    - '.*/spec/.*'
+    - '.*/__tests__/.*'
+    - '.*/cypress/.*'
+    - '.*/e2e/.*'
+    - '.*/integration/.*'
+    - '.*/fixtures/.*'
+    
+    # Build and dependency directories
+    - '.*/node_modules/.*'
+    - '.*/vendor/.*'
+    - '.*/dist/.*'
+    - '.*/build/.*'
+    - '.*/.tox/.*'
+    - '.*/.venv/.*'
+    - '.*/venv/.*'
+    - '.*/__pycache__/.*'
+    
+    # Version control
+    - '.*/\.git/.*'
+    - '.*/\.svn/.*'
+    - '.*/\.hg/.*'
+    
+    # IDE files
+    - '.*/\.idea/.*'
+    - '.*/\.vscode/.*'
+    - '.*/\.eclipse/.*'
+    
+    # Documentation directories
+    - '.*/docs?/.*'
+    - '.*/documentation/.*'
+    - '.*/examples/.*'
+    - '.*/samples/.*'
+  
+  files:
+    # Generated files
+    - '.*\.min\.(js|css)$'
+    - '.*\.bundle\.(js|css)$'
+    - '.*\.generated\.(py|js|ts)$'
+    - '.*\.pb\.(py|go|java)$'
+    
+    # Config templates (legitimate placeholder files)
+    - '.*\.example$'
+    - '.*\.template$'
+    - '.*\.sample$'
+    - '.*\.dist$'
+    
+    # Common documentation files
+    - '.*README.*'
+    - '.*CHANGELOG.*'
+    - '.*LICENSE.*'
+    
+    # Package files
+    - 'package-lock\.json$'
+    - 'yarn\.lock$'
+    - 'Pipfile\.lock$'
+    - 'poetry\.lock$'
+
+# Legitimate testing frameworks (don't flag these as violations)
+legitimate_test_frameworks:
+  - 'jest'
+  - 'sinon'
+  - 'mocha'
+  - 'unittest'
+  - 'pytest'
+  - 'testify'
+  - 'mockito'
+  - 'powermock'
+  - 'easymock'
+  - 'gmock'
+
+# Context analysis settings
+context_analysis:
+  # Keywords that suggest legitimate test context
+  test_keywords:
+    - 'test'
+    - 'spec'
+    - 'mock'
+    - 'stub'
+    - 'fixture'
+    - 'describe'
+    - 'it('
+    - 'expect'
+    - 'assert'
+  
+  # Keywords that suggest documentation/examples
+  docs_keywords:
+    - 'example'
+    - 'documentation'
+    - 'readme'
+    - 'tutorial'
+    - 'demo'
+    - 'sample'
+  
+  # Confidence reduction factors
+  confidence_adjustments:
+    test_context: 0.3           # Reduce confidence by 70% in test context
+    docs_context: 0.5           # Reduce confidence by 50% in docs context
+    template_context: 0.2       # Reduce confidence by 80% in template context
+
+# Reporting configuration
+reporting:
+  # Maximum violations to show in console output
+  max_console_violations: 10
+  
+  # Include context lines in JSON report
+  include_context_in_json: true
+  
+  # Generate audit trail
+  enable_audit_trail: true
+  
+  # Metrics to track
+  performance_metrics:
+    - 'files_per_second'
+    - 'patterns_checked'
+    - 'avg_file_size_kb'
+    - 'memory_usage_mb'
+
+# Advanced detection settings
+advanced:
+  # Machine learning model settings (if enabled)
+  ml_model:
+    model_path: null              # Path to custom ML model
+    enable_pattern_learning: false
+    min_training_samples: 100
+  
+  # Entropy analysis for detecting generated data
+  entropy_analysis:
+    enable: false
+    min_entropy_threshold: 3.0
+    sample_size: 100
+  
+  # Similarity detection for finding related mock patterns
+  similarity_detection:
+    enable: false
+    similarity_threshold: 0.8
+    clustering_method: 'cosine'
+
+# Integration settings
+integrations:
+  # Pre-commit hook settings
+  pre_commit:
+    fail_on_severity: 'HIGH'
+    block_commit: true
+    generate_report: true
+  
+  # CI/CD pipeline settings
+  ci_cd:
+    output_format: 'json'
+    fail_on_severity: 'CRITICAL'
+    generate_metrics: true
+  
+  # IDE integration
+  ide:
+    real_time_scanning: false
+    highlight_violations: true
+    show_suggestions: true
+
+# Notification settings
+notifications:
+  # Slack integration
+  slack:
+    enabled: false
+    webhook_url: null
+    channel: '#security-alerts'
+    severity_threshold: 'HIGH'
+  
+  # Email notifications
+  email:
+    enabled: false
+    smtp_server: null
+    recipients: []
+    severity_threshold: 'CRITICAL'
+
+# Compliance and governance
+compliance:
+  # Audit requirements
+  audit:
+    retain_logs_days: 90
+    log_all_scans: true
+    include_user_context: true
+  
+  # Policy enforcement
+  policy:
+    zero_tolerance_patterns: ['CRITICAL']
+    allow_overrides: false
+    require_approval_for_exceptions: true
+  
+  # Metrics and KPIs
+  metrics:
+    track_violation_trends: true
+    generate_compliance_reports: true
+    measure_detection_effectiveness: true

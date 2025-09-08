@@ -284,6 +284,133 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     return add_domain_findings(state, "logs", logs_findings)
 
 
+async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]:
+    """
+    Authentication analysis agent.
+    Analyzes login patterns, failed attempts, MFA bypass, and authentication anomalies.
+    """
+    logger.info("🔐 Authentication agent analyzing investigation")
+    
+    snowflake_data = state.get("snowflake_data", {})
+    tool_results = state.get("tool_results", {})
+    
+    auth_findings = {
+        "domain": "authentication",
+        "risk_score": 0.0,
+        "risk_indicators": [],
+        "analysis": {}
+    }
+    
+    # Analyze Snowflake data for authentication patterns
+    if snowflake_data and "results" in snowflake_data:
+        results = snowflake_data["results"]
+        
+        # Check for failed login patterns
+        login_attempts = []
+        failed_ratios = []
+        
+        for r in results:
+            if "LOGIN_ATTEMPTS_COUNT" in r:
+                attempts = r.get("LOGIN_ATTEMPTS_COUNT", 0)
+                if isinstance(attempts, (int, float)):
+                    login_attempts.append(attempts)
+                    
+            if "FAILED_LOGIN_RATIO" in r:
+                ratio = r.get("FAILED_LOGIN_RATIO", 0.0)
+                if isinstance(ratio, (int, float)):
+                    failed_ratios.append(ratio)
+        
+        # Analyze login attempts
+        if login_attempts:
+            max_attempts = max(login_attempts)
+            avg_attempts = sum(login_attempts) / len(login_attempts)
+            
+            if max_attempts > 20:
+                auth_findings["risk_indicators"].append(f"Brute force detected: {max_attempts} login attempts")
+                auth_findings["risk_score"] += 0.6
+            elif max_attempts > 10:
+                auth_findings["risk_indicators"].append(f"High login attempts: {max_attempts}")
+                auth_findings["risk_score"] += 0.3
+                
+            auth_findings["analysis"]["max_login_attempts"] = max_attempts
+            auth_findings["analysis"]["avg_login_attempts"] = avg_attempts
+        
+        # Analyze failed login ratios
+        if failed_ratios:
+            max_failed_ratio = max(failed_ratios)
+            avg_failed_ratio = sum(failed_ratios) / len(failed_ratios)
+            
+            if max_failed_ratio > 0.8:
+                auth_findings["risk_indicators"].append(f"High failure rate: {max_failed_ratio:.1%}")
+                auth_findings["risk_score"] += 0.5
+            elif max_failed_ratio > 0.5:
+                auth_findings["risk_indicators"].append(f"Moderate failure rate: {max_failed_ratio:.1%}")
+                auth_findings["risk_score"] += 0.2
+                
+            auth_findings["analysis"]["max_failed_ratio"] = max_failed_ratio
+            auth_findings["analysis"]["avg_failed_ratio"] = avg_failed_ratio
+        
+        # Check for MFA bypass attempts
+        mfa_bypass_attempts = [r for r in results if r.get("MFA_BYPASS_ATTEMPT")]
+        if mfa_bypass_attempts:
+            auth_findings["risk_indicators"].append(f"MFA bypass attempts detected: {len(mfa_bypass_attempts)}")
+            auth_findings["risk_score"] += 0.7
+        
+        # Check for impossible travel in authentication
+        travel_scores = []
+        for r in results:
+            if "IMPOSSIBLE_TRAVEL_CONFIDENCE" in r:
+                confidence = r.get("IMPOSSIBLE_TRAVEL_CONFIDENCE", 0.0)
+                if isinstance(confidence, (int, float)) and confidence > 0.8:
+                    travel_scores.append(confidence)
+        
+        if travel_scores:
+            max_travel_score = max(travel_scores)
+            auth_findings["risk_indicators"].append(f"Impossible travel detected (confidence: {max_travel_score:.2f})")
+            auth_findings["risk_score"] += 0.6
+        
+        # Check for credential stuffing indicators
+        stuffing_indicators = [r for r in results if r.get("CREDENTIAL_STUFFING_BATCH_ID")]
+        if stuffing_indicators:
+            auth_findings["risk_indicators"].append(f"Credential stuffing detected: {len(stuffing_indicators)} batches")
+            auth_findings["risk_score"] += 0.5
+        
+        # Check for SIM swap indicators
+        sim_swap_indicators = [r for r in results if r.get("SIM_SWAP_INDICATOR")]
+        if sim_swap_indicators:
+            auth_findings["risk_indicators"].append(f"SIM swap indicators: {len(sim_swap_indicators)}")
+            auth_findings["risk_score"] += 0.8
+    
+    # Check threat intelligence for authentication threats
+    threat_tools = ["abuseipdb_tool", "virustotal_tool"]
+    for tool_name in threat_tools:
+        if tool_name in tool_results:
+            result = tool_results[tool_name]
+            if isinstance(result, dict):
+                if result.get("brute_force_activity", False):
+                    auth_findings["risk_indicators"].append(f"{tool_name}: Brute force activity detected")
+                    auth_findings["risk_score"] += 0.3
+                if result.get("credential_stuffing_reports", 0) > 0:
+                    auth_findings["risk_indicators"].append(f"{tool_name}: Credential stuffing reports")
+                    auth_findings["risk_score"] += 0.4
+    
+    # Cap risk score at 1.0
+    auth_findings["risk_score"] = min(1.0, auth_findings["risk_score"])
+    
+    # Calculate confidence based on available authentication data
+    data_sources = sum([
+        1 if login_attempts else 0,
+        1 if failed_ratios else 0,
+        1 if "abuseipdb_tool" in tool_results else 0,
+        1 if mfa_bypass_attempts else 0
+    ])
+    auth_findings["confidence"] = min(1.0, data_sources / 4.0)
+    
+    logger.info(f"✅ Authentication analysis complete - Risk: {auth_findings['risk_score']:.2f}")
+    
+    return add_domain_findings(state, "authentication", auth_findings)
+
+
 async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     """
     Risk assessment agent.
@@ -339,7 +466,7 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     confidence_factors = [
         1.0 if state.get("snowflake_completed") else 0.0,
         min(1.0, len(tools_used) / 20.0),
-        min(1.0, len(domain_findings) / 5.0)
+        min(1.0, len(domain_findings) / 6.0)  # Updated to account for 6 domains including authentication
     ]
     risk_findings["confidence"] = sum(confidence_factors) / len(confidence_factors)
     

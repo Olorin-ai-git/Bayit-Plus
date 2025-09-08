@@ -257,11 +257,12 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     
     # Weight different domains
     domain_weights = {
-        "network": 0.25,
-        "device": 0.25,
+        "network": 0.20,
+        "device": 0.20,
         "location": 0.15,
         "logs": 0.15,
-        "risk": 0.20
+        "authentication": 0.20,  # Authentication fraud is high-impact
+        "risk": 0.10  # Risk is synthetic, lower weight
     }
     
     weighted_score = 0.0

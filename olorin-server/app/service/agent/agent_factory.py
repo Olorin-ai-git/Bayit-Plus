@@ -45,7 +45,7 @@ class AgentFactory:
             "standard_agents_created": 0,
             "tool_recommendations_used": 0,
             "static_tools_used": 0,
-            "domains_supported": ["network", "device", "location", "logs", "risk"], 
+            "domains_supported": ["network", "device", "location", "logs", "risk", "authentication"], 
             "ml_ai_tools_enabled": True,
             "rag_enabled": enable_rag and RAG_AVAILABLE,
             "rag_available": RAG_AVAILABLE,
@@ -357,7 +357,7 @@ def create_autonomous_agent(domain: str, tools: List[Any]):
     Create a standard autonomous investigation agent for the specified domain.
     
     Args:
-        domain: Investigation domain (network, device, location, logs, risk)
+        domain: Investigation domain (network, device, location, logs, risk, authentication)
         tools: List of available tools for the agent
         
     Returns:
@@ -495,6 +495,28 @@ def get_default_domain_objectives(domain: str) -> List[str]:
             "Aggregate web-based threat intelligence for final assessment",
             "Search for recent fraud trends and patterns online using web_search",
             "Use web sources to enhance risk scoring with current threat landscape"
+        ],
+        "authentication": [
+            "Analyze authentication transaction patterns from Snowflake data",
+            "Detect failed login ratios and suspicious authentication timing",
+            "Identify geographic authentication anomalies and impossible travel",
+            "Assess device fingerprint consistency during authentication events",
+            "Detect account takeover indicators and authentication method changes",
+            "Identify credential stuffing patterns and brute force attacks",
+            "Analyze MFA bypass attempts and authentication flow anomalies",
+            "Check application-level authentication logs using SumoLogic",
+            "Correlate authentication events with fraud transaction patterns",
+            "Apply behavioral analysis to authentication patterns using behavioral_analysis_ml tool",
+            "Detect authentication anomalies using anomaly_detection_ml tool",
+            "Apply pattern recognition for authentication fraud detection using pattern_recognition_ml tool",
+            "Use threat intelligence to verify authentication IP addresses via AbuseIPDB",
+            "Analyze suspicious authentication domains using VirusTotal",
+            "Cross-reference authentication data with known threat intelligence",
+            "Aggregate OSINT data for authentication context using osint_data_aggregator",
+            "Monitor social media for authentication fraud patterns using social_media_monitoring",
+            "Search for authentication attack patterns online using web_search",
+            "Research current authentication threats and vulnerabilities via web sources",
+            "Use web_scrape to gather threat intelligence on authentication fraud trends"
         ]
     }
     

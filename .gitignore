@@ -370,3 +370,12 @@ scripts/set-firebase-secrets.sh
 scripts/add-abuseipdb-key.sh
 scripts/setup-threat-intel-secrets.sh
 olorin-server/Tx Table Schema.csv
+
+# Mock Files (Only used in test/mock mode)
+mock_snowflake_data.json
+mock_llm.py
+mock_ips_cache_client.py
+.mock-detection-test/
+
+# Test directories
+olorin-server/app/test/
