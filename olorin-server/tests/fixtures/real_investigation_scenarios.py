@@ -82,6 +82,13 @@ class RealScenarioGenerator:
                 "ip_country_mismatch": True,
                 "device_changes_24h": random.randint(3, 10),
                 "velocity_spike": True,
+                "authentication_anomalies": {
+                    "brute_force_detected": True,
+                    "credential_stuffing": random.choice([True, False]),
+                    "mfa_bypass_attempts": random.randint(1, 5),
+                    "impossible_travel_auth": True,
+                    "concurrent_sessions": random.randint(2, 5)
+                }
             })
         elif risk_profile == "suspicious":
             user_data.update({
@@ -89,6 +96,13 @@ class RealScenarioGenerator:
                 "ip_country_mismatch": False,
                 "device_changes_24h": random.randint(1, 3),
                 "velocity_spike": False,
+                "authentication_anomalies": {
+                    "brute_force_detected": False,
+                    "credential_stuffing": random.choice([True, False]),
+                    "mfa_bypass_attempts": random.randint(0, 2),
+                    "impossible_travel_auth": False,
+                    "concurrent_sessions": random.randint(1, 2)
+                }
             })
         else:  # normal
             user_data.update({
@@ -96,6 +110,13 @@ class RealScenarioGenerator:
                 "ip_country_mismatch": False,
                 "device_changes_24h": 0,
                 "velocity_spike": False,
+                "authentication_anomalies": {
+                    "brute_force_detected": False,
+                    "credential_stuffing": False,
+                    "mfa_bypass_attempts": 0,
+                    "impossible_travel_auth": False,
+                    "concurrent_sessions": 1
+                }
             })
         
         return user_data
@@ -310,6 +331,31 @@ class RealScenarioGenerator:
                 "Multiple account linkage",
                 "Geographic dispersion",
             ],
+            "authentication_brute_force": [
+                "Excessive failed login attempts",
+                "Multiple IP addresses attacking same account",
+                "Automated login patterns detected",
+                "Dictionary attack signatures",
+                "MFA bypass attempts"
+            ],
+            "authentication_impossible_travel": [
+                "Simultaneous logins from distant locations",
+                "Impossible travel time between login locations",
+                "Concurrent active sessions detected",
+                "Geographic location inconsistencies"
+            ],
+            "authentication_credential_stuffing": [
+                "Login attempts using breach data",
+                "Systematic testing across multiple accounts",
+                "Automated tools with IP rotation",
+                "High success rate with stolen credentials"
+            ],
+            "authentication_mfa_bypass": [
+                "Multi-factor authentication circumvented",
+                "SIM swap attack detected",
+                "Social engineering indicators",
+                "Phone number hijacking detected"
+            ]
         }
         
         # Get base indicators
@@ -351,6 +397,17 @@ def get_test_scenarios() -> List[RealInvestigationScenario]:
     
     # Money laundering scenario
     scenarios.append(generator.create_scenario("money_laundering", "critical"))
+    
+    # Authentication fraud scenarios
+    for risk in ["medium", "high", "critical"]:
+        scenarios.append(generator.create_scenario("authentication_brute_force", risk))
+    
+    for risk in ["high", "critical"]:
+        scenarios.append(generator.create_scenario("authentication_impossible_travel", risk))
+        scenarios.append(generator.create_scenario("authentication_credential_stuffing", risk))
+    
+    # Critical authentication scenario
+    scenarios.append(generator.create_scenario("authentication_mfa_bypass", "critical"))
     
     return scenarios
 
