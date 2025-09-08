@@ -98,10 +98,14 @@ class ShodanClient:
         api_key = await self._get_api_key()
         session = await self._get_session()
         
-        # Add API key to params
+        # Add API key to params and normalize parameter values
         if params is None:
             params = {}
         params["key"] = api_key
+        
+        # Normalize parameters for aiohttp - convert booleans to strings and handle None values
+        if params:
+            params = {k: (str(v).lower() if isinstance(v, bool) else str(v)) for k, v in params.items() if v is not None}
         
         url = f"{self.BASE_URL}{endpoint}"
         
@@ -113,6 +117,13 @@ class ShodanClient:
                     raise ValueError("Invalid API key or unauthorized access")
                 elif response.status == 402:
                     raise ValueError("Insufficient credits for this request")
+                elif response.status == 403:
+                    # Handle paid plan requirements
+                    error_text = await response.text()
+                    if "membership" in error_text.lower() or "upgrade" in error_text.lower():
+                        raise ValueError("Shodan API endpoint requires paid subscription plan")
+                    else:
+                        raise ValueError(f"Shodan API access forbidden: {error_text}")
                 elif response.status == 404:
                     return {}  # Return empty dict for not found
                 elif response.status == 429:
@@ -153,9 +164,9 @@ class ShodanClient:
         """
         params = {}
         if history:
-            params["history"] = "true"
+            params["history"] = True
         if minify:
-            params["minify"] = "true"
+            params["minify"] = True
         
         data = await self._make_request("GET", f"/shodan/host/{ip}", params)
         
@@ -237,7 +248,7 @@ class ShodanClient:
         params = {
             "query": query,
             "page": page,
-            "minify": minify
+            "minify": "true" if minify else "false"
         }
         
         if facets:

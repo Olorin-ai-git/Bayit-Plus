@@ -42,7 +42,13 @@ from .file_system_tool import (
 from app.service.logging import get_bridge_logger
 
 # Import Olorin-specific tools
-from .splunk_tool import SplunkQueryTool
+try:
+    from .splunk_tool import SplunkQueryTool
+    SPLUNK_TOOL_AVAILABLE = True
+except ImportError as e:
+    logger = get_bridge_logger(__name__)
+    logger.warning(f"Splunk tool not available: {e}")
+    SPLUNK_TOOL_AVAILABLE = False
 from .sumologic_tool.sumologic_tool import SumoLogicQueryTool
 from .snowflake_tool.snowflake_tool import SnowflakeQueryTool
 from .vector_search_tool import VectorSearchTool
@@ -158,6 +164,57 @@ class ToolRegistry:
             "utility": [],
         }
         self._initialized = False
+        # Use proper threading lock instead of boolean flag
+        import threading
+        self._initialization_lock = threading.RLock()
+        self._initialization_in_progress = False
+
+    def _ensure_initialized(self) -> None:
+        """Ensure the tool registry is initialized with validated tool availability."""
+        # Fast path: if already initialized and has tools, return immediately
+        if self._initialized and len(self._tools) > 0:
+            return
+            
+        # Use proper threading lock to prevent race conditions
+        with self._initialization_lock:
+            # Double-check after acquiring lock (another thread might have initialized)
+            if self._initialized and len(self._tools) > 0:
+                return
+                
+            # Prevent recursive initialization
+            if self._initialization_in_progress:
+                logger.warning("Initialization already in progress, waiting...")
+                return
+                
+            # Perform initialization inside the lock
+            logger.warning("⚠️ Tool registry requires (re)initialization - performing emergency initialization")
+            try:
+                self.initialize()
+                
+                # Validate initialization was successful
+                if not self._initialized:
+                    raise RuntimeError("Registry initialization flag not set after initialization")
+                
+                if len(self._tools) == 0:
+                    logger.error("❌ Emergency initialization failed - no tools loaded!")
+                    raise RuntimeError("No tools were loaded during emergency initialization")
+                
+                # Additional validation: Test that tools are actually callable
+                sample_tools = list(self._tools.values())[:3]
+                for tool in sample_tools:
+                    if not hasattr(tool, 'invoke') or not hasattr(tool, 'name'):
+                        logger.error(f"❌ Tool {getattr(tool, 'name', 'unknown')} is missing required methods")
+                        raise RuntimeError(f"Tool {getattr(tool, 'name', 'unknown')} improperly initialized")
+                
+                logger.info(f"✅ Emergency initialization successful: {len(self._tools)} tools loaded and validated")
+                
+            except Exception as init_error:
+                logger.error(f"❌ Emergency initialization failed: {init_error}")
+                self._initialized = False
+                raise RuntimeError(f"Tool registry initialization failed: {init_error}") from init_error
+            finally:
+                # Always clear the in-progress flag
+                self._initialization_in_progress = False
 
     def initialize(
         self,
@@ -229,12 +286,14 @@ class ToolRegistry:
                 self._register_tool(VectorSearchTool(), "search")
 
             # Olorin-specific Tools - Check environment variables for enablement
-            if os.getenv('USE_SPLUNK', 'false').lower() == 'true':
+            if os.getenv('USE_SPLUNK', 'false').lower() == 'true' and SPLUNK_TOOL_AVAILABLE:
                 try:
                     self._register_tool(SplunkQueryTool(), "olorin")
                     logger.info("Splunk tool registered (enabled via USE_SPLUNK=true)")
                 except Exception as e:
                     logger.warning(f"Failed to register Splunk tool: {e}")
+            elif os.getenv('USE_SPLUNK', 'false').lower() == 'true' and not SPLUNK_TOOL_AVAILABLE:
+                logger.warning("Splunk tool requested but not available due to missing dependencies")
             else:
                 logger.debug("Splunk tool disabled (USE_SPLUNK=false)")
 
@@ -537,10 +596,13 @@ class ToolRegistry:
 
     def get_tool(self, name: str) -> Optional[BaseTool]:
         """Get a tool by name."""
+        self._ensure_initialized()
         return self._tools.get(name)
 
     def get_tools_by_category(self, category: str) -> List[BaseTool]:
         """Get all tools in a specific category."""
+        self._ensure_initialized()
+        
         if category not in self._tool_categories:
             return []
 
@@ -552,10 +614,12 @@ class ToolRegistry:
 
     def get_all_tools(self) -> List[BaseTool]:
         """Get all registered tools."""
+        self._ensure_initialized()
         return list(self._tools.values())
 
     def get_tool_names(self) -> List[str]:
         """Get names of all registered tools."""
+        self._ensure_initialized()
         return list(self._tools.keys())
 
     def get_categories(self) -> List[str]:
@@ -579,8 +643,8 @@ class ToolRegistry:
         return summary
 
     def is_initialized(self) -> bool:
-        """Check if the registry is initialized."""
-        return self._initialized
+        """Check if the registry is initialized with tools loaded."""
+        return self._initialized and len(self._tools) > 0 and not self._initialization_in_progress
 
 
 # Global tool registry instance
@@ -600,9 +664,30 @@ def get_tools_for_agent(
     Returns:
         List of BaseTool instances
     """
+    logger.info(f"🔍 get_tools_for_agent called with categories: {categories}, tool_names: {tool_names}")
+    
+    # Ensure initialization before accessing tools
+    tool_registry._ensure_initialized()
+    
+    # CRITICAL DEBUG: Check tool registry state after initialization
+    logger.info(f"📊 Registry state: initialized={tool_registry._initialized}, tools_count={len(tool_registry._tools)}")
+    if len(tool_registry._tools) > 0:
+        logger.info(f"🔧 Available tool names: {list(tool_registry._tools.keys())[:10]}...")  # First 10
+    
     if not tool_registry.is_initialized():
-        logger.warning("Tool registry not initialized. Call initialize() first.")
+        logger.error("❌ Tool registry initialization failed - returning empty tool list")
         return []
+
+    if len(tool_registry._tools) == 0:
+        logger.error("❌ CRITICAL: Tool registry shows initialized but has no tools!")
+        # Force re-initialization attempt
+        logger.warning("🔄 Attempting emergency re-initialization...")
+        try:
+            tool_registry.initialize()
+            logger.info(f"✅ Emergency re-initialization completed: {len(tool_registry._tools)} tools now available")
+        except Exception as e:
+            logger.error(f"❌ Emergency re-initialization failed: {e}")
+            return []
 
     tools = []
 
@@ -612,14 +697,16 @@ def get_tools_for_agent(
             tool = tool_registry.get_tool(name)
             if tool:
                 tools.append(tool)
+                logger.debug(f"✅ Tool '{name}' added from registry")
             else:
-                logger.warning(f"Tool '{name}' not found in registry")
+                logger.warning(f"❌ Tool '{name}' not found in registry")
 
     if categories:
         # Get tools by category
         for category in categories:
             category_tools = tool_registry.get_tools_by_category(category)
             tools.extend(category_tools)
+            logger.debug(f"✅ Added {len(category_tools)} tools from category '{category}'")
 
     # Remove duplicates while preserving order
     seen = set()
@@ -629,6 +716,16 @@ def get_tools_for_agent(
             seen.add(tool.name)
             unique_tools.append(tool)
 
+    logger.info(f"✅ Retrieved {len(unique_tools)} tools for agent (categories: {categories}, specific: {tool_names})")
+    
+    # CRITICAL VALIDATION: Ensure tools are actually callable
+    if len(unique_tools) > 0:
+        test_tool = unique_tools[0]
+        if hasattr(test_tool, 'invoke') and hasattr(test_tool, 'name') and hasattr(test_tool, 'description'):
+            logger.info(f"✅ Tool validation passed: sample tool '{test_tool.name}' is properly initialized")
+        else:
+            logger.error(f"❌ Tool validation FAILED: sample tool '{test_tool.name}' missing required attributes")
+    
     return unique_tools
 
 

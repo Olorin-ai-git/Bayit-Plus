@@ -29,7 +29,7 @@ class ToolParameterMapper:
         'domain_name': 'domain',
         'hostname': 'domain',
         'site': 'domain',
-        'url': 'domain',  # For domain tools, not URL tools
+        # Note: 'url' mapping removed - it should stay as 'url' for URL analysis tools
         
         # Query mappings
         'search_query': 'query',
