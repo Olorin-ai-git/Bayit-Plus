@@ -372,6 +372,8 @@ class LocationDataClient:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
+        # oii_results is not defined in this scope, using empty list
+        oii_results = []
         logger.warning(
             "=== END OF get_location_data, oii_results=%s, splunk_results=%s, vector_analysis=%s ===",
             oii_results,
@@ -513,16 +515,6 @@ class LocationDataClient:
             additional_info={"status": "unavailable"},
         )
 
-    async def _get_kkdash_login_history(
-        self, user_id: str, days: int
-    ) -> List[Dict[str, Any]]:
-        """Get login history from KKDash."""
-        return [
-            {
-                "status": "unavailable",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-        ]
 
     async def _get_databricks_login_history(
         self, user_id: str, days: int
@@ -535,12 +527,6 @@ class LocationDataClient:
             }
         ]
 
-    async def _get_kkdash_mfa_info(self, user_id: str) -> Dict[str, Any]:
-        """Get MFA information from KKDash."""
-        return {
-            "status": "unavailable",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
 
   
     async def get_business_location_info(self, user_id: str) -> Optional[LocationInfo]:

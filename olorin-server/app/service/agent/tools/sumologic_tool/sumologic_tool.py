@@ -103,12 +103,31 @@ class SumoLogicQueryTool(BaseTool):
             return results
             
         except Exception as e:
-            logger.error(f"SumoLogic query failed: {str(e)}")
-            return {
-                "error": str(e),
-                "results": [],
-                "query_status": "failed"
-            }
+            # Handle specific known errors gracefully
+            if "secret" in str(e).lower() and "not found" in str(e).lower():
+                logger.debug(f"SumoLogic analysis skipped: API credentials not configured")
+                return {
+                    "status": "skipped",
+                    "reason": "SumoLogic API credentials not configured",
+                    "query_status": "skipped",
+                    "results": []
+                }
+            elif "authentication" in str(e).lower() or "unauthorized" in str(e).lower():
+                logger.debug(f"SumoLogic analysis failed: authentication error")
+                return {
+                    "status": "authentication_failed",
+                    "reason": "SumoLogic API authentication failed",
+                    "query_status": "failed",
+                    "results": []
+                }
+            else:
+                logger.warning(f"SumoLogic query unavailable: {type(e).__name__}")
+                return {
+                    "status": "unavailable",
+                    "reason": f"Service temporarily unavailable ({type(e).__name__})",
+                    "query_status": "unavailable",
+                    "results": []
+                }
         finally:
             try:
                 await client.disconnect()

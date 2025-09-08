@@ -241,16 +241,38 @@ class VirusTotalDomainAnalysisTool(BaseTool):
                 raise ve
                 
         except Exception as e:
-            error_msg = f"VirusTotal domain analysis failed for {domain}: {str(e)}"
             logger = get_bridge_logger(__name__)
-            logger.error(error_msg, exc_info=True)
-            return json.dumps({
-                "error": error_msg,
-                "error_type": "analysis_error",
-                "domain": domain,
-                "timestamp": self._get_current_timestamp(),
-                "source": "VirusTotal Domain Analysis"
-            }, indent=2)
+            
+            # Handle specific known errors gracefully
+            if "InvalidArgumentError" in str(e) and "not a valid domain pattern" in str(e):
+                logger.debug(f"VirusTotal domain analysis skipped for {domain}: invalid domain pattern (likely IP address)")
+                return json.dumps({
+                    "status": "skipped",
+                    "reason": "VirusTotal domain analysis requires valid domain names, not IP addresses",
+                    "suggestion": "Use IP analysis tools for IP address investigation",
+                    "input": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
+            elif "API" in str(e) and ("quota" in str(e).lower() or "limit" in str(e).lower()):
+                logger.debug(f"VirusTotal domain analysis rate limited for {domain}: {str(e)}")
+                return json.dumps({
+                    "status": "rate_limited",
+                    "reason": "VirusTotal API quota exceeded",
+                    "domain": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
+            else:
+                # Handle all other exceptions gracefully
+                logger.warning(f"VirusTotal domain analysis unavailable for {domain}: {type(e).__name__}")
+                return json.dumps({
+                    "status": "unavailable",
+                    "reason": f"Service temporarily unavailable ({type(e).__name__})",
+                    "domain": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
     
     async def _build_domain_analysis(
         self,

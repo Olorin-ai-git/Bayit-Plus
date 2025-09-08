@@ -113,11 +113,33 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
             
             return json.dumps(analysis_result, indent=2, default=str)
             
+        except ValueError as e:
+            # Handle specific known errors gracefully (like subscription requirements)
+            if "paid subscription" in str(e).lower():
+                logger.debug(f"Shodan analysis skipped for {ip_address}: paid subscription required")
+                return json.dumps({
+                    "status": "skipped",
+                    "reason": "Shodan requires paid subscription for this endpoint",
+                    "ip_address": ip_address,
+                    "timestamp": datetime.now().isoformat(),
+                    "source": "Shodan"
+                }, indent=2)
+            else:
+                # Other ValueError cases
+                logger.warning(f"Shodan analysis failed for {ip_address}: {str(e)}")
+                return json.dumps({
+                    "status": "failed",
+                    "error": str(e),
+                    "ip_address": ip_address,
+                    "timestamp": datetime.now().isoformat(),
+                    "source": "Shodan"
+                }, indent=2)
         except Exception as e:
-            error_msg = f"Shodan infrastructure analysis failed for {ip_address}: {str(e)}"
-            logger.error(error_msg, exc_info=True)
+            # Handle all other exceptions gracefully
+            logger.warning(f"Shodan analysis unavailable for {ip_address}: {type(e).__name__}")
             return json.dumps({
-                "error": error_msg,
+                "status": "unavailable",
+                "reason": f"Service temporarily unavailable ({type(e).__name__})",
                 "ip_address": ip_address,
                 "timestamp": datetime.now().isoformat(),
                 "source": "Shodan"

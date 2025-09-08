@@ -117,6 +117,11 @@ class AbuseIPDBClient:
                     raise RateLimitError("Rate limit exceeded")
                 elif response.status == 404:
                     raise IPNotFoundError("IP address not found")
+                elif response.status == 402:
+                    raise AbuseIPDBError(
+                        f"AbuseIPDB subscription required for this endpoint. Status: {response.status}",
+                        status_code=response.status
+                    )
                 else:
                     raise AbuseIPDBError(
                         f"API request failed: {response.status} - {response_text}",

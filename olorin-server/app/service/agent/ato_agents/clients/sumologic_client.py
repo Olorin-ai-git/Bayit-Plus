@@ -97,20 +97,83 @@ class SumoLogicClient:
             
             logger.info(f"Started SumoLogic search job: {job_id}")
             
-            # Poll for job completion (simplified for this implementation)
-            # In a real implementation, you'd poll the job status endpoint
-            # For now, return a mock response structure
+            # Poll for job completion with real implementation
+            import time
+            max_polls = 30
+            poll_count = 0
             
-            return {
-                "job_id": job_id,
-                "status": "completed",
-                "query": query,
-                "results": [],  # Would contain actual log entries
-                "record_count": 0,
-                "message_count": 0,
-                "from_time": from_epoch,
-                "to_time": to_epoch
-            }
+            while poll_count < max_polls:
+                # Check job status
+                status_response = self.session.get(
+                    f"{self.endpoint}/api/v1/search/jobs/{job_id}",
+                    timeout=self.timeout
+                )
+                
+                if status_response.status_code == 200:
+                    status_data = status_response.json()
+                    state = status_data.get('state', '')
+                    
+                    if state == 'DONE GATHERING RESULTS':
+                        break
+                    elif state in ['CANCELLED', 'FORCE PAUSED']:
+                        logger.warning(f"SumoLogic search job {job_id} was cancelled or paused")
+                        return {
+                            "job_id": job_id,
+                            "status": "failed",
+                            "query": query,
+                            "error": f"Job was {state.lower()}",
+                            "from_time": from_epoch,
+                            "to_time": to_epoch
+                        }
+                else:
+                    logger.warning(f"Failed to get job status: {status_response.status_code}")
+                
+                time.sleep(1)
+                poll_count += 1
+            
+            # Get the results
+            try:
+                results_response = self.session.get(
+                    f"{self.endpoint}/api/v1/search/jobs/{job_id}/results",
+                    params={'offset': 0, 'limit': limit},
+                    timeout=self.timeout
+                )
+                
+                if results_response.status_code == 200:
+                    results_data = results_response.json()
+                    results = results_data.get('results', [])
+                    
+                    return {
+                        "job_id": job_id,
+                        "status": "completed",
+                        "query": query,
+                        "results": results,
+                        "record_count": len(results),
+                        "message_count": results_data.get('messageCount', 0),
+                        "from_time": from_epoch,
+                        "to_time": to_epoch
+                    }
+                else:
+                    logger.error(f"Failed to get results: {results_response.status_code}")
+                    return {
+                        "job_id": job_id,
+                        "status": "failed",
+                        "query": query,
+                        "error": f"Failed to retrieve results: {results_response.status_code}",
+                        "from_time": from_epoch,
+                        "to_time": to_epoch
+                    }
+                    
+            except Exception as e:
+                logger.error(f"Error retrieving results: {str(e)}")
+                return {
+                    "job_id": job_id,
+                    "status": "failed",
+                    "query": query,
+                    "error": f"Error retrieving results: {str(e)}",
+                    "from_time": from_epoch,
+                    "to_time": to_epoch
+                }
             
         except requests.RequestException as e:
             logger.error(f"SumoLogic query failed: {str(e)}")
