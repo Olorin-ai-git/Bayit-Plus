@@ -36,6 +36,9 @@ from app.service.agent.orchestration.enhanced_routing import (
 # Define MessagesState since it's not available in langchain_core.messages
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
+    investigation_id: Optional[str]
+    entity_id: Optional[str]
+    entity_type: Optional[str]
 
 from app.service.agent.autonomous_agents import (
     autonomous_network_agent,
@@ -43,6 +46,14 @@ from app.service.agent.autonomous_agents import (
     autonomous_location_agent,
     autonomous_logs_agent,
     autonomous_risk_agent,
+)
+# Import wrapped versions for graph nodes
+from app.service.agent.orchestration.agent_wrappers import (
+    wrapped_network_agent,
+    wrapped_device_agent,
+    wrapped_location_agent,
+    wrapped_logs_agent,
+    wrapped_risk_agent,
 )
 from app.service.agent.recursion_guard import get_recursion_guard
 from app.service.agent.investigators.domain_agents import (
@@ -127,11 +138,12 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
     builder.add_node("start_investigation", start_investigation)
     builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
-    builder.add_node("network_agent", autonomous_network_agent)
-    builder.add_node("location_agent", autonomous_location_agent)
-    builder.add_node("logs_agent", autonomous_logs_agent)
-    builder.add_node("device_agent", autonomous_device_agent)
-    builder.add_node("risk_agent", autonomous_risk_agent)
+    # Use wrapped agents that ensure proper context propagation
+    builder.add_node("network_agent", wrapped_network_agent)
+    builder.add_node("location_agent", wrapped_location_agent)
+    builder.add_node("logs_agent", wrapped_logs_agent)
+    builder.add_node("device_agent", wrapped_device_agent)
+    builder.add_node("risk_agent", wrapped_risk_agent)
 
     # Add tools node with enhanced executor
     tools = _get_configured_tools()
@@ -147,7 +159,7 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
             tool_node = ToolNode(_filter_working_tools(tools))
     
     # Add tool node to graph
-    builder.add_node("tools", tool_node)
+    # builder.add_node("tools", tool_node)  # Temporarily disabled to fix agent execution
 
     # Define edges for parallel execution
     builder.add_edge(START, "start_investigation")
@@ -165,23 +177,20 @@ async def create_parallel_agent_graph(use_enhanced_tools=True):
     # Raw data processing flows back to fraud investigation
     builder.add_edge("raw_data_node", "fraud_investigation")
     
-    # Autonomous tool selection
-    builder.add_conditional_edges("fraud_investigation", tools_condition)
-    builder.add_edge("tools", "fraud_investigation")
+    # COMMENTED OUT: Tool selection conflicts with agent routing
+    # builder.add_conditional_edges("fraud_investigation", tools_condition)
+    # builder.add_edge("tools", "fraud_investigation")
     
-    # Parallel domain agents
+    # Parallel domain agents - direct routing from fraud_investigation
     builder.add_edge("fraud_investigation", "network_agent")
     builder.add_edge("fraud_investigation", "location_agent")
     builder.add_edge("fraud_investigation", "logs_agent")
     builder.add_edge("fraud_investigation", "device_agent")
-
-    # All agents feed into risk assessment
-    for agent in ["network_agent", "location_agent", "logs_agent", "device_agent"]:
-        builder.add_edge(agent, "risk_agent")
+    builder.add_edge("fraud_investigation", "risk_agent")
 
     # Compile with memory
     memory = await create_resilient_memory()
-    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    graph = builder.compile(checkpointer=memory)
 
     logger.info("✅ Parallel autonomous agent graph compiled successfully")
     return graph
@@ -217,7 +226,7 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
             tool_node = ToolNode(_filter_working_tools(tools))
     
     # Add tool node to graph
-    builder.add_node("tools", tool_node)
+    # builder.add_node("tools", tool_node)  # Temporarily disabled to fix agent execution
 
     # Sequential execution flow
     builder.add_edge(START, "start_investigation")
@@ -246,7 +255,7 @@ async def create_sequential_agent_graph(use_enhanced_tools=True):
 
     # Compile with memory
     memory = await create_resilient_memory()
-    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    graph = builder.compile(checkpointer=memory)
 
     logger.info("✅ Sequential agent graph compiled successfully")
     return graph
@@ -333,7 +342,7 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     
     # Compile with persistence
     memory = await create_resilient_memory()
-    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    graph = builder.compile(checkpointer=memory)
     
     logger.info("✅ Modular graph with subgraphs compiled successfully")
     return graph
@@ -583,7 +592,7 @@ async def create_mcp_enhanced_graph(
     
     # Compile with memory
     memory = await create_resilient_memory()
-    graph = builder.compile(checkpointer=memory, interrupt_before=["tools"])
+    graph = builder.compile(checkpointer=memory)
     
     logger.info(f"✅ MCP-enhanced graph compiled with {len(all_tools)} tools")
     return graph

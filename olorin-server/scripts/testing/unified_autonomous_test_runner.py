@@ -991,13 +991,18 @@ class UnifiedAutonomousTestRunner:
                 investigation_mode = InvestigationMode.DEMO
             
             # Initialize unified investigation logging with proper mode and scenario
+            # Create JSON-serializable config for context
+            serializable_config = self.config.__dict__.copy()
+            serializable_config['output_format'] = self.config.output_format.value
+            serializable_config['mode'] = self.config.mode.value
+            
             investigation_folder = self.investigation_logger.start_investigation_logging(
                 investigation_id=investigation_id,
                 context={
                     "scenario": scenario_name,
                     "entity_id": context.entity_id,
                     "test_mode": self.config.mode.value,
-                    "config": self.config.__dict__
+                    "config": serializable_config
                 },
                 mode=investigation_mode,
                 scenario=scenario_name
