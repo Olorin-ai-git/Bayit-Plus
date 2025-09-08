@@ -1290,10 +1290,10 @@ class UnifiedAutonomousTestRunner:
             if 'context' in locals():
                 cleanup_investigation_context(investigation_id, context.entity_id)
             
-            # Clean up mock IPS cache environment variable
-            if self.config.use_mock_ips_cache and "USE_MOCK_IPS_CACHE" in os.environ:
-                del os.environ["USE_MOCK_IPS_CACHE"]
-                self.logger.debug("Cleaned up USE_MOCK_IPS_CACHE environment variable")
+            # Clean up TEST_MODE if it was set for mock mode
+            if self.config.mode == TestMode.MOCK and "TEST_MODE" in os.environ:
+                del os.environ["TEST_MODE"]
+                self.logger.debug("Cleaned up TEST_MODE environment variable")
         
         return result
 
@@ -1458,10 +1458,7 @@ class UnifiedAutonomousTestRunner:
     ) -> Dict[str, Any]:
         """Run comprehensive multi-agent investigation using proper LangGraph orchestration"""
         
-        # Set mock IPS cache environment variable if configured
-        if self.config.use_mock_ips_cache:
-            os.environ["USE_MOCK_IPS_CACHE"] = "true"
-            self.logger.info("🎭 Using mocked IPS Cache for testing")
+        # IPS Cache now controlled by TEST_MODE (set below based on mode)
         
         # Configure Snowflake integration and TEST_MODE based on mode
         if self.config.mode == TestMode.LIVE:

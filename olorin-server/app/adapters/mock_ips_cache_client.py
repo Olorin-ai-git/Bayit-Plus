@@ -155,11 +155,11 @@ class MockPipeline:
 
 
 def get_ips_cache_client():
-    """Factory function to get appropriate IPS Cache client based on environment."""
-    use_mock = os.environ.get("USE_MOCK_IPS_CACHE", "false").lower() == "true"
+    """Factory function to get appropriate IPS Cache client based on TEST_MODE."""
+    use_mock = os.environ.get("TEST_MODE", "").lower() == "mock"
     
     if use_mock:
-        logger.info("Using MockIPSCacheClient due to USE_MOCK_IPS_CACHE=true")
+        logger.info("Using MockIPSCacheClient (TEST_MODE=mock)")
         return MockIPSCacheClient()
     else:
         from app.adapters.ips_cache_client import IPSCacheClient

@@ -1,0 +1,92 @@
+{
+  "investigation_summary": {
+    "scenario_name": "Device Spoofing Investigation",
+    "scenario_description": "Investigate device fingerprint spoofing and manipulation",
+    "entity_id": "user_demo_123",
+    "execution_mode": "mock",
+    "execution_time_seconds": 0.5,
+    "timestamp": "2025-09-08T19:06:12.314704",
+    "status": "completed"
+  },
+  "risk_assessment": {
+    "risk_level": "medium",
+    "risk_score": 0.45,
+    "indicators_expected": [
+      "Device fingerprint inconsistencies",
+      "Browser automation detection",
+      "Emulation patterns",
+      "Hardware profile manipulation"
+    ],
+    "indicators_found": [
+      "Device fingerprint inconsistencies",
+      "Browser automation detection",
+      "Emulation patterns"
+    ],
+    "recommendations": [
+      "Enhanced monitoring recommended",
+      "Review activity patterns"
+    ]
+  },
+  "technical_details": {
+    "agents_executed": [
+      "network_agent",
+      "device_agent",
+      "location_agent",
+      "logs_agent",
+      "risk_agent"
+    ],
+    "execution_metrics": {
+      "total_agents": 5,
+      "successful_agents": 5,
+      "failed_agents": 0,
+      "api_calls_made": 0,
+      "tokens_used": 0,
+      "estimated_cost": 0.0
+    },
+    "test_parameters": {
+      "fingerprint_analysis": true,
+      "automation_detection": true,
+      "hardware_validation": true
+    },
+    "raw_result": {
+      "scenario_id": "device_spoofing",
+      "entity_id": "user_demo_123",
+      "mode": "mock",
+      "timestamp": "2025-09-08T19:06:12.314665",
+      "status": "completed",
+      "agents_executed": [
+        "network_agent",
+        "device_agent",
+        "location_agent",
+        "logs_agent",
+        "risk_agent"
+      ],
+      "findings": {
+        "risk_score": 0.45,
+        "indicators_found": [
+          "Device fingerprint inconsistencies",
+          "Browser automation detection",
+          "Emulation patterns"
+        ],
+        "recommendations": [
+          "Enhanced monitoring recommended",
+          "Review activity patterns"
+        ]
+      },
+      "execution_metrics": {
+        "total_agents": 5,
+        "successful_agents": 5,
+        "failed_agents": 0,
+        "api_calls_made": 0,
+        "tokens_used": 0,
+        "estimated_cost": 0.0
+      }
+    }
+  },
+  "validation": {
+    "expected_indicators_found": 3,
+    "total_expected_indicators": 4,
+    "success_rate": 75.0,
+    "performance_within_expected": true
+  }
+}

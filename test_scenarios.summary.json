@@ -1,0 +1,101 @@
+{
+  "generation_summary": {
+    "total_scenarios": 5,
+    "generated_at": "2025-09-08T19:05:08.583771",
+    "output_files": [
+      "test_scenarios.csv",
+      "test_scenarios.json"
+    ],
+    "config": {
+      "total_count": 5,
+      "scenario_types": [],
+      "risk_distribution": {},
+      "output_file": "test_scenarios.csv",
+      "output_format": "csv",
+      "include_metadata": false,
+      "validate_output": true,
+      "custom_template": null
+    }
+  },
+  "statistics": {
+    "scenario_types": {
+      "account_takeover": 1,
+      "payment_fraud": 1,
+      "authentication_brute_force": 1,
+      "authentication_impossible_travel": 1,
+      "identity_fraud": 1
+    },
+    "risk_levels": {
+      "high": 1,
+      "medium": 3,
+      "critical": 1
+    },
+    "average_expected_risk_score": 0.6119999999999999
+  },
+  "sample_scenarios": [
+    {
+      "scenario_id": "account_takeover_0_1757372708",
+      "entity_id": "user_1757372708.582348_8594",
+      "scenario_type": "account_takeover",
+      "risk_level": "high",
+      "timestamp": "2025-08-24T19:05:08.582748",
+      "user_email": "real.user.1757372708.582348@testdomain.com",
+      "user_phone": "+14155551026",
+      "ip_address": "203.0.113.149",
+      "account_age_days": 2,
+      "failed_login_attempts": 5,
+      "device_changes_24h": 3,
+      "ip_country_mismatch": false,
+      "velocity_spike": false,
+      "browser": "Edge",
+      "os": "MacOS",
+      "screen_resolution": "2560x1440",
+      "expected_risk_score": 0.772,
+      "expected_indicators": "Multiple failed login attempts|Device fingerprint change|IP location mismatch|Unusual access time|Critical risk threshold exceeded"
+    },
+    {
+      "scenario_id": "payment_fraud_1_1757372708",
+      "entity_id": "user_1757372708.582813_8372",
+      "scenario_type": "payment_fraud",
+      "risk_level": "medium",
+      "timestamp": "2025-09-05T19:05:08.582918",
+      "user_email": "real.user.1757372708.582813@testdomain.com",
+      "user_phone": "+14155556281",
+      "ip_address": "203.0.113.108",
+      "account_age_days": 56,
+      "failed_login_attempts": 1,
+      "device_changes_24h": 0,
+      "ip_country_mismatch": false,
+      "velocity_spike": false,
+      "browser": "Edge",
+      "os": "MacOS",
+      "screen_resolution": "3840x2160",
+      "expected_risk_score": 0.337,
+      "expected_indicators": "High transaction velocity|Amount anomaly|New payment method|Merchant category mismatch|Moderate risk indicators present"
+    },
+    {
+      "scenario_id": "authentication_brute_force_3_1757372708",
+      "entity_id": "user_1757372708.583037_1381",
+      "scenario_type": "authentication_brute_force",
+      "risk_level": "critical",
+      "timestamp": "2025-09-06T19:05:08.583151",
+      "user_email": "real.user.1757372708.583037@testdomain.com",
+      "user_phone": "+14155555332",
+      "ip_address": "203.0.113.254",
+      "account_age_days": 3,
+      "failed_login_attempts": 9,
+      "device_changes_24h": 9,
+      "ip_country_mismatch": true,
+      "velocity_spike": true,
+      "browser": "Safari",
+      "os": "Android",
+      "screen_resolution": "1366x768",
+      "expected_risk_score": 0.969,
+      "expected_indicators": "Excessive failed login attempts|Multiple IP addresses attacking same account|Automated login patterns detected|Dictionary attack signatures|MFA bypass attempts"
+    }
+  ],
+  "usage_instructions": {
+    "batch_runner": "python batch_investigation_runner.py --csv-file test_scenarios.summary.csv",
+    "limited_run": "python batch_investigation_runner.py --csv-file test_scenarios.summary.csv --csv-limit 10"
+  }
+}

@@ -229,7 +229,14 @@ class VirusTotalClient:
             VirusTotalDomainResponse with analysis results
         """
         try:
-            result = await self._make_request(f"domains/{domain}")
+            # Ensure domain is properly encoded as string (handle bytes input)
+            if isinstance(domain, bytes):
+                domain = domain.decode('utf-8', errors='ignore')
+            
+            # URL encode the domain for safe API calls
+            encoded_domain = urllib.parse.quote(domain, safe='')
+            
+            result = await self._make_request(f"domains/{encoded_domain}")
             
             if not result["success"]:
                 return VirusTotalDomainResponse(

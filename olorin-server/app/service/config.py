@@ -125,12 +125,7 @@ class SvcSettings(BaseSettings):
     use_ips_cache: bool = (
         False  # Changing this to True will use IPS cache implementation - AsyncRedisSaver instead of Langgraph's MemorySaver
     )
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig()
-    )
-
+   
     # Firebase settings for secret management
     firebase_project_id: Optional[str] = Field(
         None,
@@ -396,6 +391,104 @@ class SvcSettings(BaseSettings):
 
     enabled_tool_list: List[str] = []
 
+    # MCP Server Configuration
+    # Enable/disable MCP services
+    mcp_blockchain_enabled: bool = Field(
+        False,
+        description="Enable blockchain analysis MCP client",
+        env="USE_BLOCKCHAIN_MCP_CLIENT"
+    )
+    mcp_intelligence_enabled: bool = Field(
+        False,
+        description="Enable intelligence gathering MCP client", 
+        env="USE_INTELLIGENCE_MCP_CLIENT"
+    )
+    mcp_ml_ai_enabled: bool = Field(
+        False,
+        description="Enable ML/AI models MCP client",
+        env="USE_ML_AI_MCP_CLIENT"
+    )
+    
+    # MCP Server endpoints
+    mcp_blockchain_endpoint: str = Field(
+        "http://localhost:8080/mcp",
+        description="Blockchain analysis MCP server endpoint",
+        env="BLOCKCHAIN_MCP_ENDPOINT"
+    )
+    mcp_intelligence_endpoint: str = Field(
+        "http://localhost:8081/mcp", 
+        description="Intelligence gathering MCP server endpoint",
+        env="INTELLIGENCE_MCP_ENDPOINT"
+    )
+    mcp_ml_ai_endpoint: str = Field(
+        "http://localhost:8082/mcp",
+        description="ML/AI models MCP server endpoint", 
+        env="ML_AI_MCP_ENDPOINT"
+    )
+    
+    # MCP Server timeouts
+    mcp_blockchain_timeout: int = Field(
+        30,
+        description="Blockchain MCP server timeout in seconds",
+        env="BLOCKCHAIN_MCP_TIMEOUT"
+    )
+    mcp_intelligence_timeout: int = Field(
+        30,
+        description="Intelligence MCP server timeout in seconds",
+        env="INTELLIGENCE_MCP_TIMEOUT"
+    )
+    mcp_ml_ai_timeout: int = Field(
+        45,
+        description="ML/AI MCP server timeout in seconds",
+        env="ML_AI_MCP_TIMEOUT"
+    )
+    
+    # MCP API Keys - Firebase Secret Manager integration
+    mcp_blockchain_api_key_secret: str = Field(
+        "BLOCKCHAIN_MCP_API_KEY",
+        description="Firebase secret name for blockchain MCP API key",
+        env="BLOCKCHAIN_MCP_API_KEY_SECRET"
+    )
+    mcp_intelligence_api_key_secret: str = Field(
+        "INTELLIGENCE_MCP_API_KEY",
+        description="Firebase secret name for intelligence MCP API key", 
+        env="INTELLIGENCE_MCP_API_KEY_SECRET"
+    )
+    mcp_ml_ai_api_key_secret: str = Field(
+        "ML_AI_MCP_API_KEY",
+        description="Firebase secret name for ML/AI MCP API key",
+        env="ML_AI_MCP_API_KEY_SECRET"
+    )
+    
+    # Allow overriding MCP API keys directly via environment for local/dev
+    mcp_blockchain_api_key: Optional[str] = Field(
+        None,
+        description="Override blockchain MCP API key via env var BLOCKCHAIN_MCP_API_KEY",
+        env="BLOCKCHAIN_MCP_API_KEY"
+    )
+    mcp_intelligence_api_key: Optional[str] = Field(
+        None,
+        description="Override intelligence MCP API key via env var INTELLIGENCE_MCP_API_KEY",
+        env="INTELLIGENCE_MCP_API_KEY"
+    )
+    mcp_ml_ai_api_key: Optional[str] = Field(
+        None,
+        description="Override ML/AI MCP API key via env var ML_AI_MCP_API_KEY",
+        env="ML_AI_MCP_API_KEY"
+    )
+    
+    # MCP Cache settings
+    mcp_cache_enabled: bool = Field(
+        True,
+        description="Enable MCP response caching",
+        env="MCP_CACHE_ENABLED"
+    )
+    mcp_cache_ttl: int = Field(
+        300,
+        description="MCP cache TTL in seconds", 
+        env="MCP_CACHE_TTL"
+    )
+
 
 # see https://fastapi.tiangolo.com/advanced/settings/#settings-in-a-dependency
 @lru_cache(maxsize=1)
@@ -443,58 +536,9 @@ class ProdSettings(SvcSettings):
 
 class LocalSettings(PreProdSettings):
     log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    ceres_endpoint: str = "https://ceres-das-e2e.api.olorin.com"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com", upi_mock_response=True
-        )
-    )
     default_profile_id: str = "9341454513864369"
     splunk_host: str = preprod_splunk_host
     splunk_index: str = preprod_splunk_index
-
-
-class QALSettings(PreProdSettings):
-    log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-qal.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
-        )
-    )
-    default_profile_id: str = "9341454513864369"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class E2ESettings(PreProdSettings):
-    log_level: str = "DEBUG"
-    ips_base_url: str = "https://ipscache-e2e.api.olorin.com"
-    ips_base_path: str = "/v1/cache"
-    upi_history_conversation_api_config: UpiHistoryConversationApiConfig = (
-        UpiHistoryConversationApiConfig(
-            upi_base_url="https://genosuxsvc-e2e.api.olorin.com"
-        )
-    )
-    default_profile_id: str = "9341454513864369"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class PRFSettings(PreProdSettings):
-    log_level: str = "INFO"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
-
-class STGSettings(ProdSettings):
-    log_level: str = "INFO"
-    splunk_host: str = preprod_splunk_host
-    splunk_index: str = preprod_splunk_index
-
 
 class PRDSettings(ProdSettings):
     log_level: str = "INFO"
@@ -504,11 +548,6 @@ class PRDSettings(ProdSettings):
 
 _ENV_SETTINGS = {
     "local": LocalSettings,
-    "jenkins": QALSettings,
-    "qal": QALSettings,
-    "e2e": E2ESettings,
-    "prf": PRFSettings,
-    "stg": STGSettings,
     "prd": PRDSettings,
 }
 

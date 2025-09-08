@@ -84,16 +84,12 @@ async def create_resilient_memory():
     except ImportError:
         logger.info("🛡️ LangGraph RedisSaver not available - trying AsyncRedisSaver with mock")
         
-        # Fallback to AsyncRedisSaver with mock IPS cache
+        # Fallback to AsyncRedisSaver (uses TEST_MODE for mock/real IPS cache)
         try:
             from app.persistence.async_ips_redis import AsyncRedisSaver
-            import os
-            
-            # Force use of mock client to avoid non-existent ipscache-qal.api.olorin.com
-            os.environ["USE_MOCK_IPS_CACHE"] = "true"
             memory = AsyncRedisSaver()
             
-            logger.info("🛡️ Using AsyncRedisSaver with MockIPSCacheClient - bulletproof resilience enabled")
+            logger.info("🛡️ Using AsyncRedisSaver (mock/real IPS cache determined by TEST_MODE)")
             return memory
             
         except Exception as e:

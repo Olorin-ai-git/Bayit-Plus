@@ -417,7 +417,7 @@ Integration Examples:
     args = parser.parse_args()
     
     # Initialize integration runner
-    integration_runner = InvestigrationIntegrationRunner()
+    integration_runner = InvestigationIntegrationRunner()
     
     try:
         if args.validate:

@@ -86,7 +86,7 @@ async def run_monitored_investigation():
     
     try:
         # Set up environment for testing
-        os.environ["USE_MOCK_IPS_CACHE"] = "true"
+        os.environ["TEST_MODE"] = "mock"
         os.environ["ENVIRONMENT"] = "development"
         os.environ["WEBSOCKET_AUTH_REQUIRED"] = "false"
         

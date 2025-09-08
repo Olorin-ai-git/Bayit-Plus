@@ -654,40 +654,109 @@ async def get_enhanced_mcp_client() -> EnhancedMCPClient:
 
 
 async def _register_default_servers(client: EnhancedMCPClient):
-    """Register default MCP servers from environment configuration."""
-    import os
-    
-    # Blockchain servers
-    if os.getenv("USE_BLOCKCHAIN_MCP_CLIENT") == "true":
-        client.register_server(MCPServerEndpoint(
-            name="blockchain_analysis",
-            url=os.getenv("BLOCKCHAIN_MCP_ENDPOINT", "http://localhost:8080/mcp"),
-            api_key=os.getenv("BLOCKCHAIN_MCP_API_KEY"),
-            timeout=30,
-            enabled=True
-        ))
+    """Register default MCP servers from Pydantic settings configuration."""
+    try:
+        from app.service.config import get_settings_for_env
+        settings = get_settings_for_env()
         
-    # Intelligence servers
-    if os.getenv("USE_INTELLIGENCE_MCP_CLIENT") == "true":
-        client.register_server(MCPServerEndpoint(
-            name="intelligence_gathering",
-            url=os.getenv("INTELLIGENCE_MCP_ENDPOINT", "http://localhost:8081/mcp"),
-            api_key=os.getenv("INTELLIGENCE_MCP_API_KEY"),
-            timeout=30,
-            enabled=True
-        ))
+        # Blockchain servers
+        if settings.mcp_blockchain_enabled:
+            # Get API key from settings (Firebase Secret Manager or env override)
+            api_key = getattr(settings, 'mcp_blockchain_api_key', None)
+            if not api_key:
+                # Try to get from Firebase secrets via config_secrets module
+                try:
+                    from app.service.config_secrets import get_secret_value
+                    api_key = get_secret_value(settings.mcp_blockchain_api_key_secret)
+                except (ImportError, Exception) as e:
+                    logger.warning(f"Could not get blockchain MCP API key from secrets: {e}")
+                    
+            client.register_server(MCPServerEndpoint(
+                name="blockchain_analysis",
+                url=settings.mcp_blockchain_endpoint,
+                api_key=api_key,
+                timeout=settings.mcp_blockchain_timeout,
+                enabled=True
+            ))
+            
+        # Intelligence servers
+        if settings.mcp_intelligence_enabled:
+            # Get API key from settings (Firebase Secret Manager or env override)
+            api_key = getattr(settings, 'mcp_intelligence_api_key', None)
+            if not api_key:
+                # Try to get from Firebase secrets via config_secrets module
+                try:
+                    from app.service.config_secrets import get_secret_value
+                    api_key = get_secret_value(settings.mcp_intelligence_api_key_secret)
+                except (ImportError, Exception) as e:
+                    logger.warning(f"Could not get intelligence MCP API key from secrets: {e}")
+                    
+            client.register_server(MCPServerEndpoint(
+                name="intelligence_gathering",
+                url=settings.mcp_intelligence_endpoint,
+                api_key=api_key,
+                timeout=settings.mcp_intelligence_timeout,
+                enabled=True
+            ))
+            
+        # ML/AI servers
+        if settings.mcp_ml_ai_enabled:
+            # Get API key from settings (Firebase Secret Manager or env override)
+            api_key = getattr(settings, 'mcp_ml_ai_api_key', None)
+            if not api_key:
+                # Try to get from Firebase secrets via config_secrets module
+                try:
+                    from app.service.config_secrets import get_secret_value
+                    api_key = get_secret_value(settings.mcp_ml_ai_api_key_secret)
+                except (ImportError, Exception) as e:
+                    logger.warning(f"Could not get ML/AI MCP API key from secrets: {e}")
+                    
+            client.register_server(MCPServerEndpoint(
+                name="ml_ai_models",
+                url=settings.mcp_ml_ai_endpoint,
+                api_key=api_key,
+                timeout=settings.mcp_ml_ai_timeout,
+                enabled=True
+            ))
+            
+        logger.info("Default MCP servers registered from Pydantic settings")
         
-    # ML/AI servers
-    if os.getenv("USE_ML_AI_MCP_CLIENT") == "true":
-        client.register_server(MCPServerEndpoint(
-            name="ml_ai_models",
-            url=os.getenv("ML_AI_MCP_ENDPOINT", "http://localhost:8082/mcp"),
-            api_key=os.getenv("ML_AI_MCP_API_KEY"),
-            timeout=45,
-            enabled=True
-        ))
+    except Exception as e:
+        logger.error(f"Error registering default MCP servers from settings: {e}")
+        # Fallback to direct environment variables for backward compatibility
+        import os
         
-    logger.info("Default MCP servers registered")
+        # Blockchain servers
+        if os.getenv("USE_BLOCKCHAIN_MCP_CLIENT") == "true":
+            client.register_server(MCPServerEndpoint(
+                name="blockchain_analysis",
+                url=os.getenv("BLOCKCHAIN_MCP_ENDPOINT", "http://localhost:8080/mcp"),
+                api_key=os.getenv("BLOCKCHAIN_MCP_API_KEY"),
+                timeout=30,
+                enabled=True
+            ))
+            
+        # Intelligence servers
+        if os.getenv("USE_INTELLIGENCE_MCP_CLIENT") == "true":
+            client.register_server(MCPServerEndpoint(
+                name="intelligence_gathering",
+                url=os.getenv("INTELLIGENCE_MCP_ENDPOINT", "http://localhost:8081/mcp"),
+                api_key=os.getenv("INTELLIGENCE_MCP_API_KEY"),
+                timeout=30,
+                enabled=True
+            ))
+            
+        # ML/AI servers
+        if os.getenv("USE_ML_AI_MCP_CLIENT") == "true":
+            client.register_server(MCPServerEndpoint(
+                name="ml_ai_models",
+                url=os.getenv("ML_AI_MCP_ENDPOINT", "http://localhost:8082/mcp"),
+                api_key=os.getenv("ML_AI_MCP_API_KEY"),
+                timeout=45,
+                enabled=True
+            ))
+            
+        logger.info("Default MCP servers registered from fallback environment variables")
 
 
 async def shutdown_enhanced_mcp_client():

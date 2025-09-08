@@ -17,12 +17,8 @@ from starlette.datastructures import Headers
 
 from .auth import check_route_allowed
 from .config import (
-    E2ESettings,
     LocalSettings,
     PRDSettings,
-    PRFSettings,
-    QALSettings,
-    STGSettings,
     SvcSettings,
 )
 from .error_handling import register_error_handlers
@@ -97,10 +93,6 @@ def _legacy_configure_logger(app):
 
 _ENV_SETTINGS = {
     "local": LocalSettings,
-    "qal": QALSettings,
-    "e2e": E2ESettings,
-    "prf": PRFSettings,
-    "stg": STGSettings,
     "prd": PRDSettings,
 }
 
@@ -215,12 +207,8 @@ def get_app_kwargs(*args, **kwargs):
 # Preserve all original exports for backward compatibility
 __all__ = [
     # Configuration classes
-    "E2ESettings",
     "LocalSettings", 
     "PRDSettings",
-    "PRFSettings",
-    "QALSettings",
-    "STGSettings",
     "SvcSettings",
     # Factory functions
     "_settings_factory",

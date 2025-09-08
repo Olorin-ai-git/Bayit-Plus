@@ -209,6 +209,33 @@ class VirusTotalDomainAnalysisTool(BaseTool):
             # Analyze domain with VirusTotal
             domain_response = await self.client.analyze_domain(domain)
             
+            # Check if the analysis was successful
+            if not domain_response.success:
+                # Handle specific error patterns from VirusTotal
+                error_msg = domain_response.error or "Unknown error"
+                if "InvalidArgumentError" in error_msg and "not a valid domain pattern" in error_msg:
+                    logger = get_bridge_logger(__name__)
+                    logger.debug(f"VirusTotal domain analysis validation failed for {domain}: {error_msg}")
+                    return json.dumps({
+                        "status": "validation_error",
+                        "reason": "Invalid domain format for VirusTotal API",
+                        "suggestion": "Ensure input is a valid domain name (not IP address or malformed string)",
+                        "input": domain,
+                        "timestamp": self._get_current_timestamp(),
+                        "source": "VirusTotal Domain Analysis"
+                    }, indent=2)
+                else:
+                    # Handle other API errors gracefully
+                    logger = get_bridge_logger(__name__)
+                    logger.warning(f"VirusTotal domain analysis failed for {domain}: {error_msg}")
+                    return json.dumps({
+                        "status": "error",
+                        "reason": f"VirusTotal API error: {error_msg}",
+                        "domain": domain,
+                        "timestamp": self._get_current_timestamp(),
+                        "source": "VirusTotal Domain Analysis"
+                    }, indent=2)
+            
             # Build comprehensive analysis result
             analysis_result = await self._build_domain_analysis(
                 domain_response=domain_response,
@@ -242,9 +269,10 @@ class VirusTotalDomainAnalysisTool(BaseTool):
                 
         except Exception as e:
             logger = get_bridge_logger(__name__)
+            error_str = str(e)
             
             # Handle specific known errors gracefully
-            if "InvalidArgumentError" in str(e) and "not a valid domain pattern" in str(e):
+            if "InvalidArgumentError" in error_str and "not a valid domain pattern" in error_str:
                 logger.debug(f"VirusTotal domain analysis skipped for {domain}: invalid domain pattern (likely IP address)")
                 return json.dumps({
                     "status": "skipped",
@@ -254,11 +282,31 @@ class VirusTotalDomainAnalysisTool(BaseTool):
                     "timestamp": self._get_current_timestamp(),
                     "source": "VirusTotal Domain Analysis"
                 }, indent=2)
-            elif "API" in str(e) and ("quota" in str(e).lower() or "limit" in str(e).lower()):
-                logger.debug(f"VirusTotal domain analysis rate limited for {domain}: {str(e)}")
+            elif "VirusTotal API error 400" in error_str and "not a valid domain pattern" in error_str:
+                # Handle the specific error format seen in the logs
+                logger.debug(f"VirusTotal domain analysis failed for {domain}: API validation error")
+                return json.dumps({
+                    "status": "validation_error", 
+                    "reason": "Invalid domain format for VirusTotal API",
+                    "suggestion": "Ensure input is a valid domain name (not IP address or malformed string)",
+                    "input": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
+            elif "API" in error_str and ("quota" in error_str.lower() or "limit" in error_str.lower()):
+                logger.debug(f"VirusTotal domain analysis rate limited for {domain}: {error_str}")
                 return json.dumps({
                     "status": "rate_limited",
                     "reason": "VirusTotal API quota exceeded",
+                    "domain": domain,
+                    "timestamp": self._get_current_timestamp(),
+                    "source": "VirusTotal Domain Analysis"
+                }, indent=2)
+            elif "unauthorized" in error_str.lower() or "invalid api key" in error_str.lower():
+                logger.error(f"VirusTotal domain analysis authentication failed for {domain}: {error_str}")
+                return json.dumps({
+                    "status": "authentication_failed",
+                    "reason": "Invalid or missing VirusTotal API key",
                     "domain": domain,
                     "timestamp": self._get_current_timestamp(),
                     "source": "VirusTotal Domain Analysis"

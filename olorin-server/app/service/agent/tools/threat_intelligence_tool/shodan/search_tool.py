@@ -93,10 +93,45 @@ class ShodanSearchTool(BaseTool):
             
             return json.dumps(analysis_result, indent=2, default=str)
             
+        except ValueError as ve:
+            error_str = str(ve)
+            # Handle specific Shodan API errors gracefully
+            if "paid subscription plan" in error_str.lower():
+                logger.warning(f"Shodan search unavailable for query '{query}': requires paid plan")
+                return json.dumps({
+                    "status": "unavailable",
+                    "reason": "Shodan search requires paid subscription plan",
+                    "query": query,
+                    "source": "Shodan",
+                    "suggestion": "Consider upgrading Shodan subscription for advanced search capabilities"
+                }, indent=2)
+            elif "insufficient credits" in error_str.lower():
+                logger.warning(f"Shodan search unavailable for query '{query}': insufficient credits")
+                return json.dumps({
+                    "status": "quota_exceeded",
+                    "reason": "Shodan API quota exceeded",
+                    "query": query,
+                    "source": "Shodan",
+                    "suggestion": "Wait for credits to refresh or upgrade subscription"
+                }, indent=2)
+            elif "unauthorized" in error_str.lower() or "invalid api key" in error_str.lower():
+                logger.error(f"Shodan search authentication failed for query '{query}': {error_str}")
+                return json.dumps({
+                    "status": "authentication_failed",
+                    "reason": "Invalid or missing Shodan API key",
+                    "query": query,
+                    "source": "Shodan",
+                    "suggestion": "Verify Shodan API key configuration"
+                }, indent=2)
+            else:
+                # Re-raise other ValueError exceptions
+                raise ve
+            
         except Exception as e:
             error_msg = f"Shodan search failed for query '{query}': {str(e)}"
             logger.error(error_msg, exc_info=True)
             return json.dumps({
+                "status": "error",
                 "error": error_msg,
                 "query": query,
                 "source": "Shodan"
