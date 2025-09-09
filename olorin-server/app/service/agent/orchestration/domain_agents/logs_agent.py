@@ -20,7 +20,7 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     Analyzes system logs, authentication patterns, and activity timelines.
     """
     start_time = time.time()
-    logger.info("📝 Logs agent analyzing investigation")
+    logger.info("[Step 5.2.4] 📝 Logs agent analyzing investigation")
     
     # Get relevant data from state
     snowflake_data = state.get("snowflake_data", {})
@@ -31,7 +31,7 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     # Initialize logging and chain of thought
     DomainAgentBase.log_agent_start("logs", entity_type, entity_id, False)
-    DomainAgentBase.log_context_analysis(snowflake_data, tool_results)
+    DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "logs")
     
     process_id = DomainAgentBase.start_chain_of_thought(
         investigation_id=investigation_id,
@@ -68,8 +68,8 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
         if isinstance(snowflake_data, str):
             logs_findings["risk_indicators"].append("Snowflake data in non-structured format")
     
-    # Analyze log analysis tool results
-    _analyze_log_tools(tool_results, logs_findings)
+    # Analyze log analysis and activity intelligence
+    _analyze_log_intelligence(tool_results, logs_findings)
     
     # Add evidence summary
     logs_findings["evidence_summary"] = {
@@ -77,6 +77,16 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "risk_indicators_found": len(logs_findings["risk_indicators"]),
         "metrics_collected": len(logs_findings["metrics"])
     }
+    
+    # CRITICAL: Analyze evidence with LLM to generate risk scores
+    from .base import analyze_evidence_with_llm
+    logs_findings = await analyze_evidence_with_llm(
+        domain="logs",
+        findings=logs_findings,
+        snowflake_data=snowflake_data,
+        entity_type=entity_type,
+        entity_id=entity_id
+    )
     
     # Finalize findings
     analysis_duration = time.time() - start_time
@@ -88,7 +98,7 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     log_agent_handover_complete("logs", logs_findings)
     complete_chain_of_thought(process_id, logs_findings, "logs")
     
-    logger.info(f"✅ Logs analysis complete - Risk: {logs_findings['risk_score']:.2f}")
+    logger.info(f"[Step 5.2.4] ✅ Logs analysis complete - Risk: {logs_findings['risk_score']:.2f}")
     
     # Update state with findings
     return add_domain_findings(state, "logs", logs_findings)
@@ -153,25 +163,147 @@ def _analyze_error_patterns(results: list, findings: Dict[str, Any]) -> None:
         findings["evidence"].append(f"SUSPICIOUS: {len(unique_errors)} different error types may indicate probing behavior")
 
 
-def _analyze_log_tools(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:
-    """Analyze results from log analysis tools (Splunk, SumoLogic, etc.)."""
-    log_tools = ["splunk_tool", "sumologic_tool", "elasticsearch_tool"]
+def _analyze_log_intelligence(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:
+    """Analyze log analysis and activity intelligence from any tool that provides behavioral data."""
     
-    for tool_name in log_tools:
-        if tool_name in tool_results:
-            result = tool_results[tool_name]
-            if isinstance(result, dict):
-                suspicious_activity = result.get("suspicious_activity", False)
-                alert_count = result.get("alert_count", 0)
-                
-                if suspicious_activity or alert_count > 0:
-                    findings["risk_indicators"].append(f"{tool_name}: Suspicious activity detected")
-                    findings["risk_score"] = max(findings["risk_score"], 0.2)
-                    findings["evidence"].append(
-                        f"Log analysis alert from {tool_name}: "
-                        f"suspicious={suspicious_activity}, alerts={alert_count}"
-                    )
-                
-                # Store metrics
-                findings["metrics"][f"{tool_name}_suspicious"] = suspicious_activity
-                findings["metrics"][f"{tool_name}_alert_count"] = alert_count
+    logger.debug(f"[Step 5.2.4.2] 🔍 Category-based log analysis: Processing {len(tool_results)} tools")
+    
+    # Process ALL tool results, not just hardcoded ones
+    for tool_name, result in tool_results.items():
+        if not isinstance(result, dict):
+            logger.debug(f"[Step 5.2.4.2]   ⏭️  Skipping {tool_name}: non-dict result")
+            continue
+            
+        # Look for log intelligence indicators across any tool
+        log_signals = _extract_log_signals(tool_name, result)
+        
+        if log_signals:
+            logger.debug(f"[Step 5.2.4.2]   ✅ {tool_name}: Found {len(log_signals)} log signals")
+            _process_log_signals(tool_name, log_signals, findings)
+        else:
+            logger.debug(f"[Step 5.2.4.2]   ➖ {tool_name}: No log intelligence signals detected")
+
+
+def _extract_log_signals(tool_name: str, result: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract log intelligence signals from any tool result."""
+    signals = {}
+    
+    logger.debug(f"[Step 5.2.4.2] 🔍 Extracting log signals from {tool_name} with {len(result)} top-level fields")
+    
+    # Common log analysis fields (tools may use different names)
+    log_indicators = [
+        "suspicious_activity", "anomaly", "alert", "violation", "breach",
+        "failed_attempts", "rapid_fire", "bulk_activity", "automation",
+        "session_anomaly", "pattern_violation", "behavioral_risk"
+    ]
+    
+    # Log score fields
+    log_score_indicators = [
+        "alert_count", "anomaly_score", "activity_score", "behavioral_score",
+        "session_risk_score", "pattern_score", "violation_count"
+    ]
+    
+    # Extract boolean log indicators
+    for indicator in log_indicators:
+        if indicator in result:
+            signals[f"log_{indicator}"] = result[indicator]
+            logger.debug(f"[Step 5.2.4.2]     → Found log indicator: {indicator} = {result[indicator]}")
+    
+    # Extract numeric log scores
+    for indicator in log_score_indicators:
+        if indicator in result:
+            try:
+                signals[f"score_{indicator}"] = float(result[indicator])
+                logger.debug(f"[Step 5.2.4.2]     → Found log score: {indicator} = {result[indicator]}")
+            except (ValueError, TypeError):
+                logger.debug(f"[Step 5.2.4.2]     → Skipped non-numeric score: {indicator} = {result[indicator]}")
+                pass
+    
+    # Look for nested log data (many tools nest results)
+    nested_count = 0
+    for key, value in result.items():
+        if isinstance(value, dict):
+            nested_signals = _extract_log_signals(f"{tool_name}_{key}", value)
+            signals.update(nested_signals)
+            if nested_signals:
+                nested_count += 1
+        elif isinstance(value, list):
+            # Handle arrays of log data
+            for i, item in enumerate(value[:5]):  # Limit to first 5 items
+                if isinstance(item, dict):
+                    nested_signals = _extract_log_signals(f"{tool_name}_{key}_{i}", item)
+                    signals.update(nested_signals)
+                    if nested_signals:
+                        nested_count += 1
+    
+    if nested_count > 0:
+        logger.debug(f"[Step 5.2.4.2]     → Processed {nested_count} nested structures")
+    
+    logger.debug(f"[Step 5.2.4.2] ✅ Extracted {len(signals)} log signals from {tool_name}")
+    return signals
+
+
+def _process_log_signals(tool_name: str, signals: Dict[str, Any], findings: Dict[str, Any]) -> None:
+    """Process extracted log signals to adjust risk score."""
+    
+    logger.debug(f"[Step 5.2.4.3] 🔍 Processing {len(signals)} log signals from {tool_name}")
+    
+    # Calculate log risk assessment from all signals
+    log_risk_level = 0.0
+    evidence_count = 0
+    
+    # Process boolean log indicators
+    for key, value in signals.items():
+        if key.startswith("log_") and value:
+            if value is True or str(value).lower() in ["true", "yes", "1", "suspicious", "anomaly", "violation"]:
+                log_risk_level += 0.2
+                evidence_count += 1
+                findings["evidence"].append(f"{tool_name}: {key} = {value}")
+    
+    # Process numeric scores
+    for key, value in signals.items():
+        if key.startswith("score_") and isinstance(value, (int, float)):
+            # Normalize different score scales to 0-1 range
+            normalized_score = _normalize_log_score(key, value)
+            if normalized_score > 0.6:  # High log risk
+                log_risk_level += normalized_score * 0.25
+                evidence_count += 1
+                findings["evidence"].append(f"{tool_name}: {key} = {value} (normalized: {normalized_score:.2f})")
+            elif normalized_score < 0.2:  # Low log risk (normal activity)
+                log_risk_level -= (0.2 - normalized_score) * 0.15
+                findings["evidence"].append(f"{tool_name}: Normal log activity {key} = {value}")
+    
+    # Apply risk adjustment based on log assessment
+    if log_risk_level > 0.4:
+        # High log risk detected - increase risk
+        risk_multiplier = 1.0 + min(0.1, log_risk_level * 0.06)
+        findings["risk_score"] = min(1.0, findings["risk_score"] * risk_multiplier)
+        findings["risk_indicators"].append(f"{tool_name}: Suspicious log activity detected (level: {log_risk_level:.2f})")
+    elif log_risk_level < -0.1:
+        # Normal log activity - reduce risk
+        risk_multiplier = 1.0 + max(-0.05, log_risk_level * 0.1)  # log_risk_level is negative
+        findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
+        findings["evidence"].append(f"{tool_name}: Log activity appears normal (level: {log_risk_level:.2f})")
+    
+    # Store aggregated metrics
+    if evidence_count > 0:
+        findings["metrics"][f"{tool_name}_log_risk_level"] = log_risk_level
+        findings["metrics"][f"{tool_name}_evidence_count"] = evidence_count
+        logger.debug(f"[Step 5.2.4.3]   ✅ {tool_name}: Processed {evidence_count} log signals, risk level: {log_risk_level:.2f}")
+    else:
+        logger.debug(f"[Step 5.2.4.3]   ➖ {tool_name}: No actionable log signals found")
+
+
+def _normalize_log_score(score_type: str, value: float) -> float:
+    """Normalize different log score scales to 0-1 range."""
+    
+    # Common score ranges for different tools
+    if "100" in str(value) or value > 10:
+        # Likely 0-100 scale
+        return min(1.0, max(0.0, value / 100.0))
+    elif value > 1.0:
+        # Likely 0-10 scale or similar
+        return min(1.0, max(0.0, value / 10.0))
+    else:
+        # Likely already 0-1 scale
+        return min(1.0, max(0.0, value))

@@ -1717,7 +1717,7 @@ class UnifiedAutonomousTestRunner:
                 continue
         
         # Ensure we have results for all expected domains
-        expected_domains = ["network", "device", "location", "logs"]
+        expected_domains = ["network", "device", "location", "logs", "authentication", "risk"]
         for domain in expected_domains:
             if domain not in agent_results:
                 agent_results[domain] = {

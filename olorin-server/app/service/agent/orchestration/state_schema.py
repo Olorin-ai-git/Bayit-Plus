@@ -191,8 +191,41 @@ def update_phase(state: InvestigationState, new_phase: str) -> Dict[str, Any]:
     Returns:
         State updates
     """
+    current_phase = state.get('current_phase', 'unknown')
+    orchestrator_loops = state.get("orchestrator_loops", 0)
+    domains_completed = state.get("domains_completed", [])
+    tools_used = state.get("tools_used", [])
+    
     # Logger is now defined at module level
-    logger.info(f"📊 Phase transition: {state.get('current_phase', 'unknown')} → {new_phase}")
+    logger.debug(f"[PHASE-TRANSITION] 🔄 PHASE TRANSITION ANALYSIS")
+    logger.debug(f"[PHASE-TRANSITION]   From phase: {current_phase}")
+    logger.debug(f"[PHASE-TRANSITION]   To phase: {new_phase}")
+    logger.debug(f"[PHASE-TRANSITION]   Orchestrator loops: {orchestrator_loops}")
+    logger.debug(f"[PHASE-TRANSITION]   Domains completed: {len(domains_completed)} - {domains_completed}")
+    logger.debug(f"[PHASE-TRANSITION]   Tools used: {len(tools_used)} - {tools_used}")
+    logger.debug(f"[PHASE-TRANSITION]   Is completion transition: {new_phase == 'complete' or new_phase == 'summary'}")
+    
+    if new_phase in ['complete', 'summary']:
+        if new_phase == 'summary':
+            logger.debug(f"[PHASE-TRANSITION]   🎯 SUMMARY PHASE: Investigation ready for final assessment")
+        else:
+            logger.debug(f"[PHASE-TRANSITION]   🏁 COMPLETE PHASE: Investigation terminating")
+            
+        # Log which safety limits may have triggered this completion
+        completion_triggers = []
+        if len(domains_completed) >= 3:
+            completion_triggers.append(f"sufficient_domains({len(domains_completed)}>=3)")
+        if orchestrator_loops >= 6:
+            completion_triggers.append(f"orchestrator_loops({orchestrator_loops}>=6)")
+        if len(tools_used) >= 6:
+            completion_triggers.append(f"tools_used({len(tools_used)}>=6)")
+            
+        if completion_triggers:
+            logger.debug(f"[PHASE-TRANSITION]   🔒 Completion triggers active: {', '.join(completion_triggers)}")
+        else:
+            logger.debug(f"[PHASE-TRANSITION]   ✅ Natural completion - no safety limits triggered")
+    
+    logger.info(f"📊 Phase transition: {current_phase} → {new_phase}")
     
     return {"current_phase": new_phase}
 
@@ -332,25 +365,45 @@ def is_investigation_complete(state: InvestigationState) -> bool:
     Returns:
         True if investigation is complete
     """
+    current_phase = state.get("current_phase", "unknown")
+    snowflake_completed = state.get("snowflake_completed", False)
+    domains_completed = state.get("domains_completed", [])
+    tools_used = state.get("tools_used", [])
+    
+    min_domains_required = 3
+    min_tools_required = 10
+    
+    logger.debug(f"[COMPLETION-CHECK] 🔒 INVESTIGATION COMPLETION CRITERIA CHECK")
+    logger.debug(f"[COMPLETION-CHECK]   Current phase: {current_phase}")
+    logger.debug(f"[COMPLETION-CHECK]   Snowflake completed: {snowflake_completed}")
+    logger.debug(f"[COMPLETION-CHECK]   Domains completed: {domains_completed} (count: {len(domains_completed)})")
+    logger.debug(f"[COMPLETION-CHECK]   Tools used: {tools_used} (count: {len(tools_used)})")
+    logger.debug(f"[COMPLETION-CHECK]   Minimum domains required: {min_domains_required}")
+    logger.debug(f"[COMPLETION-CHECK]   Minimum tools required: {min_tools_required}")
+    
     # Check if we're in complete phase
-    if state.get("current_phase") == "complete":
+    if current_phase == "complete":
+        logger.debug(f"[COMPLETION-CHECK]   ✅ COMPLETE: Already in complete phase")
         return True
     
     # Check if all required phases are done
     required_phases = ["snowflake_analysis", "domain_analysis"]
+    logger.debug(f"[COMPLETION-CHECK]   Required phases: {required_phases}")
     
     # Snowflake must be complete
-    if not state.get("snowflake_completed", False):
+    if not snowflake_completed:
+        logger.debug(f"[COMPLETION-CHECK]   ❌ INCOMPLETE: Snowflake analysis not completed")
         return False
     
     # At least 3 domains should be complete
-    domains_completed = state.get("domains_completed", [])
-    if len(domains_completed) < 3:
+    if len(domains_completed) < min_domains_required:
+        logger.debug(f"[COMPLETION-CHECK]   ❌ INCOMPLETE: Not enough domains completed ({len(domains_completed)} < {min_domains_required})")
         return False
     
     # Should have used at least 10 tools
-    tools_used = state.get("tools_used", [])
-    if len(tools_used) < 10:
+    if len(tools_used) < min_tools_required:
+        logger.debug(f"[COMPLETION-CHECK]   ❌ INCOMPLETE: Not enough tools used ({len(tools_used)} < {min_tools_required})")
         return False
     
+    logger.debug(f"[COMPLETION-CHECK]   ✅ COMPLETE: All completion criteria met")
     return True

@@ -716,30 +716,56 @@ Use the snowflake_query_tool immediately."""
         test_mode = os.getenv('TEST_MODE', '').lower()
         
         # In mock mode: Skip additional tools after Snowflake
+        logger.debug(f"[SAFETY-CHECK-2] 🔒 TOOL EXECUTION SAFETY CHECK (MOCK MODE)")
+        logger.debug(f"[SAFETY-CHECK-2]   Test mode: {test_mode}")
+        logger.debug(f"[SAFETY-CHECK-2]   Tools used count: {len(tools_used)}")
+        logger.debug(f"[SAFETY-CHECK-2]   Mock mode skip condition: {test_mode == 'mock' and len(tools_used) >= 1}")
+        
         if test_mode == 'mock' and len(tools_used) >= 1:
+            logger.debug(f"[SAFETY-CHECK-2]   ✅ TRIGGERED: Mock mode skip after {len(tools_used)} tools")
             logger.info(f"🎭 Mock mode: Skipping to domain analysis after {len(tools_used)} tools")
             return update_phase(state, "domain_analysis")
         
-        # In live mode: Limit tool execution attempts to prevent infinite loops
+        # In live mode: Allow adequate tool execution for domain analysis
         tool_execution_attempts = state.get("tool_execution_attempts", 0) + 1
         orchestrator_loops = state.get("orchestrator_loops", 0)
-        max_attempts = 2  # Reduced to 2 attempts max
+        max_attempts = 4  # Increased to allow more tool attempts for proper domain analysis
+        max_tools = 10  # Increased to allow domain-specific tools
+        max_orchestrator_loops = 12  # Increased safety valve for proper analysis
+        
+        logger.debug(f"[SAFETY-CHECK-3] 🔒 TOOL EXECUTION SAFETY CHECK (LIVE MODE)")
+        logger.debug(f"[SAFETY-CHECK-3]   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+        logger.debug(f"[SAFETY-CHECK-3]   Tools used count: {len(tools_used)}/{max_tools}")
+        logger.debug(f"[SAFETY-CHECK-3]   Orchestrator loops: {orchestrator_loops}/{max_orchestrator_loops}")
+        logger.debug(f"[SAFETY-CHECK-3]   Condition 1 (attempts): {tool_execution_attempts >= max_attempts}")
+        logger.debug(f"[SAFETY-CHECK-3]   Condition 2 (tools): {len(tools_used) >= max_tools}")
+        logger.debug(f"[SAFETY-CHECK-3]   Condition 3 (loops): {orchestrator_loops >= max_orchestrator_loops}")
+        logger.debug(f"[SAFETY-CHECK-3]   Any condition met: {tool_execution_attempts >= max_attempts or len(tools_used) >= max_tools or orchestrator_loops >= max_orchestrator_loops}")
         
         # CRITICAL FIX: Multiple exit conditions to prevent loops
         if (tool_execution_attempts >= max_attempts or 
-            len(tools_used) >= 6 or  # Reduced tool count
-            orchestrator_loops >= 6):  # Safety valve
+            len(tools_used) >= max_tools or  # Reduced tool count
+            orchestrator_loops >= max_orchestrator_loops):  # Safety valve
+            triggered_condition = []
+            if tool_execution_attempts >= max_attempts:
+                triggered_condition.append(f"max_attempts({tool_execution_attempts}>={max_attempts})")
+            if len(tools_used) >= max_tools:
+                triggered_condition.append(f"max_tools({len(tools_used)}>={max_tools})")
+            if orchestrator_loops >= max_orchestrator_loops:
+                triggered_condition.append(f"max_loops({orchestrator_loops}>={max_orchestrator_loops})")
+            
+            logger.debug(f"[SAFETY-CHECK-3]   ✅ TRIGGERED: Tool execution limit reached - {', '.join(triggered_condition)}")
             logger.info(f"✅ Tool execution complete: {len(tools_used)} tools used, {tool_execution_attempts} attempts, {orchestrator_loops} loops")
             return update_phase(state, "domain_analysis")
         
         logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}, loop {orchestrator_loops}")
         
-        # Get tool count from state, default to 1-2 range (reduced)
-        tool_count = "1-2"  # Minimal tool count to prevent loops
+        # Get tool count from state, allow adequate tools for domain analysis
+        tool_count = "2-4"  # Increased to allow proper domain-specific analysis
         
         # Analyze Snowflake data to determine which tools to use
         tool_selection_prompt = f"""
-        Based on the Snowflake analysis results, select and use ONLY {tool_count} additional tools for investigation.
+        Based on the Snowflake analysis results, select appropriate additional tools for comprehensive investigation.
         
         Snowflake findings summary:
         {self._summarize_snowflake_data(snowflake_data)}
@@ -748,16 +774,17 @@ Use the snowflake_query_tool immediately."""
         Attempt: {tool_execution_attempts}/{max_attempts}
         Orchestrator loops: {orchestrator_loops}
         
-        CRITICAL: Select MAXIMUM {tool_count} tools. Quality over quantity.
-        Be EXTREMELY selective - only use tools that are absolutely critical.
+        OBJECTIVE: Select {tool_count} tools that will provide domain-specific data for network, device, location, and behavioral analysis.
         
-        Priority tools to consider (choose MAX one):
-        1. Threat Intelligence: VirusTotal OR AbuseIPDB (for IP reputation) - ONLY if IP-related fraud detected
-        2. Database/SIEM: Splunk OR SumoLogic (if logs indicate suspicious patterns) - ONLY if log analysis needed
+        Recommended tools for comprehensive fraud investigation:
+        1. Threat Intelligence: VirusTotal OR AbuseIPDB (for IP reputation analysis)
+        2. Network Analysis: Splunk OR SumoLogic (for network behavior patterns)
+        3. Device Fingerprinting: ML Anomaly Detection (for device behavior analysis)
+        4. Geographic Analysis: GeoIP tools (for location-based risk assessment)
         
-        Focus on the SINGLE most valuable tool based on the Snowflake findings.
-        Do NOT select multiple tools. Select ONE tool maximum.
-        If no clear need exists, select NO tools and complete the phase.
+        Select tools that will provide the domain agents with rich data for analysis.
+        Each tool should target a different domain (network, device, location, logs) to maximize investigation coverage.
+        The goal is to gather comprehensive evidence across multiple fraud dimensions.
         """
         
         human_msg = HumanMessage(content=tool_selection_prompt)
@@ -767,9 +794,9 @@ Use the snowflake_query_tool immediately."""
                            if not isinstance(m, SystemMessage)]
         
         base_prompt = f"""You are investigating potential fraud. You have {len(self.tools)} tools available.
-Select MAXIMUM {tool_count} tools based on the Snowflake findings.
+Select {tool_count} tools based on the Snowflake findings for comprehensive domain analysis.
 So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}.
-Orchestrator loops: {orchestrator_loops}. Be EXTREMELY conservative - select only 1 tool maximum to prevent loops."""
+Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich data to domain agents for network, device, location, and behavioral analysis."""
         
         enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
         system_msg = SystemMessage(content=enhanced_prompt)
@@ -884,21 +911,52 @@ Orchestrator loops: {orchestrator_loops}. Be EXTREMELY conservative - select onl
         
         # In mock mode, skip domain analysis
         import os
-        if os.getenv('TEST_MODE') == 'mock':
+        test_mode = os.getenv('TEST_MODE', '').lower()
+        
+        logger.debug(f"[SAFETY-CHECK-4] 🔒 DOMAIN ANALYSIS SAFETY CHECK (MOCK MODE)")
+        logger.debug(f"[SAFETY-CHECK-4]   Test mode: {test_mode}")
+        logger.debug(f"[SAFETY-CHECK-4]   Mock mode skip condition: {test_mode == 'mock'}")
+        
+        if test_mode == 'mock':
+            logger.debug(f"[SAFETY-CHECK-4]   ✅ TRIGGERED: Mock mode - skipping domain analysis")
             logger.info("🎭 Mock mode: Skipping domain analysis, moving to summary")
             return update_phase(state, "summary")
         
         domains_completed = state.get("domains_completed", [])
         orchestrator_loops = state.get("orchestrator_loops", 0)
+        min_domains_required = 3
+        max_orchestrator_loops = 10
+        
+        logger.debug(f"[SAFETY-CHECK-5] 🔒 DOMAIN ANALYSIS SAFETY CHECK (LIVE MODE)")
+        logger.debug(f"[SAFETY-CHECK-5]   Domains completed: {domains_completed}")
+        logger.debug(f"[SAFETY-CHECK-5]   Domains completed count: {len(domains_completed)}")
+        logger.debug(f"[SAFETY-CHECK-5]   Minimum domains required: {min_domains_required}")
+        logger.debug(f"[SAFETY-CHECK-5]   Orchestrator loops: {orchestrator_loops}")
+        logger.debug(f"[SAFETY-CHECK-5]   Maximum orchestrator loops: {max_orchestrator_loops}")
+        logger.debug(f"[SAFETY-CHECK-5]   Condition 1 (min domains): {len(domains_completed) >= min_domains_required}")
+        logger.debug(f"[SAFETY-CHECK-5]   Condition 2 (max loops): {orchestrator_loops >= max_orchestrator_loops}")
+        logger.debug(f"[SAFETY-CHECK-5]   Any condition met: {len(domains_completed) >= min_domains_required or orchestrator_loops >= max_orchestrator_loops}")
         
         # CRITICAL FIX: Force completion after reasonable attempts
-        if len(domains_completed) >= 3 or orchestrator_loops >= 10:
+        if len(domains_completed) >= min_domains_required or orchestrator_loops >= max_orchestrator_loops:
+            triggered_condition = []
+            if len(domains_completed) >= min_domains_required:
+                triggered_condition.append(f"sufficient_domains({len(domains_completed)}>={min_domains_required})")
+            if orchestrator_loops >= max_orchestrator_loops:
+                triggered_condition.append(f"max_loops({orchestrator_loops}>={max_orchestrator_loops})")
+            
+            logger.debug(f"[SAFETY-CHECK-5]   ✅ TRIGGERED: Domain analysis completion - {', '.join(triggered_condition)}")
             logger.info(f"✅ Domain analysis sufficient: {len(domains_completed)} domains, {orchestrator_loops} loops - moving to summary")
             return update_phase(state, "summary")
         
         # Check if all domains are complete
         required_domains = ["network", "device", "location", "logs", "authentication", "risk"]
         remaining_domains = [d for d in required_domains if d not in domains_completed]
+        
+        logger.debug(f"[SAFETY-CHECK-6] 🔒 DOMAIN COMPLETION CHECK")
+        logger.debug(f"[SAFETY-CHECK-6]   Required domains: {required_domains}")
+        logger.debug(f"[SAFETY-CHECK-6]   Remaining domains: {remaining_domains}")
+        logger.debug(f"[SAFETY-CHECK-6]   All domains complete: {not remaining_domains}")
         
         if not remaining_domains:
             logger.info("✅ All domain analyses complete, moving to summary")
@@ -1325,8 +1383,13 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     # CRITICAL SAFETY CHECK: Prevent runaway orchestrator execution
     max_orchestrator_executions = 8 if is_test_mode else 15  # Conservative limits
     
-    logger.debug(f"[Step 3.1.2] Safety limits enforcement - Max executions: {max_orchestrator_executions}")
-    logger.debug(f"[Step 3.1.2] Current vs limit: {orchestrator_loops}/{max_orchestrator_executions}")
+    logger.debug(f"[SAFETY-CHECK-1] 🔒 ORCHESTRATOR LOOP SAFETY CHECK")
+    logger.debug(f"[SAFETY-CHECK-1]   Current orchestrator loops: {orchestrator_loops}")
+    logger.debug(f"[SAFETY-CHECK-1]   Maximum allowed executions: {max_orchestrator_executions}")
+    logger.debug(f"[SAFETY-CHECK-1]   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"[SAFETY-CHECK-1]   Investigation ID: {state.get('investigation_id', 'unknown')}")
+    logger.debug(f"[SAFETY-CHECK-1]   Current phase: {state.get('current_phase', 'unknown')}")
+    logger.debug(f"[SAFETY-CHECK-1]   Safety status: {'❌ EXCEEDED' if orchestrator_loops > max_orchestrator_executions else '✅ WITHIN LIMITS'}")
     
     if orchestrator_loops > max_orchestrator_executions:
         logger.error(f"🚨 ORCHESTRATOR SAFETY VIOLATION: {orchestrator_loops} executions exceeded limit of {max_orchestrator_executions}")

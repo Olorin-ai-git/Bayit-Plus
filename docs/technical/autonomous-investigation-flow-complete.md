@@ -2,8 +2,8 @@
 
 **Author:** Gil Klainert  
 **Date:** 2025-09-09  
-**Version:** 2.0 - VERIFIED  
-**Status:** Production Ready  
+**Version:** 2.1 - ENHANCED WITH CATEGORY-BASED TOOL PROCESSING  
+**Status:** Production Ready with Advanced Tool Analysis  
 
 ## Overview
 
@@ -199,9 +199,50 @@ The autonomous investigation system uses a **LangGraph-based orchestration archi
 
 Each agent follows pattern:
 - Receives InvestigationState
-- Processes Snowflake data and tool results
+- **Category-Based Tool Processing**: Automatically processes ALL tool results with sophisticated signal extraction
+- Processes Snowflake data for baseline MODEL_SCORE analysis
 - Returns domain findings via `add_domain_findings`
 - **VERIFIED**: Domain agent structure in `/orchestration/domain_agents/` files
+
+#### 5.2.1 Category-Based Tool Processing System (Latest Enhancement)
+
+**CRITICAL IMPROVEMENT**: Each domain agent now implements sophisticated category-based tool processing that can analyze results from ANY tool, regardless of tool-specific field names or data structures:
+
+**Network Agent Tool Processing** (`network_agent.py:_analyze_threat_intelligence`):
+```python
+# Processes ALL tool results automatically
+for tool_name, result in tool_results.items():
+    threat_signals = _extract_threat_signals(tool_name, result)
+    if threat_signals:
+        _process_threat_signals(tool_name, threat_signals, findings)
+```
+
+**Device Agent Tool Processing** (`device_agent.py:_analyze_ml_anomaly_detection`):
+```python
+# Extracts device intelligence from any tool format
+device_signals = _extract_device_signals(tool_name, result)
+# Handles bot detection, automation scores, fingerprinting data
+```
+
+**Location Agent Tool Processing** (`location_agent.py:_analyze_geolocation_intelligence`):
+```python
+# Processes geolocation data from any tool structure
+location_signals = _extract_location_signals(tool_name, result)  
+# Handles travel risk, geographic anomalies, VPN/proxy locations
+```
+
+**Key Features**:
+- **Universal Tool Support**: Works with ANY tool output format
+- **Generic Signal Extraction**: Automatically identifies relevant signals
+- **Nested Data Processing**: Handles complex tool responses with nested objects
+- **Score Normalization**: Converts different ranges (0-1, 0-10, 0-100) to consistent scale
+- **Evidence Collection**: Maintains detailed evidence trails for transparency
+- **Risk Adjustment**: Provides both positive and negative risk adjustments
+
+**Debug Logging** (NEW):
+- `[Step 5.2.1.2] 🔍 Category-based threat analysis: Processing X tools`
+- `[Step 5.2.1.2]   ✅ tool_name: Found Y threat signals`
+- `[Step 5.2.1.2]   ➖ tool_name: No network threat signals detected`
 
 ### 6. SUMMARY PHASE
 
@@ -289,13 +330,13 @@ The investigation follows this comprehensive data flow:
    - Database queries for additional context
    - Machine learning analysis for pattern detection
 
-4. **Domain Analysis** (6 Specialized Agents):
-   - **Network Agent**: IP analysis, geolocation, threat intelligence
-   - **Device Agent**: Device fingerprinting, spoofing detection
-   - **Location Agent**: Geographic analysis, impossible travel detection
-   - **Logs Agent**: Activity pattern analysis, behavioral anomalies
-   - **Authentication Agent**: Credential analysis, account security
-   - **Risk Agent**: Comprehensive risk assessment and scoring
+4. **Domain Analysis** (6 Specialized Agents with Category-Based Tool Processing):
+   - **Network Agent**: IP analysis, threat intelligence with AUTOMATED processing of ANY network security tool output
+   - **Device Agent**: Device fingerprinting, bot detection with AUTOMATED processing of ANY device intelligence tool
+   - **Location Agent**: Geographic analysis, travel patterns with AUTOMATED processing of ANY geolocation tool
+   - **Logs Agent**: Activity pattern analysis with AUTOMATED processing of ANY log analysis tool
+   - **Authentication Agent**: Credential analysis with AUTOMATED processing of ANY authentication security tool
+   - **Risk Agent**: Comprehensive risk assessment and final scoring synthesis
 
 5. **Risk Assessment** (LLM-Driven Analysis):
    - Comprehensive LLM analysis of all findings

@@ -216,6 +216,62 @@ def log_agent_handover_complete(domain: str, findings: Dict[str, Any]) -> None:
     logger.debug(f"[Step {step}]   🧠 Chain of thought: Analysis complete, control returned to orchestrator")
 
 
+async def analyze_evidence_with_llm(
+    domain: str,
+    findings: Dict[str, Any], 
+    snowflake_data: Dict[str, Any],
+    entity_type: str,
+    entity_id: str
+) -> Dict[str, Any]:
+    """
+    Analyze collected evidence using LLM to generate risk scores.
+    This is the missing step that converts evidence to meaningful risk assessment.
+    """
+    from app.service.agent.evidence_analyzer import get_evidence_analyzer
+    
+    step = DomainAgentBase._get_domain_step(domain)
+    logger.debug(f"[Step {step}.4] 🧠 LLM Evidence Analysis - Analyzing {len(findings.get('evidence', []))} evidence points")
+    
+    try:
+        evidence_analyzer = get_evidence_analyzer()
+        
+        # Analyze evidence with LLM
+        llm_analysis = await evidence_analyzer.analyze_domain_evidence(
+            domain=domain,
+            evidence=findings.get('evidence', []),
+            metrics=findings.get('metrics', {}),
+            snowflake_data=snowflake_data,
+            entity_type=entity_type,
+            entity_id=entity_id
+        )
+        
+        # Update findings with LLM analysis results
+        findings["risk_score"] = llm_analysis["risk_score"]
+        findings["confidence"] = llm_analysis["confidence"] 
+        findings["llm_analysis"] = llm_analysis
+        
+        # Add LLM reasoning to evidence
+        findings["evidence"].append(f"LLM Analysis: {llm_analysis['reasoning'][:100]}...")
+        
+        # Add LLM risk factors to risk indicators
+        if llm_analysis["risk_factors"]:
+            findings["risk_indicators"].append(f"LLM Identified: {llm_analysis['risk_factors'][:100]}...")
+        
+        logger.debug(f"[Step {step}.4] ✅ LLM analysis complete - Risk: {findings['risk_score']:.2f}, Confidence: {findings['confidence']:.2f}")
+        
+        return findings
+        
+    except Exception as e:
+        logger.error(f"[Step {step}.4] ❌ LLM evidence analysis failed: {e}")
+        
+        # Keep existing 0.0 baseline if LLM fails
+        findings["confidence"] = 0.3  # Lower confidence due to analysis failure
+        findings["evidence"].append(f"LLM analysis failed: {str(e)}")
+        findings["risk_indicators"].append("LLM evidence analysis unavailable")
+        
+        return findings
+
+
 def complete_chain_of_thought(process_id: str, findings: Dict[str, Any], domain: str) -> None:
     """Complete chain of thought logging for the agent."""
     cot_logger = get_chain_of_thought_logger()

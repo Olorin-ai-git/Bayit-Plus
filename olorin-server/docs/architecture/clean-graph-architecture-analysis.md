@@ -219,6 +219,64 @@ for domain in domain_order:
         return f"{domain}_agent"
 ```
 
+**Category-Based Tool Processing Enhancement** (Latest Update):
+
+Each domain agent now implements sophisticated category-based tool processing that can analyze results from ANY tool, regardless of tool-specific field names or data structures:
+
+```python
+# Example: Network Agent Category-Based Processing
+def _analyze_threat_intelligence(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:
+    """Analyze threat intelligence from any tool that provides network security data."""
+    
+    # Process ALL tool results, not just hardcoded ones
+    for tool_name, result in tool_results.items():
+        if not isinstance(result, dict):
+            continue
+            
+        # Extract threat intelligence signals from diverse tool outputs
+        threat_signals = _extract_threat_signals(tool_name, result)
+        
+        if threat_signals:
+            _process_threat_signals(tool_name, threat_signals, findings)
+
+def _extract_threat_signals(tool_name: str, result: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract threat intelligence signals from any tool result."""
+    signals = {}
+    
+    # Common threat intelligence fields (tools may use different names)
+    threat_indicators = [
+        "malicious", "is_malicious", "threat", "blacklisted", "blocked",
+        "reputation", "risk_score", "threat_score", "malware", "phishing"
+    ]
+    
+    # Extract indicators regardless of specific tool format
+    for indicator in threat_indicators:
+        if indicator in result:
+            signals[f"threat_{indicator}"] = result[indicator]
+    
+    # Handle nested data structures automatically
+    for key, value in result.items():
+        if isinstance(value, dict):
+            nested_signals = _extract_threat_signals(f"{tool_name}_{key}", value)
+            signals.update(nested_signals)
+    
+    return signals
+```
+
+**Key Improvements**:
+- **Flexible Tool Support**: Works with dozens of tools without hardcoding tool names
+- **Generic Signal Extraction**: Automatically extracts relevant signals from any tool output
+- **Nested Data Handling**: Processes complex tool responses with nested objects and arrays
+- **Score Normalization**: Converts different score ranges (0-1, 0-10, 0-100) to consistent scale
+- **Evidence Collection**: Maintains detailed evidence trails for transparency
+
+**Domain-Specific Processing**:
+- **Network Agent** (`5.2.1`): Threat intelligence, IP reputation, VPN/proxy detection
+- **Device Agent** (`5.2.2`): Bot detection, device fingerprinting, anomaly scores
+- **Location Agent** (`5.2.3`): Geolocation intelligence, travel risk, high-risk regions
+- **Authentication Agent** (`5.2.5`): Brute force patterns, MFA bypass attempts
+- **Logs Agent** (`5.2.4`): System logs, authentication patterns, error analysis
+
 #### Phase 5: Summary & Completion
 ```python
 # Final risk calculation and reporting

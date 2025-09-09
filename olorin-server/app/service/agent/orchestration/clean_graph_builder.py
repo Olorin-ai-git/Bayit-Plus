@@ -118,77 +118,144 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
     tools_used = state.get("tools_used", []).copy()
     tool_results = state.get("tool_results", {}).copy()
     
-    logger.debug(f"🔧 PROCESS TOOL RESULTS DEBUG:")
-    logger.debug(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
-    logger.debug(f"   Messages to process: {len(messages)}")
-    logger.debug(f"   Tools used before: {tools_used}")
-    logger.debug(f"   Tool results keys before: {list(tool_results.keys())}")
+    # Step 4.3.1: ToolMessage detection and parsing
+    logger.debug(f"[Step 4.3.1] 📥 TOOL MESSAGE DETECTION - Starting tool result processing")
+    logger.debug(f"[Step 4.3.1]   Investigation context:")
+    logger.debug(f"[Step 4.3.1]     Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"[Step 4.3.1]     Total messages in state: {len(messages)}")
+    logger.debug(f"[Step 4.3.1]     Tools used before processing: {tools_used}")
+    logger.debug(f"[Step 4.3.1]     Existing tool results: {list(tool_results.keys())}")
     
-    # Check last message for tool results
+    # Process ALL ToolMessages in message history, not just the last one
     if messages:
-        last_message = messages[-1]
-        logger.debug(f"   Last message type: {type(last_message).__name__}")
-        
-        # Process ToolMessage results
         from langchain_core.messages import ToolMessage
-        if isinstance(last_message, ToolMessage):
-            tool_name = last_message.name
-            logger.info(f"🔧 Processing tool result from: {tool_name}")
-            logger.debug(f"   Tool name: {tool_name}")
-            logger.debug(f"   Content length: {len(str(last_message.content)) if last_message.content else 0}")
-            logger.debug(f"   Content preview: {str(last_message.content)[:150] if last_message.content else 'Empty'}...")
+        tool_messages = [msg for msg in messages if isinstance(msg, ToolMessage)]
+        
+        logger.debug(f"[Step 4.3.1]   Message analysis:")
+        logger.debug(f"[Step 4.3.1]     Total messages: {len(messages)}")
+        logger.debug(f"[Step 4.3.1]     ToolMessages found: {len(tool_messages)}")
+        logger.debug(f"[Step 4.3.1]     Message types: {[type(msg).__name__ for msg in messages[-3:]]}")  # Show last 3 message types
+        
+        if tool_messages:
+            logger.debug(f"[Step 4.3.1]   ✅ {len(tool_messages)} ToolMessages detected - proceeding with processing")
             
-            # Add to tools used
-            if tool_name not in tools_used:
-                tools_used.append(tool_name)
-                logger.debug(f"   Added {tool_name} to tools_used list")
+            # Process each ToolMessage to build complete tool_results
+            for i, tool_message in enumerate(tool_messages):
+                logger.debug(f"[Step 4.3.1]   Processing ToolMessage {i+1}/{len(tool_messages)}")
+                
+                # Extract tool information
+                tool_name = tool_message.name
+                content_raw = tool_message.content
+                content_length = len(str(content_raw)) if content_raw else 0
+                content_preview = str(content_raw)[:150] if content_raw else 'Empty'
+                
+                logger.debug(f"[Step 4.3.1]     Tool name: {tool_name}")
+                logger.debug(f"[Step 4.3.1]     Content length: {content_length} characters")
+                logger.debug(f"[Step 4.3.1]     Content preview: {content_preview}...")
+                
+                # Skip if already processed
+                if tool_name in tool_results:
+                    logger.debug(f"[Step 4.3.1]     ⚠️ {tool_name} already processed - skipping")
+                    continue
+                
+                # Continue with existing processing logic for this tool...
+                logger.info(f"🔧 Processing tool result from: {tool_name}")
+                
+                # Add to tools used tracking
+                if tool_name not in tools_used:
+                    tools_used.append(tool_name)
+                    logger.debug(f"[Step 4.3.1]     Added {tool_name} to tools_used list (new: {len(tools_used)} total)")
+                else:
+                    logger.debug(f"[Step 4.3.1]     {tool_name} already in tools_used list")
+                
+                # Step 4.3.1 continued: Parse tool result content
+                logger.debug(f"[Step 4.3.1]     🔍 Attempting to parse tool result content")
+                
+                # Store tool result with content parsing
+                parsed_successfully = False
+                parsed_result = None
+                
+                try:
+                    import json
+                    parsed_result = json.loads(content_raw)
+                    tool_results[tool_name] = parsed_result
+                    parsed_successfully = True
+                    logger.debug(f"[Step 4.3.1]     ✅ JSON parsing successful")
+                    logger.debug(f"[Step 4.3.1]     Parsed result type: {type(parsed_result)}")
+                    logger.debug(f"[Step 4.3.1]     Parsed result keys: {list(parsed_result.keys()) if isinstance(parsed_result, dict) else 'not-dict'}")
+                    
+                except Exception as e:
+                    # If not JSON, store as string
+                    logger.debug(f"[Step 4.3.1]     ❌ JSON parsing failed: {str(e)}")
+                    logger.debug(f"[Step 4.3.1]     Storing as raw string content")
+                    tool_results[tool_name] = content_raw
+                    parsed_successfully = False
+                    parsed_result = content_raw
+                
+                # Step 4.3.2: Special Snowflake handling (inside the loop)
+                if "snowflake" in tool_name.lower():
+                    logger.debug(f"[Step 4.3.2] ❄️ SNOWFLAKE HANDLING - Processing Snowflake tool result")
+                    logger.debug(f"[Step 4.3.2]   Snowflake tool detected: {tool_name}")
+                    logger.debug(f"[Step 4.3.2]   Parsed successfully: {parsed_successfully}")
+                    logger.debug(f"[Step 4.3.2]   Content type: {'JSON' if parsed_successfully else 'RAW'}")
+                    
+                    if parsed_successfully:
+                        logger.debug(f"[Step 4.3.2]   Storing JSON result as snowflake_data")
+                        logger.info("✅ Snowflake query completed with JSON result")
+                    else:
+                        logger.debug(f"[Step 4.3.2]   Storing raw content as snowflake_data")
+                        logger.info("✅ Snowflake query completed with non-JSON result")
+                else:
+                    # Handle non-Snowflake tools
+                    logger.debug(f"[Step 4.3.3] 🔄 REGULAR TOOL PROCESSING - Non-Snowflake tool completed")
+                    logger.debug(f"[Step 4.3.3]   Tool: {tool_name}")
+                    logger.debug(f"[Step 4.3.3]   State update: tools_used and tool_results updated")
+            
+            # After processing all ToolMessages, return consolidated results
+            logger.debug(f"[Step 4.3.3] ✅ ALL TOOL RESULTS PROCESSED - Summary")
+            logger.debug(f"[Step 4.3.3]   Total tools processed: {len(tool_messages)}")
+            logger.debug(f"[Step 4.3.3]   Tools used: {tools_used}")
+            logger.debug(f"[Step 4.3.3]   Tool results keys: {list(tool_results.keys())}")
+            
+            # Check if Snowflake was processed for special handling
+            snowflake_tools = [name for name in tool_results.keys() if 'snowflake' in name.lower()]
+            if snowflake_tools:
+                snowflake_tool_name = snowflake_tools[0]  # Get first snowflake tool
+                snowflake_result = tool_results[snowflake_tool_name]
+                
+                logger.debug(f"[Step 4.3.3] 🎯 PHASE TRANSITION - Moving to tool_execution phase")
+                logger.debug(f"[Step 4.3.3]   Reason: Snowflake processing completed")
+                logger.debug(f"[Step 4.3.3]   Snowflake tool: {snowflake_tool_name}")
+                logger.debug(f"[Step 4.3.3]   Next steps: Orchestrator will handle additional tool selection")
+                
+                return {
+                    "tools_used": tools_used,
+                    "tool_results": tool_results,
+                    "snowflake_data": snowflake_result,
+                    "snowflake_completed": True,
+                    "current_phase": "tool_execution"  # Move to next phase
+                }
             else:
-                logger.debug(f"   {tool_name} already in tools_used list")
-            
-            # Store tool result
-            try:
-                import json
-                result = json.loads(last_message.content)
-                tool_results[tool_name] = result
-                logger.debug(f"   Successfully parsed JSON result")
+                # No Snowflake tools - return regular tool results
+                logger.debug(f"[Step 4.3.3] 🔄 REGULAR TOOL PROCESSING - No Snowflake tools")
+                logger.debug(f"[Step 4.3.3]   Phase transition: None (staying in current phase)")
+                logger.debug(f"[Step 4.3.3]   State update: tools_used and tool_results updated")
                 
-                # Special handling for Snowflake - ALWAYS mark as completed regardless of JSON parsing
-                if "snowflake" in tool_name.lower():
-                    logger.info("✅ Snowflake query completed with JSON result")
-                    logger.debug("   Snowflake completed with JSON, moving to tool_execution phase")
-                    return {
-                        "tools_used": tools_used,
-                        "tool_results": tool_results,
-                        "snowflake_data": result,
-                        "snowflake_completed": True,
-                        "current_phase": "tool_execution"  # Move to next phase
-                    }
-            except Exception as e:
-                # If not JSON, store as string
-                logger.debug(f"   Failed to parse JSON: {e}")
-                tool_results[tool_name] = last_message.content
-                
-                # CRITICAL FIX: Mark Snowflake as completed even with non-JSON content
-                if "snowflake" in tool_name.lower():
-                    logger.info("✅ Snowflake query completed with non-JSON result")
-                    logger.debug("   Snowflake completed with non-JSON, moving to tool_execution phase")
-                    return {
-                        "tools_used": tools_used,
-                        "tool_results": tool_results,
-                        "snowflake_data": last_message.content,  # Store raw content
-                        "snowflake_completed": True,
-                        "current_phase": "tool_execution"  # Move to next phase regardless
-                    }
-            
-            logger.debug(f"   Regular tool result processed, returning state update")
-            return {
-                "tools_used": tools_used,
-                "tool_results": tool_results
-            }
+                return {
+                    "tools_used": tools_used,
+                    "tool_results": tool_results
+                }
+        else:
+            # No ToolMessages found
+            logger.debug(f"[Step 4.3.1]   ❌ No ToolMessages found in message history")
+            logger.debug(f"[Step 4.3.1]   Message types present: {[type(msg).__name__ for msg in messages]}")
+            logger.debug(f"[Step 4.3.1]   Skipping tool result processing")
     else:
-        logger.debug(f"   No messages to process")
+        logger.debug(f"[Step 4.3.1]   ❌ No messages in state")
+        logger.debug(f"[Step 4.3.1]   Cannot process tool results without messages")
     
-    logger.debug(f"   No tool results to process, returning empty update")
+    logger.debug(f"[Step 4.3.1] 🔚 NO TOOL RESULTS TO PROCESS - Returning empty state update")
+    logger.debug(f"[Step 4.3.1]   Final state: No changes made to investigation state")
     return {}
 
 
@@ -252,13 +319,51 @@ async def summary_node(state: InvestigationState) -> Dict[str, Any]:
     """
     logger.info("📊 Generating final investigation summary")
     
+    # Phase 6 DEBUG logging - Summary Phase
+    logger.debug("[Step 6.1.1] 🧮 Starting final risk score calculation")
+    logger.debug(f"[Step 6.1.1] Investigation ID: {state.get('investigation_id', 'unknown')}")
+    logger.debug(f"[Step 6.1.1] Entity type: {state.get('entity_type', 'unknown')}")
+    logger.debug(f"[Step 6.1.1] Entity ID: {state.get('entity_id', 'unknown')}")
+    
     from app.service.agent.orchestration.state_schema import calculate_final_risk_score
     from datetime import datetime
     
-    # Calculate final metrics
+    # Step 6.1.1: Final risk score calculation
+    logger.debug("[Step 6.1.1] 📊 Invoking calculate_final_risk_score function")
+    logger.debug(f"[Step 6.1.1] State domains available: {list(state.get('domain_findings', {}).keys())}")
+    logger.debug(f"[Step 6.1.1] Snowflake completed: {state.get('snowflake_completed', False)}")
+    logger.debug(f"[Step 6.1.1] Tools used count: {len(state.get('tools_used', []))}")
+    
     final_risk = calculate_final_risk_score(state)
+    logger.debug(f"[Step 6.1.1] ✅ Final risk score calculated: {final_risk:.4f}")
+    
     tools_used = state.get("tools_used", [])
     domains_completed = state.get("domains_completed", [])
+    confidence_score = state.get('confidence_score', 0.0)
+    
+    logger.debug(f"[Step 6.1.1] 📋 Summary metrics collected:")
+    logger.debug(f"[Step 6.1.1]   - Final risk: {final_risk:.4f}")
+    logger.debug(f"[Step 6.1.1]   - Tools used: {tools_used}")
+    logger.debug(f"[Step 6.1.1]   - Domains completed: {domains_completed}")
+    logger.debug(f"[Step 6.1.1]   - Confidence score: {confidence_score:.4f}")
+    
+    # Step 6.1.2: Investigation summary generation
+    logger.debug("[Step 6.1.2] 📝 Starting Markdown-formatted summary generation")
+    
+    # Calculate risk level
+    risk_level = 'CRITICAL' if final_risk >= 0.8 else 'HIGH' if final_risk >= 0.6 else 'MEDIUM' if final_risk >= 0.4 else 'LOW'
+    logger.debug(f"[Step 6.1.2] 🎯 Risk level classification: {risk_level} (score: {final_risk:.4f})")
+    
+    # Calculate recommendation
+    recommendation = '🚨 BLOCK - High fraud risk' if final_risk >= 0.7 else '⚠️ REVIEW - Moderate risk' if final_risk >= 0.4 else '✅ APPROVE - Low risk'
+    logger.debug(f"[Step 6.1.2] 💡 Recommendation generated: {recommendation}")
+    
+    # Generate coverage metrics
+    snowflake_status = '✅ Complete' if state.get('snowflake_completed') else '❌ Incomplete'
+    logger.debug(f"[Step 6.1.2] 📊 Coverage metrics:")
+    logger.debug(f"[Step 6.1.2]   - Tools used count: {len(tools_used)}")
+    logger.debug(f"[Step 6.1.2]   - Domains analyzed: {', '.join(domains_completed) if domains_completed else 'None'}")
+    logger.debug(f"[Step 6.1.2]   - Snowflake status: {snowflake_status}")
     
     # Generate summary message
     summary_content = f"""
@@ -269,34 +374,62 @@ async def summary_node(state: InvestigationState) -> Dict[str, Any]:
 
 ## Final Assessment
 - **Risk Score:** {final_risk:.2f} / 1.00
-- **Risk Level:** {'CRITICAL' if final_risk >= 0.8 else 'HIGH' if final_risk >= 0.6 else 'MEDIUM' if final_risk >= 0.4 else 'LOW'}
-- **Confidence:** {state.get('confidence_score', 0.0):.2f}
+- **Risk Level:** {risk_level}
+- **Confidence:** {confidence_score:.2f}
 
 ## Coverage
 - Tools Used: {len(tools_used)}
 - Domains Analyzed: {', '.join(domains_completed)}
-- Snowflake Analysis: {'✅ Complete' if state.get('snowflake_completed') else '❌ Incomplete'}
+- Snowflake Analysis: {snowflake_status}
 
 ## Recommendation
-{'🚨 BLOCK - High fraud risk' if final_risk >= 0.7 else '⚠️ REVIEW - Moderate risk' if final_risk >= 0.4 else '✅ APPROVE - Low risk'}
+{recommendation}
 """
     
+    logger.debug("[Step 6.1.2] 📄 Markdown summary content generated")
+    logger.debug(f"[Step 6.1.2] Content length: {len(summary_content)} characters")
+    logger.debug(f"[Step 6.1.2] Summary sections: Investigation header, Final Assessment, Coverage, Recommendation")
+    
     summary_msg = SystemMessage(content=summary_content)
+    logger.debug("[Step 6.1.2] ✅ SystemMessage created for summary")
+    logger.debug(f"[Step 6.1.2] SystemMessage type: {type(summary_msg).__name__}")
     
     # Calculate duration
+    logger.debug("[Step 6.1.2] ⏱️  Calculating investigation duration")
     if state.get("start_time"):
         start_dt = datetime.fromisoformat(state["start_time"])
         end_dt = datetime.utcnow()
         duration_ms = int((end_dt - start_dt).total_seconds() * 1000)
+        logger.debug(f"[Step 6.1.2] 📅 Start time: {state.get('start_time')}")
+        logger.debug(f"[Step 6.1.2] 📅 End time: {end_dt.isoformat()}")
+        logger.debug(f"[Step 6.1.2] ⏱️  Total duration: {duration_ms}ms ({duration_ms/1000:.2f}s)")
     else:
         duration_ms = 0
+        logger.debug("[Step 6.1.2] ⚠️  No start_time found in state, duration set to 0ms")
     
-    return {
+    logger.debug("[Step 6.1.2] ✅ Investigation summary generation completed successfully")
+    
+    # Step 6.1.3: Phase transition to "complete"
+    logger.debug("[Step 6.1.3] 🔄 Phase transition to 'complete'")
+    logger.debug("[Step 6.1.3] 📊 Preparing final state return")
+    
+    final_state = {
         "messages": [summary_msg],
         "current_phase": "complete",
         "end_time": datetime.utcnow().isoformat(),
         "total_duration_ms": duration_ms
     }
+    
+    logger.debug(f"[Step 6.1.3] 📋 Final state keys: {list(final_state.keys())}")
+    logger.debug(f"[Step 6.1.3] 📝 Messages added: 1 SystemMessage")
+    logger.debug(f"[Step 6.1.3] 🎯 Phase set to: {final_state['current_phase']}")
+    logger.debug(f"[Step 6.1.3] ⏰ End time: {final_state['end_time']}")
+    logger.debug(f"[Step 6.1.3] ⏱️  Duration: {final_state['total_duration_ms']}ms")
+    
+    logger.debug("[Step 6.1.3] ✅ Phase 6 Summary complete - returning final state")
+    logger.debug("[Step 6.1.3] 🏁 Investigation orchestration will mark as complete")
+    
+    return final_state
 
 
 def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
@@ -384,16 +517,59 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     logger.debug(f"   Message types: {[type(msg).__name__ for msg in messages[-3:]]}")  # Last 3 messages
     
     # CRITICAL FIX: Check for tool calls in last message FIRST
+    logger.debug(f"[Step 4.1.1] 🔍 TOOL CALL DETECTION - Starting analysis of last message")
+    
     if messages:
         last_message = messages[-1]
-        logger.info(f"   Last message type: {type(last_message).__name__}")
-        logger.debug(f"   Last message content preview: {str(last_message.content)[:100] if hasattr(last_message, 'content') else 'No content'}...")
+        logger.debug(f"[Step 4.1.1]   Message analysis:")
+        logger.debug(f"[Step 4.1.1]     Message type: {type(last_message).__name__}")
+        logger.debug(f"[Step 4.1.1]     Has content attribute: {hasattr(last_message, 'content')}")
+        logger.debug(f"[Step 4.1.1]     Content preview: {str(last_message.content)[:100] if hasattr(last_message, 'content') else 'No content'}...")
+        logger.debug(f"[Step 4.1.1]     Has tool_calls attribute: {hasattr(last_message, 'tool_calls')}")
         
-        if hasattr(last_message, "tool_calls") and last_message.tool_calls:
-            tool_names = [tc.get('name', 'unknown') for tc in last_message.tool_calls] if isinstance(last_message.tool_calls, list) else ['unknown']
-            logger.info(f"  → Routing to tools (found {len(last_message.tool_calls)} tool calls)")
-            logger.debug(f"     Tool calls: {tool_names}")
-            return "tools"
+        if hasattr(last_message, "tool_calls"):
+            tool_calls_exist = last_message.tool_calls is not None
+            tool_calls_count = len(last_message.tool_calls) if tool_calls_exist and isinstance(last_message.tool_calls, list) else 0
+            logger.debug(f"[Step 4.1.1]     Tool calls exist: {tool_calls_exist}")
+            logger.debug(f"[Step 4.1.1]     Tool calls count: {tool_calls_count}")
+            
+            if last_message.tool_calls:
+                # Extract tool names and details for debugging
+                tool_names = []
+                tool_details = []
+                for i, tc in enumerate(last_message.tool_calls):
+                    if isinstance(tc, dict):
+                        name = tc.get('name', 'unknown')
+                        tool_id = tc.get('id', 'no-id')
+                        args_preview = str(tc.get('args', {}))[:50] if tc.get('args') else 'no-args'
+                        tool_names.append(name)
+                        tool_details.append(f"{name}(id:{tool_id}, args:{args_preview}...)")
+                    else:
+                        tool_names.append('unknown-format')
+                        tool_details.append(f"unknown-format: {type(tc)}")
+                
+                logger.debug(f"[Step 4.1.1]     Tool call names: {tool_names}")
+                logger.debug(f"[Step 4.1.1]     Tool call details: {tool_details}")
+                logger.debug(f"[Step 4.1.1]   ✅ TOOL CALLS DETECTED - Proceeding to Step 4.1.2")
+                
+                # Step 4.1.2: Route to "tools" node for execution
+                logger.debug(f"[Step 4.1.2] 🎯 TOOL ROUTING DECISION - Routing to 'tools' node")
+                logger.debug(f"[Step 4.1.2]   Routing reason: Found {len(last_message.tool_calls)} tool calls in last message")
+                logger.debug(f"[Step 4.1.2]   Target node: 'tools'")
+                logger.debug(f"[Step 4.1.2]   Next execution: ToolNode will execute {len(last_message.tool_calls)} tools")
+                logger.debug(f"[Step 4.1.2]   Tools to execute: {tool_names}")
+                
+                logger.info(f"  → Routing to tools (found {len(last_message.tool_calls)} tool calls)")
+                logger.debug(f"     Tool calls: {tool_names}")
+                return "tools"
+            else:
+                logger.debug(f"[Step 4.1.1]     Tool calls is None or empty list")
+        else:
+            logger.debug(f"[Step 4.1.1]     No tool_calls attribute found")
+            
+        logger.debug(f"[Step 4.1.1]   ❌ NO TOOL CALLS DETECTED - Continuing to phase routing")
+    else:
+        logger.debug(f"[Step 4.1.1]   ❌ NO MESSAGES - Cannot detect tool calls, continuing to phase routing")
     
     # Route based on phase with FORCED progression to prevent loops
     logger.debug(f"📍 PHASE ROUTING LOGIC:")
@@ -483,17 +659,23 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         domains_completed = state.get("domains_completed", [])
         logger.debug(f"      Domains completed: {domains_completed}")
         
-        # CRITICAL FIX: Use sequential execution with forced progression
+        # Step 5.1.1: Domain execution order
         domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
-        logger.debug(f"      Domain execution order: {domain_order}")
+        logger.debug(f"[Step 5.1.1] 📋 Domain execution order defined: {domain_order}")
+        logger.debug(f"[Step 5.1.1]   Sequential execution ensures proper data flow between domain agents")
         
+        # Step 5.1.2: Sequential domain execution - Routes to next incomplete domain in order
         next_domain = None
-        for domain in domain_order:
+        logger.debug(f"[Step 5.1.2] 🔍 Scanning for next incomplete domain in sequential order:")
+        for i, domain in enumerate(domain_order):
             if domain not in domains_completed:
                 next_domain = domain
-                logger.info(f"  → Routing to {domain}_agent (sequential)")
-                logger.debug(f"      Next domain to execute: {domain}")
+                logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ⏳ PENDING (next to execute)")
+                logger.info(f"  → [Step 5.1.2] Routing to {domain}_agent (sequential execution)")
+                logger.debug(f"[Step 5.1.2] ✅ Selected {domain} as next domain agent to execute")
                 return f"{domain}_agent"
+            else:
+                logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ✅ COMPLETED")
         
         # MORE AGGRESSIVE LIMITS for domain completion
         domain_threshold = 6 if is_test_mode else 12  # Much lower thresholds
@@ -501,9 +683,10 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         logger.debug(f"      Predicted loops: {orchestrator_loops}")
         
         # All domains complete OR too many loops - force to summary
-        should_summarize = len(domains_completed) >= 3 or orchestrator_loops >= domain_threshold
+        total_domains = len(domain_order)  # Use all 6 domains: network, device, location, logs, authentication, risk
+        should_summarize = len(domains_completed) >= total_domains or orchestrator_loops >= domain_threshold
         logger.debug(f"      Should move to summary: {should_summarize}")
-        logger.debug(f"      Reasons: domains={len(domains_completed)}>=3, loops={orchestrator_loops}>={domain_threshold}")
+        logger.debug(f"      Reasons: domains={len(domains_completed)}>={total_domains}, loops={orchestrator_loops}>={domain_threshold}")
         
         if should_summarize:
             logger.info(f"  → FORCED move to summary (domains: {len(domains_completed)}, loops: {orchestrator_loops})")
@@ -573,11 +756,78 @@ def build_clean_investigation_graph() -> StateGraph:
     tools = get_all_tools()
     logger.debug(f"[Step 1.2.2] get_all_tools() returned {len(tools)} tools from registry")
     
-    # Create tool executor node
+    # Create tool executor node with Phase 4 Step 4.2.1 logging wrapper
     logger.debug("[Step 1.2.2] Creating ToolNode with collected tools")
-    tool_executor = ToolNode(tools)
-    logger.debug(f"[Step 1.2.2] ToolNode created successfully with {len(tools)} tools")
-    logger.info(f"✅ Created ToolNode with {len(tools)} tools")
+    
+    # Create the actual ToolNode
+    base_tool_executor = ToolNode(tools)
+    logger.debug(f"[Step 1.2.2] Base ToolNode created successfully with {len(tools)} tools")
+    
+    # Create wrapper function for Step 4.2.1 logging
+    async def tool_executor_with_logging(state: InvestigationState):
+        """
+        Wrapper for ToolNode to add Step 4.2.1 DEBUG logging
+        """
+        messages = state.get("messages", [])
+        
+        logger.debug(f"[Step 4.2.1] 🔧 TOOL EXECUTION - ToolNode starting execution")
+        logger.debug(f"[Step 4.2.1]   Total messages in state: {len(messages)}")
+        
+        if messages:
+            last_message = messages[-1]
+            if hasattr(last_message, "tool_calls") and last_message.tool_calls:
+                logger.debug(f"[Step 4.2.1]   Tools to execute: {len(last_message.tool_calls)}")
+                
+                # Log each tool call details
+                for i, tool_call in enumerate(last_message.tool_calls):
+                    if isinstance(tool_call, dict):
+                        tool_name = tool_call.get('name', 'unknown')
+                        tool_id = tool_call.get('id', 'no-id')
+                        tool_args = tool_call.get('args', {})
+                        logger.debug(f"[Step 4.2.1]   Tool {i+1}: {tool_name}")
+                        logger.debug(f"[Step 4.2.1]     ID: {tool_id}")
+                        logger.debug(f"[Step 4.2.1]     Args: {list(tool_args.keys()) if isinstance(tool_args, dict) else 'non-dict'}")
+                        logger.debug(f"[Step 4.2.1]     Args preview: {str(tool_args)[:100] if tool_args else 'no-args'}...")
+                    else:
+                        logger.debug(f"[Step 4.2.1]   Tool {i+1}: unknown format ({type(tool_call)})")
+                
+                logger.debug(f"[Step 4.2.1]   Available tools in registry: {len(tools)}")
+                logger.debug(f"[Step 4.2.1]   Tool registry preview: {[tool.name for tool in tools[:5]]}" + ("..." if len(tools) > 5 else ""))
+                logger.debug(f"[Step 4.2.1]   ⚡ Executing tools via LangGraph ToolNode...")
+                
+                # Execute the actual ToolNode
+                result = await base_tool_executor.ainvoke(state)
+                
+                logger.debug(f"[Step 4.2.1]   ✅ Tool execution completed")
+                logger.debug(f"[Step 4.2.1]   Result type: {type(result)}")
+                logger.debug(f"[Step 4.2.1]   Result keys: {list(result.keys()) if isinstance(result, dict) else 'not-dict'}")
+                
+                # Check for new messages (ToolMessages)
+                if isinstance(result, dict) and "messages" in result:
+                    new_messages = result["messages"]
+                    tool_messages = [msg for msg in new_messages if msg.__class__.__name__ == "ToolMessage"]
+                    logger.debug(f"[Step 4.2.1]   New messages generated: {len(new_messages)}")
+                    logger.debug(f"[Step 4.2.1]   ToolMessages generated: {len(tool_messages)}")
+                    
+                    for i, tool_msg in enumerate(tool_messages):
+                        if hasattr(tool_msg, 'name'):
+                            content_preview = str(tool_msg.content)[:100] if hasattr(tool_msg, 'content') else 'no-content'
+                            logger.debug(f"[Step 4.2.1]     ToolMessage {i+1}: {tool_msg.name}")
+                            logger.debug(f"[Step 4.2.1]     Content preview: {content_preview}...")
+                
+                logger.debug(f"[Step 4.2.1]   🎯 Next: Tool results will be processed by process_tool_results node")
+                return result
+            else:
+                logger.debug(f"[Step 4.2.1]   ❌ No tool calls found in last message - this shouldn't happen")
+                return await base_tool_executor.ainvoke(state)
+        else:
+            logger.debug(f"[Step 4.2.1]   ❌ No messages in state - this shouldn't happen")
+            return await base_tool_executor.ainvoke(state)
+    
+    # Use the wrapper instead of direct ToolNode
+    tool_executor = tool_executor_with_logging
+    logger.debug(f"[Step 1.2.2] ToolNode wrapper created successfully with {len(tools)} tools")
+    logger.info(f"✅ Created ToolNode with Step 4.2.1 logging wrapper ({len(tools)} tools)")
     
     # Add all nodes to the graph
     logger.debug("[Step 1.2.3] Node registration in graph - Starting node addition")

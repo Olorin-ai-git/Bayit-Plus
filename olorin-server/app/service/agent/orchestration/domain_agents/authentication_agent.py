@@ -26,7 +26,7 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
     Analyzes login patterns, failed attempts, MFA bypass, and authentication anomalies.
     """
     start_time = time.time()
-    logger.info("🔐 Authentication agent analyzing investigation")
+    logger.info("[Step 5.2.5] 🔐 Authentication agent analyzing investigation")
     
     # Get relevant data from state
     snowflake_data = state.get("snowflake_data", {})
@@ -37,7 +37,7 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
     
     # Initialize logging and chain of thought
     DomainAgentBase.log_agent_start("authentication", entity_type, entity_id, False)
-    DomainAgentBase.log_context_analysis(snowflake_data, tool_results)
+    DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "authentication")
     
     process_id = DomainAgentBase.start_chain_of_thought(
         investigation_id=investigation_id,
@@ -81,6 +81,16 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
         "metrics_collected": len(auth_findings["metrics"])
     }
     
+    # CRITICAL: Analyze evidence with LLM to generate risk scores
+    from .base import analyze_evidence_with_llm
+    auth_findings = await analyze_evidence_with_llm(
+        domain="authentication",
+        findings=auth_findings,
+        snowflake_data=snowflake_data,
+        entity_type=entity_type,
+        entity_id=entity_id
+    )
+    
     # Finalize findings
     analysis_duration = time.time() - start_time
     DomainAgentBase.finalize_findings(
@@ -91,7 +101,7 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
     log_agent_handover_complete("authentication", auth_findings)
     complete_chain_of_thought(process_id, auth_findings, "authentication")
     
-    logger.info(f"✅ Authentication analysis complete - Risk: {auth_findings['risk_score']:.2f}")
+    logger.info(f"[Step 5.2.5] ✅ Authentication analysis complete - Risk: {auth_findings['risk_score']:.2f}")
     
     # Update state with findings
     return add_domain_findings(state, "authentication", auth_findings)

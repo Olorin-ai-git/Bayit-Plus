@@ -24,7 +24,7 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     Synthesizes findings from all domains and calculates final risk.
     """
     start_time = time.time()
-    logger.info("⚠️ Risk agent performing final assessment")
+    logger.info("[Step 5.2.6] ⚠️ Risk agent performing final assessment")
     
     # Get relevant data from state
     domain_findings = state.get("domain_findings", {})
@@ -37,9 +37,9 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     # Initialize logging and chain of thought
     DomainAgentBase.log_agent_start("risk", entity_type, entity_id, False)
     
-    logger.debug(f"   📊 Domain findings available: {list(domain_findings.keys())}")
-    logger.debug(f"   🔧 Tools used: {len(tools_used)} tools")
-    logger.debug(f"   ⚠️ Risk indicators: {len(risk_indicators)} total")
+    logger.debug(f"[Step 5.2.6]   📊 Domain findings available: {list(domain_findings.keys())}")
+    logger.debug(f"[Step 5.2.6]   🔧 Tools used: {len(tools_used)} tools")
+    logger.debug(f"[Step 5.2.6]   ⚠️ Risk indicators: {len(risk_indicators)} total")
     
     process_id = DomainAgentBase.start_chain_of_thought(
         investigation_id=investigation_id,
@@ -91,6 +91,17 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "confidence_level": risk_findings.get("confidence", 0.5)
     }
     
+    # CRITICAL: Analyze evidence with LLM to generate risk scores
+    from .base import analyze_evidence_with_llm
+    snowflake_data = state.get("snowflake_data", {})
+    risk_findings = await analyze_evidence_with_llm(
+        domain="risk",
+        findings=risk_findings,
+        snowflake_data=snowflake_data,
+        entity_type=entity_type,
+        entity_id=entity_id
+    )
+    
     # Finalize findings
     analysis_duration = time.time() - start_time
     DomainAgentBase.finalize_findings(
@@ -101,7 +112,7 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     log_agent_handover_complete("risk", risk_findings)
     complete_chain_of_thought(process_id, risk_findings, "risk")
     
-    logger.info(f"✅ Risk assessment complete - Final Risk: {final_risk_score:.2f} ({risk_findings.get('risk_level', 'UNKNOWN')})")
+    logger.info(f"[Step 5.2.6] ✅ Risk assessment complete - Final Risk: {final_risk_score:.2f} ({risk_findings.get('risk_level', 'UNKNOWN')})")
     
     # Update state with risk findings
     return add_domain_findings(state, "risk", risk_findings)
