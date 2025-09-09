@@ -23,11 +23,16 @@ class InvestigationState(TypedDict):
     investigation_id: str
     entity_id: str
     entity_type: str  # "ip_address", "user_id", "device_id", etc.
+    custom_user_prompt: Optional[str]  # Custom user prompt with highest priority
     
     # Phase management
     current_phase: str  # "initialization", "snowflake_analysis", "tool_execution", "domain_analysis", "summary", "complete"
     
-    # Snowflake data (30-day analysis)
+    # Configuration parameters
+    date_range_days: int  # Number of days for Snowflake analysis (default 7)
+    tool_count: str  # Number of tools to select (default "5-6")
+    
+    # Snowflake data (configurable day analysis)
     snowflake_data: Optional[Dict[str, Any]]
     snowflake_completed: bool
     
@@ -67,7 +72,10 @@ def create_initial_state(
     entity_id: str,
     entity_type: str = "ip_address",
     parallel_execution: bool = True,
-    max_tools: int = 52
+    max_tools: int = 52,
+    custom_user_prompt: Optional[str] = None,
+    date_range_days: int = 7,
+    tool_count: str = "5-6"
 ) -> InvestigationState:
     """
     Create the initial state for a new investigation.
@@ -78,6 +86,9 @@ def create_initial_state(
         entity_type: Type of entity being investigated
         parallel_execution: Whether to run agents in parallel
         max_tools: Maximum number of tools to use
+        custom_user_prompt: Optional custom user prompt with highest priority
+        date_range_days: Number of days for Snowflake lookback (default 7)
+        tool_count: Number of tools to select (default "5-6")
         
     Returns:
         Initial InvestigationState
@@ -92,9 +103,14 @@ def create_initial_state(
         "investigation_id": investigation_id,
         "entity_id": entity_id,
         "entity_type": entity_type,
+        "custom_user_prompt": custom_user_prompt,
         
         # Phase management
         "current_phase": "initialization",
+        
+        # Configuration parameters
+        "date_range_days": date_range_days,
+        "tool_count": tool_count,
         
         # Snowflake data
         "snowflake_data": None,

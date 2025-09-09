@@ -78,6 +78,7 @@ show_usage() {
     echo -e "${CYAN}  • credential-stuffing${NC}      - Breached credential attacks (high risk, 9 min)"
     echo -e "${CYAN}  • money-laundering${NC}         - Financial crime patterns (critical risk, 15 min)"
     echo -e "${CYAN}  • device-spoofing${NC}          - Device fingerprint manipulation (medium risk, 6 min)"
+    echo -e "${CYAN}  • ip-anomaly-detection${NC}     - IP-based anomaly detection using all domain agents (high risk, 12 min)"
     echo ""
     echo -e "${WHITE}OPTIONS:${NC}"
     echo "  --entity-id ID          Entity to investigate (e.g., user_12345)"
@@ -360,7 +361,7 @@ main() {
         echo ""
         echo -e "${YELLOW}💡 Available scenarios:${NC}"
         echo "   account-takeover, payment-fraud, identity-fraud, authentication-brute-force"
-        echo "   impossible-travel, credential-stuffing, money-laundering, device-spoofing"
+        echo "   impossible-travel, credential-stuffing, money-laundering, device-spoofing, ip-anomaly-detection"
         echo ""
         echo -e "${YELLOW}💡 Use --list for detailed scenario information${NC}"
         exit 1

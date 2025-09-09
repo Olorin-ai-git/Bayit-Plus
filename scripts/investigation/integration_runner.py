@@ -78,7 +78,8 @@ class InvestigationIntegrationRunner:
             "impossible-travel": "location_impossible_travel",  # Direct match
             "credential-stuffing": "account_takeover",  # Similar pattern
             "money-laundering": "money_laundering",  # Direct match
-            "device-spoofing": "device_spoofing"  # Direct match
+            "device-spoofing": "device_spoofing",  # Direct match
+            "ip-anomaly-detection": "ip_anomaly_detection"  # New IP-based scenario
         }
         
         mapped_scenario = scenario_mapping.get(scenario_id, "device_spoofing")

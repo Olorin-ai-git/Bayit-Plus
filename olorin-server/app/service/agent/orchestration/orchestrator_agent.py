@@ -48,6 +48,108 @@ class InvestigationOrchestrator:
         logger.info(f"🎯 Orchestrator initialized with {len(tools)} tools")
         logger.info(f"   LLM type: {type(self.llm)}")
         logger.info(f"   LLM with tools type: {type(self.llm_with_tools)}")
+        
+    def _sanitize_custom_prompt(self, prompt: str) -> str:
+        """
+        Sanitize custom prompt to prevent injection and ensure safety.
+        
+        Args:
+            prompt: Raw custom prompt from user
+            
+        Returns:
+            Sanitized prompt safe for use
+        """
+        if not prompt:
+            return ""
+        
+        # Basic sanitization
+        sanitized = prompt.strip()
+        
+        # Length limit for reasonable prompts
+        if len(sanitized) > 500:
+            sanitized = sanitized[:500] + "..."
+            logger.warning(f"Custom prompt truncated to 500 characters")
+        
+        # Basic security filtering - prevent common injection patterns
+        dangerous_patterns = [
+            'ignore previous', 'forget instructions', 'system:', 
+            'assistant:', 'user:', '```', 'exec(', 'eval(',
+            'import ', '__', 'os.', 'subprocess', 'rm -rf', 'delete'
+        ]
+        
+        prompt_lower = sanitized.lower()
+        for pattern in dangerous_patterns:
+            if pattern in prompt_lower:
+                logger.warning(f"Potentially dangerous pattern '{pattern}' detected in custom prompt - removing")
+                # Replace dangerous patterns with safe alternatives
+                sanitized = sanitized.replace(pattern, '[FILTERED]')
+        
+        return sanitized
+    
+    def _validate_investigation_integrity(self, state: InvestigationState) -> bool:
+        """
+        Validate that custom prompts don't compromise investigation integrity.
+        
+        Args:
+            state: Current investigation state
+            
+        Returns:
+            True if investigation integrity is maintained
+        """
+        custom_prompt = state.get('custom_user_prompt')
+        if not custom_prompt:
+            return True
+        
+        # Ensure mandatory phases cannot be disabled
+        prompt_lower = custom_prompt.lower()
+        integrity_violations = [
+            'skip snowflake', 'bypass snowflake', 'ignore snowflake',
+            'no snowflake', 'disable snowflake', 'avoid analysis',
+            'skip investigation', 'bypass analysis', 'only use'
+        ]
+        
+        for violation in integrity_violations:
+            if violation in prompt_lower:
+                logger.warning(f"Investigation integrity violation detected: '{violation}' in custom prompt")
+                return False
+        
+        return True
+    
+    def _create_enhanced_system_prompt(self, base_prompt: str, state: InvestigationState) -> str:
+        """
+        Create system prompt with custom user prompt priority.
+        
+        Args:
+            base_prompt: Base system prompt for the current phase
+            state: Current investigation state
+            
+        Returns:
+            Enhanced prompt with custom user instruction
+        """
+        custom_prompt = state.get('custom_user_prompt')
+        if not custom_prompt:
+            return base_prompt
+        
+        # Validate investigation integrity first
+        if not self._validate_investigation_integrity(state):
+            logger.warning("Custom prompt violates investigation integrity - ignoring")
+            return base_prompt
+        
+        # Sanitize custom prompt
+        sanitized_prompt = self._sanitize_custom_prompt(custom_prompt)
+        if not sanitized_prompt or sanitized_prompt == '[FILTERED]':
+            logger.warning("Custom prompt was filtered out due to security concerns")
+            return base_prompt
+        
+        # Construct enhanced prompt with priority
+        enhanced_prompt = f"""🎯 USER PRIORITY INSTRUCTION: {sanitized_prompt}
+
+{base_prompt}
+
+IMPORTANT: While following the standard investigation process, give special attention to the user's priority instruction above. Adapt your analysis and tool selection to focus on the specified areas while maintaining investigation completeness."""
+        
+        logger.info(f"✨ Enhanced prompt with custom user focus: '{sanitized_prompt}'")
+        return enhanced_prompt
     
     def _initialize_llm(self) -> ChatAnthropic:
         """Initialize the Claude Opus LLM for orchestration."""
@@ -107,10 +209,12 @@ class InvestigationOrchestrator:
                 else:
                     where_field = 'IP_ADDRESS'  # Default to IP
                 
-                query = f"SELECT * FROM TRANSACTIONS_ENRICHED WHERE {where_field} = '{entity_id}' AND TX_DATETIME >= DATEADD(day, -30, CURRENT_DATE()) LIMIT 100"
+                # Get date range from state context if available, default to 7 days
+                date_range = 7  # Default fallback
+                query = f"SELECT * FROM TRANSACTIONS_ENRICHED WHERE {where_field} = '{entity_id}' AND TX_DATETIME >= DATEADD(day, -{date_range}, CURRENT_DATE()) LIMIT 100"
                 
                 response = AIMessage(
-                    content="I'll query Snowflake for 30 days of data.",
+                    content=f"I'll query Snowflake for {date_range} days of data.",
                     tool_calls=[{
                         "name": "snowflake_query_tool",
                         "args": {
@@ -192,6 +296,9 @@ class InvestigationOrchestrator:
         """Handle the initialization phase."""
         logger.info(f"🚀 Starting investigation for {state['entity_type']}: {state['entity_id']}")
         
+        # Get configuration from state
+        date_range_days = state.get('date_range_days', 7)
+        
         # Create initial message
         init_message = SystemMessage(content=f"""
         Starting comprehensive fraud investigation.
@@ -199,9 +306,9 @@ class InvestigationOrchestrator:
         Entity: {state['entity_type']} - {state['entity_id']}
         
         Investigation phases:
-        1. Snowflake Analysis (30-day lookback) - MANDATORY
+        1. Snowflake Analysis ({date_range_days}-day lookback) - MANDATORY
         2. Tool Execution (based on Snowflake findings)
-        3. Domain Analysis (5 specialized agents)
+        3. Domain Analysis (6 specialized agents)
         4. Risk Assessment and Summary
         """)
         
@@ -214,7 +321,7 @@ class InvestigationOrchestrator:
         }
     
     async def _handle_snowflake_analysis(self, state: InvestigationState) -> Dict[str, Any]:
-        """Handle Snowflake analysis phase - MANDATORY 30-day lookback."""
+        """Handle Snowflake analysis phase - MANDATORY lookback (default 7 days, configurable)."""
         
         if state.get("snowflake_completed", False):
             logger.info("✅ Snowflake analysis already complete, moving to tool execution")
@@ -246,11 +353,14 @@ class InvestigationOrchestrator:
                         # Don't generate another one - just return current state
                         return {"current_phase": "snowflake_analysis"}
         
-        logger.info("❄️ Starting MANDATORY Snowflake 30-day analysis")
+        logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
+        
+        # Get date range from state, default to 7 days
+        date_range_days = state.get('date_range_days', 7)
         
         # Create Snowflake query prompt
         snowflake_prompt = f"""
-        You MUST use the snowflake_query_tool to analyze ALL data for the past 30 days.
+        You MUST use the snowflake_query_tool to analyze ALL data for the past {date_range_days} days.
         
         Entity to investigate: {state['entity_type']} = {state['entity_id']}
         
@@ -258,7 +368,7 @@ class InvestigationOrchestrator:
         1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
            - IP_ADDRESS = '{state['entity_id']}' (if entity is IP)
            - Or related fields match the entity
-           - Date range: LAST 30 DAYS
+           - Date range: LAST {date_range_days} DAYS
         
         2. Retrieve these key fields:
            - TX_ID_KEY, TX_DATETIME
@@ -277,7 +387,7 @@ class InvestigationOrchestrator:
            - Related entities (other IPs, devices, users)
         
         This is MANDATORY - you MUST query Snowflake before any other analysis.
-        Use SQL to get comprehensive 30-day data.
+        Use SQL to get comprehensive {date_range_days}-day data.
         """
         
         # Create human message for Snowflake query
@@ -289,11 +399,12 @@ class InvestigationOrchestrator:
                            if not isinstance(m, SystemMessage)]
         
         # Add single system message at the beginning
-        system_msg = SystemMessage(content="""
-        You are the investigation orchestrator. Your FIRST and MANDATORY task is to 
-        query Snowflake for 30 days of historical data. This is non-negotiable.
-        Use the snowflake_query_tool immediately.
-        """)
+        base_prompt = f"""You are the investigation orchestrator. Your FIRST and MANDATORY task is to 
+query Snowflake for {date_range_days} days of historical data. This is non-negotiable.
+Use the snowflake_query_tool immediately."""
+        
+        enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
+        system_msg = SystemMessage(content=enhanced_prompt)
         
         messages = [system_msg] + existing_messages + [human_msg]
         
@@ -346,9 +457,12 @@ class InvestigationOrchestrator:
         
         logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}")
         
+        # Get tool count from state, default to 5-6 range
+        tool_count = state.get('tool_count', '5-6')
+        
         # Analyze Snowflake data to determine which tools to use
         tool_selection_prompt = f"""
-        Based on the Snowflake analysis results, select and use 2-3 additional tools for investigation.
+        Based on the Snowflake analysis results, select and use {tool_count} additional tools for investigation.
         
         Snowflake findings summary:
         {self._summarize_snowflake_data(snowflake_data)}
@@ -356,7 +470,7 @@ class InvestigationOrchestrator:
         Tools already used: {tools_used}
         Attempt: {tool_execution_attempts}/{max_attempts}
         
-        IMPORTANT: Select only 2-3 most relevant tools based on findings. Quality over quantity.
+        IMPORTANT: Select only {tool_count} most relevant tools based on findings. Quality over quantity.
         
         Priority tools to consider:
         1. Threat Intelligence: VirusTotal, AbuseIPDB (for IP reputation)
@@ -373,11 +487,12 @@ class InvestigationOrchestrator:
         existing_messages = [m for m in state.get("messages", []) 
                            if not isinstance(m, SystemMessage)]
         
-        system_msg = SystemMessage(content=f"""
-        You are investigating potential fraud. You have {len(self.tools)} tools available.
-        Select 2-3 most relevant tools based on the Snowflake findings.
-        So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}.
-        """)
+        base_prompt = f"""You are investigating potential fraud. You have {len(self.tools)} tools available.
+Select {tool_count} most relevant tools based on the Snowflake findings.
+So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}."""
+        
+        enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
+        system_msg = SystemMessage(content=enhanced_prompt)
         
         messages = [system_msg] + existing_messages + [human_msg]
         response = await self.llm_with_tools.ainvoke(messages)
@@ -400,7 +515,7 @@ class InvestigationOrchestrator:
         domains_completed = state.get("domains_completed", [])
         
         # Check if all domains are complete
-        required_domains = ["network", "device", "location", "logs", "risk"]
+        required_domains = ["network", "device", "location", "logs", "authorization", "risk"]
         remaining_domains = [d for d in required_domains if d not in domains_completed]
         
         if not remaining_domains:
@@ -410,16 +525,17 @@ class InvestigationOrchestrator:
         logger.info(f"🔄 Domain analysis - completed: {domains_completed}, remaining: {remaining_domains}")
         
         # Create message for domain agents
-        domain_msg = SystemMessage(content=f"""
-        Domain analysis phase initiated.
-        Domains to analyze: {remaining_domains}
-        Execution mode: {'Parallel' if state.get('parallel_execution', True) else 'Sequential'}
+        base_prompt = f"""Domain analysis phase initiated.
+Domains to analyze: {remaining_domains}
+Execution mode: {'Parallel' if state.get('parallel_execution', True) else 'Sequential'}
+
+Each domain agent should analyze their specific area based on:
+- Snowflake data (7-day analysis)
+- Tool execution results
+- Cross-domain correlations"""
         
-        Each domain agent should analyze their specific area based on:
-        - Snowflake data (30-day analysis)
-        - Tool execution results
-        - Cross-domain correlations
-        """)
+        enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
+        domain_msg = SystemMessage(content=enhanced_prompt)
         
         return {
             "messages": [domain_msg],
@@ -522,13 +638,13 @@ class InvestigationOrchestrator:
 ## Investigation Coverage
 - **Tools Used:** {len(tools_used)} tools
 - **Domains Analyzed:** {', '.join(domains_completed)}
-- **Snowflake Analysis:** {'✅ Complete (30-day)' if state.get('snowflake_completed') else '❌ Incomplete'}
+- **Snowflake Analysis:** {'✅ Complete (' + str(state.get('date_range_days', 7)) + '-day)' if state.get('snowflake_completed') else '❌ Incomplete'}
 
 ## Key Risk Indicators
 {self._format_risk_indicators(risk_indicators)}
 
 ## Tool Usage Summary
-- Primary Analysis: Snowflake (30-day lookback)
+- Primary Analysis: Snowflake ({state.get('date_range_days', 7)}-day lookback)
 - Threat Intelligence: {sum(1 for t in tools_used if 'threat' in t.lower() or 'virus' in t.lower())} tools
 - Database/SIEM: {sum(1 for t in tools_used if 'splunk' in t.lower() or 'sumo' in t.lower())} tools
 - ML/AI Analysis: {sum(1 for t in tools_used if 'ml' in t.lower() or 'anomaly' in t.lower())} tools

@@ -280,6 +280,35 @@ class ScenarioInvestigationRunner:
                     "automation_detection": True,
                     "hardware_validation": True
                 }
+            ),
+            
+            "ip-anomaly-detection": InvestigationScenarioTemplate(
+                name="IP Address Anomaly Detection Investigation",
+                description="Comprehensive IP-based investigation using all domain agents to detect anomalies over a 30-day period",
+                scenario_type="ip_anomaly_detection",
+                risk_level="high",
+                expected_duration_minutes=12,
+                expected_indicators=[
+                    "IP reputation violations",
+                    "Geographic anomalies", 
+                    "Network infrastructure threats",
+                    "Authentication anomalies from IP",
+                    "Device inconsistencies from IP",
+                    "Suspicious log patterns",
+                    "Threat intelligence matches",
+                    "Cross-domain risk correlation"
+                ],
+                test_parameters={
+                    "lookback_days": 30,
+                    "enable_all_domain_agents": True,
+                    "threat_intelligence_scan": True,
+                    "geographic_analysis": True,
+                    "network_infrastructure_check": True,
+                    "authentication_pattern_analysis": True,
+                    "device_correlation": True,
+                    "log_analysis": True,
+                    "snowflake_historical_query": True
+                }
             )
         }
         
@@ -463,6 +492,10 @@ class ScenarioInvestigationRunner:
         
         print(f"🎭 Executing mock investigation...")
         
+        # Check if this is an IP-based anomaly detection scenario
+        if template.scenario_type == "ip_anomaly_detection":
+            return await self._execute_ip_anomaly_investigation(template, entity_id, mode)
+        
         # Simulate some processing time
         await asyncio.sleep(0.5)
         
@@ -500,6 +533,261 @@ class ScenarioInvestigationRunner:
         }
         
         return investigation_result
+    
+    async def _execute_ip_anomaly_investigation(
+        self,
+        template: InvestigationScenarioTemplate,
+        ip_address: str,
+        mode: str
+    ) -> Dict[str, Any]:
+        """Execute specialized IP-based anomaly detection investigation."""
+        
+        print(f"🔍 Executing comprehensive IP anomaly detection for {ip_address}...")
+        print(f"📅 Analyzing 30-day lookback period")
+        print(f"🤖 Deploying all domain agents for comprehensive analysis")
+        
+        # Validate IP address format
+        import ipaddress
+        try:
+            ipaddress.ip_address(ip_address)
+        except ValueError:
+            # If not a valid IP, treat as entity ID and look up associated IPs
+            print(f"⚠️  '{ip_address}' is not a valid IP address - treating as entity ID")
+            ip_address = await self._extract_ip_from_entity(ip_address)
+        
+        # Simulate comprehensive analysis with realistic timing
+        await asyncio.sleep(2.0)  # Longer processing for comprehensive analysis
+        
+        # Calculate 30-day lookback period
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+        
+        # Generate comprehensive IP investigation results
+        investigation_result = {
+            "scenario_id": "ip_anomaly_detection",
+            "ip_address": ip_address,
+            "entity_id": ip_address,
+            "mode": mode,
+            "timestamp": end_date.isoformat(),
+            "investigation_period": {
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+                "lookback_days": 30
+            },
+            "status": "completed",
+            
+            # All domain agents executed
+            "agents_executed": [
+                "network_agent",
+                "device_agent", 
+                "location_agent",
+                "logs_agent",
+                "authentication_agent",
+                "risk_agent"
+            ],
+            
+            # Domain-specific findings
+            "domain_findings": {
+                "network": await self._simulate_network_analysis(ip_address, mode),
+                "device": await self._simulate_device_analysis(ip_address, mode),
+                "location": await self._simulate_location_analysis(ip_address, mode),
+                "logs": await self._simulate_logs_analysis(ip_address, mode),
+                "authentication": await self._simulate_authentication_analysis(ip_address, mode),
+                "threat_intelligence": await self._simulate_threat_intelligence_analysis(ip_address, mode)
+            },
+            
+            # Overall findings
+            "findings": {
+                "overall_risk_score": 0.72,  # High risk for demonstration
+                "risk_level": "HIGH",
+                "confidence": 0.85,
+                "indicators_found": template.expected_indicators,
+                "anomaly_count": 14,
+                "cross_domain_correlations": 3,
+                "recommendations": self._get_ip_specific_recommendations(ip_address)
+            },
+            
+            # Execution metrics
+            "execution_metrics": {
+                "total_agents": 6,
+                "successful_agents": 6,
+                "failed_agents": 0,
+                "snowflake_queries": 8 if mode == "live" else 0,
+                "threat_intel_calls": 12 if mode == "live" else 0,
+                "api_calls_made": 45 if mode == "live" else 0,
+                "tokens_used": 25000 if mode == "live" else 0,
+                "estimated_cost": 0.48 if mode == "live" else 0.0,
+                "data_points_analyzed": 1247
+            }
+        }
+        
+        return investigation_result
+    
+    async def _extract_ip_from_entity(self, entity_id: str) -> str:
+        """Extract IP address from entity ID using mock lookup."""
+        
+        # In a real implementation, this would query Snowflake for associated IPs
+        print(f"🔍 Looking up IP addresses associated with entity {entity_id}...")
+        await asyncio.sleep(0.3)
+        
+        # Generate a mock IP address for demonstration
+        import random
+        mock_ips = [
+            "192.168.1.100",
+            "10.0.0.45", 
+            "203.0.113.42",
+            "198.51.100.33",
+            "172.16.254.12"
+        ]
+        
+        selected_ip = random.choice(mock_ips)
+        print(f"✅ Found primary IP address: {selected_ip}")
+        return selected_ip
+    
+    async def _simulate_network_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate network domain agent analysis."""
+        await asyncio.sleep(0.2)
+        
+        return {
+            "domain": "network",
+            "risk_score": 0.78,
+            "risk_indicators": [
+                "IP associated with VPN service",
+                "Multiple ISP changes detected",
+                "Suspicious port scanning activity"
+            ],
+            "analysis": {
+                "ip_reputation": "suspicious",
+                "geographic_consistency": "anomalous",
+                "isp_changes": 5,
+                "threat_intel_matches": 2,
+                "proxy_indicators": True
+            },
+            "confidence": 0.82
+        }
+    
+    async def _simulate_device_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate device domain agent analysis."""
+        await asyncio.sleep(0.15)
+        
+        return {
+            "domain": "device", 
+            "risk_score": 0.65,
+            "risk_indicators": [
+                "Multiple device fingerprints from IP",
+                "Browser automation detected",
+                "Device spoofing patterns"
+            ],
+            "analysis": {
+                "unique_devices": 12,
+                "fingerprint_consistency": "inconsistent",
+                "automation_score": 0.73,
+                "device_types": ["desktop", "mobile", "tablet", "unknown"]
+            },
+            "confidence": 0.77
+        }
+    
+    async def _simulate_location_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate location domain agent analysis."""
+        await asyncio.sleep(0.18)
+        
+        return {
+            "domain": "location",
+            "risk_score": 0.83,
+            "risk_indicators": [
+                "Impossible travel detected",
+                "Activity from high-risk countries", 
+                "Geographic anomalies"
+            ],
+            "analysis": {
+                "countries_detected": ["US", "RO", "CN", "RU"],
+                "cities_detected": ["New York", "Bucharest", "Beijing", "Moscow"],
+                "impossible_travel_events": 3,
+                "high_risk_locations": 2
+            },
+            "confidence": 0.89
+        }
+    
+    async def _simulate_logs_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate logs domain agent analysis."""
+        await asyncio.sleep(0.25)
+        
+        return {
+            "domain": "logs",
+            "risk_score": 0.71,
+            "risk_indicators": [
+                "High volume of failed transactions",
+                "Suspicious error patterns",
+                "Automated behavior detected"
+            ],
+            "analysis": {
+                "total_events": 2847,
+                "failed_transactions": 126,
+                "error_rate": 0.089,
+                "suspicious_patterns": 8,
+                "automation_indicators": True
+            },
+            "confidence": 0.75
+        }
+    
+    async def _simulate_authentication_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate authentication domain agent analysis."""
+        await asyncio.sleep(0.22)
+        
+        return {
+            "domain": "authentication",
+            "risk_score": 0.86,
+            "risk_indicators": [
+                "Brute force attack patterns",
+                "MFA bypass attempts",
+                "Credential stuffing indicators"
+            ],
+            "analysis": {
+                "failed_login_attempts": 247,
+                "successful_logins": 23,
+                "mfa_bypass_attempts": 5,
+                "credential_stuffing_batches": 3,
+                "impossible_travel_confidence": 0.92
+            },
+            "confidence": 0.91
+        }
+    
+    async def _simulate_threat_intelligence_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+        """Simulate threat intelligence analysis across all sources."""
+        await asyncio.sleep(0.35)
+        
+        return {
+            "domain": "threat_intelligence",
+            "risk_score": 0.79,
+            "sources_checked": ["AbuseIPDB", "VirusTotal", "Shodan", "SumoLogic"],
+            "risk_indicators": [
+                "IP flagged by multiple threat feeds",
+                "Associated with malware campaigns",
+                "Known botnet infrastructure"
+            ],
+            "analysis": {
+                "abuseipdb_confidence": 84,
+                "virustotal_detections": 6,
+                "shodan_services": ["HTTP", "SSH", "HTTPS", "FTP"],
+                "malware_associations": 3,
+                "botnet_indicators": True
+            },
+            "confidence": 0.87
+        }
+    
+    def _get_ip_specific_recommendations(self, ip_address: str) -> List[str]:
+        """Get IP-specific investigation recommendations."""
+        
+        return [
+            f"🚨 IMMEDIATE ACTION: Block all traffic from {ip_address}",
+            "🔍 Investigate all user accounts that accessed from this IP",
+            "📊 Review transaction patterns from this IP over 30-day period",
+            "🔒 Implement enhanced monitoring for this IP range",
+            "⚠️ Flag associated user accounts for manual review",
+            "📧 Alert security team about potential coordinated attack",
+            "🔄 Cross-reference with other high-risk IPs in database",
+            "📈 Generate comprehensive forensic report for compliance"
+        ]
     
     def _get_mock_recommendations(self, risk_level: str) -> List[str]:
         """Get mock recommendations based on risk level."""

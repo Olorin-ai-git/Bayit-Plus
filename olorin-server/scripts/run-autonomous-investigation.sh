@@ -71,6 +71,9 @@ MOCK_IPS_CACHE="true"
 AUTO_START_SERVER="true"
 SKIP_SECRETS=""
 
+# Custom prompt configuration
+CUSTOM_PROMPT=""
+
 # Snowflake configuration
 USE_SNOWFLAKE="true"
 SNOWFLAKE_TIME_WINDOW="24h"
@@ -167,6 +170,11 @@ show_usage() {
     echo "  --show-agents               Display agent conversations and collaborations"
     echo "  --show-all                  Enable ALL monitoring options (websocket, llm, langgraph, agents)"
     echo "  --follow-logs               Tail server logs in parallel terminal"
+    echo ""
+    echo -e "${WHITE}CUSTOM INVESTIGATION OPTIONS:${NC}"
+    echo "  --custom-prompt PROMPT      Custom user prompt with highest priority"
+    echo "                              Example: 'Focus on Device Data in Snowflake'"
+    echo "                              Example: 'Prioritize network-based anomalies'"
     echo ""
     echo -e "${WHITE}OTHER OPTIONS:${NC}"
     echo "  --dry-run                   Show command without executing"
@@ -552,6 +560,11 @@ build_command_args() {
         cmd_args+=(--follow-logs)
     fi
     
+    # Custom prompt option
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        cmd_args+=(--custom-prompt "$CUSTOM_PROMPT")
+    fi
+    
     echo "${cmd_args[@]}"
 }
 
@@ -623,6 +636,11 @@ show_configuration() {
         echo -e "   Monitoring: ${GREEN}${features_str}${NC}"
     else
         echo -e "   Monitoring: ${YELLOW}Basic (use --show-all for full visibility)${NC}"
+    fi
+    
+    # Display custom prompt if set
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        echo -e "   Custom Focus: ${PURPLE}${CUSTOM_PROMPT}${NC}"
     fi
     
     echo ""
@@ -780,6 +798,10 @@ parse_arguments() {
                 SNOWFLAKE_TOP_PERCENT="$2"
                 shift 2
                 ;;
+            --custom-prompt)
+                CUSTOM_PROMPT="$2"
+                shift 2
+                ;;
             -h|--help)
                 show_usage
                 exit 0
@@ -850,6 +872,12 @@ run_investigation() {
     
     # Set environment variables for enhanced monitoring
     export SECRET_MANAGER_LOG_LEVEL=SILENT
+    
+    # Export custom prompt for Python script
+    if [[ -n "$CUSTOM_PROMPT" ]]; then
+        export CUSTOM_USER_PROMPT="$CUSTOM_PROMPT"
+        show_success "Custom investigation prompt set: '$CUSTOM_PROMPT'"
+    fi
     
     # Enable detailed logging based on monitoring flags
     if [[ "$SHOW_LLM" == "true" ]]; then

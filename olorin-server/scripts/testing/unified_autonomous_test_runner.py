@@ -217,6 +217,9 @@ class TestConfiguration:
     open_report: bool = False
     use_mock_ips_cache: bool = DEFAULT_USE_MOCK_IPS  # Now true by default
     
+    # Custom investigation options
+    custom_prompt: Optional[str] = None
+    
     # Advanced monitoring options
     show_websocket: bool = False
     show_llm: bool = False
@@ -1933,6 +1936,52 @@ class UnifiedAutonomousTestRunner:
         
         return max(0, score)
 
+    def _calculate_execution_confidence(self, agent_results: Dict[str, Any]) -> float:
+        """Calculate execution confidence based on agent success rates and data quality"""
+        if not agent_results:
+            return 0.0
+        
+        # Calculate success rate based on agent statuses
+        total_agents = len(agent_results)
+        successful_agents = sum(1 for agent_data in agent_results.values() 
+                              if agent_data.get("status") == "success")
+        partial_agents = sum(1 for agent_data in agent_results.values() 
+                           if agent_data.get("status") == "partial")
+        
+        # Base confidence from success rates
+        success_rate = successful_agents / total_agents
+        partial_rate = partial_agents / total_agents
+        base_confidence = success_rate + (partial_rate * 0.5)  # Partial success counts as 50%
+        
+        # Adjust confidence based on individual agent confidence scores
+        individual_confidences = [agent_data.get("confidence", 0.0) 
+                                for agent_data in agent_results.values()]
+        if individual_confidences:
+            avg_individual_confidence = sum(individual_confidences) / len(individual_confidences)
+            # Weight base confidence with individual confidences
+            adjusted_confidence = (base_confidence * 0.6) + (avg_individual_confidence * 0.4)
+        else:
+            adjusted_confidence = base_confidence
+        
+        # Apply quality penalties for low data quality indicators
+        quality_penalty = 0.0
+        
+        # Check for failed agents
+        failed_agents = sum(1 for agent_data in agent_results.values() 
+                          if agent_data.get("status") in ["error", "no_results"])
+        if failed_agents > 0:
+            quality_penalty += (failed_agents / total_agents) * 0.3
+        
+        # Check for very low individual confidences (indicates data quality issues)
+        low_confidence_count = sum(1 for conf in individual_confidences if conf < 0.3)
+        if low_confidence_count > 0:
+            quality_penalty += (low_confidence_count / total_agents) * 0.2
+        
+        # Final confidence with penalties applied
+        final_confidence = max(0.0, min(1.0, adjusted_confidence - quality_penalty))
+        
+        return final_confidence
+
     async def _collect_performance_metrics(
         self,
         context: AutonomousInvestigationContext,
@@ -2812,6 +2861,12 @@ Examples:
         help="Entity type: user_id, device_id, ip_address, transaction_id, etc."
     )
     
+    # Custom investigation options
+    parser.add_argument(
+        "--custom-prompt",
+        help="Custom user prompt with highest priority in investigation (e.g., 'Focus on Device Data in Snowflake')"
+    )
+    
     # CSV data options
     parser.add_argument(
         "--csv-file",
@@ -2976,6 +3031,8 @@ async def main():
         html_report=args.html_report,
         open_report=args.open_report,
         use_mock_ips_cache=use_mock_ips,
+        # Custom investigation options
+        custom_prompt=getattr(args, 'custom_prompt', None) or os.getenv('CUSTOM_USER_PROMPT'),
         # Advanced monitoring options
         show_websocket=getattr(args, 'show_websocket', False),
         show_llm=getattr(args, 'show_llm', False),

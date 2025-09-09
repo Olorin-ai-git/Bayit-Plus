@@ -5,7 +5,7 @@ Builds the complete investigation graph with proper tool integration,
 orchestrator control, and domain agent coordination.
 """
 
-from typing import List, Any, Dict, Union
+from typing import List, Any, Dict, Union, Optional
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import SystemMessage
@@ -405,6 +405,7 @@ def build_clean_investigation_graph() -> StateGraph:
             "device_agent": "device_agent",
             "location_agent": "location_agent",
             "logs_agent": "logs_agent",
+            "authentication_agent": "authentication_agent",
             "risk_agent": "risk_agent",
             "summary": "summary",
             END: END
@@ -416,7 +417,7 @@ def build_clean_investigation_graph() -> StateGraph:
     builder.add_edge("process_tools", "orchestrator")
     
     # All agents return to orchestrator
-    for agent in ["network_agent", "device_agent", "location_agent", "logs_agent", "risk_agent"]:
+    for agent in ["network_agent", "device_agent", "location_agent", "logs_agent", "authentication_agent", "risk_agent"]:
         builder.add_edge(agent, "orchestrator")
     
     # Summary can end
@@ -435,7 +436,8 @@ def build_clean_investigation_graph() -> StateGraph:
 async def run_investigation(
     entity_id: str,
     entity_type: str = "ip_address",
-    investigation_id: str = None
+    investigation_id: str = None,
+    custom_user_prompt: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Run a complete investigation using the clean graph.
@@ -444,6 +446,7 @@ async def run_investigation(
         entity_id: Entity to investigate
         entity_type: Type of entity
         investigation_id: Optional investigation ID
+        custom_user_prompt: Optional custom user prompt with highest priority
         
     Returns:
         Investigation results
@@ -462,7 +465,8 @@ async def run_investigation(
         entity_id=entity_id,
         entity_type=entity_type,
         parallel_execution=True,
-        max_tools=52
+        max_tools=52,
+        custom_user_prompt=custom_user_prompt
     )
     
     logger.info("📊 Initial state created")
