@@ -62,11 +62,17 @@ AVAILABLE_MODELS = {
         display_name="Claude 3 Opus",
         max_tokens=4096
     ),
-    "claude-3-sonnet-20240229": ModelConfig(
+    "claude-3-5-sonnet-20241022": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
-        model_name="claude-3-sonnet-20240229",
-        display_name="Claude 3 Sonnet",
-        max_tokens=4096
+        model_name="claude-3-5-sonnet-20241022",
+        display_name="Claude 3.5 Sonnet",
+        max_tokens=8192
+    ),
+    "claude-3-5-sonnet-20240620": ModelConfig(
+        provider=ModelProvider.ANTHROPIC,
+        model_name="claude-3-5-sonnet-20240620",
+        display_name="Claude 3.5 Sonnet (June)",
+        max_tokens=8192
     ),
     "claude-3-haiku-20240307": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
@@ -120,6 +126,20 @@ AVAILABLE_MODELS = {
     ),
     
     # Google models
+    "gemini-1.5-flash": ModelConfig(
+        provider=ModelProvider.GOOGLE,
+        model_name="gemini-1.5-flash",
+        display_name="Gemini 1.5 Flash",
+        max_tokens=8192,
+        temperature=0.7
+    ),
+    "gemini-1.5-flash-002": ModelConfig(
+        provider=ModelProvider.GOOGLE,
+        model_name="gemini-1.5-flash-002",
+        display_name="Gemini 1.5 Flash 002",
+        max_tokens=8192,
+        temperature=0.7
+    ),
     "gemini-pro": ModelConfig(
         provider=ModelProvider.GOOGLE,
         model_name="gemini-pro",
@@ -151,18 +171,18 @@ class LLMManager:
         self.openai_api_key = os.getenv('OPENAI_API_KEY') or self.config_loader.load_secret('OPENAI_API_KEY')
         self.gemini_api_key = os.getenv('GEMINI_API_KEY') or self.config_loader.load_secret('GEMINI_API_KEY')
         
-        # Load model selection
-        self.selected_model_id = os.getenv('SELECTED_MODEL', 'claude-3-opus-20240229')
-        self.verification_model_id = os.getenv('VERIFICATION_MODEL', 'gpt-4-turbo-preview')
+        # Load model selection - use cost-effective models by default
+        self.selected_model_id = os.getenv('SELECTED_MODEL', 'claude-3-5-sonnet-20240620')  # Sonnet is more cost-effective than Opus
+        self.verification_model_id = os.getenv('VERIFICATION_MODEL', 'gemini-1.5-flash')  # Use cost-effective Gemini Flash for verification
         
         # Validate configuration
         if self.selected_model_id not in AVAILABLE_MODELS:
-            logger.warning(f"Invalid selected model: {self.selected_model_id}, defaulting to claude-3-opus")
-            self.selected_model_id = 'claude-3-opus-20240229'
+            logger.warning(f"Invalid selected model: {self.selected_model_id}, defaulting to claude-3.5-sonnet")
+            self.selected_model_id = 'claude-3-5-sonnet-20240620'
             
         if self.verification_model_id not in AVAILABLE_MODELS:
-            logger.warning(f"Invalid verification model: {self.verification_model_id}, defaulting to gpt-4-turbo")
-            self.verification_model_id = 'gpt-4-turbo-preview'
+            logger.warning(f"Invalid verification model: {self.verification_model_id}, defaulting to gemini-1.5-flash")
+            self.verification_model_id = 'gemini-1.5-flash'
             
         logger.info(f"LLM Manager configured: selected={self.selected_model_id}, verification={self.verification_model_id}")
         
@@ -235,14 +255,20 @@ class LLMManager:
         
     def _try_fallback_model(self):
         """Try to initialize a fallback model if primary fails."""
+        # Fallback order prioritizes cost-effective models first
         fallback_order = [
-            'claude-opus-4-1-20250805',
-            'gpt-5-chat-latest',
-            'claude-3-opus-20240229',
-            'gpt-5',
-            'gpt-4-turbo-preview',
+            'claude-3-5-sonnet-20240620',  # Start with cost-effective models
+            'claude-3-haiku-20240307',
+            'gemini-1.5-flash',          # Very cost-effective
+            'gemini-1.5-flash-002',
+            'gpt-3.5-turbo',
             'gemini-pro',
-            'gpt-3.5-turbo'
+            'gpt-4-turbo-preview',
+            'claude-3-opus-20240229',  # More expensive models later in fallback
+            'gpt-4',
+            'gpt-5',
+            'gpt-5-chat-latest',
+            'claude-opus-4-1-20250805'  # Most expensive models last
         ]
         
         for model_id in fallback_order:
@@ -294,8 +320,34 @@ class LLMManager:
                 result['verification'] = verification_result
                 
         except Exception as e:
-            logger.error(f"Model invocation failed: {e}")
-            result['error'] = str(e)
+            # Handle LLM API errors gracefully (works for OpenAI, Anthropic, etc.)
+            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                logger.error(f"❌ LLM context length exceeded in model invocation")
+                logger.error(f"   Model: {self.selected_model_id}")
+                logger.error(f"   Error: {str(e)}")
+                logger.error(f"   Context info: {len(messages)} messages, estimated {sum(len(str(m.content)) for m in messages if hasattr(m, 'content'))} characters")
+                result['error'] = f"Context length exceeded for model {self.selected_model_id}"
+                
+            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                logger.error(f"❌ LLM model not found in model invocation")
+                logger.error(f"   Model: {self.selected_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                result['error'] = f"Model not found: {self.selected_model_id} (check model name/availability)"
+                
+            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                logger.error(f"❌ LLM API error in model invocation")
+                logger.error(f"   Model: {self.selected_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                result['error'] = f"API error for model {self.selected_model_id}: {type(e).__name__}"
+                
+            else:
+                logger.error(f"❌ Unexpected error in model invocation")
+                logger.error(f"   Model: {self.selected_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                result['error'] = str(e)
             
         return result
         
@@ -343,11 +395,46 @@ class LLMManager:
             }
             
         except Exception as e:
-            logger.error(f"Verification failed: {e}")
-            return {
-                'verified': False,
-                'error': str(e)
-            }
+            # Handle verification model LLM API errors gracefully
+            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                logger.error(f"❌ Verification model context length exceeded")
+                logger.error(f"   Verification model: {self.verification_model_id}")
+                logger.error(f"   Error: {str(e)}")
+                logger.error(f"   Verification prompt length: {len(verification_prompt)} characters")
+                return {
+                    'verified': False,
+                    'error': f"Context length exceeded for verification model {self.verification_model_id}"
+                }
+                
+            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                logger.error(f"❌ Verification model not found")
+                logger.error(f"   Verification model: {self.verification_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                return {
+                    'verified': False,
+                    'error': f"Verification model not found: {self.verification_model_id} (check model name/availability)"
+                }
+                
+            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                logger.error(f"❌ Verification model API error")
+                logger.error(f"   Verification model: {self.verification_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                return {
+                    'verified': False,
+                    'error': f"API error for verification model {self.verification_model_id}: {type(e).__name__}"
+                }
+                
+            else:
+                logger.error(f"❌ Unexpected error in verification model")
+                logger.error(f"   Verification model: {self.verification_model_id}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                return {
+                    'verified': False,
+                    'error': str(e)
+                }
             
     def switch_model(self, model_id: str) -> bool:
         """

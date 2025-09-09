@@ -229,7 +229,15 @@ class AbuseIPDBClient:
                 "networkList": ip_list
             }
             
-            response_data = await self._make_request("POST", "check-block", params=params, data=data)
+            # CRITICAL FIX: Try alternative endpoint if check-block fails
+            try:
+                response_data = await self._make_request("POST", "check-block", params=params, data=data)
+            except Exception as e:
+                if "405" in str(e) or "Method Not Allowed" in str(e):
+                    logger.warning("Bulk check-block endpoint not available, falling back to individual checks")
+                    # Fallback to individual IP checks for bulk analysis
+                    return await self._fallback_individual_checks(ip_addresses, max_age_days)
+                raise
             response_time = int((time.time() - start_time) * 1000)
             
             # Parse bulk response
@@ -271,6 +279,77 @@ class AbuseIPDBClient:
                 error=str(e),
                 response_time_ms=int((time.time() - start_time) * 1000)
             )
+    
+    async def _fallback_individual_checks(
+        self,
+        ip_addresses: List[str],
+        max_age_days: int = 90
+    ) -> BulkAnalysisResponse:
+        """
+        Fallback method for bulk analysis using individual IP checks.
+        Used when bulk endpoint is not available.
+        """
+        start_time = time.time()
+        logger.info(f"Performing fallback individual checks for {len(ip_addresses)} IPs")
+        
+        ips_analyzed = []
+        high_risk_ips = []
+        
+        # Limit to reasonable number for fallback (to prevent API rate limiting)
+        limited_ips = ip_addresses[:50]  # Process max 50 IPs in fallback mode
+        if len(ip_addresses) > 50:
+            logger.warning(f"Limiting fallback analysis to first 50 IPs (out of {len(ip_addresses)})")
+        
+        try:
+            # Process IPs individually using the correct method name
+            for ip in limited_ips:
+                try:
+                    # CRITICAL FIX: Use check_ip_reputation instead of check_ip
+                    ip_response = await self.check_ip_reputation(ip, max_age_days=max_age_days)
+                    
+                    if ip_response.success and ip_response.ip_info:
+                        # Convert single IP response to bulk format
+                        from .models import BulkIPData
+                        ip_info = ip_response.ip_info
+                        bulk_ip = BulkIPData(
+                            ip_address=ip,
+                            country_code=ip_info.country_code,
+                            usage_type=ip_info.usage_type,
+                            isp=ip_info.isp,
+                            domain=ip_info.domain,
+                            abuse_confidence_percentage=ip_info.abuse_confidence_percentage,
+                            last_reported_at=ip_info.last_reported_at
+                        )
+                        ips_analyzed.append(bulk_ip)
+                        
+                        # Flag high-risk IPs (>75% confidence)
+                        if bulk_ip.abuse_confidence_percentage >= 75:
+                            high_risk_ips.append(bulk_ip.ip_address)
+                    
+                    # Add small delay to avoid rate limiting
+                    import asyncio
+                    await asyncio.sleep(0.1)
+                    
+                except Exception as e:
+                    logger.warning(f"Failed to check individual IP {ip}: {e}")
+                    continue
+            
+            return BulkAnalysisResponse(
+                success=True,
+                ips_analyzed=ips_analyzed,
+                total_ips=len(ips_analyzed),
+                high_risk_ips=high_risk_ips,
+                response_time_ms=int((time.time() - start_time) * 1000),
+                error="Used fallback individual checks (bulk endpoint unavailable)" if len(ips_analyzed) > 0 else None
+            )
+            
+        except Exception as e:
+            logger.error(f"Fallback individual checks failed: {e}")
+            return BulkAnalysisResponse(
+                success=False,
+                error=f"Fallback failed: {str(e)}",
+                response_time_ms=int((time.time() - start_time) * 1000)
+            )
 
     async def check_cidr_block(
         self,
@@ -295,6 +374,7 @@ class AbuseIPDBClient:
                 "maxAgeInDays": min(max(max_age_days, 1), 365)
             }
             
+            # CRITICAL FIX: Use correct endpoint for CIDR analysis
             response_data = await self._make_request("GET", "check-block", params=params)
             response_time = int((time.time() - start_time) * 1000)
             

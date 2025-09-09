@@ -1554,13 +1554,51 @@ class UnifiedAutonomousTestRunner:
             # Execute clean graph with initial state
             # Increase recursion limit for live mode to handle more complex investigations
             recursion_limit = 100 if self.config.mode == TestMode.LIVE else 50
-            langgraph_result = await graph.ainvoke(
-                initial_state,
-                config={"recursion_limit": recursion_limit}  # Allow more iterations in live mode
-            )
             
-            duration = time.time() - start_time
-            self.logger.info(f"✅ Clean graph orchestration completed in {duration:.2f}s")
+            try:
+                langgraph_result = await graph.ainvoke(
+                    initial_state,
+                    config={"recursion_limit": recursion_limit}  # Allow more iterations in live mode
+                )
+                
+                duration = time.time() - start_time
+                self.logger.info(f"✅ Clean graph orchestration completed in {duration:.2f}s")
+                
+            except Exception as e:
+                duration = time.time() - start_time
+                
+                # Handle LLM orchestration failures gracefully - NO FALLBACKS
+                if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                    self.logger.error(f"❌ LLM orchestration failed: Context length exceeded")
+                    self.logger.error(f"   Error: {str(e)}")
+                    self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
+                    self.logger.error(f"❌ Test failed for {context.entity_id}: Fix orchestration context length issue.")
+                    raise e
+                        
+                elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                    self.logger.error(f"❌ LLM orchestration failed: Model not found")
+                    self.logger.error(f"   Error type: {type(e).__name__}")
+                    self.logger.error(f"   Error details: {str(e)}")
+                    self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
+                    self.logger.error(f"❌ Test failed for {context.entity_id}: Fix model configuration (check model name/availability).")
+                    raise e
+                        
+                elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                    self.logger.error(f"❌ LLM orchestration failed: API error")
+                    self.logger.error(f"   Error type: {type(e).__name__}")
+                    self.logger.error(f"   Error details: {str(e)}")
+                    self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
+                    self.logger.error(f"❌ Test failed for {context.entity_id}: Fix API configuration or connection issue.")
+                    raise e
+                        
+                else:
+                    # Re-raise unexpected errors with clean error message
+                    self.logger.error(f"❌ LLM orchestration failed: Unexpected error")
+                    self.logger.error(f"   Error type: {type(e).__name__}")
+                    self.logger.error(f"   Error details: {str(e)}")
+                    self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
+                    self.logger.error(f"❌ Test failed for {context.entity_id}: Fix orchestration failure.")
+                    raise e
             
             # Debug: Log what clean graph returned
             self.logger.info(f"🔍 Clean graph result keys: {list(langgraph_result.keys())[:10]}...")  # Show first 10 keys
@@ -1576,11 +1614,33 @@ class UnifiedAutonomousTestRunner:
             return agent_results
             
         except Exception as e:
-            import traceback
-            self.logger.error(f"❌ LangGraph orchestration failed: {e}")
-            self.logger.error(f"Full traceback:\n{traceback.format_exc()}")
-            # Fallback to mock responses to prevent test failure
-            return await self._generate_fallback_results(context, result)
+            # Handle LLM API errors gracefully with clean logging
+            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                self.logger.error(f"❌ LLM context length exceeded in comprehensive investigation")
+                self.logger.error(f"   Error: {str(e)}")
+                self.logger.error(f"   Investigation ID: {context.entity_id}")
+                self.logger.error(f"   Investigation cannot continue - fix context length issue")
+                raise e
+            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                self.logger.error(f"❌ LLM model not found in comprehensive investigation")
+                self.logger.error(f"   Error type: {type(e).__name__}")
+                self.logger.error(f"   Error details: {str(e)}")
+                self.logger.error(f"   Investigation ID: {context.entity_id}")
+                self.logger.error(f"   Investigation cannot continue - fix model configuration (check model name/availability)")
+                raise e
+            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                self.logger.error(f"❌ LLM API error in comprehensive investigation")
+                self.logger.error(f"   Error type: {type(e).__name__}")
+                self.logger.error(f"   Error details: {str(e)}")
+                self.logger.error(f"   Investigation ID: {context.entity_id}")
+                self.logger.error(f"   Investigation cannot continue - fix API configuration")
+                raise e
+            else:
+                self.logger.error(f"❌ LangGraph orchestration failed: {e}")
+                self.logger.error(f"   Error type: {type(e).__name__}")
+                self.logger.error(f"   Investigation ID: {context.entity_id}")
+                self.logger.error(f"   Investigation cannot continue - unexpected error")
+                raise e
     
     def _extract_agent_results_from_langgraph(self, langgraph_result: Dict, total_duration: float) -> Dict[str, Any]:
         """Extract individual agent results from LangGraph execution"""
@@ -2380,16 +2440,27 @@ class UnifiedAutonomousTestRunner:
         # Generate report files
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Determine output directory - use centralized reports folder under logs
-        if self.config.output_dir == ".":
-            # Create centralized reports directory under logs
+        # Extract investigation folder from first result (if available)
+        investigation_folder = None
+        if self.results and hasattr(self.results[0], 'investigation_folder'):
+            investigation_folder = self.results[0].investigation_folder
+            
+        # Determine output directory - prefer investigation folder over default
+        if investigation_folder and Path(investigation_folder).exists():
+            # Use the investigation folder for JSON report
+            output_dir = Path(investigation_folder)
+            self.logger.info(f"📁 Using investigation folder for JSON report: {output_dir}")
+        elif self.config.output_dir == ".":
+            # Create centralized reports directory under logs (fallback)
             reports_dir = Path("logs/reports")
             reports_dir.mkdir(parents=True, exist_ok=True)
             output_dir = reports_dir
+            self.logger.info(f"📁 Using fallback reports directory for JSON report: {output_dir}")
         else:
             # Use user-specified output directory
             output_dir = Path(self.config.output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
+            self.logger.info(f"📁 Using user-specified directory for JSON report: {output_dir}")
         
         # Always generate JSON report
         json_filename = f"unified_test_report_{timestamp}.json"
@@ -2409,7 +2480,7 @@ class UnifiedAutonomousTestRunner:
                     self.logger.warning(f"Could not open browser: {e}")
         
         if self.config.output_format == OutputFormat.MARKDOWN:
-            markdown_path = await self._generate_markdown_report(report_data, timestamp)
+            markdown_path = await self._generate_markdown_report(report_data, timestamp, investigation_folder)
             self.logger.info(f"📝 Markdown report saved: {markdown_path}")
         
         if self.config.output_format == OutputFormat.TERMINAL:
@@ -2489,13 +2560,13 @@ class UnifiedAutonomousTestRunner:
             return str(Path(generated_path).absolute())
             
         except Exception as e:
-            self.logger.error(f"Failed to generate unified HTML report: {e}")
-            # Import traceback for detailed error information
-            import traceback
-            self.logger.error(f"Traceback: {traceback.format_exc()}")
+            self.logger.error(f"❌ Failed to generate unified HTML report")
+            self.logger.error(f"   Error type: {type(e).__name__}")
+            self.logger.error(f"   Error details: {str(e)}")
+            self.logger.error(f"   Report generation failed - check file permissions and paths")
             return None
 
-    async def _generate_markdown_report(self, report_data: Dict[str, Any], timestamp: str) -> str:
+    async def _generate_markdown_report(self, report_data: Dict[str, Any], timestamp: str, investigation_folder: Optional[str] = None) -> str:
         """Generate comprehensive Markdown report"""
         
         markdown_lines = [
@@ -2568,16 +2639,22 @@ class UnifiedAutonomousTestRunner:
         markdown_content = "\n".join(markdown_lines)
         
         # Save to file
-        # Determine output directory - use centralized reports folder under logs
-        if self.config.output_dir == ".":
-            # Create centralized reports directory under logs
+        # Determine output directory - prefer investigation folder over default
+        if investigation_folder and Path(investigation_folder).exists():
+            # Use the investigation folder for Markdown report
+            output_dir = Path(investigation_folder)
+            self.logger.info(f"📁 Using investigation folder for Markdown report: {output_dir}")
+        elif self.config.output_dir == ".":
+            # Create centralized reports directory under logs (fallback)
             reports_dir = Path("logs/reports")
             reports_dir.mkdir(parents=True, exist_ok=True)
             output_dir = reports_dir
+            self.logger.info(f"📁 Using fallback reports directory for Markdown report: {output_dir}")
         else:
             # Use user-specified output directory
             output_dir = Path(self.config.output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
+            self.logger.info(f"📁 Using user-specified directory for Markdown report: {output_dir}")
         
         markdown_filename = f"unified_test_report_{timestamp}.md"
         markdown_path = output_dir / markdown_filename
@@ -2813,6 +2890,7 @@ class UnifiedAutonomousTestRunner:
             recommendations.append("Consider using concurrent execution for faster test suite completion")
         
         return recommendations
+
 
 def create_argument_parser() -> argparse.ArgumentParser:
     """Create comprehensive command line argument parser"""

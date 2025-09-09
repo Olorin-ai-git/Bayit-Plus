@@ -13,7 +13,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.requests import Request
 
-from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.agent_request import AgentRequest
@@ -690,7 +689,7 @@ async def verification_stats():
             "enabled": bool(getattr(settings, "verification_enabled", False)),
             "mode": getattr(settings, "verification_mode", "shadow"),
             "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
-            "verification_model_name": getattr(settings, "verification_model_name", "claude-opus-4.1"),
+            "verification_model_name": "DEPRECATED - use VERIFICATION_MODEL environment variable",
             "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
             "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
             "task_policies": {

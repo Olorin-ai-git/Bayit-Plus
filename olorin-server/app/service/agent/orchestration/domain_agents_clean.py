@@ -19,13 +19,65 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
     Network domain analysis agent.
     Analyzes network patterns, IP reputation, and geographic anomalies.
     """
+    import os
+    import time
+    is_test_mode = os.environ.get("TEST_MODE") == "mock"
+    start_time = time.time()
+    
     logger.info("🌐 Network agent analyzing investigation")
+    
+    # DEBUG: Agent handover logging
+    logger.debug("🌐 NETWORK AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Network Agent")
+    logger.debug(f"   🎯 Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"   📋 Task: Analyze network patterns, IP reputation, geographic anomalies")
+    logger.debug(f"   🏗️  Investigation ID: {state.get('investigation_id', 'N/A')}")
+    logger.debug(f"   🎯 Entity: {state.get('entity_type', 'N/A')} - {state.get('entity_id', 'N/A')}")
     
     # Get relevant data from state
     snowflake_data = state.get("snowflake_data", {})
     tool_results = state.get("tool_results", {})
     entity_id = state["entity_id"]
     entity_type = state["entity_type"]
+    
+    # DEBUG: Context analysis
+    logger.debug(f"   📊 Available data sources:")
+    logger.debug(f"      Snowflake data: {'Yes' if snowflake_data else 'No'} ({len(str(snowflake_data))} chars)")
+    logger.debug(f"      Tool results: {len(tool_results)} tools")
+    if tool_results:
+        logger.debug(f"         Tool results keys: {list(tool_results.keys())}")
+    logger.debug(f"   🧠 Chain of thought: Starting network analysis with available context")
+    
+    # CHAIN OF THOUGHT: Initialize network agent reasoning
+    from app.service.agent.chain_of_thought_logger import get_chain_of_thought_logger, ReasoningType
+    cot_logger = get_chain_of_thought_logger()
+    
+    investigation_id = state.get('investigation_id', 'unknown')
+    process_id = f"network_agent_{investigation_id}"
+    
+    # Start thought process for network agent
+    cot_logger.start_agent_thinking(
+        investigation_id=investigation_id,
+        agent_name="network_agent",
+        domain="network",
+        initial_context={"entity_type": entity_type, "entity_id": entity_id}
+    )
+    
+    # Log initial analysis reasoning
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.ANALYSIS,
+        premise=f"Network domain analysis required for {entity_type} {entity_id}",
+        reasoning="Need to analyze network patterns, IP reputation, VPN/proxy usage, geographic anomalies, and threat intelligence data to assess network-based fraud risk.",
+        conclusion="Will examine Snowflake transaction data and threat intelligence results for network risk indicators",
+        confidence=0.8,
+        supporting_evidence=[
+            {"type": "data_availability", "data": f"Snowflake data: {'available' if snowflake_data else 'missing'}"},
+            {"type": "tool_results", "data": f"{len(tool_results)} tools executed"},
+            {"type": "domain", "data": "network analysis specialization"}
+        ],
+        metadata={"agent": "network", "entity_type": entity_type, "entity_id": entity_id}
+    )
     
     # Analyze network aspects
     network_findings = {
@@ -36,8 +88,22 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
     }
     
     # Analyze Snowflake data for network patterns
-    if snowflake_data and "results" in snowflake_data:
-        results = snowflake_data["results"]
+    # CRITICAL FIX: Handle both dictionary and string snowflake_data to prevent TypeError
+    results = []
+    if snowflake_data:
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            logger.debug(f"   📊 Processing {len(results)} Snowflake records for network analysis")
+        elif isinstance(snowflake_data, str):
+            logger.warning("⚠️ Network Agent: Snowflake data is string format, cannot extract structured results")
+            logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+            # Add risk indicator for incomplete data
+            network_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        else:
+            logger.warning(f"⚠️ Network Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+            logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+    
+    if results:
         
         if results:  # Only process if we have results
             # Check for proxy/VPN indicators (multiple possible column names)
@@ -100,7 +166,25 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
     ])
     network_findings["confidence"] = min(1.0, data_sources / 4.0)
     
+    # Calculate completion time
+    analysis_duration = time.time() - start_time
+    
     logger.info(f"✅ Network analysis complete - Risk: {network_findings['risk_score']:.2f}")
+    
+    # DEBUG: Analysis completion and handover back
+    logger.debug("🌐 NETWORK AGENT COMPLETION DEBUG:")
+    logger.debug(f"   ⏱️  Analysis duration: {analysis_duration:.3f}s")
+    logger.debug(f"   🎯 Risk score calculated: {network_findings['risk_score']:.2f}")
+    logger.debug(f"   🔍 Risk indicators found: {len(network_findings['risk_indicators'])}")
+    for i, indicator in enumerate(network_findings['risk_indicators'][:3]):  # Show first 3
+        logger.debug(f"      Risk {i+1}: {indicator}")
+    if len(network_findings['risk_indicators']) > 3:
+        logger.debug(f"      ... and {len(network_findings['risk_indicators']) - 3} more")
+    logger.debug(f"   📊 Confidence level: {network_findings.get('confidence', 0):.2f}")
+    logger.debug(f"   🧠 Chain of thought: Analysis complete, findings generated")
+    logger.debug(f"   📋 Analysis summary: {network_findings.get('analysis', {})}")
+    logger.debug(f"   🤝 Agent handover: Network Agent → Orchestrator")
+    logger.debug(f"   ✅ Domain completion: Adding 'network' to completed domains")
     
     return add_domain_findings(state, "network", network_findings)
 
@@ -111,6 +195,38 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
     Analyzes device consistency, spoofing indicators, and browser patterns.
     """
     logger.info("📱 Device agent analyzing investigation")
+    
+    # DEBUG: Detailed device agent handover logging
+    investigation_id = state.get("investigation_id", "unknown")
+    entity_type = state.get("entity_type", "unknown")
+    entity_id = state.get("entity_id", "unknown")
+    process_id = f"investigation_{investigation_id}"
+    
+    logger.debug("📱 DEVICE AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Device Agent")
+    logger.debug(f"   📋 Task: Analyze device consistency, spoofing indicators, browser patterns")
+    logger.debug(f"   🎯 Target: {entity_type} - {entity_id}")
+    logger.debug(f"   📊 State keys available: {list(state.keys())}")
+    
+    # CHAIN OF THOUGHT: Initialize reasoning for device analysis
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
+    cot_logger = ChainOfThoughtLogger()
+    
+    # CHAIN OF THOUGHT: Log initial reasoning for device analysis
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.ANALYSIS,
+        premise=f"Device fingerprinting analysis required for {entity_type} {entity_id} fraud investigation",
+        reasoning=f"Device fingerprints are fundamental fraud indicators revealing device consistency and spoofing attempts. Will analyze: (1) Device fingerprint consistency across sessions, (2) Browser spoofing indicators and inconsistencies, (3) Device change patterns and frequency, (4) Virtual machine and automation tool signatures",
+        conclusion="Initiating comprehensive device fingerprinting analysis for spoofing and consistency detection",
+        confidence=0.8,
+        supporting_evidence=[
+            {"type": "data_availability", "data": f"Snowflake data: {'available' if state.get('snowflake_data') else 'missing'}"},
+            {"type": "tool_results", "data": f"{len(state.get('tool_results', {}))} tools executed"},
+            {"type": "domain", "data": "device analysis specialization"}
+        ],
+        metadata={"agent": "device", "entity_type": entity_type, "entity_id": entity_id}
+    )
     
     snowflake_data = state.get("snowflake_data", {})
     tool_results = state.get("tool_results", {})
@@ -123,8 +239,22 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
     }
     
     # Analyze Snowflake data for device patterns
-    if snowflake_data and "results" in snowflake_data:
-        results = snowflake_data["results"]
+    # CRITICAL FIX: Handle both dictionary and string snowflake_data to prevent TypeError
+    results = []
+    if snowflake_data:
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            logger.debug(f"   📊 Processing {len(results)} Snowflake records for device analysis")
+        elif isinstance(snowflake_data, str):
+            logger.warning("⚠️ Device Agent: Snowflake data is string format, cannot extract structured results")
+            logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+            # Add risk indicator for incomplete data
+            device_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        else:
+            logger.warning(f"⚠️ Device Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+            logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+    
+    if results:
         
         # Check for multiple device IDs
         device_ids = set(r.get("DEVICE_ID") for r in results if r.get("DEVICE_ID"))
@@ -171,6 +301,37 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
     """
     logger.info("📍 Location agent analyzing investigation")
     
+    # DEBUG: Detailed location agent handover logging
+    investigation_id = state.get("investigation_id", "unknown")
+    entity_type = state.get("entity_type", "unknown")
+    entity_id = state.get("entity_id", "unknown")
+    process_id = f"investigation_{investigation_id}"
+    
+    logger.debug("📍 LOCATION AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Location Agent")
+    logger.debug(f"   📋 Task: Analyze geographic patterns, impossible travel, location-based risks")
+    logger.debug(f"   🎯 Target: {entity_type} - {entity_id}")
+    logger.debug(f"   📊 State keys available: {list(state.keys())}")
+    
+    # CHAIN OF THOUGHT: Initialize reasoning for location analysis
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
+    cot_logger = ChainOfThoughtLogger()
+    
+    # CHAIN OF THOUGHT: Log initial reasoning for location analysis
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.ANALYSIS,
+        premise=f"Location analysis required for {entity_type} {entity_id} fraud investigation",
+        reasoning=f"Geographic patterns and location-based fraud indicators are critical for comprehensive risk assessment. Will analyze: (1) Impossible travel detection between transaction locations, (2) High-risk geographic regions, (3) Location consistency patterns, (4) IP geolocation anomalies",
+        conclusion="Initiating comprehensive location-based fraud analysis with impossible travel detection",
+        confidence=0.8,
+        supporting_evidence=[
+            {"type": "data_availability", "data": f"Snowflake data: {'available' if state.get('snowflake_data') else 'missing'}"},
+            {"type": "domain", "data": "location analysis specialization"}
+        ],
+        metadata={"agent": "location", "entity_type": entity_type, "entity_id": entity_id}
+    )
+    
     snowflake_data = state.get("snowflake_data", {})
     
     location_findings = {
@@ -181,8 +342,22 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
     }
     
     # Analyze Snowflake data for location patterns
-    if snowflake_data and "results" in snowflake_data:
-        results = snowflake_data["results"]
+    # CRITICAL FIX: Handle both dictionary and string snowflake_data to prevent TypeError
+    results = []
+    if snowflake_data:
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            logger.debug(f"   📊 Processing {len(results)} Snowflake records for location analysis")
+        elif isinstance(snowflake_data, str):
+            logger.warning("⚠️ Location Agent: Snowflake data is string format, cannot extract structured results")
+            logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+            # Add risk indicator for incomplete data
+            location_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        else:
+            logger.warning(f"⚠️ Location Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+            logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+    
+    if results:
         
         # Check for impossible travel
         locations_by_time = []
@@ -234,6 +409,38 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     """
     logger.info("📝 Logs agent analyzing investigation")
     
+    # DEBUG: Detailed logs agent handover logging
+    investigation_id = state.get("investigation_id", "unknown")
+    entity_type = state.get("entity_type", "unknown")
+    entity_id = state.get("entity_id", "unknown")
+    process_id = f"investigation_{investigation_id}"
+    
+    logger.debug("📝 LOGS AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Logs Agent")
+    logger.debug(f"   📋 Task: Analyze system logs, authentication patterns, activity timelines")
+    logger.debug(f"   🎯 Target: {entity_type} - {entity_id}")
+    logger.debug(f"   📊 State keys available: {list(state.keys())}")
+    
+    # CHAIN OF THOUGHT: Initialize reasoning for logs analysis
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
+    cot_logger = ChainOfThoughtLogger()
+    
+    # CHAIN OF THOUGHT: Log initial reasoning for logs analysis
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.ANALYSIS,
+        premise=f"Logs analysis required for {entity_type} {entity_id} fraud investigation",
+        reasoning=f"System logs and authentication patterns provide crucial behavioral insights for fraud detection. Will analyze: (1) Failed transaction patterns and rejection reasons, (2) Rapid-fire transaction sequences, (3) Error code patterns and anomalies, (4) Splunk/SumoLogic suspicious activity indicators",
+        conclusion="Initiating comprehensive logs analysis for behavioral fraud indicators",
+        confidence=0.8,
+        supporting_evidence=[
+            {"type": "data_availability", "data": f"Snowflake data: {'available' if state.get('snowflake_data') else 'missing'}"},
+            {"type": "tool_results", "data": f"{len(state.get('tool_results', {}))} tools executed"},
+            {"type": "domain", "data": "logs analysis specialization"}
+        ],
+        metadata={"agent": "logs", "entity_type": entity_type, "entity_id": entity_id}
+    )
+    
     snowflake_data = state.get("snowflake_data", {})
     tool_results = state.get("tool_results", {})
     
@@ -245,8 +452,22 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     }
     
     # Analyze Snowflake transaction logs
-    if snowflake_data and "results" in snowflake_data:
-        results = snowflake_data["results"]
+    # CRITICAL FIX: Handle both dictionary and string snowflake_data to prevent TypeError
+    results = []
+    if snowflake_data:
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            logger.debug(f"   📊 Processing {len(results)} Snowflake records for logs analysis")
+        elif isinstance(snowflake_data, str):
+            logger.warning("⚠️ Logs Agent: Snowflake data is string format, cannot extract structured results")
+            logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+            # Add risk indicator for incomplete data
+            logs_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        else:
+            logger.warning(f"⚠️ Logs Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+            logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+    
+    if results:
         
         # Check for failed transactions
         failed_txs = [r for r in results if r.get("NSURE_LAST_DECISION") == "reject"]
@@ -291,6 +512,38 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
     """
     logger.info("🔐 Authentication agent analyzing investigation")
     
+    # DEBUG: Detailed authentication agent handover logging
+    investigation_id = state.get("investigation_id", "unknown")
+    entity_type = state.get("entity_type", "unknown")
+    entity_id = state.get("entity_id", "unknown")
+    process_id = f"investigation_{investigation_id}"
+    
+    logger.debug("🔐 AUTHENTICATION AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Authentication Agent")
+    logger.debug(f"   📋 Task: Analyze login patterns, failed attempts, MFA bypass, authentication anomalies")
+    logger.debug(f"   🎯 Target: {entity_type} - {entity_id}")
+    logger.debug(f"   📊 State keys available: {list(state.keys())}")
+    
+    # CHAIN OF THOUGHT: Initialize reasoning for authentication analysis
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
+    cot_logger = ChainOfThoughtLogger()
+    
+    # CHAIN OF THOUGHT: Log initial reasoning for authentication analysis
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.ANALYSIS,
+        premise=f"Authentication analysis required for {entity_type} {entity_id} fraud investigation",
+        reasoning=f"Authentication patterns are critical indicators for account takeover and fraud attempts. Will analyze: (1) Brute force attack patterns via login attempt counts, (2) Failed login ratios and failure patterns, (3) MFA bypass attempts and security circumvention, (4) Impossible travel in authentication context, (5) Credential stuffing and SIM swap indicators",
+        conclusion="Initiating comprehensive authentication security analysis with multi-vector threat detection",
+        confidence=0.8,
+        supporting_evidence=[
+            {"type": "data_availability", "data": f"Snowflake data: {'available' if state.get('snowflake_data') else 'missing'}"},
+            {"type": "tool_results", "data": f"{len(state.get('tool_results', {}))} tools executed"},
+            {"type": "domain", "data": "authentication analysis specialization"}
+        ],
+        metadata={"agent": "authentication", "entity_type": entity_type, "entity_id": entity_id}
+    )
+    
     snowflake_data = state.get("snowflake_data", {})
     tool_results = state.get("tool_results", {})
     
@@ -302,8 +555,22 @@ async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]
     }
     
     # Analyze Snowflake data for authentication patterns
-    if snowflake_data and "results" in snowflake_data:
-        results = snowflake_data["results"]
+    # CRITICAL FIX: Handle both dictionary and string snowflake_data to prevent TypeError
+    results = []
+    if snowflake_data:
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            logger.debug(f"   📊 Processing {len(results)} Snowflake records for authentication analysis")
+        elif isinstance(snowflake_data, str):
+            logger.warning("⚠️ Authentication Agent: Snowflake data is string format, cannot extract structured results")
+            logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+            # Add risk indicator for incomplete data
+            auth_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        else:
+            logger.warning(f"⚠️ Authentication Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+            logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+    
+    if results:
         
         # Check for failed login patterns
         login_attempts = []
@@ -417,6 +684,38 @@ async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
     Synthesizes findings from all domains and calculates final risk.
     """
     logger.info("⚠️ Risk agent performing final assessment")
+    
+    # DEBUG: Detailed risk agent handover logging
+    investigation_id = state.get("investigation_id", "unknown")
+    entity_type = state.get("entity_type", "unknown")
+    entity_id = state.get("entity_id", "unknown")
+    process_id = f"investigation_{investigation_id}"
+    
+    logger.debug("⚠️ RISK AGENT HANDOVER DEBUG:")
+    logger.debug(f"   🤝 Agent handover: Orchestrator → Risk Assessment Agent")
+    logger.debug(f"   📋 Task: Synthesize all domain findings and calculate final risk score")
+    logger.debug(f"   🎯 Target: {entity_type} - {entity_id}")
+    logger.debug(f"   📊 State keys available: {list(state.keys())}")
+    
+    # CHAIN OF THOUGHT: Initialize reasoning for risk assessment
+    from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
+    cot_logger = ChainOfThoughtLogger()
+    
+    # CHAIN OF THOUGHT: Log initial reasoning for risk assessment
+    cot_logger.log_reasoning_step(
+        process_id=process_id,
+        reasoning_type=ReasoningType.SYNTHESIS,
+        premise=f"Final risk assessment required for {entity_type} {entity_id} after domain analysis completion",
+        reasoning=f"Risk synthesis combines insights from all domain agents to produce unified fraud assessment. Will synthesize: (1) Network analysis results and IP reputation risks, (2) Device fingerprinting and spoofing indicators, (3) Location analysis and impossible travel patterns, (4) Logs analysis and behavioral anomalies, (5) Authentication security findings and breach indicators. Final risk score will weight each domain appropriately.",
+        conclusion="Initiating comprehensive risk synthesis across all investigation domains",
+        confidence=0.9,
+        supporting_evidence=[
+            {"type": "domain_findings", "data": f"Domains analyzed: {list(state.get('domain_findings', {}).keys())}"},
+            {"type": "tools_used", "data": f"{len(state.get('tools_used', []))} tools executed across domains"},
+            {"type": "synthesis_capability", "data": "risk assessment synthesis specialization"}
+        ],
+        metadata={"agent": "risk_synthesis", "entity_type": entity_type, "entity_id": entity_id, "phase": "final_assessment"}
+    )
     
     from app.service.agent.orchestration.state_schema import calculate_final_risk_score
     

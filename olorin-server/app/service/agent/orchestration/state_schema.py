@@ -58,6 +58,12 @@ class InvestigationState(TypedDict):
     errors: List[Dict[str, Any]]  # Any errors encountered
     retry_count: int  # Number of retries attempted
     
+    # Loop prevention and debugging
+    orchestrator_loops: int  # Track orchestrator executions
+    tool_execution_attempts: int  # Track tool execution attempts
+    phase_changes: List[Dict[str, Any]]  # Track phase transitions
+    routing_decisions: List[Dict[str, Any]]  # Track routing decisions for debugging
+    
     # Metadata
     start_time: Optional[str]  # When investigation started
     end_time: Optional[str]  # When investigation completed
@@ -137,6 +143,12 @@ def create_initial_state(
         # Error handling
         "errors": [],
         "retry_count": 0,
+        
+        # Loop prevention and debugging
+        "orchestrator_loops": 0,
+        "tool_execution_attempts": 0,
+        "phase_changes": [],
+        "routing_decisions": [],
         
         # Metadata
         "start_time": datetime.utcnow().isoformat(),

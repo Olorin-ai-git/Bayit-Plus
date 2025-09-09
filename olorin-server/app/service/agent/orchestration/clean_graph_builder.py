@@ -5,6 +5,7 @@ Builds the complete investigation graph with proper tool integration,
 orchestrator control, and domain agent coordination.
 """
 
+import os
 from typing import List, Any, Dict, Union, Optional
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
@@ -110,33 +111,51 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
     Returns:
         State updates based on tool execution
     """
+    import os
+    is_test_mode = os.environ.get("TEST_MODE") == "mock"
+    
     messages = state.get("messages", [])
     tools_used = state.get("tools_used", []).copy()
     tool_results = state.get("tool_results", {}).copy()
     
+    logger.debug(f"🔧 PROCESS TOOL RESULTS DEBUG:")
+    logger.debug(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"   Messages to process: {len(messages)}")
+    logger.debug(f"   Tools used before: {tools_used}")
+    logger.debug(f"   Tool results keys before: {list(tool_results.keys())}")
+    
     # Check last message for tool results
     if messages:
         last_message = messages[-1]
+        logger.debug(f"   Last message type: {type(last_message).__name__}")
         
         # Process ToolMessage results
         from langchain_core.messages import ToolMessage
         if isinstance(last_message, ToolMessage):
             tool_name = last_message.name
             logger.info(f"🔧 Processing tool result from: {tool_name}")
+            logger.debug(f"   Tool name: {tool_name}")
+            logger.debug(f"   Content length: {len(str(last_message.content)) if last_message.content else 0}")
+            logger.debug(f"   Content preview: {str(last_message.content)[:150] if last_message.content else 'Empty'}...")
             
             # Add to tools used
             if tool_name not in tools_used:
                 tools_used.append(tool_name)
+                logger.debug(f"   Added {tool_name} to tools_used list")
+            else:
+                logger.debug(f"   {tool_name} already in tools_used list")
             
             # Store tool result
             try:
                 import json
                 result = json.loads(last_message.content)
                 tool_results[tool_name] = result
+                logger.debug(f"   Successfully parsed JSON result")
                 
                 # Special handling for Snowflake - ALWAYS mark as completed regardless of JSON parsing
                 if "snowflake" in tool_name.lower():
                     logger.info("✅ Snowflake query completed with JSON result")
+                    logger.debug("   Snowflake completed with JSON, moving to tool_execution phase")
                     return {
                         "tools_used": tools_used,
                         "tool_results": tool_results,
@@ -144,13 +163,15 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                         "snowflake_completed": True,
                         "current_phase": "tool_execution"  # Move to next phase
                     }
-            except:
+            except Exception as e:
                 # If not JSON, store as string
+                logger.debug(f"   Failed to parse JSON: {e}")
                 tool_results[tool_name] = last_message.content
                 
                 # CRITICAL FIX: Mark Snowflake as completed even with non-JSON content
                 if "snowflake" in tool_name.lower():
                     logger.info("✅ Snowflake query completed with non-JSON result")
+                    logger.debug("   Snowflake completed with non-JSON, moving to tool_execution phase")
                     return {
                         "tools_used": tools_used,
                         "tool_results": tool_results,
@@ -159,11 +180,15 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                         "current_phase": "tool_execution"  # Move to next phase regardless
                     }
             
+            logger.debug(f"   Regular tool result processed, returning state update")
             return {
                 "tools_used": tools_used,
                 "tool_results": tool_results
             }
+    else:
+        logger.debug(f"   No messages to process")
     
+    logger.debug(f"   No tool results to process, returning empty update")
     return {}
 
 
@@ -264,92 +289,249 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     Returns:
         Next node(s) to execute
     """
+    from datetime import datetime
+    
     current_phase = state.get("current_phase", "")
     messages = state.get("messages", [])
     snowflake_completed = state.get("snowflake_completed", False)
     tools_used = state.get("tools_used", [])
     
-    # ARCHITECTURE FIX: Global recursion safety check
-    orchestrator_loops = state.get("orchestrator_loops", 0) + 1
-    max_loops = 25  # Maximum orchestrator calls to prevent infinite recursion
+    # CRITICAL FIX: Increment orchestrator_loops FIRST to prevent infinite recursion
+    # The orchestrator_agent.py increments this counter, but routing happens before that increment is saved
+    # So we need to predict the next loop count for proper routing decisions
+    base_orchestrator_loops = state.get("orchestrator_loops", 0)
+    # Since routing happens AFTER orchestrator execution, we should use the incremented value
+    # The orchestrator increments by 1, so we use the incremented value for routing decisions
+    orchestrator_loops = base_orchestrator_loops + 1
     
+    # Track routing decisions for debugging (collect them to return with result)
+    routing_decisions = state.get("routing_decisions", []).copy()
+    
+    def log_routing_decision(decision: str, reason: str, state_info: dict):
+        routing_decisions.append({
+            "timestamp": datetime.utcnow().isoformat(),
+            "orchestrator_loop": orchestrator_loops,
+            "phase": current_phase,
+            "decision": decision,
+            "reason": reason,
+            "state_info": state_info
+        })
+        
+    # Helper function to return routing decision with state updates
+    def route_with_logging(next_node: str, reason: str, state_info: dict = None):
+        state_info = state_info or {}
+        log_routing_decision(next_node, reason, state_info)
+        # For LangGraph conditional edges, we can't return state updates
+        # The state updates would need to be handled by the target node
+        return next_node
+    
+    # Check if we're in TEST_MODE or live environment
+    is_test_mode = os.environ.get("TEST_MODE") == "mock"
+    max_loops = 12 if is_test_mode else 25  # Reduced limits to prevent long waits
+    
+    logger.info(f"🔀 Routing from orchestrator (predicted loop {orchestrator_loops}/{max_loops}, base: {base_orchestrator_loops})")
+    
+    # CRITICAL: Early termination to prevent infinite loops
     if orchestrator_loops >= max_loops:
-        logger.warning(f"🚨 RECURSION SAFETY: {orchestrator_loops} orchestrator loops reached, forcing completion")
-        return "summary"  # Force to summary to complete investigation
+        logger.warning(f"🚨 RECURSION SAFETY: {orchestrator_loops} orchestrator loops reached, forcing completion (mode: {'TEST' if is_test_mode else 'LIVE'})")
+        return route_with_logging(
+            "summary", 
+            f"Recursion safety triggered - {orchestrator_loops} loops exceeded max {max_loops}",
+            {"loops": orchestrator_loops, "max_loops": max_loops, "mode": "TEST" if is_test_mode else "LIVE"}
+        )
     
-    logger.info(f"🔀 Routing from orchestrator (loop {orchestrator_loops}/{max_loops})")
     logger.info(f"   Phase: {current_phase}")
     logger.info(f"   Snowflake completed: {snowflake_completed}")
     logger.info(f"   Tools used: {len(tools_used)}")
     logger.info(f"   Messages: {len(messages)}")
     
-    # Check for tool calls in last message
+    # DEBUG: Detailed state inspection
+    logger.debug(f"🔍 DEBUG STATE INSPECTION:")
+    logger.debug(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"   Max loops allowed: {max_loops}")
+    logger.debug(f"   Base orchestrator loops: {base_orchestrator_loops}")
+    logger.debug(f"   Predicted loop count: {orchestrator_loops}")
+    logger.debug(f"   Phase: {current_phase}")
+    logger.debug(f"   Investigation ID: {state.get('investigation_id', 'N/A')}")
+    logger.debug(f"   Entity: {state.get('entity_type', 'N/A')} - {state.get('entity_id', 'N/A')}")
+    logger.debug(f"   Tools used: {tools_used}")
+    logger.debug(f"   Tool results keys: {list(state.get('tool_results', {}).keys())}")
+    logger.debug(f"   Domains completed: {state.get('domains_completed', [])}")
+    logger.debug(f"   Snowflake data available: {'Yes' if state.get('snowflake_data') else 'No'}")
+    logger.debug(f"   Risk score: {state.get('risk_score', 'N/A')}")
+    logger.debug(f"   Confidence: {state.get('confidence_score', 'N/A')}")
+    logger.debug(f"   Tool execution attempts: {state.get('tool_execution_attempts', 0)}")
+    logger.debug(f"   Message types: {[type(msg).__name__ for msg in messages[-3:]]}")  # Last 3 messages
+    
+    # CRITICAL FIX: Check for tool calls in last message FIRST
     if messages:
         last_message = messages[-1]
         logger.info(f"   Last message type: {type(last_message).__name__}")
+        logger.debug(f"   Last message content preview: {str(last_message.content)[:100] if hasattr(last_message, 'content') else 'No content'}...")
+        
         if hasattr(last_message, "tool_calls") and last_message.tool_calls:
+            tool_names = [tc.get('name', 'unknown') for tc in last_message.tool_calls] if isinstance(last_message.tool_calls, list) else ['unknown']
             logger.info(f"  → Routing to tools (found {len(last_message.tool_calls)} tool calls)")
+            logger.debug(f"     Tool calls: {tool_names}")
             return "tools"
     
-    # Route based on phase
+    # Route based on phase with FORCED progression to prevent loops
+    logger.debug(f"📍 PHASE ROUTING LOGIC:")
+    
     if current_phase == "snowflake_analysis":
+        logger.debug(f"   📊 SNOWFLAKE ANALYSIS PHASE")
+        logger.debug(f"      Snowflake completed: {snowflake_completed}")
+        
         if not snowflake_completed:
             # ADDITIONAL SAFETY: Check if any Snowflake ToolMessage already exists
             from langchain_core.messages import ToolMessage
             snowflake_tool_found = False
-            for msg in messages:
+            snowflake_messages = []
+            for i, msg in enumerate(messages):
                 if isinstance(msg, ToolMessage) and "snowflake" in msg.name.lower():
                     snowflake_tool_found = True
-                    logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
-                    break
+                    snowflake_messages.append(f"Message {i}: {msg.name}")
             
-            if snowflake_tool_found:
-                logger.info("  → Forcing move to tool_execution phase (Snowflake ToolMessage found)")
-                return "orchestrator"  # Orchestrator will handle phase change
+            logger.debug(f"      Snowflake ToolMessages found: {len(snowflake_messages)}")
+            if snowflake_messages:
+                logger.debug(f"      Snowflake messages: {snowflake_messages}")
+                logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
+            
+            # Adjust thresholds based on mode - MORE AGGRESSIVE to prevent infinite loops
+            loop_threshold = 3 if is_test_mode else 6  # Much lower thresholds
+            logger.debug(f"      Loop threshold for this mode: {loop_threshold}")
+            logger.debug(f"      Predicted loops: {orchestrator_loops}")
+            
+            if snowflake_tool_found or orchestrator_loops >= loop_threshold:
+                logger.info(f"  → FORCED move to tool_execution phase (Snowflake ToolMessage found or loops >= {loop_threshold})")
+                logger.debug(f"      Reason: {'Snowflake ToolMessage found' if snowflake_tool_found else 'Loop threshold exceeded'}")
+                # Force phase completion by routing to process_tools
+                return "process_tools"
             else:
-                logger.info("  → Staying in orchestrator (Snowflake not complete)")
+                # Only stay in orchestrator for first few loops
+                logger.info("  → Continuing with Snowflake analysis")
+                logger.debug(f"      Staying in orchestrator (loops: {orchestrator_loops}/{loop_threshold})")
                 return "orchestrator"
         else:
-            logger.info("  → Moving to tool_execution phase")
-            return "orchestrator"  # Go back to orchestrator to change phase
+            logger.info("  → Snowflake complete, moving to tool_execution phase")
+            logger.debug("      Snowflake completed, orchestrator will change phase")
+            return "orchestrator"  # Let orchestrator change phase
     
     elif current_phase == "tool_execution":
+        logger.debug(f"   🔧 TOOL EXECUTION PHASE")
+        
         # ARCHITECTURE FIX: Prevent infinite loops in tool execution phase
-        tools_used = state.get("tools_used", [])
         tool_execution_attempts = state.get("tool_execution_attempts", 0)
         max_attempts = 3
         
-        # If we've reached max attempts or enough tools, move to domain analysis
-        if tool_execution_attempts >= max_attempts or len(tools_used) >= 10:
-            logger.info(f"  → Tool execution complete, moving to domain analysis (attempts: {tool_execution_attempts}, tools: {len(tools_used)})")
-            # Force phase change by returning orchestrator but orchestrator will change phase
-            return "orchestrator"
+        # MORE AGGRESSIVE LIMITS to prevent infinite loops
+        loop_threshold = 5 if is_test_mode else 8  # Much lower thresholds
+        tool_threshold = 5 if is_test_mode else 8   # Reduced tool limits
+        
+        logger.debug(f"      Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+        logger.debug(f"      Tools used: {len(tools_used)}/{tool_threshold}")
+        logger.debug(f"      Loop threshold: {orchestrator_loops}/{loop_threshold}")
+        logger.debug(f"      Current tools: {tools_used}")
+        
+        # CRITICAL FIX: Force progression after limited attempts
+        should_progress = (
+            tool_execution_attempts >= max_attempts or 
+            len(tools_used) >= tool_threshold or 
+            orchestrator_loops >= loop_threshold
+        )
+        
+        if should_progress:
+            reasons = []
+            if tool_execution_attempts >= max_attempts:
+                reasons.append(f"max attempts ({tool_execution_attempts})")
+            if len(tools_used) >= tool_threshold:
+                reasons.append(f"tool threshold ({len(tools_used)})")
+            if orchestrator_loops >= loop_threshold:
+                reasons.append(f"loop threshold ({orchestrator_loops})")
+            
+            logger.info(f"  → FORCED move to domain analysis (attempts: {tool_execution_attempts}, tools: {len(tools_used)}, loops: {orchestrator_loops})")
+            logger.debug(f"      Progression reasons: {', '.join(reasons)}")
+            return "orchestrator"  # Orchestrator will change phase to domain_analysis
         else:
-            logger.info(f"  → Staying in orchestrator (tools: {len(tools_used)}, attempts: {tool_execution_attempts})")
+            logger.info(f"  → Continuing tool execution (tools: {len(tools_used)}, attempts: {tool_execution_attempts})")
+            logger.debug(f"      Continuing in tool execution phase")
             return "orchestrator"
     
     elif current_phase == "domain_analysis":
-        domains_completed = state.get("domains_completed", [])
+        logger.debug(f"   🎯 DOMAIN ANALYSIS PHASE")
         
-        # Use sequential execution to avoid concurrent updates
-        # (parallel execution causes "domain_findings" update conflicts)
+        domains_completed = state.get("domains_completed", [])
+        logger.debug(f"      Domains completed: {domains_completed}")
+        
+        # CRITICAL FIX: Use sequential execution with forced progression
         domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
+        logger.debug(f"      Domain execution order: {domain_order}")
+        
+        next_domain = None
         for domain in domain_order:
             if domain not in domains_completed:
+                next_domain = domain
                 logger.info(f"  → Routing to {domain}_agent (sequential)")
+                logger.debug(f"      Next domain to execute: {domain}")
                 return f"{domain}_agent"
+        
+        # MORE AGGRESSIVE LIMITS for domain completion
+        domain_threshold = 6 if is_test_mode else 12  # Much lower thresholds
+        logger.debug(f"      Domain threshold for this mode: {domain_threshold}")
+        logger.debug(f"      Predicted loops: {orchestrator_loops}")
+        
+        # All domains complete OR too many loops - force to summary
+        should_summarize = len(domains_completed) >= 3 or orchestrator_loops >= domain_threshold
+        logger.debug(f"      Should move to summary: {should_summarize}")
+        logger.debug(f"      Reasons: domains={len(domains_completed)}>=3, loops={orchestrator_loops}>={domain_threshold}")
+        
+        if should_summarize:
+            logger.info(f"  → FORCED move to summary (domains: {len(domains_completed)}, loops: {orchestrator_loops})")
+            return "summary"
     
     elif current_phase == "summary":
+        logger.debug(f"   📋 SUMMARY PHASE")
         logger.info("  → Routing to summary")
+        logger.debug("      Moving to summary generation")
         return "summary"
     
     elif current_phase == "complete":
+        logger.debug(f"   ✅ COMPLETE PHASE")
         logger.info("  → Investigation complete")
+        logger.debug("      Investigation completed, ending graph execution")
         return END
     
-    # Default: back to orchestrator
-    logger.info("  → Default: back to orchestrator")
-    return "orchestrator"
+    # CRITICAL FIX: Prevent infinite default loops - MUCH MORE AGGRESSIVE
+    logger.debug(f"   ❓ FALLBACK ROUTING")
+    final_threshold = 6 if is_test_mode else 10  # Much lower thresholds
+    logger.debug(f"      Final threshold for this mode: {final_threshold}")
+    logger.debug(f"      Predicted loops: {orchestrator_loops}")
+    
+    if orchestrator_loops >= final_threshold:
+        logger.warning(f"  → Too many orchestrator loops ({orchestrator_loops}), forcing summary (mode: {'TEST' if is_test_mode else 'LIVE'})")
+        logger.debug("      Exceeded final threshold, forcing completion")
+        return "summary"
+    
+    # SAFER DEFAULT: Force progression more aggressively to prevent infinite loops
+    logger.info("  → Default: FORCING progression to prevent loops")
+    logger.debug(f"      Fallback routing logic (aggressive):")
+    logger.debug(f"         Snowflake completed: {snowflake_completed}")
+    logger.debug(f"         Tools used: {len(tools_used)}")
+    logger.debug(f"         Predicted loops: {orchestrator_loops}")
+    
+    # CRITICAL: Be much more aggressive about forcing completion
+    if orchestrator_loops >= 4:  # After 4 loops, force summary regardless of state
+        logger.warning(f"      → AGGRESSIVE TERMINATION: {orchestrator_loops} loops, forcing summary")
+        return "summary"
+    elif not snowflake_completed and orchestrator_loops >= 2:
+        logger.warning(f"      → FORCED Snowflake completion after {orchestrator_loops} loops")
+        return "summary"  # Force completion if Snowflake still not done
+    elif len(tools_used) < 3 and orchestrator_loops >= 3:
+        logger.warning(f"      → FORCED tool completion after {orchestrator_loops} loops")
+        return "summary"  # Force completion if tools still not used
+    else:
+        logger.debug("      → Safe default to summary")
+        return "summary"  # Default to summary to prevent further loops
 
 
 def build_clean_investigation_graph() -> StateGraph:
@@ -477,14 +659,59 @@ async def run_investigation(
     logger.info("🏗️ Graph built, starting execution")
     
     # Run the investigation with timeout and recursion limit
+    # Check if we're in TEST_MODE or live environment
+    is_test_mode = os.environ.get("TEST_MODE") == "mock"
+    
+    # CRITICAL FIX: Much more aggressive limits to prevent infinite loops
+    recursion_limit = 20 if is_test_mode else 35  # Lower recursion limits
+    timeout = 60.0 if is_test_mode else 180.0  # Reasonable timeouts: 1-3 minutes max
+    
+    logger.info(f"⚙️ Graph execution configuration:")
+    logger.info(f"   Recursion limit: {recursion_limit}")
+    logger.info(f"   Timeout: {timeout}s")
+    logger.info(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    
+    # Add a deadlock detection mechanism
+    start_time = asyncio.get_event_loop().time()
+    deadlock_threshold = timeout * 0.8  # Warn at 80% of timeout
+    
     try:
-        result = await asyncio.wait_for(
+        # Create a task for the graph execution
+        graph_task = asyncio.create_task(
             graph.ainvoke(
                 initial_state,
-                config={"recursion_limit": 50}  # Allow up to 50 iterations
-            ),
-            timeout=25.0  # 25 second timeout for the graph execution
+                config={"recursion_limit": recursion_limit}  # Adjusted based on mode
+            )
         )
+        
+        # Monitor progress with intermediate checks
+        result = None
+        check_interval = 15.0  # Check every 15 seconds
+        last_check = start_time
+        
+        while True:
+            try:
+                # Wait for either completion or next check interval
+                result = await asyncio.wait_for(graph_task, timeout=check_interval)
+                break  # Task completed successfully
+                
+            except asyncio.TimeoutError:
+                # Check if we've hit our deadlock threshold
+                current_time = asyncio.get_event_loop().time()
+                elapsed = current_time - start_time
+                
+                if elapsed >= deadlock_threshold:
+                    logger.warning(f"⚠️ Potential deadlock detected: {elapsed:.1f}s elapsed (threshold: {deadlock_threshold:.1f}s)")
+                    logger.warning(f"   Investigation: {investigation_id}")
+                    logger.warning(f"   This may indicate an infinite loop in the orchestrator")
+                
+                if elapsed >= timeout:
+                    # Cancel the task and raise timeout
+                    graph_task.cancel()
+                    raise asyncio.TimeoutError()
+                
+                # Continue monitoring
+                continue
         
         logger.info(f"✅ Investigation complete - Risk: {result.get('risk_score', 0.0):.2f}")
         
@@ -500,7 +727,7 @@ async def run_investigation(
         }
         
     except asyncio.TimeoutError:
-        logger.error(f"❌ Investigation timed out after 25 seconds")
+        logger.error(f"❌ Investigation timed out after {timeout} seconds (mode: {'TEST' if is_test_mode else 'LIVE'})")
         
         return {
             "success": False,

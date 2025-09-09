@@ -132,8 +132,37 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
         logger.exception(f"API Connection Error: {ex}")
         raise AgentInvokeException(ex)
     except Exception as ex:
-        logger.exception(f"Unknown Error: {ex}")
-        raise AgentInvokeException(ex)
+        # Handle LLM API errors gracefully with clean logging
+        if "context_length_exceeded" in str(ex) or "maximum context length" in str(ex) or "token limit" in str(ex).lower():
+            logger.error(f"❌ LLM context length exceeded in agent graph invocation")
+            logger.error(f"   Error: {str(ex)}")
+            logger.error(f"   Context info: {len(messages)} messages, estimated {sum(len(str(m.content)) for m in messages if hasattr(m, 'content'))} characters")
+            logger.error(f"   Investigation ID: {investigation_id or 'unknown'}")
+            logger.error(f"   Agent cannot continue - fix context length issue")
+            raise AgentInvokeException(f"Context length exceeded: {str(ex)}")
+            
+        elif "not_found_error" in str(ex).lower() or "notfounderror" in str(type(ex)).lower() or "model:" in str(ex).lower():
+            logger.error(f"❌ LLM model not found in agent graph invocation")
+            logger.error(f"   Error type: {type(ex).__name__}")
+            logger.error(f"   Error details: {str(ex)}")
+            logger.error(f"   Investigation ID: {investigation_id or 'unknown'}")
+            logger.error(f"   Agent cannot continue - fix model configuration (check model name/availability)")
+            raise AgentInvokeException(f"Model not found: {str(ex)}")
+            
+        elif any(error_type in str(type(ex)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(ex).lower() for provider in ["openai", "anthropic", "google"]):
+            logger.error(f"❌ LLM API error in agent graph invocation")
+            logger.error(f"   Error type: {type(ex).__name__}")
+            logger.error(f"   Error details: {str(ex)}")
+            logger.error(f"   Investigation ID: {investigation_id or 'unknown'}")
+            logger.error(f"   Agent cannot continue - fix API configuration")
+            raise AgentInvokeException(f"API error: {type(ex).__name__} - {str(ex)}")
+            
+        else:
+            logger.error(f"❌ Unexpected error in agent graph invocation")
+            logger.error(f"   Error type: {type(ex).__name__}")
+            logger.error(f"   Error details: {str(ex)}")
+            logger.error(f"   Investigation ID: {investigation_id or 'unknown'}")
+            raise AgentInvokeException(ex)
 
     logger.debug(
         f"Agent Response with output_content={output_content} and langfuse trace_id={trace_id}"

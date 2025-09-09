@@ -73,7 +73,7 @@ class ExecutiveSummary(BaseComponent):
                     <h4>Risk Assessment</h4>
                     <div class="risk-score-display">
                         <div class="risk-score-value" style="color: {risk_color};">
-                            {summary.overall_risk_score:.2f if summary.overall_risk_score else 'N/A'}
+                            {f'{summary.overall_risk_score:.2f}' if summary.overall_risk_score is not None else 'N/A'}
                         </div>
                         <div class="risk-level" style="background-color: {risk_color};">
                             {risk_level.value.upper()}

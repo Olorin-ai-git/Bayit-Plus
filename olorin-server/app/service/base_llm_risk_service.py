@@ -17,6 +17,7 @@ from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.service.llm.verified_client import VerifiedOpenAIClient
 from app.service.llm.verification.opus_verifier import OpusVerifier
+from app.service.llm_manager import get_llm_manager
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.prompt_utils import trim_prompt_to_token_limit
@@ -40,6 +41,15 @@ class BaseLLMRiskService(ABC, Generic[T]):
 
     def __init__(self):
         self.settings = get_settings_for_env()
+        
+    def _get_verification_model_name(self) -> str:
+        """Get the verification model name from LLM Manager."""
+        try:
+            llm_manager = get_llm_manager()
+            return llm_manager.verification_model_id
+        except Exception as e:
+            logger.warning(f"Failed to get verification model from LLM Manager: {e}")
+            return "gemini-1.5-flash"  # Cost-effective fallback
 
     @abstractmethod
     def get_agent_name(self) -> str:
@@ -239,7 +249,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 # Inject verifier with configured API key
                 from app.service.llm.verification.model_verifier import ModelVerifier
                 verified_client.verifier = ModelVerifier(
-                    model_name=getattr(self.settings, "verification_model_name", "claude-opus-4.1"),
+                    model_name=self._get_verification_model_name(),
                     api_key=None,  # Will use Firebase secrets based on model type
                 )
                 raw_llm_response_str = await verified_client.complete_with_verification(
@@ -254,7 +264,7 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 if should_verify and verification_mode == "shadow":
                     from app.service.llm.verification.model_verifier import ModelVerifier
                     verifier = ModelVerifier(
-                        model_name=getattr(self.settings, "verification_model_name", "claude-opus-4.1"),
+                        model_name=self._get_verification_model_name(),
                         api_key=None,  # Will use Firebase secrets based on model type
                     )
                     ctx_for_shadow = {
@@ -291,9 +301,13 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 )
             except json.JSONDecodeError as json_err:
                 logger.error(
-                    f"LLM JSON parsing error for {assessment_type} risk for {user_id}: {json_err}. "
-                    f"Raw response was: {raw_llm_response_str[:500]}...",
-                    exc_info=True,
+                    f"❌ LLM JSON parsing error for {assessment_type} risk for {user_id}"
+                )
+                logger.error(
+                    f"   Error: {json_err}"
+                )
+                logger.error(
+                    f"   Raw response was: {raw_llm_response_str[:500]}..."
                 )
                 return self.create_fallback_assessment(
                     user_id=user_id,
@@ -310,8 +324,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 )
             except Exception as validation_err:
                 logger.error(
-                    f"LLM response validation error for {assessment_type} risk for {user_id}: {validation_err}",
-                    exc_info=True,
+                    f"❌ LLM response validation error for {assessment_type} risk for {user_id}"
+                )
+                logger.error(
+                    f"   Error: {validation_err}"
                 )
                 return self.create_fallback_assessment(
                     user_id=user_id,
@@ -334,8 +350,10 @@ class BaseLLMRiskService(ABC, Generic[T]):
                 .lower()
             )
             logger.error(
-                f"LLM invocation or validation error for {assessment_type} risk for {user_id}: {llm_err}",
-                exc_info=True,
+                f"❌ LLM invocation or validation error for {assessment_type} risk for {user_id}"
+            )
+            logger.error(
+                f"   Error: {llm_err}"
             )
 
             return self.create_fallback_assessment(

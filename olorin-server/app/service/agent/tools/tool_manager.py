@@ -691,7 +691,8 @@ class ToolManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                self.logger.error(f"Health check loop error: {str(e)}", exc_info=True)
+                self.logger.error(f"❌ Health check loop error")
+                self.logger.error(f"   Error: {str(e)}")
     
     async def shutdown(self) -> None:
         """Shutdown tool manager and cleanup resources"""

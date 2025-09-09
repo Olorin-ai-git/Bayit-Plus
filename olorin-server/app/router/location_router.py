@@ -10,7 +10,6 @@ from urllib.parse import unquote_plus
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
-from app.mock import demo_splunk_data
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.api_models import InvestigationCreate

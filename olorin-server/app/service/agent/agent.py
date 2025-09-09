@@ -220,7 +220,8 @@ async def investigate_with_enhanced_patterns(
         return investigation_result
         
     except Exception as e:
-        logger.error(f"Enhanced investigation failed: {e}", exc_info=True)
+        logger.error(f"❌ Enhanced investigation failed")
+        logger.error(f"   Error: {e}")
         await ws_streaming.send_error(str(e), {"entity_id": entity_id})
         return {
             "investigation_id": investigation_id,

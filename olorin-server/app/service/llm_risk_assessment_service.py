@@ -212,7 +212,8 @@ Input:
                 investigation_id=investigation_id,
             )
         except Exception as e:
-            logger.error(f"Error in overall risk assessment: {e}", exc_info=True)
+            logger.error(f"❌ Error in overall risk assessment")
+            logger.error(f"   Error: {e}")
             return self.create_fallback_assessment(
                 user_id=user_id,
                 extracted_signals=[],

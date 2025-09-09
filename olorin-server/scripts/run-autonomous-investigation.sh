@@ -939,6 +939,28 @@ main() {
     # Display banner
     print_banner
     
+    # CRITICAL: Require explicit user approval for LIVE mode investigations
+    if [[ "$MODE" == "live" ]]; then
+        echo -e "${RED}⚠️  LIVE MODE INVESTIGATION DETECTED${NC}"
+        echo -e "${YELLOW}   This will use real Anthropic API calls and may incur costs.${NC}"
+        echo -e "${YELLOW}   Real investigation data will be processed.${NC}"
+        echo ""
+        echo -e "${WHITE}Do you want to proceed with LIVE mode investigation? (y/N):${NC} "
+        read -r user_approval
+        
+        case "$user_approval" in
+            [Yy]|[Yy][Ee][Ss])
+                echo -e "${GREEN}✅ User approved LIVE mode investigation${NC}"
+                echo ""
+                ;;
+            *)
+                echo -e "${RED}❌ LIVE mode investigation cancelled by user${NC}"
+                echo -e "${BLUE}💡 Tip: Use '--mode mock' for cost-free testing${NC}"
+                exit 0
+                ;;
+        esac
+    fi
+    
     # Show configuration
     show_configuration
     

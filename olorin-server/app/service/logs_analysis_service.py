@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, Request
 
-from app.mock import demo_splunk_data
 from app.persistence import (
     ensure_investigation_exists,
     get_investigation,

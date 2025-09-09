@@ -215,27 +215,8 @@ class EnhancedSplunkTool(EnhancedToolBase):
         
         # Check for demo/test mode
         if os.getenv("OLORIN_USE_DEMO_DATA", "false").lower() == "true":
-            # Return demo data for testing
-            from app.mock.demo_splunk_data import (
-                network_splunk_data,
-                device_splunk_data,
-                location_splunk_data,
-                logs_splunk_data
-            )
-            
-            # Parse query to determine what type of data to return
-            query_lower = query_input.query.lower()
-            if "device" in query_lower or "fuzzy_device" in query_lower:
-                demo_results = device_splunk_data
-            elif "network" in query_lower or "ip_address" in query_lower or "isp" in query_lower:
-                demo_results = network_splunk_data
-            elif "location" in query_lower or "city" in query_lower or "geo" in query_lower:
-                demo_results = location_splunk_data
-            elif "log" in query_lower or "transaction" in query_lower or "login" in query_lower:
-                demo_results = logs_splunk_data
-            else:
-                # Default to logs data if query type unclear
-                demo_results = logs_splunk_data
+            # Return empty results for testing when demo data is not available
+            demo_results = []
             
             # Return enhanced results format for demo data
             return {

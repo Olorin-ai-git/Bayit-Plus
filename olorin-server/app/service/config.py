@@ -41,11 +41,7 @@ class SvcSettings(BaseSettings):
         description="0.0-1.0 sampling rate for verification (env var is 0-100)",
         env="VERIFICATION_SAMPLE_PERCENT"
     )
-    verification_model_name: str = Field(
-        default="claude-opus-4.1", 
-        description="Model name for verification (can be any supported model)",
-        env="VERIFICATION_MODEL_NAME"
-    )
+    # REMOVED: verification_model_name - now using VERIFICATION_MODEL from LLM Manager
     verification_threshold_default: float = Field(
         default=0.85,
         description="Pass/fail threshold for verification score (0.0-1.0, env var is 0-100)",
@@ -539,6 +535,7 @@ class LocalSettings(PreProdSettings):
     default_profile_id: str = "9341454513864369"
     splunk_host: str = preprod_splunk_host
     splunk_index: str = preprod_splunk_index
+    ips_base_url: str = "http://localhost:8091"
 
 class PRDSettings(ProdSettings):
     log_level: str = "INFO"

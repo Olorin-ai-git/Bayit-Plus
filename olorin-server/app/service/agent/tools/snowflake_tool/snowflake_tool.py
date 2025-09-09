@@ -98,6 +98,10 @@ class SnowflakeQueryTool(BaseTool):
             'GEO_IP_REGION': 'IP_REGION',
             'TRIGGERED_RULES': 'FRAUD_RULES_TRIGGERED',
             'DISPUTE_FLAG': 'DISPUTES',  # Map DISPUTE_FLAG to DISPUTES for consistency
+            # Map all TX_ID variants to the correct TX_ID_KEY column
+            'ORIGINAL_TX_ID': 'TX_ID_KEY',
+            'SURROGATE_APP_TX_ID': 'TX_ID_KEY', 
+            'NSURE_UNIQUE_TX_ID': 'TX_ID_KEY',
             'IP\b': 'IP_ADDRESS',  # Replace standalone IP with IP_ADDRESS
         }
         
@@ -121,6 +125,7 @@ class SnowflakeQueryTool(BaseTool):
             r'SELECT\s+DISPUTE_FLAG\s*,',
             r',\s*FRAUD_ALERTS\s*(?=,|FROM|WHERE|GROUP|ORDER|LIMIT|$)',
             r'SELECT\s+FRAUD_ALERTS\s*,'
+            # Note: TX_ID variants are handled by corrections mapping above, not removal
         ]
         
         for pattern in problematic_patterns:

@@ -151,13 +151,17 @@ IMPORTANT: While following the standard investigation process, give special atte
         logger.info(f"✨ Enhanced prompt with custom user focus: '{sanitized_prompt}'")
         return enhanced_prompt
     
-    def _initialize_llm(self) -> ChatAnthropic:
-        """Initialize the Claude Opus LLM for orchestration."""
+    def _initialize_llm(self):
+        """Initialize the configured LLM for orchestration (uses environment-selected model)."""
         import os
         
         # Check for TEST_MODE first
         test_mode = os.getenv("TEST_MODE", "").lower()
-        use_mock = test_mode == "mock" or not os.getenv("ANTHROPIC_API_KEY")
+        # Check if any API key is available (Anthropic, OpenAI, Google, etc.)
+        has_api_key = (os.getenv("ANTHROPIC_API_KEY") or 
+                      os.getenv("OPENAI_API_KEY") or 
+                      os.getenv("GEMINI_API_KEY"))
+        use_mock = test_mode == "mock" or not has_api_key
         
         if use_mock:
             logger.info("🧪 Using mock LLM for testing")
@@ -211,7 +215,8 @@ IMPORTANT: While following the standard investigation process, give special atte
                 
                 # Get date range from state context if available, default to 7 days
                 date_range = 7  # Default fallback
-                query = f"SELECT * FROM TRANSACTIONS_ENRICHED WHERE {where_field} = '{entity_id}' AND TX_DATETIME >= DATEADD(day, -{date_range}, CURRENT_DATE()) LIMIT 100"
+                # CRITICAL FIX: Use CURRENT_TIMESTAMP() instead of CURRENT_DATE() to match Snowflake syntax
+                query = f"SELECT * FROM TRANSACTIONS_ENRICHED WHERE {where_field} = '{entity_id}' AND TX_DATETIME >= DATEADD(day, -{date_range}, CURRENT_TIMESTAMP()) LIMIT 100"
                 
                 response = AIMessage(
                     content=f"I'll query Snowflake for {date_range} days of data.",
@@ -243,19 +248,55 @@ IMPORTANT: While following the standard investigation process, give special atte
             mock_llm.bind_tools = bind_tools_mock
             return mock_llm
         
-        settings = get_settings_for_env()
-        api_key = get_firebase_secret(settings.anthropic_api_key_secret)
+        # Use the LLM manager to get the configured model
+        from app.service.llm_manager import get_llm_manager
         
-        if not api_key:
-            raise RuntimeError(f"Anthropic API key must be configured in Firebase Secrets")
-        
-        return ChatAnthropic(
-            api_key=api_key,
-            model="claude-opus-4-1-20250805",
-            temperature=0.3,  # Lower temperature for more focused orchestration
-            max_tokens=8000,
-            timeout=90
-        )
+        try:
+            llm_manager = get_llm_manager()
+            llm = llm_manager.get_selected_model()
+            
+            if llm is None:
+                raise RuntimeError("No LLM model is available - check API keys and configuration")
+            
+            # Override settings for orchestration based on model capabilities
+            if hasattr(llm, 'temperature'):
+                llm.temperature = 0.3  # Lower temperature for more focused orchestration
+            if hasattr(llm, 'max_tokens'):
+                # Set max_tokens based on model capabilities
+                model_id = llm_manager.selected_model_id
+                if 'haiku' in model_id.lower():
+                    llm.max_tokens = 4096  # Haiku max limit
+                elif 'sonnet' in model_id.lower() or 'opus' in model_id.lower():
+                    llm.max_tokens = 8000  # Sonnet/Opus can handle more
+                else:
+                    llm.max_tokens = 4096  # Conservative default for other models
+            if hasattr(llm, 'timeout'):
+                llm.timeout = 90
+                
+            logger.info(f"🤖 Orchestrator using model: {llm_manager.selected_model_id}")
+            return llm
+            
+        except Exception as e:
+            # Fallback to direct Anthropic initialization if LLM manager fails
+            logger.warning(f"LLM Manager failed, falling back to direct initialization: {e}")
+            
+            settings = get_settings_for_env()
+            api_key = get_firebase_secret(settings.anthropic_api_key_secret)
+            
+            if not api_key:
+                raise RuntimeError(f"No API key available - check Firebase Secrets configuration")
+            
+            # Use a cost-effective model as fallback instead of expensive Opus
+            fallback_model = os.getenv('SELECTED_MODEL', 'claude-3-5-sonnet-20240620')  # Sonnet is cheaper than Opus
+            logger.info(f"🤖 Orchestrator using fallback model: {fallback_model}")
+            
+            return ChatAnthropic(
+                api_key=api_key,
+                model=fallback_model,
+                temperature=0.3,  # Lower temperature for more focused orchestration
+                max_tokens=8000,
+                timeout=90
+            )
     
     async def orchestrate(self, state: InvestigationState) -> Dict[str, Any]:
         """
@@ -267,37 +308,57 @@ IMPORTANT: While following the standard investigation process, give special atte
         Returns:
             State updates
         """
+        import os
+        is_test_mode = os.environ.get("TEST_MODE") == "mock"
+        
         current_phase = state.get("current_phase", "initialization")
         
         logger.info(f"🎼 Orchestrator handling phase: {current_phase}")
-        logger.debug(f"State keys: {list(state.keys())}")
-        logger.debug(f"Tools used so far: {len(state.get('tools_used', []))}")
+        logger.debug(f"🎼 ORCHESTRATE DEBUG:")
+        logger.debug(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+        logger.debug(f"   Current phase: {current_phase}")
+        logger.debug(f"   State keys: {list(state.keys())}")
+        logger.debug(f"   Tools used so far: {len(state.get('tools_used', []))}")
+        logger.debug(f"   Snowflake completed: {state.get('snowflake_completed', False)}")
+        logger.debug(f"   Domains completed: {len(state.get('domains_completed', []))}")
+        logger.debug(f"   Messages count: {len(state.get('messages', []))}")
         
         if current_phase == "initialization":
+            logger.debug("   → Handling initialization phase")
             return await self._handle_initialization(state)
         
         elif current_phase == "snowflake_analysis":
+            logger.debug("   → Handling snowflake analysis phase")
             return await self._handle_snowflake_analysis(state)
         
         elif current_phase == "tool_execution":
+            logger.debug("   → Handling tool execution phase")
             return await self._handle_tool_execution(state)
         
         elif current_phase == "domain_analysis":
+            logger.debug("   → Handling domain analysis phase")
             return await self._handle_domain_analysis(state)
         
         elif current_phase == "summary":
+            logger.debug("   → Handling summary phase")
             return await self._handle_summary(state)
         
         else:
             logger.warning(f"Unknown phase: {current_phase}")
+            logger.debug(f"   → Unknown phase, moving to summary")
             return update_phase(state, "summary")
     
     async def _handle_initialization(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle the initialization phase."""
         logger.info(f"🚀 Starting investigation for {state['entity_type']}: {state['entity_id']}")
+        logger.debug(f"🚀 INITIALIZATION PHASE DEBUG:")
+        logger.debug(f"   Investigation ID: {state['investigation_id']}")
+        logger.debug(f"   Entity type: {state['entity_type']}")
+        logger.debug(f"   Entity ID: {state['entity_id']}")
         
         # Get configuration from state
         date_range_days = state.get('date_range_days', 7)
+        logger.debug(f"   Date range: {date_range_days} days")
         
         # Create initial message
         init_message = SystemMessage(content=f"""
@@ -314,6 +375,8 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         # Immediately move to Snowflake analysis phase
         logger.info("📊 Moving from initialization to snowflake_analysis phase")
+        
+        logger.debug("   ✅ Initialization complete, moving to snowflake_analysis phase")
         
         return {
             "messages": [init_message],
@@ -353,10 +416,10 @@ IMPORTANT: While following the standard investigation process, give special atte
                         # Don't generate another one - just return current state
                         return {"current_phase": "snowflake_analysis"}
         
-        logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
-        
         # Get date range from state, default to 7 days
         date_range_days = state.get('date_range_days', 7)
+        
+        logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
         
         # Create Snowflake query prompt
         snowflake_prompt = f"""
@@ -412,9 +475,181 @@ Use the snowflake_query_tool immediately."""
         logger.info(f"   LLM type: {type(self.llm_with_tools)}")
         logger.info(f"   Messages to LLM: {len(messages)}")
         
-        response = await self.llm_with_tools.ainvoke(messages)
+        # DEBUG: Detailed LLM interaction logging
+        logger.debug("🤖 LLM SNOWFLAKE INTERACTION DEBUG:")
+        logger.debug(f"   🧠 Reasoning context: Snowflake analysis for {state.get('entity_type')} - {state.get('entity_id')}")
+        logger.debug(f"   📝 System prompt length: {len(system_msg.content)} chars")
+        logger.debug(f"   📝 System prompt preview: {system_msg.content[:200]}...")
+        logger.debug(f"   💭 Human message: {human_msg.content}")
+        logger.debug(f"   📚 Existing messages count: {len(existing_messages)}")
+        for i, msg in enumerate(existing_messages[-3:]):  # Last 3 messages
+            logger.debug(f"      Message {i}: {type(msg).__name__} - {str(msg.content)[:100] if hasattr(msg, 'content') else 'No content'}...")
+        logger.debug(f"   🔧 Available tools: {len(self.tools)}")
+        logger.debug(f"   🎯 Expected outcome: Snowflake tool call generation")
+        
+        # CHAIN OF THOUGHT: Log reasoning for Snowflake analysis
+        from app.service.agent.chain_of_thought_logger import get_chain_of_thought_logger, ReasoningType
+        cot_logger = get_chain_of_thought_logger()
+        
+        # Start or get active thought process for orchestrator
+        investigation_id = state.get('investigation_id', 'unknown')
+        process_id = f"orchestrator_{investigation_id}"
+        
+        if process_id not in cot_logger._active_processes:
+            cot_logger.start_agent_thinking(
+                investigation_id=investigation_id,
+                agent_name="orchestrator",
+                domain="orchestration",
+                initial_context={"phase": "snowflake_analysis", "entity_type": state.get('entity_type'), "entity_id": state.get('entity_id')}
+            )
+        
+        # Log the reasoning for Snowflake analysis decision
+        cot_logger.log_reasoning_step(
+            process_id=process_id,
+            reasoning_type=ReasoningType.ANALYSIS,
+            premise=f"Investigation requires data analysis for {state.get('entity_type')} {state.get('entity_id')}",
+            reasoning=f"Snowflake analysis is mandatory first step. Need to query transaction data for last {state.get('date_range_days', 7)} days to understand entity behavior patterns and risk indicators.",
+            conclusion="Must generate Snowflake tool call to retrieve foundational data for investigation",
+            confidence=0.9,
+            supporting_evidence=[
+                {"type": "requirement", "data": "Snowflake analysis is mandatory first phase"},
+                {"type": "context", "data": f"Entity: {state.get('entity_type')} - {state.get('entity_id')}"},
+                {"type": "tools", "data": f"{len(self.tools)} tools available including Snowflake"}
+            ],
+            metadata={"phase": "snowflake_analysis", "attempt": "initial"}
+        )
+        
+        # Invoke LLM and measure timing
+        import time
+        start_time = time.time()
+        
+        try:
+            response = await self.llm_with_tools.ainvoke(messages)
+            llm_duration = time.time() - start_time
+        except Exception as e:
+            llm_duration = time.time() - start_time
+            
+            # Get model information for error reporting
+            model_info = "unknown"
+            try:
+                from app.service.llm_manager import get_llm_manager
+                llm_manager = get_llm_manager()
+                model_info = llm_manager.selected_model_id if hasattr(llm_manager, 'selected_model_id') else "unknown"
+            except:
+                model_info = "unknown"
+            
+            # Handle LLM API errors gracefully (works for OpenAI, Anthropic, etc.)
+            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                logger.error(f"❌ LLM context length exceeded in Snowflake analysis")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error: {str(e)}")
+                logger.error(f"   Context info: {len(messages)} messages, estimated {sum(len(str(m.content)) for m in messages if hasattr(m, 'content'))} characters")
+                logger.error(f"   Investigation cannot continue - fix context length issue")
+                raise e
+                
+            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                logger.error(f"❌ LLM model not found in Snowflake analysis")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                logger.error(f"   Investigation cannot continue - fix model configuration (check model name/availability)")
+                raise e
+                
+            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                logger.error(f"❌ LLM API error in Snowflake analysis")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                logger.error(f"   Investigation cannot continue - fix API configuration")
+                raise e
+                
+            else:
+                # Re-raise unexpected errors
+                logger.error(f"❌ Unexpected error in Snowflake analysis LLM call")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                raise e
         
         logger.info(f"🤖 LLM response type: {type(response)}")
+        logger.debug(f"🤖 LLM RESPONSE DEBUG:")
+        logger.debug(f"   ⏱️  LLM response time: {llm_duration:.3f}s")
+        logger.debug(f"   📄 Response content length: {len(str(response.content)) if hasattr(response, 'content') else 0} chars")
+        logger.debug(f"   📄 Response content preview: {str(response.content)[:200] if hasattr(response, 'content') else 'No content'}...")
+        logger.debug(f"   🔧 Tool calls present: {'Yes' if hasattr(response, 'tool_calls') and response.tool_calls else 'No'}")
+        if hasattr(response, 'tool_calls') and response.tool_calls:
+            for i, tc in enumerate(response.tool_calls):
+                tool_name = tc.get('name', 'unknown')
+                tool_args_preview = str(tc.get('args', {}))[:100] if tc.get('args') else 'No args'
+                logger.debug(f"      Tool call {i}: {tool_name} - {tool_args_preview}...")
+        logger.debug(f"   🧠 Chain of thought: LLM analyzed entity and generated {'tool calls' if hasattr(response, 'tool_calls') and response.tool_calls else 'text response'}")
+        
+        # Log reasoning assessment
+        if hasattr(response, 'tool_calls') and response.tool_calls:
+            snowflake_calls = [tc for tc in response.tool_calls if 'snowflake' in tc.get('name', '').lower()]
+            if snowflake_calls:
+                logger.debug(f"   ✅ Reasoning successful: Generated {len(snowflake_calls)} Snowflake tool call(s)")
+                
+                # CHAIN OF THOUGHT: Log successful tool selection reasoning
+                tool_names = [tc.get('name', 'unknown') for tc in response.tool_calls]
+                cot_logger.log_tool_selection_reasoning(
+                    process_id=process_id,
+                    available_tools=[tool.name for tool in self.tools],
+                    selected_tools=tool_names,
+                    selection_criteria={
+                        "requirement": "Snowflake analysis mandatory",
+                        "phase": "snowflake_analysis", 
+                        "data_needed": "transaction history"
+                    },
+                    reasoning_chain=[
+                        "Identified need for foundational data analysis",
+                        "Snowflake contains comprehensive transaction history", 
+                        "Query will provide risk indicators and patterns",
+                        f"Generated {len(snowflake_calls)} Snowflake tool calls"
+                    ],
+                    expected_outcomes={tool_name: "Transaction data with risk indicators" for tool_name in tool_names if 'snowflake' in tool_name.lower()},
+                    confidence_scores={tool_name: 0.9 for tool_name in tool_names},
+                    contextual_factors={
+                        "entity_type": state.get('entity_type'),
+                        "entity_id": state.get('entity_id'),
+                        "date_range_days": state.get('date_range_days', 7),
+                        "llm_response_time": llm_duration
+                    }
+                )
+            else:
+                logger.debug(f"   ⚠️  Reasoning issue: Generated {len(response.tool_calls)} tool calls but none are Snowflake")
+                
+                # CHAIN OF THOUGHT: Log tool selection issue
+                cot_logger.log_reasoning_step(
+                    process_id=process_id,
+                    reasoning_type=ReasoningType.ERROR_RECOVERY,
+                    premise="LLM generated tool calls but none are Snowflake tools",
+                    reasoning=f"Expected Snowflake tool call but got {[tc.get('name') for tc in response.tool_calls]}. This indicates potential prompt engineering issue or tool binding problem.",
+                    conclusion="Need to investigate why Snowflake tool was not selected",
+                    confidence=0.3,
+                    supporting_evidence=[
+                        {"type": "response", "data": f"{len(response.tool_calls)} tool calls generated"},
+                        {"type": "tools", "data": [tc.get('name') for tc in response.tool_calls]}
+                    ],
+                    metadata={"issue": "snowflake_not_selected", "phase": "snowflake_analysis"}
+                )
+        else:
+            logger.debug(f"   ❌ Reasoning issue: No tool calls generated, got text response instead")
+            
+            # CHAIN OF THOUGHT: Log no tool calls issue
+            cot_logger.log_reasoning_step(
+                process_id=process_id,
+                reasoning_type=ReasoningType.ERROR_RECOVERY,
+                premise="LLM generated text response instead of tool calls",
+                reasoning="Expected tool calls for Snowflake analysis but LLM provided text response. This could indicate prompt engineering issue, tool binding problem, or LLM reasoning failure.",
+                conclusion="Investigation cannot proceed without Snowflake data - need to retry or escalate",
+                confidence=0.2,
+                supporting_evidence=[
+                    {"type": "response_type", "data": "text_response"},
+                    {"type": "response_content", "data": str(response.content)[:200] if hasattr(response, 'content') else 'No content'}
+                ],
+                metadata={"issue": "no_tool_calls", "phase": "snowflake_analysis"}
+            )
         
         # Check if Snowflake tool was called
         if hasattr(response, 'tool_calls') and response.tool_calls:
@@ -449,36 +684,42 @@ Use the snowflake_query_tool immediately."""
         
         # In live mode: Limit tool execution attempts to prevent infinite loops
         tool_execution_attempts = state.get("tool_execution_attempts", 0) + 1
-        max_attempts = 3  # Maximum 3 attempts at tool execution
+        orchestrator_loops = state.get("orchestrator_loops", 0)
+        max_attempts = 2  # Reduced to 2 attempts max
         
-        if tool_execution_attempts >= max_attempts or len(tools_used) >= 10:
-            logger.info(f"✅ Tool execution complete: {len(tools_used)} tools used, {tool_execution_attempts} attempts")
+        # CRITICAL FIX: Multiple exit conditions to prevent loops
+        if (tool_execution_attempts >= max_attempts or 
+            len(tools_used) >= 6 or  # Reduced tool count
+            orchestrator_loops >= 6):  # Safety valve
+            logger.info(f"✅ Tool execution complete: {len(tools_used)} tools used, {tool_execution_attempts} attempts, {orchestrator_loops} loops")
             return update_phase(state, "domain_analysis")
         
-        logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}")
+        logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}, loop {orchestrator_loops}")
         
-        # Get tool count from state, default to 5-6 range
-        tool_count = state.get('tool_count', '5-6')
+        # Get tool count from state, default to 1-2 range (reduced)
+        tool_count = "1-2"  # Minimal tool count to prevent loops
         
         # Analyze Snowflake data to determine which tools to use
         tool_selection_prompt = f"""
-        Based on the Snowflake analysis results, select and use {tool_count} additional tools for investigation.
+        Based on the Snowflake analysis results, select and use ONLY {tool_count} additional tools for investigation.
         
         Snowflake findings summary:
         {self._summarize_snowflake_data(snowflake_data)}
         
         Tools already used: {tools_used}
         Attempt: {tool_execution_attempts}/{max_attempts}
+        Orchestrator loops: {orchestrator_loops}
         
-        IMPORTANT: Select only {tool_count} most relevant tools based on findings. Quality over quantity.
+        CRITICAL: Select MAXIMUM {tool_count} tools. Quality over quantity.
+        Be EXTREMELY selective - only use tools that are absolutely critical.
         
-        Priority tools to consider:
-        1. Threat Intelligence: VirusTotal, AbuseIPDB (for IP reputation)
-        2. Database/SIEM: Splunk, SumoLogic (if logs indicate suspicious patterns)
-        3. OSINT: For entity investigation (if high-risk patterns detected)
+        Priority tools to consider (choose MAX one):
+        1. Threat Intelligence: VirusTotal OR AbuseIPDB (for IP reputation) - ONLY if IP-related fraud detected
+        2. Database/SIEM: Splunk OR SumoLogic (if logs indicate suspicious patterns) - ONLY if log analysis needed
         
-        Focus on tools that will provide the most valuable insights based on the Snowflake findings.
-        Do NOT select tools unless they are directly relevant to the findings.
+        Focus on the SINGLE most valuable tool based on the Snowflake findings.
+        Do NOT select multiple tools. Select ONE tool maximum.
+        If no clear need exists, select NO tools and complete the phase.
         """
         
         human_msg = HumanMessage(content=tool_selection_prompt)
@@ -488,14 +729,111 @@ Use the snowflake_query_tool immediately."""
                            if not isinstance(m, SystemMessage)]
         
         base_prompt = f"""You are investigating potential fraud. You have {len(self.tools)} tools available.
-Select {tool_count} most relevant tools based on the Snowflake findings.
-So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}."""
+Select MAXIMUM {tool_count} tools based on the Snowflake findings.
+So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/{max_attempts}.
+Orchestrator loops: {orchestrator_loops}. Be EXTREMELY conservative - select only 1 tool maximum to prevent loops."""
         
         enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
         system_msg = SystemMessage(content=enhanced_prompt)
         
         messages = [system_msg] + existing_messages + [human_msg]
-        response = await self.llm_with_tools.ainvoke(messages)
+        
+        # DEBUG: Detailed LLM interaction logging for tool execution
+        logger.debug("🤖 LLM TOOL EXECUTION INTERACTION DEBUG:")
+        logger.debug(f"   🧠 Reasoning context: Tool execution phase for {state.get('entity_type')} - {state.get('entity_id')}")
+        logger.debug(f"   📝 System prompt length: {len(system_msg.content)} chars")
+        logger.debug(f"   📝 System prompt preview: {enhanced_prompt[:200]}...")
+        logger.debug(f"   💭 Human message: {human_msg.content}")
+        logger.debug(f"   📚 Existing messages count: {len(existing_messages)}")
+        logger.debug(f"   🔧 Available tools: {len(self.tools)}")
+        logger.debug(f"   🎯 Expected outcome: Additional tool call generation based on Snowflake results")
+        
+        # Log Snowflake context for reasoning
+        snowflake_data = state.get('snowflake_data')
+        if snowflake_data:
+            logger.debug(f"   📊 Snowflake context available: Yes ({len(str(snowflake_data))} chars)")
+            logger.debug(f"   📊 Snowflake preview: {str(snowflake_data)[:150]}...")
+        else:
+            logger.debug(f"   📊 Snowflake context available: No")
+        
+        # Invoke LLM and measure timing
+        import time
+        start_time = time.time()
+        
+        try:
+            response = await self.llm_with_tools.ainvoke(messages)
+            llm_duration = time.time() - start_time
+        except Exception as e:
+            llm_duration = time.time() - start_time
+            
+            # Get model information for error reporting
+            model_info = "unknown"
+            try:
+                from app.service.llm_manager import get_llm_manager
+                llm_manager = get_llm_manager()
+                model_info = llm_manager.selected_model_id if hasattr(llm_manager, 'selected_model_id') else "unknown"
+            except:
+                model_info = "unknown"
+            
+            # Handle LLM API errors gracefully (works for OpenAI, Anthropic, etc.)
+            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                logger.error(f"❌ LLM context length exceeded in tool execution")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error: {str(e)}")
+                logger.error(f"   Context info: {len(messages)} messages, estimated {sum(len(str(m.content)) for m in messages if hasattr(m, 'content'))} characters")
+                logger.error(f"   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+                logger.error(f"   Investigation cannot continue - fix context length issue")
+                raise e
+                
+            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                logger.error(f"❌ LLM model not found in tool execution")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                logger.error(f"   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+                logger.error(f"   Investigation cannot continue - fix model configuration (check model name/availability)")
+                raise e
+                
+            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                logger.error(f"❌ LLM API error in tool execution")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                logger.error(f"   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+                logger.error(f"   Investigation cannot continue - fix API configuration")
+                raise e
+                
+            else:
+                # Re-raise unexpected errors
+                logger.error(f"❌ Unexpected error in tool execution LLM call")
+                logger.error(f"   Model: {model_info}")
+                logger.error(f"   Error type: {type(e).__name__}")
+                logger.error(f"   Error details: {str(e)}")
+                logger.error(f"   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+                raise e
+        
+        # DEBUG: Detailed response analysis
+        logger.debug(f"🤖 LLM TOOL EXECUTION RESPONSE DEBUG:")
+        logger.debug(f"   ⏱️  LLM response time: {llm_duration:.3f}s")
+        logger.debug(f"   📄 Response content length: {len(str(response.content)) if hasattr(response, 'content') else 0} chars")
+        logger.debug(f"   📄 Response content preview: {str(response.content)[:200] if hasattr(response, 'content') else 'No content'}...")
+        logger.debug(f"   🔧 Tool calls present: {'Yes' if hasattr(response, 'tool_calls') and response.tool_calls else 'No'}")
+        
+        if hasattr(response, 'tool_calls') and response.tool_calls:
+            for i, tc in enumerate(response.tool_calls):
+                tool_name = tc.get('name', 'unknown')
+                tool_args_preview = str(tc.get('args', {}))[:100] if tc.get('args') else 'No args'
+                logger.debug(f"      Tool call {i}: {tool_name} - {tool_args_preview}...")
+            logger.debug(f"   🧠 Chain of thought: LLM analyzed Snowflake results and generated {len(response.tool_calls)} additional tool calls")
+        else:
+            logger.debug(f"   🧠 Chain of thought: LLM decided no additional tools needed based on current analysis")
+            
+        # Log reasoning assessment for tool execution
+        tools_used_count = len(state.get('tools_used', []))
+        if hasattr(response, 'tool_calls') and response.tool_calls:
+            logger.debug(f"   ✅ Reasoning successful: Generated {len(response.tool_calls)} new tool calls (total tools used: {tools_used_count})")
+        else:
+            logger.debug(f"   💭 Reasoning decision: No additional tools needed (current tools used: {tools_used_count})")
         
         return {
             "messages": [response],
@@ -513,26 +851,35 @@ So far you have used {len(tools_used)} tools. This is attempt {tool_execution_at
             return update_phase(state, "summary")
         
         domains_completed = state.get("domains_completed", [])
+        orchestrator_loops = state.get("orchestrator_loops", 0)
+        
+        # CRITICAL FIX: Force completion after reasonable attempts
+        if len(domains_completed) >= 3 or orchestrator_loops >= 10:
+            logger.info(f"✅ Domain analysis sufficient: {len(domains_completed)} domains, {orchestrator_loops} loops - moving to summary")
+            return update_phase(state, "summary")
         
         # Check if all domains are complete
-        required_domains = ["network", "device", "location", "logs", "authorization", "risk"]
+        required_domains = ["network", "device", "location", "logs", "authentication", "risk"]
         remaining_domains = [d for d in required_domains if d not in domains_completed]
         
         if not remaining_domains:
             logger.info("✅ All domain analyses complete, moving to summary")
             return update_phase(state, "summary")
         
-        logger.info(f"🔄 Domain analysis - completed: {domains_completed}, remaining: {remaining_domains}")
+        logger.info(f"🔄 Domain analysis - completed: {domains_completed}, remaining: {remaining_domains}, loop: {orchestrator_loops}")
         
         # Create message for domain agents
         base_prompt = f"""Domain analysis phase initiated.
 Domains to analyze: {remaining_domains}
-Execution mode: {'Parallel' if state.get('parallel_execution', True) else 'Sequential'}
+Execution mode: Sequential (to prevent conflicts)
+Orchestrator loops: {orchestrator_loops}
 
 Each domain agent should analyze their specific area based on:
-- Snowflake data (7-day analysis)
+- Snowflake data ({state.get('date_range_days', 7)}-day analysis)
 - Tool execution results
-- Cross-domain correlations"""
+- Cross-domain correlations
+
+Be efficient to prevent timeout issues."""
         
         enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
         domain_msg = SystemMessage(content=enhanced_prompt)
@@ -540,7 +887,7 @@ Each domain agent should analyze their specific area based on:
         return {
             "messages": [domain_msg],
             "current_phase": "domain_analysis",
-            "parallel_execution": state.get("parallel_execution", True)
+            "parallel_execution": False  # Force sequential to prevent conflicts
         }
     
     async def _handle_summary(self, state: InvestigationState) -> Dict[str, Any]:
@@ -717,21 +1064,65 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     Returns:
         State updates
     """
+    import os
+    
     # ARCHITECTURE FIX: Track orchestrator loops to prevent infinite recursion
     orchestrator_loops = state.get("orchestrator_loops", 0) + 1
+    is_test_mode = os.environ.get("TEST_MODE") == "mock"
     
-    logger.info(f"🎼 Orchestrator node execution #{orchestrator_loops}")
+    # CRITICAL SAFETY CHECK: Prevent runaway orchestrator execution
+    max_orchestrator_executions = 8 if is_test_mode else 15  # Conservative limits
+    
+    if orchestrator_loops > max_orchestrator_executions:
+        logger.error(f"🚨 ORCHESTRATOR SAFETY VIOLATION: {orchestrator_loops} executions exceeded limit of {max_orchestrator_executions}")
+        logger.error(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+        logger.error(f"   Investigation: {state.get('investigation_id', 'unknown')}")
+        logger.error(f"   Phase: {state.get('current_phase', 'unknown')}")
+        logger.error(f"   This indicates an infinite loop bug - FORCING INVESTIGATION TERMINATION")
+        
+        # Force investigation termination with error state
+        return {
+            "orchestrator_loops": orchestrator_loops,
+            "current_phase": "complete",  # Force to completion
+            "errors": state.get("errors", []) + [{
+                "type": "orchestrator_runaway",
+                "message": f"Orchestrator executed {orchestrator_loops} times, exceeding safety limit of {max_orchestrator_executions}",
+                "phase": state.get("current_phase", "unknown"),
+                "safety_termination": True
+            }],
+            "risk_score": 0.5,  # Default medium risk on safety termination
+            "confidence_score": 0.0  # Zero confidence due to incomplete investigation
+        }
+    
+    logger.info(f"🎼 Orchestrator node execution #{orchestrator_loops}/{max_orchestrator_executions}")
+    logger.debug(f"🎼 ORCHESTRATOR NODE DEBUG:")
+    logger.debug(f"   Mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"   Loop: {orchestrator_loops}")
+    logger.debug(f"   Investigation ID: {state.get('investigation_id', 'N/A')}")
+    logger.debug(f"   Current phase: {state.get('current_phase', 'N/A')}")
+    logger.debug(f"   Entity: {state.get('entity_type', 'N/A')} - {state.get('entity_id', 'N/A')}")
+    logger.debug(f"   Messages count: {len(state.get('messages', []))}")
+    logger.debug(f"   Tools used: {state.get('tools_used', [])}")
+    logger.debug(f"   Snowflake completed: {state.get('snowflake_completed', False)}")
+    logger.debug(f"   Domains completed: {state.get('domains_completed', [])}")
     
     # Get tools from graph configuration
     from app.service.agent.orchestration.clean_graph_builder import get_all_tools
     
     tools = get_all_tools()
+    logger.debug(f"   Available tools: {len(tools)}")
+    
     orchestrator = InvestigationOrchestrator(tools)
     
+    logger.debug("   🚀 Starting orchestration...")
     result = await orchestrator.orchestrate(state)
     
     # Add loop counter to result
     if isinstance(result, dict):
         result["orchestrator_loops"] = orchestrator_loops
+        logger.debug(f"   ✅ Orchestration complete, returning:")
+        logger.debug(f"      Updated phase: {result.get('current_phase', 'unchanged')}")
+        logger.debug(f"      New messages: {len(result.get('messages', []))}")
+        logger.debug(f"      Tool calls made: {'Yes' if result.get('messages') and any(hasattr(msg, 'tool_calls') and msg.tool_calls for msg in result.get('messages', [])) else 'No'}")
     
     return result
