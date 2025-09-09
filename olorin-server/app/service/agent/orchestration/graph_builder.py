@@ -406,20 +406,51 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     return graph
 
 
-async def create_and_get_agent_graph(parallel: bool = True, use_enhanced_tools: bool = True, use_subgraphs: bool = False):
+async def create_and_get_agent_graph(
+    parallel: bool = True, 
+    use_enhanced_tools: bool = True, 
+    use_subgraphs: bool = False,
+    investigation_id: Optional[str] = None,
+    entity_type: str = "ip_address"
+):
     """
-    Create and return the appropriate agent graph based on execution mode.
+    Create and return the appropriate agent graph with hybrid intelligence selection.
+    
+    This function now integrates with the Hybrid Intelligence Graph system,
+    using feature flags and confidence-based routing to select the optimal
+    graph implementation for each investigation.
     
     Args:
         parallel: If True, creates parallel autonomous agent graph.
                  If False, creates sequential controlled agent graph.
         use_enhanced_tools: If True, use enhanced tool executor with resilience patterns.
         use_subgraphs: If True, use modular subgraph architecture (Phase 2).
+        investigation_id: Optional investigation ID for hybrid graph selection.
+        entity_type: Type of entity being investigated (for hybrid selection).
     
     Returns:
         Compiled LangGraph instance ready for investigation execution.
     """
-    logger.info(f"Creating agent graph: parallel={parallel}, enhanced_tools={use_enhanced_tools}, subgraphs={use_subgraphs}")
+    
+    # If investigation_id is provided, use hybrid intelligence selection
+    if investigation_id:
+        try:
+            from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph
+            logger.info(f"🧠 Using Hybrid Intelligence Graph selection for investigation {investigation_id}")
+            
+            # Get graph via hybrid selection with feature flags and A/B testing
+            return await get_investigation_graph(
+                investigation_id=investigation_id,
+                entity_type=entity_type
+            )
+            
+        except ImportError:
+            logger.warning("🧠 Hybrid system not available, falling back to traditional graph selection")
+        except Exception as e:
+            logger.error(f"🧠 Hybrid graph selection failed: {e}, falling back to traditional selection")
+    
+    # Traditional graph selection as fallback
+    logger.info(f"Creating traditional agent graph: parallel={parallel}, enhanced_tools={use_enhanced_tools}, subgraphs={use_subgraphs}")
     
     # Use subgraph architecture if requested (Phase 2)
     if use_subgraphs:

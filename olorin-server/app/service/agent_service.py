@@ -75,11 +75,13 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
         # Determine which graph to use based on investigation settings
         from app.service.websocket_manager import websocket_manager
 
-        # Extract investigation_id from agent_context metadata
+        # Extract investigation_id and entity info from agent_context metadata
         investigation_id = None
+        entity_type = "ip_address"  # default
         if hasattr(agent_context, "metadata") and agent_context.metadata:
             md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
             investigation_id = md.get("investigationId") or md.get("investigation_id")
+            entity_type = md.get("entity_type") or entity_type
 
         # Get parallel setting for this investigation (defaults to False - sequential)
         use_parallel = False
@@ -92,22 +94,50 @@ async def ainvoke_agent(request: Request, agent_context: AgentContext) -> (str, 
         # Autonomous agents use RecursionGuard to prevent infinite loops
         use_parallel = True  # Re-enabled for autonomous investigation mode
 
-        # Select appropriate graph - handle case where request is None
-        if (
-            request is not None
-            and hasattr(request, "app")
-            and hasattr(request.app, "state")
-        ):
-            graph = (
-                request.app.state.graph_parallel
-                if use_parallel
-                else request.app.state.graph_sequential
-            )
+        # 🧠 HYBRID INTELLIGENCE GRAPH SELECTION
+        # Use hybrid system if available, otherwise fallback to traditional graphs
+        if investigation_id:
+            # Try hybrid graph selection first
+            try:
+                from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph
+                logger.info(f"🧠 Using Hybrid Intelligence Graph selection for investigation {investigation_id}")
+                graph = await get_investigation_graph(
+                    investigation_id=investigation_id,
+                    entity_type=entity_type
+                )
+            except ImportError:
+                logger.info("🧠 Hybrid system not available, using traditional graph selection")
+                # Fall through to traditional selection
+                graph = None
+            except Exception as e:
+                logger.warning(f"🧠 Hybrid graph selection failed: {e}, falling back to traditional selection")
+                # Fall through to traditional selection
+                graph = None
         else:
-            # Fallback: create graph directly when request is None (e.g., from LLM services)
-            from app.service.agent.agent import create_and_get_agent_graph
+            logger.info("🧠 No investigation_id provided, using traditional graph selection")
+            graph = None
 
-            graph = await create_and_get_agent_graph(parallel=use_parallel)
+        # Traditional graph selection as fallback
+        if graph is None:
+            if (
+                request is not None
+                and hasattr(request, "app")
+                and hasattr(request.app, "state")
+            ):
+                graph = (
+                    request.app.state.graph_parallel
+                    if use_parallel
+                    else request.app.state.graph_sequential
+                )
+            else:
+                # Fallback: create graph directly when request is None (e.g., from LLM services)
+                from app.service.agent.orchestration import create_and_get_agent_graph
+                
+                graph = await create_and_get_agent_graph(
+                    parallel=use_parallel,
+                    investigation_id=investigation_id,
+                    entity_type=entity_type
+                )
 
         logger.info(
             f"Using {'parallel' if use_parallel else 'sequential'} graph for investigation {investigation_id}"

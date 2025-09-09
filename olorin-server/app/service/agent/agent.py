@@ -105,12 +105,20 @@ async def investigate_with_patterns(
     agent_context=None,
     request=None,
     thread_id: Optional[str] = None,
-    parallel: bool = True
+    parallel: bool = True,
+    investigation_id: Optional[str] = None,
+    entity_type: str = "ip_address"
 ):
-    """Execute pattern-based investigation using configured agent graph."""
-    logger.info(f"Starting investigation: pattern_type={pattern_type}")
+    """Execute pattern-based investigation using hybrid intelligence graph selection."""
+    logger.info(f"Starting investigation: pattern_type={pattern_type}, investigation_id={investigation_id}")
     
-    graph = create_and_get_agent_graph(parallel=parallel)
+    # Use hybrid graph selection if investigation_id is available
+    graph = await create_and_get_agent_graph(
+        parallel=parallel,
+        investigation_id=investigation_id,
+        entity_type=entity_type
+    )
+    
     config = {
         "configurable": {
             "thread_id": thread_id or "default",
