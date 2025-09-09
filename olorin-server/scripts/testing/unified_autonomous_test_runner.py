@@ -87,23 +87,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
-# DEBUG logging for initialization steps
-if "TEST_MODE" in os.environ and os.environ["TEST_MODE"] == "mock":
-    logger.debug("[Step 1.1.1] Command line argument parsing - Mock mode detected in sys.argv")
-    logger.debug("[Step 1.1.1] Setting os.environ['TEST_MODE'] = 'mock' BEFORE agent imports")
-    logger.debug("[Step 1.1.2] Environment setup detection - MockLLM warning displayed")
-else:
-    logger.debug("[Step 1.1.1] Command line argument parsing - Live mode will be used")
-    logger.debug("[Step 1.1.2] Environment setup detection - No TEST_MODE override")
+# DEBUG logging will be done after logger configuration in test runner
 
 try:
     # Import orchestration system - using clean implementation
-    logger.debug("[Step 1.1.3] Clean graph orchestration import - Starting imports")
     from app.service.agent.orchestration.clean_graph_builder import (
         build_clean_investigation_graph,
         run_investigation
     )
-    logger.debug("[Step 1.1.3] Successfully imported build_clean_investigation_graph and run_investigation")
     from app.service.agent.orchestration.state_schema import create_initial_state
     from langchain_core.messages import HumanMessage
     
@@ -744,8 +735,20 @@ class UnifiedAutonomousTestRunner:
         logger.setLevel(getattr(logging, self.config.log_level.upper()))
         
         # Configure bridge logger for orchestration DEBUG messages
-        from app.service.logging import configure_unified_bridge_from_config
+        from app.service.logging import configure_unified_bridge_from_config, get_bridge_logger
         configure_unified_bridge_from_config(log_level=self.config.log_level.upper())
+        
+        # DEBUG logging for Phase 1 initialization steps (Steps 1.1.1-1.1.3)
+        bridge_logger = get_bridge_logger('scripts.testing.unified_autonomous_test_runner')
+        if self.config.mode == TestMode.MOCK:
+            bridge_logger.debug("[Step 1.1.1] Command line argument parsing - Mock mode detected in sys.argv")
+            bridge_logger.debug("[Step 1.1.1] Setting os.environ['TEST_MODE'] = 'mock' BEFORE agent imports")
+            bridge_logger.debug("[Step 1.1.2] Environment setup detection - MockLLM warning displayed")
+        else:
+            bridge_logger.debug("[Step 1.1.1] Command line argument parsing - Live mode will be used")
+            bridge_logger.debug("[Step 1.1.2] Environment setup detection - No TEST_MODE override")
+        bridge_logger.debug("[Step 1.1.3] Clean graph orchestration import - Starting imports")
+        bridge_logger.debug("[Step 1.1.3] Successfully imported build_clean_investigation_graph and run_investigation")
         
         # Clear existing handlers to avoid duplicates
         logger.handlers.clear()

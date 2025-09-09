@@ -204,6 +204,13 @@ async def data_ingestion_node(state: InvestigationState) -> Dict[str, Any]:
     """
     logger.info(f"📥 Data ingestion for {state['entity_type']}: {state['entity_id']}")
     
+    # DEBUG logging for Phase 2 Data Ingestion
+    logger.debug("[Step 2.1.1] Investigation context SystemMessage creation - Starting message preparation")
+    logger.debug(f"[Step 2.1.1] Entity type: {state['entity_type']}")
+    logger.debug(f"[Step 2.1.1] Entity ID: {state['entity_id']}")
+    logger.debug(f"[Step 2.1.1] Investigation ID: {state['investigation_id']}")
+    logger.debug(f"[Step 2.1.1] Date range days: {state.get('date_range_days', 7)}")
+    
     # Prepare initial investigation message
     ingestion_msg = SystemMessage(content=f"""
     Investigation initialized:
@@ -211,13 +218,26 @@ async def data_ingestion_node(state: InvestigationState) -> Dict[str, Any]:
     - Entity: {state['entity_id']}
     - Investigation ID: {state['investigation_id']}
     
-    Next: Mandatory Snowflake 30-day analysis
+    Next: Mandatory Snowflake {state.get('date_range_days', 7)}-day analysis
     """)
     
-    return {
+    logger.debug(f"[Step 2.1.1] SystemMessage created with content: {ingestion_msg.content.strip()}")
+    logger.debug(f"[Step 2.1.1] SystemMessage type: {type(ingestion_msg).__name__}")
+    
+    # Phase transition
+    logger.debug("[Step 2.1.2] Phase transition to 'initialization' - Preparing return state")
+    logger.debug("[Step 2.1.2] Setting current_phase = 'initialization'")
+    logger.debug("[Step 2.1.2] Adding SystemMessage to messages array")
+    
+    return_state = {
         "messages": [ingestion_msg],
         "current_phase": "initialization"
     }
+    
+    logger.debug(f"[Step 2.1.2] Data ingestion complete - returning state with {len(return_state['messages'])} message(s)")
+    logger.debug(f"[Step 2.1.2] Phase transition complete: current_phase = '{return_state['current_phase']}'")
+    
+    return return_state
 
 
 async def summary_node(state: InvestigationState) -> Dict[str, Any]:

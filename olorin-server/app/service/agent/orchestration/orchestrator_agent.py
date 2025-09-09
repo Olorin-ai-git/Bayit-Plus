@@ -310,9 +310,16 @@ IMPORTANT: While following the standard investigation process, give special atte
             State updates
         """
         import os
-        is_test_mode = os.environ.get("TEST_MODE") == "mock"
         
+        # DEBUG logging for Phase 3.2: Phase-Specific Orchestration
+        logger.debug("[Step 3.2.1] Phase detection from state.get('current_phase') - Starting orchestrate method")
+        
+        is_test_mode = os.environ.get("TEST_MODE") == "mock"
         current_phase = state.get("current_phase", "initialization")
+        
+        logger.debug(f"[Step 3.2.1] Phase detection complete: '{current_phase}'")
+        logger.debug(f"[Step 3.2.1] Available phases: ['initialization', 'snowflake_analysis', 'tool_execution', 'domain_analysis', 'summary']")
+        logger.debug(f"[Step 3.2.2] LLM initialization with TEST_MODE detection: {'MockLLM' if is_test_mode else 'Real LLM'}")
         
         logger.info(f"🎼 Orchestrator handling phase: {current_phase}")
         logger.debug(f"🎼 ORCHESTRATE DEBUG:")
@@ -351,6 +358,8 @@ IMPORTANT: While following the standard investigation process, give special atte
     
     async def _handle_initialization(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle the initialization phase."""
+        logger.debug("[Step 3.2.3.1] Initialization Handler entry - Creating initial system message")
+        
         logger.info(f"🚀 Starting investigation for {state['entity_type']}: {state['entity_id']}")
         logger.debug(f"🚀 INITIALIZATION PHASE DEBUG:")
         logger.debug(f"   Investigation ID: {state['investigation_id']}")
@@ -360,6 +369,7 @@ IMPORTANT: While following the standard investigation process, give special atte
         # Get configuration from state
         date_range_days = state.get('date_range_days', 7)
         logger.debug(f"   Date range: {date_range_days} days")
+        logger.debug(f"[Step 3.2.3.1] Configuration retrieved: {date_range_days}-day lookback analysis")
         
         # Create initial message
         init_message = SystemMessage(content=f"""
@@ -375,9 +385,11 @@ IMPORTANT: While following the standard investigation process, give special atte
         """)
         
         # Immediately move to Snowflake analysis phase
+        logger.debug("[Step 3.2.3.1] Immediate transition to 'snowflake_analysis' phase - No analysis in initialization")
         logger.info("📊 Moving from initialization to snowflake_analysis phase")
         
         logger.debug("   ✅ Initialization complete, moving to snowflake_analysis phase")
+        logger.debug("[Step 3.2.3.1] Return state: {'messages': [SystemMessage], 'current_phase': 'snowflake_analysis'}")
         
         return {
             "messages": [init_message],
@@ -386,10 +398,15 @@ IMPORTANT: While following the standard investigation process, give special atte
     
     async def _handle_snowflake_analysis(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle Snowflake analysis phase - MANDATORY lookback (default 7 days, configurable)."""
+        logger.debug("[Step 3.2.4.1] Snowflake Analysis Handler entry - Checking completion status")
         
         if state.get("snowflake_completed", False):
+            logger.debug("[Step 3.2.4.1] Snowflake analysis already completed - Skipping to tool_execution phase")
             logger.info("✅ Snowflake analysis already complete, moving to tool execution")
             return update_phase(state, "tool_execution")
+            
+        logger.debug("[Step 3.2.4.1] Snowflake analysis not completed - Proceeding with mandatory query execution")
+        logger.debug("[Step 3.2.4.1] Target table: FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED")
         
         # CRITICAL FIX: Check if any Snowflake ToolMessage already exists
         from langchain_core.messages import ToolMessage
@@ -435,9 +452,11 @@ IMPORTANT: While following the standard investigation process, give special atte
         # Get date range from state, default to 7 days
         date_range_days = state.get('date_range_days', 7)
         
+        logger.debug(f"[Step 3.2.4.2] Tool call generation for Snowflake - Date range: {date_range_days} days")
         logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
         
         # Create Snowflake query prompt
+        logger.debug("[Step 3.2.4.2] Creating Snowflake query prompt for LLM")
         snowflake_prompt = f"""
         You MUST use the snowflake_query_tool to analyze ALL data for the past {date_range_days} days.
         
@@ -487,9 +506,12 @@ Use the snowflake_query_tool immediately."""
         
         messages = [system_msg] + existing_messages + [human_msg]
         
+        logger.debug("[Step 3.2.4.2] LLM tool call generation - Invoking LLM with SnowflakeQueryTool")
+        logger.debug(f"[Step 3.2.4.2] LLM generates tool calls for SnowflakeQueryTool")
         logger.info("🤖 Invoking LLM for Snowflake query generation...")
         logger.info(f"   LLM type: {type(self.llm_with_tools)}")
         logger.info(f"   Messages to LLM: {len(messages)}")
+        logger.debug(f"[Step 3.2.4.2] Expected tool call: snowflake_query_tool with FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED query")
         
         # DEBUG: Detailed LLM interaction logging
         logger.debug("🤖 LLM SNOWFLAKE INTERACTION DEBUG:")
@@ -1290,12 +1312,21 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     """
     import os
     
+    # DEBUG logging for Phase 3.1: Orchestrator Node Entry
+    logger.debug("[Step 3.1.1] Safety check with loop counter increment - Starting orchestrator_node")
+    
     # ARCHITECTURE FIX: Track orchestrator loops to prevent infinite recursion
     orchestrator_loops = state.get("orchestrator_loops", 0) + 1
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
     
+    logger.debug(f"[Step 3.1.1] Loop counter incremented: {orchestrator_loops} (previous: {state.get('orchestrator_loops', 0)})")
+    logger.debug(f"[Step 3.1.1] Test mode detection: {'TEST_MODE=mock' if is_test_mode else 'LIVE mode'}")
+    
     # CRITICAL SAFETY CHECK: Prevent runaway orchestrator execution
     max_orchestrator_executions = 8 if is_test_mode else 15  # Conservative limits
+    
+    logger.debug(f"[Step 3.1.2] Safety limits enforcement - Max executions: {max_orchestrator_executions}")
+    logger.debug(f"[Step 3.1.2] Current vs limit: {orchestrator_loops}/{max_orchestrator_executions}")
     
     if orchestrator_loops > max_orchestrator_executions:
         logger.error(f"🚨 ORCHESTRATOR SAFETY VIOLATION: {orchestrator_loops} executions exceeded limit of {max_orchestrator_executions}")
@@ -1333,10 +1364,14 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     # Get tools from graph configuration
     from app.service.agent.orchestration.clean_graph_builder import get_all_tools
     
+    logger.debug("[Step 3.1.3] InvestigationOrchestrator instance creation - Getting tools")
     tools = get_all_tools()
-    logger.debug(f"   Available tools: {len(tools)}")
+    logger.debug(f"[Step 3.1.3] Tools retrieved: {len(tools)} tools available")
+    logger.debug(f"[Step 3.1.3] Tool names: {[tool.name for tool in tools[:5]]}..." if len(tools) > 5 else f"[Step 3.1.3] Tool names: {[tool.name for tool in tools]}")
     
+    logger.debug("[Step 3.1.3] Creating InvestigationOrchestrator instance")
     orchestrator = InvestigationOrchestrator(tools)
+    logger.debug("[Step 3.1.3] InvestigationOrchestrator instance created successfully")
     
     logger.debug("   🚀 Starting orchestration...")
     result = await orchestrator.orchestrate(state)
