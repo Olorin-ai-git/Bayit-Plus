@@ -11,7 +11,7 @@ import asyncio
 import json
 import statistics
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional, Tuple, Set, Union
+from typing import Dict, List, Any, Optional, Tuple, Set, Union, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 import hashlib

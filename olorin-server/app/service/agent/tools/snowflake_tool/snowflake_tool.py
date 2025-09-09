@@ -11,7 +11,20 @@ from typing import Any, Dict, Optional
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from datetime import datetime
+from decimal import Decimal
+import json
 from .client import SnowflakeClient
+
+class SnowflakeJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder for Snowflake data types."""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        elif isinstance(obj, datetime):
+            return obj.isoformat()
+        elif hasattr(obj, '__dict__'):
+            return obj.__dict__
+        return super().default(obj)
 # Real column names from Snowflake schema
 REAL_COLUMNS = [
     'TX_ID_KEY', 'EMAIL', 'MODEL_SCORE', 'IS_FRAUD_TX', 'NSURE_LAST_DECISION',
@@ -193,8 +206,11 @@ class SnowflakeQueryTool(BaseTool):
                 "is_aggregate_query": any(keyword in query.upper() for keyword in ['COUNT', 'SUM', 'AVG', 'GROUP BY'])
             }
             
+            # Convert results to JSON-serializable format
+            json_safe_results = json.loads(json.dumps(results, cls=SnowflakeJSONEncoder))
+            
             return {
-                "results": results,
+                "results": json_safe_results,
                 "row_count": len(results),
                 "columns": columns,
                 "database": database,

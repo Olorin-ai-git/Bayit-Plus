@@ -128,6 +128,19 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
                 network_findings["risk_score"] += 0.15
             
             # Use MODEL_SCORE directly if available
+
+        # CRITICAL DEBUG: Log MODEL_SCORE processing
+        if results:
+            logger.debug(f"   📊 Processing {len(results)} records for risk calculation")
+            for idx, r in enumerate(results[:3]):  # Log first 3 records
+                model_score = r.get("MODEL_SCORE")
+                logger.debug(f"      Record {idx+1}: MODEL_SCORE = {model_score} (type: {type(model_score)})")
+                if model_score:
+                    try:
+                        float_score = float(model_score)
+                        logger.debug(f"      Converted to float: {float_score}")
+                    except (ValueError, TypeError) as e:
+                        logger.error(f"      ❌ Failed to convert MODEL_SCORE to float: {e}")
             model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
             if model_scores:
                 avg_model_score = sum(model_scores) / len(model_scores)

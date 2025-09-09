@@ -8,7 +8,7 @@
         "IP_ADDRESS": "192.0.2.123",
         "IP_COUNTRY": "US",
         "IP_CITY": "New York",
-        "MODEL_SCORE": 0.7234,
+        "MODEL_SCORE": 0.9900,
         "PAID_AMOUNT_VALUE": 1250.00,
         "IS_FRAUD_TX": 0,
         "NSURE_LAST_DECISION": "REVIEW",

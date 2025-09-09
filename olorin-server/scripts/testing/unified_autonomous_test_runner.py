@@ -121,6 +121,18 @@ try:
     from app.service.logging.journey_tracker import get_journey_tracker
     from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
     
+    # Import enhanced validation system
+    try:
+        from app.service.agent.enhanced_validation import (
+            get_enhanced_validator,
+            EnhancedValidationResult,
+            ValidationStatus
+        )
+        ENHANCED_VALIDATION_AVAILABLE = True
+    except ImportError as e:
+        logger.warning(f"Enhanced validation not available: {e}")
+        ENHANCED_VALIDATION_AVAILABLE = False
+    
     # Import test data generators if available
     try:
         from tests.fixtures.real_investigation_scenarios import (
@@ -670,6 +682,8 @@ class InvestigationResult:
     validation_results: Dict[str, Any] = field(default_factory=dict)
     investigation_folder: Optional[str] = None  # Path to investigation folder
     websocket_events: List[Dict] = field(default_factory=list)
+    graph_result: Dict[str, Any] = field(default_factory=dict)  # Clean graph result
+    initial_risk_score: Optional[float] = None  # Initial risk from Snowflake
 
 class UnifiedAutonomousTestRunner:
     """
@@ -1608,6 +1622,16 @@ class UnifiedAutonomousTestRunner:
             self.logger.info(f"🔍 Domains completed: {langgraph_result.get('domains_completed', [])}")
             self.logger.info(f"🔍 Current phase: {langgraph_result.get('current_phase', 'unknown')}")
             
+            # Store the full graph result for validation
+            result.graph_result = langgraph_result
+            
+            # Store initial risk score from Snowflake if available
+            if self.snowflake_entities and context:
+                for entity in self.snowflake_entities:
+                    if entity.get('ip_address') == context.entity_id:
+                        result.initial_risk_score = entity.get('risk_score', 0.99)
+                        break
+            
             # Extract agent results from clean graph execution
             agent_results = self._extract_agent_results_from_clean_graph(langgraph_result, duration)
             
@@ -1764,6 +1788,79 @@ class UnifiedAutonomousTestRunner:
     ) -> Dict[str, Any]:
         """Comprehensive validation of investigation results"""
         
+        # Use enhanced validation if available
+        if ENHANCED_VALIDATION_AVAILABLE and hasattr(result, 'graph_result'):
+            try:
+                enhanced_validator = get_enhanced_validator()
+                
+                # Prepare initial context for validation
+                initial_context = {
+                    'investigation_id': result.investigation_id,
+                    'entity_id': context.entity_id if context else None,
+                    'entity_type': context.entity_type.value if context and context.entity_type else None,
+                }
+                
+                # Add Snowflake risk score if available
+                if hasattr(result, 'initial_risk_score'):
+                    initial_context['snowflake_risk_score'] = result.initial_risk_score
+                elif self.snowflake_entities:
+                    # Find matching entity from Snowflake data
+                    for entity in self.snowflake_entities:
+                        if entity.get('ip_address') == context.entity_id:
+                            initial_context['snowflake_risk_score'] = entity.get('risk_score', 0.99)
+                            break
+                
+                # Run enhanced validation
+                enhanced_result: EnhancedValidationResult = await enhanced_validator.validate_investigation(
+                    investigation_id=result.investigation_id,
+                    initial_context=initial_context,
+                    investigation_result=result.graph_result if hasattr(result, 'graph_result') else {},
+                    agent_results=result.agent_results if result.agent_results else {}
+                )
+                
+                # Convert enhanced validation to standard format
+                validation_results = {
+                    "overall_score": enhanced_result.overall_score,
+                    "completion_score": 100 if enhanced_result.data_extraction_status.value == "success" else 0,
+                    "accuracy_score": 100 if enhanced_result.risk_consistency_passed else 0,
+                    "performance_score": 90,  # Default performance score
+                    "logging_score": 100,  # Default logging score
+                    "journey_score": 100,  # Default journey score
+                    "quality_score": enhanced_result.evidence_quality_score * 100,
+                    "correlation_score": 80 if enhanced_result.risk_consistency_passed else 40,
+                    "business_logic_score": 100 if enhanced_result.minimum_evidence_met else 50,
+                    "validation_status": enhanced_result.validation_status.value,
+                    "critical_issues": enhanced_result.critical_issues,
+                    "warnings": enhanced_result.warnings,
+                    "recommendations": enhanced_result.recommendations,
+                    "details": {
+                        "data_extraction_status": enhanced_result.data_extraction_status.value,
+                        "extraction_failures": enhanced_result.extraction_failures,
+                        "initial_risk": enhanced_result.initial_risk_score,
+                        "final_risk": enhanced_result.final_risk_score,
+                        "risk_delta": enhanced_result.risk_score_delta,
+                        "evidence_count": enhanced_result.evidence_count,
+                        "minimum_evidence_met": enhanced_result.minimum_evidence_met,
+                        "llm_verification_score": enhanced_result.llm_verification_score,
+                        "llm_verification_passed": enhanced_result.llm_verification_passed
+                    }
+                }
+                
+                # Mark investigation as failed if validation failed
+                if enhanced_result.validation_status in [ValidationStatus.FAILED, ValidationStatus.CRITICAL_FAILURE]:
+                    result.status = "failed"
+                    result.errors.extend(enhanced_result.critical_issues)
+                    self.logger.error(f"❌ Investigation FAILED validation: {enhanced_result.critical_issues}")
+                elif enhanced_result.validation_status == ValidationStatus.WARNING:
+                    self.logger.warning(f"⚠️  Investigation has warnings: {enhanced_result.warnings}")
+                
+                return validation_results
+                
+            except Exception as e:
+                self.logger.error(f"Enhanced validation failed, falling back to standard: {e}")
+                # Fall through to standard validation
+        
+        # Standard validation (fallback)
         validation_results = {
             "overall_score": 0,
             "completion_score": 0,

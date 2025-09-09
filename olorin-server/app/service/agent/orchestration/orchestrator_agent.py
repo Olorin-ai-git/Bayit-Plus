@@ -1,3 +1,4 @@
+import json  # CRITICAL FIX: Added for snowflake data parsing
 """
 Orchestrator Agent for LangGraph Clean Architecture
 
@@ -400,8 +401,23 @@ IMPORTANT: While following the standard investigation process, give special atte
                 logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
                 snowflake_result_found = True
                 # Force completion and move to next phase
+                # Try to parse as JSON, but handle Python repr() strings too
+                snowflake_data = msg.content
+                if isinstance(msg.content, str):
+                    try:
+                        snowflake_data = json.loads(msg.content)
+                    except json.JSONDecodeError:
+                        # If it's a Python repr string, try to evaluate it safely
+                        logger.warning(f"Snowflake data is not valid JSON, attempting to parse Python repr: {msg.content[:100]}...")
+                        try:
+                            import ast
+                            snowflake_data = ast.literal_eval(msg.content)
+                        except (ValueError, SyntaxError):
+                            logger.error("Failed to parse Snowflake data as JSON or Python literal")
+                            snowflake_data = {"error": "Failed to parse Snowflake data", "raw": msg.content}
+                
                 return {
-                    "snowflake_data": msg.content,  # Store the result
+                    "snowflake_data": snowflake_data,
                     "snowflake_completed": True,
                     "current_phase": "tool_execution"
                 }
