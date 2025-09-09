@@ -85,7 +85,8 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "evidence": [],  # Collect evidence for LLM to analyze
         "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
-        "analysis": {}
+        "analysis": {},
+        "risk_score": 0.0  # CRITICAL FIX: Initialize risk_score to prevent KeyError
     }
     
     # Analyze Snowflake data for network patterns
@@ -250,7 +251,8 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "evidence": [],  # Collect evidence for LLM to analyze
         "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
-        "analysis": {}
+        "analysis": {},
+        "risk_score": 0.0  # CRITICAL FIX: Initialize risk_score to prevent KeyError
     }
     
     # Analyze Snowflake data for device patterns
@@ -389,7 +391,8 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "evidence": [],  # Collect evidence for LLM to analyze
         "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
-        "analysis": {}
+        "analysis": {},
+        "risk_score": 0.0  # CRITICAL FIX: Initialize risk_score to prevent KeyError
     }
     
     # Analyze Snowflake data for location patterns
@@ -514,7 +517,8 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
         "evidence": [],  # Collect evidence for LLM to analyze
         "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
-        "analysis": {}
+        "analysis": {},
+        "risk_score": 0.0  # CRITICAL FIX: Initialize risk_score to prevent KeyError
     }
     
     # Analyze Snowflake transaction logs
