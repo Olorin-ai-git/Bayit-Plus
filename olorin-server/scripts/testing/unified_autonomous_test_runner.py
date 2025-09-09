@@ -1583,9 +1583,20 @@ class UnifiedAutonomousTestRunner:
             self.logger.info("🔄 Using clean graph orchestration system...")
             start_time = time.time()
             
-            # Execute clean graph with initial state
-            # Increase recursion limit for live mode to handle more complex investigations
+            # Step 8.1.1: Mode-specific recursion limits - LIVE: 100, MOCK: 50
             recursion_limit = 100 if self.config.mode == TestMode.LIVE else 50
+            
+            self.logger.debug(f"[Step 8.1.1] 🔄 RECURSION LIMITS - Mode-specific configuration")
+            self.logger.debug(f"[Step 8.1.1]   Test mode: {self.config.mode}")
+            self.logger.debug(f"[Step 8.1.1]   Recursion limit: {recursion_limit} ({'LIVE: 100' if self.config.mode == TestMode.LIVE else 'MOCK: 50'})")
+            self.logger.debug(f"[Step 8.1.1]   Rationale: {'Complex investigations need higher limits' if self.config.mode == TestMode.LIVE else 'Test mode uses conservative limits'}")
+            self.logger.debug(f"[Step 8.1.1]   Graph config: recursion_limit={recursion_limit}")
+            
+            # Execute clean graph with initial state
+            self.logger.debug(f"[Step 8.1.1] 🚀 GRAPH EXECUTION - Starting LangGraph with configured limits")
+            self.logger.debug(f"[Step 8.1.1]   Initial state keys: {list(initial_state.keys())}")
+            self.logger.debug(f"[Step 8.1.1]   Investigation ID: {initial_state.get('investigation_id', 'N/A')}")
+            self.logger.debug(f"[Step 8.1.1]   Entity: {initial_state.get('entity_type', 'N/A')} - {initial_state.get('entity_id', 'N/A')}")
             
             try:
                 langgraph_result = await graph.ainvoke(
@@ -1599,37 +1610,78 @@ class UnifiedAutonomousTestRunner:
             except Exception as e:
                 duration = time.time() - start_time
                 
+                # Step 7.2.1: LLM error categorization - Context length, model not found, API errors
+                self.logger.debug(f"[Step 7.2.1] 🚨 LLM ERROR CATEGORIZATION - Analyzing error type")
+                self.logger.debug(f"[Step 7.2.1]   Exception type: {type(e).__name__}")
+                self.logger.debug(f"[Step 7.2.1]   Exception string: {str(e)}")
+                self.logger.debug(f"[Step 7.2.1]   Investigation duration before failure: {duration:.2f}s")
+                self.logger.debug(f"[Step 7.2.1]   Entity ID: {context.entity_id}")
+                
                 # Handle LLM orchestration failures gracefully - NO FALLBACKS
                 if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
+                    self.logger.debug(f"[Step 7.2.1] 📏 CONTEXT LENGTH ERROR - LLM token limit exceeded")
+                    self.logger.debug(f"[Step 7.2.1]   Error category: Context Length Exceeded")
+                    self.logger.debug(f"[Step 7.2.1]   Recovery action: None (NO FALLBACKS)")
+                    self.logger.debug(f"[Step 7.2.1]   User guidance: Fix orchestration context length issue")
+                    
                     self.logger.error(f"❌ LLM orchestration failed: Context length exceeded")
                     self.logger.error(f"   Error: {str(e)}")
                     self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
                     self.logger.error(f"❌ Test failed for {context.entity_id}: Fix orchestration context length issue.")
+                    
+                    # Step 7.2.2: Graceful failure with no fallbacks - Errors are logged and re-raised
+                    self.logger.debug(f"[Step 7.2.2] 🛑 GRACEFUL FAILURE - Re-raising context length error (NO FALLBACKS)")
                     raise e
                         
                 elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
+                    self.logger.debug(f"[Step 7.2.1] 🔍 MODEL NOT FOUND ERROR - LLM model unavailable")
+                    self.logger.debug(f"[Step 7.2.1]   Error category: Model Not Found")
+                    self.logger.debug(f"[Step 7.2.1]   Recovery action: None (NO FALLBACKS)")
+                    self.logger.debug(f"[Step 7.2.1]   User guidance: Fix model configuration (check model name/availability)")
+                    
                     self.logger.error(f"❌ LLM orchestration failed: Model not found")
                     self.logger.error(f"   Error type: {type(e).__name__}")
                     self.logger.error(f"   Error details: {str(e)}")
                     self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
                     self.logger.error(f"❌ Test failed for {context.entity_id}: Fix model configuration (check model name/availability).")
+                    
+                    # Step 7.2.2: Graceful failure with no fallbacks
+                    self.logger.debug(f"[Step 7.2.2] 🛑 GRACEFUL FAILURE - Re-raising model not found error (NO FALLBACKS)")
                     raise e
                         
                 elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
+                    self.logger.debug(f"[Step 7.2.1] 🌐 API ERROR - LLM provider API failure")
+                    self.logger.debug(f"[Step 7.2.1]   Error category: API Error")
+                    self.logger.debug(f"[Step 7.2.1]   Detected error types: {[t for t in ['badrequest', 'apierror', 'ratelimit'] if t in str(type(e)).lower()]}")
+                    self.logger.debug(f"[Step 7.2.1]   Detected providers: {[p for p in ['openai', 'anthropic', 'google'] if p in str(e).lower()]}")
+                    self.logger.debug(f"[Step 7.2.1]   Recovery action: None (NO FALLBACKS)")
+                    self.logger.debug(f"[Step 7.2.1]   User guidance: Fix API configuration or connection issue")
+                    
                     self.logger.error(f"❌ LLM orchestration failed: API error")
                     self.logger.error(f"   Error type: {type(e).__name__}")
                     self.logger.error(f"   Error details: {str(e)}")
                     self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
                     self.logger.error(f"❌ Test failed for {context.entity_id}: Fix API configuration or connection issue.")
+                    
+                    # Step 7.2.2: Graceful failure with no fallbacks
+                    self.logger.debug(f"[Step 7.2.2] 🛑 GRACEFUL FAILURE - Re-raising API error (NO FALLBACKS)")
                     raise e
                         
                 else:
+                    self.logger.debug(f"[Step 7.2.1] ❓ UNEXPECTED ERROR - Unhandled error type")
+                    self.logger.debug(f"[Step 7.2.1]   Error category: Unexpected Error")
+                    self.logger.debug(f"[Step 7.2.1]   Recovery action: None (NO FALLBACKS)")
+                    self.logger.debug(f"[Step 7.2.1]   User guidance: Fix orchestration failure")
+                    
                     # Re-raise unexpected errors with clean error message
                     self.logger.error(f"❌ LLM orchestration failed: Unexpected error")
                     self.logger.error(f"   Error type: {type(e).__name__}")
                     self.logger.error(f"   Error details: {str(e)}")
                     self.logger.error(f"   Investigation duration before failure: {duration:.2f}s")
                     self.logger.error(f"❌ Test failed for {context.entity_id}: Fix orchestration failure.")
+                    
+                    # Step 7.2.2: Graceful failure with no fallbacks
+                    self.logger.debug(f"[Step 7.2.2] 🛑 GRACEFUL FAILURE - Re-raising unexpected error (NO FALLBACKS)")
                     raise e
             
             # Debug: Log what clean graph returned

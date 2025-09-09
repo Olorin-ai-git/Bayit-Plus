@@ -478,14 +478,25 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         # The state updates would need to be handled by the target node
         return next_node
     
-    # Check if we're in TEST_MODE or live environment
+    # Step 7.1.1: Orchestrator loop limits - TEST: 12 loops, LIVE: 25 loops maximum
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
     max_loops = 12 if is_test_mode else 25  # Reduced limits to prevent long waits
+    
+    logger.debug(f"[Step 7.1.1] 🔄 ORCHESTRATOR LOOP LIMITS - Configuration check")
+    logger.debug(f"[Step 7.1.1]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"[Step 7.1.1]   Max loops allowed: {max_loops} ({'TEST: 12' if is_test_mode else 'LIVE: 25'})")
+    logger.debug(f"[Step 7.1.1]   Base orchestrator loops: {base_orchestrator_loops}")
+    logger.debug(f"[Step 7.1.1]   Predicted orchestrator loops: {orchestrator_loops}")
+    logger.debug(f"[Step 7.1.1]   Loop prevention status: {'ACTIVE' if orchestrator_loops < max_loops else 'TRIGGERED'}")
     
     logger.info(f"🔀 Routing from orchestrator (predicted loop {orchestrator_loops}/{max_loops}, base: {base_orchestrator_loops})")
     
     # CRITICAL: Early termination to prevent infinite loops
     if orchestrator_loops >= max_loops:
+        logger.debug(f"[Step 7.1.1] 🚨 LOOP LIMIT EXCEEDED - Triggering recursion safety")
+        logger.debug(f"[Step 7.1.1]   Condition: {orchestrator_loops} >= {max_loops}")
+        logger.debug(f"[Step 7.1.1]   Safety action: Force routing to 'summary' phase")
+        logger.debug(f"[Step 7.1.1]   Termination reason: Recursion safety triggered")
         logger.warning(f"🚨 RECURSION SAFETY: {orchestrator_loops} orchestrator loops reached, forcing completion (mode: {'TEST' if is_test_mode else 'LIVE'})")
         return route_with_logging(
             "summary", 
@@ -593,12 +604,21 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 logger.debug(f"      Snowflake messages: {snowflake_messages}")
                 logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
             
-            # Adjust thresholds based on mode - MORE AGGRESSIVE to prevent infinite loops
+            # Step 7.1.2: Phase-specific thresholds - Snowflake: 3 loops (TEST) / 6 loops (LIVE)
             loop_threshold = 3 if is_test_mode else 6  # Much lower thresholds
-            logger.debug(f"      Loop threshold for this mode: {loop_threshold}")
-            logger.debug(f"      Predicted loops: {orchestrator_loops}")
+            logger.debug(f"[Step 7.1.2] 📊 SNOWFLAKE PHASE THRESHOLDS - Threshold configuration")
+            logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
+            logger.debug(f"[Step 7.1.2]   Snowflake loop threshold: {loop_threshold} ({'TEST: 3' if is_test_mode else 'LIVE: 6'})")
+            logger.debug(f"[Step 7.1.2]   Current predicted loops: {orchestrator_loops}")
+            logger.debug(f"[Step 7.1.2]   Snowflake ToolMessage detected: {snowflake_tool_found}")
+            logger.debug(f"[Step 7.1.2]   Threshold exceeded: {orchestrator_loops >= loop_threshold}")
+            logger.debug(f"[Step 7.1.2]   Force progression condition: {snowflake_tool_found or orchestrator_loops >= loop_threshold}")
             
             if snowflake_tool_found or orchestrator_loops >= loop_threshold:
+                logger.debug(f"[Step 7.1.2] ⚡ FORCED PROGRESSION TRIGGERED - Moving to tool_execution phase")
+                logger.debug(f"[Step 7.1.2]   Trigger reason: {'Snowflake ToolMessage found' if snowflake_tool_found else 'Loop threshold exceeded'}")
+                logger.debug(f"[Step 7.1.2]   Target phase: tool_execution")
+                logger.debug(f"[Step 7.1.2]   Routing destination: process_tools")
                 logger.info(f"  → FORCED move to tool_execution phase (Snowflake ToolMessage found or loops >= {loop_threshold})")
                 logger.debug(f"      Reason: {'Snowflake ToolMessage found' if snowflake_tool_found else 'Loop threshold exceeded'}")
                 # Force phase completion by routing to process_tools
@@ -620,21 +640,33 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         tool_execution_attempts = state.get("tool_execution_attempts", 0)
         max_attempts = 3
         
-        # MORE AGGRESSIVE LIMITS to prevent infinite loops
+        # Step 7.1.2: Phase-specific thresholds - Tool execution: 5 loops (TEST) / 8 loops (LIVE)
         loop_threshold = 5 if is_test_mode else 8  # Much lower thresholds
         tool_threshold = 5 if is_test_mode else 8   # Reduced tool limits
         
-        logger.debug(f"      Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
-        logger.debug(f"      Tools used: {len(tools_used)}/{tool_threshold}")
-        logger.debug(f"      Loop threshold: {orchestrator_loops}/{loop_threshold}")
-        logger.debug(f"      Current tools: {tools_used}")
+        logger.debug(f"[Step 7.1.2] 🔧 TOOL EXECUTION PHASE THRESHOLDS - Threshold configuration")
+        logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
+        logger.debug(f"[Step 7.1.2]   Tool execution loop threshold: {loop_threshold} ({'TEST: 5' if is_test_mode else 'LIVE: 8'})")
+        logger.debug(f"[Step 7.1.2]   Tool usage threshold: {tool_threshold} ({'TEST: 5' if is_test_mode else 'LIVE: 8'})")
+        logger.debug(f"[Step 7.1.2]   Max execution attempts: {max_attempts}")
+        logger.debug(f"[Step 7.1.2]   Current tool execution attempts: {tool_execution_attempts}/{max_attempts}")
+        logger.debug(f"[Step 7.1.2]   Current tools used: {len(tools_used)}/{tool_threshold}")
+        logger.debug(f"[Step 7.1.2]   Current orchestrator loops: {orchestrator_loops}/{loop_threshold}")
+        logger.debug(f"[Step 7.1.2]   Active tools: {tools_used}")
         
-        # CRITICAL FIX: Force progression after limited attempts
+        # Step 7.1.3: Forced progression mechanisms - CRITICAL FIX: Force progression after limited attempts
         should_progress = (
             tool_execution_attempts >= max_attempts or 
             len(tools_used) >= tool_threshold or 
             orchestrator_loops >= loop_threshold
         )
+        
+        logger.debug(f"[Step 7.1.3] ⚡ FORCED PROGRESSION EVALUATION - Checking progression conditions")
+        logger.debug(f"[Step 7.1.3]   Attempts condition: {tool_execution_attempts} >= {max_attempts} = {tool_execution_attempts >= max_attempts}")
+        logger.debug(f"[Step 7.1.3]   Tools condition: {len(tools_used)} >= {tool_threshold} = {len(tools_used) >= tool_threshold}")
+        logger.debug(f"[Step 7.1.3]   Loops condition: {orchestrator_loops} >= {loop_threshold} = {orchestrator_loops >= loop_threshold}")
+        logger.debug(f"[Step 7.1.3]   Should progress: {should_progress}")
+        logger.debug(f"[Step 7.1.3]   Next phase if progressing: domain_analysis")
         
         if should_progress:
             reasons = []
@@ -644,6 +676,12 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 reasons.append(f"tool threshold ({len(tools_used)})")
             if orchestrator_loops >= loop_threshold:
                 reasons.append(f"loop threshold ({orchestrator_loops})")
+            
+            logger.debug(f"[Step 7.1.3] 🎯 FORCED PROGRESSION ACTIVATED - Moving to domain analysis")
+            logger.debug(f"[Step 7.1.3]   Triggered reasons: {', '.join(reasons)}")
+            logger.debug(f"[Step 7.1.3]   Target phase: domain_analysis")
+            logger.debug(f"[Step 7.1.3]   Routing action: Return to orchestrator for phase change")
+            logger.debug(f"[Step 7.1.3]   Expected next: Orchestrator will set current_phase = 'domain_analysis'")
             
             logger.info(f"  → FORCED move to domain analysis (attempts: {tool_execution_attempts}, tools: {len(tools_used)}, loops: {orchestrator_loops})")
             logger.debug(f"      Progression reasons: {', '.join(reasons)}")
@@ -704,18 +742,30 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         logger.debug("      Investigation completed, ending graph execution")
         return END
     
-    # CRITICAL FIX: Prevent infinite default loops - MUCH MORE AGGRESSIVE
-    logger.debug(f"   ❓ FALLBACK ROUTING")
+    # Step 7.1.3: Fallback forced progression mechanisms - CRITICAL FIX: Prevent infinite default loops
+    logger.debug(f"[Step 7.1.3] ❓ FALLBACK ROUTING - Safety mechanisms for unhandled cases")
     final_threshold = 6 if is_test_mode else 10  # Much lower thresholds
-    logger.debug(f"      Final threshold for this mode: {final_threshold}")
-    logger.debug(f"      Predicted loops: {orchestrator_loops}")
+    logger.debug(f"[Step 7.1.3]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 6' if is_test_mode else 'LIVE: 10'})")
+    logger.debug(f"[Step 7.1.3]   Current predicted loops: {orchestrator_loops}")
+    logger.debug(f"[Step 7.1.3]   Final threshold exceeded: {orchestrator_loops >= final_threshold}")
     
     if orchestrator_loops >= final_threshold:
+        logger.debug(f"[Step 7.1.3] 🚨 FINAL THRESHOLD EXCEEDED - Emergency completion")
+        logger.debug(f"[Step 7.1.3]   Condition: {orchestrator_loops} >= {final_threshold}")
+        logger.debug(f"[Step 7.1.3]   Safety action: Direct routing to 'summary'")
+        logger.debug(f"[Step 7.1.3]   Termination type: Emergency loop prevention")
         logger.warning(f"  → Too many orchestrator loops ({orchestrator_loops}), forcing summary (mode: {'TEST' if is_test_mode else 'LIVE'})")
         logger.debug("      Exceeded final threshold, forcing completion")
         return "summary"
     
     # SAFER DEFAULT: Force progression more aggressively to prevent infinite loops
+    logger.debug(f"[Step 7.1.3] 🛡️ AGGRESSIVE SAFETY MECHANISMS - Multi-tier fallback system")
+    logger.debug(f"[Step 7.1.3]   Snowflake status: {'Completed' if snowflake_completed else 'Incomplete'}")
+    logger.debug(f"[Step 7.1.3]   Tools used count: {len(tools_used)}")
+    logger.debug(f"[Step 7.1.3]   Predicted loops: {orchestrator_loops}")
+    logger.debug(f"[Step 7.1.3]   Evaluating aggressive termination conditions:")
+    
     logger.info("  → Default: FORCING progression to prevent loops")
     logger.debug(f"      Fallback routing logic (aggressive):")
     logger.debug(f"         Snowflake completed: {snowflake_completed}")
@@ -724,15 +774,19 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     
     # CRITICAL: Be much more aggressive about forcing completion
     if orchestrator_loops >= 4:  # After 4 loops, force summary regardless of state
+        logger.debug(f"[Step 7.1.3]   Tier 1 Safety: {orchestrator_loops} >= 4 loops - AGGRESSIVE TERMINATION")
         logger.warning(f"      → AGGRESSIVE TERMINATION: {orchestrator_loops} loops, forcing summary")
         return "summary"
     elif not snowflake_completed and orchestrator_loops >= 2:
+        logger.debug(f"[Step 7.1.3]   Tier 2 Safety: Snowflake incomplete + {orchestrator_loops} >= 2 loops")
         logger.warning(f"      → FORCED Snowflake completion after {orchestrator_loops} loops")
         return "summary"  # Force completion if Snowflake still not done
     elif len(tools_used) < 3 and orchestrator_loops >= 3:
+        logger.debug(f"[Step 7.1.3]   Tier 3 Safety: Tools < 3 + {orchestrator_loops} >= 3 loops")
         logger.warning(f"      → FORCED tool completion after {orchestrator_loops} loops")
         return "summary"  # Force completion if tools still not used
     else:
+        logger.debug(f"[Step 7.1.3]   Tier 4 Safety: Default fallback to summary")
         logger.debug("      → Safe default to summary")
         return "summary"  # Default to summary to prevent further loops
 
@@ -964,13 +1018,20 @@ async def run_investigation(
     
     logger.info("🏗️ Graph built, starting execution")
     
-    # Run the investigation with timeout and recursion limit
+    # Step 8.2.1: Investigation timeouts - TEST: 60 seconds, LIVE: 180 seconds
     # Check if we're in TEST_MODE or live environment
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
     
     # CRITICAL FIX: Much more aggressive limits to prevent infinite loops
     recursion_limit = 20 if is_test_mode else 35  # Lower recursion limits
     timeout = 60.0 if is_test_mode else 180.0  # Reasonable timeouts: 1-3 minutes max
+    
+    logger.debug(f"[Step 8.2.1] ⏱️ TIMEOUT MANAGEMENT - Investigation timeout configuration")
+    logger.debug(f"[Step 8.2.1]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
+    logger.debug(f"[Step 8.2.1]   Investigation timeout: {timeout}s ({'TEST: 60s' if is_test_mode else 'LIVE: 180s'})")
+    logger.debug(f"[Step 8.2.1]   Recursion limit: {recursion_limit} ({'TEST: 20' if is_test_mode else 'LIVE: 35'})")
+    logger.debug(f"[Step 8.2.1]   Timeout rationale: {'Quick tests need short timeouts' if is_test_mode else 'Complex investigations need longer timeouts'}")
+    logger.debug(f"[Step 8.2.1]   Deadlock detection: Will warn at {timeout * 0.8}s (80% of timeout)")
     
     logger.info(f"⚙️ Graph execution configuration:")
     logger.info(f"   Recursion limit: {recursion_limit}")
@@ -980,6 +1041,11 @@ async def run_investigation(
     # Add a deadlock detection mechanism
     start_time = asyncio.get_event_loop().time()
     deadlock_threshold = timeout * 0.8  # Warn at 80% of timeout
+    
+    logger.debug(f"[Step 8.2.1] 🚨 DEADLOCK DETECTION - Monitoring system activated")
+    logger.debug(f"[Step 8.2.1]   Start time: {start_time}")
+    logger.debug(f"[Step 8.2.1]   Deadlock warning threshold: {deadlock_threshold}s")
+    logger.debug(f"[Step 8.2.1]   Maximum execution time: {timeout}s")
     
     try:
         # Create a task for the graph execution

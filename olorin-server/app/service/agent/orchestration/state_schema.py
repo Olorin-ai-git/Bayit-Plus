@@ -105,6 +105,29 @@ def create_initial_state(
     """
     from datetime import datetime
     
+    # Step 9.1: InvestigationState Fields - Complete state schema initialization
+    logger.debug(f"[Step 9.1] 🗃️ INVESTIGATION STATE SCHEMA - Creating initial state with all required fields")
+    logger.debug(f"[Step 9.1]   Core identifiers:")
+    logger.debug(f"[Step 9.1]     investigation_id: {investigation_id}")
+    logger.debug(f"[Step 9.1]     entity_id: {entity_id}")
+    logger.debug(f"[Step 9.1]     entity_type: {entity_type}")
+    logger.debug(f"[Step 9.1]   Phase management:")
+    logger.debug(f"[Step 9.1]     current_phase: 'initialization' (starting phase)")
+    logger.debug(f"[Step 9.1]     date_range_days: {date_range_days} (Snowflake lookback)")
+    logger.debug(f"[Step 9.1]     tool_count: {tool_count} (tool selection range)")
+    logger.debug(f"[Step 9.1]   Data initialization:")
+    logger.debug(f"[Step 9.1]     snowflake_data: None (will be populated)")
+    logger.debug(f"[Step 9.1]     snowflake_completed: False (pending)")
+    logger.debug(f"[Step 9.1]     tool_results: {} (empty dict)")
+    logger.debug(f"[Step 9.1]     domain_findings: {} (empty dict)")
+    logger.debug(f"[Step 9.1]   Safety counters:")
+    logger.debug(f"[Step 9.1]     orchestrator_loops: 0 (initial)")
+    logger.debug(f"[Step 9.1]     tool_execution_attempts: 0 (initial)")
+    logger.debug(f"[Step 9.1]   Configuration:")
+    logger.debug(f"[Step 9.1]     max_tools: {max_tools}")
+    logger.debug(f"[Step 9.1]     parallel_execution: {parallel_execution}")
+    logger.debug(f"[Step 9.1]     custom_user_prompt: {'Set' if custom_user_prompt else 'None'}")
+    
     # DEBUG logging for state initialization
     logger.debug(f"[Step 1.4.1] InvestigationState creation with required fields:")
     logger.debug(f"[Step 1.4.1]   investigation_id: {investigation_id}")
@@ -173,6 +196,31 @@ def create_initial_state(
         # Optional context
         "agent_context": None
     }
+    
+    # Step 9.1: Complete verification of all initialized state fields
+    logger.debug(f"[Step 9.1] ✅ STATE SCHEMA VERIFICATION - Complete field initialization check")
+    logger.debug(f"[Step 9.1]   Core fields verified:")
+    logger.debug(f"[Step 9.1]     messages: {len(initial_state['messages'])} (empty list)")
+    logger.debug(f"[Step 9.1]     investigation_id: '{initial_state['investigation_id']}'")
+    logger.debug(f"[Step 9.1]     entity_id: '{initial_state['entity_id']}'")
+    logger.debug(f"[Step 9.1]     entity_type: '{initial_state['entity_type']}'")
+    logger.debug(f"[Step 9.1]   Phase fields verified:")
+    logger.debug(f"[Step 9.1]     current_phase: '{initial_state['current_phase']}'")
+    logger.debug(f"[Step 9.1]     date_range_days: {initial_state['date_range_days']}")
+    logger.debug(f"[Step 9.1]     tool_count: '{initial_state['tool_count']}'")
+    logger.debug(f"[Step 9.1]   Data fields verified:")
+    logger.debug(f"[Step 9.1]     snowflake_data: {initial_state['snowflake_data']}")
+    logger.debug(f"[Step 9.1]     snowflake_completed: {initial_state['snowflake_completed']}")
+    logger.debug(f"[Step 9.1]     tool_results: {len(initial_state['tool_results'])} entries")
+    logger.debug(f"[Step 9.1]     domain_findings: {len(initial_state['domain_findings'])} domains")
+    logger.debug(f"[Step 9.1]   Safety fields verified:")
+    logger.debug(f"[Step 9.1]     orchestrator_loops: {initial_state['orchestrator_loops']}")
+    logger.debug(f"[Step 9.1]     tool_execution_attempts: {initial_state['tool_execution_attempts']}")
+    logger.debug(f"[Step 9.1]     errors: {len(initial_state['errors'])} errors")
+    logger.debug(f"[Step 9.1]     phase_changes: {len(initial_state['phase_changes'])} changes")
+    logger.debug(f"[Step 9.1]     routing_decisions: {len(initial_state['routing_decisions'])} decisions")
+    logger.debug(f"[Step 9.1]   Total state fields: {len(initial_state)}")
+    logger.debug(f"[Step 9.1]   State initialization: COMPLETE ✅")
     
     logger.debug(f"[Step 1.4.1] InvestigationState initialized with current_phase='initialization'")
     logger.debug(f"[Step 1.4.1] State creation completed - returning initialized state")
