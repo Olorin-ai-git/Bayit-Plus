@@ -1,3 +1,6 @@
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
 # 🎭 Active Agent Orchestration System
 
 ## Overview

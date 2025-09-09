@@ -1,3 +1,6 @@
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
 # REMOVED: Exact Duplicate File
 
 This file `logging-concepts-engineer.md` was an exact duplicate of `/universal/logging-concepts-engineer.md`.

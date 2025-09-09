@@ -1,3 +1,6 @@
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
 # MOVED: UX Designer Agent
 
 The `ux-designer.md` file has been moved to maintain better categorization and eliminate duplication.

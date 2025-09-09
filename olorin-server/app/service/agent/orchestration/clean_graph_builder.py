@@ -544,67 +544,103 @@ def build_clean_investigation_graph() -> StateGraph:
     logger.info("🏗️ Building clean investigation graph")
     
     # Create the graph with our state schema
+    logger.debug("[Step 1.2.1] StateGraph creation with InvestigationState schema")
     builder = StateGraph(InvestigationState)
+    logger.debug("[Step 1.2.1] StateGraph(InvestigationState) created successfully")
     
     # Get all tools for the graph
+    logger.debug("[Step 1.2.2] Tool loading via get_all_tools() - Starting tool collection")
     tools = get_all_tools()
+    logger.debug(f"[Step 1.2.2] get_all_tools() returned {len(tools)} tools from registry")
     
     # Create tool executor node
+    logger.debug("[Step 1.2.2] Creating ToolNode with collected tools")
     tool_executor = ToolNode(tools)
+    logger.debug(f"[Step 1.2.2] ToolNode created successfully with {len(tools)} tools")
     logger.info(f"✅ Created ToolNode with {len(tools)} tools")
     
     # Add all nodes to the graph
+    logger.debug("[Step 1.2.3] Node registration in graph - Starting node addition")
     builder.add_node("data_ingestion", data_ingestion_node)
+    logger.debug("[Step 1.2.3] Added 'data_ingestion' → data_ingestion_node")
     builder.add_node("orchestrator", orchestrator_node)
+    logger.debug("[Step 1.2.3] Added 'orchestrator' → orchestrator_node")
     builder.add_node("tools", tool_executor)
+    logger.debug("[Step 1.2.3] Added 'tools' → tool_executor (ToolNode)")
     builder.add_node("process_tools", process_tool_results)  # Add tool result processor
+    logger.debug("[Step 1.2.3] Added 'process_tools' → process_tool_results")
     builder.add_node("network_agent", network_agent_node)
+    logger.debug("[Step 1.2.3] Added 'network_agent' → network_agent_node")
     builder.add_node("device_agent", device_agent_node)
+    logger.debug("[Step 1.2.3] Added 'device_agent' → device_agent_node")
     builder.add_node("location_agent", location_agent_node)
+    logger.debug("[Step 1.2.3] Added 'location_agent' → location_agent_node")
     builder.add_node("logs_agent", logs_agent_node)
+    logger.debug("[Step 1.2.3] Added 'logs_agent' → logs_agent_node")
     builder.add_node("authentication_agent", authentication_agent_node)
+    logger.debug("[Step 1.2.3] Added 'authentication_agent' → authentication_agent_node")
     builder.add_node("risk_agent", risk_agent_node)
+    logger.debug("[Step 1.2.3] Added 'risk_agent' → risk_agent_node")
     builder.add_node("summary", summary_node)
+    logger.debug("[Step 1.2.3] Added 'summary' → summary_node")
+    logger.debug("[Step 1.2.3] All 11 nodes registered successfully")
     
     logger.info("✅ Added all nodes to graph")
     
     # Define edges
     
     # Entry point
+    logger.debug("[Step 1.3.1] Entry point: START → 'data_ingestion'")
     builder.add_edge(START, "data_ingestion")
+    logger.debug("[Step 1.3.1] Edge added: START → 'data_ingestion'")
     
     # Data ingestion to orchestrator
+    logger.debug("[Step 1.3.2] Linear progression: 'data_ingestion' → 'orchestrator'")
     builder.add_edge("data_ingestion", "orchestrator")
+    logger.debug("[Step 1.3.2] Edge added: 'data_ingestion' → 'orchestrator'")
     
     # Orchestrator routing
+    logger.debug("[Step 1.3.3] Orchestrator conditional routing - Setting up routing destinations")
+    routing_destinations = {
+        "orchestrator": "orchestrator",  # Loop back to self
+        "tools": "tools",
+        "network_agent": "network_agent",
+        "device_agent": "device_agent",
+        "location_agent": "location_agent",
+        "logs_agent": "logs_agent",
+        "authentication_agent": "authentication_agent",
+        "risk_agent": "risk_agent",
+        "summary": "summary",
+        END: END
+    }
+    logger.debug(f"[Step 1.3.3] Routing destinations configured: {list(routing_destinations.keys())}")
     builder.add_conditional_edges(
         "orchestrator",
         route_from_orchestrator,
-        {
-            "orchestrator": "orchestrator",  # Loop back to self
-            "tools": "tools",
-            "network_agent": "network_agent",
-            "device_agent": "device_agent",
-            "location_agent": "location_agent",
-            "logs_agent": "logs_agent",
-            "authentication_agent": "authentication_agent",
-            "risk_agent": "risk_agent",
-            "summary": "summary",
-            END: END
-        }
+        routing_destinations
     )
+    logger.debug("[Step 1.3.3] Conditional edges added for orchestrator with 10 routing destinations")
     
     # Tools go to processor, then back to orchestrator
+    logger.debug("[Step 1.3.4] Tool processing flow: 'tools' → 'process_tools' → 'orchestrator'")
     builder.add_edge("tools", "process_tools")
+    logger.debug("[Step 1.3.4] Edge added: 'tools' → 'process_tools'")
     builder.add_edge("process_tools", "orchestrator")
+    logger.debug("[Step 1.3.4] Edge added: 'process_tools' → 'orchestrator'")
     
     # All agents return to orchestrator
-    for agent in ["network_agent", "device_agent", "location_agent", "logs_agent", "authentication_agent", "risk_agent"]:
+    agents = ["network_agent", "device_agent", "location_agent", "logs_agent", "authentication_agent", "risk_agent"]
+    logger.debug(f"[Step 1.3.5] Agent return flow: All {len(agents)} agents → 'orchestrator'")
+    for agent in agents:
         builder.add_edge(agent, "orchestrator")
+        logger.debug(f"[Step 1.3.5] Edge added: '{agent}' → 'orchestrator'")
     
     # Summary can end
+    logger.debug("[Step 1.3.6] Exit: 'summary' → END")
     builder.add_edge("summary", END)
+    logger.debug("[Step 1.3.6] Edge added: 'summary' → END")
     
+    logger.debug("[Step 1.3.6] All edge definitions completed successfully")
     logger.info("✅ Defined all edges and routing")
     
     # Compile the graph

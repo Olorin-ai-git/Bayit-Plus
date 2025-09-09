@@ -7,6 +7,10 @@ Defines the complete investigation state used throughout the graph.
 from typing import TypedDict, List, Dict, Any, Annotated, Optional
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
+from app.service.logging import get_bridge_logger
+
+# Initialize logger at module level
+logger = get_bridge_logger(__name__)
 
 
 class InvestigationState(TypedDict):
@@ -101,7 +105,18 @@ def create_initial_state(
     """
     from datetime import datetime
     
-    return {
+    # DEBUG logging for state initialization
+    logger.debug(f"[Step 1.4.1] InvestigationState creation with required fields:")
+    logger.debug(f"[Step 1.4.1]   investigation_id: {investigation_id}")
+    logger.debug(f"[Step 1.4.1]   entity_id: {entity_id}")
+    logger.debug(f"[Step 1.4.1]   entity_type: {entity_type}")
+    logger.debug(f"[Step 1.4.1]   date_range_days: {date_range_days} (default: 7)")
+    logger.debug(f"[Step 1.4.1]   max_tools: {max_tools} (passed from runner)")
+    logger.debug(f"[Step 1.4.1]   parallel_execution: {parallel_execution}")
+    logger.debug(f"[Step 1.4.1]   custom_user_prompt: {custom_user_prompt}")
+    logger.debug(f"[Step 1.4.1]   tool_count: {tool_count}")
+    
+    initial_state = {
         # Core message flow
         "messages": [],
         
@@ -158,6 +173,11 @@ def create_initial_state(
         # Optional context
         "agent_context": None
     }
+    
+    logger.debug(f"[Step 1.4.1] InvestigationState initialized with current_phase='initialization'")
+    logger.debug(f"[Step 1.4.1] State creation completed - returning initialized state")
+    
+    return initial_state
 
 
 def update_phase(state: InvestigationState, new_phase: str) -> Dict[str, Any]:
@@ -171,9 +191,7 @@ def update_phase(state: InvestigationState, new_phase: str) -> Dict[str, Any]:
     Returns:
         State updates
     """
-    from app.service.logging import get_bridge_logger
-    
-    logger = get_bridge_logger(__name__)
+    # Logger is now defined at module level
     logger.info(f"📊 Phase transition: {state.get('current_phase', 'unknown')} → {new_phase}")
     
     return {"current_phase": new_phase}

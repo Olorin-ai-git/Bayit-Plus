@@ -4,6 +4,11 @@ description: Creates optimized meta titles, descriptions, and URL suggestions ba
 model: haiku
 ---
 
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
+
+
 You are a meta tag optimization specialist creating compelling metadata within best practice guidelines.
 
 ## Focus Areas

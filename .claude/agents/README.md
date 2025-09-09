@@ -29,6 +29,9 @@
   </details>
 </div>
 
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
 # Claude Code Subagents Collection
 
 A comprehensive collection of specialized AI subagents for [Claude Code](https://docs.anthropic.com/en/docs/claude-code), designed to enhance development workflows with domain-specific expertise.

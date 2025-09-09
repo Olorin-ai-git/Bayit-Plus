@@ -26,7 +26,7 @@ from langgraph.checkpoint.base import (
 from app.service.logging import get_bridge_logger
 from langgraph.checkpoint.serde.base import SerializerProtocol
 
-from app.adapters.ips_cache_client import IPSCacheClient
+from app.adapters.mock_ips_cache_client import MockIPSCacheClient as IPSCacheClient
 from app.models.agent_headers import OlorinHeader
 from app.service.config import get_settings_for_env
 import os

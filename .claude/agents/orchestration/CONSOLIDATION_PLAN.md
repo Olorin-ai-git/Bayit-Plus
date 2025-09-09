@@ -1,3 +1,6 @@
+## ⚠️ CRITICAL PROHIBITION
+**YOU ARE NOT ALLOWED TO USE MOCK DATA ANYWHERE IN THE CODEBASE!!!!!**
+
 # Orchestration Agent Consolidation Plan
 
 **Current State**: 17 orchestration agents with significant functional overlap  
