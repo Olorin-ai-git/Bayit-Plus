@@ -41,9 +41,9 @@ class DomainAgentBase:
                              entity_type: str, entity_id: str, task_description: str) -> str:
         """Initialize chain of thought logging for the agent."""
         cot_logger = get_chain_of_thought_logger()
-        process_id = f"{agent_name}_{investigation_id}"
         
-        cot_logger.start_agent_thinking(
+        # Get the actual process_id returned by start_agent_thinking
+        process_id = cot_logger.start_agent_thinking(
             investigation_id=investigation_id,
             agent_name=agent_name,
             domain=domain,
@@ -179,7 +179,6 @@ def complete_chain_of_thought(process_id: str, findings: Dict[str, Any], domain:
     )
     
     cot_logger.complete_agent_thinking(
-        investigation_id=process_id.split('_')[2] if '_' in process_id else 'unknown',
-        agent_name=f"{domain}_agent",
-        final_output=findings
+        process_id=process_id,
+        final_assessment=findings
     )
