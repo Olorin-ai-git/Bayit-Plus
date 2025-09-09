@@ -1797,7 +1797,7 @@ class UnifiedAutonomousTestRunner:
                 initial_context = {
                     'investigation_id': result.investigation_id,
                     'entity_id': context.entity_id if context else None,
-                    'entity_type': context.entity_type.value if context and context.entity_type else None,
+                    'entity_type': context.entity_type.value if context and hasattr(context.entity_type, 'value') else str(context.entity_type) if context else None,
                 }
                 
                 # Add Snowflake risk score if available

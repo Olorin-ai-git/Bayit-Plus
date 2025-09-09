@@ -909,20 +909,19 @@ Be efficient to prevent timeout issues."""
     async def _handle_summary(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle summary phase - consolidate all findings."""
         
-        from app.service.agent.orchestration.state_schema import calculate_final_risk_score
         from datetime import datetime
         
-        logger.info("📊 Generating investigation summary")
+        logger.info("📊 Generating investigation summary with LLM risk assessment")
         
-        # Calculate final risk score
-        final_risk_score = calculate_final_risk_score(state)
+        # Get LLM-based risk assessment from aggregated tool results
+        llm_assessment = await self.analyze_with_llm(state)
         
-        # Calculate confidence based on tool coverage
-        tools_used = state.get("tools_used", [])
-        confidence = min(1.0, len(tools_used) / 20.0)  # Max confidence at 20+ tools
+        # Use LLM's risk score as the final risk score
+        final_risk_score = llm_assessment.get("risk_score", 0.5)
+        confidence = llm_assessment.get("confidence", 0.5)
         
-        # Generate summary
-        summary = self._generate_investigation_summary(state, final_risk_score, confidence)
+        # Generate summary including LLM reasoning
+        summary = self._generate_investigation_summary_with_llm(state, llm_assessment)
         
         summary_msg = AIMessage(content=summary)
         
@@ -980,12 +979,217 @@ Be efficient to prevent timeout issues."""
         
         return "\n".join(summary_parts) if summary_parts else "Snowflake data received"
     
-    def _generate_investigation_summary(self, state: InvestigationState, risk_score: float, confidence: float) -> str:
-        """Generate comprehensive investigation summary."""
+    async def analyze_with_llm(self, state: InvestigationState) -> Dict[str, Any]:
+        """Analyze aggregated tool results with LLM for risk assessment."""
+        logger.info("🤖 Performing LLM-based risk assessment on aggregated tool results")
+        
+        # Prepare comprehensive analysis prompt
+        analysis_prompt = self._prepare_risk_analysis_prompt(state)
+        
+        # Create messages for LLM
+        system_msg = SystemMessage(content="""You are a fraud risk assessment expert. Analyze the investigation results and provide:
+1. A risk score from 0.0 to 1.0 based on the evidence
+2. Confidence level in your assessment (0.0 to 1.0)
+3. Key risk factors identified
+4. Detailed reasoning for your risk assessment
+5. Recommended actions
+
+Base your assessment ONLY on the actual data provided. Do not use arbitrary values.""")
+        
+        human_msg = HumanMessage(content=analysis_prompt)
+        
+        try:
+            # Invoke LLM for risk assessment
+            response = await self.llm.ainvoke([system_msg, human_msg])
+            
+            # Parse the LLM response to extract risk metrics
+            return self._parse_llm_risk_assessment(response.content)
+            
+        except Exception as e:
+            logger.error(f"LLM risk assessment failed: {e}")
+            # Fallback to data-driven calculation
+            return self._calculate_fallback_risk_score(state)
+    
+    def _prepare_risk_analysis_prompt(self, state: InvestigationState) -> str:
+        """Prepare comprehensive prompt for LLM risk analysis."""
+        
+        # Extract key data from state
+        snowflake_data = state.get("snowflake_data", {})
+        tool_results = state.get("tool_results", {})
+        domain_findings = state.get("domain_findings", {})
+        
+        prompt = f"""Analyze this fraud investigation and provide risk assessment:
+
+## Investigation Details
+- Entity: {state.get('entity_type', 'unknown')} - {state.get('entity_id', 'unknown')}
+- Investigation ID: {state.get('investigation_id', 'unknown')}
+
+## Snowflake Data Analysis ({state.get('date_range_days', 7)}-day lookback)
+{self._format_snowflake_for_llm(snowflake_data)}
+
+## Tool Results
+{self._format_tools_for_llm(tool_results)}
+
+## Domain Agent Findings
+{self._format_domains_for_llm(domain_findings)}
+
+## Risk Indicators Found
+{self._format_risk_indicators_for_llm(state.get('risk_indicators', []))}
+
+Based on ALL the above evidence, provide:
+1. Overall risk score (0.0-1.0) - MUST be data-driven based on the evidence
+2. Confidence in assessment (0.0-1.0) - based on data completeness
+3. Top 5 risk factors with evidence
+4. Detailed reasoning explaining your risk score
+5. Specific recommended actions"""
+        
+        return prompt
+    
+    def _format_snowflake_for_llm(self, snowflake_data) -> str:
+        """Format Snowflake data for LLM analysis."""
+        if not snowflake_data:
+            return "No Snowflake data available"
+        
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            if not results:
+                return "No transaction records found"
+            
+            # Extract key metrics
+            model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
+            fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
+            
+            summary = f"""- Total transactions: {len(results)}
+- Average MODEL_SCORE: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
+- High risk transactions (MODEL_SCORE > 0.7): {len([s for s in model_scores if s > 0.7])}
+- Confirmed fraud transactions: {len(fraud_flags)}
+- Date range: {results[0].get('TX_DATETIME', 'N/A')} to {results[-1].get('TX_DATETIME', 'N/A') if results else 'N/A'}"""
+            
+            return summary
+        
+        return f"Raw data: {str(snowflake_data)[:500]}"
+    
+    def _format_tools_for_llm(self, tool_results: Dict) -> str:
+        """Format tool results for LLM analysis."""
+        if not tool_results:
+            return "No additional tools executed"
+        
+        formatted = []
+        for tool_name, result in tool_results.items():
+            if isinstance(result, dict):
+                # Extract key findings from each tool
+                if "risk_score" in result:
+                    formatted.append(f"- {tool_name}: Risk score {result['risk_score']}")
+                elif "is_malicious" in result:
+                    formatted.append(f"- {tool_name}: {'Malicious' if result['is_malicious'] else 'Clean'}")
+                else:
+                    formatted.append(f"- {tool_name}: {str(result)[:100]}")
+            else:
+                formatted.append(f"- {tool_name}: {str(result)[:100]}")
+        
+        return "\n".join(formatted) if formatted else "No tool results"
+    
+    def _format_domains_for_llm(self, domain_findings: Dict) -> str:
+        """Format domain findings for LLM analysis."""
+        if not domain_findings:
+            return "No domain analysis completed"
+        
+        formatted = []
+        for domain, findings in domain_findings.items():
+            if isinstance(findings, dict):
+                risk = findings.get("risk_score", 0.0)
+                indicators = findings.get("risk_indicators", [])
+                formatted.append(f"""### {domain.title()} Domain
+- Risk Score: {risk:.2f}
+- Indicators: {', '.join(indicators[:3]) if indicators else 'None'}
+- Confidence: {findings.get('confidence', 0.0):.2f}""")
+        
+        return "\n\n".join(formatted) if formatted else "No domain findings"
+    
+    def _format_risk_indicators_for_llm(self, indicators: list) -> str:
+        """Format risk indicators for LLM analysis."""
+        if not indicators:
+            return "No specific risk indicators identified"
+        
+        unique = list(set(indicators))[:15]  # Top 15 unique indicators
+        return "\n".join([f"- {ind}" for ind in unique])
+    
+    def _parse_llm_risk_assessment(self, llm_response: str) -> Dict[str, Any]:
+        """Parse LLM response to extract risk assessment metrics."""
+        import re
+        
+        # Try to extract risk score
+        risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
+        risk_match = re.search(risk_pattern, llm_response.lower())
+        risk_score = float(risk_match.group(1)) if risk_match else 0.5
+        
+        # Try to extract confidence
+        conf_pattern = r"confidence[:\s]*(\d*\.?\d+)"
+        conf_match = re.search(conf_pattern, llm_response.lower())
+        confidence = float(conf_match.group(1)) if conf_match else 0.5
+        
+        # Extract risk factors (look for numbered or bulleted lists)
+        factors_pattern = r"(?:risk factors?|key factors?)[:\s]*([\s\S]*?)(?:reasoning|recommendation|$)"
+        factors_match = re.search(factors_pattern, llm_response.lower())
+        risk_factors = factors_match.group(1).strip() if factors_match else ""
+        
+        # Extract reasoning
+        reasoning_pattern = r"(?:reasoning|explanation)[:\s]*([\s\S]*?)(?:recommendation|$)"
+        reasoning_match = re.search(reasoning_pattern, llm_response.lower())
+        reasoning = reasoning_match.group(1).strip() if reasoning_match else llm_response
+        
+        # Extract recommendations
+        rec_pattern = r"(?:recommendation|action)[s]?[:\s]*([\s\S]*?)$"
+        rec_match = re.search(rec_pattern, llm_response.lower())
+        recommendations = rec_match.group(1).strip() if rec_match else "Monitor activity"
+        
+        return {
+            "risk_score": min(1.0, max(0.0, risk_score)),
+            "confidence": min(1.0, max(0.0, confidence)),
+            "risk_factors": risk_factors,
+            "reasoning": reasoning,
+            "recommendations": recommendations,
+            "llm_response": llm_response
+        }
+    
+    def _calculate_fallback_risk_score(self, state: InvestigationState) -> Dict[str, Any]:
+        """Calculate fallback risk score based on data when LLM fails."""
+        logger.warning("Using fallback risk calculation")
+        
+        # Extract MODEL_SCORE from Snowflake data as primary indicator
+        risk_score = 0.0
+        snowflake_data = state.get("snowflake_data", {})
+        
+        if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            results = snowflake_data["results"]
+            model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
+            if model_scores:
+                risk_score = sum(model_scores) / len(model_scores)
+        
+        # Calculate confidence based on data availability
+        data_points = 0
+        if state.get("snowflake_completed"):
+            data_points += 1
+        data_points += len(state.get("tools_used", [])) * 0.1
+        data_points += len(state.get("domains_completed", [])) * 0.2
+        
+        confidence = min(1.0, data_points / 5.0)
+        
+        return {
+            "risk_score": risk_score,
+            "confidence": confidence,
+            "risk_factors": "Fallback calculation based on MODEL_SCORE",
+            "reasoning": f"Primary risk indicator MODEL_SCORE average: {risk_score:.3f}",
+            "recommendations": "Review investigation manually due to LLM failure"
+        }
+    
+    def _generate_investigation_summary_with_llm(self, state: InvestigationState, llm_assessment: Dict[str, Any]) -> str:
+        """Generate comprehensive investigation summary with LLM assessment."""
         
         tools_used = state.get("tools_used", [])
         domains_completed = state.get("domains_completed", [])
-        risk_indicators = state.get("risk_indicators", [])
+        risk_score = llm_assessment.get("risk_score", 0.5)
+        confidence = llm_assessment.get("confidence", 0.5)
         
         summary = f"""
 # Fraud Investigation Summary
@@ -993,18 +1197,22 @@ Be efficient to prevent timeout issues."""
 **Investigation ID:** {state['investigation_id']}
 **Entity:** {state['entity_type']} - {state['entity_id']}
 
-## Risk Assessment
-- **Risk Score:** {risk_score:.2f} / 1.00
+## LLM Risk Assessment
+- **Risk Score:** {risk_score:.2f} / 1.00 (LLM-determined)
 - **Confidence:** {confidence:.2f} / 1.00
 - **Risk Level:** {self._get_risk_level(risk_score)}
+
+## LLM Analysis
+### Risk Factors
+{llm_assessment.get('risk_factors', 'No specific factors identified')}
+
+### Reasoning
+{llm_assessment.get('reasoning', 'No reasoning provided')}
 
 ## Investigation Coverage
 - **Tools Used:** {len(tools_used)} tools
 - **Domains Analyzed:** {', '.join(domains_completed)}
 - **Snowflake Analysis:** {'✅ Complete (' + str(state.get('date_range_days', 7)) + '-day)' if state.get('snowflake_completed') else '❌ Incomplete'}
-
-## Key Risk Indicators
-{self._format_risk_indicators(risk_indicators)}
 
 ## Tool Usage Summary
 - Primary Analysis: Snowflake ({state.get('date_range_days', 7)}-day lookback)
@@ -1015,8 +1223,8 @@ Be efficient to prevent timeout issues."""
 ## Domain Findings
 {self._format_domain_findings(state.get('domain_findings', {}))}
 
-## Recommendation
-{self._get_recommendation(risk_score)}
+## LLM Recommendations
+{llm_assessment.get('recommendations', self._get_recommendation(risk_score))}
 
 **Investigation Complete**
 """

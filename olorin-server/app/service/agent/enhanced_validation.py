@@ -331,6 +331,7 @@ class EnhancedInvestigationValidator:
         failures = []
         partial_success = False
         any_success = False
+        suspicious_zeros = []
         
         # Check for Snowflake data extraction issues
         snowflake_data = investigation_result.get('snowflake_data')
@@ -347,6 +348,7 @@ class EnhancedInvestigationValidator:
             for agent_name, result in agent_results.items():
                 if isinstance(result, dict):
                     status = result.get('status', '')
+                    risk_score = result.get('risk_score', None)
                     
                     # Check for explicit extraction failures
                     if 'extraction_error' in result or 'parse_error' in result:
@@ -358,12 +360,32 @@ class EnhancedInvestigationValidator:
                     elif status == 'partial':
                         partial_success = True
                     elif status == 'success':
-                        any_success = True
+                        # Check for suspicious 0.00 risk scores with "success" status
+                        if risk_score == 0.0 and agent_name in ['device', 'location', 'logs']:
+                            # Check if the findings indicate a parsing issue
+                            findings = result.get('findings', {})
+                            if isinstance(findings, dict):
+                                analysis = findings.get('analysis', {})
+                                # If analysis shows no data (all zeros), it's likely a parsing failure
+                                if all(v == 0 for v in analysis.values() if isinstance(v, (int, float))):
+                                    suspicious_zeros.append(agent_name)
+                                    failures.append(f"{agent_name}: Suspicious 0.00 risk with empty analysis (likely parsing failure)")
+                                else:
+                                    any_success = True
+                            else:
+                                any_success = True
+                        else:
+                            any_success = True
                     
                     # Check for string format issues in findings
                     findings = result.get('findings')
                     if isinstance(findings, str) and "string format" in findings.lower():
                         failures.append(f"{agent_name}: String format error in findings")
+        
+        # Check if too many agents returned suspicious zeros
+        if len(suspicious_zeros) >= 2:
+            failures.insert(0, f"CRITICAL: {len(suspicious_zeros)} agents returned 0.00 risk with empty data (parsing failure suspected)")
+            return DataExtractionStatus.FAILED, failures
         
         # Determine overall status
         if failures and not any_success:
@@ -374,7 +396,7 @@ class EnhancedInvestigationValidator:
         elif failures and (any_success or partial_success):
             return DataExtractionStatus.PARTIAL, failures
         elif any_success:
-            return DataExtractionStatus.SUCCESS, []
+            return DataExtractionStatus.SUCCESS, [] if not suspicious_zeros else failures
         else:
             return DataExtractionStatus.FAILED, ["No data successfully extracted"]
     
@@ -478,25 +500,45 @@ class EnhancedInvestigationValidator:
             Tuple of (verification_score, passed, details)
         """
         try:
+            # Check if verification model is available
+            if not hasattr(self.llm_manager, 'verification_model') or not self.llm_manager.verification_model:
+                logger.warning("Verification model not available, skipping LLM verification")
+                return None, None, None
+            
             # Prepare verification prompt
             verification_prompt = self._create_verification_prompt(
                 initial_context, investigation_result, agent_results
             )
             
-            # Call verification model
-            verification_response = await self.llm_manager.verify_with_llm(
-                verification_prompt,
-                investigation_id
-            )
+            # Call verification model directly
+            from langchain.schema import HumanMessage
+            messages = [HumanMessage(content=verification_prompt)]
             
-            # Parse verification response
-            if verification_response:
-                score = verification_response.get('confidence_score', 0.0)
+            try:
+                response = await self.llm_manager.verification_model.ainvoke(messages)
+                response_text = response.content if hasattr(response, 'content') else str(response)
+                
+                # Parse the response to extract a confidence score
+                # Look for numerical values in the response
+                import re
+                numbers = re.findall(r'(\d+\.?\d*)', response_text)
+                
+                # Try to find a score between 0 and 1 (or 0-100)
+                score = 0.5  # Default score
+                for num_str in numbers:
+                    num = float(num_str)
+                    if 0 <= num <= 1:
+                        score = num
+                        break
+                    elif 0 <= num <= 100:
+                        score = num / 100
+                        break
+                
                 passed = score >= self.verification_threshold
                 details = {
                     'model': self.llm_manager.verification_model_id,
                     'threshold': self.verification_threshold,
-                    'response': verification_response
+                    'response': response_text[:500]  # Truncate long responses
                 }
                 
                 logger.info(
@@ -505,6 +547,10 @@ class EnhancedInvestigationValidator:
                 )
                 
                 return score, passed, details
+                
+            except Exception as model_error:
+                logger.error(f"Verification model invocation failed: {model_error}")
+                return None, None, None
             
         except Exception as e:
             logger.error(f"LLM verification failed: {e}")

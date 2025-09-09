@@ -82,7 +82,8 @@ async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
     # Analyze network aspects
     network_findings = {
         "domain": "network",
-        "risk_score": 0.0,
+        "evidence": [],  # Collect evidence for LLM to analyze
+        "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
         "analysis": {}
     }
@@ -246,7 +247,8 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     device_findings = {
         "domain": "device",
-        "risk_score": 0.0,
+        "evidence": [],  # Collect evidence for LLM to analyze
+        "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
         "analysis": {}
     }
@@ -269,17 +271,40 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     if results:
         
-        # Check for multiple device IDs
+        # Collect MODEL_SCORE as evidence for LLM
+        model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
+        if model_scores:
+            avg_model_score = sum(model_scores) / len(model_scores)
+            max_model_score = max(model_scores)
+            # Store as evidence for LLM to analyze
+            device_findings["metrics"]["avg_model_score"] = avg_model_score
+            device_findings["metrics"]["max_model_score"] = max_model_score
+            device_findings["evidence"].append(f"Average MODEL_SCORE: {avg_model_score:.3f}")
+            device_findings["evidence"].append(f"Max MODEL_SCORE: {max_model_score:.3f}")
+            if avg_model_score > 0.7:
+                device_findings["risk_indicators"].append(f"High fraud model score: {avg_model_score:.3f}")
+            logger.debug(f"   📊 Device agent collected MODEL_SCORE evidence: avg={avg_model_score:.3f}, max={max_model_score:.3f}")
+        
+        # Collect device ID patterns as evidence
         device_ids = set(r.get("DEVICE_ID") for r in results if r.get("DEVICE_ID"))
+        device_findings["metrics"]["unique_device_count"] = len(device_ids)
+        device_findings["metrics"]["total_transactions"] = len(results)
+        device_findings["evidence"].append(f"Unique devices: {len(device_ids)} across {len(results)} transactions")
+        
         if len(device_ids) > 5:
             device_findings["risk_indicators"].append(f"Multiple device IDs detected: {len(device_ids)}")
-            device_findings["risk_score"] += 0.3
+            device_findings["evidence"].append(f"SUSPICIOUS: {len(device_ids)} different devices used")
         
-        # Check for user agent inconsistencies
+        device_findings["analysis"]["unique_devices"] = len(device_ids)
+        
+        # Collect user agent patterns as evidence
         user_agents = set(r.get("USER_AGENT") for r in results if r.get("USER_AGENT"))
+        device_findings["metrics"]["unique_user_agents"] = len(user_agents)
+        device_findings["evidence"].append(f"User agent variations: {len(user_agents)}")
+        
         if len(user_agents) > 10:
             device_findings["risk_indicators"].append(f"Excessive user agent variations: {len(user_agents)}")
-            device_findings["risk_score"] += 0.2
+            device_findings["evidence"].append(f"SUSPICIOUS: {len(user_agents)} different user agents detected")
         
         # Check for browser/OS mismatches
         browsers = set(r.get("BROWSER_NAME") for r in results if r.get("BROWSER_NAME"))
@@ -288,21 +313,33 @@ async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
         device_findings["analysis"]["unique_browsers"] = len(browsers)
         device_findings["analysis"]["unique_os"] = len(os_names)
         
+        device_findings["metrics"]["unique_browsers"] = len(browsers)
+        device_findings["metrics"]["unique_os"] = len(os_names)
+        device_findings["evidence"].append(f"Browser diversity: {len(browsers)} browsers, {len(os_names)} operating systems")
+        
         if len(browsers) > 3 or len(os_names) > 3:
             device_findings["risk_indicators"].append("Device fingerprint inconsistencies detected")
-            device_findings["risk_score"] += 0.2
+            device_findings["evidence"].append(f"SUSPICIOUS: High variation in browsers ({len(browsers)}) and OS ({len(os_names)})")
     
-    # Check for device spoofing patterns in tool results
+    # Collect ML anomaly detection evidence
     if "ml_anomaly_detection" in tool_results:
         anomaly_result = tool_results["ml_anomaly_detection"]
-        if isinstance(anomaly_result, dict) and anomaly_result.get("anomaly_score", 0) > 0.7:
-            device_findings["risk_indicators"].append("ML detected device anomalies")
-            device_findings["risk_score"] += 0.3
+        if isinstance(anomaly_result, dict):
+            anomaly_score = anomaly_result.get("anomaly_score", 0)
+            device_findings["metrics"]["ml_anomaly_score"] = anomaly_score
+            device_findings["evidence"].append(f"ML anomaly score: {anomaly_score:.2f}")
+            if anomaly_score > 0.7:
+                device_findings["risk_indicators"].append("ML detected device anomalies")
+                device_findings["evidence"].append(f"HIGH RISK: ML anomaly score {anomaly_score:.2f}")
     
-    device_findings["risk_score"] = min(1.0, device_findings["risk_score"])
-    device_findings["confidence"] = 0.7  # Moderate confidence for device analysis
+    # Provide evidence summary for LLM
+    device_findings["evidence_summary"] = {
+        "total_evidence_points": len(device_findings["evidence"]),
+        "risk_indicators_found": len(device_findings["risk_indicators"]),
+        "metrics_collected": len(device_findings["metrics"])
+    }
     
-    logger.info(f"✅ Device analysis complete - Risk: {device_findings['risk_score']:.2f}")
+    logger.info(f"✅ Device analysis complete - Evidence collected: {len(device_findings['evidence'])} points")
     
     return add_domain_findings(state, "device", device_findings)
 
@@ -349,7 +386,8 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     location_findings = {
         "domain": "location",
-        "risk_score": 0.0,
+        "evidence": [],  # Collect evidence for LLM to analyze
+        "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
         "analysis": {}
     }
@@ -372,6 +410,20 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     if results:
         
+        # Collect MODEL_SCORE as evidence for LLM
+        model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
+        if model_scores:
+            avg_model_score = sum(model_scores) / len(model_scores)
+            max_model_score = max(model_scores)
+            # Store as evidence for LLM to analyze
+            location_findings["metrics"]["avg_model_score"] = avg_model_score
+            location_findings["metrics"]["max_model_score"] = max_model_score
+            location_findings["evidence"].append(f"Average MODEL_SCORE: {avg_model_score:.3f}")
+            location_findings["evidence"].append(f"Max MODEL_SCORE: {max_model_score:.3f}")
+            if avg_model_score > 0.7:
+                location_findings["risk_indicators"].append(f"High fraud model score: {avg_model_score:.3f}")
+            logger.debug(f"   📊 Location agent collected MODEL_SCORE evidence: avg={avg_model_score:.3f}, max={max_model_score:.3f}")
+        
         # Check for impossible travel
         locations_by_time = []
         for r in results:
@@ -393,7 +445,7 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
             if prev_loc["country"] != curr_loc["country"]:
                 # Would need to parse timestamps properly in production
                 location_findings["risk_indicators"].append("Possible impossible travel detected")
-                location_findings["risk_score"] += 0.4
+                location_findings["risk_score"] = max(location_findings["risk_score"], 0.4)
                 break
         
         # Check for high-risk countries
@@ -402,7 +454,7 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
         
         if countries & high_risk_countries:
             location_findings["risk_indicators"].append("Activity from high-risk countries")
-            location_findings["risk_score"] += 0.3
+            location_findings["risk_score"] = max(location_findings["risk_score"], 0.3)
         
         location_findings["analysis"]["unique_countries"] = len(countries)
         location_findings["analysis"]["unique_cities"] = len(set(r.get("IP_CITY") for r in results if r.get("IP_CITY")))
@@ -459,7 +511,8 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     logs_findings = {
         "domain": "logs",
-        "risk_score": 0.0,
+        "evidence": [],  # Collect evidence for LLM to analyze
+        "metrics": {},  # Collect metrics without scoring
         "risk_indicators": [],
         "analysis": {}
     }
@@ -482,24 +535,33 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
     
     if results:
         
+        # CRITICAL: Use MODEL_SCORE as primary risk indicator when available
+        model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
+        if model_scores:
+            avg_model_score = sum(model_scores) / len(model_scores)
+            # Use the actual model score as the base risk score
+            logs_findings["risk_score"] = max(logs_findings["risk_score"], avg_model_score)
+            logs_findings["risk_indicators"].append(f"Model fraud score: {avg_model_score:.3f}")
+            logger.debug(f"   🎯 Logs agent using MODEL_SCORE: {avg_model_score:.3f}")
+        
         # Check for failed transactions
         failed_txs = [r for r in results if r.get("NSURE_LAST_DECISION") == "reject"]
         if len(failed_txs) > 5:
             logs_findings["risk_indicators"].append(f"High number of rejected transactions: {len(failed_txs)}")
-            logs_findings["risk_score"] += 0.3
+            logs_findings["risk_score"] = max(logs_findings["risk_score"], 0.3)
         
         # Check for rapid-fire transactions
         tx_times = [r.get("TX_DATETIME") for r in results if r.get("TX_DATETIME")]
         if len(tx_times) > 10:
             # In production, would calculate actual time deltas
             logs_findings["risk_indicators"].append("Potential rapid-fire transaction pattern")
-            logs_findings["risk_score"] += 0.2
+            logs_findings["risk_score"] = max(logs_findings["risk_score"], 0.2)
         
         # Check for error patterns
         error_codes = [r.get("ERROR_CODE") for r in results if r.get("ERROR_CODE")]
         if len(error_codes) > 3:
             logs_findings["risk_indicators"].append(f"Multiple error codes detected: {len(set(error_codes))}")
-            logs_findings["risk_score"] += 0.1
+            logs_findings["risk_score"] = max(logs_findings["risk_score"], 0.1)
     
     # Check Splunk/SumoLogic results
     log_tools = ["splunk_tool", "sumologic_tool"]
@@ -508,7 +570,7 @@ async def logs_agent_node(state: InvestigationState) -> Dict[str, Any]:
             result = tool_results[tool_name]
             if isinstance(result, dict) and result.get("suspicious_activity", False):
                 logs_findings["risk_indicators"].append(f"{tool_name}: Suspicious activity detected")
-                logs_findings["risk_score"] += 0.2
+                logs_findings["risk_score"] = max(logs_findings["risk_score"], 0.2)
     
     logs_findings["risk_score"] = min(1.0, logs_findings["risk_score"])
     logs_findings["confidence"] = 0.7

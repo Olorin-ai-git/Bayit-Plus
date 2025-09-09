@@ -235,15 +235,22 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
     if "risk_indicators" in findings:
         risk_indicators.extend(findings["risk_indicators"])
     
-    # Update risk score if provided
+    # Build updates
     updates = {
         "domain_findings": domain_findings,
         "domains_completed": domains_completed,
         "risk_indicators": risk_indicators
     }
     
+    # Handle both old risk_score format and new evidence-based format
     if "risk_score" in findings:
+        # Legacy format - still update for compatibility
         updates["risk_score"] = max(state.get("risk_score", 0.0), findings["risk_score"])
+    elif "metrics" in findings and "avg_model_score" in findings["metrics"]:
+        # New evidence-based format - use MODEL_SCORE as temporary risk indicator
+        # The actual risk score will be determined by LLM in the summary phase
+        model_score = findings["metrics"]["avg_model_score"]
+        updates["risk_score"] = max(state.get("risk_score", 0.0), model_score)
     
     return updates
 
@@ -251,6 +258,7 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
 def calculate_final_risk_score(state: InvestigationState) -> float:
     """
     Calculate the final risk score based on all findings.
+    NOTE: This is now a fallback - the actual risk score should come from LLM analysis.
     
     Args:
         state: Current investigation state
@@ -258,55 +266,42 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     Returns:
         Final risk score (0.0 - 1.0)
     """
+    # First check if we have an LLM-determined risk score
+    if state.get("llm_risk_score") is not None:
+        return state["llm_risk_score"]
+    
     domain_findings = state.get("domain_findings", {})
     
     if not domain_findings:
         return 0.5  # Default medium risk if no findings
     
-    # Collect all risk scores from domains
-    risk_scores = []
+    # Collect MODEL_SCORES from new evidence-based format
+    model_scores = []
     for domain, findings in domain_findings.items():
-        if isinstance(findings, dict) and "risk_score" in findings:
-            risk_scores.append(findings["risk_score"])
+        if isinstance(findings, dict):
+            # Check for legacy risk_score
+            if "risk_score" in findings:
+                model_scores.append(findings["risk_score"])
+            # Check for new metrics format
+            elif "metrics" in findings and "avg_model_score" in findings["metrics"]:
+                model_scores.append(findings["metrics"]["avg_model_score"])
     
-    if not risk_scores:
-        # Fall back to counting risk indicators
-        risk_indicators = state.get("risk_indicators", [])
-        if len(risk_indicators) > 10:
-            return 0.9
-        elif len(risk_indicators) > 5:
-            return 0.7
-        elif len(risk_indicators) > 2:
-            return 0.5
-        elif len(risk_indicators) > 0:
-            return 0.3
-        else:
-            return 0.1
+    if model_scores:
+        # Use average of MODEL_SCORES as fallback
+        return min(1.0, sum(model_scores) / len(model_scores))
     
-    # Weight different domains
-    domain_weights = {
-        "network": 0.20,
-        "device": 0.20,
-        "location": 0.15,
-        "logs": 0.15,
-        "authentication": 0.20,  # Authentication fraud is high-impact
-        "risk": 0.10  # Risk is synthetic, lower weight
-    }
-    
-    weighted_score = 0.0
-    total_weight = 0.0
-    
-    for domain, findings in domain_findings.items():
-        if isinstance(findings, dict) and "risk_score" in findings:
-            weight = domain_weights.get(domain, 0.1)
-            weighted_score += findings["risk_score"] * weight
-            total_weight += weight
-    
-    if total_weight > 0:
-        return min(1.0, weighted_score / total_weight)
-    
-    # Fallback to average
-    return min(1.0, sum(risk_scores) / len(risk_scores))
+    # Final fallback to risk indicators
+    risk_indicators = state.get("risk_indicators", [])
+    if len(risk_indicators) > 10:
+        return 0.9
+    elif len(risk_indicators) > 5:
+        return 0.7
+    elif len(risk_indicators) > 2:
+        return 0.5
+    elif len(risk_indicators) > 0:
+        return 0.3
+    else:
+        return 0.1
 
 
 def is_investigation_complete(state: InvestigationState) -> bool:
