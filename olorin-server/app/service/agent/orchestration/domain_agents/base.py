@@ -19,22 +19,38 @@ class DomainAgentBase:
     """Base class for domain analysis agents."""
     
     @staticmethod
-    def log_agent_start(domain: str, entity_type: str, entity_id: str, is_test_mode: bool) -> None:
-        """Log agent handover and initialization."""
-        logger.debug(f"{domain.upper()} AGENT HANDOVER DEBUG:")
-        logger.debug(f"   🤝 Agent handover: Orchestrator → {domain.title()} Agent")
-        logger.debug(f"   🎯 Mode: {'TEST' if is_test_mode else 'LIVE'}")
-        logger.debug(f"   🏗️  Investigation ID: {entity_id}")
-        logger.debug(f"   🎯 Entity: {entity_type} - {entity_id}")
+    def _get_domain_step(domain: str) -> str:
+        """Get step number for domain in Phase 5."""
+        domain_steps = {
+            "network": "5.2.1",
+            "device": "5.2.2", 
+            "location": "5.2.3",
+            "logs": "5.2.4",
+            "authentication": "5.2.5",
+            "risk": "5.2.6"
+        }
+        return domain_steps.get(domain.lower(), "5.2.X")
     
     @staticmethod
-    def log_context_analysis(snowflake_data: Dict[str, Any], tool_results: Dict[str, Any]) -> None:
+    def log_agent_start(domain: str, entity_type: str, entity_id: str, is_test_mode: bool) -> None:
+        """Log agent handover and initialization."""
+        step = DomainAgentBase._get_domain_step(domain)
+        logger.debug(f"[Step {step}] {domain.upper()} AGENT HANDOVER DEBUG:")
+        logger.debug(f"[Step {step}]   🤝 Agent handover: Orchestrator → {domain.title()} Agent")
+        logger.debug(f"[Step {step}]   🎯 Mode: {'TEST' if is_test_mode else 'LIVE'}")
+        logger.debug(f"[Step {step}]   🏗️  Investigation ID: {entity_id}")
+        logger.debug(f"[Step {step}]   🎯 Entity: {entity_type} - {entity_id}")
+    
+    @staticmethod
+    def log_context_analysis(snowflake_data: Dict[str, Any], tool_results: Dict[str, Any], domain: str = "unknown") -> None:
         """Log available data sources for debugging."""
-        logger.debug(f"   📊 Available data sources:")
-        logger.debug(f"      Snowflake data: {'Yes' if snowflake_data else 'No'} ({len(str(snowflake_data))} chars)")
-        logger.debug(f"      Tool results: {len(tool_results)} tools")
+        step = DomainAgentBase._get_domain_step(domain)
+        logger.debug(f"[Step {step}.1] 📊 Available data sources:")
+        logger.debug(f"[Step {step}.1]   Snowflake data: {'Yes' if snowflake_data else 'No'} ({len(str(snowflake_data))} chars)")
+        logger.debug(f"[Step {step}.1]   Tool results: {len(tool_results)} tools for category-based analysis")
         if tool_results:
-            logger.debug(f"         Tool results keys: {list(tool_results.keys())}")
+            logger.debug(f"[Step {step}.1]   Tool results keys: {list(tool_results.keys())}")
+            logger.debug(f"[Step {step}.1]   🔄 Category-based processing: Will extract domain-specific signals from all tools")
     
     @staticmethod
     def start_chain_of_thought(investigation_id: str, agent_name: str, domain: str, 
@@ -86,43 +102,61 @@ class DomainAgentBase:
         if snowflake_data:
             if isinstance(snowflake_data, dict) and "results" in snowflake_data:
                 results = snowflake_data["results"]
-                logger.debug(f"   📊 Processing {len(results)} Snowflake records for {domain} analysis")
+                # Get step prefix for domain
+                domain_steps = {
+                    "network": "5.2.1", "device": "5.2.2", "location": "5.2.3",
+                    "logs": "5.2.4", "authentication": "5.2.5", "risk": "5.2.6"
+                }
+                step = domain_steps.get(domain.lower(), "5.2.X")
+                logger.debug(f"[Step {step}]   📊 Processing {len(results)} Snowflake records for {domain} analysis")
             elif isinstance(snowflake_data, str):
-                logger.warning(f"⚠️ {domain.title()} Agent: Snowflake data is string format, cannot extract structured results")
-                logger.debug(f"   String content preview: {snowflake_data[:200]}...")
+                step = DomainAgentBase._get_domain_step(domain)
+                logger.warning(f"[Step {step}] ⚠️ {domain.title()} Agent: Snowflake data is string format, cannot extract structured results")
+                logger.debug(f"[Step {step}]   String content preview: {snowflake_data[:200]}...")
             else:
-                logger.warning(f"⚠️ {domain.title()} Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
-                logger.debug(f"   Data content preview: {str(snowflake_data)[:200]}...")
+                step = DomainAgentBase._get_domain_step(domain)
+                logger.warning(f"[Step {step}] ⚠️ {domain.title()} Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
+                logger.debug(f"[Step {step}]   Data content preview: {str(snowflake_data)[:200]}...")
         
         return results
     
     @staticmethod
     def process_model_scores(results: list, findings: Dict[str, Any], domain: str) -> None:
-        """Process MODEL_SCORE from Snowflake results."""
+        """
+        Process Snowflake results for domain analysis.
+        
+        CRITICAL: MODEL_SCORE is COMPLETELY IGNORED per system architecture.
+        MODEL_SCORE is only used for initial population sorting, not investigation scoring.
+        Domain agents start from neutral baseline and analyze raw data independently.
+        """
         if not results:
             return
             
-        logger.debug(f"   📊 Processing {len(results)} records for {domain} risk calculation")
+        step = DomainAgentBase._get_domain_step(domain)
+        logger.debug(f"[Step {step}]   📊 Processing {len(results)} records for {domain} anomaly detection")
         
+        # Log data availability for debugging but DO NOT use MODEL_SCORE in calculations
         for idx, r in enumerate(results[:3]):  # Log first 3 records
             model_score = r.get("MODEL_SCORE")
-            logger.debug(f"      Record {idx+1}: MODEL_SCORE = {model_score} (type: {type(model_score)})")
-            if model_score:
-                try:
-                    float_score = float(model_score)
-                    logger.debug(f"      Converted to float: {float_score}")
-                except (ValueError, TypeError) as e:
-                    logger.error(f"      ❌ Failed to convert MODEL_SCORE to float: {e}")
+            logger.debug(f"[Step {step}]      Record {idx+1}: Raw data available (MODEL_SCORE present but ignored: {model_score is not None})")
+            logger.debug(f"[Step {step}]      Available fields for analysis: {list(r.keys())}")
         
-        model_scores = [float(r.get("MODEL_SCORE", 0)) for r in results if "MODEL_SCORE" in r]
-        if model_scores:
-            avg_model_score = sum(model_scores) / len(model_scores)
-            findings["risk_score"] = max(findings["risk_score"], avg_model_score)
-            findings["risk_indicators"].append(f"Model fraud score: {avg_model_score:.3f}")
-            
-            # Store metrics for LLM analysis
-            findings["metrics"]["avg_model_score"] = avg_model_score
-            findings["metrics"]["model_scores_count"] = len(model_scores)
+        # CRITICAL ARCHITECTURAL FIX: 
+        # 1. Start with ZERO baseline (0.0) - truly neutral, no pre-existing assumptions
+        # 2. COMPLETELY IGNORE MODEL_SCORE - it's only for population sorting
+        # 3. Let LLM agents analyze raw patterns and determine risk independently
+        
+        findings["risk_score"] = 0.0  # Zero baseline - build risk score from evidence only
+        
+        logger.debug(f"[Step {step}]   🎯 CORRECTED: Starting {domain} analysis from ZERO baseline (0.0)")
+        logger.debug(f"[Step {step}]   🚫 MODEL_SCORE completely ignored per system architecture")
+        logger.debug(f"[Step {step}]   🧠 LLM will analyze raw Snowflake patterns independently")
+        
+        # Store only record count for analysis - no MODEL_SCORE bias
+        findings["metrics"]["snowflake_records_count"] = len(results)
+        
+        # Remove any MODEL_SCORE bias from risk indicators
+        # Domain agents will add legitimate risk indicators based on actual pattern analysis
     
     @staticmethod
     def finalize_findings(findings: Dict[str, Any], snowflake_data: Dict[str, Any], 
@@ -138,25 +172,48 @@ class DomainAgentBase:
         ])
         findings["confidence"] = min(1.0, data_sources / 4.0)
         
-        logger.info(f"✅ {domain.title()} analysis complete - Risk: {findings['risk_score']:.2f}")
+        step = DomainAgentBase._get_domain_step(domain)
+        logger.info(f"[Step {step}] ✅ {domain.title()} analysis complete - Risk: {findings['risk_score']:.2f}")
         
         # DEBUG: Analysis completion
-        logger.debug(f"{domain.upper()} AGENT COMPLETION DEBUG:")
-        logger.debug(f"   ⏱️  Analysis duration: {analysis_duration:.3f}s")
-        logger.debug(f"   🎯 Risk score calculated: {findings['risk_score']:.2f}")
-        logger.debug(f"   🔍 Risk indicators found: {len(findings['risk_indicators'])}")
+        # step already defined above
+        logger.debug(f"[Step {step}] {domain.upper()} AGENT COMPLETION DEBUG:")
+        logger.debug(f"[Step {step}]   ⏱️  Analysis duration: {analysis_duration:.3f}s")
+        logger.debug(f"[Step {step}]   🎯 Risk score calculated: {findings['risk_score']:.2f}")
+        logger.debug(f"[Step {step}]   🔍 Risk indicators found: {len(findings['risk_indicators'])}")
         for i, indicator in enumerate(findings['risk_indicators'][:3]):  # Show first 3
-            logger.debug(f"      Risk {i+1}: {indicator}")
+            logger.debug(f"[Step {step}]      Risk {i+1}: {indicator}")
         if len(findings['risk_indicators']) > 3:
-            logger.debug(f"      ... and {len(findings['risk_indicators']) - 3} more")
-        logger.debug(f"   📊 Confidence level: {findings.get('confidence', 0):.2f}")
+            logger.debug(f"[Step {step}]      ... and {len(findings['risk_indicators']) - 3} more")
+        logger.debug(f"[Step {step}]   📊 Confidence level: {findings.get('confidence', 0):.2f}")
+        logger.debug(f"[Step {step}]   🧠 Evidence points collected: {len(findings.get('evidence', []))}")
+        logger.debug(f"[Step {step}]   🔄 Category-based signals processed from {_count_tool_metrics(findings)} tools")
+
+
+def _count_tool_metrics(findings: Dict[str, Any]) -> int:
+    """Count how many tools provided metrics during category-based analysis."""
+    metrics = findings.get("metrics", {})
+    tool_names = set()
+    
+    # Look for tool-specific metrics (those with _evidence_count, _risk_level, _threat_level suffixes)
+    for key in metrics.keys():
+        if any(suffix in key for suffix in ["_evidence_count", "_risk_level", "_threat_level"]):
+            # Extract tool name (everything before the suffix)
+            for suffix in ["_evidence_count", "_risk_level", "_threat_level"]:
+                if suffix in key:
+                    tool_name = key.split(suffix)[0]
+                    tool_names.add(tool_name)
+                    break
+    
+    return len(tool_names)
 
 
 def log_agent_handover_complete(domain: str, findings: Dict[str, Any]) -> None:
     """Log agent handover completion back to orchestrator."""
-    logger.debug(f"   🤝 Agent handover: {domain.title()} Agent → Orchestrator")
-    logger.debug(f"   🎯 Findings delivered: {len(findings.get('risk_indicators', []))} indicators")
-    logger.debug(f"   🧠 Chain of thought: Analysis complete, control returned to orchestrator")
+    step = DomainAgentBase._get_domain_step(domain)
+    logger.debug(f"[Step {step}]   🤝 Agent handover: {domain.title()} Agent → Orchestrator")
+    logger.debug(f"[Step {step}]   🎯 Findings delivered: {len(findings.get('risk_indicators', []))} indicators")
+    logger.debug(f"[Step {step}]   🧠 Chain of thought: Analysis complete, control returned to orchestrator")
 
 
 def complete_chain_of_thought(process_id: str, findings: Dict[str, Any], domain: str) -> None:
