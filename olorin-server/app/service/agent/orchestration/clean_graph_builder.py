@@ -20,7 +20,7 @@ from app.service.agent.orchestration.state_schema import (
     is_investigation_complete
 )
 from app.service.agent.orchestration.orchestrator_agent import orchestrator_node
-from app.service.agent.orchestration.domain_agents_clean import (
+from app.service.agent.orchestration.domain_agents import (
     network_agent_node,
     device_agent_node,
     location_agent_node,
