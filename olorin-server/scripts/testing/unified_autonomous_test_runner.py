@@ -121,6 +121,7 @@ try:
     from app.service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
     from app.service.logging.investigation_folder_manager import InvestigationMode
     from app.service.logging.journey_tracker import get_journey_tracker
+    from app.service.logging.server_log_capture import get_server_log_capture
     from app.service.agent.chain_of_thought_logger import ChainOfThoughtLogger, ReasoningType
     
     # Import enhanced validation system
@@ -712,6 +713,9 @@ class UnifiedAutonomousTestRunner:
         self.chain_of_thought_logger = ChainOfThoughtLogger()
         self.scenario_generator = RealScenarioGenerator() if RealScenarioGenerator else None
         
+        # Initialize server log capture
+        self.server_log_capture = get_server_log_capture()
+        
         # Data from Snowflake or CSV
         self.snowflake_entities: List[Dict] = []  # High-risk entities from Snowflake
         self.csv_transactions: List[Dict] = []  # Deprecated - for backward compatibility
@@ -1075,6 +1079,10 @@ class UnifiedAutonomousTestRunner:
             
             self.logger.info(f"📁 Investigation folder: {investigation_folder}")
             
+            # Start server log capture for this investigation
+            self.server_log_capture.start_capture(investigation_id, investigation_folder)
+            self.logger.info(f"🖥️ Server log capture started for investigation: {investigation_id}")
+            
             # Update log file location to be inside the investigation folder
             self._update_log_file_location(str(investigation_folder))
             
@@ -1236,6 +1244,13 @@ class UnifiedAutonomousTestRunner:
                 final_status="completed"
             )
             
+            # Stop server log capture and save to investigation folder
+            server_logs_file = self.server_log_capture.stop_capture(investigation_id)
+            if server_logs_file:
+                self.logger.info(f"🖥️ Server logs saved to: {server_logs_file}")
+            else:
+                self.logger.warning(f"⚠️ Server log capture was not active for investigation: {investigation_id}")
+            
             # Complete chain of thought tracking
             self.chain_of_thought_logger.complete_agent_thinking(
                 process_id=self.orchestrator_thought_process_id,
@@ -1288,6 +1303,13 @@ class UnifiedAutonomousTestRunner:
                         investigation_id, 
                         final_status="failed"
                     )
+                    
+                    # Stop server log capture and save to investigation folder
+                    server_logs_file = self.server_log_capture.stop_capture(investigation_id)
+                    if server_logs_file:
+                        self.logger.info(f"🖥️ Server logs saved to: {server_logs_file}")
+                    else:
+                        self.logger.warning(f"⚠️ Server log capture was not active for investigation: {investigation_id}")
                     
                     # Complete chain of thought tracking for failed investigation
                     if hasattr(self, 'orchestrator_thought_process_id'):
@@ -2694,12 +2716,15 @@ class UnifiedAutonomousTestRunner:
                 if i == 0 and result_data.get("investigation_folder"):
                     investigation_folder = result_data["investigation_folder"]
             
-            # Determine output directory - prefer investigation folder over default
+            # Check if investigation folder already has a comprehensive report
             if investigation_folder and Path(investigation_folder).exists():
-                # Use the investigation folder for HTML report
-                output_dir = Path(investigation_folder)
-                self.logger.info(f"📁 Using investigation folder for HTML report: {output_dir}")
-            elif self.config.output_dir == ".":
+                comprehensive_report = Path(investigation_folder) / "comprehensive_investigation_report.html"
+                if comprehensive_report.exists():
+                    self.logger.info(f"✅ Using existing comprehensive investigation report: {comprehensive_report}")
+                    return str(comprehensive_report.absolute())
+            
+            # Determine output directory for standalone test reports
+            if self.config.output_dir == ".":
                 # Create centralized reports directory under logs (fallback)
                 reports_dir = Path("logs/reports")
                 reports_dir.mkdir(parents=True, exist_ok=True)
@@ -2714,7 +2739,7 @@ class UnifiedAutonomousTestRunner:
             html_filename = f"unified_test_report_{timestamp}.html"
             html_path = output_dir / html_filename
             
-            # Generate report using unified system
+            # Generate standalone test report using unified system
             generated_path = unified_generator.generate_report(
                 data_source=test_results,
                 data_type=DataSourceType.TEST_RESULTS,
@@ -2723,7 +2748,7 @@ class UnifiedAutonomousTestRunner:
                 theme="professional"
             )
             
-            self.logger.info(f"📊 Unified HTML report generated: {generated_path}")
+            self.logger.info(f"📊 Standalone test report generated: {generated_path}")
             return str(Path(generated_path).absolute())
             
         except Exception as e:

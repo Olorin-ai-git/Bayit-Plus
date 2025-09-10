@@ -151,7 +151,7 @@ async def list_tools(category: Optional[str] = None):
                     display_name=display_name,
                     description=tool.description,
                     category=tool_category,
-                    schema=(
+                    tool_schema=(
                         tool.args_schema.model_json_schema() if tool.args_schema else {}
                     ),
                 )
@@ -185,7 +185,7 @@ async def list_olorin_tools():
                     display_name=display_name,
                     description=tool.description,
                     category="olorin",
-                    schema=(
+                    tool_schema=(
                         tool.args_schema.model_json_schema() if tool.args_schema else {}
                     ),
                 )
@@ -321,7 +321,7 @@ async def get_tools_by_categories():
                 display_name=display_name,
                 description=tool.description,
                 category=tool_category,
-                schema=tool.args_schema.model_json_schema() if tool.args_schema else {},
+                tool_schema=tool.args_schema.model_json_schema() if tool.args_schema else {},
             )
 
             # Categorize into Olorin vs MCP

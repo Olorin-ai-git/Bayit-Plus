@@ -85,16 +85,25 @@ class RealSnowflakeClient:
                 if self.authenticator and self.authenticator != 'snowflake':
                     conn_params['authenticator'] = self.authenticator
                 
+                logger.info(f"🔗 Initiating Snowflake connection...")
+                logger.info(f"   Account: {self.account}")
+                logger.info(f"   User: {self.user}")
+                logger.info(f"   Database: {self.database}")
+                logger.info(f"   Schema: {self.schema}")
+                logger.info(f"   Warehouse: {self.warehouse}")
+                logger.info(f"   Timeout: {self.query_timeout}s")
+                logger.info(f"   This may take 30-60 seconds...")
+                
                 logger.info(f"Connecting to Snowflake account: {self.account}")
                 self.connection = snowflake.connector.connect(**conn_params)
                 self.cursor = self.connection.cursor()
-                logger.info(f"Successfully connected to Snowflake: {self.database}.{self.schema}")
+                logger.info(f"✅ Successfully connected to Snowflake: {self.database}.{self.schema}")
                 
             except ImportError:
                 logger.error("snowflake-connector-python not installed. Run: poetry add snowflake-connector-python")
                 raise
             except Exception as e:
-                logger.error(f"Failed to connect to Snowflake: {e}")
+                logger.error(f"❌ Failed to connect to Snowflake: {e}")
                 raise
         
         return self.connection

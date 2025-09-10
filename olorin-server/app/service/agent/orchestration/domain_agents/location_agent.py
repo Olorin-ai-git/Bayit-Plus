@@ -60,16 +60,20 @@ async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
         
         # Analyze high-risk countries
         _analyze_high_risk_countries(results, location_findings)
-        
-        # Analyze geographic diversity
-        _analyze_geographic_diversity(results, location_findings)
     else:
         # Handle case where Snowflake data format is problematic
         if isinstance(snowflake_data, str):
             location_findings["risk_indicators"].append("Snowflake data in non-structured format")
     
-    # Analyze geolocation and travel intelligence
+    # Analyze geolocation and travel intelligence FIRST to populate evidence
     _analyze_geolocation_intelligence(tool_results, location_findings)
+    
+    # Analyze geographic diversity AFTER processing tool results (for fallback data)
+    if results:
+        _analyze_geographic_diversity(results, location_findings)
+    else:
+        # No Snowflake results, but we might have tool results now
+        _analyze_geographic_diversity([], location_findings)
     
     # Add evidence summary
     location_findings["evidence_summary"] = {
@@ -157,8 +161,14 @@ def _analyze_high_risk_countries(results: list, findings: Dict[str, Any]) -> Non
 
 def _analyze_geographic_diversity(results: list, findings: Dict[str, Any]) -> None:
     """Analyze geographic diversity patterns."""
+    # Primary attempt: use Snowflake data
     countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
     cities = set(r.get("IP_CITY") for r in results if r.get("IP_CITY"))
+    
+    # Fallback: extract from tool results if Snowflake data is empty
+    if not countries and not cities:
+        logger.debug("[Step 5.2.3.1] 🔄 Snowflake geographic data empty, attempting extraction from tool results")
+        countries, cities = _extract_geographic_data_from_findings(findings)
     
     findings["analysis"]["unique_countries"] = len(countries)
     findings["analysis"]["unique_cities"] = len(cities)
@@ -166,7 +176,10 @@ def _analyze_geographic_diversity(results: list, findings: Dict[str, Any]) -> No
     findings["metrics"]["unique_countries"] = len(countries)
     findings["metrics"]["unique_cities"] = len(cities)
     
-    findings["evidence"].append(f"Geographic spread: {len(cities)} cities across {len(countries)} countries")
+    if countries or cities:
+        findings["evidence"].append(f"Geographic spread: {len(cities)} cities across {len(countries)} countries")
+    else:
+        findings["evidence"].append("Geographic data: No location information available from any source")
     
     if len(countries) > 5:
         findings["risk_indicators"].append(f"High country diversity: {len(countries)} countries")
@@ -210,7 +223,13 @@ def _extract_location_signals(tool_name: str, result: Dict[str, Any]) -> Dict[st
     location_indicators = [
         "country", "city", "region", "latitude", "longitude", "timezone",
         "travel_risk", "high_risk_location", "vpn_location", "proxy_location",
-        "tor_exit", "anonymous_proxy", "hosting_provider", "datacenter"
+        "tor_exit", "anonymous_proxy", "hosting_provider", "datacenter",
+        # VirusTotal API fields
+        "country_code", "continent", "as_owner", "network",
+        # AbuseIPDB fields
+        "countryCode", "countryName", "isp", "domain", "usage_type",
+        # Shodan fields
+        "country_name", "city_name", "region_code", "org", "isp"
     ]
     
     # Risk score fields for locations
@@ -314,6 +333,46 @@ def _process_location_signals(tool_name: str, signals: Dict[str, Any], findings:
         logger.debug(f"[Step 5.2.3.3]   ✅ {tool_name}: Processed {evidence_count} location signals, risk level: {location_risk_level:.2f}")
     else:
         logger.debug(f"[Step 5.2.3.3]   ➖ {tool_name}: No actionable location signals found")
+
+
+def _extract_geographic_data_from_findings(findings: Dict[str, Any]) -> tuple[set, set]:
+    """Extract geographic data from existing findings (evidence from tool results)."""
+    countries = set()
+    cities = set()
+    
+    # Look through evidence for geographic information
+    for evidence in findings.get("evidence", []):
+        if isinstance(evidence, str):
+            evidence_lower = evidence.lower()
+            # Look for tool-specific location patterns
+            if "country" in evidence_lower:
+                # Extract country information from evidence strings
+                if ":" in evidence:
+                    parts = evidence.split(":")
+                    if len(parts) > 1:
+                        location_data = parts[1].strip()
+                        if location_data and location_data != "None":
+                            countries.add(location_data)
+            
+            if "city" in evidence_lower:
+                # Extract city information from evidence strings
+                if ":" in evidence:
+                    parts = evidence.split(":")
+                    if len(parts) > 1:
+                        location_data = parts[1].strip()
+                        if location_data and location_data != "None":
+                            cities.add(location_data)
+    
+    # Look through metrics for location data
+    metrics = findings.get("metrics", {})
+    for key, value in metrics.items():
+        if "country" in key.lower() and isinstance(value, str) and value:
+            countries.add(value)
+        elif "city" in key.lower() and isinstance(value, str) and value:
+            cities.add(value)
+    
+    logger.debug(f"[Step 5.2.3.1] 📍 Extracted from findings: {len(countries)} countries, {len(cities)} cities")
+    return countries, cities
 
 
 def _normalize_location_score(score_type: str, value: float) -> float:

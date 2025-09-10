@@ -71,10 +71,16 @@ class SecretManagerClient:
     def _initialize_client(self):
         """Initialize the Secret Manager client with error handling."""
         try:
+            logger.info(f"🔐 Initializing Google Cloud Secret Manager client...")
+            logger.info(f"   Project: {self.project_id}")
+            logger.info(f"   Cache TTL: {self.cache_ttl} seconds")
+            logger.info(f"   This requires GCP credentials to be configured...")
+            logger.info(f"   Connection may take 10-30 seconds...")
+            
             self._client = secretmanager.SecretManagerServiceClient()
-            logger.info(f"Secret Manager client initialized for project: {self.project_id}")
+            logger.info(f"✅ Secret Manager client initialized for project: {self.project_id}")
         except Exception as e:
-            logger.error(f"Failed to initialize Secret Manager client - Firebase Secrets Manager is required: {e}")
+            logger.error(f"❌ Failed to initialize Secret Manager client - Firebase Secrets Manager is required: {e}")
             raise ValueError(f"Firebase Secret Manager client initialization failed: {e}")
     
     def get_secret(self, secret_name: str, version: str = "latest") -> Optional[str]:
@@ -117,6 +123,13 @@ class SecretManagerClient:
             # Build the resource name using Firebase format
             name = f"projects/{self.project_id}/secrets/{firebase_secret_name}/versions/{version}"
             
+            logger.info(f"🔐 Attempting to retrieve secret from Firebase Secret Manager...")
+            logger.info(f"   Project: {self.project_id}")
+            logger.info(f"   Secret: {firebase_secret_name}")
+            logger.info(f"   Version: {version}")
+            logger.info(f"   Full path: {name}")
+            logger.info(f"   This may take 10-30 seconds...")
+            
             # Access the secret
             response = self._client.access_secret_version(request={"name": name})
             secret_value = response.payload.data.decode("UTF-8")
@@ -137,8 +150,14 @@ class SecretManagerClient:
             logger.error(f"Permission denied accessing secret {firebase_secret_name} (original: {secret_name}) in project {self.project_id}")
             return None
             
+        except google_exceptions.DeadlineExceeded:
+            logger.error(f"⏰ Timeout retrieving secret {firebase_secret_name} (original: {secret_name}) from Secret Manager")
+            logger.error("   This usually indicates network connectivity issues or service unavailability")
+            return None
+            
         except Exception as e:
-            logger.error(f"Error retrieving secret {firebase_secret_name} (original: {secret_name}) from Secret Manager: {e}")
+            logger.error(f"❌ Error retrieving secret {firebase_secret_name} (original: {secret_name}) from Secret Manager: {e}")
+            logger.error(f"   Error type: {type(e).__name__}")
             return None
     
     def _convert_to_firebase_format(self, secret_name: str) -> str:

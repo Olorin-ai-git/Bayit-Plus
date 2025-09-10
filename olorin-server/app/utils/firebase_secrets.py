@@ -63,6 +63,14 @@ def _get_secret_via_firebase_cli_only(secret_name: str) -> Optional[str]:
         # Execute firebase functions:secrets:access command
         # This command ALWAYS gets the latest version from Firebase
         cmd = ['firebase', 'functions:secrets:access', secret_name, '--project', project_id]
+        
+        logger.info(f"🔥 Attempting to retrieve secret via Firebase CLI...")
+        logger.info(f"   Project: {project_id}")
+        logger.info(f"   Secret: {secret_name}")
+        logger.info(f"   Command: {' '.join(cmd)}")
+        logger.info(f"   Timeout: 30 seconds")
+        logger.info(f"   This requires Firebase CLI and authentication...")
+        
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         
         if result.returncode == 0:

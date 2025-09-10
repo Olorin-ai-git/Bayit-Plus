@@ -564,21 +564,34 @@ class AutonomousInvestigationLogger:
                 _get_bridge_logger().warning(f"Investigation folder not found for {investigation_id}")
                 return
             
-            # Try to use the enhanced report generator first
+            # Generate comprehensive HTML report using the unified generator
             try:
-                from ..reporting import generate_report_for_folder
+                from ..reporting.comprehensive_investigation_report import generate_comprehensive_investigation_report
                 
-                # Generate comprehensive HTML report using the enhanced generator
-                report_path = generate_report_for_folder(
-                    folder_path=folder_path,
-                    output_path=folder_path / "investigation_report.html",
-                    title=f"Investigation Report - {investigation_id}"
+                # Generate single comprehensive report that includes all investigation data
+                report_path = generate_comprehensive_investigation_report(
+                    investigation_folder=folder_path,
+                    output_path=folder_path / "comprehensive_investigation_report.html",
+                    title=f"Comprehensive Investigation Report - {investigation_id}"
                 )
-                _get_bridge_logger().info(f"Generated enhanced HTML report: {report_path}")
+                _get_bridge_logger().info(f"✅ Generated comprehensive HTML report: {report_path}")
+                
+                # Remove old report files to avoid confusion
+                old_reports = [
+                    folder_path / "investigation_report.html",
+                    folder_path / "unified_test_report.html"
+                ]
+                for old_report in old_reports:
+                    if old_report.exists():
+                        try:
+                            old_report.unlink()
+                            _get_bridge_logger().debug(f"🗑️ Removed old report: {old_report}")
+                        except Exception as e:
+                            _get_bridge_logger().warning(f"Failed to remove old report {old_report}: {e}")
                 
             except ImportError as import_error:
-                # Fallback to simple generator if enhanced generator is not available
-                _get_bridge_logger().warning(f"Enhanced report generator not available, using simple generator: {import_error}")
+                # Fallback to simple generator if comprehensive generator is not available
+                _get_bridge_logger().warning(f"Comprehensive report generator not available, using simple generator: {import_error}")
                 html_content = self._create_investigation_html_report(folder_path)
                 
                 # Save HTML report to investigation folder

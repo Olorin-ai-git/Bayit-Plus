@@ -924,8 +924,8 @@ Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich da
         
         domains_completed = state.get("domains_completed", [])
         orchestrator_loops = state.get("orchestrator_loops", 0)
-        min_domains_required = 3
-        max_orchestrator_loops = 10
+        min_domains_required = 5  # Require at least 5 domains (network, device, location, logs, authentication)
+        max_orchestrator_loops = 15  # Allow more loops for complete analysis
         
         logger.debug(f"[SAFETY-CHECK-5] 🔒 DOMAIN ANALYSIS SAFETY CHECK (LIVE MODE)")
         logger.debug(f"[SAFETY-CHECK-5]   Domains completed: {domains_completed}")

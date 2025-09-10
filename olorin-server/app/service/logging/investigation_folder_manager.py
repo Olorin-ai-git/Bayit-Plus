@@ -158,6 +158,7 @@ class InvestigationFolderManager:
             "autonomous_log": folder_path / "autonomous_activities.jsonl",
             "journey_log": folder_path / "journey_tracking.json",
             "metadata": folder_path / "metadata.json",
+            "server_logs": folder_path / "server_logs",
             "results_dir": folder_path / "results"
         }
     

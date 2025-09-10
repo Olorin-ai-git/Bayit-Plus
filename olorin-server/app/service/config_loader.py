@@ -53,7 +53,15 @@ class ConfigLoader:
             else:
                 logger.warning(f"No .env file found at {env_path}")
             
-            self.secret_manager = get_secret_manager()
+            # Initialize secret manager only if Firebase secrets are enabled
+            use_firebase_secrets = os.getenv('USE_FIREBASE_SECRETS', 'true').lower() == 'true'
+            if use_firebase_secrets:
+                self.secret_manager = get_secret_manager()
+                logger.info("Firebase Secret Manager enabled")
+            else:
+                self.secret_manager = None
+                logger.info("Firebase Secret Manager disabled - using .env only")
+                
             self.env = os.getenv("APP_ENV", "local")
             logger.info(f"ConfigLoader initialized for environment: {self.env}")
             ConfigLoader._initialized = True
@@ -71,9 +79,16 @@ class ConfigLoader:
         # Priority 1: Check .env file first
         value = os.getenv(secret_path)
         if value:
+            logger.debug(f"✅ Using .env value for {secret_path}")
             return value
         
-        # Priority 2: Try Firebase Secret Manager
+        # Priority 2: Try Firebase Secret Manager (if enabled)
+        if not self.secret_manager:
+            logger.debug(f"❌ Firebase secrets disabled, {secret_path} not found in .env")
+            return None
+            
+        logger.info(f"⚠️  Secret '{secret_path}' not found in .env, attempting Firebase fallback...")
+        
         # Try environment-specific secret first
         env_secret_path = f"{self.env}/{secret_path}"
         value = self.secret_manager.get_secret(env_secret_path)
