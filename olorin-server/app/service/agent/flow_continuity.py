@@ -585,7 +585,8 @@ class FlowContinuityManager:
         
         for agent_type, results in completed_agents.items():
             confidence = results.get("confidence_score", 0.5)
-            indicators[f"{agent_type.value}_confidence"] = confidence
+            agent_name = agent_type.value if hasattr(agent_type, 'value') else str(agent_type)
+            indicators[f"{agent_name}_confidence"] = confidence
         
         # Calculate overall confidence
         if indicators:

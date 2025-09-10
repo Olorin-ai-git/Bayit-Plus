@@ -332,7 +332,8 @@ def convert_legacy_response(
         "risk_aggregation": "risk"  # Map risk_aggregation to risk
     }
     
-    schema_value = agent_type_mapping.get(agent_type.value, "risk")
+    agent_type_str = agent_type.value if hasattr(agent_type, 'value') else str(agent_type)
+    schema_value = agent_type_mapping.get(agent_type_str, "risk")
     schema_agent_type = SchemaAgentType(schema_value)
     risk_result = validator.extract_risk_score(
         legacy_response, 

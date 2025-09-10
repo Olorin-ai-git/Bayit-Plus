@@ -641,14 +641,14 @@ The `.env` file controls all aspects of the Snowflake POC. Here's what you can c
 SELECTED_MODEL=claude-opus-4-1-20250805
 
 # Verification model for dual-model verification system
-VERIFICATION_MODEL=gpt-5-chat-latest
+LLM_VERIFICATION_MODEL=gpt-5-chat-latest
 
 # ============================================
 # LLM VERIFICATION SYSTEM
 # ============================================
 
 # Master switch for verification system (true/false)
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 
 # Verification mode
 # - blocking: Synchronous verification with automatic retries on failure
@@ -668,7 +668,7 @@ VERIFICATION_MAX_RETRIES=1
 
 # Model to use for verification (can be any supported model)
 # Examples: claude-opus-4.1, gpt-4-turbo, gpt-5-chat-latest
-VERIFICATION_MODEL_NAME=claude-opus-4.1
+LLM_VERIFICATION_MODEL_NAME=claude-opus-4.1
 ```
 
 ### Essential Snowflake Configuration
@@ -854,14 +854,14 @@ The LLM Verification System provides dual-model verification for enhanced reliab
 #### Basic Setup
 ```bash
 # Enable verification with default settings
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 VERIFICATION_MODE=blocking
 ```
 
 #### Production Configuration
 ```bash
 # High-reliability production setup
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 VERIFICATION_MODE=blocking
 VERIFICATION_SAMPLE_PERCENT=100    # Verify all requests
 VERIFICATION_THRESHOLD_DEFAULT=90   # Strict threshold
@@ -871,7 +871,7 @@ VERIFICATION_MAX_RETRIES=2          # Allow 2 retry attempts
 #### Testing/Development Configuration
 ```bash
 # Shadow mode for monitoring without blocking
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 VERIFICATION_MODE=shadow
 VERIFICATION_SAMPLE_PERCENT=10     # Sample 10% of requests
 VERIFICATION_THRESHOLD_DEFAULT=75  # Lower threshold for testing
@@ -880,7 +880,7 @@ VERIFICATION_THRESHOLD_DEFAULT=75  # Lower threshold for testing
 #### Gradual Rollout Configuration
 ```bash
 # Start with shadow mode and low sampling
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 VERIFICATION_MODE=shadow
 VERIFICATION_SAMPLE_PERCENT=5      # Start with 5%
 
@@ -968,7 +968,7 @@ The system tracks:
 - Check verification model response times
 
 **Issue**: Verification always passes
-- Verify that VERIFICATION_ENABLED=true
+- Verify that LLM_VERIFICATION_ENABLED=true
 - Check API keys are configured correctly
 - Review threshold (may be too lenient)
 

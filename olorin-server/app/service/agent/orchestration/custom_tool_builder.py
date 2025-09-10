@@ -538,7 +538,7 @@ class InvestigationToolBuilder:
 
 
 # Example tool implementations
-def analyze_device_fingerlogger.info(fingerprint: str, metadata: dict = None) -> dict:
+def analyze_device_fingerprint(fingerprint: str, metadata: dict = None) -> dict:
     """Example implementation of device fingerprint analysis."""
     # Simulate analysis
     risk_score = 0.3

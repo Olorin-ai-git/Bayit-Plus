@@ -29,35 +29,17 @@ logger = logging.getLogger(__name__)
 _autonomous_llm = None
 
 def get_autonomous_llm():
-    """Get or create the autonomous LLM with Firebase secrets integration ONLY."""
+    """Get or create the autonomous LLM using the configured SELECTED_MODEL."""
     global _autonomous_llm
     
     if _autonomous_llm is None:
-        # Get Firebase secrets integration - REQUIRED, no fallback
-        try:
-            from app.utils.firebase_secrets import get_firebase_secret
-        except ImportError:
-            logger.error("Firebase secrets module not available - cannot initialize LLM")
-            raise RuntimeError("Firebase secrets integration is required for Anthropic API key")
+        from app.service.llm_manager import get_llm_manager
         
-        settings = get_settings_for_env()
+        # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
+        llm_manager = get_llm_manager()
+        _autonomous_llm = llm_manager.get_selected_model()
         
-        # ONLY use Firebase secrets - NO environment variable fallback
-        api_key = get_firebase_secret(settings.anthropic_api_key_secret)
-        
-        if not api_key:
-            logger.error(f"Anthropic API key not found in Firebase secrets (secret name: {settings.anthropic_api_key_secret})")
-            raise RuntimeError(f"Anthropic API key must be configured in Firebase Secrets Manager as '{settings.anthropic_api_key_secret}'")
-        
-        _autonomous_llm = ChatAnthropic(
-            api_key=api_key,
-            model="claude-opus-4-1-20250805",  # Claude Opus 4.1 - correct model name
-            temperature=0.1,  # Lower temperature for more focused decision making
-            max_tokens=8090,  # Larger context for reasoning
-            timeout=90,  # Longer timeout for complex reasoning with Anthropic
-        )
-        
-        logger.info(f"Initialized autonomous LLM with API key from Firebase secrets (secret: {settings.anthropic_api_key_secret})")
+        logger.info("Initialized autonomous LLM using configured SELECTED_MODEL")
     
     return _autonomous_llm
 

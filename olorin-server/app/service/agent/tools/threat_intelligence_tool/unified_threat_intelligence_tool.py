@@ -14,6 +14,7 @@ from enum import Enum
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.enhanced_tool_execution_logger import get_tool_execution_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -453,16 +454,79 @@ class UnifiedThreatIntelligenceTool(BaseTool):
         correlation_level: str = "basic",
         **kwargs
     ) -> str:
-        """Execute unified threat intelligence query."""
+        """Execute unified threat intelligence query with comprehensive error logging."""
+        import time
+        
+        # Get tool execution logger for detailed logging
+        tool_logger = get_tool_execution_logger()
+        
+        # Start execution logging
+        tool_args = {
+            "target": target,
+            "query_type": query_type,
+            "sources": sources,
+            "priority": priority,
+            "correlation_level": correlation_level
+        }
+        execution_id = await tool_logger.log_tool_execution_start(
+            tool_name=self.name,
+            tool_args=tool_args
+        )
+        
+        start_time = time.time()
+        
         try:
-            start_time = datetime.utcnow()
+            logger.info(f"🔍 THREAT INTELLIGENCE ANALYSIS STARTING")
+            logger.info(f"   Target: {target}")
+            logger.info(f"   Query Type: {query_type}")
+            logger.info(f"   Sources: {sources}")
+            logger.info(f"   Priority: {priority}")
+            logger.info(f"   Correlation Level: {correlation_level}")
             
             # Initialize providers if needed
-            await self._initialize_providers()
+            try:
+                await self._initialize_providers()
+                logger.info(f"✅ Threat intelligence providers initialized")
+                logger.debug(f"   Available providers: {list(self._provider_tools.keys())}")
+            except Exception as init_error:
+                logger.error(f"❌ Provider initialization failed: {init_error}")
+                
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=init_error,
+                    tool_args=tool_args
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": f"Provider initialization failed: {str(init_error)}",
+                    "error_category": "provider_initialization_error",
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": int((time.time() - start_time) * 1000)
+                }, indent=2)
             
             # Parse priority and sources
-            priority_enum = QueryPriority(priority.lower())
-            requested_sources = sources.lower().split(",") if sources != "all" else ["all"]
+            try:
+                priority_enum = QueryPriority(priority.lower())
+                requested_sources = sources.lower().split(",") if sources != "all" else ["all"]
+            except ValueError as parse_error:
+                logger.error(f"❌ Invalid parameter values: {parse_error}")
+                
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=parse_error,
+                    tool_args=tool_args
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": f"Invalid parameter values: {str(parse_error)}",
+                    "error_category": "parameter_validation_error",
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": int((time.time() - start_time) * 1000)
+                }, indent=2)
             
             # Determine optimal sources
             if "all" in requested_sources:
@@ -470,14 +534,66 @@ class UnifiedThreatIntelligenceTool(BaseTool):
             else:
                 optimal_sources = [ThreatIntelligenceSource(s.strip()) for s in requested_sources if s.strip()]
             
-            logger.info(f"Querying {len(optimal_sources)} sources for {target}: {[s.value for s in optimal_sources]}")
+            if not optimal_sources:
+                logger.warning(f"📭 No optimal threat intelligence sources determined for target: {target}")
+                
+                await tool_logger.log_empty_result(
+                    tool_name=self.name,
+                    execution_id=execution_id,
+                    reason="no_sources_available",
+                    context={
+                        "target": target,
+                        "query_type": query_type,
+                        "requested_sources": sources,
+                        "available_providers": list(self._provider_tools.keys())
+                    }
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": "No threat intelligence sources available for this query",
+                    "error_category": "no_sources_available",
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": int((time.time() - start_time) * 1000)
+                }, indent=2)
+            
+            logger.info(f"🎯 Querying {len(optimal_sources)} sources for {target}: {[s.value for s in optimal_sources]}")
             
             # Query providers concurrently
             query_tasks = []
+            available_sources = []
             for source in optimal_sources:
                 if source.value in self._provider_tools:
                     task = self._query_provider(source.value, target, query_type)
-                    query_tasks.append(task)
+                    query_tasks.append((source.value, task))
+                    available_sources.append(source.value)
+                else:
+                    logger.warning(f"⚠️ Provider {source.value} not available in tool registry")
+            
+            if not query_tasks:
+                logger.error(f"❌ No available providers for threat intelligence query")
+                
+                await tool_logger.log_empty_result(
+                    tool_name=self.name,
+                    execution_id=execution_id,
+                    reason="no_providers_available",
+                    context={
+                        "target": target,
+                        "query_type": query_type,
+                        "optimal_sources": [s.value for s in optimal_sources],
+                        "available_providers": list(self._provider_tools.keys())
+                    }
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": "No threat intelligence providers available",
+                    "error_category": "no_providers_available", 
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": int((time.time() - start_time) * 1000)
+                }, indent=2)
             
             # Execute queries with timeout based on priority
             timeout_seconds = {
@@ -487,43 +603,143 @@ class UnifiedThreatIntelligenceTool(BaseTool):
                 QueryPriority.LOW: 15
             }.get(priority_enum, 30)
             
+            logger.info(f"⏱️ Executing {len(query_tasks)} provider queries with {timeout_seconds}s timeout")
+            
             try:
+                # Execute just the tasks, not the tuples
+                tasks = [task for source, task in query_tasks]
                 provider_results = await asyncio.wait_for(
-                    asyncio.gather(*query_tasks, return_exceptions=True),
+                    asyncio.gather(*tasks, return_exceptions=True),
                     timeout=timeout_seconds
                 )
+                
+                logger.info(f"✅ Provider queries completed")
+                logger.debug(f"   Results received: {len(provider_results)}")
+                
             except asyncio.TimeoutError:
-                logger.warning(f"Query timeout after {timeout_seconds}s for target: {target}")
-                provider_results = [{"provider": "timeout", "success": False, "error": "Query timeout"}]
+                execution_duration_ms = int((time.time() - start_time) * 1000)
+                logger.error(f"❌ Query timeout after {timeout_seconds}s for target: {target}")
+                
+                timeout_error = TimeoutError(f"Threat intelligence query timeout after {timeout_seconds}s")
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=timeout_error,
+                    tool_args=tool_args
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": f"Query timeout after {timeout_seconds} seconds",
+                    "error_category": "query_timeout",
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": execution_duration_ms,
+                    "timeout_threshold": timeout_seconds,
+                    "providers_queried": available_sources
+                }, indent=2)
             
-            # Filter out exceptions
+            # Filter out exceptions and analyze results
             valid_results = []
-            for result in provider_results:
+            failed_providers = []
+            
+            for i, result in enumerate(provider_results):
+                provider_name = available_sources[i] if i < len(available_sources) else "unknown"
+                
                 if isinstance(result, dict):
                     valid_results.append(result)
+                    if result.get("success"):
+                        logger.debug(f"   ✅ {provider_name}: Success")
+                    else:
+                        logger.warning(f"   ❌ {provider_name}: Failed - {result.get('error', 'Unknown error')}")
+                        failed_providers.append(provider_name)
                 elif isinstance(result, Exception):
-                    logger.error(f"Provider query exception: {result}")
-                    valid_results.append({"provider": "exception", "success": False, "error": str(result)})
+                    logger.error(f"   ❌ {provider_name}: Exception - {str(result)}")
+                    failed_providers.append(provider_name)
+                    valid_results.append({
+                        "provider": provider_name, 
+                        "success": False, 
+                        "error": str(result),
+                        "error_type": type(result).__name__
+                    })
+                else:
+                    logger.warning(f"   ⚠️ {provider_name}: Unexpected result type - {type(result)}")
+                    failed_providers.append(provider_name)
+            
+            successful_queries = len([r for r in valid_results if r.get("success")])
+            
+            logger.info(f"📊 Provider Query Results:")
+            logger.info(f"   Total providers queried: {len(query_tasks)}")
+            logger.info(f"   Successful queries: {successful_queries}")
+            logger.info(f"   Failed providers: {len(failed_providers)}")
+            
+            if failed_providers:
+                logger.warning(f"   Failed providers: {failed_providers}")
+            
+            # Check if we have any successful results
+            if successful_queries == 0:
+                logger.error(f"❌ All threat intelligence providers failed for target: {target}")
+                
+                all_failures_error = Exception(f"All {len(query_tasks)} threat intelligence providers failed")
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=all_failures_error,
+                    tool_args=tool_args
+                )
+                
+                return json.dumps({
+                    "success": False,
+                    "error": "All threat intelligence providers failed",
+                    "error_category": "all_providers_failed",
+                    "target": target,
+                    "tool": "unified_threat_intelligence",
+                    "execution_duration_ms": int((time.time() - start_time) * 1000),
+                    "failed_providers": failed_providers,
+                    "provider_errors": [r for r in valid_results if not r.get("success")]
+                }, indent=2)
             
             # Correlate results
-            correlation_analysis = self._correlate_results(valid_results, correlation_level)
+            logger.info(f"🔗 Correlating results across {successful_queries} successful sources")
+            
+            try:
+                correlation_analysis = self._correlate_results(valid_results, correlation_level)
+                logger.info(f"✅ Cross-source correlation completed")
+                logger.debug(f"   Consensus score: {correlation_analysis.get('consensus_score', 0.0):.3f}")
+                logger.debug(f"   Confidence level: {correlation_analysis.get('confidence_assessment', 'unknown')}")
+            except Exception as correlation_error:
+                logger.error(f"❌ Result correlation failed: {correlation_error}")
+                # Continue with basic analysis even if correlation fails
+                correlation_analysis = {
+                    "consensus_score": 0.0,
+                    "confidence_assessment": "low",
+                    "correlation_error": str(correlation_error)
+                }
             
             # Generate final analysis
+            execution_duration_ms = int((time.time() - start_time) * 1000)
+            
             analysis = {
                 "target": target,
                 "query_type": query_type,
                 "analysis_summary": {
                     "total_sources_queried": len(optimal_sources),
-                    "successful_queries": len([r for r in valid_results if r.get("success")]),
+                    "successful_queries": successful_queries,
+                    "failed_queries": len(failed_providers),
                     "consensus_threat_score": correlation_analysis.get("consensus_score", 0.0),
                     "confidence_level": correlation_analysis.get("confidence_assessment", "unknown"),
                     "threat_indicators_found": len(correlation_analysis.get("threat_indicators", []))
                 },
                 "source_analysis": correlation_analysis,
                 "recommendations": self._generate_unified_recommendations(correlation_analysis, target, query_type),
+                "execution_details": {
+                    "successful_providers": [s for s in available_sources if s not in failed_providers],
+                    "failed_providers": failed_providers,
+                    "execution_duration_ms": execution_duration_ms,
+                    "timeout_threshold": timeout_seconds,
+                    "data_quality_score": successful_queries / len(optimal_sources) if optimal_sources else 0.0
+                },
                 "metadata": {
-                    "query_timestamp": start_time.isoformat(),
-                    "total_query_time_ms": int((datetime.utcnow() - start_time).total_seconds() * 1000),
+                    "query_timestamp": datetime.utcnow().isoformat(),
+                    "total_query_time_ms": execution_duration_ms,
                     "priority": priority,
                     "correlation_level": correlation_level,
                     "sources_requested": sources,
@@ -531,18 +747,49 @@ class UnifiedThreatIntelligenceTool(BaseTool):
                 }
             }
             
-            return json.dumps({
+            final_result = {
                 "success": True,
                 "data": analysis
-            }, indent=2, default=str)
+            }
+            
+            logger.info(f"✅ THREAT INTELLIGENCE ANALYSIS COMPLETED")
+            logger.info(f"   Target: {target}")
+            logger.info(f"   Duration: {execution_duration_ms}ms")
+            logger.info(f"   Consensus Threat Score: {correlation_analysis.get('consensus_score', 0.0):.3f}")
+            logger.info(f"   Data Quality: {successful_queries}/{len(optimal_sources)} sources")
+            
+            # Log successful execution
+            await tool_logger.log_tool_execution_success(
+                execution_id=execution_id,
+                result=final_result
+            )
+            
+            return json.dumps(final_result, indent=2, default=str)
             
         except Exception as e:
-            logger.error(f"Unified threat intelligence query failed: {e}")
+            execution_duration_ms = int((time.time() - start_time) * 1000)
+            
+            logger.error(f"❌ THREAT INTELLIGENCE ANALYSIS FAILED")
+            logger.error(f"   Target: {target}")
+            logger.error(f"   Duration: {execution_duration_ms}ms")
+            logger.error(f"   Error: {str(e)}")
+            logger.error(f"   Error Type: {type(e).__name__}")
+            
+            # Log execution failure
+            await tool_logger.log_tool_execution_failure(
+                execution_id=execution_id,
+                error=e,
+                tool_args=tool_args
+            )
+            
             return json.dumps({
                 "success": False,
-                "error": str(e),
+                "error": f"Unified threat intelligence query failed: {str(e)}",
+                "error_category": "unexpected_error",
+                "error_type": type(e).__name__,
                 "target": target,
-                "tool": "unified_threat_intelligence"
+                "tool": "unified_threat_intelligence",
+                "execution_duration_ms": execution_duration_ms
             }, indent=2)
 
     def _generate_unified_recommendations(self, correlation: Dict[str, Any], target: str, query_type: str) -> List[str]:

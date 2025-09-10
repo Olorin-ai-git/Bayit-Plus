@@ -60,6 +60,7 @@ def get_all_tools() -> List[Any]:
                 "file_system",     # File operations
                 "api",             # HTTP and JSON API tools
                 "mcp_clients",     # External MCP connections
+                "mcp_servers",     # Internal MCP servers (fraud database, external API, graph analysis)
                 "utility"          # Utility tools
             ]
         )

@@ -68,6 +68,9 @@ class InvestigationState(TypedDict):
     phase_changes: List[Dict[str, Any]]  # Track phase transitions
     routing_decisions: List[Dict[str, Any]]  # Track routing decisions for debugging
     
+    # Hybrid compatibility fields
+    decision_audit_trail: List[Dict[str, Any]]  # Complete decision history (hybrid compatibility)
+    
     # Metadata
     start_time: Optional[str]  # When investigation started
     end_time: Optional[str]  # When investigation completed
@@ -188,6 +191,18 @@ def create_initial_state(
         "phase_changes": [],
         "routing_decisions": [],
         
+        # Hybrid compatibility fields
+        "decision_audit_trail": [{
+            "timestamp": datetime.utcnow().isoformat(),
+            "decision_type": "initial_state_creation",
+            "details": {
+                "entity_id": entity_id,
+                "entity_type": entity_type,
+                "investigation_strategy": "clean_graph",
+                "parallel_execution": parallel_execution
+            }
+        }],
+        
         # Metadata
         "start_time": datetime.utcnow().isoformat(),
         "end_time": None,
@@ -219,6 +234,8 @@ def create_initial_state(
     logger.debug(f"[Step 9.1]     errors: {len(initial_state['errors'])} errors")
     logger.debug(f"[Step 9.1]     phase_changes: {len(initial_state['phase_changes'])} changes")
     logger.debug(f"[Step 9.1]     routing_decisions: {len(initial_state['routing_decisions'])} decisions")
+    logger.debug(f"[Step 9.1]   Hybrid compatibility fields verified:")
+    logger.debug(f"[Step 9.1]     decision_audit_trail: {len(initial_state['decision_audit_trail'])} entries")
     logger.debug(f"[Step 9.1]   Total state fields: {len(initial_state)}")
     logger.debug(f"[Step 9.1]   State initialization: COMPLETE ✅")
     

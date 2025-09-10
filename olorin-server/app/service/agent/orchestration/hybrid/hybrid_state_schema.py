@@ -124,6 +124,9 @@ class HybridInvestigationState(InvestigationState):
     graph_selection_reason: str                     # Why hybrid vs clean vs orchestrator
     feature_flags_active: List[str]                 # Active feature flags during investigation
     
+    # Enhanced Error Tracking for Tool Execution
+    errors: List[Dict[str, Any]]                     # Comprehensive error tracking list
+    
 
 def create_hybrid_initial_state(
     investigation_id: str,
@@ -281,7 +284,10 @@ def create_hybrid_initial_state(
         # Hybrid System Metadata  
         "hybrid_system_version": "1.0.0",
         "graph_selection_reason": "Hybrid system selected for AI-driven investigation with safety",
-        "feature_flags_active": []  # Will be populated by feature flag system
+        "feature_flags_active": [],  # Will be populated by feature flag system
+        
+        # Enhanced Error Tracking
+        "errors": []  # Comprehensive error tracking list
     })
     
     logger.info(f"✅ Hybrid investigation state created successfully")

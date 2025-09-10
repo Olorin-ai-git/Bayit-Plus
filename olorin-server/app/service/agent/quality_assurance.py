@@ -118,7 +118,7 @@ class InvestigationQualityAssurance:
         self,
         investigation_id: str,
         agent_results: Dict[AgentType, Dict[str, Any]],
-        validation_level: ValidationLevel = ValidationLevel.STANDARD
+        validation_level: Union[ValidationLevel, str] = ValidationLevel.STANDARD
     ) -> QualityAssessment:
         """
         Validate complete investigation results with comprehensive quality assessment.
@@ -131,7 +131,19 @@ class InvestigationQualityAssurance:
         Returns:
             Comprehensive quality assessment
         """
-        logger.info(f"🔍 Validating investigation results for {investigation_id} at {validation_level.value} level")
+        # Handle both enum and string types for validation_level
+        if isinstance(validation_level, str):
+            validation_level_str = validation_level
+            try:
+                validation_level = ValidationLevel(validation_level)
+            except ValueError:
+                # Default to standard if invalid string
+                validation_level = ValidationLevel.STANDARD
+                validation_level_str = ValidationLevel.STANDARD.value
+        else:
+            validation_level_str = validation_level.value
+            
+        logger.info(f"🔍 Validating investigation results for {investigation_id} at {validation_level_str} level")
         
         try:
             # Validate individual agent results
@@ -446,15 +458,27 @@ class InvestigationQualityAssurance:
         investigation_id: str,
         agent_type: AgentType,
         results: Dict[str, Any],
-        validation_level: ValidationLevel
+        validation_level: Union[ValidationLevel, str]
     ) -> AgentResultValidation:
         """Validate individual agent results"""
+        
+        # Handle both enum and string types for validation_level
+        if isinstance(validation_level, str):
+            validation_level_str = validation_level
+            try:
+                validation_level = ValidationLevel(validation_level)
+            except ValueError:
+                # Default to standard if invalid string
+                validation_level = ValidationLevel.STANDARD
+                validation_level_str = ValidationLevel.STANDARD.value
+        else:
+            validation_level_str = validation_level.value
         
         validation_issues = []
         validation_warnings = []
         
         # Apply validation rules based on level
-        validation_rules = self.validation_rules.get(validation_level.value, [])
+        validation_rules = self.validation_rules.get(validation_level_str, [])
         
         for rule in validation_rules:
             try:
@@ -515,8 +539,10 @@ class InvestigationQualityAssurance:
     ) -> CrossAgentCorrelation:
         """Analyze correlation between two agent results"""
         
-        # Generate correlation ID
-        correlation_id = hashlib.md5(f"{investigation_id}_{agent1.value}_{agent2.value}".encode()).hexdigest()[:12]
+        # Generate correlation ID - handle both enum and string types
+        agent1_str = agent1.value if hasattr(agent1, 'value') else str(agent1)
+        agent2_str = agent2.value if hasattr(agent2, 'value') else str(agent2)
+        correlation_id = hashlib.md5(f"{investigation_id}_{agent1_str}_{agent2_str}".encode()).hexdigest()[:12]
         
         # Calculate correlation metrics
         correlation_strength = await self._calculate_correlation_strength(results1, results2)
@@ -920,7 +946,7 @@ class InvestigationQualityAssurance:
     
     async def _create_agent_performance_summary(self, agent_validations: Dict[AgentType, AgentResultValidation]) -> Dict[str, Any]:
         return {
-            agent_type.value: {
+            (agent_type.value if hasattr(agent_type, 'value') else str(agent_type)): {
                 "quality_score": validation.quality_score,
                 "confidence": validation.confidence_score,
                 "is_valid": validation.is_valid,

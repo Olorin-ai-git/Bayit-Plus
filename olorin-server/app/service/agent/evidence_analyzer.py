@@ -12,7 +12,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 
 from app.service.logging import get_bridge_logger
 from app.service.llm_manager import get_llm_manager
-from app.utils.firebase_secrets import get_firebase_secret
+from app.service.config_loader import ConfigLoader
 from app.service.config import get_settings_for_env
 
 logger = get_bridge_logger(__name__)
@@ -118,24 +118,8 @@ RECOMMENDATIONS:
             return llm
             
         except Exception as e:
-            logger.warning(f"LLM Manager failed for evidence analysis: {e}")
-            
-            # Fallback to direct initialization
-            settings = get_settings_for_env()
-            api_key = get_firebase_secret(settings.anthropic_api_key_secret)
-            
-            if not api_key:
-                raise RuntimeError("No API key available for evidence analysis")
-            
-            from langchain_anthropic import ChatAnthropic
-            
-            return ChatAnthropic(
-                api_key=api_key,
-                model='claude-3-5-sonnet-20240620',  # Cost-effective model
-                temperature=0.2,
-                max_tokens=2000,
-                timeout=60
-            )
+            logger.error(f"LLM Manager failed for evidence analysis: {e}")
+            raise RuntimeError(f"Failed to initialize LLM for evidence analysis: {e}")
     
     async def analyze_domain_evidence(
         self, 

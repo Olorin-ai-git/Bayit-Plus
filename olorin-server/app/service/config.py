@@ -29,7 +29,7 @@ class SvcSettings(BaseSettings):
     verification_enabled: bool = Field(
         default=False, 
         description="Enable Opus verification gating",
-        env="VERIFICATION_ENABLED"
+        env="LLM_VERIFICATION_ENABLED"
     )
     verification_mode: str = Field(
         default="shadow", 
@@ -41,7 +41,7 @@ class SvcSettings(BaseSettings):
         description="0.0-1.0 sampling rate for verification (env var is 0-100)",
         env="VERIFICATION_SAMPLE_PERCENT"
     )
-    # REMOVED: verification_model_name - now using VERIFICATION_MODEL from LLM Manager
+    # REMOVED: verification_model_name - now using LLM_VERIFICATION_MODEL from LLM Manager
     verification_threshold_default: float = Field(
         default=0.85,
         description="Pass/fail threshold for verification score (0.0-1.0, env var is 0-100)",

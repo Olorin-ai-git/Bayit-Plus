@@ -95,7 +95,7 @@ class EnhancedInvestigationValidator:
         """Initialize the enhanced validator."""
         self.llm_manager = LLMManager()
         self.quality_assurance = InvestigationQualityAssurance()
-        self.verification_enabled = os.getenv('VERIFICATION_ENABLED', 'true').lower() == 'true'
+        self.verification_enabled = os.getenv('LLM_VERIFICATION_ENABLED', 'true').lower() == 'true'
         self.verification_threshold = float(os.getenv('VERIFICATION_THRESHOLD_DEFAULT', '85')) / 100
         self.min_evidence_threshold = int(os.getenv('MIN_EVIDENCE_THRESHOLD', '3'))
         self.max_risk_delta_threshold = float(os.getenv('MAX_RISK_DELTA_THRESHOLD', '0.5'))

@@ -34,6 +34,7 @@ REAL_COLUMNS = [
     'CARD_ISSUER', 'PAYMENT_PROCESSOR', 'FRAUD_RULES_TRIGGERED', 'MAXMIND_RISK_SCORE'
 ]
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.enhanced_tool_execution_logger import get_tool_execution_logger
 
 logger = get_bridge_logger(__name__)
 
@@ -161,85 +162,266 @@ class SnowflakeQueryTool(BaseTool):
         return asyncio.run(self._arun(query, database, db_schema, limit))
     
     async def _arun(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
-        """Async execution of the Snowflake query."""
+        """Async execution of the Snowflake query with comprehensive error logging."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret
+        import time
         
-        # Auto-correct common column name mistakes
-        query = self._correct_column_names(query)
+        # Get tool execution logger for detailed logging
+        tool_logger = get_tool_execution_logger()
         
-        settings = get_settings_for_env()
-        
-        # Get credentials (would come from settings/secrets in production)
-        user = getattr(settings, 'snowflake_user', 'fraud_analyst')
-        password = getattr(settings, 'snowflake_password', None)
-        
-        if not password:
-            # Fallback to secrets manager
-            try:
-                password = get_app_secret("SNOWFLAKE_PASSWORD")
-            except:
-                password = "demo_password"
-        
-        client = SnowflakeClient(
-            account=self.account,
-            user=user,
-            password=password,
-            warehouse=self.warehouse
+        # Start execution logging
+        tool_args = {
+            "query": query[:200] + "..." if len(query) > 200 else query,
+            "database": database,
+            "schema": db_schema, 
+            "limit": limit
+        }
+        execution_id = await tool_logger.log_tool_execution_start(
+            tool_name=self.name,
+            tool_args=tool_args
         )
         
+        start_time = time.time()
+        client = None
+        
         try:
-            await client.connect(database=database, schema=db_schema)
-            results = await client.execute_query(query, limit=limit)
+            # Auto-correct common column name mistakes
+            corrected_query = self._correct_column_names(query)
+            if corrected_query != query:
+                logger.info(f"🔧 Auto-corrected column names in query")
+                logger.debug(f"   Original: {query[:100]}...")
+                logger.debug(f"   Corrected: {corrected_query[:100]}...")
             
-            logger.info(f"Snowflake query completed, returned {len(results)} rows")
+            settings = get_settings_for_env()
             
-            # Extract column names from first row if available
-            columns = list(results[0].keys()) if results else []
+            # Get credentials (would come from settings/secrets in production)
+            user = getattr(settings, 'snowflake_user', 'fraud_analyst')
+            password = getattr(settings, 'snowflake_password', None)
             
-            # Provide query insights
-            query_insights = {
-                "contains_fraud_analysis": any(keyword in query.upper() for keyword in ['FRAUD', 'MODEL_SCORE', 'RISK']),
-                "contains_user_analysis": any(keyword in query.upper() for keyword in ['EMAIL', 'USER', 'CUSTOMER']),
-                "contains_payment_analysis": any(keyword in query.upper() for keyword in ['PAYMENT', 'CARD', 'BIN']),
-                "contains_time_analysis": any(keyword in query.upper() for keyword in ['TX_DATETIME', 'DATE', 'TIME']),
-                "is_aggregate_query": any(keyword in query.upper() for keyword in ['COUNT', 'SUM', 'AVG', 'GROUP BY'])
-            }
+            if not password:
+                # Fallback to secrets manager
+                try:
+                    password = get_app_secret("SNOWFLAKE_PASSWORD")
+                    logger.debug("🔐 Retrieved Snowflake password from secrets manager")
+                except Exception as secret_error:
+                    logger.warning(f"⚠️ Failed to retrieve Snowflake password from secrets: {secret_error}")
+                    password = "demo_password"
             
-            # Convert results to JSON-serializable format
-            json_safe_results = json.loads(json.dumps(results, cls=SnowflakeJSONEncoder))
+            logger.info(f"🗄️ Connecting to Snowflake...")
+            logger.info(f"   Account: {self.account}")
+            logger.info(f"   User: {user}")
+            logger.info(f"   Database: {database}")
+            logger.info(f"   Schema: {db_schema}")
+            logger.info(f"   Warehouse: {self.warehouse}")
             
-            return {
-                "results": json_safe_results,
-                "row_count": len(results),
-                "columns": columns,
-                "database": database,
-                "schema": db_schema,
-                "table": "TRANSACTIONS_ENRICHED",
-                "query_insights": query_insights,
-                "query_status": "success",
-                "execution_timestamp": datetime.now().isoformat(),
-                "schema_info": {
-                    "available_columns": REAL_COLUMNS,
-                    "main_table": "TRANSACTIONS_ENRICHED"
+            client = SnowflakeClient(
+                account=self.account,
+                user=user,
+                password=password,
+                warehouse=self.warehouse
+            )
+            
+            # Attempt connection with detailed error tracking
+            try:
+                await client.connect(database=database, schema=db_schema)
+                logger.info(f"✅ Snowflake connection established successfully")
+            except Exception as conn_error:
+                logger.error(f"❌ Snowflake connection failed: {conn_error}")
+                
+                # Log specific connection failure
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=conn_error,
+                    tool_args=tool_args
+                )
+                
+                # Determine specific connection error type
+                error_msg = str(conn_error).lower()
+                if "authentication" in error_msg or "invalid username" in error_msg:
+                    detailed_error = "Authentication failed - check Snowflake credentials"
+                elif "warehouse" in error_msg:
+                    detailed_error = "Warehouse connection failed - warehouse may be suspended"
+                elif "network" in error_msg or "timeout" in error_msg:
+                    detailed_error = "Network connection failed - check connectivity to Snowflake"
+                else:
+                    detailed_error = f"Connection error: {str(conn_error)}"
+                
+                return {
+                    "error": detailed_error,
+                    "error_category": "connection_failure",
+                    "results": [],
+                    "row_count": 0,
+                    "query_status": "connection_failed",
+                    "execution_timestamp": datetime.now().isoformat(),
+                    "execution_duration_ms": int((time.time() - start_time) * 1000),
+                    "suggestion": (
+                        "Check Snowflake credentials, network connectivity, and warehouse status. "
+                        "Ensure the warehouse is not suspended."
+                    )
                 }
-            }
+            
+            # Execute query with detailed monitoring
+            logger.info(f"🔍 Executing Snowflake query...")
+            logger.debug(f"   Query: {corrected_query}")
+            logger.debug(f"   Limit: {limit}")
+            
+            try:
+                results = await client.execute_query(corrected_query, limit=limit)
+                execution_duration_ms = int((time.time() - start_time) * 1000)
+                
+                logger.info(f"✅ Snowflake query completed successfully")
+                logger.info(f"   Duration: {execution_duration_ms}ms")
+                logger.info(f"   Rows returned: {len(results)}")
+                
+                # Check for empty results and provide detailed analysis
+                if not results:
+                    await tool_logger.log_empty_result(
+                        tool_name=self.name,
+                        execution_id=execution_id,
+                        reason="no_data_found",
+                        context={
+                            "query": corrected_query[:200] + "..." if len(corrected_query) > 200 else corrected_query,
+                            "database": database,
+                            "schema": db_schema,
+                            "limit": limit,
+                            "execution_duration_ms": execution_duration_ms
+                        }
+                    )
+                    
+                    logger.warning(f"📭 Snowflake query returned empty results")
+                    logger.warning(f"   This could indicate:")
+                    logger.warning(f"   - No data matches the query criteria")
+                    logger.warning(f"   - Date/time filters are too restrictive")
+                    logger.warning(f"   - Column names or table references are incorrect")
+                    logger.warning(f"   - Data may not be available for the specified time period")
+                
+                # Extract column names from first row if available
+                columns = list(results[0].keys()) if results else []
+                
+                # Provide comprehensive query insights
+                query_insights = {
+                    "contains_fraud_analysis": any(keyword in corrected_query.upper() for keyword in ['FRAUD', 'MODEL_SCORE', 'RISK']),
+                    "contains_user_analysis": any(keyword in corrected_query.upper() for keyword in ['EMAIL', 'USER', 'CUSTOMER']),
+                    "contains_payment_analysis": any(keyword in corrected_query.upper() for keyword in ['PAYMENT', 'CARD', 'BIN']),
+                    "contains_time_analysis": any(keyword in corrected_query.upper() for keyword in ['TX_DATETIME', 'DATE', 'TIME']),
+                    "is_aggregate_query": any(keyword in corrected_query.upper() for keyword in ['COUNT', 'SUM', 'AVG', 'GROUP BY']),
+                    "query_complexity": "complex" if len(corrected_query) > 500 else "medium" if len(corrected_query) > 200 else "simple",
+                    "estimated_data_coverage": "comprehensive" if len(results) > 100 else "partial" if len(results) > 10 else "limited"
+                }
+                
+                # Convert results to JSON-serializable format
+                json_safe_results = json.loads(json.dumps(results, cls=SnowflakeJSONEncoder))
+                
+                # Create comprehensive result object
+                result_object = {
+                    "results": json_safe_results,
+                    "row_count": len(results),
+                    "columns": columns,
+                    "database": database,
+                    "schema": db_schema,
+                    "table": "TRANSACTIONS_ENRICHED",
+                    "query_insights": query_insights,
+                    "query_status": "success",
+                    "execution_timestamp": datetime.now().isoformat(),
+                    "execution_duration_ms": execution_duration_ms,
+                    "schema_info": {
+                        "available_columns": REAL_COLUMNS,
+                        "main_table": "TRANSACTIONS_ENRICHED"
+                    }
+                }
+                
+                # Log successful execution
+                await tool_logger.log_tool_execution_success(
+                    execution_id=execution_id,
+                    result=result_object
+                )
+                
+                return result_object
+                
+            except Exception as query_error:
+                execution_duration_ms = int((time.time() - start_time) * 1000)
+                
+                logger.error(f"❌ Snowflake query execution failed")
+                logger.error(f"   Duration: {execution_duration_ms}ms")
+                logger.error(f"   Error: {query_error}")
+                
+                # Log query execution failure
+                await tool_logger.log_tool_execution_failure(
+                    execution_id=execution_id,
+                    error=query_error,
+                    tool_args=tool_args
+                )
+                
+                # Categorize query error for better debugging
+                error_msg = str(query_error).lower()
+                if "syntax error" in error_msg or "sql compilation error" in error_msg:
+                    error_category = "sql_syntax_error"
+                    detailed_error = f"SQL syntax error: {str(query_error)}"
+                    suggestion = "Check SQL syntax, table names, and column names. Verify against schema documentation."
+                elif "timeout" in error_msg or "statement timeout" in error_msg:
+                    error_category = "query_timeout"
+                    detailed_error = f"Query timeout: {str(query_error)}"
+                    suggestion = "Query took too long to execute. Try adding more specific filters or reducing the time range."
+                elif "permission" in error_msg or "access denied" in error_msg:
+                    error_category = "permission_error"
+                    detailed_error = f"Permission error: {str(query_error)}"
+                    suggestion = "Check user permissions for the specified database, schema, and tables."
+                elif "warehouse" in error_msg:
+                    error_category = "warehouse_error"
+                    detailed_error = f"Warehouse error: {str(query_error)}"
+                    suggestion = "Check if the Snowflake warehouse is active and not suspended."
+                else:
+                    error_category = "query_execution_error"
+                    detailed_error = f"Query execution error: {str(query_error)}"
+                    suggestion = "Review query logic and ensure all referenced tables and columns exist."
+                
+                return {
+                    "error": detailed_error,
+                    "error_category": error_category,
+                    "results": [],
+                    "row_count": 0,
+                    "query_status": "query_failed",
+                    "execution_timestamp": datetime.now().isoformat(),
+                    "execution_duration_ms": execution_duration_ms,
+                    "suggestion": suggestion,
+                    "query_attempted": corrected_query[:500] + "..." if len(corrected_query) > 500 else corrected_query
+                }
             
         except Exception as e:
-            logger.error(f"Snowflake query failed: {str(e)}")
+            execution_duration_ms = int((time.time() - start_time) * 1000)
+            
+            logger.error(f"❌ Snowflake tool execution failed with unexpected error")
+            logger.error(f"   Duration: {execution_duration_ms}ms") 
+            logger.error(f"   Error: {str(e)}")
+            
+            # Log unexpected error
+            await tool_logger.log_tool_execution_failure(
+                execution_id=execution_id,
+                error=e,
+                tool_args=tool_args
+            )
+            
             return {
-                "error": str(e),
+                "error": f"Unexpected Snowflake tool error: {str(e)}",
+                "error_category": "unexpected_error",
                 "results": [],
                 "row_count": 0,
-                "query_status": "failed",
+                "query_status": "tool_error",
                 "execution_timestamp": datetime.now().isoformat(),
+                "execution_duration_ms": execution_duration_ms,
                 "suggestion": (
-                    "Ensure your query uses SELECT statements only and references the "
-                    "TRANSACTIONS_ENRICHED table. Check column names against schema documentation."
+                    "An unexpected error occurred. Check Snowflake connectivity and credentials. "
+                    "Contact system administrator if the issue persists."
                 )
             }
+            
         finally:
-            try:
-                await client.disconnect()
-            except Exception:
-                pass
+            # Clean up connection
+            if client:
+                try:
+                    await client.disconnect()
+                    logger.debug("🔌 Snowflake connection closed")
+                except Exception as disconnect_error:
+                    logger.warning(f"⚠️ Error closing Snowflake connection: {disconnect_error}")
+                    # Don't re-raise - this is cleanup

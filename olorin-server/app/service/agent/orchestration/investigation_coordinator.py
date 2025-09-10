@@ -24,26 +24,50 @@ logger = get_bridge_logger(__name__)
 
 
 async def start_investigation(state: MessagesState, config) -> dict:
-    """Initialize and start a fraud investigation workflow."""
-    logger.error("🔥🔥🔥 START_INVESTIGATION FUNCTION CALLED 🔥🔥🔥")
+    """Initialize and start a fraud investigation workflow.
+    
+    Compatible with both legacy AgentContext and hybrid HybridInvestigationState structures.
+    """
+    logger.info("🔥 START_INVESTIGATION FUNCTION CALLED 🔥")
     logger.info("[start_investigation] initiating fraud investigation flow")
     
+    # Try to get agent_context from config (legacy path)
     agent_context = rehydrate_agent_context(get_config_value(config, ["configurable", "agent_context"]))
-    metadata = extract_metadata(agent_context)
-    entity_id = metadata.get("entity_id") or metadata.get("entityId")
-    entity_type = metadata.get("entity_type") or metadata.get("entityType")
     
-    # Debug logging
-    logger.error(f"🔍 start_investigation received metadata: {metadata}")
-    logger.error(f"🔍 agent_context.metadata: {agent_context.metadata}")
+    # Handle both legacy and hybrid state structures
+    if agent_context is not None:
+        # Legacy path: extract from agent_context
+        logger.info("[start_investigation] Using legacy agent_context structure")
+        metadata = extract_metadata(agent_context)
+        entity_id = metadata.get("entity_id") or metadata.get("entityId")
+        entity_type = metadata.get("entity_type") or metadata.get("entityType")
+        investigation_id = metadata.get("investigation_id") or metadata.get("investigationId")
+        
+        logger.info(f"🔍 Legacy metadata: {metadata}")
+    else:
+        # Hybrid path: extract directly from state
+        logger.info("[start_investigation] Using hybrid state structure - extracting from state")
+        entity_id = state.get("entity_id")
+        entity_type = state.get("entity_type")
+        investigation_id = state.get("investigation_id")
+        
+        # Create metadata dictionary for compatibility
+        metadata = {
+            "entity_id": entity_id,
+            "entity_type": entity_type,
+            "investigation_id": investigation_id
+        }
+        
+        logger.info(f"🔍 Hybrid state parameters: entity_id={entity_id}, entity_type={entity_type}, investigation_id={investigation_id}")
     
-    # Extract or generate investigation_id
-    investigation_id = metadata.get("investigation_id") or metadata.get("investigationId")
-    logger.error(f"🔍 extracted investigation_id: {investigation_id}")
+    # Generate investigation_id if missing
     if not investigation_id:
         from uuid import uuid4
         investigation_id = str(uuid4())
-        logger.error(f"🔍 generated new UUID investigation_id: {investigation_id}")
+        logger.info(f"🔍 Generated new investigation_id: {investigation_id}")
+        # Update metadata for consistency
+        metadata["investigation_id"] = investigation_id
+        metadata["investigationId"] = investigation_id
 
     from app.models.api_models import InvestigationCreate
     from app.persistence import create_investigation
@@ -63,9 +87,10 @@ async def start_investigation(state: MessagesState, config) -> dict:
         )
     )
     
-    # Update metadata with investigation ID
-    agent_context.metadata.additional_metadata["investigation_id"] = investigation_id
-    agent_context.metadata.additional_metadata["investigationId"] = investigation_id
+    # Update metadata with investigation ID (only for legacy path)
+    if agent_context is not None:
+        agent_context.metadata.additional_metadata["investigation_id"] = investigation_id
+        agent_context.metadata.additional_metadata["investigationId"] = investigation_id
 
     # Emit progress update: Investigation initialized
     await websocket_manager.broadcast_progress(
@@ -80,11 +105,15 @@ async def start_investigation(state: MessagesState, config) -> dict:
     csv_data = None
     filename = None
     
-    # Extract CSV data from metadata if available
-    if hasattr(agent_context, 'metadata') and agent_context.metadata:
+    # Extract CSV data from metadata if available (legacy path only)
+    if agent_context is not None and hasattr(agent_context, 'metadata') and agent_context.metadata:
         additional_metadata = getattr(agent_context.metadata, 'additional_metadata', {})
         csv_data = additional_metadata.get('csv_data') or additional_metadata.get('file_content')
         filename = additional_metadata.get('filename')
+    else:
+        # Hybrid path: CSV data would be handled differently if needed
+        csv_data = None
+        filename = None
     
     # Create initial message with potential CSV data
     if csv_data:

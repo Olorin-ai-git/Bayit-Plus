@@ -689,7 +689,7 @@ async def verification_stats():
             "enabled": bool(getattr(settings, "verification_enabled", False)),
             "mode": getattr(settings, "verification_mode", "shadow"),
             "sample_percent": float(getattr(settings, "verification_sample_percent", 1.0) or 0.0),
-            "verification_model_name": "DEPRECATED - use VERIFICATION_MODEL environment variable",
+            "verification_model_name": "DEPRECATED - use LLM_VERIFICATION_MODEL environment variable",
             "threshold_default": float(getattr(settings, "verification_threshold_default", 0.85)),
             "max_retries_default": int(getattr(settings, "verification_max_retries_default", 1)),
             "task_policies": {

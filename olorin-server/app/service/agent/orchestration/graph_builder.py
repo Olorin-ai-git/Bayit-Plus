@@ -477,7 +477,7 @@ def _get_configured_tools():
         # Get all essential tools including threat intelligence, MCP clients, blockchain, intelligence, ML/AI, and web tools
         # Load ALL tools from these categories (no specific tool_names filter)
         tools = get_tools_for_agent(
-            categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients", "blockchain", "intelligence", "ml_ai", "web"]
+            categories=["olorin", "search", "database", "threat_intelligence", "mcp_clients", "mcp_servers", "blockchain", "intelligence", "ml_ai", "web"]
             # All tools from these categories will be loaded
         )
         

@@ -10,14 +10,14 @@ Add these environment variables to your `.env` file to configure the enhanced va
 # ========================================
 
 # Enable/disable LLM verification (true/false)
-VERIFICATION_ENABLED=true
+LLM_VERIFICATION_ENABLED=true
 
 # Verification model selection (uses cost-effective models by default)
 # Available models: 
-# - gemini-1.5-flash (recommended for cost-effectiveness)
+# - gpt-3.5-turbo (recommended for cost-effectiveness and OpenAI compatibility)
+# - gemini-1.5-flash (Google alternative)
 # - claude-3-haiku-20240307 (fast and affordable)
-# - gpt-3.5-turbo (OpenAI alternative)
-VERIFICATION_MODEL=gemini-1.5-flash
+LLM_VERIFICATION_MODEL=gpt-3.5-turbo
 
 # Verification threshold (0-100, percentage)
 # Investigations scoring below this threshold will be marked as failed
@@ -49,14 +49,14 @@ VERIFICATION_MAX_RETRIES=1
 
 ### Core Settings
 
-1. **VERIFICATION_ENABLED**: Master switch for the enhanced validation system
+1. **LLM_VERIFICATION_ENABLED**: Master switch for the enhanced validation system
    - Set to `true` to enable comprehensive validation
    - Set to `false` to use basic validation only
 
-2. **VERIFICATION_MODEL**: The LLM model used for verification
-   - `gemini-1.5-flash`: Most cost-effective, good performance
+2. **LLM_VERIFICATION_MODEL**: The LLM model used for verification
+   - `gpt-3.5-turbo`: Most cost-effective, good performance (default)
+   - `gemini-1.5-flash`: Google alternative
    - `claude-3-haiku-20240307`: Fast Anthropic model
-   - `gpt-3.5-turbo`: OpenAI alternative
    - Choose based on your API availability and cost requirements
 
 3. **VERIFICATION_THRESHOLD_DEFAULT**: Pass/fail threshold
@@ -92,8 +92,8 @@ VERIFICATION_MAX_RETRIES=1
 
 ### Development Environment
 ```bash
-VERIFICATION_ENABLED=true
-VERIFICATION_MODEL=gemini-1.5-flash
+LLM_VERIFICATION_ENABLED=true
+LLM_VERIFICATION_MODEL=gpt-3.5-turbo
 VERIFICATION_THRESHOLD_DEFAULT=75
 MIN_EVIDENCE_THRESHOLD=2
 MAX_RISK_DELTA_THRESHOLD=0.6
@@ -102,8 +102,8 @@ VERIFICATION_MODE=shadow
 
 ### Production Environment
 ```bash
-VERIFICATION_ENABLED=true
-VERIFICATION_MODEL=gemini-1.5-flash
+LLM_VERIFICATION_ENABLED=true
+LLM_VERIFICATION_MODEL=gpt-3.5-turbo
 VERIFICATION_THRESHOLD_DEFAULT=85
 MIN_EVIDENCE_THRESHOLD=3
 MAX_RISK_DELTA_THRESHOLD=0.5
@@ -112,8 +112,8 @@ VERIFICATION_MODE=blocking
 
 ### Testing Environment
 ```bash
-VERIFICATION_ENABLED=true
-VERIFICATION_MODEL=claude-3-haiku-20240307
+LLM_VERIFICATION_ENABLED=true
+LLM_VERIFICATION_MODEL=claude-3-haiku-20240307
 VERIFICATION_THRESHOLD_DEFAULT=90
 MIN_EVIDENCE_THRESHOLD=4
 MAX_RISK_DELTA_THRESHOLD=0.3
@@ -170,7 +170,7 @@ The test runner automatically uses enhanced validation when available:
 ```python
 # The test runner will:
 1. Check if enhanced validation is available
-2. Use VERIFICATION_MODEL from .env for LLM verification
+2. Use LLM_VERIFICATION_MODEL from .env for LLM verification
 3. Apply all thresholds and rules
 4. Fail investigations that don't pass validation
 5. Provide detailed failure reasons and recommendations
@@ -181,7 +181,7 @@ The test runner automatically uses enhanced validation when available:
 ### Issue: All investigations failing validation
 - Lower VERIFICATION_THRESHOLD_DEFAULT temporarily
 - Check MIN_EVIDENCE_THRESHOLD is reasonable
-- Ensure VERIFICATION_MODEL API key is configured
+- Ensure LLM_VERIFICATION_MODEL API key is configured
 
 ### Issue: Suspicious investigations passing
 - Increase VERIFICATION_THRESHOLD_DEFAULT
@@ -189,8 +189,8 @@ The test runner automatically uses enhanced validation when available:
 - Switch VERIFICATION_MODE to "blocking"
 
 ### Issue: LLM verification not running
-- Check VERIFICATION_ENABLED=true
-- Verify API key for VERIFICATION_MODEL is set
+- Check LLM_VERIFICATION_ENABLED=true
+- Verify API key for LLM_VERIFICATION_MODEL is set
 - Check model name is valid
 
 ## Cost Optimization
