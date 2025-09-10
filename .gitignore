@@ -378,4 +378,4 @@ mock_ips_cache_client.py
 .mock-detection-test/
 
 # Test directories
-olorin-server/app/test/
+# olorin-server/app/test/ - Commented out to allow essential test files to be tracked
