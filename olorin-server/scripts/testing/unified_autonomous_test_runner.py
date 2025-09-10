@@ -90,11 +90,13 @@ logger = get_bridge_logger(__name__)
 # DEBUG logging will be done after logger configuration in test runner
 
 try:
-    # Import orchestration system - using clean implementation
-    from app.service.agent.orchestration.clean_graph_builder import (
-        build_clean_investigation_graph,
-        run_investigation
+    # Import orchestration system - using hybrid intelligence with feature flags
+    from app.service.agent.orchestration.hybrid.migration_utilities import (
+        get_investigation_graph,
+        get_feature_flags
     )
+    # Import clean graph for fallback
+    from app.service.agent.orchestration.clean_graph_builder import run_investigation
     from app.service.agent.orchestration.state_schema import create_initial_state
     from langchain_core.messages import HumanMessage
     
@@ -752,7 +754,7 @@ class UnifiedAutonomousTestRunner:
             bridge_logger.debug("[Step 1.1.1] Command line argument parsing - Live mode will be used")
             bridge_logger.debug("[Step 1.1.2] Environment setup detection - No TEST_MODE override")
         bridge_logger.debug("[Step 1.1.3] Clean graph orchestration import - Starting imports")
-        bridge_logger.debug("[Step 1.1.3] Successfully imported build_clean_investigation_graph and run_investigation")
+        bridge_logger.debug("[Step 1.1.3] Successfully imported get_investigation_graph with hybrid intelligence support")
         
         # Clear existing handlers to avoid duplicates
         logger.handlers.clear()
@@ -1529,10 +1531,13 @@ class UnifiedAutonomousTestRunner:
                 self.logger.warning("🎭🎭🎭 TEST_MODE=mock set - will use MockLLM instead of real Claude/GPT 🎭🎭🎭")
             self.logger.info(f"🎭 Using mock Snowflake client for {self.config.mode.value.upper()} mode")
         
-        # CRITICAL FIX: Use proper LangGraph orchestration instead of calling agents directly
+        # CRITICAL FIX: Use proper LangGraph orchestration with hybrid intelligence
         try:
-            # Create clean investigation graph
-            graph = build_clean_investigation_graph()
+            # Create investigation graph using feature flags (clean vs hybrid)
+            graph = await get_investigation_graph(
+                investigation_id=context.investigation_id,
+                entity_type=context.entity_type.value
+            )
             
             # Create proper AgentContext for orchestration system
             from app.models.agent_context import AgentContext
@@ -1593,16 +1598,30 @@ class UnifiedAutonomousTestRunner:
             if self.config.verbose and hasattr(self, 'llm_callback'):
                 config["callbacks"] = [self.llm_callback]
             
-            # Create initial state for clean graph
-            initial_state = create_initial_state(
-                investigation_id=context.investigation_id,
-                entity_id=context.entity_id,
-                entity_type=context.entity_type.value,
-                parallel_execution=True,
-                max_tools=52
-            )
-            
-            self.logger.info("🔄 Using clean graph orchestration system...")
+            # Create initial state based on graph type
+            feature_flags = get_feature_flags()
+            if feature_flags.is_enabled("hybrid_graph_v1", context.investigation_id):
+                # Create hybrid state for hybrid graph
+                from app.service.agent.orchestration.hybrid.hybrid_state_schema import create_hybrid_initial_state
+                initial_state = create_hybrid_initial_state(
+                    investigation_id=context.investigation_id,
+                    entity_id=context.entity_id,
+                    entity_type=context.entity_type.value,
+                    parallel_execution=True,
+                    max_tools=52
+                )
+                self.logger.info("🧠 Using Hybrid Intelligence Graph system...")
+                self.logger.info(f"   Created hybrid state with {len(initial_state.get('decision_audit_trail', []))} initial audit trail entries")
+            else:
+                # Create regular state for clean graph
+                initial_state = create_initial_state(
+                    investigation_id=context.investigation_id,
+                    entity_id=context.entity_id,
+                    entity_type=context.entity_type.value,
+                    parallel_execution=True,
+                    max_tools=52
+                )
+                self.logger.info("🔄 Using clean graph orchestration system...")
             start_time = time.time()
             
             # Step 8.1.1: Mode-specific recursion limits - LIVE: 100, MOCK: 50
@@ -1621,13 +1640,25 @@ class UnifiedAutonomousTestRunner:
             self.logger.debug(f"[Step 8.1.1]   Entity: {initial_state.get('entity_type', 'N/A')} - {initial_state.get('entity_id', 'N/A')}")
             
             try:
+                # Configure for both clean and hybrid graphs
+                config = {"recursion_limit": recursion_limit}
+                
+                # If using hybrid graph (with checkpointer), add thread_id
+                feature_flags = get_feature_flags()
+                if feature_flags.is_enabled("hybrid_graph_v1", context.investigation_id):
+                    config["configurable"] = {"thread_id": context.investigation_id}
+                    self.logger.debug(f"[Step 8.1.1]   Added thread_id for hybrid graph: {context.investigation_id}")
+                
                 langgraph_result = await graph.ainvoke(
                     initial_state,
-                    config={"recursion_limit": recursion_limit}  # Allow more iterations in live mode
+                    config=config
                 )
                 
                 duration = time.time() - start_time
-                self.logger.info(f"✅ Clean graph orchestration completed in {duration:.2f}s")
+                # Log completion with appropriate graph type
+                feature_flags = get_feature_flags()
+                graph_type = "Hybrid Intelligence" if feature_flags.is_enabled("hybrid_graph_v1", context.investigation_id) else "Clean"
+                self.logger.info(f"✅ {graph_type} graph orchestration completed in {duration:.2f}s")
                 
             except Exception as e:
                 duration = time.time() - start_time
@@ -1706,8 +1737,11 @@ class UnifiedAutonomousTestRunner:
                     self.logger.debug(f"[Step 7.2.2] 🛑 GRACEFUL FAILURE - Re-raising unexpected error (NO FALLBACKS)")
                     raise e
             
-            # Debug: Log what clean graph returned
-            self.logger.info(f"🔍 Clean graph result keys: {list(langgraph_result.keys())[:10]}...")  # Show first 10 keys
+            # Debug: Log what investigation graph returned
+            # Log result with appropriate graph type
+            feature_flags = get_feature_flags()
+            graph_type = "Hybrid Intelligence" if feature_flags.is_enabled("hybrid_graph_v1", context.investigation_id) else "Clean"
+            self.logger.info(f"🔍 {graph_type} graph result keys: {list(langgraph_result.keys())[:10]}...")  # Show first 10 keys
             self.logger.info(f"🔍 Final risk score: {langgraph_result.get('risk_score', 0.0):.2f}")
             self.logger.info(f"🔍 Confidence score: {langgraph_result.get('confidence_score', 0.0):.2f}")
             self.logger.info(f"🔍 Tools used: {len(langgraph_result.get('tools_used', []))}")

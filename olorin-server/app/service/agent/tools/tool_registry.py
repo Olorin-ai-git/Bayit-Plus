@@ -142,6 +142,17 @@ except ImportError as e:
     logger.warning(f"Threat intelligence tools not available: {e}")
     THREAT_INTEL_AVAILABLE = False
 
+# Try to import MCP server tools
+try:
+    from ...mcp_servers.fraud_database_server import create_fraud_database_server
+    from ...mcp_servers.external_api_server import create_external_api_server  
+    from ...mcp_servers.graph_analysis_server import create_graph_analysis_server
+    import asyncio
+    MCP_SERVERS_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"MCP server tools not available: {e}")
+    MCP_SERVERS_AVAILABLE = False
+
 
 class ToolRegistry:
     """Registry for managing and accessing LangGraph agent tools."""
@@ -158,6 +169,7 @@ class ToolRegistry:
             "olorin": [],  # Olorin-specific tools
             "threat_intelligence": [],  # Threat intelligence tools
             "mcp_clients": [],  # MCP client tools (connect to external MCP servers)
+            "mcp_servers": [],  # MCP server tools (internal MCP servers)
             "blockchain": [],  # Blockchain and cryptocurrency analysis tools
             "intelligence": [],  # Advanced intelligence gathering tools (SOCMINT, OSINT, Dark Web)
             "ml_ai": [],  # Machine learning and AI enhancement tools
@@ -581,6 +593,44 @@ class ToolRegistry:
                     except Exception as e:
                         logger.warning(f"Failed to register risk scoring ML tool: {e}")
 
+            # MCP Server Tools (internal MCP servers)
+            if MCP_SERVERS_AVAILABLE:
+                # Fraud Database MCP Server Tools
+                if os.getenv('USE_FRAUD_DATABASE_MCP_SERVER', 'false').lower() == 'true':
+                    try:
+                        # Create the server asynchronously and get its tools
+                        fraud_server = asyncio.run(create_fraud_database_server())
+                        fraud_tools = fraud_server.get_tools()
+                        for tool in fraud_tools:
+                            self._register_tool(tool, "mcp_servers")
+                        logger.info(f"Fraud Database MCP server registered with {len(fraud_tools)} tools: {[t.name for t in fraud_tools]}")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Fraud Database MCP server tools: {e}")
+                
+                # External API MCP Server Tools  
+                if os.getenv('USE_EXTERNAL_API_MCP_SERVER', 'false').lower() == 'true':
+                    try:
+                        # Create the server asynchronously and get its tools
+                        api_server = asyncio.run(create_external_api_server())
+                        api_tools = api_server.get_tools()
+                        for tool in api_tools:
+                            self._register_tool(tool, "mcp_servers")
+                        logger.info(f"External API MCP server registered with {len(api_tools)} tools: {[t.name for t in api_tools]}")
+                    except Exception as e:
+                        logger.warning(f"Failed to register External API MCP server tools: {e}")
+                
+                # Graph Analysis MCP Server Tools
+                if os.getenv('USE_GRAPH_ANALYSIS_MCP_SERVER', 'false').lower() == 'true':
+                    try:
+                        # Create the server asynchronously and get its tools
+                        graph_server = asyncio.run(create_graph_analysis_server())
+                        graph_tools = graph_server.get_tools()
+                        for tool in graph_tools:
+                            self._register_tool(tool, "mcp_servers")
+                        logger.info(f"Graph Analysis MCP server registered with {len(graph_tools)} tools: {[t.name for t in graph_tools]}")
+                    except Exception as e:
+                        logger.warning(f"Failed to register Graph Analysis MCP server tools: {e}")
+
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")
 
@@ -806,6 +856,11 @@ def get_intelligence_tools() -> List[BaseTool]:
 def get_ml_ai_tools() -> List[BaseTool]:
     """Get machine learning and AI enhancement tools."""
     return tool_registry.get_tools_by_category("ml_ai")
+
+
+def get_mcp_server_tools() -> List[BaseTool]:
+    """Get internal MCP server tools (fraud database, external API, graph analysis)."""
+    return tool_registry.get_tools_by_category("mcp_servers")
 
 
 def get_essential_tools() -> List[BaseTool]:

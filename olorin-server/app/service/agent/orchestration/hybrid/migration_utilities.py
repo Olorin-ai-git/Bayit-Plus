@@ -304,7 +304,7 @@ class GraphSelector:
     async def _build_clean_graph(self) -> StateGraph:
         """Build clean graph (original implementation)"""
         
-        return await build_clean_investigation_graph()
+        return build_clean_investigation_graph()
     
     async def _build_orchestrator_graph(self) -> StateGraph:
         """Build orchestrator-driven graph"""

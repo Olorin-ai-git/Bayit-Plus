@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import ToolNode
+from langgraph.prebuilt import ToolNode, tools_condition
 from langchain_core.messages import BaseMessage, AIMessage, HumanMessage, SystemMessage
 
 from .hybrid_state_schema import (
@@ -33,15 +33,15 @@ from app.service.agent.orchestration.assistant import assistant
 from app.service.agent.orchestration.enhanced_routing import raw_data_or_investigation_routing
 
 # Import domain agents
-from app.service.agent.orchestration.domain_agents.network_agent import network_agent
-from app.service.agent.orchestration.domain_agents.device_agent import device_agent  
-from app.service.agent.orchestration.domain_agents.location_agent import location_agent
-from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent
-from app.service.agent.orchestration.domain_agents.authentication_agent import authentication_agent
-from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent
+from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node  
+from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
+from app.service.agent.orchestration.domain_agents.authentication_agent import authentication_agent_node
+from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 
 from app.service.agent.orchestration.enhanced_tool_executor import EnhancedToolNode
-from app.service.agent.orchestration.custom_tool_builder import get_custom_tools
+# from app.service.agent.orchestration.custom_tool_builder import get_custom_tools  # TODO: Fix this import
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -103,12 +103,12 @@ class HybridGraphBuilder:
             builder.add_node("safety_validation", self._safety_validation_node)
             
             # Add domain agents with hybrid tracking
-            builder.add_node("network_agent", self._create_enhanced_domain_agent("network", network_agent))
-            builder.add_node("device_agent", self._create_enhanced_domain_agent("device", device_agent))
-            builder.add_node("location_agent", self._create_enhanced_domain_agent("location", location_agent))
-            builder.add_node("logs_agent", self._create_enhanced_domain_agent("logs", logs_agent))
-            builder.add_node("authentication_agent", self._create_enhanced_domain_agent("authentication", authentication_agent))
-            builder.add_node("risk_agent", self._create_enhanced_domain_agent("risk", risk_agent))
+            builder.add_node("network_agent", self._create_enhanced_domain_agent("network", network_agent_node))
+            builder.add_node("device_agent", self._create_enhanced_domain_agent("device", device_agent_node))
+            builder.add_node("location_agent", self._create_enhanced_domain_agent("location", location_agent_node))
+            builder.add_node("logs_agent", self._create_enhanced_domain_agent("logs", logs_agent_node))
+            builder.add_node("authentication_agent", self._create_enhanced_domain_agent("authentication", authentication_agent_node))
+            builder.add_node("risk_agent", self._create_enhanced_domain_agent("risk", risk_agent_node))
             
             # Add summary and completion nodes
             builder.add_node("summary", self._enhanced_summary_node)
@@ -155,13 +155,47 @@ class HybridGraphBuilder:
         # Call original start_investigation
         base_result = await start_investigation(state, config)
         
-        # Initialize hybrid tracking
+        # Production safety: Validate base_result before merging
+        if not isinstance(base_result, dict):
+            logger.error(f"CRITICAL: start_investigation returned invalid type: {type(base_result)}")
+            raise ValueError(f"start_investigation must return dict, got {type(base_result)}")
+        
+        # Critical hybrid fields that must not be overwritten
+        PROTECTED_HYBRID_FIELDS = {
+            "decision_audit_trail", "ai_confidence", "ai_confidence_level", 
+            "investigation_strategy", "safety_overrides", "dynamic_limits",
+            "performance_metrics", "hybrid_system_version"
+        }
+        
+        # Check for dangerous overwrites in base_result
+        dangerous_overwrites = set(base_result.keys()) & PROTECTED_HYBRID_FIELDS
+        if dangerous_overwrites:
+            logger.warning(f"start_investigation attempting to overwrite protected fields: {dangerous_overwrites}")
+            # Remove dangerous keys from base_result to protect hybrid state
+            safe_base_result = {k: v for k, v in base_result.items() if k not in PROTECTED_HYBRID_FIELDS}
+        else:
+            safe_base_result = base_result
+        
+        # Safely merge state with validation
         enhanced_state = {
-            **base_result,
+            **state,  # Start with the full hybrid state
+            **safe_base_result,  # Merge in safe results only
             "hybrid_system_version": "1.0.0",
             "graph_selection_reason": "Hybrid intelligence system selected",
             "start_time": datetime.now().isoformat()
         }
+        
+        # Production safety: Validate critical hybrid fields are preserved
+        required_fields = ["investigation_id", "entity_id", "entity_type", "decision_audit_trail"]
+        missing_fields = [field for field in required_fields if field not in enhanced_state]
+        if missing_fields:
+            logger.error(f"CRITICAL: State merge lost required fields: {missing_fields}")
+            raise ValueError(f"State merge validation failed - missing fields: {missing_fields}")
+        
+        # Ensure decision_audit_trail is properly typed
+        if not isinstance(enhanced_state["decision_audit_trail"], list):
+            logger.error(f"CRITICAL: decision_audit_trail corrupted: {type(enhanced_state['decision_audit_trail'])}")
+            enhanced_state["decision_audit_trail"] = []
         
         # Add initial audit trail entry
         enhanced_state["decision_audit_trail"].append({
@@ -216,17 +250,21 @@ class HybridGraphBuilder:
         logger.debug(f"   AI-powered investigation velocity tracking")
         logger.debug(f"   Performance metrics: Real-time optimization")
         
-        # Call original assistant
-        base_result = await assistant(state, config)
+        # Call original assistant (synchronous function)
+        assistant_result = assistant(state, config)
         
-        # Update performance metrics
-        base_result["performance_metrics"]["investigation_velocity"] = (
-            base_result["performance_metrics"].get("investigation_velocity", 0) + 0.1
+        # Merge assistant result back into hybrid state
+        enhanced_state = state.copy()
+        enhanced_state.update(assistant_result)
+        
+        # Update performance metrics in the hybrid state
+        enhanced_state["performance_metrics"]["investigation_velocity"] = (
+            enhanced_state["performance_metrics"].get("investigation_velocity", 0) + 0.1
         )
         
         logger.debug(f"✅ Fraud investigation enhanced")
         
-        return base_result
+        return enhanced_state
     
     async def _ai_confidence_assessment_node(
         self,
@@ -680,8 +718,46 @@ class HybridGraphBuilder:
     async def _add_tool_nodes(self, builder: StateGraph, use_enhanced_tools: bool):
         """Add tool nodes to the graph"""
         
-        # Get available tools
-        tools = get_custom_tools()
+        # Get available tools using the same approach as clean graph builder
+        from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
+        from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool
+        
+        try:
+            # Initialize the tool registry
+            initialize_tools()
+            
+            # Get all tools from all categories (same as clean graph)
+            tools = get_tools_for_agent(
+                categories=[
+                    "olorin",           # Snowflake, Splunk, SumoLogic
+                    "threat_intelligence",  # AbuseIPDB, VirusTotal, Shodan
+                    "database",         # Database query tools
+                    "search",           # Vector search
+                    "blockchain",       # Crypto analysis
+                    "intelligence",     # OSINT, social media
+                    "ml_ai",           # ML-powered analysis
+                    "web",             # Web search and scraping
+                    "file_system",     # File operations
+                    "api",             # API tools
+                    "mcp_clients",     # MCP client tools
+                    "mcp_servers",     # Internal MCP servers
+                    "utility"          # Utility tools
+                ]
+            )
+            
+            # Add primary Snowflake tool (same as clean graph)
+            snowflake_tool = SnowflakeQueryTool()
+            if snowflake_tool not in tools:
+                tools.insert(0, snowflake_tool)
+                logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool")
+            
+            logger.info(f"📦 Loaded {len(tools)} tools for hybrid investigation")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to load tools: {str(e)}")
+            # Fallback to minimal tool set
+            tools = [SnowflakeQueryTool()]
+            logger.warning(f"⚠️ Using fallback tools: {len(tools)} tools")
         
         if use_enhanced_tools:
             # Use enhanced tool node with hybrid tracking
@@ -764,8 +840,18 @@ class HybridGraphBuilder:
         # Raw data flows to fraud investigation
         builder.add_edge("raw_data_node", "fraud_investigation")
         
-        # Fraud investigation flows to AI confidence assessment
-        builder.add_edge("fraud_investigation", "ai_confidence_assessment")
+        # Add tools_condition routing from fraud_investigation
+        builder.add_conditional_edges(
+            "fraud_investigation",
+            tools_condition,
+            {
+                "tools": "tools",
+                "__end__": "ai_confidence_assessment"  # Continue to AI confidence when no tools needed
+            }
+        )
+        
+        # Tools flow back to fraud investigation for continued processing
+        builder.add_edge("tools", "fraud_investigation")
         
         # AI confidence flows to safety validation
         builder.add_edge("ai_confidence_assessment", "safety_validation")

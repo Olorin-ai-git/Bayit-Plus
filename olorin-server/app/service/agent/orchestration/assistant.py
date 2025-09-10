@@ -39,13 +39,18 @@ def assistant(state: MessagesState, config: RunnableConfig):
     
     Handles LLM invocation with tools and progress reporting.
     """
-    olorin_header = get_config_value(
-        config, ["configurable", "agent_context"]
-    ).get_header()
+    # Safely extract agent context and header
+    agent_context = get_config_value(config, ["configurable", "agent_context"])
+    if agent_context and hasattr(agent_context, 'get_header'):
+        olorin_header = agent_context.get_header()
+    else:
+        # For hybrid graphs or when agent_context is not available, use empty header
+        logger.debug("No agent_context available or missing get_header method, using empty header")
+        olorin_header = {}
+    
     logger.debug(f"LangGraph State={state}")
 
-    # Extract investigation_id for progress reporting
-    agent_context = get_config_value(config, ["configurable", "agent_context"])
+    # Extract investigation_id for progress reporting (reuse agent_context from above)
     if agent_context:
         agent_context = rehydrate_agent_context(agent_context)
         md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
