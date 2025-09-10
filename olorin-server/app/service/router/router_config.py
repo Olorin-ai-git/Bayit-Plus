@@ -44,11 +44,13 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.performance_router import router as performance_router
     from app.router.autonomous_investigation_router import router as autonomous_router
     from app.router.health_router import router as health_router
+    from app.router.smoke_test_router import router as smoke_test_router
     from .. import example
 
     # Include routers in order of dependency
     app.include_router(health_router)  # Enhanced health endpoints (no auth required)
     app.include_router(auth_router)  # Authentication routes (no auth required)
+    app.include_router(smoke_test_router)  # Smoke test endpoints (no auth required)
     app.include_router(example.router)
     app.include_router(agent_router.router)
     app.include_router(api_router.router)

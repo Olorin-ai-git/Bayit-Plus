@@ -42,6 +42,7 @@ from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_
 
 from app.service.agent.orchestration.enhanced_tool_executor import EnhancedToolNode
 # from app.service.agent.orchestration.custom_tool_builder import get_custom_tools  # TODO: Fix this import
+from app.service.agent.orchestration.enhanced_tool_execution_logger import get_tool_execution_logger
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -66,6 +67,7 @@ class HybridGraphBuilder:
             confidence_engine=self.confidence_engine,
             safety_manager=self.safety_manager
         )
+        self.tool_execution_logger = None  # Will be initialized with investigation_id
         
     async def build_hybrid_investigation_graph(
         self,
@@ -151,6 +153,12 @@ class HybridGraphBuilder:
         logger.debug(f"   Entity: {state.get('entity_type')} - {state.get('entity_id')}")
         logger.debug(f"   Intelligence mode: {self.intelligence_mode}")
         logger.debug(f"   System: Hybrid Intelligence v{state.get('hybrid_system_version', '1.0.0')}")
+        
+        # Initialize enhanced tool execution logger for this investigation
+        investigation_id = state.get('investigation_id')
+        if investigation_id:
+            self.tool_execution_logger = get_tool_execution_logger(investigation_id)
+            logger.info(f"🔧 Enhanced Tool Execution Logger initialized for investigation: {investigation_id}")
         
         # Call original start_investigation
         base_result = await start_investigation(state, config)
@@ -780,8 +788,8 @@ class HybridGraphBuilder:
             logger.debug(f"   Enhanced tools: AI-optimized execution with comprehensive audit trail")
             
             try:
-                # Call original tool node
-                result = await tool_node.execute(state, config)
+                # Call original tool node using correct method
+                result = await tool_node.ainvoke(state, config)
                 
                 # Update tool execution tracking
                 result["tool_execution_attempts"] = result.get("tool_execution_attempts", 0) + 1
@@ -850,8 +858,9 @@ class HybridGraphBuilder:
             }
         )
         
-        # Tools flow back to fraud investigation for continued processing
-        builder.add_edge("tools", "fraud_investigation")
+        # CRITICAL FIX: Tools flow directly to orchestrator to ensure domain analysis
+        # This prevents the assistant from thinking it's complete after tool execution
+        builder.add_edge("tools", "hybrid_orchestrator")
         
         # AI confidence flows to safety validation
         builder.add_edge("ai_confidence_assessment", "safety_validation")

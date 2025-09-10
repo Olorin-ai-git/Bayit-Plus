@@ -909,18 +909,14 @@ Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich da
     async def _handle_domain_analysis(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle domain analysis phase - route to specialized agents."""
         
-        # In mock mode, skip domain analysis
+        # Domain agents handle mock mode internally - don't skip them
         import os
         test_mode = os.getenv('TEST_MODE', '').lower()
         
-        logger.debug(f"[SAFETY-CHECK-4] 🔒 DOMAIN ANALYSIS SAFETY CHECK (MOCK MODE)")
+        logger.debug(f"[SAFETY-CHECK-4] 🔒 DOMAIN ANALYSIS SAFETY CHECK (MODE DETECTION)")
         logger.debug(f"[SAFETY-CHECK-4]   Test mode: {test_mode}")
-        logger.debug(f"[SAFETY-CHECK-4]   Mock mode skip condition: {test_mode == 'mock'}")
-        
-        if test_mode == 'mock':
-            logger.debug(f"[SAFETY-CHECK-4]   ✅ TRIGGERED: Mock mode - skipping domain analysis")
-            logger.info("🎭 Mock mode: Skipping domain analysis, moving to summary")
-            return update_phase(state, "summary")
+        logger.debug(f"[SAFETY-CHECK-4]   Domain agents will run in: {'MOCK' if test_mode == 'mock' else 'LIVE'} mode")
+        logger.debug(f"[SAFETY-CHECK-4]   Domain agents handle mock behavior internally")
         
         domains_completed = state.get("domains_completed", [])
         orchestrator_loops = state.get("orchestrator_loops", 0)

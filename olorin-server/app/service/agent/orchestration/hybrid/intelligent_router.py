@@ -401,32 +401,59 @@ class IntelligentRouter:
         
         current_phase = state.get("current_phase", "initialization")
         snowflake_completed = state.get("snowflake_completed", False)
-        tools_used = len(state.get("tools_used", []))
+        snowflake_data = state.get("snowflake_data")
+        tools_used = state.get("tools_used", [])
+        tool_results = state.get("tool_results", {})
+        domain_findings = state.get("domain_findings", {})
+        domains_completed = state.get("domains_completed", [])
         
-        # Phase-based progression
-        if not snowflake_completed:
+        logger.debug(f"📋 Sequential routing state analysis:")
+        logger.debug(f"   current_phase: {current_phase}")
+        logger.debug(f"   snowflake_completed: {snowflake_completed}")
+        logger.debug(f"   snowflake_data: {bool(snowflake_data)}")
+        logger.debug(f"   tools_used: {len(tools_used)} tools")
+        logger.debug(f"   tool_results: {len(tool_results)} results")
+        logger.debug(f"   domain_findings: {len(domain_findings)} domains")
+        logger.debug(f"   domains_completed: {len(domains_completed)} completed")
+        
+        # Phase 1: Snowflake data collection
+        if not snowflake_completed and not snowflake_data:
+            logger.debug(f"🔄 Routing to Snowflake data collection")
             return {
                 "next_node": "fraud_investigation",
-                "reasoning": [reason, "Continue with Snowflake analysis"]
+                "reasoning": [reason, "Snowflake data collection required"]
             }
         
-        # Tool execution phase
-        if tools_used < 3:  # Minimum tools for comprehensive analysis
+        # Phase 2: Tool execution (only after Snowflake data is available)
+        if snowflake_data and len(tool_results) == 0:
+            logger.debug(f"🔧 Routing to tools execution - Snowflake data available")
             return {
-                "next_node": "tools",
-                "reasoning": [reason, "Execute additional tools for comprehensive evidence"]
+                "next_node": "fraud_investigation",  # Let fraud_investigation handle tool calls
+                "reasoning": [reason, "Execute analysis tools with Snowflake data"]
             }
         
-        # Domain analysis phase
-        domain_decision = await self._get_next_sequential_domain(state)
-        if domain_decision["next_node"] != "summary":
-            domain_decision["reasoning"] = [reason] + domain_decision["reasoning"]
+        # Phase 3: Domain analysis (CRITICAL FIX - ensure domain agents are triggered)
+        if len(tool_results) > 0 and len(domain_findings) == 0:
+            logger.debug(f"🎯 CRITICAL ROUTING: Tool results available, triggering domain analysis")
+            # Get first domain agent to start sequential domain analysis
+            domain_decision = await self._get_next_sequential_domain(state)
+            logger.info(f"🎯 ROUTING TO DOMAIN AGENT: {domain_decision['next_node']}")
+            domain_decision["reasoning"] = [reason, "CRITICAL: Start domain analysis with tool results"] + domain_decision["reasoning"]
             return domain_decision
         
-        # All domains complete
+        # Phase 4: Continue domain analysis
+        if len(tool_results) > 0 and len(domain_findings) < 5:  # Need more domain analysis
+            domain_decision = await self._get_next_sequential_domain(state)
+            if domain_decision["next_node"] != "summary":
+                logger.debug(f"🔄 Continue domain analysis: {domain_decision['next_node']}")
+                domain_decision["reasoning"] = [reason] + domain_decision["reasoning"]
+                return domain_decision
+        
+        # Phase 5: All domains complete - proceed to summary
+        logger.debug(f"✅ All analysis complete - routing to summary")
         return {
             "next_node": "summary",
-            "reasoning": [reason, "Sequential analysis complete"]
+            "reasoning": [reason, "Sequential analysis complete", f"Analyzed {len(domain_findings)} domains"]
         }
     
     async def _get_next_sequential_domain(
@@ -435,11 +462,31 @@ class IntelligentRouter:
     ) -> Dict[str, Any]:
         """Get next domain in sequential order"""
         
+        # Get completed domains from both possible sources
         domains_completed = set(state.get("domains_completed", []))
+        domain_findings = state.get("domain_findings", {})
+        
+        # Also check domain_findings keys for completion tracking
+        for domain_key in domain_findings.keys():
+            if any(domain in domain_key for domain in ["network", "device", "location", "logs", "authentication", "risk"]):
+                # Extract domain name from key (e.g., "network_analysis" -> "network")
+                for domain_name in ["network", "device", "location", "logs", "authentication", "risk"]:
+                    if domain_name in domain_key:
+                        domains_completed.add(domain_name)
+                        break
+        
         domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
+        
+        logger.debug(f"🎯 Domain completion analysis:")
+        logger.debug(f"   domains_completed list: {list(state.get('domains_completed', []))}")
+        logger.debug(f"   domain_findings keys: {list(domain_findings.keys())}")
+        logger.debug(f"   computed completed domains: {list(domains_completed)}")
+        logger.debug(f"   domain execution order: {domain_order}")
         
         for domain in domain_order:
             if domain not in domains_completed:
+                agent_node = f"{domain}_agent"
+                logger.info(f"🎯 Next domain agent: {agent_node} (domain: {domain})")
                 return {
                     "next_node": f"{domain}_agent",
                     "reasoning": [f"Sequential domain analysis: {domain}"]
