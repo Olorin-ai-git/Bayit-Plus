@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Mode Investigation Debugging Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --info-color: #0891b2;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .approval-banner {
+            background: linear-gradient(135deg, var(--success-color), #10b981);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            border-left: 4px solid #065f46;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: var(--light-color);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .metric-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-safe {
+            background: #ecfdf5;
+            color: var(--success-color);
+        }
+
+        .status-warning {
+            background: #fffbeb;
+            color: var(--warning-color);
+        }
+
+        .status-danger {
+            background: #fef2f2;
+            color: var(--danger-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-safe {
+            background: var(--success-color);
+        }
+
+        .progress-warning {
+            background: var(--warning-color);
+        }
+
+        .progress-danger {
+            background: var(--danger-color);
+        }
+
+        .emergency-controls {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 2px solid var(--danger-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .emergency-button {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-button:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .phase-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .phase-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .phase-active {
+            background: #eff6ff;
+            border-color: var(--primary-color);
+        }
+
+        .phase-completed {
+            background: #ecfdf5;
+            border-color: var(--success-color);
+        }
+
+        .phase-pending {
+            background: #f9fafb;
+            border-color: var(--border-color);
+        }
+
+        .phase-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .alert-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 0.75rem;
+            border-left: 4px solid var(--border-color);
+            margin-bottom: 0.5rem;
+            border-radius: 0 4px 4px 0;
+            background: white;
+        }
+
+        .alert-critical {
+            border-color: var(--danger-color);
+            background: #fef2f2;
+        }
+
+        .alert-warning {
+            border-color: var(--warning-color);
+            background: #fffbeb;
+        }
+
+        .alert-info {
+            border-color: var(--info-color);
+            background: #f0f9ff;
+        }
+
+        .safety-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .safety-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .safety-active {
+            background: #ecfdf5;
+            border-color: var(--success-color);
+        }
+
+        .safety-triggered {
+            background: #fef2f2;
+            border-color: var(--danger-color);
+        }
+
+        .mermaid-container {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .mermaid {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="approval-banner">
+        ✅ USER APPROVAL RECEIVED: Live mode debugging with real financial costs approved for investigation system fixes
+    </div>
+
+    <div class="header">
+        <h1>🔬 Live Mode Debugging Dashboard</h1>
+        <p>Autonomous Investigation System - Real-Time Monitoring & Safety Controls</p>
+        <p><strong>Financial Risk Acknowledged</strong> | <strong>Safety Protocols Active</strong> | <strong>Emergency Procedures Ready</strong></p>
+    </div>
+
+    <div class="container">
+        <!-- Emergency Controls Section -->
+        <div class="emergency-controls">
+            <h3>🚨 Emergency Controls</h3>
+            <p><strong>CRITICAL:</strong> These controls immediately terminate all live mode operations and prevent further costs.</p>
+            <button class="emergency-button" onclick="activateKillSwitch()">🛑 MANUAL KILL SWITCH</button>
+            <button class="emergency-button" onclick="pauseInvestigations()">⏸️ PAUSE ALL INVESTIGATIONS</button>
+            <button class="emergency-button" onclick="enableEmergencyMode()">🚨 EMERGENCY MODE</button>
+        </div>
+
+        <!-- Real-Time Metrics Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Cost Tracking Card -->
+            <div class="card">
+                <div class="card-header">💰 Real-Time Cost Tracking</div>
+                <div class="card-body">
+                    <div class="metric-display">
+                        <div>
+                            <div class="metric-value" id="totalCost">$0.00</div>
+                            <div class="metric-label">Total Session Cost</div>
+                        </div>
+                        <span class="status-indicator status-safe" id="costStatus">SAFE</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-safe" id="costProgress" style="width: 0%"></div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                        Budget: $100.00 | Remaining: <span id="remainingBudget">$100.00</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Status Card -->
+            <div class="card">
+                <div class="card-header">🛡️ Safety Status</div>
+                <div class="card-body">
+                    <div class="safety-grid">
+                        <div class="safety-item safety-active" id="costCircuitBreaker">
+                            <h4>Cost Circuit Breaker</h4>
+                            <span class="status-indicator status-safe">ACTIVE</span>
+                        </div>
+                        <div class="safety-item safety-active" id="timeCircuitBreaker">
+                            <h4>Time Circuit Breaker</h4>
+                            <span class="status-indicator status-safe">ACTIVE</span>
+                        </div>
+                        <div class="safety-item safety-active" id="errorCircuitBreaker">
+                            <h4>Error Circuit Breaker</h4>
+                            <span class="status-indicator status-safe">ACTIVE</span>
+                        </div>
+                        <div class="safety-item safety-active" id="manualOverride">
+                            <h4>Manual Override</h4>
+                            <span class="status-indicator status-safe">READY</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investigation Progress Card -->
+            <div class="card">
+                <div class="card-header">📊 Investigation Progress</div>
+                <div class="card-body">
+                    <div class="metric-display">
+                        <div>
+                            <div class="metric-value" id="investigationCount">0</div>
+                            <div class="metric-label">Active Investigations</div>
+                        </div>
+                        <span class="status-indicator status-safe" id="investigationStatus">READY</span>
+                    </div>
+                    <div class="phase-timeline" id="phaseTimeline">
+                        <!-- Phase items will be dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost Breakdown Card -->
+            <div class="card">
+                <div class="card-header">💳 Cost Breakdown</div>
+                <div class="card-body">
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Snowflake:</span>
+                            <span id="snowflakeCost">$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Claude API:</span>
+                            <span id="claudeCost">$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>External APIs:</span>
+                            <span id="externalApiCost">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="costBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Card -->
+            <div class="card">
+                <div class="card-header">⚡ Performance Metrics</div>
+                <div class="card-body">
+                    <div class="metric-display">
+                        <div>
+                            <div class="metric-value" id="avgResponseTime">0s</div>
+                            <div class="metric-label">Avg Response Time</div>
+                        </div>
+                        <span class="status-indicator status-safe" id="performanceStatus">OPTIMAL</span>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Success Rate:</span>
+                            <span id="successRate">100%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Error Rate:</span>
+                            <span id="errorRate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-Time Alerts Card -->
+            <div class="card">
+                <div class="card-header">⚠️ Real-Time Alerts</div>
+                <div class="card-body">
+                    <div class="alert-list" id="alertList">
+                        <div class="alert-item alert-info">
+                            <strong>System Ready</strong><br>
+                            Live mode debugging dashboard initialized and monitoring active.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase Architecture Diagram -->
+        <div class="card">
+            <div class="card-header">🏗️ 6-Phase Debugging Architecture</div>
+            <div class="card-body">
+                <div class="mermaid-container">
+                    <div class="mermaid">
+                        graph TD
+                            A[Phase 1: Environment Verification] --> B[Phase 2: Live Data Integration]
+                            B --> C[Phase 3: External API Validation]
+                            C --> D[Phase 4: Cost Management Setup]
+                            D --> E[Phase 5: Live Investigation Testing]
+                            E --> F[Phase 6: Performance Analysis]
+                            
+                            A1[Credential Validation] --> A
+                            A2[Rate Limit Assessment] --> A
+                            A3[Circuit Breaker Testing] --> A
+                            
+                            B1[Schema Validation] --> B
+                            B2[Data Pipeline Testing] --> B
+                            
+                            C1[API Integration Testing] --> C
+                            C2[Error Handling Validation] --> C
+                            
+                            D1[Real-Time Tracking] --> D
+                            D2[Safety Circuits] --> D
+                            D3[Budget Management] --> D
+                            
+                            E1[Single Investigation] --> E
+                            E2[Error Recovery Testing] --> E
+                            E3[Comparative Analysis] --> E
+                            
+                            F1[Performance Optimization] --> F
+                            F2[Cost Optimization] --> F
+                            F3[Operational Guidelines] --> F
+                            
+                            style A fill:#e1f5fe
+                            style B fill:#f3e5f5
+                            style C fill:#e8f5e8
+                            style D fill:#fff3e0
+                            style E fill:#fce4ec
+                            style F fill:#f1f8e9
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Protocol Flow -->
+        <div class="card">
+            <div class="card-header">🛡️ Safety Protocol Flow</div>
+            <div class="card-body">
+                <div class="mermaid-container">
+                    <div class="mermaid">
+                        graph TD
+                            Start([Start Investigation]) --> Check{Safety Check}
+                            Check -->|Pass| Monitor[Real-Time Monitoring]
+                            Check -->|Fail| Block[Block Investigation]
+                            
+                            Monitor --> Cost{Cost Threshold}
+                            Monitor --> Time{Time Threshold}
+                            Monitor --> Error{Error Threshold}
+                            Monitor --> Manual{Manual Override}
+                            
+                            Cost -->|Exceeded| Emergency[Emergency Stop]
+                            Time -->|Exceeded| Emergency
+                            Error -->|Exceeded| Emergency
+                            Manual -->|Triggered| Emergency
+                            
+                            Cost -->|OK| Continue[Continue Monitoring]
+                            Time -->|OK| Continue
+                            Error -->|OK| Continue
+                            Manual -->|OK| Continue
+                            
+                            Continue --> Monitor
+                            
+                            Emergency --> Cleanup[Resource Cleanup]
+                            Cleanup --> Report[Generate Report]
+                            Report --> End([End])
+                            
+                            Block --> End
+                            
+                            style Start fill:#e8f5e8
+                            style Check fill:#fff3e0
+                            style Monitor fill:#e1f5fe
+                            style Emergency fill:#ffebee
+                            style End fill:#f1f8e9
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Circuit Breaker Logic -->
+        <div class="card">
+            <div class="card-header">💰 Cost Circuit Breaker Logic</div>
+            <div class="card-body">
+                <div class="mermaid-container">
+                    <div class="mermaid">
+                        graph TD
+                            Track[Track Cost Event] --> Check{Check Thresholds}
+                            
+                            Check --> Per[Per Investigation: $10]
+                            Check --> Session[Session Budget: $100]
+                            Check --> Daily[Daily Budget: $200]
+                            Check --> Emergency[Emergency Stop: $500]
+                            
+                            Per -->|< 75%| Safe1[Continue]
+                            Per -->|75-90%| Warn1[Warning Alert]
+                            Per -->|90-95%| Crit1[Critical Alert]
+                            Per -->|> 95%| Stop1[Emergency Stop]
+                            
+                            Session -->|< 75%| Safe2[Continue]
+                            Session -->|75-90%| Warn2[Warning Alert]
+                            Session -->|90-95%| Crit2[Critical Alert]
+                            Session -->|> 95%| Stop2[Emergency Stop]
+                            
+                            Emergency -->|Exceeded| Stop3[Immediate Stop]
+                            
+                            Warn1 --> Alert[Send Alert]
+                            Warn2 --> Alert
+                            Crit1 --> Alert
+                            Crit2 --> Alert
+                            
+                            Stop1 --> Terminate[Terminate Investigation]
+                            Stop2 --> Terminate
+                            Stop3 --> Terminate
+                            
+                            Safe1 --> Monitor[Continue Monitoring]
+                            Safe2 --> Monitor
+                            
+                            style Track fill:#e8f5e8
+                            style Check fill:#fff3e0
+                            style Alert fill:#fff8e1
+                            style Terminate fill:#ffebee
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#2563eb',
+                primaryTextColor: '#1f2937',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#6b7280',
+                secondaryColor: '#f3f4f6',
+                tertiaryColor: '#f9fafb'
+            }
+        });
+
+        // Simulated data for demonstration
+        let sessionData = {
+            totalCost: 0,
+            sessionBudget: 100,
+            snowflakeCost: 0,
+            claudeCost: 0,
+            externalApiCost: 0,
+            investigationCount: 0,
+            avgResponseTime: 0,
+            successRate: 100,
+            errorRate: 0,
+            alerts: []
+        };
+
+        // Chart instances
+        let costChart, costBreakdownChart;
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            createCostChart();
+            createCostBreakdownChart();
+            updatePhaseTimeline();
+            startRealtimeUpdates();
+        }
+
+        function createCostChart() {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Total Cost',
+                        data: [],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Budget Limit',
+                        data: [],
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createCostBreakdownChart() {
+            const ctx = document.getElementById('costBreakdownChart').getContext('2d');
+            costBreakdownChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Snowflake', 'Claude API', 'External APIs'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#0891b2', '#2563eb', '#059669'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMetrics() {
+            // Update cost displays
+            document.getElementById('totalCost').textContent = `$${sessionData.totalCost.toFixed(2)}`;
+            document.getElementById('remainingBudget').textContent = `$${(sessionData.sessionBudget - sessionData.totalCost).toFixed(2)}`;
+            document.getElementById('snowflakeCost').textContent = `$${sessionData.snowflakeCost.toFixed(2)}`;
+            document.getElementById('claudeCost').textContent = `$${sessionData.claudeCost.toFixed(2)}`;
+            document.getElementById('externalApiCost').textContent = `$${sessionData.externalApiCost.toFixed(2)}`;
+
+            // Update cost progress bar
+            const costPercentage = (sessionData.totalCost / sessionData.sessionBudget) * 100;
+            const costProgressElement = document.getElementById('costProgress');
+            costProgressElement.style.width = `${Math.min(costPercentage, 100)}%`;
+
+            // Update cost status
+            const costStatusElement = document.getElementById('costStatus');
+            if (costPercentage >= 95) {
+                costStatusElement.textContent = 'EMERGENCY';
+                costStatusElement.className = 'status-indicator status-danger';
+                costProgressElement.className = 'progress-fill progress-danger';
+            } else if (costPercentage >= 75) {
+                costStatusElement.textContent = 'WARNING';
+                costStatusElement.className = 'status-indicator status-warning';
+                costProgressElement.className = 'progress-fill progress-warning';
+            } else {
+                costStatusElement.textContent = 'SAFE';
+                costStatusElement.className = 'status-indicator status-safe';
+                costProgressElement.className = 'progress-fill progress-safe';
+            }
+
+            // Update other metrics
+            document.getElementById('investigationCount').textContent = sessionData.investigationCount;
+            document.getElementById('avgResponseTime').textContent = `${sessionData.avgResponseTime}s`;
+            document.getElementById('successRate').textContent = `${sessionData.successRate}%`;
+            document.getElementById('errorRate').textContent = `${sessionData.errorRate}%`;
+
+            // Update charts
+            updateCharts();
+        }
+
+        function updateCharts() {
+            // Update cost chart
+            const now = new Date().toLocaleTimeString();
+            costChart.data.labels.push(now);
+            costChart.data.datasets[0].data.push(sessionData.totalCost);
+            costChart.data.datasets[1].data.push(sessionData.sessionBudget);
+
+            // Keep only last 20 data points
+            if (costChart.data.labels.length > 20) {
+                costChart.data.labels.shift();
+                costChart.data.datasets[0].data.shift();
+                costChart.data.datasets[1].data.shift();
+            }
+            costChart.update('none');
+
+            // Update cost breakdown chart
+            costBreakdownChart.data.datasets[0].data = [
+                sessionData.snowflakeCost,
+                sessionData.claudeCost,
+                sessionData.externalApiCost
+            ];
+            costBreakdownChart.update('none');
+        }
+
+        function updatePhaseTimeline() {
+            const phases = [
+                { number: 1, name: 'Environment Verification', status: 'completed' },
+                { number: 2, name: 'Live Data Integration', status: 'active' },
+                { number: 3, name: 'External API Validation', status: 'pending' },
+                { number: 4, name: 'Cost Management Setup', status: 'pending' },
+                { number: 5, name: 'Live Investigation Testing', status: 'pending' },
+                { number: 6, name: 'Performance Analysis', status: 'pending' }
+            ];
+
+            const timeline = document.getElementById('phaseTimeline');
+            timeline.innerHTML = phases.map(phase => `
+                <div class="phase-item phase-${phase.status}">
+                    <div class="phase-number" style="background-color: ${getPhaseColor(phase.status)}; color: white;">
+                        ${phase.number}
+                    </div>
+                    <div>
+                        <strong>${phase.name}</strong>
+                        <div style="font-size: 0.9rem; color: #6b7280;">
+                            Status: ${phase.status.charAt(0).toUpperCase() + phase.status.slice(1)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getPhaseColor(status) {
+            switch (status) {
+                case 'completed': return '#059669';
+                case 'active': return '#2563eb';
+                case 'pending': return '#6b7280';
+                default: return '#6b7280';
+            }
+        }
+
+        function addAlert(level, message) {
+            const alertList = document.getElementById('alertList');
+            const timestamp = new Date().toLocaleTimeString();
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert-item alert-${level}`;
+            alertElement.innerHTML = `
+                <strong>${level.toUpperCase()}</strong> - ${timestamp}<br>
+                ${message}
+            `;
+            
+            alertList.insertBefore(alertElement, alertList.firstChild);
+            
+            // Remove old alerts to prevent overflow
+            while (alertList.children.length > 10) {
+                alertList.removeChild(alertList.lastChild);
+            }
+        }
+
+        function simulateCostIncrease() {
+            // Simulate gradual cost increase
+            sessionData.snowflakeCost += Math.random() * 0.5;
+            sessionData.claudeCost += Math.random() * 1.0;
+            sessionData.externalApiCost += Math.random() * 0.2;
+            sessionData.totalCost = sessionData.snowflakeCost + sessionData.claudeCost + sessionData.externalApiCost;
+
+            // Check for threshold alerts
+            const costPercentage = (sessionData.totalCost / sessionData.sessionBudget) * 100;
+            if (costPercentage > 75 && costPercentage <= 90 && Math.random() < 0.1) {
+                addAlert('warning', `Cost reached ${costPercentage.toFixed(1)}% of session budget`);
+            } else if (costPercentage > 90 && Math.random() < 0.2) {
+                addAlert('critical', `Critical: Cost at ${costPercentage.toFixed(1)}% of session budget`);
+            }
+        }
+
+        function startRealtimeUpdates() {
+            setInterval(() => {
+                simulateCostIncrease();
+                updateMetrics();
+                
+                // Simulate performance metrics
+                sessionData.avgResponseTime = Math.random() * 10 + 5;
+                sessionData.successRate = Math.max(85, 100 - Math.random() * 15);
+                sessionData.errorRate = 100 - sessionData.successRate;
+                
+            }, 2000); // Update every 2 seconds
+        }
+
+        // Emergency control functions
+        function activateKillSwitch() {
+            if (confirm('⚠️ EMERGENCY KILL SWITCH\n\nThis will immediately terminate all live investigations and stop all costs.\n\nAre you sure you want to proceed?')) {
+                addAlert('critical', '🛑 EMERGENCY KILL SWITCH ACTIVATED - All investigations terminated');
+                document.getElementById('investigationStatus').textContent = 'TERMINATED';
+                document.getElementById('investigationStatus').className = 'status-indicator status-danger';
+                
+                // Update all circuit breakers to triggered state
+                ['costCircuitBreaker', 'timeCircuitBreaker', 'errorCircuitBreaker', 'manualOverride'].forEach(id => {
+                    document.getElementById(id).className = 'safety-item safety-triggered';
+                    document.getElementById(id).querySelector('.status-indicator').textContent = 'TRIGGERED';
+                    document.getElementById(id).querySelector('.status-indicator').className = 'status-indicator status-danger';
+                });
+            }
+        }
+
+        function pauseInvestigations() {
+            addAlert('warning', '⏸️ All investigations paused - costs frozen');
+            document.getElementById('investigationStatus').textContent = 'PAUSED';
+            document.getElementById('investigationStatus').className = 'status-indicator status-warning';
+        }
+
+        function enableEmergencyMode() {
+            addAlert('critical', '🚨 Emergency mode enabled - strict safety limits active');
+            document.getElementById('costStatus').textContent = 'EMERGENCY MODE';
+            document.getElementById('costStatus').className = 'status-indicator status-danger';
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

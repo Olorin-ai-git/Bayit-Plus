@@ -186,10 +186,24 @@ IMPORTANT: While following the standard investigation process, give special atte
                             break
                 
                 if is_tool_execution:
-                    logger.info("🧪 Mock LLM: Skipping additional tools in mock mode")
-                    # In tool execution phase, just return a message without tool calls
-                    # This will allow the graph to progress
-                    return AIMessage(content="In mock mode, skipping additional tool execution.")
+                    logger.info("🧪 Mock LLM: Generating tool calls for domain analysis")
+                    # Fix 2: Generate tool calls for different domains instead of skipping
+                    # Need tools for: network, device, location, logs, risk_aggregation
+                    
+                    # Simulate tool selection for comprehensive domain coverage
+                    domain_tools = [
+                        {"name": "virustotal_ip_analysis", "args": {"ip_address": entity_id}},  # network domain
+                        {"name": "splunk_query", "args": {"entity_id": entity_id, "query_type": "device_analysis"}},  # device domain  
+                        {"name": "geoip_lookup", "args": {"ip_address": entity_id}},  # location domain
+                        {"name": "sumo_logic_query", "args": {"entity_id": entity_id, "query_type": "behavior_logs"}},  # logs domain
+                        {"name": "ml_anomaly_detection", "args": {"entity_id": entity_id, "entity_type": entity_type}}  # risk analysis
+                    ]
+                    
+                    # Return AIMessage with tool calls for domain analysis
+                    return AIMessage(
+                        content="Selecting tools for comprehensive domain analysis: network reputation, device patterns, location analysis, behavior logs, and anomaly detection.",
+                        tool_calls=domain_tools
+                    )
                 
                 logger.info("🧪 Mock LLM: Generating Snowflake tool call")
                 
@@ -722,11 +736,13 @@ Use the snowflake_query_tool immediately."""
         logger.debug(f"[SAFETY-CHECK-2] 🔒 TOOL EXECUTION SAFETY CHECK (MOCK MODE)")
         logger.debug(f"[SAFETY-CHECK-2]   Test mode: {test_mode}")
         logger.debug(f"[SAFETY-CHECK-2]   Tools used count: {len(tools_used)}")
-        logger.debug(f"[SAFETY-CHECK-2]   Mock mode skip condition: {test_mode == 'mock' and len(tools_used) >= 1}")
+        # Fix 2: Mock Mode Domain Completion - Need tools for all 5 domains
+        min_tools_for_domains = 5  # network, device, location, logs, risk_aggregation
+        logger.debug(f"[SAFETY-CHECK-2]   Mock mode skip condition: {test_mode == 'mock' and len(tools_used) >= min_tools_for_domains}")
         
-        if test_mode == 'mock' and len(tools_used) >= 1:
-            logger.debug(f"[SAFETY-CHECK-2]   ✅ TRIGGERED: Mock mode skip after {len(tools_used)} tools")
-            logger.info(f"🎭 Mock mode: Skipping to domain analysis after {len(tools_used)} tools")
+        if test_mode == 'mock' and len(tools_used) >= min_tools_for_domains:
+            logger.debug(f"[SAFETY-CHECK-2]   ✅ TRIGGERED: Mock mode skip after {len(tools_used)} tools (sufficient for all domains)")
+            logger.info(f"🎭 Mock mode: Skipping to domain analysis after {len(tools_used)} tools (allows all 5 domains)")
             return update_phase(state, "domain_analysis")
         
         # In live mode: Allow adequate tool execution for domain analysis

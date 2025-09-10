@@ -1535,12 +1535,14 @@ class UnifiedAutonomousTestRunner:
         
         # CRITICAL FIX: Use proper LangGraph orchestration with hybrid intelligence
         try:
-            # Create investigation graph using feature flags (clean vs hybrid)
+            # TEMPORARY FIX: Force clean graph to test mock mode domain completion fixes
+            # The clean graph has the fixes for mock mode tool execution
+            from app.service.agent.orchestration.hybrid.migration_utilities import GraphType
             graph = await get_investigation_graph(
                 investigation_id=context.investigation_id,
-                entity_type=context.entity_type.value
-            )
-            
+                entity_type=context.entity_type.value,
+                force_graph_type=GraphType.CLEAN  # Force clean graph to test fixes
+            )            
             # Create proper AgentContext for orchestration system
             from app.models.agent_context import AgentContext
             from app.models.agent_headers import OlorinHeader, AuthContext
