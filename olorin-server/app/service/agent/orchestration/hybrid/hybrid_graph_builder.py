@@ -247,6 +247,94 @@ class HybridGraphBuilder:
         
         return base_result
     
+    async def _hybrid_aware_assistant(
+        self,
+        state: HybridInvestigationState,
+        config: Optional[Dict] = None
+    ) -> HybridInvestigationState:
+        """
+        Hybrid-aware assistant that provides proper context to LLM and maintains hybrid graph flow.
+        
+        This function ensures the LLM gets AI recommendations in the prompt context
+        so it can naturally prioritize Snowflake, and maintains proper hybrid state management.
+        """
+        
+        logger.info(f"🧠 Hybrid-aware assistant preparing LLM context with AI recommendations")
+        
+        # Get AI recommendations to include in LLM prompt context
+        ai_decisions = state.get("ai_decisions", [])
+        ai_context = ""
+        
+        if ai_decisions:
+            latest_decision = ai_decisions[-1]
+            recommended_action = latest_decision.recommended_action
+            reasoning = latest_decision.reasoning
+            
+            logger.info(f"   AI recommendation: {recommended_action}")
+            logger.info(f"   AI reasoning: {reasoning}")
+            
+            # Create context for LLM that includes AI recommendations
+            ai_context = f"""
+
+HYBRID INTELLIGENCE GUIDANCE:
+- AI Confidence Engine recommends: {recommended_action}
+- Reasoning: {' '.join(reasoning) if reasoning else 'Strategic investigation approach'}
+- Current investigation strategy: {state.get('investigation_strategy', 'adaptive')}
+- Snowflake completed: {state.get('snowflake_completed', False)}
+
+Please follow this guidance when selecting tools and investigation approach.
+"""
+        
+        # Create enhanced messages with AI guidance context
+        messages = state.get("messages", [])
+        
+        # Add AI guidance as system context if we have recommendations
+        if ai_context.strip():
+            # Add system message with AI guidance before the latest message
+            if messages:
+                enhanced_messages = messages[:-1] + [
+                    SystemMessage(content=ai_context),
+                    messages[-1]
+                ] if len(messages) > 0 else [SystemMessage(content=ai_context)]
+            else:
+                enhanced_messages = [SystemMessage(content=ai_context)]
+        else:
+            enhanced_messages = messages
+        
+        # Create enhanced state for LLM with AI guidance
+        llm_state = state.copy()
+        llm_state["messages"] = enhanced_messages
+        
+        logger.info(f"   🤖 Running LLM with AI guidance context")
+        
+        # Call LLM assistant with enhanced context
+        assistant_result = assistant(llm_state, config)
+        
+        # Merge LLM result back into hybrid state while preserving hybrid fields
+        enhanced_state = state.copy()
+        
+        # Update with LLM results but preserve hybrid-specific fields
+        for key, value in assistant_result.items():
+            if key not in ["ai_decisions", "confidence_evolution", "decision_audit_trail", 
+                          "performance_metrics", "hybrid_system_version", "feature_flags_active"]:
+                enhanced_state[key] = value
+        
+        # Add audit trail for hybrid assistant execution
+        enhanced_state["decision_audit_trail"].append({
+            "timestamp": datetime.now().isoformat(),
+            "decision_type": "hybrid_assistant_execution",
+            "details": {
+                "ai_guidance_provided": bool(ai_context.strip()),
+                "recommended_action": ai_decisions[-1].recommended_action if ai_decisions else "none",
+                "llm_response_received": True,
+                "messages_count": len(enhanced_state.get("messages", []))
+            }
+        })
+        
+        logger.info(f"✅ Hybrid-aware assistant completed with LLM guidance")
+        
+        return enhanced_state
+    
     async def _enhanced_fraud_investigation(
         self,
         state: HybridInvestigationState,
@@ -258,12 +346,8 @@ class HybridGraphBuilder:
         logger.debug(f"   AI-powered investigation velocity tracking")
         logger.debug(f"   Performance metrics: Real-time optimization")
         
-        # Call original assistant (synchronous function)
-        assistant_result = assistant(state, config)
-        
-        # Merge assistant result back into hybrid state
-        enhanced_state = state.copy()
-        enhanced_state.update(assistant_result)
+        # Use hybrid-aware assistant that respects AI recommendations
+        enhanced_state = await self._hybrid_aware_assistant(state, config)
         
         # Update performance metrics in the hybrid state
         enhanced_state["performance_metrics"]["investigation_velocity"] = (
