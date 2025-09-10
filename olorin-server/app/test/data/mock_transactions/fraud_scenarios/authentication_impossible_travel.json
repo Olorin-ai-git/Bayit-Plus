@@ -1,0 +1,257 @@
+{
+  "scenario_name": "authentication_impossible_travel",
+  "description": "Account accessed from geographically impossible locations within minutes, indicating credential theft or sharing",
+  "investigation_complexity": "medium",
+  "expected_fraud_indicators": [
+    "Simultaneous logins from distant geographic locations",
+    "Travel time physically impossible between login locations",
+    "Different device signatures from impossible travel locations",
+    "Behavior patterns inconsistent across locations"
+  ],
+  "transaction": {
+    "transaction_id": "TXN_AUTH_002",
+    "amount": 899.50,
+    "currency": "USD",
+    "timestamp": "2025-09-08T22:15:47Z",
+    "merchant": {
+      "name": "Digital Services Marketplace",
+      "category": "digital_goods",
+      "location": {
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "city": "London",
+        "state": "England",
+        "country": "United Kingdom",
+        "postal_code": "SW1A 1AA"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_AUTH_002",
+    "account_age_days": 1456,
+    "historical_patterns": {
+      "avg_transaction_amount": 127.33,
+      "common_locations": [
+        {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "city": "San Francisco",
+          "state": "CA",
+          "country": "United States",
+          "postal_code": "94102"
+        }
+      ],
+      "typical_spending_categories": ["subscription_services", "cloud_storage", "productivity_tools"],
+      "authentication_patterns": {
+        "typical_login_times": ["08:00-10:00", "20:00-23:00"],
+        "usual_devices": ["iPad", "MacBook Air"],
+        "consistent_timezone": "America/Los_Angeles",
+        "travel_frequency": "rare"
+      }
+    }
+  },
+  "device": {
+    "device_id": "DEV_AUTH_IMPOSSIBLE_001",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      "screen_resolution": "1920x1080",
+      "timezone": "Europe/London",
+      "language": "en-GB",
+      "platform": "Win32",
+      "browser": "Chrome"
+    },
+    "first_seen": "2025-09-08T22:12:30Z",
+    "is_trusted": false,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [
+        "User typically uses iOS/macOS devices, current session Windows",
+        "Timezone changed from America/Los_Angeles to Europe/London",
+        "Language preference changed from en-US to en-GB",
+        "Screen resolution differs from typical mobile/laptop usage"
+      ],
+      "device_reputation": {
+        "first_time_device": true,
+        "multiple_user_associations": false,
+        "known_fraud_device": false,
+        "geographic_anomaly": true
+      }
+    }
+  },
+  "location": {
+    "latitude": 51.5074,
+    "longitude": -0.1278,
+    "city": "London",
+    "state": "England",
+    "country": "United Kingdom",
+    "postal_code": "SW1A 1AA",
+    "fraud_indicators": {
+      "distance_from_last_login": 5367.8,
+      "impossible_travel": {
+        "detected": true,
+        "last_location": {
+          "latitude": 37.7749,
+          "longitude": -122.4194,
+          "city": "San Francisco",
+          "state": "CA",
+          "country": "United States"
+        },
+        "last_activity_time": "2025-09-08T22:05:12Z",
+        "travel_time_required_hours": 11.0,
+        "actual_time_elapsed_hours": 0.17,
+        "impossibility_factor": 64.7
+      },
+      "simultaneous_sessions": {
+        "detected": true,
+        "active_sessions": 2,
+        "session_locations": [
+          "San Francisco, CA, US",
+          "London, England, UK"
+        ]
+      }
+    }
+  },
+  "network": {
+    "ip_address": "198.51.100.156",
+    "proxy_detected": false,
+    "vpn_detected": false,
+    "tor_detected": false,
+    "country_code": "GB",
+    "asn": "AS2856",
+    "isp": "British Telecom",
+    "fraud_indicators": {
+      "ip_reputation": {
+        "malicious": false,
+        "suspicious": false,
+        "bot_activity": false,
+        "abuse_reports": 0
+      },
+      "geographic_anomaly": {
+        "detected": true,
+        "user_never_accessed_from_country": true,
+        "no_travel_indicators": true,
+        "sudden_location_change": true
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 2,
+      "transactions_last_day": 2,
+      "unique_devices_last_day": 2,
+      "unique_locations_last_day": 2,
+      "fraud_flags": {
+        "high_velocity": true,
+        "multiple_devices": true,
+        "multiple_locations": true,
+        "unusual_pattern": true
+      }
+    },
+    "session_info": {
+      "session_duration": 189,
+      "pages_visited": 7,
+      "time_on_checkout": 45,
+      "fraud_indicators": {
+        "rushed_checkout": false,
+        "minimal_browsing": false,
+        "automated_behavior_suspected": false,
+        "behavior_differs_from_sf_session": true
+      }
+    },
+    "authentication_anomalies": {
+      "login_attempts": 1,
+      "failed_attempts": 0,
+      "password_resets_recent": 0,
+      "2fa_bypassed": false,
+      "security_questions_skipped": false,
+      "simultaneous_login_detected": true,
+      "concurrent_sessions": {
+        "total_active": 2,
+        "locations": ["San Francisco", "London"],
+        "devices": ["MacBook Air", "Windows Desktop"],
+        "last_sf_activity": "2025-09-08T22:14:30Z",
+        "last_london_activity": "2025-09-08T22:15:47Z"
+      }
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-09-08T22:05:12Z",
+      "event": "Last activity from San Francisco",
+      "details": "User browsing subscription services from MacBook Air"
+    },
+    {
+      "timestamp": "2025-09-08T22:12:30Z",
+      "event": "Login from London detected",
+      "details": "Windows device, 7 minutes after SF activity, 5367 miles away"
+    },
+    {
+      "timestamp": "2025-09-08T22:13:45Z",
+      "event": "Concurrent browsing detected",
+      "details": "Both SF and London sessions active simultaneously"
+    },
+    {
+      "timestamp": "2025-09-08T22:14:30Z",
+      "event": "SF session continues activity",
+      "details": "MacBook Air still active while London session proceeds"
+    },
+    {
+      "timestamp": "2025-09-08T22:15:47Z",
+      "event": "London transaction completed",
+      "details": "Digital goods purchase while SF session remains active"
+    }
+  ],
+  "expected_agent_findings": {
+    "authentication_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "Impossible travel detected: 5367 miles in 10 minutes",
+        "Simultaneous active sessions from different continents",
+        "No authentication challenges for impossible geographic jump",
+        "Concurrent device usage patterns suggest credential sharing/theft"
+      ]
+    },
+    "device_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Device fingerprint completely different from user history",
+        "Windows desktop usage unprecedented for mobile-first user",
+        "Timezone and language preferences inconsistent",
+        "Two devices active simultaneously across continents"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "Impossible travel factor 64.7x faster than commercial aviation",
+        "User has no travel history or international presence",
+        "Simultaneous activity from 5367 miles apart",
+        "No gradual location transitions suggesting legitimate travel"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "MEDIUM",
+      "key_findings": [
+        "Clean IP reputation but unprecedented geographic usage",
+        "No VPN/proxy indicators suggest genuine UK location",
+        "Network patterns normal but geographically suspicious for user"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Concurrent session activity confirms impossible travel",
+        "Different behavioral patterns between locations",
+        "Transaction completed while original session remained active"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 89,
+    "fraud_classification": "CONFIRMED_FRAUD",
+    "primary_fraud_type": "Impossible Travel - Credential Compromise",
+    "recommended_action": "SUSPEND_ACCOUNT_AND_INVESTIGATE",
+    "confidence_level": 0.92,
+    "attack_classification": "credential_theft_or_sharing",
+    "security_impact": "concurrent_unauthorized_access"
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "scenario_name": "authentication_mfa_bypass",
+  "description": "Sophisticated attack bypassing multi-factor authentication through SIM swap and social engineering to gain account access",
+  "investigation_complexity": "critical",
+  "expected_fraud_indicators": [
+    "MFA bypass through SIM swap attack",
+    "Social engineering indicators targeting customer service",
+    "Phone number takeover preceding account access",
+    "Immediate high-value transactions after MFA bypass"
+  ],
+  "transaction": {
+    "transaction_id": "TXN_AUTH_004",
+    "amount": 4299.99,
+    "currency": "USD",
+    "timestamp": "2025-09-08T15:42:33Z",
+    "merchant": {
+      "name": "Luxury Tech Emporium",
+      "category": "electronics",
+      "location": {
+        "latitude": 25.7617,
+        "longitude": -80.1918,
+        "city": "Miami",
+        "state": "FL",
+        "country": "United States",
+        "postal_code": "33101"
+      }
+    }
+  },
+  "user": {
+    "user_id": "USER_AUTH_004",
+    "account_age_days": 1823,
+    "historical_patterns": {
+      "avg_transaction_amount": 156.78,
+      "common_locations": [
+        {
+          "latitude": 42.3601,
+          "longitude": -71.0589,
+          "city": "Boston",
+          "state": "MA",
+          "country": "United States",
+          "postal_code": "02101"
+        }
+      ],
+      "typical_spending_categories": ["grocery", "dining", "transportation", "utilities"],
+      "authentication_patterns": {
+        "typical_login_times": ["06:00-08:00", "18:00-21:00"],
+        "usual_devices": ["iPhone 15 Pro", "MacBook Pro"],
+        "strong_2fa_enabled": true,
+        "backup_methods": ["SMS", "authenticator_app", "hardware_key"],
+        "security_conscious": true
+      }
+    }
+  },
+  "device": {
+    "device_id": "DEV_AUTH_MFA_001",
+    "fingerprint": {
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "screen_resolution": "2880x1800",
+      "timezone": "America/New_York",
+      "language": "en-US",
+      "platform": "MacIntel",
+      "browser": "Chrome"
+    },
+    "first_seen": "2025-09-08T15:38:12Z",
+    "is_trusted": false,
+    "fraud_indicators": {
+      "fingerprint_inconsistencies": [
+        "MacOS device matches user pattern but never seen before",
+        "Chrome browser while user typically uses Safari",
+        "Device ID not in trusted device list despite matching fingerprint",
+        "Screen resolution matches but hardware signatures differ"
+      ],
+      "device_reputation": {
+        "first_time_device": true,
+        "multiple_user_associations": false,
+        "known_fraud_device": false,
+        "spoofing_indicators": {
+          "detected": true,
+          "fingerprint_manipulation": true,
+          "hardware_mismatch": true
+        }
+      }
+    }
+  },
+  "location": {
+    "latitude": 25.7617,
+    "longitude": -80.1918,
+    "city": "Miami",
+    "state": "FL",
+    "country": "United States",
+    "postal_code": "33101",
+    "fraud_indicators": {
+      "distance_from_last_login": 1255.8,
+      "impossible_travel": {
+        "detected": false,
+        "last_location": {
+          "latitude": 42.3601,
+          "longitude": -71.0589,
+          "city": "Boston",
+          "state": "MA"
+        },
+        "last_activity_time": "2025-09-07T19:30:00Z",
+        "travel_time_required_hours": 3.0,
+        "actual_time_elapsed_hours": 20.2
+      },
+      "social_engineering_indicators": {
+        "detected": true,
+        "phone_carrier_interaction": true,
+        "sim_swap_timeline_correlation": true
+      }
+    }
+  },
+  "network": {
+    "ip_address": "198.51.100.201",
+    "proxy_detected": false,
+    "vpn_detected": false,
+    "tor_detected": false,
+    "country_code": "US",
+    "asn": "AS7922",
+    "isp": "Comcast Cable Communications",
+    "fraud_indicators": {
+      "ip_reputation": {
+        "malicious": false,
+        "suspicious": false,
+        "bot_activity": false,
+        "abuse_reports": 1
+      },
+      "geographic_consistency": {
+        "matches_location": true,
+        "legitimate_isp": true,
+        "residential_connection": true
+      }
+    }
+  },
+  "behavioral_signals": {
+    "velocity_indicators": {
+      "transactions_last_hour": 1,
+      "transactions_last_day": 1,
+      "unique_devices_last_day": 1,
+      "fraud_flags": {
+        "high_velocity": false,
+        "multiple_devices": false,
+        "unusual_pattern": true,
+        "high_value_after_travel": true
+      }
+    },
+    "session_info": {
+      "session_duration": 263,
+      "pages_visited": 15,
+      "time_on_checkout": 67,
+      "fraud_indicators": {
+        "rushed_checkout": false,
+        "minimal_browsing": false,
+        "automated_behavior_suspected": false,
+        "deliberate_high_value_targeting": true
+      }
+    },
+    "authentication_anomalies": {
+      "login_attempts": 1,
+      "failed_attempts": 0,
+      "password_resets_recent": 0,
+      "2fa_bypassed": true,
+      "security_questions_skipped": false,
+      "mfa_bypass_indicators": {
+        "sim_swap_detected": true,
+        "phone_number_hijacked": true,
+        "carrier_social_engineering": true,
+        "sms_2fa_compromised": true,
+        "authenticator_app_intact": true,
+        "hardware_key_unused": true,
+        "backup_codes_not_used": true
+      },
+      "social_engineering_timeline": {
+        "carrier_contact": "2025-09-08T14:45:00Z",
+        "sim_swap_completed": "2025-09-08T15:12:00Z",
+        "first_login_attempt": "2025-09-08T15:38:12Z",
+        "sms_interception_confirmed": true
+      }
+    }
+  },
+  "investigation_timeline": [
+    {
+      "timestamp": "2025-09-08T14:45:00Z",
+      "event": "Phone carrier contact initiated",
+      "details": "Social engineering attack on carrier customer service begins"
+    },
+    {
+      "timestamp": "2025-09-08T15:12:00Z",
+      "event": "SIM swap completed",
+      "details": "Attacker successfully transfers phone number to attacker-controlled SIM"
+    },
+    {
+      "timestamp": "2025-09-08T15:30:00Z",
+      "event": "SMS interception testing",
+      "details": "Attacker tests SMS reception on hijacked phone number"
+    },
+    {
+      "timestamp": "2025-09-08T15:38:12Z",
+      "event": "Account login with valid credentials",
+      "details": "Attacker uses known/stolen password, triggers SMS 2FA"
+    },
+    {
+      "timestamp": "2025-09-08T15:38:45Z",
+      "event": "SMS 2FA code intercepted",
+      "details": "2FA code received on attacker's SIM, authentication successful"
+    },
+    {
+      "timestamp": "2025-09-08T15:40:00Z",
+      "event": "Account exploration and limit testing",
+      "details": "Attacker reviews account limits and payment methods"
+    },
+    {
+      "timestamp": "2025-09-08T15:42:33Z",
+      "event": "High-value fraudulent purchase",
+      "details": "Luxury electronics purchased using compromised account"
+    }
+  ],
+  "expected_agent_findings": {
+    "authentication_agent": {
+      "risk_level": "CRITICAL",
+      "key_findings": [
+        "MFA bypass through confirmed SIM swap attack",
+        "Social engineering timeline correlates with carrier interaction",
+        "SMS 2FA compromised while app-based 2FA and hardware key unused",
+        "Authentication successful despite device never seen before",
+        "Attack sophistication indicates organized fraud operation"
+      ]
+    },
+    "device_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Device fingerprint partially matches user patterns (spoofing attempt)",
+        "Chrome browser usage unprecedented for Safari-only user",
+        "Hardware signatures inconsistent despite matching screen resolution",
+        "First-time device despite appearing legitimate"
+      ]
+    },
+    "location_analysis_agent": {
+      "risk_level": "MEDIUM",
+      "key_findings": [
+        "Geographic travel from Boston to Miami plausible (20+ hours)",
+        "Location change coincides with SIM swap timeline",
+        "No impossible travel but sudden location change suspicious"
+      ]
+    },
+    "network_analysis_agent": {
+      "risk_level": "LOW",
+      "key_findings": [
+        "Clean IP reputation from legitimate ISP",
+        "Residential connection consistent with Miami location",
+        "No proxy/VPN usage indicates genuine geographic location"
+      ]
+    },
+    "logs_analysis_agent": {
+      "risk_level": "HIGH",
+      "key_findings": [
+        "Session behavior normal but high-value transaction suspicious",
+        "Account exploration phase suggests attacker reconnaissance",
+        "Timeline correlation with phone carrier social engineering"
+      ]
+    }
+  },
+  "investigation_verdict": {
+    "overall_risk_score": 95,
+    "fraud_classification": "CONFIRMED_FRAUD",
+    "primary_fraud_type": "SIM Swap Attack with MFA Bypass",
+    "recommended_action": "IMMEDIATE_BLOCK_AND_CONTACT_USER",
+    "confidence_level": 0.97,
+    "attack_classification": "social_engineering_mfa_bypass",
+    "security_impact": "phone_number_compromise",
+    "carrier_notification_required": true
+  }
+}
