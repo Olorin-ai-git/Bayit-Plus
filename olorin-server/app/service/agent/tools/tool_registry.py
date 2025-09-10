@@ -181,6 +181,40 @@ class ToolRegistry:
         self._initialization_lock = threading.RLock()
         self._initialization_in_progress = False
 
+    def _safe_async_run(self, coro_func):
+        """
+        Safely run async coroutine function, handling existing event loop conflicts.
+        
+        This method detects if we're already in an async context and handles
+        the common 'asyncio.run() cannot be called from a running event loop' error.
+        """
+        try:
+            # Check if there's already a running event loop
+            loop = asyncio.get_running_loop()
+            logger.info("🔄 Detected running event loop - creating task for MCP server registration")
+            # Create a task in the existing event loop instead of asyncio.run()
+            try:
+                coro = coro_func()
+                task = loop.create_task(coro)
+                # We can't wait for the task in sync context, so schedule it and return None
+                # This is expected behavior - MCP servers will be registered asynchronously
+                logger.info("📅 MCP server registration task scheduled in existing event loop")
+                return None
+            except Exception as e:
+                logger.warning(f"Failed to create MCP server task: {e}")
+                return None
+        except RuntimeError:
+            # No event loop running - safe to use asyncio.run()
+            try:
+                # Now create and run the coroutine
+                coro = coro_func()
+                result = asyncio.run(coro)
+                logger.info("✅ Successfully executed async MCP server registration")
+                return result
+            except Exception as e:
+                logger.warning(f"❌ MCP server async execution failed: {e}")
+                return None
+
     def _ensure_initialized(self) -> None:
         """Ensure the tool registry is initialized with validated tool availability."""
         # Fast path: if already initialized and has tools, return immediately
@@ -599,8 +633,8 @@ class ToolRegistry:
                 if os.getenv('USE_FRAUD_DATABASE_MCP_SERVER', 'false').lower() == 'true':
                     try:
                         # Create the server asynchronously and get its tools
-                        fraud_server = asyncio.run(create_fraud_database_server())
-                        fraud_tools = fraud_server.get_tools()
+                        fraud_server = self._safe_async_run(create_fraud_database_server)
+                        fraud_tools = fraud_server.get_tools() if fraud_server else []
                         for tool in fraud_tools:
                             self._register_tool(tool, "mcp_servers")
                         logger.info(f"Fraud Database MCP server registered with {len(fraud_tools)} tools: {[t.name for t in fraud_tools]}")
@@ -611,8 +645,8 @@ class ToolRegistry:
                 if os.getenv('USE_EXTERNAL_API_MCP_SERVER', 'false').lower() == 'true':
                     try:
                         # Create the server asynchronously and get its tools
-                        api_server = asyncio.run(create_external_api_server())
-                        api_tools = api_server.get_tools()
+                        api_server = self._safe_async_run(create_external_api_server)
+                        api_tools = api_server.get_tools() if api_server else []
                         for tool in api_tools:
                             self._register_tool(tool, "mcp_servers")
                         logger.info(f"External API MCP server registered with {len(api_tools)} tools: {[t.name for t in api_tools]}")
@@ -623,8 +657,8 @@ class ToolRegistry:
                 if os.getenv('USE_GRAPH_ANALYSIS_MCP_SERVER', 'false').lower() == 'true':
                     try:
                         # Create the server asynchronously and get its tools
-                        graph_server = asyncio.run(create_graph_analysis_server())
-                        graph_tools = graph_server.get_tools()
+                        graph_server = self._safe_async_run(create_graph_analysis_server)
+                        graph_tools = graph_server.get_tools() if graph_server else []
                         for tool in graph_tools:
                             self._register_tool(tool, "mcp_servers")
                         logger.info(f"Graph Analysis MCP server registered with {len(graph_tools)} tools: {[t.name for t in graph_tools]}")

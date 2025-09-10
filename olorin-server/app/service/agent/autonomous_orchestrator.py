@@ -77,11 +77,11 @@ class AutonomousOrchestrator:
     """Master Orchestrator for AI-driven investigation coordination."""
     
     def __init__(self):
-        self.llm = ChatOpenAI(
-            model="claude-3-opus-20240229",
-            temperature=0.1,
-            max_tokens=4000
-        )
+        from app.service.llm_manager import get_llm_manager
+        
+        # Use the LLM manager which respects SELECTED_MODEL setting
+        llm_manager = get_llm_manager()
+        self.llm = llm_manager.get_selected_model()
         self.active_agents = {}
         self.handoff_history = []
         self.orchestration_state = {}

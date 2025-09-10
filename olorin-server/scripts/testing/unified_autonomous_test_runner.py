@@ -1205,18 +1205,20 @@ class UnifiedAutonomousTestRunner:
                 metadata={"investigation_phase": "execution", "domains_analyzed": list(agent_results.keys())}
             )
             
-            # Validate and analyze results
+            # Calculate final metrics BEFORE validation
+            result.final_risk_score = self._extract_final_risk_score(agent_results)
+            result.confidence = self._extract_confidence_score(agent_results)
+            
+            # Set initial status (validation can override this)
+            result.status = "completed"
+            
+            # Validate and analyze results (can set status to "failed" if validation fails)
             validation_results = await self._validate_investigation_results(context, result)
             result.validation_results = validation_results
             
             # Collect performance metrics
             performance_data = await self._collect_performance_metrics(context, result)
             result.performance_data = performance_data
-            
-            # Calculate final metrics
-            result.final_risk_score = self._extract_final_risk_score(agent_results)
-            result.confidence = self._extract_confidence_score(agent_results)
-            result.status = "completed"
             
             # Log reasoning step for final risk assessment
             self.chain_of_thought_logger.log_reasoning_step(
@@ -1234,16 +1236,16 @@ class UnifiedAutonomousTestRunner:
                 metadata={"investigation_phase": "conclusion", "scenario": scenario_name}
             )
             
-            # Complete unified journey tracking
+            # Complete unified journey tracking with actual result status
             self.unified_journey_tracker.complete_journey_tracking(
                 investigation_id,
-                status="completed"
+                status=result.status  # Use actual status (could be "failed" if validation failed)
             )
             
-            # Complete investigation logging
+            # Complete investigation logging with actual result status
             self.investigation_logger.complete_investigation_logging(
                 investigation_id, 
-                final_status="completed"
+                final_status=result.status  # Use actual status (could be "failed" if validation failed)
             )
             
             # Stop server log capture and save to investigation folder
@@ -2612,6 +2614,24 @@ class UnifiedAutonomousTestRunner:
         self.metrics.end_time = time.time()
         self.metrics.total_duration = self.metrics.end_time - self.metrics.start_time
         self.metrics.scenarios_tested = len(self.results)
+        
+        # Validate status consistency and quality thresholds before counting
+        for result in self.results:
+            if result.status not in ["completed", "failed"]:
+                self.logger.warning(f"⚠️ Result {result.investigation_id} has invalid status: {result.status}, defaulting to 'failed'")
+                result.status = "failed"
+            
+            # Additional check: investigations marked "completed" but with very low scores should be failed
+            if result.status == "completed" and result.validation_results:
+                overall_score = result.validation_results.get("overall_score", 0)
+                if overall_score < 70:  # Quality threshold
+                    self.logger.warning(f"⚠️ Investigation {result.investigation_id} marked completed but has low quality score {overall_score:.1f}/100, changing status to failed")
+                    result.status = "failed"
+                    if not result.errors:
+                        result.errors = []
+                    result.errors.append(f"Investigation quality score {overall_score:.1f}/100 is below acceptable threshold of 70/100")
+        
+        # Now calculate final counts after status validation
         self.metrics.scenarios_passed = sum(1 for r in self.results if r.status == "completed")
         self.metrics.scenarios_failed = sum(1 for r in self.results if r.status == "failed")
         

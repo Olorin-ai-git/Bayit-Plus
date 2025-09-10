@@ -278,17 +278,20 @@ IMPORTANT: While following the standard investigation process, give special atte
             return llm
             
         except Exception as e:
-            # Fallback to direct Anthropic initialization if LLM manager fails
+            # Fallback to direct initialization if LLM manager fails
             logger.warning(f"LLM Manager failed, falling back to direct initialization: {e}")
             
-            settings = get_settings_for_env()
-            api_key = get_firebase_secret(settings.anthropic_api_key_secret)
+            from app.service.config_loader import ConfigLoader
+            config_loader = ConfigLoader()
+            
+            # Respect USE_FIREBASE_SECRETS setting
+            api_key = config_loader.load_secret('ANTHROPIC_API_KEY')
             
             if not api_key:
-                raise RuntimeError(f"No API key available - check Firebase Secrets configuration")
+                raise RuntimeError(f"No API key available - check .env file or Firebase Secrets configuration")
             
-            # Use a cost-effective model as fallback instead of expensive Opus
-            fallback_model = os.getenv('SELECTED_MODEL', 'claude-3-5-sonnet-20240620')  # Sonnet is cheaper than Opus
+            # Use the configured model from SELECTED_MODEL
+            fallback_model = os.getenv('SELECTED_MODEL', 'claude-3-5-sonnet-20240620')
             logger.info(f"🤖 Orchestrator using fallback model: {fallback_model}")
             
             return ChatAnthropic(

@@ -97,25 +97,11 @@ def assistant(state: MessagesState, config: RunnableConfig):
 
 def _get_llm_with_tools():
     """Get configured LLM with tools for graph-based tool execution."""
-    from app.service.config import get_settings_for_env
-    from langchain_anthropic import ChatAnthropic
-    from app.utils.firebase_secrets import get_firebase_secret
+    from app.service.llm_manager import get_llm_manager
     
-    settings = get_settings_for_env()
-    
-    # Get API key from Firebase Secrets Manager ONLY
-    api_key = get_firebase_secret(settings.anthropic_api_key_secret)
-    if not api_key:
-        raise RuntimeError(f"Anthropic API key must be configured in Firebase Secrets Manager as '{settings.anthropic_api_key_secret}'")
-    
-    # Create LLM with Claude Opus 4.1
-    llm = ChatAnthropic(
-        api_key=api_key,
-        model="claude-opus-4-1-20250805",  # Claude Opus 4.1
-        temperature=0.7,
-        max_tokens=4000,
-        timeout=60,
-    )
+    # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
+    llm_manager = get_llm_manager()
+    llm = llm_manager.get_selected_model()
     
     # Get tools from the graph configuration - these are already configured
     from app.service.agent.orchestration.graph_builder import _get_configured_tools

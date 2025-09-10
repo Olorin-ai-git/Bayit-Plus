@@ -783,39 +783,111 @@ class HybridGraphBuilder:
             config: Optional[Dict] = None
         ) -> HybridInvestigationState:
             
-            logger.debug(f"🔧 Hybrid Intelligence enhanced tool execution starting")
-            logger.debug(f"   Tool tracking: Execution attempts, results quality, performance efficiency")
-            logger.debug(f"   Enhanced tools: AI-optimized execution with comprehensive audit trail")
+            logger.info(f"🔧 CRITICAL: Enhanced tool execution starting - fixing state management")
+            logger.info(f"   Current tools_used: {len(state.get('tools_used', []))}")
+            logger.info(f"   Current tool_results: {len(state.get('tool_results', {}))}")
             
             try:
                 # Call original tool node using correct method
-                result = await tool_node.ainvoke(state, config)
+                tool_result = await tool_node.ainvoke(state, config)
+                logger.info(f"🔧 Tool execution result type: {type(tool_result)}")
+                
+                # CRITICAL FIX: Process tool messages and update state properly
+                updated_state = state.copy()
+                
+                if isinstance(tool_result, dict) and "messages" in tool_result:
+                    tool_messages = tool_result["messages"]
+                    logger.info(f"🔧 Processing {len(tool_messages)} tool messages")
+                    
+                    # Extract tool results from messages
+                    tools_used = updated_state.get("tools_used", []).copy()
+                    tool_results = updated_state.get("tool_results", {}).copy()
+                    
+                    for msg in tool_messages:
+                        if hasattr(msg, 'name') and hasattr(msg, 'content'):
+                            tool_name = msg.name
+                            tool_content = msg.content
+                            
+                            # Update tools_used
+                            if tool_name not in tools_used:
+                                tools_used.append(tool_name)
+                                logger.info(f"🔧 Added tool to tools_used: {tool_name}")
+                            
+                            # Update tool_results
+                            tool_results[tool_name] = tool_content
+                            logger.info(f"🔧 Added tool result for: {tool_name}")
+                    
+                    # Update state with processed results
+                    updated_state["tools_used"] = tools_used
+                    updated_state["tool_results"] = tool_results
+                    
+                    # CRITICAL: Update phase after first successful tool execution
+                    if len(tools_used) > 0 and updated_state.get("current_phase") == "initialization":
+                        updated_state["current_phase"] = "tool_execution"
+                        logger.info(f"🔧 PHASE UPDATE: initialization → tool_execution")
+                    
+                    # Also add the original messages
+                    updated_state["messages"] = updated_state.get("messages", []) + tool_messages
+                    
+                    logger.info(f"🔧 FIXED: Updated tools_used to {len(tools_used)} tools")
+                    logger.info(f"🔧 FIXED: Updated tool_results to {len(tool_results)} results")
+                elif isinstance(tool_result, list):
+                    # Handle list of messages
+                    logger.info(f"🔧 Processing {len(tool_result)} tool messages (list format)")
+                    
+                    tools_used = updated_state.get("tools_used", []).copy()
+                    tool_results = updated_state.get("tool_results", {}).copy()
+                    
+                    for msg in tool_result:
+                        if hasattr(msg, 'name') and hasattr(msg, 'content'):
+                            tool_name = msg.name
+                            tool_content = msg.content
+                            
+                            if tool_name not in tools_used:
+                                tools_used.append(tool_name)
+                            tool_results[tool_name] = tool_content
+                    
+                    updated_state["tools_used"] = tools_used
+                    updated_state["tool_results"] = tool_results
+                    
+                    # CRITICAL: Update phase after first successful tool execution
+                    if len(tools_used) > 0 and updated_state.get("current_phase") == "initialization":
+                        updated_state["current_phase"] = "tool_execution"
+                        logger.info(f"🔧 PHASE UPDATE: initialization → tool_execution")
+                    
+                    updated_state["messages"] = updated_state.get("messages", []) + tool_result
                 
                 # Update tool execution tracking
-                result["tool_execution_attempts"] = result.get("tool_execution_attempts", 0) + 1
+                updated_state["tool_execution_attempts"] = updated_state.get("tool_execution_attempts", 0) + 1
                 
                 # Update performance metrics
-                result["performance_metrics"]["tool_execution_efficiency"] = (
-                    len(result.get("tool_results", {})) / max(1, len(result.get("tools_used", [])))
+                current_tools_used = len(updated_state.get("tools_used", []))
+                current_tool_results = len(updated_state.get("tool_results", {}))
+                updated_state["performance_metrics"]["tool_execution_efficiency"] = (
+                    current_tool_results / max(1, current_tools_used)
                 )
                 
                 # Add tool execution to audit trail
-                result["decision_audit_trail"].append({
+                updated_state["decision_audit_trail"].append({
                     "timestamp": datetime.now().isoformat(),
                     "decision_type": "tool_execution",
                     "details": {
-                        "tools_executed": len(result.get("tools_used", [])),
-                        "execution_attempt": result.get("tool_execution_attempts", 0),
-                        "results_obtained": len(result.get("tool_results", {}))
+                        "tools_executed": current_tools_used,
+                        "execution_attempt": updated_state.get("tool_execution_attempts", 0),
+                        "results_obtained": current_tool_results,
+                        "state_update_successful": True
                     }
                 })
                 
-                logger.debug(f"✅ Enhanced tool execution completed")
+                logger.info(f"✅ CRITICAL FIX: Enhanced tool execution completed successfully")
+                logger.info(f"   Final tools_used: {current_tools_used}")
+                logger.info(f"   Final tool_results: {current_tool_results}")
                 
-                return result
+                return updated_state
                 
             except Exception as e:
                 logger.error(f"❌ Enhanced tool execution failed: {str(e)}")
+                logger.exception("Full traceback:")
                 
                 # Add error to state
                 state["errors"].append({

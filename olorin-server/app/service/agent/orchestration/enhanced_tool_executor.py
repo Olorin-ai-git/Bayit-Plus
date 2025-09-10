@@ -114,9 +114,18 @@ class EnhancedToolNode(ToolNode):
         # Validate configurations
         self._validate_config()
         
-        # Tool health tracking
+        # Tool health tracking - Initialize proper health manager
+        self.health_manager = ToolHealthManager()
         self.tool_metrics: Dict[str, ToolHealthMetrics] = {}
         self._initialize_metrics()
+        
+        # Initialize health manager with our tools
+        for tool in self.tools:
+            if isinstance(tool, BaseTool):
+                # Add tool to health manager
+                self.health_manager.health_checks[tool.name] = ToolHealthMetrics(tool_name=tool.name)
+                # Ensure circuit breaker starts in CLOSED state (working)
+                self.health_manager.health_checks[tool.name].circuit_state = CircuitState.CLOSED
         
     def _validate_config(self):
         """Validate configuration parameters."""
@@ -153,22 +162,37 @@ class EnhancedToolNode(ToolNode):
         Returns:
             Updated state with tool responses
         """
+        logger.info(f"🔧 EnhancedToolNode.ainvoke called with input type: {type(input)}")
+        
         # Extract messages from input
         if isinstance(input, dict) and "messages" in input:
             messages = input["messages"]
+            logger.info(f"🔧 Extracted {len(messages)} messages from dict input")
         else:
             # Handle direct message input
             messages = input if isinstance(input, list) else [input]
+            logger.info(f"🔧 Processing {len(messages)} direct messages")
         
         # Process each message that requires tool invocation
         result_messages = []
+        tool_calls_found = 0
         
-        for message in messages:
+        for message_idx, message in enumerate(messages):
+            logger.debug(f"🔧 Processing message {message_idx + 1}/{len(messages)}: {type(message)}")
+            
             if isinstance(message, AIMessage) and message.tool_calls:
-                for tool_call in message.tool_calls:
+                tool_calls_found += len(message.tool_calls)
+                logger.info(f"🔧 Found {len(message.tool_calls)} tool calls in AIMessage")
+                
+                for tool_idx, tool_call in enumerate(message.tool_calls):
+                    tool_name = tool_call.get("name", "unknown")
+                    tool_id = tool_call.get("id", "")
+                    logger.info(f"🔧 Executing tool {tool_idx + 1}/{len(message.tool_calls)}: {tool_name} (id: {tool_id})")
+                    
                     try:
                         # Execute with resilience
                         result = await self._execute_tool_with_resilience(tool_call, config)
+                        logger.info(f"🔧 ✅ Tool {tool_name} executed successfully, result type: {type(result)}")
                         
                         # Create tool message with result
                         tool_message = ToolMessage(
@@ -177,12 +201,13 @@ class EnhancedToolNode(ToolNode):
                             name=tool_call.get("name", "unknown")
                         )
                         result_messages.append(tool_message)
+                        logger.debug(f"🔧 Created ToolMessage for {tool_name}")
                         
                     except Exception as e:
                         # Sanitize error message for security
                         safe_error_msg = sanitize_exception_message(e)
                         error_category = get_error_category(e)
-                        logger.error(f"Tool execution failed - {error_category}: {safe_error_msg}")
+                        logger.error(f"🔧 ❌ Tool {tool_name} execution failed - {error_category}: {safe_error_msg}")
                         
                         # Create safe error tool message
                         tool_message = ToolMessage(
@@ -191,15 +216,24 @@ class EnhancedToolNode(ToolNode):
                             name=tool_call.get("name", "unknown")
                         )
                         result_messages.append(tool_message)
+                        logger.debug(f"🔧 Created error ToolMessage for {tool_name}")
+            else:
+                logger.debug(f"🔧 Message {message_idx + 1} is not an AIMessage with tool_calls")
+        
+        logger.info(f"🔧 Tool execution summary: {tool_calls_found} tool calls found, {len(result_messages)} results generated")
         
         # If no tool calls were processed, use parent implementation
         if not result_messages:
+            logger.info(f"🔧 No tool calls processed, delegating to parent ToolNode")
             return await super().ainvoke(input, config)
         
         # Return updated state
         if isinstance(input, dict):
-            return {"messages": result_messages}
+            result = {"messages": result_messages}
+            logger.info(f"🔧 Returning dict result with {len(result_messages)} messages")
+            return result
         else:
+            logger.info(f"🔧 Returning list result with {len(result_messages)} messages")
             return result_messages
     
     async def _execute_tool_with_resilience(self, tool_call: Dict[str, Any], config: Optional[RunnableConfig]) -> Any:
@@ -361,12 +395,24 @@ class EnhancedToolNode(ToolNode):
     def _get_tool_by_name(self, name: str) -> Optional[BaseTool]:
         """Get tool by name with input validation."""
         if not name or not isinstance(name, str):
-            logger.warning(f"Invalid tool name: {name}")
+            logger.warning(f"🔧 Invalid tool name: {name}")
             return None
-            
+        
+        logger.debug(f"🔧 Looking for tool: '{name}' among {len(self.tools)} available tools")
+        
+        # Log all available tool names for debugging
+        available_tools = []
+        for tool in self.tools:
+            if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
+                available_tools.append(tool.name)
+        logger.debug(f"🔧 Available tools: {available_tools}")
+        
         for tool in self.tools:
             if isinstance(tool, BaseTool) and hasattr(tool, 'name') and tool.name == name:
+                logger.debug(f"🔧 ✅ Found matching tool: {tool.name}")
                 return tool
+        
+        logger.error(f"🔧 ❌ Tool '{name}' not found in available tools: {available_tools}")
         return None
     
     async def _execute_with_timeout(self, tool: BaseTool, args: Dict[str, Any], config: Optional[RunnableConfig], timeout: float = 30.0) -> Any:
@@ -419,6 +465,49 @@ class EnhancedToolNode(ToolNode):
                 if not metrics or metrics.circuit_state != CircuitState.OPEN:
                     working_tools.append(tool)
         return working_tools
+    
+    async def _emit_tool_event(self, event_type: str, tool_name: str, event_data: Dict[str, Any]):
+        """
+        Emit tool execution event via WebSocket and event handlers.
+        
+        Args:
+            event_type: Type of event (started, completed, failed, skipped)
+            tool_name: Name of the tool
+            event_data: Additional event data
+        """
+        try:
+            # Sanitize event data before broadcasting
+            sanitized_event_data = sanitize_websocket_event_data(event_data)
+            
+            event = {
+                "type": event_type,
+                "tool_name": tool_name,
+                "timestamp": datetime.now().isoformat(),
+                "investigation_id": self.investigation_id,
+                "data": sanitized_event_data
+            }
+            
+            # Emit to registered event handlers
+            for handler in _tool_event_handlers:
+                try:
+                    await handler(event)
+                except Exception as e:
+                    logger.warning(f"Tool event handler failed: {e}")
+            
+            # Emit via WebSocket if investigation_id is available
+            if self.investigation_id:
+                try:
+                    from app.router.handlers.websocket_handler import notify_websocket_connections
+                    await notify_websocket_connections(self.investigation_id, {
+                        "type": "tool_execution_event",
+                        "event": event
+                    })
+                except ImportError:
+                    logger.debug("WebSocket handler not available for tool events")
+                except Exception as e:
+                    logger.warning(f"Failed to emit tool event via WebSocket: {e}")
+        except Exception as e:
+            logger.error(f"Critical error in _emit_tool_event: {e}")
 
 
 class ToolHealthManager:
@@ -501,46 +590,6 @@ class ToolHealthManager:
             return sum(latencies) / len(latencies) if latencies else 0.0
         
         return sorted(tools, key=get_avg_latency)
-    
-    async def _emit_tool_event(self, event_type: str, tool_name: str, event_data: Dict[str, Any]):
-        """
-        Emit tool execution event via WebSocket and event handlers.
-        
-        Args:
-            event_type: Type of event (started, completed, failed, skipped)
-            tool_name: Name of the tool
-            event_data: Additional event data
-        """
-        # Sanitize event data before broadcasting
-        sanitized_event_data = sanitize_websocket_event_data(event_data)
-        
-        event = {
-            "type": event_type,
-            "tool_name": tool_name,
-            "timestamp": datetime.now().isoformat(),
-            "investigation_id": self.investigation_id,
-            "data": sanitized_event_data
-        }
-        
-        # Emit to registered event handlers
-        for handler in _tool_event_handlers:
-            try:
-                await handler(event)
-            except Exception as e:
-                logger.warning(f"Tool event handler failed: {e}")
-        
-        # Emit via WebSocket if investigation_id is available
-        if self.investigation_id:
-            try:
-                from app.router.handlers.websocket_handler import notify_websocket_connections
-                await notify_websocket_connections(self.investigation_id, {
-                    "type": "tool_execution_event",
-                    "event": event
-                })
-            except ImportError:
-                logger.debug("WebSocket handler not available for tool events")
-            except Exception as e:
-                logger.warning(f"Failed to emit tool event via WebSocket: {e}")
 
 
 def register_tool_event_handler(handler):

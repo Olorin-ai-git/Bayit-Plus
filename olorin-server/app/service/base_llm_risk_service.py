@@ -49,7 +49,9 @@ class BaseLLMRiskService(ABC, Generic[T]):
             return llm_manager.verification_model_id
         except Exception as e:
             logger.warning(f"Failed to get verification model from LLM Manager: {e}")
-            return "gemini-1.5-flash"  # Cost-effective fallback
+            # Use default verification model from environment or LLM_VERIFICATION_MODEL
+            import os
+            return os.getenv('LLM_VERIFICATION_MODEL', 'gpt-3.5-turbo')
 
     @abstractmethod
     def get_agent_name(self) -> str:
