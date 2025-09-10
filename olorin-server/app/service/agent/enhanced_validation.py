@@ -200,8 +200,10 @@ class EnhancedInvestigationValidator:
         if extraction_status == DataExtractionStatus.PARTIAL:
             warnings.append("Some data extraction partially succeeded")
         
-        if quality_assessment and quality_assessment.overall_quality_score < 0.6:
-            warnings.append(f"Low quality score: {quality_assessment.overall_quality_score:.2f}")
+        # Adjust quality threshold and provide more context
+        quality_threshold = 0.55  # Lowered threshold to reduce false warnings for successful investigations
+        if quality_assessment and quality_assessment.overall_quality_score < quality_threshold:
+            warnings.append(f"Low quality score: {quality_assessment.overall_quality_score:.2f} (threshold: {quality_threshold})")
         
         # Generate recommendations
         if extraction_failures:

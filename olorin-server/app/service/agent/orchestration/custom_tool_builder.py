@@ -23,7 +23,7 @@ from abc import ABC, abstractmethod
 import json
 
 from langchain_core.tools import BaseTool, StructuredTool
-from langchain_core.pydantic_v1 import BaseModel, Field, create_model
+from pydantic import BaseModel, Field, create_model
 from langchain_core.callbacks import CallbackManagerForToolRun, AsyncCallbackManagerForToolRun
 
 logger = logging.getLogger(__name__)

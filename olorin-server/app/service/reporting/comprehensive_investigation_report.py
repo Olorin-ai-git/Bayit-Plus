@@ -189,8 +189,18 @@ class ComprehensiveInvestigationReportGenerator:
         elif filename.startswith("unified_test_report") and filename.endswith(".json"):
             data["test_results"] = self._load_json_file(file_path)
             
-        elif filename == "server_logs":
+        elif filename == "server_logs" or filename == "server_logs.json":
             data["server_logs"] = self._load_json_file(file_path)
+            
+        elif filename == "server_logs.txt" or filename.endswith("_logs.txt"):
+            # Handle text-based log files
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    log_content = f.read()
+                    data["server_logs"] = {"raw_logs": log_content, "log_count": len(log_content.split('\n'))}
+            except Exception as e:
+                self.logger.warning(f"Failed to load text log file {file_path}: {e}")
+                data["server_logs"] = {}
     
     def _load_json_file(self, file_path: Path) -> Dict[str, Any]:
         """Load JSON file safely."""
@@ -220,6 +230,7 @@ class ComprehensiveInvestigationReportGenerator:
         agents_data = data.get("agents", {})
         performance = data.get("performance", {})
         validation = data.get("validation", {})
+        test_results = data.get("test_results", {})
         
         # Extract key metrics
         investigation_id = metadata.get("investigation_id", "unknown")
@@ -227,26 +238,79 @@ class ComprehensiveInvestigationReportGenerator:
         entity_id = metadata.get("config", {}).get("entity_id", "unknown")
         entity_type = metadata.get("config", {}).get("entity_type", "unknown")
         
-        # Risk and confidence scores
+        # Risk and confidence scores - get from agents_data (investigation_result.json)
         final_risk_score = agents_data.get("final_risk_score", 0.0)
         confidence_score = agents_data.get("confidence", 0.0)
         
-        # Duration
-        duration = performance.get("total_duration", 0.0)
+        # Duration - check multiple sources
+        duration = 0.0
+        if performance:
+            # Check for total_duration or calculate from agent_timings
+            duration = performance.get("total_duration", 0.0)
+            if duration == 0.0 and "agent_timings" in performance:
+                # Calculate total duration from agent timings
+                agent_timings = performance.get("agent_timings", {})
+                for agent_name, timing_data in agent_timings.items():
+                    if isinstance(timing_data, dict) and "duration" in timing_data:
+                        duration += timing_data.get("duration", 0.0)
         
-        # Status
+        # Status - determine from multiple sources
         status = metadata.get("status", "unknown")
+        if status == "unknown" and test_results:
+            # Try to get status from test results
+            investigation_results = test_results.get("investigation_results", {})
+            status = investigation_results.get("status", "unknown")
+        if status == "unknown" and agents_executed:
+            # If we have successful agents, mark as completed
+            status = "completed"
         
-        # Agent execution info
+        # Agent execution info - check multiple data sources
         agents_executed = []
-        agent_results = agents_data.get("agent_results", {})
-        for agent_name, result in agent_results.items():
-            if result.get("status") == "success":
-                agents_executed.append(agent_name)
+        agent_results = {}
+        tools_used = 0
+        
+        # Try to get agent results from investigation data first
+        if agents_data and "agent_results" in agents_data:
+            agent_results = agents_data.get("agent_results", {})
+            for agent_name, result in agent_results.items():
+                if result.get("status") == "success":
+                    agents_executed.append(agent_name)
+            
+            # Count tools from agent findings (specifically risk_aggregation)
+            risk_agg = agent_results.get("risk_aggregation", {})
+            if risk_agg and "findings" in risk_agg:
+                tools_used = risk_agg["findings"].get("tools_used", 0)
+            else:
+                # Fallback: count tools across all agents
+                tools_used = 0
+                for agent_name, agent_data in agent_results.items():
+                    if isinstance(agent_data, dict) and "findings" in agent_data:
+                        findings = agent_data["findings"]
+                        if "tools_used" in findings:
+                            tools_used += findings["tools_used"]
+        
+        # If no agents found, try from test_results
+        elif test_results and "investigation_results" in test_results:
+            investigation_results = test_results.get("investigation_results", {})
+            # Check for agent execution data in test results
+            if "agent_executions" in investigation_results:
+                for agent_name, status in investigation_results["agent_executions"].items():
+                    if status == "success":
+                        agents_executed.append(agent_name)
+            # Count tools from test results if available
+            if "tools_used" in investigation_results:
+                tools_used = investigation_results.get("tools_used", 0)
+        
+        # If still no results, try direct agents_data structure
+        if not agents_executed and agents_data:
+            # Check if agents_data itself contains agent execution info
+            for key, value in agents_data.items():
+                if isinstance(value, dict) and value.get("status") == "success":
+                    agents_executed.append(key)
+                    agent_results[key] = value
         
         # Tools and evidence
-        tools_used = len(agents_data.get("tool_results", {}))
-        evidence_points = 0
+        evidence_points = len(agents_executed)  # Use number of successful agents as evidence points
         
         # Geographic info
         geographic_countries = 0
@@ -730,38 +794,74 @@ class ComprehensiveInvestigationReportGenerator:
     def _generate_tools_html(self, data: Dict[str, Any]) -> str:
         """Generate tools execution section HTML."""
         agents_data = data.get("agents", {})
-        tool_results = agents_data.get("tool_results", {})
+        agent_results = agents_data.get("agent_results", {})
         
-        if not tool_results:
+        # Extract tool execution data from agent evidence
+        tools_found = {}
+        
+        for agent_name, agent_data in agent_results.items():
+            if isinstance(agent_data, dict) and "findings" in agent_data:
+                findings = agent_data["findings"]
+                if isinstance(findings, dict) and "evidence" in findings:
+                    evidence = findings["evidence"]
+                    if isinstance(evidence, list):
+                        for evidence_item in evidence:
+                            if isinstance(evidence_item, str):
+                                # Look for tool execution patterns
+                                if "virustotal_ip_analysis:" in evidence_item:
+                                    tools_found["virustotal_ip_analysis"] = {
+                                        "agent": agent_name,
+                                        "purpose": "IP Reputation & Malware Scanning",
+                                        "status": "Success",
+                                        "result": evidence_item.split(": ", 1)[1] if ": " in evidence_item else evidence_item
+                                    }
+                                elif "abuseipdb" in evidence_item.lower():
+                                    tools_found["abuseipdb_analysis"] = {
+                                        "agent": agent_name,
+                                        "purpose": "IP Abuse Database Check",
+                                        "status": "Success", 
+                                        "result": evidence_item
+                                    }
+                                elif "snowflake" in evidence_item.lower() and ("record" in evidence_item.lower() or "transaction" in evidence_item.lower()):
+                                    tools_found["snowflake_query"] = {
+                                        "agent": agent_name,
+                                        "purpose": "Transaction Data Analysis",
+                                        "status": "Success",
+                                        "result": evidence_item
+                                    }
+        
+        # Also check Snowflake agent specifically
+        snowflake_agent = agent_results.get("snowflake", {})
+        if isinstance(snowflake_agent, dict) and "findings" in snowflake_agent:
+            findings = snowflake_agent["findings"]
+            if isinstance(findings, dict):
+                row_count = findings.get("row_count", 0)
+                if row_count > 0:
+                    tools_found["snowflake_database"] = {
+                        "agent": "snowflake",
+                        "purpose": "Database Query Execution",
+                        "status": "Success",
+                        "result": f"Retrieved {row_count} transaction records"
+                    }
+        
+        if not tools_found:
             return "<p>No tool execution data available.</p>"
         
-        html = "<table class='data-table'><thead><tr><th>Tool</th><th>Purpose</th><th>Result Status</th><th>Key Data</th></tr></thead><tbody>"
+        html = "<table class='data-table'><thead><tr><th>Tool</th><th>Agent</th><th>Purpose</th><th>Status</th><th>Key Result</th></tr></thead><tbody>"
         
-        tool_info = {
-            "snowflake_query_tool": "Transaction Analysis",
-            "abuseipdb_ip_reputation": "IP Reputation Check",
-            "virustotal_ip_analysis": "Malware Scanning",
-            "shodan_infrastructure_analysis": "Infrastructure Analysis",
-            "abuseipdb_bulk_ip_analysis": "Bulk IP Analysis"
-        }
-        
-        for tool_name, result in tool_results.items():
-            purpose = tool_info.get(tool_name, "External Analysis")
-            
-            if isinstance(result, dict):
-                # Try to extract meaningful data
-                status = "Success" if result else "No Data"
-                key_data = "Data retrieved" if result else "Empty result"
-            else:
-                status = "Success" if result else "Failed"
-                key_data = str(result)[:100] + "..." if len(str(result)) > 100 else str(result)
+        for tool_name, tool_data in tools_found.items():
+            agent = tool_data.get('agent', 'Unknown')
+            purpose = tool_data.get('purpose', 'Data analysis')
+            key_result = tool_data.get('key_result', 'Analysis completed')
+            status = tool_data.get('status', 'Success')
             
             html += f"""
             <tr>
                 <td><strong>{tool_name.replace('_', ' ').title()}</strong></td>
+                <td>{agent}</td>
                 <td>{purpose}</td>
                 <td>{status}</td>
-                <td>{key_data}</td>
+                <td>{key_result}</td>
             </tr>
             """
         
@@ -987,6 +1087,28 @@ class ComprehensiveInvestigationReportGenerator:
         
         if not server_logs:
             return "<p>No server logs available.</p>"
+        
+        # Handle raw logs format
+        if "raw_logs" in server_logs:
+            raw_logs = server_logs.get("raw_logs", "")
+            log_count = server_logs.get("log_count", 0)
+            
+            html = f"""
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <strong>Total Log Lines</strong>
+                    <span>{log_count:,}</span>
+                </div>
+                <div class="metric-card">
+                    <strong>Log Size</strong>
+                    <span>{len(raw_logs):,} chars</span>
+                </div>
+            </div>
+            <div class="log-container">
+                <pre style="max-height: 400px; overflow-y: auto; background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px;">{raw_logs[:10000]}{'...[truncated]' if len(raw_logs) > 10000 else ''}</pre>
+            </div>
+            """
+            return html
         
         capture_session = server_logs.get("capture_session", {})
         logs = server_logs.get("server_logs", [])
