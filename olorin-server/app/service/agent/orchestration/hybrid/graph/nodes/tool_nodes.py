@@ -18,6 +18,56 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
+def _is_successful_tool_execution(tool_name: str, tool_content: str) -> bool:
+    """
+    Determine if a tool execution was successful (not skipped/failed).
+    
+    Tool telemetry hygiene: Only count tools that were actually executed,
+    exclude tools that were skipped, failed, or returned error messages.
+    
+    Args:
+        tool_name: Name of the tool
+        tool_content: Content returned by the tool
+        
+    Returns:
+        True if this represents a successful tool execution, False otherwise
+    """
+    if not tool_content or not isinstance(tool_content, str):
+        return False
+        
+    # Convert to lowercase for case-insensitive checking
+    content_lower = tool_content.lower().strip()
+    
+    # Skip tools with explicit error/skip indicators
+    skip_indicators = [
+        "error", "failed", "skipped", "unavailable", "not available",
+        "connection error", "timeout", "permission denied", "unauthorized",
+        "tool not found", "service unavailable", "rate limited",
+        "insufficient permissions", "access denied", "api error"
+    ]
+    
+    for indicator in skip_indicators:
+        if indicator in content_lower:
+            return False
+    
+    # Skip tools with very short content (likely error messages or empty results)
+    if len(tool_content.strip()) < 10:
+        return False
+    
+    # Skip tools that return only JSON error structures
+    if tool_content.strip().startswith('{"error"') or tool_content.strip().startswith('{"success": false'):
+        return False
+    
+    # Special handling for specific tools
+    if tool_name == "snowflake_query":
+        # Snowflake should have actual query results
+        if "results" not in content_lower or "empty" in content_lower:
+            return False
+    
+    # If we got here, consider it a successful execution
+    return True
+
+
 class ToolNodes:
     """
     Tool execution and metadata tracking for hybrid intelligence graph.
@@ -105,20 +155,27 @@ class ToolNodes:
                 tool_results = dict(state.get("tool_results", {}))  # Copy to avoid mutation
                 
                 # Look for new ToolMessage instances (added by standard ToolNode)
+                # Only count tools that were actually executed (not skipped/failed)
                 new_tools_found = 0
                 for msg in reversed(messages[-10:]):  # Check last 10 messages
                     if hasattr(msg, 'name') and hasattr(msg, 'content') and hasattr(msg, 'tool_call_id'):
                         tool_name = msg.name
                         tool_content = msg.content
                         
-                        # Track new tools only
-                        if tool_name not in tools_used:
-                            tools_used.append(tool_name)
-                            new_tools_found += 1
-                            logger.info(f"📊 Tracked new tool: {tool_name}")
+                        # Check if this is a successful tool execution (not skipped/failed)
+                        is_successful_execution = _is_successful_tool_execution(tool_name, tool_content)
                         
-                        # Always update tool results with latest content
-                        tool_results[tool_name] = tool_content
+                        if is_successful_execution:
+                            # Track new tools only if they were successfully executed
+                            if tool_name not in tools_used:
+                                tools_used.append(tool_name)
+                                new_tools_found += 1
+                                logger.info(f"📊 Tracked successful tool execution: {tool_name}")
+                            
+                            # Always update tool results with latest content for successful tools
+                            tool_results[tool_name] = tool_content
+                        else:
+                            logger.debug(f"📊 Skipping tool telemetry for {tool_name} (not successfully executed)")
                 
                 # Create metadata update
                 metadata_update = {

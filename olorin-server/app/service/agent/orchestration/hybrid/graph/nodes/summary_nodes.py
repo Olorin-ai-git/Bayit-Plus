@@ -19,6 +19,7 @@ from app.service.agent.orchestration.risk.finalize import finalize_risk
 from app.service.agent.orchestration.metrics.finalize import finalize_all_metrics
 
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.metrics.safe import fmt_num
 
 logger = get_bridge_logger(__name__)
 
@@ -61,13 +62,14 @@ class SummaryNodes:
             # Apply consolidated confidence to state
             state = self.confidence_consolidator.apply_consolidated_confidence(state, consolidated_confidence)
             
-            logger.info(f"✅ Confidence consolidated: {consolidated_confidence.overall_score:.3f} ({consolidated_confidence.level_description})")
+            from app.service.agent.orchestration.metrics.safe import fmt_num
+            logger.info(f"✅ Confidence consolidated: {fmt_num(consolidated_confidence.overall_score, 3)} ({consolidated_confidence.level_description})")
             if consolidated_confidence.data_quality_issues:
                 logger.warning(f"   Data quality issues detected: {len(consolidated_confidence.data_quality_issues)}")
             
             # Finalize risk score using uniform computation
             finalize_risk(state)
-            logger.info(f"✅ Risk score finalized: {state.get('risk_score', 0.0):.2f}")
+            logger.info(f"✅ Risk score finalized: {fmt_num(state.get('risk_score', 0.0), 2)}")
             
             # Finalize all performance metrics
             finalize_all_metrics(state)
@@ -113,7 +115,7 @@ class SummaryNodes:
             
             logger.info(f"✅ Enhanced summary completed")
             logger.info(f"   Duration: {state.get('total_duration_ms', 0)}ms")
-            logger.info(f"   Final confidence: {state.get('ai_confidence', 0.0):.3f}")
+            logger.info(f"   Final confidence: {fmt_num(state.get('ai_confidence', 0.0), 3)}")
             logger.info(f"   Canonical outcome: {canonical_outcome.status.value}")
             
             return state
@@ -217,5 +219,5 @@ class SummaryNodes:
         logger.info(f"   Domains completed: {len(state.get('domains_completed', []))}/6")
         logger.info(f"   Tools used: {len(state.get('tools_used', []))}")
         logger.info(f"   Safety overrides: {len(state.get('safety_overrides', []))}")
-        logger.info(f"   Final confidence: {state.get('ai_confidence', 0.0):.3f}")
-        logger.info(f"   Investigation efficiency: {state.get('investigation_efficiency', 0.0):.3f}")
+        logger.info(f"   Final confidence: {fmt_num(state.get('ai_confidence', 0.0), 3)}")
+        logger.info(f"   Investigation efficiency: {fmt_num(state.get('investigation_efficiency', 0.0), 3)}")

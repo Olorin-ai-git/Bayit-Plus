@@ -392,7 +392,10 @@ class AdvancedSafetyManager:
         # Check evidence sufficiency
         evidence_quality = 0.0
         if state.get("ai_decisions"):
-            evidence_quality = state["ai_decisions"][-1].evidence_quality
+            # CRITICAL FIX: Safe attribute access to prevent None formatting errors
+            ai_decision = state["ai_decisions"][-1]
+            evidence_quality = getattr(ai_decision, 'evidence_quality', 0.0) if ai_decision else 0.0
+            evidence_quality = evidence_quality if evidence_quality is not None else 0.0
         
         evidence_validator = get_evidence_validator()
         if evidence_validator.should_trigger_safety_concerns(evidence_quality, orchestrator_loops):

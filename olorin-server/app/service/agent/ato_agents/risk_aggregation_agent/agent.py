@@ -494,7 +494,7 @@ RECOMMENDED ACTIONS:
         
         return analysis_response.strip()
 
-    def _extract_snowflake_model_score(self, agent_results: List[AgentResult], investigation_context: Dict[str, Any]) -> Optional[float]:
+    def _extract_snowflake_model_score(self, agent_results: Dict[str, Any], investigation_context: Dict[str, Any]) -> Optional[float]:
         """
         Extract Snowflake MODEL_SCORE from agent results.
         
@@ -510,10 +510,12 @@ RECOMMENDED ACTIONS:
             if investigation_context and 'snowflake_data' in investigation_context:
                 snowflake_data = investigation_context['snowflake_data']
                 if isinstance(snowflake_data, dict) and 'MODEL_SCORE' in snowflake_data:
-                    return float(snowflake_data['MODEL_SCORE'])
+                    model_score = snowflake_data['MODEL_SCORE']
+                    if model_score is not None:
+                        return float(model_score)
             
             # Search through agent results for Snowflake tool outputs
-            for result in agent_results:
+            for result in agent_results.values():
                 if not result or not hasattr(result, 'tool_outputs'):
                     continue
                     
@@ -535,11 +537,17 @@ RECOMMENDED ACTIONS:
                                 # Look for MODEL_SCORE in various locations
                                 if isinstance(parsed_result, dict):
                                     if 'MODEL_SCORE' in parsed_result:
-                                        return float(parsed_result['MODEL_SCORE'])
+                                        model_score = parsed_result['MODEL_SCORE']
+                                        if model_score is not None:
+                                            return float(model_score)
                                     if 'model_score' in parsed_result:
-                                        return float(parsed_result['model_score'])
+                                        model_score = parsed_result['model_score']
+                                        if model_score is not None:
+                                            return float(model_score)
                                     if 'score' in parsed_result and 'model' in tool_output.tool_name.lower():
-                                        return float(parsed_result['score'])
+                                        score = parsed_result['score']
+                                        if score is not None:
+                                            return float(score)
                         except (json.JSONDecodeError, ValueError, KeyError) as e:
                             self.logger.debug(f"Failed to parse Snowflake result from {tool_output.tool_name}: {e}")
                             continue

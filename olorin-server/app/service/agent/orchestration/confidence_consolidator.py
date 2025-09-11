@@ -200,19 +200,19 @@ class ConfidenceConsolidator:
                     continue
                     
                 # Check for confidence in agent result attributes
-                if hasattr(result, 'confidence'):
+                if hasattr(result, 'confidence') and result.confidence is not None:
                     tool_confidences.append(float(result.confidence))
-                elif hasattr(result, 'confidence_score'):
+                elif hasattr(result, 'confidence_score') and result.confidence_score is not None:
                     tool_confidences.append(float(result.confidence_score))
                 
                 # Check for domain-specific confidence
-                if hasattr(result, 'domain') and hasattr(result, 'confidence'):
+                if hasattr(result, 'domain') and hasattr(result, 'confidence') and result.confidence is not None:
                     domain_confidences.append(float(result.confidence))
                     
                 # Check tool outputs for confidence scores
                 if hasattr(result, 'tool_outputs'):
                     for tool_output in result.tool_outputs:
-                        if hasattr(tool_output, 'confidence'):
+                        if hasattr(tool_output, 'confidence') and tool_output.confidence is not None:
                             tool_confidences.append(float(tool_output.confidence))
             
             # Average tool and domain confidences
@@ -225,7 +225,9 @@ class ConfidenceConsolidator:
         # Extract from investigation context
         if investigation_context:
             if "overall_confidence" in investigation_context:
-                confidence_values[ConfidenceFieldType.OVERALL_CONFIDENCE] = float(investigation_context["overall_confidence"])
+                overall_confidence = investigation_context["overall_confidence"]
+                if overall_confidence is not None:
+                    confidence_values[ConfidenceFieldType.OVERALL_CONFIDENCE] = float(overall_confidence)
         
         return confidence_values
     
@@ -295,8 +297,11 @@ class ConfidenceConsolidator:
             ai_conf = confidence_values[ConfidenceFieldType.AI_CONFIDENCE]
             score_conf = confidence_values[ConfidenceFieldType.CONFIDENCE_SCORE]
             
-            if abs(ai_conf - score_conf) > 0.3:  # 30% difference
-                issues.append(f"AI confidence ({ai_conf:.3f}) significantly differs from confidence score ({score_conf:.3f})")
+            # Safe null check before formatting
+            if ai_conf is not None and score_conf is not None and abs(ai_conf - score_conf) > 0.3:  # 30% difference
+                ai_conf_safe = ai_conf if ai_conf is not None else 0.0
+                score_conf_safe = score_conf if score_conf is not None else 0.0
+                issues.append(f"AI confidence ({ai_conf_safe:.3f}) significantly differs from confidence score ({score_conf_safe:.3f})")
         
         return issues
     

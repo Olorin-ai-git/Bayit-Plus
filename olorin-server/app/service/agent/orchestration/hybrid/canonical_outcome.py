@@ -272,7 +272,10 @@ class CanonicalOutcomeBuilder:
         # Get evidence quality from latest AI decision or calculate default
         evidence_quality = 0.0
         if state.get("ai_decisions"):
-            evidence_quality = state["ai_decisions"][-1].evidence_quality
+            # CRITICAL FIX: Safe attribute access to prevent None formatting errors
+            ai_decision = state["ai_decisions"][-1]
+            evidence_quality = getattr(ai_decision, 'evidence_quality', 0.0) if ai_decision else 0.0
+            evidence_quality = evidence_quality if evidence_quality is not None else 0.0
         
         # Validate evidence
         domains_completed = len(state.get("domains_completed", []))
@@ -339,7 +342,9 @@ class CanonicalOutcomeBuilder:
         risk_score = state.get("risk_score", 0.0)
         confidence = state.get("ai_confidence", 0.0)
         
-        return f"Investigation {investigation_id} for entity {entity_id} completed with risk score {risk_score:.2f} and AI confidence {confidence:.2f}."
+        risk_score_safe = risk_score if risk_score is not None else 0.0
+        confidence_safe = confidence if confidence is not None else 0.0
+        return f"Investigation {investigation_id} for entity {entity_id} completed with risk score {risk_score_safe:.2f} and AI confidence {confidence_safe:.2f}."
     
     def _extract_key_findings(self, state: HybridInvestigationState) -> List[str]:
         """Extract key findings from investigation state."""

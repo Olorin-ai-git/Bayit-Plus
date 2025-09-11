@@ -499,7 +499,7 @@ class IntegratedAgentSystem:
             if result.related_entities:
                 evidence_factors.append(len(result.related_entities) * 0.05)
             
-            result.evidence_strength = min(1.0, sum(evidence_factors))
+            result.evidence_strength = min(0.4, sum(evidence_factors))
             
             # Check if quality thresholds are met
             if result.confidence_score < request.min_confidence_threshold:

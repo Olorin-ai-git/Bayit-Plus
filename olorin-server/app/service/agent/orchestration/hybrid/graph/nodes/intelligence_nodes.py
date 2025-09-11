@@ -86,7 +86,9 @@ class IntelligenceNodes:
             updated_state["decision_audit_trail"].append(audit_entry)
             logger.debug(f"   ✅ AUDIT ENTRY ADDED: Total audit entries: {len(updated_state['decision_audit_trail'])}")
             
-            logger.info(f"✅ AI confidence assessed: {getattr(ai_decision, 'confidence', 0.0):.3f} ({getattr(ai_decision, 'confidence_level', 'UNKNOWN')})")
+            from app.service.agent.orchestration.metrics.safe import fmt_num
+            confidence_val = getattr(ai_decision, 'confidence', 0.0)
+            logger.info(f"✅ AI confidence assessed: {fmt_num(confidence_val, 3)} ({getattr(ai_decision, 'confidence_level', 'UNKNOWN')})")
             logger.info(f"   Strategy: {getattr(ai_decision, 'strategy', 'N/A')}")
             logger.info(f"   Recommended action: {getattr(ai_decision, 'recommended_action', 'N/A')}")
             
@@ -159,7 +161,8 @@ class IntelligenceNodes:
             logger.debug(f"     Safety Level: {getattr(safety_status, 'safety_level', 'N/A')}")
             logger.debug(f"     AI Control Allowed: {getattr(safety_status, 'allows_ai_control', False)}")
             logger.debug(f"     Termination Required: {getattr(safety_status, 'requires_immediate_termination', False)}")
-            logger.debug(f"     Resource Pressure: {getattr(safety_status, 'resource_pressure', 0.0):.3f}")
+            resource_pressure = getattr(safety_status, 'resource_pressure', 0.0)
+            logger.debug(f"     Resource Pressure: {fmt_num(resource_pressure, 3)}")
             logger.debug(f"     Safety Concerns: {len(getattr(safety_status, 'safety_concerns', []))}")
             
             # Update dynamic limits
@@ -216,7 +219,8 @@ class IntelligenceNodes:
             logger.info(f"✅ Safety validation complete")
             logger.info(f"   Safety level: {getattr(safety_status.safety_level, 'value', safety_status.safety_level) if hasattr(safety_status, 'safety_level') else 'UNKNOWN'}")
             logger.info(f"   AI control allowed: {getattr(safety_status, 'allows_ai_control', False)}")
-            logger.info(f"   Resource pressure: {getattr(safety_status, 'resource_pressure', 0.0):.3f}")
+            resource_pressure = getattr(safety_status, 'resource_pressure', 0.0)
+            logger.info(f"   Resource pressure: {fmt_num(resource_pressure, 3)}")
             
             logger.debug(f"   🎯 SAFETY VALIDATION COMPLETE:")
             logger.debug(f"     Comprehensive safety assessment performed")

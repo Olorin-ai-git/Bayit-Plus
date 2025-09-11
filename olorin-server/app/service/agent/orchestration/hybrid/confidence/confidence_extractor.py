@@ -116,19 +116,19 @@ class ConfidenceExtractor:
         domain_confidences = []
         
         # Check for confidence in agent result attributes
-        if hasattr(result, 'confidence'):
+        if hasattr(result, 'confidence') and result.confidence is not None:
             tool_confidences.append(float(result.confidence))
-        elif hasattr(result, 'confidence_score'):
+        elif hasattr(result, 'confidence_score') and result.confidence_score is not None:
             tool_confidences.append(float(result.confidence_score))
         
         # Check for domain-specific confidence
-        if hasattr(result, 'domain') and hasattr(result, 'confidence'):
+        if hasattr(result, 'domain') and hasattr(result, 'confidence') and result.confidence is not None:
             domain_confidences.append(float(result.confidence))
             
         # Check tool outputs for confidence scores
         if hasattr(result, 'tool_outputs'):
             for tool_output in result.tool_outputs:
-                if hasattr(tool_output, 'confidence'):
+                if hasattr(tool_output, 'confidence') and tool_output.confidence is not None:
                     tool_confidences.append(float(tool_output.confidence))
         
         # Check for nested confidence data
@@ -147,7 +147,9 @@ class ConfidenceExtractor:
         confidences = {}
         
         if "overall_confidence" in investigation_context:
-            confidences[ConfidenceFieldType.OVERALL_CONFIDENCE] = float(investigation_context["overall_confidence"])
+            overall_confidence = investigation_context["overall_confidence"]
+            if overall_confidence is not None:
+                confidences[ConfidenceFieldType.OVERALL_CONFIDENCE] = float(overall_confidence)
         
         # Check for other context-specific confidence fields
         context_confidence_fields = [
@@ -158,7 +160,9 @@ class ConfidenceExtractor:
         
         for field_name, field_type in context_confidence_fields:
             if field_name in investigation_context:
-                confidences[field_type] = float(investigation_context[field_name])
+                confidence_value = investigation_context[field_name]
+                if confidence_value is not None:
+                    confidences[field_type] = float(confidence_value)
         
         return confidences
     

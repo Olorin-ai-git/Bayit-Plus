@@ -51,7 +51,8 @@ def update_ai_confidence(
     _add_decision_audit_entry(state, new_decision, trigger)
     
     # Add routing explanation
-    explanation = f"AI confidence updated to {new_decision.confidence:.2f} ({new_decision.confidence_level.value}) - {trigger}"
+    confidence_value = new_decision.confidence if new_decision.confidence is not None else 0.0
+    explanation = f"AI confidence updated to {confidence_value:.2f} ({new_decision.confidence_level.value}) - {trigger}"
     state["routing_explanations"].append(explanation)
     
     logger.debug(f"✅ AI confidence updated successfully")

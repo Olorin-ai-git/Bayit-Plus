@@ -128,7 +128,8 @@ RECOMMENDATIONS:
         metrics: Dict[str, Any],
         snowflake_data: Optional[Dict[str, Any]] = None,
         entity_type: str = "unknown",
-        entity_id: str = "unknown"
+        entity_id: str = "unknown",
+        computed_risk_score: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         Analyze domain evidence using LLM to generate risk assessment.
@@ -150,9 +151,9 @@ RECOMMENDATIONS:
         logger.debug(f"   Evidence points: {len(evidence)}")
         logger.debug(f"   Metrics available: {len(metrics)}")
         
-        # Prepare comprehensive analysis prompt
+        # Prepare comprehensive analysis prompt with computed score
         analysis_prompt = self._create_evidence_analysis_prompt(
-            domain, evidence, metrics, snowflake_data, entity_type, entity_id
+            domain, evidence, metrics, snowflake_data, entity_type, entity_id, computed_risk_score
         )
         
         # Create system message for domain-specific analysis
@@ -166,8 +167,8 @@ RECOMMENDATIONS:
             response = await self.llm.ainvoke([system_msg, human_msg])
             analysis_duration = time.time() - start_time
             
-            # Parse LLM response
-            analysis_result = self._parse_evidence_analysis(response.content, domain)
+            # Parse LLM response, with computed score override if provided
+            analysis_result = self._parse_evidence_analysis(response.content, domain, computed_risk_score)
             analysis_result["analysis_duration"] = analysis_duration
             
             logger.debug(f"✅ {domain} evidence analysis complete:")
@@ -217,16 +218,28 @@ RECOMMENDATIONS:
         
         return f"""{base_prompt}
 
+You MUST NOT use MODEL_SCORE (or any model-derived risk score) to set or justify the numeric risk you return.
+You may cite it as context, but its weight is 0 in your final risk computation.
+If evidence volume is low (≤1 event) or external TI is MINIMAL/clean, default to LOW or "needs more evidence".
+Return a numeric risk ONLY if you can justify it from non-model evidence.
+
 Your task is to analyze evidence from {domain} domain analysis and provide:
-1. A risk score from 0.0 to 1.0 based on the evidence
+1. A risk score from 0.0 to 1.0 based on the evidence (NEVER using MODEL_SCORE as justification)
 2. Confidence level in your assessment (0.0 to 1.0)
-3. Key risk factors identified
-4. Detailed reasoning for your assessment
+3. Key risk factors identified (exclude MODEL_SCORE references)
+4. Detailed reasoning for your assessment (based on patterns, not model scores)
 5. Specific recommendations
 
 CRITICAL: Base your assessment ONLY on the actual evidence provided. 
 Do not make assumptions or use arbitrary values. If evidence is limited, 
-reflect that in your confidence score."""
+reflect that in your confidence score.
+
+MODEL_SCORE BAN: You are FORBIDDEN from using MODEL_SCORE values to justify risk levels.
+Focus on behavioral patterns, threat intelligence, technical indicators, and fraud signals.
+
+RENDER CONTEXT LOCK: When engine-computed scores are provided, use EXACTLY those values.
+Do not calculate, estimate, or invent numeric scores in your analysis prose.
+Focus on qualitative interpretation of the provided quantitative values."""
     
     def _create_evidence_analysis_prompt(
         self, 
@@ -235,9 +248,10 @@ reflect that in your confidence score."""
         metrics: Dict[str, Any],
         snowflake_data: Optional[Dict[str, Any]],
         entity_type: str,
-        entity_id: str
+        entity_id: str,
+        computed_risk_score: Optional[float] = None
     ) -> str:
-        """Create comprehensive prompt for evidence analysis."""
+        """Create comprehensive prompt for evidence analysis with render context lock."""
         
         # Format evidence
         evidence_text = "\n".join([f"- {e}" for e in evidence]) if evidence else "No evidence collected"
@@ -248,7 +262,31 @@ reflect that in your confidence score."""
         # Format Snowflake context
         snowflake_text = self._format_snowflake_for_analysis(snowflake_data) if snowflake_data else "No Snowflake context available"
         
+        # CRITICAL PATCH C: Create render context with only engine values (prevent LLM invention)
+        if computed_risk_score is not None:
+            # Lock down completely - LLM can only use provided numeric values
+            risk_instruction = f"""1. **RISK SCORE**: {computed_risk_score:.3f} - THIS IS THE FINAL ENGINE-COMPUTED SCORE.
+   
+   CRITICAL RULES:
+   - You MUST use exactly {computed_risk_score:.3f} as the risk score
+   - You MUST NOT calculate, estimate, or infer any numeric scores
+   - You MUST NOT create additional numeric assessments in your prose
+   - Focus ONLY on qualitative analysis around the provided score
+   - If asked about scoring, refer only to the engine-computed value: {computed_risk_score:.3f}
+   
+   STRICT REQUIREMENT: Your response MUST contain "risk_score": {computed_risk_score:.3f} exactly as shown.
+   FORBIDDEN: Do not write phrases like "I assess...", "I estimate...", "appears to be around...", or any invented numeric values."""
+        else:
+            risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
+        
+        # Add system-level numeric scoring ban
+        scoring_ban = """
+SYSTEM RULE: Use the numeric scores exactly as provided in the render context. If a score is missing (None), write 'N/A'. 
+Do not infer, calculate, estimate, or create numeric scores in your prose. Focus on qualitative analysis only."""
+        
         prompt = f"""Analyze this {domain} domain evidence for fraud risk assessment:
+
+{scoring_ban}
 
 ## Entity Information
 - Type: {entity_type}
@@ -267,13 +305,14 @@ reflect that in your confidence score."""
 ## Analysis Requirements
 Provide a comprehensive fraud risk assessment based ONLY on the evidence above:
 
-1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence
+{risk_instruction}
 2. **CONFIDENCE**: (0.0 to 1.0) - Based on evidence quality and completeness
 3. **RISK FACTORS**: List specific factors that increase/decrease risk
 4. **REASONING**: Detailed explanation of your risk assessment
 5. **RECOMMENDATIONS**: Specific actions based on your findings
 
-Format your response clearly with these sections. Be precise and evidence-based."""
+Format your response clearly with these sections. Be precise and evidence-based.
+REMINDER: Do not create numeric scores in your prose - use only the provided engine values."""
         
         return prompt
     
@@ -322,14 +361,32 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on domai
         
         return f"Raw Snowflake data: {str(snowflake_data)[:300]}..."
     
-    def _parse_evidence_analysis(self, llm_response: str, domain: str) -> Dict[str, Any]:
+    def _parse_evidence_analysis(self, llm_response: str, domain: str, computed_risk_score: Optional[float] = None) -> Dict[str, Any]:
         """Parse LLM response to extract structured analysis."""
         import re
         
-        # Extract risk score
-        risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
-        risk_match = re.search(risk_pattern, llm_response.lower())
-        risk_score = float(risk_match.group(1)) if risk_match else 0.2
+        # CRITICAL FIX: Use computed score as authoritative when provided (SPLIT-BRAIN FIX)
+        if computed_risk_score is not None:
+            risk_score = computed_risk_score
+            logger.debug(f"🧮 Using COMPUTED risk score: {risk_score:.3f} (LLM echoing requirement - prevents split-brain)")
+            
+            # VALIDATION: Check if LLM actually echoed the score correctly
+            risk_pattern = r"risk[_\s]*score[\":\s]*([\d.]+)"
+            risk_match = re.search(risk_pattern, llm_response.lower())
+            if risk_match:
+                llm_extracted_score = float(risk_match.group(1))
+                if abs(llm_extracted_score - computed_risk_score) > 0.01:
+                    logger.warning(f"⚠️ SPLIT-BRAIN DETECTED: LLM extracted {llm_extracted_score:.3f} vs computed {computed_risk_score:.3f}")
+                else:
+                    logger.debug(f"✅ LLM correctly echoed computed score: {llm_extracted_score:.3f}")
+            else:
+                logger.warning(f"⚠️ SPLIT-BRAIN RISK: Could not verify LLM echoed computed score in response")
+        else:
+            # Fallback: Extract risk score from LLM response
+            risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
+            risk_match = re.search(risk_pattern, llm_response.lower())
+            risk_score = float(risk_match.group(1)) if risk_match else 0.2
+            logger.debug(f"🤖 Extracted LLM risk score: {risk_score:.3f}")
         
         # Extract confidence
         conf_pattern = r"confidence[:\s]*(\d*\.?\d+)"

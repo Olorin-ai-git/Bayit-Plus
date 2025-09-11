@@ -89,7 +89,9 @@ class OrchestratorNode:
             logger.info(f"✅ Hybrid orchestrator decision: {routing_decision['next_node']}")
             logger.debug(f"   🎯 DECISION DETAILS:")
             logger.debug(f"     Next Node: {routing_decision['next_node']}")
-            logger.debug(f"     Confidence: {routing_decision.get('confidence', 0.0):.3f}")
+            from app.service.agent.orchestration.metrics.safe import fmt_num
+            confidence_val = routing_decision.get('confidence', 0.0)
+            logger.debug(f"     Confidence: {fmt_num(confidence_val, 3)}")
             logger.debug(f"     Reasoning Items: {len(routing_decision.get('reasoning', []))}")
             logger.debug(f"     Safety Override: {routing_decision.get('safety_override', False)}")
             

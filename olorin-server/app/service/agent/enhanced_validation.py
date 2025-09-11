@@ -284,17 +284,23 @@ class EnhancedInvestigationValidator:
         """Extract initial risk score from Snowflake or context."""
         # Check for Snowflake risk score
         if 'snowflake_risk_score' in initial_context:
-            return float(initial_context['snowflake_risk_score'])
+            risk_value = initial_context['snowflake_risk_score']
+            if risk_value is not None:
+                return float(risk_value)
         
         # Check for risk in entity data
         if 'entity_data' in initial_context:
             entity_data = initial_context['entity_data']
             if isinstance(entity_data, dict) and 'risk_score' in entity_data:
-                return float(entity_data['risk_score'])
+                risk_value = entity_data['risk_score']
+                if risk_value is not None:
+                    return float(risk_value)
         
         # Check for direct risk_score in context
         if 'risk_score' in initial_context:
-            return float(initial_context['risk_score'])
+            risk_value = initial_context['risk_score']
+            if risk_value is not None:
+                return float(risk_value)
         
         return None
     
@@ -306,21 +312,29 @@ class EnhancedInvestigationValidator:
         """Extract final risk score from investigation results."""
         # Check investigation result
         if 'risk_score' in investigation_result:
-            return float(investigation_result['risk_score'])
+            risk_value = investigation_result['risk_score']
+            if risk_value is not None:
+                return float(risk_value)
         
         # Check risk aggregation agent
         if agent_results and 'risk_aggregation' in agent_results:
             risk_agg = agent_results['risk_aggregation']
             if isinstance(risk_agg, dict):
                 if 'risk_score' in risk_agg:
-                    return float(risk_agg['risk_score'])
+                    risk_value = risk_agg['risk_score']
+                    if risk_value is not None:
+                        return float(risk_value)
                 if 'findings' in risk_agg and isinstance(risk_agg['findings'], dict):
                     if 'risk_score' in risk_agg['findings']:
-                        return float(risk_agg['findings']['risk_score'])
+                        risk_value = risk_agg['findings']['risk_score']
+                        if risk_value is not None:
+                            return float(risk_value)
         
         # Check for final_risk_score
         if 'final_risk_score' in investigation_result:
-            return float(investigation_result['final_risk_score'])
+            risk_value = investigation_result['final_risk_score']
+            if risk_value is not None:
+                return float(risk_value)
         
         return None
     

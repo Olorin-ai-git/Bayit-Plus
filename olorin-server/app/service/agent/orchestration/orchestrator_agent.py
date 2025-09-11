@@ -230,8 +230,26 @@ IMPORTANT: While following the standard investigation process, give special atte
                 
                 # Get date range from state context if available, default to 7 days
                 date_range = 7  # Default fallback
-                # CRITICAL FIX: Use CURRENT_TIMESTAMP() instead of CURRENT_DATE() to match Snowflake syntax
-                query = f"SELECT * FROM TRANSACTIONS_ENRICHED WHERE {where_field} = '{entity_id}' AND TX_DATETIME >= DATEADD(day, -{date_range}, CURRENT_TIMESTAMP()) LIMIT 100"
+                # CRITICAL FIX: Always select IS_FRAUD_TX - explicit column list prevents missing fraud label
+                # User requirement: "Query template must include: SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, DISPUTES, FRAUD_ALERTS"
+                query = f"""SELECT
+                           TX_ID_KEY,
+                           EMAIL,
+                           MODEL_SCORE,
+                           IS_FRAUD_TX,
+                           NSURE_LAST_DECISION,
+                           DISPUTES,
+                           FRAUD_ALERTS,
+                           PAID_AMOUNT_VALUE,
+                           IP_ADDRESS,
+                           IP_COUNTRY, IP_CITY,
+                           DEVICE_ID, DEVICE_FINGERPRINT,
+                           USER_AGENT, DEVICE_TYPE,
+                           TX_DATETIME
+                           FROM TRANSACTIONS_ENRICHED
+                           WHERE {where_field} = '{entity_id}'
+                           ORDER BY TX_DATETIME DESC
+                           LIMIT 10"""
                 
                 response = AIMessage(
                     content=f"I'll query Snowflake for {date_range} days of data.",

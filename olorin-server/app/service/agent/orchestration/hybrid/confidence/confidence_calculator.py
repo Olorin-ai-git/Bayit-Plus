@@ -8,6 +8,7 @@ confidence levels based on consolidated scores.
 from typing import Dict, Union, Any, List
 
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.metrics.safe import fmt_num
 from .confidence_models import (
     ConfidenceFieldType,
     DEFAULT_COMPONENT_WEIGHTS,
@@ -64,7 +65,7 @@ class ConfidenceCalculator:
         # If overall confidence is already calculated, use it
         if ConfidenceFieldType.OVERALL_CONFIDENCE in confidence_values:
             overall = confidence_values[ConfidenceFieldType.OVERALL_CONFIDENCE]
-            logger.debug(f"Using pre-calculated overall confidence: {overall:.3f}")
+            logger.debug(f"Using pre-calculated overall confidence: {fmt_num(overall, 3)}")
             return overall
         
         # Calculate weighted average of available confidence types
@@ -80,7 +81,7 @@ class ConfidenceCalculator:
                 weight = self.component_weights[field_type]
                 weighted_sum += value * weight
                 total_weight += weight
-                logger.debug(f"  {field_type.value}: {value:.3f} × {weight:.2f} = {value * weight:.3f}")
+                logger.debug(f"  {field_type.value}: {fmt_num(value, 3)} × {fmt_num(weight, 2)} = {fmt_num(value * weight, 3)}")
         
         # If no weighted components, use simple average
         if total_weight == 0:
@@ -90,16 +91,16 @@ class ConfidenceCalculator:
                 return FALLBACK_CONFIDENCE
             
             simple_avg = sum(valid_values) / len(valid_values)
-            logger.debug(f"No weighted components found, using simple average: {simple_avg:.3f}")
+            logger.debug(f"No weighted components found, using simple average: {fmt_num(simple_avg, 3)}")
             return simple_avg
         
         # Normalize by actual weights used
         result = min(1.0, max(0.0, weighted_sum / total_weight))
         
         logger.debug(f"Weighted confidence calculation:")
-        logger.debug(f"  Total weighted sum: {weighted_sum:.3f}")
-        logger.debug(f"  Total weight: {total_weight:.3f}")
-        logger.debug(f"  Final result: {result:.3f}")
+        logger.debug(f"  Total weighted sum: {fmt_num(weighted_sum, 3)}")
+        logger.debug(f"  Total weight: {fmt_num(total_weight, 3)}")
+        logger.debug(f"  Final result: {fmt_num(result, 3)}")
         
         return result
     
@@ -252,7 +253,7 @@ class ConfidenceCalculator:
         
         # Warn if weights don't sum to approximately 1.0
         if abs(total_weight - 1.0) > 0.1:
-            logger.warning(f"Component weights sum to {total_weight:.3f}, expected ~1.0")
+            logger.warning(f"Component weights sum to {fmt_num(total_weight, 3)}, expected ~1.0")
     
     def update_component_weights(self, new_weights: Dict[ConfidenceFieldType, float]):
         """

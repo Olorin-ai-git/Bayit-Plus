@@ -216,6 +216,116 @@ def log_agent_handover_complete(domain: str, findings: Dict[str, Any]) -> None:
     logger.debug(f"[Step {step}]   🧠 Chain of thought: Analysis complete, control returned to orchestrator")
 
 
+def _detect_confirmed_fraud(snowflake_data: Dict[str, Any]) -> bool:
+    """
+    Detect if there's confirmed fraud in the Snowflake data.
+    
+    Returns:
+        True if confirmed fraud detected, False otherwise
+    """
+    if not snowflake_data or not isinstance(snowflake_data.get('results'), list):
+        return False
+    
+    # Check each record for confirmed fraud
+    for record in snowflake_data['results']:
+        if not isinstance(record, dict):
+            continue
+            
+        # Check IS_FRAUD_TX field
+        fraud_flag = record.get('IS_FRAUD_TX')
+        if fraud_flag == 1 or fraud_flag == '1' or str(fraud_flag).lower() == 'true':
+            logger.debug(f"🚨 CONFIRMED FRAUD detected in Snowflake data: IS_FRAUD_TX = {fraud_flag}")
+            return True
+    
+    return False
+
+
+def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowflake_data: Dict[str, Any]) -> float:
+    """
+    Compute risk score algorithmically using deterministic domain logic WITH internal MODEL_SCORE evidence.
+    
+    MODEL_SCORE is used as INTERNAL evidence for risk fusion but LLMs are prevented from citing it.
+    This prevents LLM anchoring while allowing proper high internal / low external discordance detection.
+    """
+    from .deterministic_scoring import (
+        compute_logs_risk, compute_network_risk, compute_device_risk, 
+        compute_location_risk, compute_authentication_risk
+    )
+    
+    metrics = findings.get('metrics', {})
+    
+    # CRITICAL FIX: Extract MODEL_SCORE as internal evidence
+    # This is the key high-risk signal that was being ignored
+    model_score = None
+    if snowflake_data and isinstance(snowflake_data.get('results'), list):
+        for record in snowflake_data['results']:
+            if isinstance(record, dict):
+                score = record.get('MODEL_SCORE')
+                if score is not None:
+                    try:
+                        model_score = float(score)
+                        logger.debug(f"🎯 EXTRACTED MODEL_SCORE for {domain} domain: {model_score}")
+                        break  # Use first valid MODEL_SCORE found
+                    except (ValueError, TypeError):
+                        continue
+    
+    # Extract external threat intelligence level
+    ext_ti = "MINIMAL"  # Default
+    evidence = findings.get('evidence', [])
+    for e in evidence:
+        if 'threat level: HIGH' in str(e).upper():
+            ext_ti = "HIGH"
+        elif 'threat level: CRITICAL' in str(e).upper():
+            ext_ti = "CRITICAL"
+        elif 'MINIMAL' in str(e).upper():
+            ext_ti = "MINIMAL"
+    
+    # Use deterministic domain-specific scoring WITH MODEL_SCORE as internal evidence
+    risk_score = None
+    
+    if domain == 'logs':
+        tx_count = metrics.get('transaction_count', 0)
+        failures = metrics.get('failed_transaction_count', 0)
+        error_codes = metrics.get('unique_error_codes', 0)
+        risk_score = compute_logs_risk(tx_count, failures, error_codes, ext_ti, model_score)
+        
+    elif domain == 'network':
+        is_public = metrics.get('is_public', True)
+        vpn_proxy = any('vpn' in str(e).lower() or 'proxy' in str(e).lower() for e in evidence)
+        asn_rep = "CLEAN"  # Default
+        velocity_anomaly = metrics.get('unique_ip_count', 1) > 3
+        geo_diversity = metrics.get('unique_countries', 0)
+        risk_score = compute_network_risk(is_public, vpn_proxy, asn_rep, velocity_anomaly, geo_diversity, ext_ti, model_score)
+        
+    elif domain == 'device':
+        device_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
+        fingerprint_anomaly = any('fingerprint' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
+        browser_spoofing = any('spoofing' in str(e).lower() for e in evidence)
+        device_velocity = metrics.get('unique_device_count', 1)
+        risk_score = compute_device_risk(device_consistency, fingerprint_anomaly, browser_spoofing, device_velocity, ext_ti, model_score)
+        
+    elif domain == 'location':
+        impossible_travel = any('impossible travel' in str(e).lower() for e in evidence)
+        travel_confidence = 0.8 if impossible_travel else 0.0
+        location_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
+        high_risk_country = any('high-risk' in str(e).lower() and 'country' in str(e).lower() for e in evidence)
+        risk_score = compute_location_risk(impossible_travel, travel_confidence, location_consistency, high_risk_country, ext_ti, model_score)
+        
+    elif domain == 'authentication':
+        failed_attempts = metrics.get('max_login_attempts', 0)
+        mfa_bypass = any('mfa bypass' in str(e).lower() for e in evidence)
+        credential_stuffing = any('credential stuffing' in str(e).lower() for e in evidence)
+        session_anomaly = any('session' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
+        risk_score = compute_authentication_risk(failed_attempts, mfa_bypass, credential_stuffing, session_anomaly, ext_ti, model_score)
+    
+    # Fallback if deterministic scoring fails
+    if risk_score is None:
+        risk_score = 0.2  # Conservative default
+    
+    logger.debug(f"🧮 DETERMINISTIC RISK SCORE for {domain}: {risk_score:.3f} (NO MODEL_SCORE used)")
+    return risk_score
+
+
 async def analyze_evidence_with_llm(
     domain: str,
     findings: Dict[str, Any], 
@@ -224,18 +334,21 @@ async def analyze_evidence_with_llm(
     entity_id: str
 ) -> Dict[str, Any]:
     """
-    Analyze collected evidence using LLM to generate risk scores.
-    This is the missing step that converts evidence to meaningful risk assessment.
+    Analyze collected evidence using LLM, with computed risk score as authority.
+    LLM must echo the computed score, preventing prompt hacking and overfitting.
     """
     from app.service.agent.evidence_analyzer import get_evidence_analyzer
     
     step = DomainAgentBase._get_domain_step(domain)
     logger.debug(f"[Step {step}.4] 🧠 LLM Evidence Analysis - Analyzing {len(findings.get('evidence', []))} evidence points")
     
+    # CRITICAL FIX: Compute risk score algorithmically BEFORE LLM analysis
+    computed_risk_score = _compute_algorithmic_risk_score(domain, findings, snowflake_data)
+    
     try:
         evidence_analyzer = get_evidence_analyzer()
         
-        # Analyze evidence with LLM
+        # Analyze evidence with LLM for independent assessment
         llm_analysis = await evidence_analyzer.analyze_domain_evidence(
             domain=domain,
             evidence=findings.get('evidence', []),
@@ -245,22 +358,41 @@ async def analyze_evidence_with_llm(
             entity_id=entity_id
         )
         
-        # Update findings with LLM analysis results
-        findings["risk_score"] = llm_analysis["risk_score"]
+        # Use LLM risk score for proper risk fusion (no authoritative override)
+        llm_risk_score = llm_analysis.get("risk_score", computed_risk_score)
+        
+        # CRITICAL FIX: Use only computed algorithmic score, isolate LLM narrative
+        # Store LLM risk assessment separately as "claimed_risk" to prevent contamination
+        if "llm_analysis" in findings and "risk_score" in llm_analysis:
+            findings["llm_analysis"]["claimed_risk"] = llm_analysis.pop("risk_score", None)
+        
+        # Use ONLY the computed algorithmic score for domain risk
+        findings["risk_score"] = computed_risk_score
         findings["confidence"] = llm_analysis["confidence"]
         
         # Clean and deduplicate all text content before storing
-        from app.service.agent.orchestration.text.clean import (
-            clean_recommendations, clean_reasoning, clean_assessment
-        )
-        if "recommendations" in llm_analysis:
-            llm_analysis["recommendations"] = clean_recommendations(llm_analysis["recommendations"])
-        if "reasoning" in llm_analysis:
-            llm_analysis["reasoning"] = clean_reasoning(llm_analysis["reasoning"])
-        if "assessment" in llm_analysis:
-            llm_analysis["assessment"] = clean_assessment(llm_analysis["assessment"])
-            
+        from app.service.text.clean import write_llm_sections, deduplicate_recommendations
+        
+        # Store the LLM analysis first
         findings["llm_analysis"] = llm_analysis
+        
+        # CRITICAL FIX: Detect confirmed fraud for severity guard
+        has_confirmed_fraud = _detect_confirmed_fraud(snowflake_data)
+        
+        # Apply recommendations severity guard for confirmed fraud cases
+        if has_confirmed_fraud and "recommendations" in llm_analysis:
+            if isinstance(llm_analysis["recommendations"], list):
+                llm_analysis["recommendations"] = deduplicate_recommendations(
+                    llm_analysis["recommendations"], has_confirmed_fraud=True
+                )
+            elif isinstance(llm_analysis["recommendations"], str):
+                # Convert string to list, apply guard, then back to string
+                rec_list = [llm_analysis["recommendations"]]
+                guarded_list = deduplicate_recommendations(rec_list, has_confirmed_fraud=True)
+                llm_analysis["recommendations"] = guarded_list[0] if guarded_list else llm_analysis["recommendations"]
+        
+        # Apply write-time deduplication to prevent duplicate text propagation
+        write_llm_sections(findings)
         
         # Add LLM reasoning to evidence
         findings["evidence"].append(f"LLM Analysis: {llm_analysis['reasoning'][:100]}...")

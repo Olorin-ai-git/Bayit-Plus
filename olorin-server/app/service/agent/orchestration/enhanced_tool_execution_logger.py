@@ -16,6 +16,7 @@ from langchain_core.tools import BaseTool
 from langchain_core.runnables import RunnableConfig
 
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.metrics.safe import fmt_num
 from app.utils.tool_error_categorization import (
     ToolErrorDetails,
     ToolExecutionMetrics,
@@ -116,7 +117,7 @@ class EnhancedToolExecutionLogger:
             tools_used = len(state.get("tools_used", []))
             
             logger.debug(f"   Investigation Context:")
-            logger.debug(f"     AI Confidence: {ai_confidence:.3f}")
+            logger.debug(f"     AI Confidence: {fmt_num(ai_confidence, 3)}")
             logger.debug(f"     Orchestrator Loops: {orchestrator_loops}")
             logger.debug(f"     Tools Previously Used: {tools_used}")
         
@@ -168,7 +169,7 @@ class EnhancedToolExecutionLogger:
         logger.info(f"   Duration: {metrics.duration_ms}ms")
         logger.info(f"   Result Size: {metrics.result_size_bytes} bytes")
         logger.info(f"   Record Count: {metrics.result_record_count}")
-        logger.info(f"   Data Completeness: {metrics.data_completeness_score:.3f}")
+        logger.info(f"   Data Completeness: {fmt_num(metrics.data_completeness_score, 3)}")
         logger.info(f"   Result Hash: {metrics.result_hash}")
         
         # Performance analysis
@@ -270,7 +271,7 @@ class EnhancedToolExecutionLogger:
         # Log investigation context
         if state:
             logger.error(f"   Investigation Context:")
-            logger.error(f"     AI Confidence: {state.get('ai_confidence', 0.0):.3f}")
+            logger.error(f"     AI Confidence: {fmt_num(state.get('ai_confidence', 0.0), 3)}")
             logger.error(f"     Orchestrator Loops: {state.get('orchestrator_loops', 0)}")
             logger.error(f"     Previous Tools Used: {len(state.get('tools_used', []))}")
         
@@ -588,9 +589,9 @@ class EnhancedToolExecutionLogger:
         risk_score = state.get("risk_score", 0.0)
         
         logger.debug(f"   Investigation Impact:")
-        logger.debug(f"     Current AI Confidence: {ai_confidence:.3f}")
+        logger.debug(f"     Current AI Confidence: {fmt_num(ai_confidence, 3)}")
         logger.debug(f"     Domains Completed: {domains_completed}/6")
-        logger.debug(f"     Current Risk Score: {risk_score:.3f}")
+        logger.debug(f"     Current Risk Score: {fmt_num(risk_score, 3)}")
         
         # Check if this tool significantly changed the investigation
         if ai_confidence > 0.8:
@@ -598,7 +599,7 @@ class EnhancedToolExecutionLogger:
         elif domains_completed >= 4:
             logger.info(f"   📊 Substantial investigation coverage reached")
         elif risk_score > 0.7:
-            logger.warning(f"   ⚠️ High risk score detected: {risk_score:.3f}")
+            logger.warning(f"   ⚠️ High risk score detected: {fmt_num(risk_score, 3)}")
     
     async def _emit_websocket_event(self, event_type: str, data: Dict[str, Any]):
         """Emit WebSocket event to registered handlers."""

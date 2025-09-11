@@ -137,8 +137,13 @@ class IntelligentRouter:
             
             # Final decision logging
             logger.info(f"🧭 Routing decision: {routing_decision['next_node']}")
-            logger.info(f"   Confidence: {getattr(ai_decision, 'confidence', 0.0):.3f} ({getattr(ai_decision, 'confidence_level', 'UNKNOWN')})")
-            logger.info(f"   Strategy: {getattr(ai_decision, 'strategy', 'ADAPTIVE')}")
+            # CRITICAL FIX: Safe access to ai_decision attributes to prevent None formatting errors
+            confidence = getattr(ai_decision, 'confidence', 0.0) if ai_decision else 0.0
+            confidence = confidence if confidence is not None else 0.0
+            confidence_level = getattr(ai_decision, 'confidence_level', 'UNKNOWN') if ai_decision else 'UNKNOWN'
+            strategy = getattr(ai_decision, 'strategy', 'ADAPTIVE') if ai_decision else 'ADAPTIVE'
+            logger.info(f"   Confidence: {confidence:.3f} ({confidence_level})")
+            logger.info(f"   Strategy: {strategy}")
             logger.info(f"   Safety override: {routing_decision.get('safety_override', False)}")
             logger.debug(f"   🎯 FINAL ROUTING DECISION:")
             logger.debug(f"     Complete decision object: {routing_decision}")
@@ -184,11 +189,18 @@ class IntelligentRouter:
         
         logger.debug(f"🎯 Applying Hybrid Intelligence decision logic")
         logger.debug(f"   🧠 AI DECISION ANALYSIS:")
-        logger.debug(f"     Confidence: {getattr(ai_decision, 'confidence', 0.0):.3f}")
-        logger.debug(f"     Confidence Level: {getattr(ai_decision, 'confidence_level', 'UNKNOWN')}")
-        logger.debug(f"     Recommended Action: {getattr(ai_decision, 'recommended_action', 'N/A')}")
-        logger.debug(f"     Strategy: {getattr(ai_decision, 'strategy', 'N/A')}")
-        logger.debug(f"     Reasoning Count: {len(getattr(ai_decision, 'reasoning', []))}")
+        # CRITICAL FIX: Safe access to ai_decision attributes to prevent None formatting errors
+        confidence = getattr(ai_decision, 'confidence', 0.0) if ai_decision else 0.0
+        confidence = confidence if confidence is not None else 0.0
+        confidence_level = getattr(ai_decision, 'confidence_level', 'UNKNOWN') if ai_decision else 'UNKNOWN'
+        recommended_action = getattr(ai_decision, 'recommended_action', 'N/A') if ai_decision else 'N/A'
+        strategy = getattr(ai_decision, 'strategy', 'N/A') if ai_decision else 'N/A'
+        reasoning = getattr(ai_decision, 'reasoning', []) if ai_decision else []
+        logger.debug(f"     Confidence: {confidence:.3f}")
+        logger.debug(f"     Confidence Level: {confidence_level}")
+        logger.debug(f"     Recommended Action: {recommended_action}")
+        logger.debug(f"     Strategy: {strategy}")
+        logger.debug(f"     Reasoning Count: {len(reasoning)}")
         logger.debug(f"   🛡️ SAFETY STATUS ANALYSIS:")
         logger.debug(f"     Allows AI Control: {getattr(safety_status, 'allows_ai_control', False)}")
         logger.debug(f"     Requires Termination: {getattr(safety_status, 'requires_immediate_termination', False)}")

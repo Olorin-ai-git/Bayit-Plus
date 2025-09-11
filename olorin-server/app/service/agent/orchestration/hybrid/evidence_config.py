@@ -93,6 +93,9 @@ class EvidenceValidator:
         Returns:
             Tuple of (is_valid, reason, metrics)
         """
+        # CRITICAL FIX: Ensure evidence_quality is never None to prevent formatting errors
+        evidence_quality = evidence_quality if evidence_quality is not None else 0.0
+        
         validation_result = {
             "evidence_quality": evidence_quality,
             "quality_level": self.get_evidence_quality_level(evidence_quality).value,

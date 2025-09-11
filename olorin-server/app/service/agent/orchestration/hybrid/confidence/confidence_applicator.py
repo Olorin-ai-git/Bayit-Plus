@@ -8,6 +8,7 @@ state and ensures all confidence fields are synchronized.
 from typing import Dict, Any
 
 from app.service.logging import get_bridge_logger
+from app.service.agent.orchestration.metrics.safe import fmt_num
 from .confidence_models import ConsolidatedConfidence
 
 logger = get_bridge_logger(__name__)
@@ -35,7 +36,7 @@ class ConfidenceApplicator:
             Updated state with synchronized confidence values
         """
         
-        logger.debug(f"Applying consolidated confidence {consolidated.overall_score:.3f} to state")
+        logger.debug(f"Applying consolidated confidence {fmt_num(consolidated.overall_score, 3)} to state")
         
         # Update primary confidence fields
         self._update_primary_confidence_fields(state, consolidated)
@@ -67,7 +68,7 @@ class ConfidenceApplicator:
         if consolidated.evidence_confidence is not None:
             self._safe_set_confidence(state, "evidence_confidence", consolidated.evidence_confidence)
         
-        logger.debug(f"Updated primary confidence fields to {consolidated.overall_score:.3f}")
+        logger.debug(f"Updated primary confidence fields to {fmt_num(consolidated.overall_score, 3)}")
     
     def _add_consolidation_metadata(
         self, 
@@ -149,8 +150,8 @@ class ConfidenceApplicator:
     
     def _log_application_results(self, consolidated: ConsolidatedConfidence):
         """Log the results of applying consolidated confidence."""
-        logger.debug(f"✅ Applied consolidated confidence {consolidated.overall_score:.3f} ({consolidated.level_description})")
-        logger.debug(f"   Consistency: {consolidated.consistency_score:.3f} | Reliability: {consolidated.reliability_score:.3f}")
+        logger.debug(f"✅ Applied consolidated confidence {fmt_num(consolidated.overall_score, 3)} ({consolidated.level_description})")
+        logger.debug(f"   Consistency: {fmt_num(consolidated.consistency_score, 3)} | Reliability: {fmt_num(consolidated.reliability_score, 3)}")
         
         if consolidated.data_quality_issues:
             logger.warning(f"   Data quality issues: {len(consolidated.data_quality_issues)} detected")

@@ -1745,8 +1745,15 @@ class UnifiedAutonomousTestRunner:
             feature_flags = get_feature_flags()
             graph_type = "Hybrid Intelligence" if feature_flags.is_enabled("hybrid_graph_v1", context.investigation_id) else "Clean"
             self.logger.info(f"🔍 {graph_type} graph result keys: {list(langgraph_result.keys())[:10]}...")  # Show first 10 keys
-            self.logger.info(f"🔍 Final risk score: {langgraph_result.get('risk_score', 0.0):.2f}")
-            self.logger.info(f"🔍 Confidence score: {langgraph_result.get('confidence_score', 0.0):.2f}")
+            # CRITICAL FIX: Don't coerce None risk scores to 0.0 - respect evidence gating
+            risk_score = langgraph_result.get('risk_score')
+            confidence_score = langgraph_result.get('confidence_score')
+            
+            risk_display = f"{risk_score:.2f}" if risk_score is not None else "N/A (blocked by evidence gating)"
+            confidence_display = f"{confidence_score:.2f}" if confidence_score is not None else "N/A"
+            
+            self.logger.info(f"🔍 Final risk score: {risk_display}")
+            self.logger.info(f"🔍 Confidence score: {confidence_display}")
             self.logger.info(f"🔍 Tools used: {len(langgraph_result.get('tools_used', []))}")
             self.logger.info(f"🔍 Domains completed: {langgraph_result.get('domains_completed', [])}")
             self.logger.info(f"🔍 Current phase: {langgraph_result.get('current_phase', 'unknown')}")
@@ -1898,7 +1905,10 @@ class UnifiedAutonomousTestRunner:
                         total_confidence += agent_results[agent_name]["confidence"]
                         agent_count += 1
                 
-                aggregated_risk = total_risk / agent_count if agent_count > 0 else graph_result.get("risk_score", 0.0)
+                # Calculate risk from individual agents - no authoritative override
+                aggregated_risk = total_risk / agent_count if agent_count > 0 else 0.0
+                self.logger.info(f"Calculated risk score from {agent_count} agents: {aggregated_risk:.3f}")
+                
                 aggregated_confidence = total_confidence / agent_count if agent_count > 0 else graph_result.get("confidence_score", 0.0)
                 
                 # Create comprehensive risk aggregation result
@@ -2512,7 +2522,7 @@ class UnifiedAutonomousTestRunner:
 
     def _extract_final_risk_score(self, agent_results: Dict[str, Any]) -> float:
         """Extract final risk score from aggregated results or individual agents"""
-        # First try to get from risk aggregation agent
+        # Get from risk aggregation agent but treat as fusion input, not authoritative
         risk_agg = agent_results.get("risk_aggregation", {})
         if risk_agg.get("risk_score", 0.0) > 0:
             return risk_agg.get("risk_score", 0.0)

@@ -321,7 +321,7 @@ class AutonomousOrchestrator:
                 strategy=OrchestrationStrategy(response_data["strategy"]),
                 agents_to_activate=response_data["agents_to_activate"],
                 execution_order=response_data["execution_order"],
-                confidence_score=float(response_data["confidence_score"]),
+                confidence_score=float(response_data.get("confidence_score", 0.6)) if response_data.get("confidence_score") is not None else 0.6,
                 reasoning=response_data["reasoning"],
                 estimated_duration=int(response_data["estimated_duration"]),
                 risk_assessment=response_data["risk_assessment"],
