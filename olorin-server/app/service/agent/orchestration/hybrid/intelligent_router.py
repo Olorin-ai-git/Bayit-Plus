@@ -281,10 +281,13 @@ class IntelligentRouter:
         logger.debug(f"     Safety chose: {safety_next_node}")
         logger.debug(f"     Override needed: {ai_recommendation != safety_next_node}")
         
+        override_applied = False
         if ai_recommendation != safety_next_node:
-            logger.debug(f"   🛡️ RECORDING SAFETY OVERRIDE:")
+            logger.debug(f"   🛡️ ATTEMPTING SAFETY OVERRIDE:")
             logger.debug(f"     Original AI decision: {ai_recommendation}")
             logger.debug(f"     Safety override to: {safety_next_node}")
+            # Check if override was actually applied (gated function may reject it)
+            original_override_count = len(state.get("safety_overrides", []))
             add_safety_override(
                 state,
                 original_ai_decision=ai_recommendation,
@@ -292,11 +295,20 @@ class IntelligentRouter:
                 concern_type=SafetyConcernType.RESOURCE_PRESSURE,  # Default concern type
                 reasoning=safety_status.override_reasoning
             )
+            new_override_count = len(state.get("safety_overrides", []))
+            override_applied = new_override_count > original_override_count
+            logger.debug(f"     Override actually applied: {override_applied}")
+        
+        # Clean reasoning: empty for normal routing, specific for overrides
+        clean_reasoning = []
+        if override_applied:
+            clean_reasoning = ["Safety-first routing applied"] + safety_status.override_reasoning
+        # No reasoning for normal routing to reduce noise
         
         safety_decision.update({
-            "safety_override": True,
-            "override_reason": "ai_control_denied",
-            "reasoning": ["Safety-first routing applied"] + safety_status.override_reasoning
+            "safety_override": override_applied,  # Only True if override was actually applied
+            "override_reason": "ai_control_denied" if override_applied else None,
+            "reasoning": clean_reasoning
         })
         
         return safety_decision

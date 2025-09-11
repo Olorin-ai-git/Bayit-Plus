@@ -15,6 +15,8 @@ from ...hybrid_state_schema import HybridInvestigationState
 from ...canonical_outcome import build_canonical_outcome, outcome_to_dict
 from ..metrics.summary_generator import SummaryGenerator
 from ..metrics.performance_calculator import PerformanceCalculator
+from app.service.agent.orchestration.risk.finalize import finalize_risk
+from app.service.agent.orchestration.metrics.finalize import finalize_all_metrics
 
 from app.service.logging import get_bridge_logger
 
@@ -63,15 +65,23 @@ class SummaryNodes:
             if consolidated_confidence.data_quality_issues:
                 logger.warning(f"   Data quality issues detected: {len(consolidated_confidence.data_quality_issues)}")
             
+            # Finalize risk score using uniform computation
+            finalize_risk(state)
+            logger.info(f"✅ Risk score finalized: {state.get('risk_score', 0.0):.2f}")
+            
+            # Finalize all performance metrics
+            finalize_all_metrics(state)
+            logger.info(f"✅ Performance metrics finalized")
+            
             # Generate hybrid intelligence summary
             investigation_summary = self.summary_generator.generate_hybrid_summary(state)
             
             # Update state
             state["current_phase"] = "complete"
-            state["end_time"] = datetime.now().isoformat()
-            
-            # Calculate total duration with robust fallback
-            state = self._calculate_investigation_duration(state)
+            # Note: end_time and total_duration_ms should already be set by run_timer context manager
+            # Only set end_time if not already present from run_timer
+            if not state.get("end_time"):
+                state["end_time"] = datetime.now().isoformat()
             
             # Add summary to messages
             summary_message = AIMessage(content=investigation_summary)
@@ -110,20 +120,29 @@ class SummaryNodes:
             
         except Exception as e:
             logger.error(f"❌ Enhanced summary failed: {str(e)}")
+            logger.exception("Enhanced summary generation error details")
             
-            # Add basic summary on error
-            state["messages"].append(AIMessage(content=f"Investigation completed with errors: {str(e)}"))
+            # Record error in state but don't leak to AI messages
+            if "errors" not in state:
+                state["errors"] = []
+            state["errors"].append({
+                "error_type": "summary_generation",
+                "message": str(e),
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            # Add generic completion message without error details
+            state["messages"].append(AIMessage(content="Investigation completed"))
             state["current_phase"] = "complete"
-            state["end_time"] = datetime.now().isoformat()
+            # Only set end_time if not already present from run_timer
+            if not state.get("end_time"):
+                state["end_time"] = datetime.now().isoformat()
             
-            # Calculate total duration even in error case
-            state = self._calculate_investigation_duration(state)
-            
-            # Generate canonical outcome even for error cases
+            # Generate canonical outcome for error cases
             try:
                 canonical_outcome = build_canonical_outcome(
                     state, 
-                    completion_reason=f"Investigation completed with errors: {str(e)}",
+                    completion_reason="Investigation completed with processing errors",
                     include_raw_state=False
                 )
                 state["canonical_final_outcome"] = outcome_to_dict(canonical_outcome)
@@ -132,8 +151,8 @@ class SummaryNodes:
                 logger.error(f"Failed to generate canonical outcome: {outcome_error}")
                 # Ensure basic outcome structure exists
                 state["canonical_final_outcome"] = {
-                    "status": "failed",
-                    "completion_reason": f"Investigation failed: {str(e)}",
+                    "status": "completed_with_errors",
+                    "completion_reason": "Investigation completed with processing errors",
                     "success": False
                 }
             
@@ -151,6 +170,9 @@ class SummaryNodes:
         
         # Update final state
         state["current_phase"] = "complete"
+        
+        # Finalize all performance metrics consistently  
+        finalize_all_metrics(state)
         
         # Calculate final performance metrics
         state["performance_metrics"]["final_efficiency"] = self.performance_calculator.calculate_investigation_efficiency(state)

@@ -466,5 +466,5 @@ class WebSocketStreamingService:
         await self.send_info("Streaming service closed", {
             "total_events_sent": self.events_sent,
             "total_execution_time": self._calculate_total_execution_time(),
-            "average_event_rate": self.events_sent / self._calculate_total_execution_time() if self._calculate_total_execution_time() > 0 else 0
+            "average_event_rate": self.events_sent / max(self._calculate_total_execution_time() or 1, 1)
         })

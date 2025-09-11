@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional, Callable
 from datetime import datetime
 
 from ...hybrid_state_schema import HybridInvestigationState
+from app.service.agent.orchestration.metrics.safe import safe_div
 
 from app.service.logging import get_bridge_logger
 
@@ -40,8 +41,10 @@ class DomainAgentEnhancer:
             logger.debug(f"   Performance metrics: Real-time completion time monitoring")
             
             try:
-                # Call original domain agent
-                result = await original_agent(state, config)
+                # Call original domain agent with duration tracking
+                from app.service.agent.orchestration.timing import domain_timer
+                with domain_timer(state, domain_name):
+                    result = await original_agent(state, config)
                 
                 # Update domain completion tracking
                 domains_completed = set(result.get("domains_completed", []))
@@ -62,11 +65,14 @@ class DomainAgentEnhancer:
                         }
                     result["confidence_factors"][f"{domain_name}_analysis"] = finding_quality
                 
-                # Update performance metrics
+                # Update performance metrics with domain duration
                 # CRITICAL FIX: Ensure performance_metrics exists before accessing
                 if "performance_metrics" not in result:
                     result["performance_metrics"] = {}
-                result["performance_metrics"][f"{domain_name}_completion_time"] = datetime.now().timestamp()
+                
+                # Use domain timer for duration tracking instead of timestamps
+                from app.service.agent.orchestration.timing import domain_timer
+                # Note: This will be tracked by the domain timer context manager
                 
                 # Add domain completion to audit trail
                 # CRITICAL FIX: Ensure decision_audit_trail exists before accessing
@@ -112,17 +118,17 @@ class DomainAgentEnhancer:
         }
     
     def get_domain_performance_metrics(self, state: HybridInvestigationState) -> Dict[str, Any]:
-        """Get performance metrics for domain agents."""
+        """Get performance metrics for domain agents using actual durations."""
         performance_metrics = state.get("performance_metrics", {})
+        domain_durations = performance_metrics.get("domain_durations_ms", {})
         domain_metrics = {}
         
-        for key, value in performance_metrics.items():
-            if key.endswith("_completion_time"):
-                domain_name = key.replace("_completion_time", "")
-                domain_metrics[domain_name] = {
-                    "completion_time": value,
-                    "completed": True
-                }
+        for domain_name, duration_ms in domain_durations.items():
+            domain_metrics[domain_name] = {
+                "duration_ms": duration_ms,
+                "duration_seconds": safe_div(duration_ms, 1000.0, 0.0),
+                "completed": True
+            }
         
         return domain_metrics
     

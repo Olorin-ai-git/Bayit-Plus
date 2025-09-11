@@ -8,6 +8,7 @@ hybrid intelligence investigations, measuring time, coverage, and safety metrics
 from typing import Dict, Any
 
 from ...hybrid_state_schema import HybridInvestigationState
+from app.service.agent.orchestration.metrics.safe import safe_div
 
 from app.service.logging import get_bridge_logger
 
@@ -65,7 +66,7 @@ class PerformanceCalculator:
             return 1.0
             
         ideal_time_ms = 30000  # 30 seconds ideal
-        time_ratio = duration_ms / ideal_time_ms
+        time_ratio = safe_div(duration_ms, ideal_time_ms, 1.0)
         
         # Efficiency decreases as we deviate from ideal time
         time_efficiency = max(0.1, min(1.0, 1.0 / (1.0 + abs(time_ratio - 1.0))))
@@ -81,8 +82,8 @@ class PerformanceCalculator:
     def _calculate_coverage_efficiency(self, domains_completed: int, tools_used: int) -> float:
         """Calculate coverage efficiency based on domains and tools."""
         # More domains and tools generally indicate better coverage
-        domain_score = (domains_completed / 6.0) * 0.7
-        tool_score = min(1.0, tools_used / 5.0) * 0.3
+        domain_score = safe_div(domains_completed, 6.0, 0.0) * 0.7
+        tool_score = min(1.0, safe_div(tools_used, 5.0, 0.0)) * 0.3
         
         coverage_efficiency = domain_score + tool_score
         return coverage_efficiency
@@ -113,7 +114,7 @@ class PerformanceCalculator:
             "overall_efficiency": self.calculate_investigation_efficiency(state),
             "time_metrics": {
                 "duration_ms": duration_ms,
-                "duration_seconds": (duration_ms or 0) / 1000.0,  # CRITICAL FIX: None-safety for duration_ms
+                "duration_seconds": safe_div(duration_ms, 1000.0, 0.0),  # CRITICAL FIX: Safe division for duration_ms
                 "time_efficiency": self._calculate_time_efficiency(duration_ms or 0),
                 "ideal_time_ms": 30000
             },
@@ -127,7 +128,7 @@ class PerformanceCalculator:
                 "total_domains": 6,
                 "tools_used": tools_used,
                 "coverage_efficiency": self._calculate_coverage_efficiency(domains_completed, tools_used),
-                "domain_completion_percentage": (domains_completed / 6.0) * 100
+                "domain_completion_percentage": safe_div(domains_completed, 6.0, 0.0) * 100
             },
             "safety_metrics": {
                 "safety_overrides": safety_overrides,

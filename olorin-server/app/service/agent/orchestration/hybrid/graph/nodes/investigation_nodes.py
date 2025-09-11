@@ -159,9 +159,9 @@ class InvestigationNodes:
         from ..assistant.hybrid_assistant import HybridAssistant
         hybrid_assistant = HybridAssistant(self.components)
         
-        # CRITICAL FIX: Use timing context manager on the enhanced state
-        from app.service.agent.orchestration.timing_utils import investigation_timer
-        with investigation_timer(state):
+        # BULLETPROOF FIX: Use perf counter timer for accurate timing
+        from app.service.agent.orchestration.timing import run_timer
+        with run_timer(state):
             enhanced_state = await hybrid_assistant.hybrid_aware_assistant(state, config)
             
             # Update performance metrics in the hybrid state
@@ -171,9 +171,9 @@ class InvestigationNodes:
             
             logger.debug(f"✅ Fraud investigation enhanced")
             
-            # CRITICAL FIX: Copy timing from state to enhanced_state
-            enhanced_state["start_time"] = state.get("start_time", enhanced_state.get("start_time"))
-            enhanced_state["end_time"] = state.get("end_time", enhanced_state.get("end_time"))
-            enhanced_state["total_duration_ms"] = state.get("total_duration_ms", enhanced_state.get("total_duration_ms", 0))
+            # Copy timing from state to enhanced_state (now guaranteed to be set by run_timer)
+            enhanced_state["start_time"] = state.get("start_time")
+            enhanced_state["end_time"] = state.get("end_time")
+            enhanced_state["total_duration_ms"] = state.get("total_duration_ms")
             
         return enhanced_state

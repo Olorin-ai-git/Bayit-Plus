@@ -247,7 +247,19 @@ async def analyze_evidence_with_llm(
         
         # Update findings with LLM analysis results
         findings["risk_score"] = llm_analysis["risk_score"]
-        findings["confidence"] = llm_analysis["confidence"] 
+        findings["confidence"] = llm_analysis["confidence"]
+        
+        # Clean and deduplicate all text content before storing
+        from app.service.agent.orchestration.text.clean import (
+            clean_recommendations, clean_reasoning, clean_assessment
+        )
+        if "recommendations" in llm_analysis:
+            llm_analysis["recommendations"] = clean_recommendations(llm_analysis["recommendations"])
+        if "reasoning" in llm_analysis:
+            llm_analysis["reasoning"] = clean_reasoning(llm_analysis["reasoning"])
+        if "assessment" in llm_analysis:
+            llm_analysis["assessment"] = clean_assessment(llm_analysis["assessment"])
+            
         findings["llm_analysis"] = llm_analysis
         
         # Add LLM reasoning to evidence
