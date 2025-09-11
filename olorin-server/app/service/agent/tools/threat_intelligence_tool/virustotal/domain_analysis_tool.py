@@ -2,7 +2,7 @@
 
 import ipaddress
 import json
-import asyncio
+from app.service.agent.tools.async_helpers import safe_run_async
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -63,7 +63,7 @@ class DomainAnalysisInput(BaseModel):
             try:
                 # Query Snowflake for email associated with this IP
                 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
-                import asyncio
+                from app.service.agent.tools.async_helpers import safe_run_async
                 
                 async def get_email_domain():
                     client = SnowflakeClient()
@@ -162,8 +162,8 @@ class VirusTotalDomainAnalysisTool(BaseTool):
     
     def _run(self, **kwargs) -> str:
         """Execute domain analysis synchronously."""
-        import asyncio
-        return asyncio.run(self._arun(**kwargs))
+        from app.service.agent.tools.async_helpers import safe_run_async
+        return safe_run_async(self._arun(**kwargs))
     
     async def _arun(
         self,

@@ -198,12 +198,17 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         ip_info = response.ip_info
         risk_level = response.get_risk_level()
         
+        # Apply reputation data normalization
+        normalized_assessment = self._normalize_reputation_data(ip_info)
+        
         # Core IP information
         analysis = {
             "ip_address": ip_info.ip_address,
             "reputation_summary": {
                 "abuse_confidence": ip_info.abuse_confidence_percentage,
                 "risk_level": risk_level,
+                "normalized_risk_level": normalized_assessment["normalized_risk_level"],
+                "data_quality_score": normalized_assessment["data_quality_score"],
                 "is_whitelisted": ip_info.is_whitelisted,
                 "total_reports": ip_info.total_reports,
                 "distinct_reporters": ip_info.num_distinct_users,
@@ -222,6 +227,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
             },
             "threat_assessment": self._generate_threat_assessment(ip_info, risk_level),
             "investigation_recommendations": self._generate_recommendations(ip_info, risk_level),
+            "data_quality_assessment": normalized_assessment,
             "metadata": {
                 "response_time_ms": response.response_time_ms,
                 "cached": response.cached,
@@ -230,6 +236,129 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         }
         
         return analysis
+
+    def _normalize_reputation_data(self, ip_info) -> Dict[str, Any]:
+        """
+        Normalize reputation data to detect and correct inconsistencies.
+        
+        This addresses cases where external reputation sources may have outdated
+        or inconsistent data compared to internal fraud models.
+        """
+        confidence = ip_info.abuse_confidence_percentage
+        total_reports = ip_info.total_reports
+        is_whitelisted = ip_info.is_whitelisted
+        usage_type = ip_info.usage_type or ""
+        
+        # Calculate data quality indicators
+        data_quality_factors = []
+        data_quality_score = 1.0
+        
+        # Factor 1: Report freshness and volume consistency
+        if confidence == 0 and total_reports > 0:
+            data_quality_factors.append("Zero confidence despite existing reports")
+            data_quality_score -= 0.3
+        
+        # Factor 2: Hosting infrastructure risk assessment
+        if usage_type.lower() in ["hosting", "datacenter", "cloud"] and confidence < 25:
+            data_quality_factors.append("Low confidence for hosting infrastructure")
+            data_quality_score -= 0.2
+            
+        # Factor 3: Whitelisted but suspicious patterns
+        if is_whitelisted and confidence > 0:
+            data_quality_factors.append("Whitelisted IP with abuse reports")
+            data_quality_score -= 0.15
+            
+        # Factor 4: Time-based reputation lag
+        if ip_info.last_reported_at:
+            days_since_last_report = (datetime.utcnow() - ip_info.last_reported_at).days
+            if days_since_last_report > 90 and confidence < 25:
+                data_quality_factors.append("Potentially stale reputation data")
+                data_quality_score -= 0.25
+        
+        # Normalize risk level based on data quality assessment
+        normalized_risk_level = self._calculate_normalized_risk_level(
+            confidence, data_quality_score, data_quality_factors
+        )
+        
+        return {
+            "normalized_risk_level": normalized_risk_level,
+            "data_quality_score": max(0.0, data_quality_score),
+            "data_quality_factors": data_quality_factors,
+            "reputation_reliability": self._assess_reputation_reliability(
+                confidence, total_reports, data_quality_score
+            ),
+            "recommendation": self._get_normalization_recommendation(
+                confidence, normalized_risk_level, data_quality_score
+            )
+        }
+    
+    def _calculate_normalized_risk_level(
+        self, 
+        confidence: int, 
+        data_quality_score: float, 
+        quality_factors: List[str]
+    ) -> str:
+        """Calculate normalized risk level accounting for data quality issues."""
+        
+        # If data quality is poor, be more conservative
+        if data_quality_score < 0.5:
+            if confidence <= 25:
+                return "MEDIUM_RISK_DUE_TO_DATA_UNCERTAINTY"
+            elif confidence <= 50:
+                return "HIGH_RISK_CONFIRMED"
+            else:
+                return "CRITICAL_RISK_CONFIRMED"
+        
+        # Normal risk level calculation for good data quality
+        if confidence >= 90:
+            return "CRITICAL"
+        elif confidence >= 75:
+            return "HIGH"
+        elif confidence >= 50:
+            return "MEDIUM"
+        elif confidence >= 25:
+            return "LOW"
+        else:
+            return "MINIMAL"
+    
+    def _assess_reputation_reliability(
+        self, 
+        confidence: int, 
+        total_reports: int, 
+        data_quality_score: float
+    ) -> str:
+        """Assess the reliability of reputation data."""
+        
+        if data_quality_score >= 0.8 and total_reports >= 5:
+            return "HIGH_RELIABILITY"
+        elif data_quality_score >= 0.6 and total_reports >= 2:
+            return "MEDIUM_RELIABILITY"
+        elif data_quality_score >= 0.4:
+            return "LOW_RELIABILITY"
+        else:
+            return "QUESTIONABLE_RELIABILITY"
+    
+    def _get_normalization_recommendation(
+        self, 
+        original_confidence: int, 
+        normalized_risk: str, 
+        data_quality_score: float
+    ) -> str:
+        """Generate recommendation based on normalization results."""
+        
+        if data_quality_score < 0.5:
+            return (
+                f"CAUTION: Low data quality score ({data_quality_score:.2f}). "
+                f"Consider cross-referencing with additional reputation sources. "
+                f"Original confidence {original_confidence}% may be unreliable."
+            )
+        elif "UNCERTAINTY" in normalized_risk:
+            return (
+                f"Data quality concerns detected. Recommend manual review or "
+                f"additional verification for IP with {original_confidence}% confidence."
+            )
+        else:
+            return f"Reputation data appears reliable (quality: {data_quality_score:.2f})"
 
     def _generate_threat_assessment(self, ip_info, risk_level: str) -> Dict[str, Any]:
         """Generate detailed threat assessment."""

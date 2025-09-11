@@ -84,10 +84,23 @@ def assistant(state: MessagesState, config: RunnableConfig):
     # Get LLM with tools and invoke
     llm_with_tools = _get_llm_with_tools()
     
+    # Check if there's already a system message to avoid duplicates
+    # This is important for hybrid graphs that may have already processed system messages
+    has_system_message = any(isinstance(msg, SystemMessage) for msg in messages)
+    
+    if has_system_message:
+        # Use messages as-is to preserve tool_use/tool_result sequences
+        final_messages = messages
+        logger.debug("Using existing system message, preserving message sequence")
+    else:
+        # Add default system message only if none exists
+        final_messages = [SYSTEM_MESSAGE] + messages
+        logger.debug("Added default system message")
+    
     return {
         "messages": [
             llm_with_tools.invoke(
-                [SYSTEM_MESSAGE] + messages,
+                final_messages,
                 config=config,
                 extra_headers=olorin_header,
             )

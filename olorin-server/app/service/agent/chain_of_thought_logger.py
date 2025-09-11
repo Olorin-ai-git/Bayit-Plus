@@ -577,7 +577,7 @@ class ChainOfThoughtLogger:
                 "max": max(confidence_values),
                 "average": sum(confidence_values) / len(confidence_values)
             },
-            "thinking_velocity": len(thought_process.reasoning_steps) / max(1, thought_process.performance_metrics.get("thinking_duration_ms", 1) / 1000)
+            "thinking_velocity": len(thought_process.reasoning_steps) / max(1, (thought_process.performance_metrics.get("thinking_duration_ms") or 1000) / 1000)
         }
     
     def _extract_key_reasoning_chains(self, thought_process: AgentThoughtProcess) -> List[Dict[str, Any]]:

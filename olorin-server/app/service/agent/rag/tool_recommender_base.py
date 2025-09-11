@@ -19,10 +19,21 @@ from .tool_analysis_utils import ToolAnalysisUtils
 from .context_augmentor import ContextAugmentor, ContextAugmentationConfig, KnowledgeContext
 from .rag_orchestrator import RAGOrchestrator
 from ..autonomous_context import AutonomousInvestigationContext
-from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
+# Lazy import to avoid circular dependencies
+# from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+
+
+# Lazy import functions to avoid circular dependencies
+def _import_tool_registry():
+    """Lazy import tool registry to avoid circular dependencies."""
+    try:
+        from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
+        return ToolRegistry, get_tools_for_agent
+    except ImportError:
+        return None, None
 
 
 class ToolRecommenderBase:
@@ -31,7 +42,7 @@ class ToolRecommenderBase:
     def __init__(
         self,
         rag_orchestrator: RAGOrchestrator,
-        tool_registry: ToolRegistry,
+        tool_registry: Any,  # Use Any to avoid circular import
         context_augmentor: Optional[ContextAugmentor] = None,
         config: Optional[ToolRecommenderConfig] = None
     ):
@@ -144,7 +155,12 @@ class ToolRecommenderBase:
         
         # Use standard tool selection as fallback
         fallback_categories = categories or self.utils.get_default_categories(domain)
-        tools = get_tools_for_agent(categories=fallback_categories)
+        ToolRegistry, get_tools_for_agent = _import_tool_registry()
+        if get_tools_for_agent:
+            tools = get_tools_for_agent(categories=fallback_categories)
+        else:
+            logger.warning("Tool registry not available for fallback")
+            tools = []
         
         # Convert to recommendations with lower confidence
         recommendations = []

@@ -31,6 +31,7 @@ from .models import (
 )
 from app.service.logging import get_bridge_logger
 from app.utils.firebase_secrets import get_firebase_secret
+from app.service.agent.tools.async_client_manager import get_client_manager
 
 logger = get_bridge_logger(__name__)
 
@@ -64,13 +65,15 @@ class AbuseIPDBClient:
         return self._api_key
 
     async def _get_session(self) -> aiohttp.ClientSession:
-        """Get or create HTTP session."""
+        """Get or create HTTP session with managed cleanup."""
         if self._session is None or self._session.closed:
             timeout = ClientTimeout(total=self.config.timeout)
             self._session = aiohttp.ClientSession(
                 timeout=timeout,
                 headers={"User-Agent": "Olorin-Fraud-Detection/1.0"}
             )
+            # Register session with manager for cleanup tracking
+            get_client_manager().register_session(self._session)
         return self._session
 
     async def _make_request(
@@ -478,9 +481,10 @@ class AbuseIPDBClient:
             )
 
     async def close(self):
-        """Close HTTP session."""
+        """Close HTTP session with managed cleanup."""
         if self._session and not self._session.closed:
-            await self._session.close()
+            await get_client_manager().close_session(self._session)
+            self._session = None
 
     async def __aenter__(self):
         """Async context manager entry."""

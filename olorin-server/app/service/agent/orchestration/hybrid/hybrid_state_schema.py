@@ -136,7 +136,7 @@ def create_hybrid_initial_state(
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,
     date_range_days: int = 7,
-    tool_count: str = "5-6",
+    tool_count: int = 5,
     initial_strategy: InvestigationStrategy = InvestigationStrategy.ADAPTIVE,
     force_confidence_level: Optional[AIConfidenceLevel] = None
 ) -> HybridInvestigationState:
@@ -399,7 +399,7 @@ def add_safety_override(
     
     # Add to state
     state["safety_overrides"].append(override)
-    state["ai_override_reasons"].append(f"{concern_type.value}: {reasoning[0]}")
+    state["ai_override_reasons"].append(f"{concern_type.value}: {reasoning[0] if reasoning else 'No reason provided'}")
     
     # Update audit trail
     state["decision_audit_trail"].append({

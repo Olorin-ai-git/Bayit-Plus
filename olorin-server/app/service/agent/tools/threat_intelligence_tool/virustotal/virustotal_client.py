@@ -14,6 +14,7 @@ import urllib.parse
 
 import aiohttp
 from app.utils.firebase_secrets import get_firebase_secret
+from app.service.agent.tools.async_client_manager import http_session
 
 from .models import (
     VirusTotalConfig,
@@ -49,7 +50,6 @@ class VirusTotalClient:
         """Initialize VirusTotal API client."""
         self.config = config
         self._api_key: Optional[str] = None
-        self._session: Optional[aiohttp.ClientSession] = None
     
     async def _get_api_key(self) -> str:
         """Get API key from Firebase secrets."""
@@ -64,56 +64,49 @@ class VirusTotalClient:
         
         return self._api_key
     
-    async def _get_session(self) -> aiohttp.ClientSession:
-        """Get or create HTTP session."""
-        if self._session is None or self._session.closed:
-            api_key = await self._get_api_key()
-            headers = {
-                'x-apikey': api_key,
-                'User-Agent': 'Olorin-ThreatIntelligence/1.0',
-                'Accept': 'application/json'
-            }
-            
-            timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
-            self._session = aiohttp.ClientSession(
-                headers=headers,
-                timeout=timeout,
-                raise_for_status=False
-            )
-        
-        return self._session
+    async def _get_session_headers(self) -> dict:
+        """Get HTTP headers for VirusTotal API."""
+        api_key = await self._get_api_key()
+        return {
+            'x-apikey': api_key,
+            'User-Agent': 'Olorin-ThreatIntelligence/1.0',
+            'Accept': 'application/json'
+        }
     
     async def _make_request(self, endpoint: str, method: str = "GET", **kwargs) -> dict:
-        """Make HTTP request to VirusTotal API."""
-        session = await self._get_session()
+        """Make HTTP request to VirusTotal API using managed session."""
         url = f"{self.config.base_url}/{endpoint}"
+        headers = await self._get_session_headers()
+        timeout = aiohttp.ClientTimeout(total=self.config.timeout_seconds)
         
         start_time = datetime.utcnow()
         
         try:
-            async with session.request(method, url, **kwargs) as response:
-                response_time_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)
-                
-                # Handle different response codes
-                if response.status == 200:
-                    data = await response.json()
-                    return {"success": True, "data": data, "response_time_ms": response_time_ms}
-                
-                elif response.status == 404:
-                    raise VirusTotalNotFoundError("Resource not found in VirusTotal database")
-                
-                elif response.status == 401:
-                    raise VirusTotalAuthError("VirusTotal API authentication failed")
-                
-                elif response.status == 429:
-                    raise VirusTotalRateLimitError("VirusTotal API rate limit exceeded")
-                
-                elif response.status == 403:
-                    raise VirusTotalQuotaError("VirusTotal API quota exceeded")
-                
-                else:
-                    error_text = await response.text()
-                    raise VirusTotalError(f"VirusTotal API error {response.status}: {error_text}")
+            # Use managed HTTP session to prevent unclosed session warnings
+            async with http_session(timeout=timeout, headers=headers) as session:
+                async with session.request(method, url, **kwargs) as response:
+                    response_time_ms = int((datetime.utcnow() - start_time).total_seconds() * 1000)
+                    
+                    # Handle different response codes
+                    if response.status == 200:
+                        data = await response.json()
+                        return {"success": True, "data": data, "response_time_ms": response_time_ms}
+                    
+                    elif response.status == 404:
+                        raise VirusTotalNotFoundError("Resource not found in VirusTotal database")
+                    
+                    elif response.status == 401:
+                        raise VirusTotalAuthError("VirusTotal API authentication failed")
+                    
+                    elif response.status == 429:
+                        raise VirusTotalRateLimitError("VirusTotal API rate limit exceeded")
+                    
+                    elif response.status == 403:
+                        raise VirusTotalQuotaError("VirusTotal API quota exceeded")
+                    
+                    else:
+                        error_text = await response.text()
+                        raise VirusTotalError(f"VirusTotal API error {response.status}: {error_text}")
         
         except asyncio.TimeoutError:
             raise VirusTotalError(f"Request timeout after {self.config.timeout_seconds} seconds")
@@ -441,15 +434,10 @@ class VirusTotalClient:
                 error=str(e)
             )
     
-    async def close(self):
-        """Close the HTTP session."""
-        if self._session and not self._session.closed:
-            await self._session.close()
-    
     async def __aenter__(self):
         """Async context manager entry."""
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit."""
-        await self.close()
+        """Async context manager exit - sessions managed automatically."""
+        pass  # Sessions are automatically managed by http_session context manager

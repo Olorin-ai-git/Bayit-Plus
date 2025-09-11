@@ -2,15 +2,18 @@ import json
 import logging
 from app.service.logging import get_bridge_logger
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from fastapi import Request
 
 from app.models.agent_context import AgentContext
 from app.models.agent_headers import AuthContext, OlorinHeader
 from app.models.upi_response import Metadata
-from app.router.demo_router import demo_cache, demo_mode_users
-from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient
+# Moved imports to inside methods to avoid circular import
+# Use TYPE_CHECKING for type hints only
+if TYPE_CHECKING:
+    from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient
+    
 from app.service.agent.tools.vector_search_tool.vector_search_tool import (
     VectorSearchTool,
 )
@@ -30,7 +33,7 @@ class LocationAnalysisService:
 
     def __init__(
         self,
-        location_data_client: LocationDataClient,
+        location_data_client: "LocationDataClient",
         vector_search_tool: VectorSearchTool,
     ):
         self.location_data_client = location_data_client
@@ -59,6 +62,9 @@ class LocationAnalysisService:
             vector_search_results = None
 
             # Demo mode fallback
+            # Import here to avoid circular dependency
+            from app.router.demo_router import demo_cache, demo_mode_users
+            
             if (
                 entity_id in demo_mode_users
                 and entity_id in demo_cache

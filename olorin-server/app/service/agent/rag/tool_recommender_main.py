@@ -4,7 +4,7 @@ Knowledge-Based Tool Recommender Main Implementation
 Main class for RAG-enhanced tool selection with historical effectiveness analysis.
 """
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from langchain_core.tools import BaseTool
 
@@ -17,10 +17,21 @@ from .tool_recommender_base import ToolRecommenderBase
 from .context_augmentor import ContextAugmentor
 from .rag_orchestrator import RAGOrchestrator
 from ..autonomous_context import AutonomousInvestigationContext
-from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
+# Lazy import to avoid circular dependencies
+# from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+
+
+# Lazy import functions to avoid circular dependencies
+def _import_tool_registry():
+    """Lazy import tool registry to avoid circular dependencies."""
+    try:
+        from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
+        return ToolRegistry, get_tools_for_agent
+    except ImportError:
+        return None, None
 
 
 class KnowledgeBasedToolRecommender(ToolRecommenderBase):
@@ -161,13 +172,18 @@ class KnowledgeBasedToolRecommender(ToolRecommenderBase):
             self.logger.error(f"Enhanced tool list generation failed: {str(e)}")
             
             # Fallback to standard tool selection
-            return get_tools_for_agent(categories=categories, tool_names=tool_names)
+            ToolRegistry, get_tools_for_agent = _import_tool_registry()
+            if get_tools_for_agent:
+                return get_tools_for_agent(categories=categories, tool_names=tool_names)
+            else:
+                logger.warning("Tool registry not available for fallback")
+                return []
 
 
 # Factory function for easy initialization
 def create_tool_recommender(
     rag_orchestrator: RAGOrchestrator,
-    tool_registry: ToolRegistry,
+    tool_registry: Any,  # Use Any to avoid circular import
     config: Optional[ToolRecommenderConfig] = None
 ) -> KnowledgeBasedToolRecommender:
     """Create knowledge-based tool recommender instance"""

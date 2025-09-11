@@ -4,6 +4,7 @@ State Schema for LangGraph Clean Architecture
 Defines the complete investigation state used throughout the graph.
 """
 
+import json
 from typing import TypedDict, List, Dict, Any, Annotated, Optional
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
@@ -11,6 +12,44 @@ from app.service.logging import get_bridge_logger
 
 # Initialize logger at module level
 logger = get_bridge_logger(__name__)
+
+
+def _normalize_snowflake_data_type(data):
+    """
+    Normalize snowflake data to expected type (object instead of JSON string).
+    
+    Args:
+        data: Raw data from tool result (could be string or object)
+        
+    Returns:
+        Normalized data as object/dict
+    """
+    try:
+        if isinstance(data, str):
+            # Try to parse as JSON first
+            try:
+                parsed_data = json.loads(data)
+                logger.debug(f"📊 SNOWFLAKE DATA: Parsed JSON string to {type(parsed_data).__name__}")
+                return parsed_data
+            except json.JSONDecodeError:
+                # Try to evaluate as Python literal (safer than eval)
+                try:
+                    import ast
+                    parsed_data = ast.literal_eval(data)
+                    logger.debug(f"📊 SNOWFLAKE DATA: Parsed Python literal to {type(parsed_data).__name__}")
+                    return parsed_data
+                except (ValueError, SyntaxError):
+                    # If all parsing fails, return as string but log warning
+                    logger.warning(f"📊 SNOWFLAKE DATA: Could not parse string data, keeping as string")
+                    return data
+        else:
+            # Already an object, return as-is
+            logger.debug(f"📊 SNOWFLAKE DATA: Already {type(data).__name__}, no parsing needed")
+            return data
+            
+    except Exception as e:
+        logger.error(f"📊 SNOWFLAKE DATA: Error normalizing data type: {str(e)}")
+        return data  # Return original data if normalization fails
 
 
 class InvestigationState(TypedDict):
@@ -88,7 +127,7 @@ def create_initial_state(
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,
     date_range_days: int = 7,
-    tool_count: str = "5-6"
+    tool_count: int = 5
 ) -> InvestigationState:
     """
     Create the initial state for a new investigation.
@@ -321,7 +360,9 @@ def add_tool_result(state: InvestigationState, tool_name: str, result: Any) -> D
     }
     
     if "snowflake" in tool_name.lower():
-        updates["snowflake_data"] = result
+        # CRITICAL FIX: Normalize snowflake data type (JSON string → object)
+        snowflake_data = _normalize_snowflake_data_type(result)
+        updates["snowflake_data"] = snowflake_data
         updates["snowflake_completed"] = True
     
     return updates

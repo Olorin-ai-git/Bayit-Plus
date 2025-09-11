@@ -15,7 +15,7 @@ from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, create_initial_state
 from app.service.agent.orchestration.hybrid.intelligent_router import IntelligentRouter
 from app.service.agent.orchestration.hybrid.ai_confidence_engine import AIConfidenceEngine
-from app.service.agent.orchestration.hybrid.advanced_safety_manager import AdvancedSafetyManager
+from app.service.agent.orchestration.hybrid.safety import AdvancedSafetyManager
 from app.service.agent.orchestration.debugging.orchestration_debugger import debug_failed_investigation
 
 logger = get_bridge_logger(__name__)

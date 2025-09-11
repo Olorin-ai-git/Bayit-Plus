@@ -16,7 +16,8 @@ from app.service.agent.agent_communication import (
     get_context_with_retry,
 )
 from app.service.logging import get_bridge_logger
-from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
+# Lazy import to avoid circular dependencies
+# from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
 
 # RAG imports with graceful fallback
 try:
@@ -37,6 +38,16 @@ logger = get_bridge_logger(__name__)
 
 # Get global journey tracker instance
 journey_tracker = get_journey_tracker()
+
+
+# Lazy import functions to avoid circular dependencies
+def _import_agent_factory():
+    """Lazy import agent factory to avoid circular dependencies."""
+    try:
+        from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
+        return create_rag_agent, create_agent_with_intelligent_tools
+    except ImportError:
+        return None, None
 
 
 async def autonomous_device_agent(state, config) -> dict:
@@ -110,6 +121,11 @@ async def autonomous_device_agent(state, config) -> dict:
             device_agent = await create_enhanced_device_agent()
             logger.info("🔧 Created MCP-enhanced device agent with connection pooling, caching, and circuit breakers")
         elif RAG_AVAILABLE and rag_config:
+            create_rag_agent, create_agent_with_intelligent_tools = _import_agent_factory()
+            if create_agent_with_intelligent_tools is None:
+                logger.error("Agent factory not available")
+                return _create_error_response("Agent factory not available")
+            
             device_agent = await create_agent_with_intelligent_tools(
                 domain="device",
                 investigation_context=autonomous_context,
@@ -120,8 +136,15 @@ async def autonomous_device_agent(state, config) -> dict:
             logger.info("🔧 Created device agent with intelligent RAG-enhanced tool selection")
         else:
             # Fallback to standard agent creation
-            from app.service.agent.agent_factory import create_autonomous_agent
-            device_agent = create_autonomous_agent("device", tools)
+            create_rag_agent, create_agent_with_intelligent_tools = _import_agent_factory()
+            if create_agent_with_intelligent_tools is None:
+                logger.error("Agent factory not available for fallback")
+                return _create_error_response("Agent factory not available")
+            
+            # Use create_agent_with_intelligent_tools for fallback as well
+            device_agent = await create_agent_with_intelligent_tools(
+                "device", tools, agent_context
+            )
             logger.info("🔧 Created standard device agent (RAG not available)")
         
         # Get enhanced objectives with MCP/RAG-augmented threat intelligence focus

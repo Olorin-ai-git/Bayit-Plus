@@ -156,7 +156,7 @@ class PerformanceMonitor:
             metrics["failed_executions"] += 1
         
         metrics["total_duration"] += duration
-        metrics["avg_duration"] = metrics["total_duration"] / metrics["total_executions"]
+        metrics["avg_duration"] = metrics["total_duration"] / max(1, metrics["total_executions"])  # CRITICAL FIX: Division by zero protection
         metrics["max_duration"] = max(metrics["max_duration"], duration)
         metrics["min_duration"] = min(metrics["min_duration"], duration)
         

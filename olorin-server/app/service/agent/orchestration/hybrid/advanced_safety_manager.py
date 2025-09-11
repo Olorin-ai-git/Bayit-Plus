@@ -18,6 +18,7 @@ from .hybrid_state_schema import (
     SafetyConcernType,
     InvestigationStrategy
 )
+from .evidence_config import get_evidence_validator
 
 from app.service.logging import get_bridge_logger
 
@@ -264,39 +265,80 @@ class AdvancedSafetyManager:
         state: HybridInvestigationState,
         limits: SafetyLimits
     ) -> float:
-        """Calculate current resource pressure (0.0 - 1.0)"""
+        """Calculate current resource pressure (0.0 - 1.0) with improved normalization and realistic thresholds"""
         
         orchestrator_loops = state.get("orchestrator_loops", 0)
         tools_used = len(state.get("tools_used", []))
         domains_completed = len(state.get("domains_completed", []))
         
-        # Calculate pressure for each resource type
-        loop_pressure = orchestrator_loops / limits.max_orchestrator_loops
-        tool_pressure = tools_used / limits.max_tool_executions
-        domain_pressure = domains_completed / limits.max_domain_attempts
+        # Warmup: Don't throttle immediately in the first 3 loops (increased from 2)
+        if orchestrator_loops < 3:
+            logger.debug(f"   🔄 Warmup period: {orchestrator_loops}/3 loops - pressure limited to 0.0")
+            return 0.0
         
-        # Time pressure
+        # CRITICAL FIX: Get actual count of tool executions, not just unique tools
+        tool_execution_attempts = state.get("tool_execution_attempts", 0)
+        total_tool_executions = max(tools_used, tool_execution_attempts)  # Use higher of the two
+        
+        # CRITICAL FIX: Apply realistic pressure scaling with proper normalization
+        # Pressure should be low until we approach 70% of limits
+        def calculate_progressive_pressure(current: int, limit: int, early_threshold: float = 0.7) -> float:
+            """Calculate pressure that stays low until approaching limits"""
+            if current <= 0 or limit <= 0:
+                return 0.0
+            
+            ratio = current / limit
+            if ratio <= early_threshold:
+                # Very gentle increase in the first 70% of capacity
+                return ratio * 0.5  # Scale down early pressure significantly
+            else:
+                # Sharper increase as we approach limits
+                excess_ratio = (ratio - early_threshold) / (1.0 - early_threshold)
+                return 0.35 + (excess_ratio * 0.65)  # 0.35 at 70%, up to 1.0 at 100%
+        
+        loop_pressure = calculate_progressive_pressure(orchestrator_loops, limits.max_orchestrator_loops)
+        tool_pressure = calculate_progressive_pressure(total_tool_executions, limits.max_tool_executions)
+        domain_pressure = calculate_progressive_pressure(domains_completed, limits.max_domain_attempts)
+        
+        # CRITICAL FIX: Time pressure calculation with proper error handling
         time_pressure = 0.0
         start_time = state.get("start_time")
         if start_time:
             try:
-                from dateutil.parser import parse
-                start_dt = parse(start_time)
-                elapsed_minutes = (datetime.now() - start_dt).total_seconds() / 60.0
-                time_pressure = elapsed_minutes / limits.max_investigation_time_minutes
-            except Exception:
+                if isinstance(start_time, str):
+                    from dateutil.parser import parse
+                    start_dt = parse(start_time)
+                    elapsed_minutes = (datetime.now() - start_dt).total_seconds() / 60.0
+                else:
+                    # If start_time is already datetime
+                    elapsed_minutes = (datetime.now() - start_time).total_seconds() / 60.0
+                    
+                time_budget_minutes = getattr(limits, 'max_investigation_time_minutes', 30)  # More realistic 30 min default
+                time_pressure = calculate_progressive_pressure(int(elapsed_minutes), time_budget_minutes)
+                
+            except Exception as e:
+                logger.debug(f"Time pressure calculation error: {str(e)}")
                 time_pressure = 0.0
         
-        # Overall pressure is the maximum of individual pressures (worst case)
-        overall_pressure = max(loop_pressure, tool_pressure, domain_pressure, time_pressure)
-        overall_pressure = min(1.0, overall_pressure)  # Cap at 1.0
+        # CRITICAL FIX: Rebalanced weighted approach with lower baseline pressure
+        overall_pressure = (
+            0.4 * tool_pressure +    # Tool usage most important but reduced weight
+            0.3 * loop_pressure +    # Loop count important  
+            0.2 * time_pressure +    # Time pressure 
+            0.1 * domain_pressure    # Domain completion least critical
+        )
         
-        logger.debug(f"   📈 Hybrid Intelligence resource pressure: {overall_pressure:.3f}")
-        logger.debug(f"      Loops: {loop_pressure:.3f} ({orchestrator_loops}/{limits.max_orchestrator_loops})")
-        logger.debug(f"      Tools: {tool_pressure:.3f} ({tools_used}/{limits.max_tool_executions})")
+        # CRITICAL FIX: Remove the domain penalty that was artificially inflating pressure
+        # The old logic added 0.1 pressure even with normal progress
+        
+        overall_pressure = min(1.0, max(0.0, overall_pressure))  # Clamp to [0.0, 1.0]
+        
+        logger.debug(f"   📈 FIXED Hybrid Intelligence resource pressure: {overall_pressure:.3f}")
+        logger.debug(f"      Loops: {loop_pressure:.3f} ({orchestrator_loops}/{limits.max_orchestrator_loops}) [70% threshold: {limits.max_orchestrator_loops * 0.7:.0f}]")
+        logger.debug(f"      Tools: {tool_pressure:.3f} ({total_tool_executions}/{limits.max_tool_executions}) [unique: {tools_used}, attempts: {tool_execution_attempts}]")
         logger.debug(f"      Domains: {domain_pressure:.3f} ({domains_completed}/{limits.max_domain_attempts})")
         logger.debug(f"      Time: {time_pressure:.3f}")
-        logger.debug(f"   Resource monitoring: Real-time utilization tracking for AI optimization")
+        logger.debug(f"   Progressive pressure scaling: gentle increase until 70% capacity, then sharper curve")
         
         return overall_pressure
     
@@ -352,7 +394,8 @@ class AdvancedSafetyManager:
         if state.get("ai_decisions"):
             evidence_quality = state["ai_decisions"][-1].evidence_quality
         
-        if evidence_quality < 0.3 and orchestrator_loops > 5:
+        evidence_validator = get_evidence_validator()
+        if evidence_validator.should_trigger_safety_concerns(evidence_quality, orchestrator_loops):
             concerns.append(SafetyConcern(
                 concern_type=SafetyConcernType.EVIDENCE_INSUFFICIENT,
                 severity="medium",
@@ -392,12 +435,21 @@ class AdvancedSafetyManager:
         
         ai_confidence = state.get("ai_confidence", 0.5)
         confidence_level = state.get("ai_confidence_level", AIConfidenceLevel.UNKNOWN)
+        orchestrator_loops = state.get("orchestrator_loops", 0)
         
         # Never allow AI control in emergency situations
         critical_concerns = [c for c in concerns if c.severity == "critical"]
         if critical_concerns:
             logger.debug(f"   🚫 AI control denied: {len(critical_concerns)} critical concerns")
             return False
+        
+        # CRITICAL FIX: Respect minimum pressure threshold from state_updater.py
+        MIN_PRESSURE_THRESHOLD = 0.35
+        
+        # If resource pressure is very low, allow AI control regardless of other factors
+        if resource_pressure < MIN_PRESSURE_THRESHOLD:
+            logger.debug(f"   ✅ AI control allowed: resource pressure {resource_pressure:.3f} below threshold {MIN_PRESSURE_THRESHOLD}")
+            return True
         
         # High confidence with low resource pressure -> Allow AI control
         if confidence_level == AIConfidenceLevel.HIGH and resource_pressure < 0.6:
@@ -409,8 +461,13 @@ class AdvancedSafetyManager:
             logger.debug(f"   ✅ AI control allowed: medium confidence, moderate pressure")
             return True
         
-        # Low confidence or high pressure -> Deny AI control
-        logger.debug(f"   🚫 AI control denied: confidence={confidence_level.value}, pressure={resource_pressure:.3f}")
+        # UNKNOWN confidence -> Allow AI control if pressure is reasonable (removed loop restriction)
+        if confidence_level == AIConfidenceLevel.UNKNOWN and resource_pressure < 0.5:
+            logger.debug(f"   ✅ AI control allowed: unknown confidence, acceptable pressure (loop {orchestrator_loops})")
+            return True
+        
+        # Low confidence, high pressure -> Deny AI control
+        logger.debug(f"   🚫 AI control denied: confidence={confidence_level.value}, pressure={resource_pressure:.3f}, loop={orchestrator_loops}")
         return False
     
     def _requires_immediate_termination(

@@ -448,6 +448,15 @@ Key principles:
         
         final_risk_score = min(base_risk_score + correlation_boost, 1.0)
         
+        # Risk floor: Apply minimum risk for high internal model scores
+        snowflake_model_score = self._extract_snowflake_model_score(agent_results, investigation_context)
+        if snowflake_model_score and snowflake_model_score >= 0.95:
+            risk_floor = 0.6  # Set minimum risk to moderate level
+            if final_risk_score < risk_floor:
+                self.logger.warning(f"Applying risk floor: Snowflake MODEL_SCORE={snowflake_model_score:.2f} but aggregated risk={final_risk_score:.2f}")
+                self.logger.warning(f"Raising risk score to floor value: {risk_floor:.2f}")
+                final_risk_score = risk_floor
+        
         # Generate comprehensive analysis response
         analysis_response = f"""
 CROSS-DOMAIN CORRELATION SUMMARY:
@@ -484,3 +493,60 @@ RECOMMENDED ACTIONS:
 """
         
         return analysis_response.strip()
+
+    def _extract_snowflake_model_score(self, agent_results: List[AgentResult], investigation_context: Dict[str, Any]) -> Optional[float]:
+        """
+        Extract Snowflake MODEL_SCORE from agent results.
+        
+        Args:
+            agent_results: List of agent results from investigation
+            investigation_context: Investigation context containing metadata
+            
+        Returns:
+            Snowflake MODEL_SCORE as float, or None if not found
+        """
+        try:
+            # Check investigation context first
+            if investigation_context and 'snowflake_data' in investigation_context:
+                snowflake_data = investigation_context['snowflake_data']
+                if isinstance(snowflake_data, dict) and 'MODEL_SCORE' in snowflake_data:
+                    return float(snowflake_data['MODEL_SCORE'])
+            
+            # Search through agent results for Snowflake tool outputs
+            for result in agent_results:
+                if not result or not hasattr(result, 'tool_outputs'):
+                    continue
+                    
+                for tool_output in result.tool_outputs:
+                    if not tool_output or not hasattr(tool_output, 'tool_name'):
+                        continue
+                        
+                    # Look for Snowflake-related tools
+                    if 'snowflake' in tool_output.tool_name.lower() or 'model_score' in tool_output.tool_name.lower():
+                        try:
+                            # Parse JSON output if available
+                            if hasattr(tool_output, 'result') and tool_output.result:
+                                import json
+                                if isinstance(tool_output.result, str):
+                                    parsed_result = json.loads(tool_output.result)
+                                else:
+                                    parsed_result = tool_output.result
+                                    
+                                # Look for MODEL_SCORE in various locations
+                                if isinstance(parsed_result, dict):
+                                    if 'MODEL_SCORE' in parsed_result:
+                                        return float(parsed_result['MODEL_SCORE'])
+                                    if 'model_score' in parsed_result:
+                                        return float(parsed_result['model_score'])
+                                    if 'score' in parsed_result and 'model' in tool_output.tool_name.lower():
+                                        return float(parsed_result['score'])
+                        except (json.JSONDecodeError, ValueError, KeyError) as e:
+                            self.logger.debug(f"Failed to parse Snowflake result from {tool_output.tool_name}: {e}")
+                            continue
+            
+            self.logger.debug("No Snowflake MODEL_SCORE found in agent results")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting Snowflake MODEL_SCORE: {e}")
+            return None

@@ -313,7 +313,7 @@ class JourneyVisualizationComponent(BaseVisualizationComponent):
             'completion_rate': round(completion_rate, 1),
             'event_type_distribution': dict(event_types),
             'importance_distribution': dict(importance_distribution),
-            'timeline_span_hours': round(total_duration_ms / (1000 * 60 * 60), 2) if total_duration_ms > 0 else 0
+            'timeline_span_hours': round(total_duration_ms / (1000 * 60 * 60), 2) if total_duration_ms and total_duration_ms > 0 else 0
         }
     
     def _analyze_journey_patterns(self, events: List[Dict]) -> Dict[str, Any]:

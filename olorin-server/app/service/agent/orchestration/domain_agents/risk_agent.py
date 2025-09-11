@@ -5,7 +5,7 @@ Synthesizes findings from all domains and calculates final risk assessment.
 """
 
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import (
@@ -18,7 +18,7 @@ from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_o
 logger = get_bridge_logger(__name__)
 
 
-async def risk_agent_node(state: InvestigationState) -> Dict[str, Any]:
+async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = None) -> Dict[str, Any]:
     """
     Risk assessment agent.
     Synthesizes findings from all domains and calculates final risk.

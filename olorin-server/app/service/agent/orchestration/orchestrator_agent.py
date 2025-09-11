@@ -780,7 +780,9 @@ Use the snowflake_query_tool immediately."""
         logger.info(f"🔧 Tool execution phase - {len(tools_used)} tools used, attempt {tool_execution_attempts}/{max_attempts}, loop {orchestrator_loops}")
         
         # Get tool count from state, allow adequate tools for domain analysis
-        tool_count = "2-4"  # Increased to allow proper domain-specific analysis
+        # CRITICAL FIX: Use actual tool count instead of string range
+        actual_tools_used = len(set(state.get("tools_used", [])))
+        tool_count = max(actual_tools_used, 2)  # Minimum 2 for proper analysis
         
         # Analyze Snowflake data to determine which tools to use
         tool_selection_prompt = f"""

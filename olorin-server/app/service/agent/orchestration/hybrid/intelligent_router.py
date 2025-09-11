@@ -12,11 +12,12 @@ from .hybrid_state_schema import (
     HybridInvestigationState,
     AIConfidenceLevel,
     InvestigationStrategy,
-    SafetyConcernType,
-    add_safety_override
+    SafetyConcernType
 )
+from .state.state_updater import add_safety_override  # CRITICAL FIX: Use version with gating logic
 from .ai_confidence_engine import AIConfidenceEngine
-from .advanced_safety_manager import AdvancedSafetyManager
+from .safety import AdvancedSafetyManager
+from .safety_threshold_config import get_safety_threshold_manager
 
 from app.service.logging import get_bridge_logger
 
@@ -74,51 +75,104 @@ class IntelligentRouter:
         """
         
         logger.debug(f"🧭 Generating Hybrid Intelligence routing decision")
-        logger.debug(f"   Intelligent Router: AI confidence + Advanced safety validation")
-        logger.debug(f"   Decision factors: Confidence levels, investigation strategy, safety concerns")
+        logger.debug(f"   🔍 INPUT STATE ANALYSIS:")
+        logger.debug(f"     Investigation ID: {state.get('investigation_id', 'N/A')}")
+        logger.debug(f"     Current Phase: {state.get('current_phase', 'N/A')}")
+        logger.debug(f"     Tool Count: {state.get('tool_count', 0)}")
+        logger.debug(f"     Orchestrator Loops: {state.get('orchestrator_loops', 0)}")
+        logger.debug(f"     Previous routing decisions: {len(state.get('routing_decisions', []))}")
+        logger.debug(f"     Safety concerns: {len(state.get('safety_concerns', []))}")
+        logger.debug(f"     Risk Score: {state.get('risk_score', 0.0)}")
+        logger.debug(f"   🧠 DECISION FRAMEWORK:")
+        logger.debug(f"     Router Type: Intelligent Router (AI confidence + Advanced safety validation)")
+        logger.debug(f"     Decision factors: Confidence levels, investigation strategy, safety concerns")
+        logger.debug(f"     Available strategies: {list(self.strategy_routing.keys())}")
+        logger.debug(f"     Available confidence levels: {list(self.confidence_routing.keys())}")
         
         try:
             # Step 1: Get AI confidence assessment
+            logger.debug(f"   🔄 STEP 1: Getting AI confidence assessment...")
             ai_decision = await self.confidence_engine.calculate_investigation_confidence(state)
+            logger.debug(f"   ✅ AI DECISION RECEIVED:")
+            logger.debug(f"     Confidence: {getattr(ai_decision, 'confidence', 'N/A')}")
+            logger.debug(f"     Confidence Level: {getattr(ai_decision, 'confidence_level', 'N/A')}")
+            logger.debug(f"     Strategy: {getattr(ai_decision, 'strategy', 'N/A')}")
+            logger.debug(f"     Recommended Action: {getattr(ai_decision, 'recommended_action', 'N/A')}")
+            logger.debug(f"     Reasoning Items: {len(getattr(ai_decision, 'reasoning', []))}")
             
             # Step 2: Validate with safety manager
+            logger.debug(f"   🔄 STEP 2: Validating with safety manager...")
             safety_status = self.safety_manager.validate_current_state(state)
+            logger.debug(f"   ✅ SAFETY STATUS RECEIVED:")
+            logger.debug(f"     Safety Level: {getattr(safety_status, 'safety_level', 'N/A')}")
+            logger.debug(f"     Allows AI Control: {getattr(safety_status, 'allows_ai_control', 'N/A')}")
+            logger.debug(f"     Requires Termination: {getattr(safety_status, 'requires_immediate_termination', 'N/A')}")
+            logger.debug(f"     Resource Pressure: {getattr(safety_status, 'resource_pressure', 'N/A')}")
+            logger.debug(f"     Safety Concerns: {len(getattr(safety_status, 'safety_concerns', []))}")
             
             # Step 3: Apply hybrid decision logic
+            logger.debug(f"   🔄 STEP 3: Applying hybrid decision logic...")
             routing_decision = await self._apply_hybrid_decision_logic(
                 state, ai_decision, safety_status
             )
+            logger.debug(f"   ✅ HYBRID DECISION LOGIC COMPLETE:")
+            logger.debug(f"     Proposed Next Node: {routing_decision.get('next_node', 'N/A')}")
+            logger.debug(f"     Safety Override: {routing_decision.get('safety_override', False)}")
+            logger.debug(f"     Override Reason: {routing_decision.get('override_reason', 'None')}")
+            logger.debug(f"     Reasoning Items: {len(routing_decision.get('reasoning', []))}")
             
             # Step 4: Add comprehensive metadata
-            routing_decision.update({
+            logger.debug(f"   🔄 STEP 4: Adding comprehensive metadata...")
+            metadata = {
                 "timestamp": datetime.now().isoformat(),
-                "confidence": ai_decision.confidence,
-                "confidence_level": ai_decision.confidence_level.value,
-                "strategy": ai_decision.strategy.value,
-                "safety_level": safety_status.safety_level.value,
-                "resource_pressure": safety_status.resource_pressure,
+                "confidence": getattr(ai_decision, 'confidence', 0.0),
+                "confidence_level": getattr(ai_decision, 'confidence_level', 'UNKNOWN').value if hasattr(getattr(ai_decision, 'confidence_level', None), 'value') else str(getattr(ai_decision, 'confidence_level', 'UNKNOWN')),
+                "strategy": getattr(ai_decision, 'strategy', 'ADAPTIVE').value if hasattr(getattr(ai_decision, 'strategy', None), 'value') else str(getattr(ai_decision, 'strategy', 'ADAPTIVE')),
+                "safety_level": getattr(safety_status, 'safety_level', 'UNKNOWN').value if hasattr(getattr(safety_status, 'safety_level', None), 'value') else str(getattr(safety_status, 'safety_level', 'UNKNOWN')),
+                "resource_pressure": getattr(safety_status, 'resource_pressure', 0.0),
                 "orchestrator_loops": state.get("orchestrator_loops", 0)
-            })
+            }
+            routing_decision.update(metadata)
+            logger.debug(f"   ✅ METADATA ADDED: {metadata}")
             
+            # Final decision logging
             logger.info(f"🧭 Routing decision: {routing_decision['next_node']}")
-            logger.info(f"   Confidence: {ai_decision.confidence:.3f} ({ai_decision.confidence_level.value})")
-            logger.info(f"   Strategy: {ai_decision.strategy.value}")
+            logger.info(f"   Confidence: {getattr(ai_decision, 'confidence', 0.0):.3f} ({getattr(ai_decision, 'confidence_level', 'UNKNOWN')})")
+            logger.info(f"   Strategy: {getattr(ai_decision, 'strategy', 'ADAPTIVE')}")
             logger.info(f"   Safety override: {routing_decision.get('safety_override', False)}")
+            logger.debug(f"   🎯 FINAL ROUTING DECISION:")
+            logger.debug(f"     Complete decision object: {routing_decision}")
             
             return routing_decision
             
         except Exception as e:
             logger.error(f"❌ Hybrid routing decision failed: {str(e)}")
+            logger.debug(f"   💥 ERROR DETAILS:")
+            logger.debug(f"     Exception Type: {type(e).__name__}")
+            logger.debug(f"     Exception Message: {str(e)}")
+            logger.debug(f"     State at failure: {state.get('investigation_id', 'N/A')} - phase {state.get('current_phase', 'N/A')}")
             
-            # Return safe fallback decision
-            return {
+            # Create comprehensive fallback decision
+            fallback_decision = {
                 "next_node": "summary",
                 "reasoning": [f"Routing decision failed: {str(e)}", "Falling back to safe completion"],
                 "safety_override": True,
                 "override_reason": "routing_failure",
                 "confidence": 0.0,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "error_context": {
+                    "exception_type": type(e).__name__,
+                    "exception_message": str(e),
+                    "investigation_id": state.get("investigation_id"),
+                    "current_phase": state.get("current_phase"),
+                    "orchestrator_loops": state.get("orchestrator_loops", 0)
+                }
             }
+            
+            logger.debug(f"   🛡️ FALLBACK DECISION: {fallback_decision}")
+            
+            # Return safe fallback decision
+            return fallback_decision
     
     async def _apply_hybrid_decision_logic(
         self,
@@ -129,49 +183,112 @@ class IntelligentRouter:
         """Apply the core hybrid decision logic combining AI and safety"""
         
         logger.debug(f"🎯 Applying Hybrid Intelligence decision logic")
-        logger.debug(f"   AI confidence: {ai_decision.confidence:.3f} ({ai_decision.confidence_level.value})")
-        logger.debug(f"   AI recommendation: {ai_decision.recommended_action}")
-        logger.debug(f"   Safety allows AI control: {safety_status.allows_ai_control}")
-        logger.debug(f"   Termination required: {safety_status.requires_immediate_termination}")
-        logger.debug(f"   Decision fusion: Combining AI intelligence with safety validation")
+        logger.debug(f"   🧠 AI DECISION ANALYSIS:")
+        logger.debug(f"     Confidence: {getattr(ai_decision, 'confidence', 0.0):.3f}")
+        logger.debug(f"     Confidence Level: {getattr(ai_decision, 'confidence_level', 'UNKNOWN')}")
+        logger.debug(f"     Recommended Action: {getattr(ai_decision, 'recommended_action', 'N/A')}")
+        logger.debug(f"     Strategy: {getattr(ai_decision, 'strategy', 'N/A')}")
+        logger.debug(f"     Reasoning Count: {len(getattr(ai_decision, 'reasoning', []))}")
+        logger.debug(f"   🛡️ SAFETY STATUS ANALYSIS:")
+        logger.debug(f"     Allows AI Control: {getattr(safety_status, 'allows_ai_control', False)}")
+        logger.debug(f"     Requires Termination: {getattr(safety_status, 'requires_immediate_termination', False)}")
+        logger.debug(f"     Safety Level: {getattr(safety_status, 'safety_level', 'UNKNOWN')}")
+        logger.debug(f"     Resource Pressure: {getattr(safety_status, 'resource_pressure', 0.0)}")
+        logger.debug(f"     Safety Concerns Count: {len(getattr(safety_status, 'safety_concerns', []))}")
+        logger.debug(f"   🔄 DECISION FUSION PROCESS:")
+        logger.debug(f"     Combining AI intelligence with safety validation")
+        logger.debug(f"     Decision hierarchy: Emergency check → AI control check → Safety-first fallback")
         
         # Emergency termination check
-        if safety_status.requires_immediate_termination:
+        logger.debug(f"   🔄 DECISION STEP 1: Emergency termination check...")
+        if getattr(safety_status, 'requires_immediate_termination', False):
             logger.warning(f"🚨 Emergency termination required")
-            return {
+            logger.debug(f"   🚨 EMERGENCY TERMINATION TRIGGERED:")
+            logger.debug(f"     Reason: Safety manager requires immediate termination")
+            logger.debug(f"     Safety concerns: {getattr(safety_status, 'safety_concerns', [])}")
+            logger.debug(f"     Override reasoning: {getattr(safety_status, 'override_reasoning', [])}")
+            
+            emergency_decision = {
                 "next_node": "summary",
-                "reasoning": ["Emergency termination required by safety manager"] + safety_status.override_reasoning,
+                "reasoning": ["Emergency termination required by safety manager"] + getattr(safety_status, 'override_reasoning', []),
                 "safety_override": True,
                 "override_reason": "emergency_termination",
-                "safety_concerns": safety_status.safety_concerns
+                "safety_concerns": getattr(safety_status, 'safety_concerns', [])
             }
+            logger.debug(f"   ✅ EMERGENCY DECISION: {emergency_decision}")
+            return emergency_decision
+        
+        logger.debug(f"   ✅ EMERGENCY CHECK PASSED: No immediate termination required")
         
         # AI control allowed - trust AI decision
-        if safety_status.allows_ai_control and ai_decision.confidence_level in [AIConfidenceLevel.HIGH, AIConfidenceLevel.MEDIUM]:
+        logger.debug(f"   🔄 DECISION STEP 2: AI control authorization check...")
+        allows_ai_control = getattr(safety_status, 'allows_ai_control', False)
+        confidence_level = getattr(ai_decision, 'confidence_level', None)
+        high_confidence = confidence_level in [AIConfidenceLevel.HIGH, AIConfidenceLevel.MEDIUM] if confidence_level else False
+        
+        logger.debug(f"     Safety allows AI control: {allows_ai_control}")
+        logger.debug(f"     AI confidence level: {confidence_level}")
+        logger.debug(f"     High/Medium confidence: {high_confidence}")
+        logger.debug(f"     Combined condition: {allows_ai_control and high_confidence}")
+        
+        if allows_ai_control and high_confidence:
             logger.debug(f"✅ AI control granted - using AI decision")
+            logger.debug(f"   🧠 AI CONTROL AUTHORIZED:")
+            logger.debug(f"     Confidence level qualifies: {confidence_level}")
+            logger.debug(f"     Safety validation passed")
+            logger.debug(f"     Using confidence-based routing method")
             
             # Use confidence-based routing
-            routing_method = self.confidence_routing[ai_decision.confidence_level]
-            decision = await routing_method(state, ai_decision)
+            routing_method = self.confidence_routing.get(confidence_level)
+            if routing_method:
+                logger.debug(f"     Selected routing method: {routing_method.__name__}")
+                decision = await routing_method(state, ai_decision)
+                logger.debug(f"     Routing method result: {decision}")
+            else:
+                logger.warning(f"     No routing method found for confidence level: {confidence_level}")
+                decision = {"next_node": "summary", "reasoning": ["No routing method available"]}
             
+            # Add AI control metadata
             decision.update({
                 "safety_override": False,
-                "reasoning": ai_decision.reasoning + ["AI control granted by safety validation"]
+                "reasoning": getattr(ai_decision, 'reasoning', []) + ["AI control granted by safety validation"],
+                "ai_control_granted": True,
+                "confidence_based_routing": True
             })
             
+            logger.debug(f"   ✅ AI DECISION FINAL: {decision}")
             return decision
         
+        logger.debug(f"   ❌ AI CONTROL DENIED: Proceeding to safety-first routing")
+        logger.debug(f"     Reason: allows_ai_control={allows_ai_control}, high_confidence={high_confidence}")
+        
         # AI control denied or low confidence - use safety-first approach
+        logger.debug(f"   🔄 DECISION STEP 3: Safety-first routing...")
         logger.debug(f"🛡️ AI control denied - using safety-first routing")
+        logger.debug(f"   🛡️ SAFETY-FIRST MODE:")
+        logger.debug(f"     AI control was denied or confidence too low")
+        logger.debug(f"     Using safety manager recommendations")
+        logger.debug(f"     Prioritizing safe completion over AI optimization")
         
         safety_decision = await self._safety_first_routing(state, ai_decision, safety_status)
+        logger.debug(f"   ✅ SAFETY-FIRST DECISION: {safety_decision}")
         
         # Record safety override if AI wanted something different
-        if ai_decision.recommended_action != safety_decision["next_node"]:
+        ai_recommendation = getattr(ai_decision, 'recommended_action', None)
+        safety_next_node = safety_decision.get("next_node")
+        logger.debug(f"   🔄 OVERRIDE CHECK:")
+        logger.debug(f"     AI wanted: {ai_recommendation}")
+        logger.debug(f"     Safety chose: {safety_next_node}")
+        logger.debug(f"     Override needed: {ai_recommendation != safety_next_node}")
+        
+        if ai_recommendation != safety_next_node:
+            logger.debug(f"   🛡️ RECORDING SAFETY OVERRIDE:")
+            logger.debug(f"     Original AI decision: {ai_recommendation}")
+            logger.debug(f"     Safety override to: {safety_next_node}")
             add_safety_override(
                 state,
-                original_ai_decision=ai_decision.recommended_action,
-                safety_decision=safety_decision["next_node"],
+                original_ai_decision=ai_recommendation,
+                safety_decision=safety_next_node,
                 concern_type=SafetyConcernType.RESOURCE_PRESSURE,  # Default concern type
                 reasoning=safety_status.override_reasoning
             )
@@ -264,12 +381,43 @@ class IntelligentRouter:
         
         current_phase = state.get("current_phase", "initialization")
         domains_completed = state.get("domains_completed", [])
+        domain_findings = state.get("domain_findings", {})
         
-        # Critical path goes directly to risk assessment
+        # CRITICAL FIX: Ensure at least one domain analysis before risk assessment
+        # Critical path still needs minimum evidence gathering
+        if len(domain_findings) == 0 and len(domains_completed) == 0:
+            logger.debug(f"⚡ Critical path: Need at least one domain analysis before risk assessment")
+            
+            # CRITICAL FIX: Use circuit breaker to avoid repeated failures
+            from app.service.agent.orchestration.circuit_breaker import is_node_disabled, get_next_available_domain_node
+            
+            # Check if network_agent is available (not disabled by circuit breaker)
+            if not is_node_disabled(state, "network_agent"):
+                return {
+                    "next_node": "network_agent",  # Network analysis has highest priority
+                    "reasoning": ["Critical path: Priority domain analysis first", "Network analysis critical for fraud detection"]
+                }
+            else:
+                # Network agent disabled, try next available domain
+                next_available = get_next_available_domain_node(state)
+                if next_available and next_available != "summary":
+                    return {
+                        "next_node": next_available,
+                        "reasoning": ["Critical path: Network agent disabled, using next available domain", f"Fallback to {next_available}"]
+                    }
+                else:
+                    # All domain agents disabled, skip to summary
+                    logger.warning("⚡ Critical path: All domain agents disabled, skipping to summary")
+                    return {
+                        "next_node": "summary",
+                        "reasoning": ["Critical path: All domain agents failed", "Emergency fallback to summary"]
+                    }
+        
+        # After at least one domain, proceed to risk assessment
         if "risk" not in domains_completed:
             return {
                 "next_node": "risk_agent",
-                "reasoning": ["Critical path: Direct to risk assessment", "High confidence fraud detected"]
+                "reasoning": ["Critical path: Risk assessment with domain evidence", "High confidence fraud detected"]
             }
         else:
             return {
@@ -287,12 +435,23 @@ class IntelligentRouter:
         logger.debug(f"📋 Minimal routing")
         
         domains_completed = state.get("domains_completed", [])
+        domain_findings = state.get("domain_findings", {})
         
-        # Minimal strategy: only risk assessment
+        # CRITICAL FIX: Even minimal strategy needs at least one domain analysis
+        # Cannot make reliable risk assessment without any domain evidence
+        if len(domain_findings) == 0 and len(domains_completed) == 0:
+            logger.debug(f"📋 Minimal routing: Need at least one domain for evidence")
+            # Choose most efficient domain for minimal analysis
+            return {
+                "next_node": "device_agent",  # Device analysis is typically fastest
+                "reasoning": ["Minimal strategy: One domain analysis required", "Device analysis for basic evidence"]
+            }
+        
+        # After domain evidence, proceed to risk assessment
         if "risk" not in domains_completed:
             return {
                 "next_node": "risk_agent",
-                "reasoning": ["Minimal strategy: Risk assessment only", "Low fraud indicators detected"]
+                "reasoning": ["Minimal strategy: Risk assessment with minimal evidence", "Low fraud indicators detected"]
             }
         else:
             return {
@@ -508,6 +667,21 @@ class IntelligentRouter:
         
         logger.debug(f"🛡️ Safety-first routing")
         
+        # CRITICAL FIX: Check for safety override loops to prevent infinite recursion
+        safety_overrides = state.get("safety_overrides", [])
+        threshold_manager = get_safety_threshold_manager()
+        
+        if threshold_manager.should_force_termination_for_safety_overrides(len(safety_overrides)):
+            logger.warning(f"🚨 LOOP PREVENTION: {len(safety_overrides)} safety overrides detected - forcing completion")
+            return {
+                "next_node": "summary",
+                "reasoning": [
+                    f"Loop prevention: {len(safety_overrides)} safety overrides (limit: {threshold_manager.get_threshold_config().max_safety_overrides_before_termination})",
+                    "Forcing investigation completion to prevent infinite loops",
+                    "Safety system detected potential recursion"
+                ]
+            }
+        
         # Check for critical safety concerns
         critical_concerns = [c for c in safety_status.safety_concerns if "critical" in c.lower()]
         if critical_concerns:
@@ -523,7 +697,57 @@ class IntelligentRouter:
                 "reasoning": [f"High resource pressure: {safety_status.resource_pressure:.2f}", "Force completion to prevent resource exhaustion"]
             }
         
-        # Default to conservative sequential routing
+        # CRITICAL FIX: Minimum evidence requirement - ALWAYS require at least 1 domain agent
+        tools_used = state.get("tools_used", [])
+        domains_completed = state.get("domains_completed", [])
+        domain_findings = state.get("domain_findings", {})
+        evidence_strength = state.get("evidence_strength", 0.0)
+        
+        # Count actual domain analysis completed (check both sources)
+        actual_domains_completed = len(domains_completed)
+        if len(domain_findings) > 0:
+            # Count domains that have actual analysis results (not just "no_results")
+            valid_domain_findings = sum(1 for k, v in domain_findings.items() 
+                                      if v and isinstance(v, dict) and v.get("status") != "no_results")
+            actual_domains_completed = max(actual_domains_completed, valid_domain_findings)
+        
+        # STRICT REQUIREMENT: At least 1 domain agent must execute with valid results
+        has_sufficient_evidence = (
+            actual_domains_completed >= 1 and len(tools_used) >= 2  # MUST have domain analysis
+            and evidence_strength >= 0.3  # AND reasonable confidence
+        )
+        
+        if has_sufficient_evidence:
+            logger.debug(f"🛡️ Safety routing with sufficient evidence: {len(tools_used)} tools, {actual_domains_completed} valid domains - moving to summary")
+            return {
+                "next_node": "summary",
+                "reasoning": [
+                    "Safety-first mode: Sufficient evidence gathered",
+                    f"Tools executed: {len(tools_used)}, Valid domains: {actual_domains_completed}",
+                    f"Evidence strength: {evidence_strength:.2f}",
+                    "Moving toward completion with adequate analysis"
+                ]
+            }
+        
+        # CRITICAL FIX: If no domain agents executed yet, force at least one
+        if actual_domains_completed == 0:
+            logger.debug(f"🛡️ CRITICAL: No domain agents executed - forcing domain analysis")
+            # Go directly to first domain agent instead of sequential routing that might skip
+            return {
+                "next_node": "network_agent",
+                "reasoning": [
+                    "Safety-first: MUST execute at least one domain agent",
+                    "No domain analysis completed - evidence gathering required",
+                    "Network agent selected as priority domain for safety mode"
+                ]
+            }
+        
+        # If some tools but insufficient evidence, try more domain analysis
+        elif len(tools_used) >= 1:  # Lowered from >= 2 to >= 1
+            logger.debug(f"🛡️ Insufficient evidence: {len(tools_used)} tools, {actual_domains_completed} domains - require more domain analysis")
+            return await self._sequential_routing(state, "Safety-first: Need more domain analysis for evidence")
+        
+        # Default to conservative sequential routing for initial state
         return await self._sequential_routing(state, "Safety-first mode: Conservative approach")
     
     async def _add_validation_checks(

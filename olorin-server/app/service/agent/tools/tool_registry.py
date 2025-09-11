@@ -279,7 +279,7 @@ class ToolRegistry:
             api_default_headers: Default headers for API tools
         """
         if self._initialized:
-            logger.info("Tool registry already initialized")
+            logger.debug("Tool registry already initialized (skipping duplicate initialization)")
             return
 
         try:
@@ -828,6 +828,15 @@ def initialize_tools(
         file_system_base_path: Base path restriction for file system tools
         api_default_headers: Default headers for API tools
     """
+    # Track registry initialization calls (for observability) - lazy import to avoid circular dependencies
+    try:
+        # Import inside function to avoid circular import during module loading
+        from app.service.agent.orchestration.hybrid.observability import increment_counter
+        increment_counter("registry_initialization_calls")
+    except (ImportError, AttributeError, ModuleNotFoundError) as e:
+        # Observability not available or circular import detected
+        pass
+    
     tool_registry.initialize(
         database_connection_string=database_connection_string,
         web_search_user_agent=web_search_user_agent,

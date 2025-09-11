@@ -41,19 +41,40 @@ from .rag_orchestrator import (
     get_rag_orchestrator
 )
 
-# Tool recommendation system
-from .tool_recommender import (
-    KnowledgeBasedToolRecommender,
-    ToolRecommendation,
-    ToolEffectivenessMetrics,
-    ToolRecommendationStrategy,
-    ToolRecommenderConfig,
-    create_tool_recommender
-)
+# Tool recommendation system (lazy import to avoid circular dependencies with tool_registry)
+def _import_tool_recommender():
+    """Lazy import tool recommender to avoid circular dependencies."""
+    try:
+        from .tool_recommender import (
+            KnowledgeBasedToolRecommender,
+            ToolRecommendation,
+            ToolEffectivenessMetrics,
+            ToolRecommendationStrategy,
+            ToolRecommenderConfig,
+            create_tool_recommender
+        )
+        return {
+            'KnowledgeBasedToolRecommender': KnowledgeBasedToolRecommender,
+            'ToolRecommendation': ToolRecommendation,
+            'ToolEffectivenessMetrics': ToolEffectivenessMetrics,
+            'ToolRecommendationStrategy': ToolRecommendationStrategy,
+            'ToolRecommenderConfig': ToolRecommenderConfig,
+            'create_tool_recommender': create_tool_recommender
+        }
+    except ImportError:
+        return {}
 
-# Tool recommendation utilities (for advanced usage)
+# Tool recommendation utilities (for advanced usage) - lazy import to avoid circular dependencies  
 from .tool_analysis_utils import ToolAnalysisUtils
-from .tool_recommender_strategies import ToolRecommendationStrategies
+
+# Lazy import for ToolRecommendationStrategies to avoid circular dependency with tool_registry
+def _import_tool_strategies():
+    """Lazy import tool strategies to avoid circular dependencies."""
+    try:
+        from .tool_recommender_strategies import ToolRecommendationStrategies
+        return ToolRecommendationStrategies
+    except ImportError:
+        return None
 
 __all__ = [
     # Knowledge Base
@@ -87,7 +108,7 @@ __all__ = [
     "ContextAugmentationConfig",
     "create_context_augmentor",
     
-    # Tool Recommender
+    # Tool Recommender (lazy loaded)
     "KnowledgeBasedToolRecommender",
     "ToolRecommendation",
     "ToolEffectivenessMetrics",
@@ -99,3 +120,42 @@ __all__ = [
     "ToolAnalysisUtils",
     "ToolRecommendationStrategies"
 ]
+
+# Cache for lazily loaded tool recommender modules
+_tool_recommender_cache = None
+_tool_strategies_cache = None
+
+def __getattr__(name: str):
+    """Handle lazy loading of tool recommender modules to avoid circular imports."""
+    global _tool_recommender_cache, _tool_strategies_cache
+    
+    # Tool recommender components that need lazy loading
+    tool_recommender_names = {
+        'KnowledgeBasedToolRecommender',
+        'ToolRecommendation', 
+        'ToolEffectivenessMetrics',
+        'ToolRecommendationStrategy',
+        'ToolRecommenderConfig',
+        'create_tool_recommender'
+    }
+    
+    if name in tool_recommender_names:
+        if _tool_recommender_cache is None:
+            _tool_recommender_cache = _import_tool_recommender()
+        
+        if name in _tool_recommender_cache:
+            return _tool_recommender_cache[name]
+        else:
+            raise ImportError(f"Tool recommender module '{name}' not available due to circular import")
+    
+    # Handle ToolRecommendationStrategies
+    elif name == 'ToolRecommendationStrategies':
+        if _tool_strategies_cache is None:
+            _tool_strategies_cache = _import_tool_strategies()
+        
+        if _tool_strategies_cache is not None:
+            return _tool_strategies_cache
+        else:
+            raise ImportError(f"Tool strategies module 'ToolRecommendationStrategies' not available due to circular import")
+    
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

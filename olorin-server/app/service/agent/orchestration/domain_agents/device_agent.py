@@ -5,7 +5,7 @@ Analyzes device consistency, spoofing indicators, and browser patterns for fraud
 """
 
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
@@ -14,94 +14,105 @@ from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_o
 logger = get_bridge_logger(__name__)
 
 
-async def device_agent_node(state: InvestigationState) -> Dict[str, Any]:
+async def device_agent_node(state: InvestigationState, config: Optional[Dict] = None) -> Dict[str, Any]:
     """
     Device fingerprint analysis agent.
     Analyzes device consistency, spoofing indicators, and browser patterns.
     """
-    start_time = time.time()
-    logger.info("[Step 5.2.2] 📱 Device agent analyzing investigation")
-    
-    # Get relevant data from state
-    snowflake_data = state.get("snowflake_data", {})
-    tool_results = state.get("tool_results", {})
-    entity_id = state["entity_id"]
-    entity_type = state["entity_type"]
-    investigation_id = state.get('investigation_id', 'unknown')
-    
-    # Initialize logging and chain of thought
-    DomainAgentBase.log_agent_start("device", entity_type, entity_id, False)
-    DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "device")
-    
-    process_id = DomainAgentBase.start_chain_of_thought(
-        investigation_id=investigation_id,
-        agent_name="device_agent",
-        domain="device",
-        entity_type=entity_type,
-        entity_id=entity_id,
-        task_description="Device fingerprints are fundamental fraud indicators revealing device consistency "
-                        "and spoofing attempts. Will analyze: (1) Device fingerprint consistency across sessions, "
-                        "(2) Browser spoofing indicators and inconsistencies, (3) Device change patterns and frequency, "
-                        "(4) Virtual machine and automation tool signatures"
-    )
-    
-    # Initialize device findings
-    device_findings = DomainAgentBase.initialize_findings("device")
-    
-    # Process Snowflake data for device patterns
-    results = DomainAgentBase.process_snowflake_results(snowflake_data, "device")
-    
-    if results:
-        # Process MODEL_SCORE
-        DomainAgentBase.process_model_scores(results, device_findings, "device")
+    try:
+        start_time = time.time()
+        logger.info("[Step 5.2.2] 📱 Device agent analyzing investigation")
         
-        # Analyze device ID patterns
-        _analyze_device_id_patterns(results, device_findings)
+        # Get relevant data from state
+        snowflake_data = state.get("snowflake_data", {})
+        tool_results = state.get("tool_results", {})
+        entity_id = state["entity_id"]
+        entity_type = state["entity_type"]
+        investigation_id = state.get('investigation_id', 'unknown')
         
-        # Analyze user agent patterns
-        _analyze_user_agent_patterns(results, device_findings)
+        # Initialize logging and chain of thought
+        DomainAgentBase.log_agent_start("device", entity_type, entity_id, False)
+        DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "device")
         
-        # Analyze browser/OS consistency
-        _analyze_browser_os_patterns(results, device_findings)
-    else:
-        # Handle case where Snowflake data format is problematic
-        if isinstance(snowflake_data, str):
-            device_findings["risk_indicators"].append("Snowflake data in non-structured format")
-    
-    # Analyze ML anomaly detection results
-    _analyze_ml_anomaly_detection(tool_results, device_findings)
-    
-    # Add evidence summary
-    device_findings["evidence_summary"] = {
-        "total_evidence_points": len(device_findings["evidence"]),
-        "risk_indicators_found": len(device_findings["risk_indicators"]),
-        "metrics_collected": len(device_findings["metrics"])
-    }
-    
-    # CRITICAL: Analyze evidence with LLM to generate risk scores
-    from .base import analyze_evidence_with_llm
-    device_findings = await analyze_evidence_with_llm(
-        domain="device",
-        findings=device_findings,
-        snowflake_data=snowflake_data,
-        entity_type=entity_type,
-        entity_id=entity_id
-    )
-    
-    # Finalize findings
-    analysis_duration = time.time() - start_time
-    DomainAgentBase.finalize_findings(
-        device_findings, snowflake_data, tool_results, analysis_duration, "device"
-    )
-    
-    # Complete logging
-    log_agent_handover_complete("device", device_findings)
-    complete_chain_of_thought(process_id, device_findings, "device")
-    
-    logger.info(f"[Step 5.2.2] ✅ Device analysis complete - Evidence collected: {len(device_findings['evidence'])} points")
-    
-    # Update state with findings
-    return add_domain_findings(state, "device", device_findings)
+        process_id = DomainAgentBase.start_chain_of_thought(
+            investigation_id=investigation_id,
+            agent_name="device_agent",
+            domain="device",
+            entity_type=entity_type,
+            entity_id=entity_id,
+            task_description="Device fingerprints are fundamental fraud indicators revealing device consistency "
+                            "and spoofing attempts. Will analyze: (1) Device fingerprint consistency across sessions, "
+                            "(2) Browser spoofing indicators and inconsistencies, (3) Device change patterns and frequency, "
+                            "(4) Virtual machine and automation tool signatures"
+        )
+        
+        # Initialize device findings
+        device_findings = DomainAgentBase.initialize_findings("device")
+        
+        # Process Snowflake data for device patterns
+        results = DomainAgentBase.process_snowflake_results(snowflake_data, "device")
+        
+        if results:
+            # Process MODEL_SCORE
+            DomainAgentBase.process_model_scores(results, device_findings, "device")
+            
+            # Analyze device ID patterns
+            _analyze_device_id_patterns(results, device_findings)
+            
+            # Analyze user agent patterns
+            _analyze_user_agent_patterns(results, device_findings)
+            
+            # Analyze browser/OS consistency
+            _analyze_browser_os_patterns(results, device_findings)
+        else:
+            # Handle case where Snowflake data format is problematic
+            if isinstance(snowflake_data, str):
+                device_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        
+        # Analyze ML anomaly detection results
+        _analyze_ml_anomaly_detection(tool_results, device_findings)
+        
+        # Add evidence summary
+        device_findings["evidence_summary"] = {
+            "total_evidence_points": len(device_findings["evidence"]),
+            "risk_indicators_found": len(device_findings["risk_indicators"]),
+            "metrics_collected": len(device_findings["metrics"])
+        }
+        
+        # CRITICAL: Analyze evidence with LLM to generate risk scores
+        from .base import analyze_evidence_with_llm
+        device_findings = await analyze_evidence_with_llm(
+            domain="device",
+            findings=device_findings,
+            snowflake_data=snowflake_data,
+            entity_type=entity_type,
+            entity_id=entity_id
+        )
+        
+        # Finalize findings
+        analysis_duration = time.time() - start_time
+        DomainAgentBase.finalize_findings(
+            device_findings, snowflake_data, tool_results, analysis_duration, "device"
+        )
+        
+        # Complete logging
+        log_agent_handover_complete("device", device_findings)
+        complete_chain_of_thought(process_id, device_findings, "device")
+        
+        logger.info(f"[Step 5.2.2] ✅ Device analysis complete - Evidence collected: {len(device_findings['evidence'])} points")
+        
+        # Update state with findings
+        return add_domain_findings(state, "device", device_findings)
+        
+    except Exception as e:
+        logger.error(f"❌ Device agent failed: {str(e)}")
+        
+        # Record failure with circuit breaker
+        from app.service.agent.orchestration.circuit_breaker import record_node_failure
+        record_node_failure(state, "device_agent", e)
+        
+        # Return state as-is to allow investigation to continue
+        return state
 
 
 def _analyze_device_id_patterns(results: list, findings: Dict[str, Any]) -> None:
@@ -224,7 +235,7 @@ def _extract_device_signals(tool_name: str, result: Dict[str, Any]) -> Dict[str,
     if nested_count > 0:
         logger.debug(f"[Step 5.2.2.2]     → Processed {nested_count} nested structures")
     
-    logger.debug(f"[Step 5.2.2.2] ✅ Extracted {len(signals)} device signals from {tool_name}")
+    logger.debug(f"[Step 5.2.2.2] ✅ Extracted {len(device_signals)} device signals from {tool_name}")
     return signals
 
 

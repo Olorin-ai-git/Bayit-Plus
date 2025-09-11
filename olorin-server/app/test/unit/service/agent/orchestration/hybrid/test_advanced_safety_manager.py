@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-from app.service.agent.orchestration.hybrid.advanced_safety_manager import (
+from app.service.agent.orchestration.hybrid.safety import (
     AdvancedSafetyManager,
     SafetyLevel,
     SafetyLimits,

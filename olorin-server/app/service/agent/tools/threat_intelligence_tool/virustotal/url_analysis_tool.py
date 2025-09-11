@@ -119,8 +119,8 @@ class VirusTotalURLAnalysisTool(BaseTool):
     
     def _run(self, **kwargs) -> str:
         """Execute URL analysis synchronously."""
-        import asyncio
-        return asyncio.run(self._arun(**kwargs))
+        from app.service.agent.tools.async_helpers import safe_run_async
+        return safe_run_async(self._arun(**kwargs))
     
     async def _arun(
         self,

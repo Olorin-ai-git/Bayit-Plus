@@ -17,7 +17,8 @@ from app.service.agent.orchestration.state_schema import (
     create_initial_state,
     update_phase,
     add_tool_result,
-    is_investigation_complete
+    is_investigation_complete,
+    _normalize_snowflake_data_type
 )
 from app.service.agent.orchestration.orchestrator_agent import orchestrator_node
 from app.service.agent.orchestration.domain_agents import (
@@ -229,10 +230,13 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                 logger.debug(f"[Step 4.3.3]   Snowflake tool: {snowflake_tool_name}")
                 logger.debug(f"[Step 4.3.3]   Next steps: Orchestrator will handle additional tool selection")
                 
+                # CRITICAL FIX: Normalize snowflake data type (JSON string → object)
+                snowflake_data = _normalize_snowflake_data_type(snowflake_result)
+                
                 return {
                     "tools_used": tools_used,
                     "tool_results": tool_results,
-                    "snowflake_data": snowflake_result,
+                    "snowflake_data": snowflake_data,
                     "snowflake_completed": True,
                     "current_phase": "tool_execution"  # Move to next phase
                 }

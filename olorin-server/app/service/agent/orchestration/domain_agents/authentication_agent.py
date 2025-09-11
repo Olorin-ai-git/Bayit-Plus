@@ -5,7 +5,7 @@ Analyzes login patterns, failed attempts, MFA bypass, and authentication anomali
 """
 
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
@@ -20,7 +20,7 @@ from .auth_utils import (
 logger = get_bridge_logger(__name__)
 
 
-async def authentication_agent_node(state: InvestigationState) -> Dict[str, Any]:
+async def authentication_agent_node(state: InvestigationState, config: Optional[Dict] = None) -> Dict[str, Any]:
     """
     Authentication analysis agent.
     Analyzes login patterns, failed attempts, MFA bypass, and authentication anomalies.

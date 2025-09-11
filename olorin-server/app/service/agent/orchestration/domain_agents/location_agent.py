@@ -5,7 +5,7 @@ Analyzes geographic patterns, impossible travel, and location anomalies for frau
 """
 
 import time
-from typing import Dict, Any, List
+from typing import Dict, Any, Optional, List
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
@@ -14,7 +14,7 @@ from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_o
 logger = get_bridge_logger(__name__)
 
 
-async def location_agent_node(state: InvestigationState) -> Dict[str, Any]:
+async def location_agent_node(state: InvestigationState, config: Optional[Dict] = None) -> Dict[str, Any]:
     """
     Location analysis agent.
     Analyzes geographic patterns, impossible travel, and location anomalies.

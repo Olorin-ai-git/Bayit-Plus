@@ -292,7 +292,7 @@ class MetricsCollector:
         agent_metrics = self.metrics["agents"][agent_name]
         agent_metrics["executions"] += 1
         agent_metrics["total_duration"] += duration
-        agent_metrics["avg_duration"] = agent_metrics["total_duration"] / agent_metrics["executions"]
+        agent_metrics["avg_duration"] = agent_metrics["total_duration"] / max(1, agent_metrics["executions"])  # CRITICAL FIX: Division by zero protection
     
     def record_tool_call(self, tool_name: str, duration: float):
         """Record tool call metrics."""
@@ -306,7 +306,7 @@ class MetricsCollector:
         tool_metrics = self.metrics["tools"][tool_name]
         tool_metrics["calls"] += 1
         tool_metrics["total_duration"] += duration
-        tool_metrics["avg_duration"] = tool_metrics["total_duration"] / tool_metrics["calls"]
+        tool_metrics["avg_duration"] = tool_metrics["total_duration"] / max(1, tool_metrics["calls"])  # CRITICAL FIX: Division by zero protection
     
     def record_cache_hit(self):
         """Record cache hit."""

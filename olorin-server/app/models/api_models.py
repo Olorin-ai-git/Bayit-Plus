@@ -1,10 +1,19 @@
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.location_risk import LocationRiskAssessment
-from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
+
+# Import LocationInfo for runtime use
+try:
+    from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
+except ImportError:
+    # Fallback for when the import is not available
+    LocationInfo = Any
+
+if TYPE_CHECKING:
+    from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
 
 
 class Investigation(BaseModel):

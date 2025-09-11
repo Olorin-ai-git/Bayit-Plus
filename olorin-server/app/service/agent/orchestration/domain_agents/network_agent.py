@@ -6,7 +6,7 @@ Analyzes network patterns, IP reputation, and geographic anomalies for fraud det
 
 import os
 import time
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
@@ -15,85 +15,96 @@ from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_o
 logger = get_bridge_logger(__name__)
 
 
-async def network_agent_node(state: InvestigationState) -> Dict[str, Any]:
+async def network_agent_node(state: InvestigationState, config: Optional[Dict] = None) -> Dict[str, Any]:
     """
     Network domain analysis agent.
     Analyzes network patterns, IP reputation, and geographic anomalies.
     """
-    is_test_mode = os.environ.get("TEST_MODE") == "mock"
-    start_time = time.time()
-    
-    logger.info("[Step 5.2.1] 🌐 Network agent analyzing investigation")
-    
-    # Get relevant data from state
-    snowflake_data = state.get("snowflake_data", {})
-    tool_results = state.get("tool_results", {})
-    entity_id = state["entity_id"]
-    entity_type = state["entity_type"]
-    investigation_id = state.get('investigation_id', 'unknown')
-    
-    # Initialize logging and chain of thought
-    DomainAgentBase.log_agent_start("network", entity_type, entity_id, is_test_mode)
-    DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "network")
-    
-    process_id = DomainAgentBase.start_chain_of_thought(
-        investigation_id=investigation_id,
-        agent_name="network_agent",
-        domain="network",
-        entity_type=entity_type,
-        entity_id=entity_id,
-        task_description="Need to analyze network patterns, IP reputation, VPN/proxy usage, "
-                        "geographic anomalies, and threat intelligence data to assess network-based fraud risk."
-    )
-    
-    # Initialize network findings
-    network_findings = DomainAgentBase.initialize_findings("network")
-    
-    # Process Snowflake data for network patterns
-    results = DomainAgentBase.process_snowflake_results(snowflake_data, "network")
-    
-    if results:
-        # Check for proxy/VPN indicators
-        _analyze_vpn_proxy_indicators(results, network_findings)
+    try:
+        is_test_mode = os.environ.get("TEST_MODE") == "mock"
+        start_time = time.time()
         
-        # Check for multiple countries
-        _analyze_geographic_patterns(results, network_findings)
+        logger.info("[Step 5.2.1] 🌐 Network agent analyzing investigation")
         
-        # Process MODEL_SCORE
-        DomainAgentBase.process_model_scores(results, network_findings, "network")
+        # Get relevant data from state
+        snowflake_data = state.get("snowflake_data", {})
+        tool_results = state.get("tool_results", {})
+        entity_id = state["entity_id"]
+        entity_type = state["entity_type"]
+        investigation_id = state.get('investigation_id', 'unknown')
         
-        # Analyze IP diversity
-        _analyze_ip_diversity(results, network_findings)
-    else:
-        # Handle case where Snowflake data format is problematic
-        if isinstance(snowflake_data, str):
-            network_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        # Initialize logging and chain of thought
+        DomainAgentBase.log_agent_start("network", entity_type, entity_id, is_test_mode)
+        DomainAgentBase.log_context_analysis(snowflake_data, tool_results, "network")
+        
+        process_id = DomainAgentBase.start_chain_of_thought(
+            investigation_id=investigation_id,
+            agent_name="network_agent",
+            domain="network",
+            entity_type=entity_type,
+            entity_id=entity_id,
+            task_description="Need to analyze network patterns, IP reputation, VPN/proxy usage, "
+                            "geographic anomalies, and threat intelligence data to assess network-based fraud risk."
+        )
+        
+        # Initialize network findings
+        network_findings = DomainAgentBase.initialize_findings("network")
+        
+        # Process Snowflake data for network patterns
+        results = DomainAgentBase.process_snowflake_results(snowflake_data, "network")
+        
+        if results:
+            # Check for proxy/VPN indicators
+            _analyze_vpn_proxy_indicators(results, network_findings)
+            
+            # Check for multiple countries
+            _analyze_geographic_patterns(results, network_findings)
+            
+            # Process MODEL_SCORE
+            DomainAgentBase.process_model_scores(results, network_findings, "network")
+            
+            # Analyze IP diversity
+            _analyze_ip_diversity(results, network_findings)
+        else:
+            # Handle case where Snowflake data format is problematic
+            if isinstance(snowflake_data, str):
+                network_findings["risk_indicators"].append("Snowflake data in non-structured format")
+        
+        # Analyze threat intelligence results
+        _analyze_threat_intelligence(tool_results, network_findings)
+        
+        # CRITICAL: Analyze evidence with LLM to generate risk scores
+        from .base import analyze_evidence_with_llm
+        network_findings = await analyze_evidence_with_llm(
+            domain="network",
+            findings=network_findings,
+            snowflake_data=snowflake_data,
+            entity_type=entity_type,
+            entity_id=entity_id
+        )
+        
+        # Finalize findings
+        analysis_duration = time.time() - start_time
+        DomainAgentBase.finalize_findings(
+            network_findings, snowflake_data, tool_results, analysis_duration, "network"
+        )
+        
+        # Complete logging
+        log_agent_handover_complete("network", network_findings)
+        complete_chain_of_thought(process_id, network_findings, "network")
+        
+        # Update state with findings
+        return add_domain_findings(state, "network", network_findings)
     
-    # Analyze threat intelligence results
-    _analyze_threat_intelligence(tool_results, network_findings)
-    
-    # CRITICAL: Analyze evidence with LLM to generate risk scores
-    from .base import analyze_evidence_with_llm
-    network_findings = await analyze_evidence_with_llm(
-        domain="network",
-        findings=network_findings,
-        snowflake_data=snowflake_data,
-        entity_type=entity_type,
-        entity_id=entity_id
-    )
-    
-    # Finalize findings
-    analysis_duration = time.time() - start_time
-    DomainAgentBase.finalize_findings(
-        network_findings, snowflake_data, tool_results, analysis_duration, "network"
-    )
-    
-    # Complete logging
-    log_agent_handover_complete("network", network_findings)
-    complete_chain_of_thought(process_id, network_findings, "network")
-    
-    # Update state with findings
-    return add_domain_findings(state, "network", network_findings)
+    except Exception as e:
+        logger.error(f"❌ Network agent failed: {str(e)}")
+        
+        # Record failure with circuit breaker
+        from app.service.agent.orchestration.circuit_breaker import record_node_failure
+        record_node_failure(state, "network_agent", e)
+        
+        # Return state as-is to allow investigation to continue
+        return state
 
 
 def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> None:

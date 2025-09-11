@@ -163,6 +163,15 @@ async def on_shutdown(app: FastAPI):
         app(FastAPI): FastAPI app object.
     """
     logger.info("Shutting down Olorin application...")
+    
+    # Cleanup async HTTP clients to prevent unclosed session warnings
+    try:
+        from app.service.agent.tools.async_client_manager import cleanup_async_clients
+        await cleanup_async_clients()
+        logger.info("✅ Async client cleanup completed")
+    except Exception as e:
+        logger.warning(f"⚠️ Async client cleanup failed: {e}")
+    
     # Shutdown performance optimization system
     await shutdown_performance_system(app)
     logger.info("Olorin application shutdown completed")

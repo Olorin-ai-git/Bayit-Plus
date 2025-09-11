@@ -386,13 +386,16 @@ class OrchestratorStateManager:
                 
                 # Record handoff efficiency metric
                 if performance_data and "duration_ms" in performance_data:
-                    await self._record_performance_metric(
-                        investigation_id=investigation_id,
-                        metric_type=MetricType.HANDOFF_EFFICIENCY,
-                        value=1.0 / (performance_data["duration_ms"] / 1000.0),  # Inverse of duration in seconds
-                        agent_type=handoff_context.to_agent,
-                        context={"handoff_type": handoff_context.trigger.value}
-                    )
+                    duration_ms = performance_data["duration_ms"]
+                    # Guard against None or zero duration
+                    if duration_ms and duration_ms > 0:
+                        await self._record_performance_metric(
+                            investigation_id=investigation_id,
+                            metric_type=MetricType.HANDOFF_EFFICIENCY,
+                            value=1.0 / (duration_ms / 1000.0),  # Inverse of duration in seconds
+                            agent_type=handoff_context.to_agent,
+                            context={"handoff_type": handoff_context.trigger.value}
+                        )
                 
                 # Create state snapshot
                 transition = StateTransition.HANDOFF_COMPLETED if success else StateTransition.HANDOFF_INITIATED

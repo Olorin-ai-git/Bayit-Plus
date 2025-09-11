@@ -376,6 +376,6 @@ class VirusTotalIPAnalysisTool(BaseTool):
             }, indent=2)
 
     def _run(self, **kwargs) -> str:
-        """Synchronous wrapper."""
-        import asyncio
-        return asyncio.run(self._arun(**kwargs))
+        """Synchronous wrapper with safe async execution."""
+        from app.service.agent.tools.async_helpers import safe_run_async
+        return safe_run_async(self._arun(**kwargs))

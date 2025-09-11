@@ -104,7 +104,7 @@ class MasterTestRunner:
         if performance_metrics["total_requests"] > 0:
             self.overall_metrics.update({
                 "total_requests": performance_metrics["total_requests"],
-                "average_response_time": performance_metrics["total_response_time"] / performance_metrics["total_requests"],
+                "average_response_time": (performance_metrics["total_response_time"] or 0) / max(1, performance_metrics["total_requests"] or 1),
                 "slowest_endpoint": performance_metrics["slowest_endpoint"],
                 "fastest_endpoint": performance_metrics["fastest_endpoint"]
             })
@@ -355,7 +355,7 @@ def master_test_session_coordinator(request):
             logger.info(f"\nFinal Statistics:")
             logger.info(f"Total API requests made: {performance_metrics['total_requests']}")
             logger.info(f"Total response time: {performance_metrics['total_response_time']:.1f}ms")
-            logger.info(f"Average response time: {performance_metrics['total_response_time']/performance_metrics['total_requests']:.1f}ms")
+            logger.info(f"Average response time: {(performance_metrics['total_response_time'] or 0)/max(1, performance_metrics['total_requests'] or 1):.1f}ms")
     
     # Register finalizer
     request.addfinalizer(finalize_master_test_run)

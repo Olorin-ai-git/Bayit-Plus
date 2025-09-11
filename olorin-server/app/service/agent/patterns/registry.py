@@ -114,7 +114,10 @@ class PatternRegistry:
         
         if hasattr(metrics, 'duration_ms') and metrics.duration_ms:
             stats["total_duration_ms"] += metrics.duration_ms
-            stats["average_duration_ms"] = stats["total_duration_ms"] / stats["total_executions"]
+            # CRITICAL FIX: Enhanced None-safety for duration calculation
+            total_duration = stats.get("total_duration_ms") or 0
+            total_executions = max(1, stats.get("total_executions", 1))
+            stats["average_duration_ms"] = total_duration / total_executions
         
         if hasattr(metrics, 'cache_hit') and metrics.cache_hit:
             stats["cache_hits"] += 1

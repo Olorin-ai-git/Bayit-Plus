@@ -13,10 +13,21 @@ from .tool_analysis_utils import ToolAnalysisUtils
 from .tool_strategy_implementations import ToolStrategyImplementations
 from .context_augmentor import KnowledgeContext
 from ..autonomous_context import AutonomousInvestigationContext
-from ..tools.tool_registry import get_tools_for_agent
+# Lazy import to avoid circular dependencies
+# from ..tools.tool_registry import get_tools_for_agent
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+
+
+# Lazy import functions to avoid circular dependencies
+def _import_tool_registry():
+    """Lazy import tool registry to avoid circular dependencies."""
+    try:
+        from ..tools.tool_registry import get_tools_for_agent
+        return get_tools_for_agent
+    except ImportError:
+        return None
 
 
 class ToolRecommendationStrategies:
@@ -108,4 +119,9 @@ class ToolRecommendationStrategies:
         
         # Default categories for each domain
         default_categories = self.utils.get_default_categories(domain)
-        return get_tools_for_agent(categories=default_categories)
+        get_tools_for_agent = _import_tool_registry()
+        if get_tools_for_agent:
+            return get_tools_for_agent(categories=default_categories)
+        else:
+            logger.warning("Tool registry not available for domain recommendations")
+            return []
