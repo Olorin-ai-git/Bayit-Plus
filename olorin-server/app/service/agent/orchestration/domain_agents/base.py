@@ -242,83 +242,100 @@ def _detect_confirmed_fraud(snowflake_data: Dict[str, Any]) -> bool:
 
 def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowflake_data: Dict[str, Any]) -> float:
     """
-    Compute risk score algorithmically using deterministic domain logic WITH internal MODEL_SCORE evidence.
+    Compute risk score using validated domain scorers without model score pollution.
     
-    MODEL_SCORE is used as INTERNAL evidence for risk fusion but LLMs are prevented from citing it.
-    This prevents LLM anchoring while allowing proper high internal / low external discordance detection.
+    CRITICAL FIX: Uses the new domain scorers that exclude MODEL_SCORE and IS_FRAUD_TX 
+    to prevent narrative/score contradictions identified in user's investigation runs.
     """
-    from .deterministic_scoring import (
-        compute_logs_risk, compute_network_risk, compute_device_risk, 
-        compute_location_risk, compute_authentication_risk
-    )
+    from app.service.agent.orchestration.domain.logs_scorer import score_logs_domain
+    from app.service.agent.orchestration.domain.network_scorer import score_network_domain
+    from app.service.agent.orchestration.domain.domain_result import validate_domain
     
+    # Get metrics and facts for domain scoring
     metrics = findings.get('metrics', {})
+    facts = {}
     
-    # CRITICAL FIX: Extract MODEL_SCORE as internal evidence
-    # This is the key high-risk signal that was being ignored
-    model_score = None
-    if snowflake_data and isinstance(snowflake_data.get('results'), list):
-        for record in snowflake_data['results']:
-            if isinstance(record, dict):
-                score = record.get('MODEL_SCORE')
-                if score is not None:
-                    try:
-                        model_score = float(score)
-                        logger.debug(f"🎯 EXTRACTED MODEL_SCORE for {domain} domain: {model_score}")
-                        break  # Use first valid MODEL_SCORE found
-                    except (ValueError, TypeError):
-                        continue
+    # CRITICAL: DO NOT pass MODEL_SCORE or IS_FRAUD_TX to domain scorers
+    # This prevents the cross-domain pollution that causes narrative/score mismatches
     
-    # Extract external threat intelligence level
-    ext_ti = "MINIMAL"  # Default
-    evidence = findings.get('evidence', [])
-    for e in evidence:
-        if 'threat level: HIGH' in str(e).upper():
-            ext_ti = "HIGH"
-        elif 'threat level: CRITICAL' in str(e).upper():
-            ext_ti = "CRITICAL"
-        elif 'MINIMAL' in str(e).upper():
-            ext_ti = "MINIMAL"
-    
-    # Use deterministic domain-specific scoring WITH MODEL_SCORE as internal evidence
+    # Use validated domain scorers
     risk_score = None
+    domain_result = None
     
     if domain == 'logs':
-        tx_count = metrics.get('transaction_count', 0)
-        failures = metrics.get('failed_transaction_count', 0)
-        error_codes = metrics.get('unique_error_codes', 0)
-        risk_score = compute_logs_risk(tx_count, failures, error_codes, ext_ti, model_score)
+        # Use logs scorer with LOGS_ALLOWED whitelist (excludes MODEL_SCORE)
+        logs_metrics = {
+            "transaction_count": metrics.get('transaction_count', 0),
+            "failed_transaction_count": metrics.get('failed_transaction_count', 0), 
+            "error_count": metrics.get('unique_error_codes', 0),
+            "total_transaction_count": metrics.get('transaction_count', 0)
+        }
+        domain_result = score_logs_domain(logs_metrics, facts)
         
     elif domain == 'network':
-        is_public = metrics.get('is_public', True)
-        vpn_proxy = any('vpn' in str(e).lower() or 'proxy' in str(e).lower() for e in evidence)
-        asn_rep = "CLEAN"  # Default
-        velocity_anomaly = metrics.get('unique_ip_count', 1) > 3
-        geo_diversity = metrics.get('unique_countries', 0)
-        risk_score = compute_network_risk(is_public, vpn_proxy, asn_rep, velocity_anomaly, geo_diversity, ext_ti, model_score)
+        # Use network scorer with signal requirements
+        evidence = findings.get('evidence', [])
+        
+        # Extract network-specific signals
+        ti_hits = []
+        if any('abuse' in str(e).lower() for e in evidence):
+            ti_hits.append({"provider": "AbuseIPDB", "confidence": 75})
+            
+        proxy_vpn = any('vpn' in str(e).lower() or 'proxy' in str(e).lower() for e in evidence)
+        tor_detected = any('tor' in str(e).lower() for e in evidence)
+        asn_risk = any('high-risk' in str(e).lower() and 'asn' in str(e).lower() for e in evidence)
+        geo_anomaly = any('geo' in str(e).lower() and ('anomaly' in str(e).lower() or 'suspicious' in str(e).lower()) for e in evidence)
+        
+        # Get IP from entity_id or fallback
+        ip_str = findings.get('entity_id', '127.0.0.1')
+        
+        domain_result = score_network_domain(ti_hits, proxy_vpn, tor_detected, asn_risk, geo_anomaly, ip_str)
         
     elif domain == 'device':
+        # Fallback to deterministic scoring for device domain (not implemented in new scorers yet)
+        from .deterministic_scoring import compute_device_risk
+        
         device_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         fingerprint_anomaly = any('fingerprint' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
         browser_spoofing = any('spoofing' in str(e).lower() for e in evidence)
         device_velocity = metrics.get('unique_device_count', 1)
-        risk_score = compute_device_risk(device_consistency, fingerprint_anomaly, browser_spoofing, device_velocity, ext_ti, model_score)
+        
+        # CRITICAL: Pass None for model_score to prevent pollution
+        risk_score = compute_device_risk(device_consistency, fingerprint_anomaly, browser_spoofing, device_velocity, "MINIMAL", None)
         
     elif domain == 'location':
+        # Fallback to deterministic scoring for location domain
+        from .deterministic_scoring import compute_location_risk
+        
+        evidence = findings.get('evidence', [])
         impossible_travel = any('impossible travel' in str(e).lower() for e in evidence)
         travel_confidence = 0.8 if impossible_travel else 0.0
         location_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         high_risk_country = any('high-risk' in str(e).lower() and 'country' in str(e).lower() for e in evidence)
-        risk_score = compute_location_risk(impossible_travel, travel_confidence, location_consistency, high_risk_country, ext_ti, model_score)
+        
+        # CRITICAL: Pass None for model_score to prevent pollution
+        risk_score = compute_location_risk(impossible_travel, travel_confidence, location_consistency, high_risk_country, "MINIMAL", None)
         
     elif domain == 'authentication':
+        # Fallback to deterministic scoring for authentication domain
+        from .deterministic_scoring import compute_authentication_risk
+        
+        evidence = findings.get('evidence', [])
         failed_attempts = metrics.get('max_login_attempts', 0)
         mfa_bypass = any('mfa bypass' in str(e).lower() for e in evidence)
         credential_stuffing = any('credential stuffing' in str(e).lower() for e in evidence)
         session_anomaly = any('session' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
-        risk_score = compute_authentication_risk(failed_attempts, mfa_bypass, credential_stuffing, session_anomaly, ext_ti, model_score)
+        
+        # CRITICAL: Pass None for model_score to prevent pollution
+        risk_score = compute_authentication_risk(failed_attempts, mfa_bypass, credential_stuffing, session_anomaly, "MINIMAL", None)
     
-    # Fallback if deterministic scoring fails
+    # Extract score from domain result if using new scorers
+    if domain_result is not None:
+        validate_domain(domain_result)  # Apply validation
+        risk_score = domain_result.score
+        logger.debug(f"🎯 VALIDATED DOMAIN SCORER for {domain}: score={risk_score}, status={domain_result.status}, signals={len(domain_result.signals)}")
+    
+    # Fallback if all scoring fails
     if risk_score is None:
         risk_score = 0.2  # Conservative default
     

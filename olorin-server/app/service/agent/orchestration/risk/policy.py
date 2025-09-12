@@ -278,12 +278,23 @@ def has_minimum_evidence(state: Dict[str, Any]) -> bool:
     sufficient external validation. Requires at least 1 tool result OR significant
     domain evidence collection.
     
+    CONFIRMED FRAUD OVERRIDE: Cases with confirmed fraud (IS_FRAUD_TX=true) bypass
+    evidence gating as they represent ground truth adjudication.
+    
     Args:
         state: Investigation state to check
         
     Returns:
         True if investigation has sufficient external evidence to finalize
     """
+    # CRITICAL: Confirmed fraud bypasses evidence gating (ground truth)
+    snowflake_data = state.get("snowflake_data", {})
+    if snowflake_data and snowflake_data.get("results"):
+        for row in snowflake_data["results"]:
+            if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
+                logger.info("✅ Evidence gate BYPASSED: Confirmed fraud (IS_FRAUD_TX=true) - ground truth present")
+                return True
+    
     # Check for tool results (external sources)
     tool_results = state.get("tool_results", {})
     tool_count = len([r for r in tool_results.values() if r])  # Non-empty results only
@@ -632,6 +643,27 @@ def prepublish_validate(state: Dict[str, Any]) -> Dict[str, Any]:
     }
     
     try:
+        # CRITICAL: Check for confirmed fraud FIRST (ground truth bypass)
+        confirmed_fraud_detected = False
+        snowflake_data = state.get("snowflake_data", {})
+        if snowflake_data and snowflake_data.get("results"):
+            for row in snowflake_data["results"]:
+                if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
+                    confirmed_fraud_detected = True
+                    logger.info("🚨 CONFIRMED FRAUD BYPASS: prepublish_validate allowing ground truth fraud case")
+                    break
+        
+        # BYPASS ALL EVIDENCE CHECKS for confirmed fraud (ground truth overrides)
+        if confirmed_fraud_detected:
+            validation_result.update({
+                "status": "confirmed_fraud_bypass",
+                "can_publish_numeric_risk": True,
+                "evidence_gate_passed": True,
+                "confirmed_fraud_bypass": True
+            })
+            validation_result["issues"].append("Ground truth confirmed fraud - evidence requirements bypassed")
+            return validation_result
+        
         # Check 1: Single-source detection (Snowflake only)
         tools_used = set(state.get("tools_used", []))
         if tools_used == {"snowflake_query_tool"} or tools_used == set():

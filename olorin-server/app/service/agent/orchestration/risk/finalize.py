@@ -7,7 +7,7 @@ Includes external intelligence fusion and sanity checking.
 """
 
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from app.service.agent.orchestration.metrics.safe import safe_div, fmt_num
 from app.service.agent.orchestration.metrics.network import compute_network_metrics
 from app.service.intel.normalize import normalize_abuseipdb, abuseipdb_risk_component, normalize_virustotal, resolve_provider_conflicts
@@ -19,72 +19,87 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
-def compute_final_risk(state: Dict[str, Any]) -> float:
+def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
     """
-    Compute final risk score from domain findings with weighted approach and risk floor protection.
+    SINGLE SOURCE OF TRUTH aggregator to prevent double aggregation.
+    
+    CRITICAL FIX: Replaces the old aggregator that was causing double calculation
+    (0.521 calculated but N/A gated) with the validated aggregator from domain fixes.
     
     Args:
         state: Investigation state containing domain findings
         
     Returns:
-        Final risk score between 0.0 and 1.0 with appropriate floors applied
+        Final risk score or None if evidence gating blocks publication
     """
-    # Extract Snowflake data to determine model score and confirmed fraud
-    snowflake_data = state.get("snowflake_data", {})
-    model_score = 0.0
-    confirmed_fraud = False
+    from app.service.agent.orchestration.domain.aggregator import aggregate_domains, fmt_score
+    from app.service.agent.orchestration.domain.domain_result import DomainResult
     
-    if snowflake_data and snowflake_data.get("results"):
-        # Get highest model score from transactions
-        model_scores = []
-        for row in snowflake_data["results"]:
-            if isinstance(row, dict) and "MODEL_SCORE" in row:
-                model_scores.append(float(row["MODEL_SCORE"]))
-                # Check for confirmed fraud in any transaction
-                if derive_confirmed_fraud(row):
-                    confirmed_fraud = True
-        
-        if model_scores:
-            model_score = max(model_scores)
-    
-    # Get domain risk scores (with special handling for location)
+    # Extract domain findings and convert to DomainResult objects
     domain_findings = state.get("domain_findings", {})
-    domain_scores = []
+    domains = []
     
-    # Collect domain risk scores with special handling for location missing data
-    for domain in ["network", "logs", "device", "location", "authentication"]:
-        domain_data = domain_findings.get(domain, {})
+    for domain_name in ["logs", "network", "device", "location", "authentication"]:
+        domain_data = domain_findings.get(domain_name, {})
         
-        if domain == "location":
-            # DESIGN FLAW FIX: Use risk_from_location for proper missing data handling
-            from .policy import risk_from_location
-            location_risk = risk_from_location(domain_data)
-            domain_scores.append(location_risk)  # May be None for missing data
+        if not isinstance(domain_data, dict):
+            continue
+            
+        # Extract risk score (may be None for insufficient evidence)
+        risk_score = domain_data.get("risk_score")
+        
+        # Determine status
+        if risk_score is None:
+            status = "INSUFFICIENT_EVIDENCE"
         else:
-            # Standard risk score extraction for other domains
-            risk_score = domain_data.get("risk_score")
-            if isinstance(risk_score, (int, float)) and risk_score >= 0:
-                domain_scores.append(risk_score)
-            else:
-                domain_scores.append(None)  # Missing data for this domain
+            status = "OK"
+        
+        # Extract signals/evidence
+        evidence = domain_data.get("evidence", [])
+        signals = []
+        
+        # Convert evidence to signals (simplified)
+        for item in evidence[:5]:  # Limit to first 5 evidence items
+            if isinstance(item, str) and len(item.strip()) > 0:
+                signals.append(item.strip()[:50])  # Truncate long signals
+        
+        # Create DomainResult
+        domain_result = DomainResult(
+            name=domain_name,
+            score=risk_score,
+            status=status,
+            signals=signals,
+            confidence=domain_data.get("confidence", 0.35),
+            narrative=domain_data.get("summary", f"Domain {domain_name} analysis")
+        )
+        
+        domains.append(domain_result)
     
-    # Calculate exculpatory weight (simplified - could be enhanced)
-    # For now, use inverse of evidence strength
-    evidence_strength = state.get("evidence_strength", 0.0)
-    exculpatory_weight = max(0.0, 1.0 - evidence_strength) * 0.2  # Cap at 0.2
+    # Extract facts for aggregation
+    facts = {}
     
-    # Use fuse_risk to prevent risk freefall
-    final_risk = fuse_risk(
-        model_score=model_score,
-        domain_scores=domain_scores,
-        exculpatory_weight=exculpatory_weight,
-        confirmed_fraud=confirmed_fraud
-    )
+    # Check for confirmed fraud (IS_FRAUD_TX=True)
+    snowflake_data = state.get("snowflake_data", {})
+    if snowflake_data and snowflake_data.get("results"):
+        for row in snowflake_data["results"]:
+            if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
+                facts["IS_FRAUD_TX"] = True
+                break
     
-    logger.debug(f"🔥 Risk fusion applied: model={fmt_num(model_score, 3)}, domains={domain_scores}, "
-                f"confirmed_fraud={confirmed_fraud}, final={fmt_num(final_risk, 3)}")
+    # Use single source of truth aggregator
+    final_risk, gating_status, gating_reason = aggregate_domains(domains, facts)
     
-    return round(min(1.0, max(0.0, final_risk)), 3)
+    # Store gating information in state for transparency
+    state["gating_status"] = gating_status
+    state["gating_reason"] = gating_reason
+    
+    logger.debug(f"🎯 SINGLE AGGREGATOR: final_risk={fmt_score(final_risk)}, gating={gating_status}, domains={len(domains)}")
+    
+    if gating_status == "BLOCK":
+        logger.info(f"🚫 EVIDENCE GATING: {gating_reason}")
+        return None  # Evidence gating blocks numeric risk
+    else:
+        return final_risk
 
 
 def finalize_risk(state: Dict[str, Any]) -> None:
@@ -135,6 +150,15 @@ def finalize_risk(state: Dict[str, Any]) -> None:
     # Compute final risk score
     final_risk = compute_final_risk(state)
     
+    # CRITICAL FIX: Handle None from evidence gating
+    if final_risk is None:
+        logger.info("🚫 EVIDENCE GATING: Final risk blocked by aggregator - investigation needs more evidence")
+        state["risk_score"] = None
+        state["investigation_status"] = "insufficient_evidence"
+        gating_reason = state.get("gating_reason", "Insufficient corroborating evidence")
+        state["recommended_next_actions"] = [f"Investigation blocked: {gating_reason}"]
+        return  # Exit early - no numeric risk to publish
+    
     # CRITICAL PATCH E: Apply anti-flap guard to prevent wild swings
     entity_id = state.get("entity_id", "unknown")
     flap_result = _apply_anti_flap_guard(entity_id, final_risk, state)
@@ -142,32 +166,109 @@ def finalize_risk(state: Dict[str, Any]) -> None:
     # Use flap-adjusted risk score
     final_risk = flap_result["adjusted_risk"]
     
+    # CRITICAL: Check for confirmed fraud BEFORE evidence gating (ground truth bypass)
+    confirmed_fraud_detected = False
+    snowflake_data = state.get("snowflake_data", {})
+    if snowflake_data and snowflake_data.get("results"):
+        for row in snowflake_data["results"]:
+            if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
+                confirmed_fraud_detected = True
+                state["confirmed_fraud_present"] = True
+                logger.info("🚨 CONFIRMED FRAUD DETECTED: Will bypass evidence gating due to ground truth")
+                break
+    
     # CRITICAL FIX: Hard evidence gating before publishing numeric risk
     validation_result = prepublish_validate(state)
     state["validation_result"] = validation_result
     
-    if not validation_result["can_publish_numeric_risk"]:
+    # BYPASS EVIDENCE GATE for confirmed fraud cases (ground truth overrides evidence requirements)
+    if confirmed_fraud_detected:
+        logger.info("🚨 CONFIRMED FRAUD BYPASS: Skipping evidence gate due to ground truth fraud confirmation")
+        pass  # Skip evidence gate blocking logic
+    elif not validation_result["can_publish_numeric_risk"]:
         # Block numeric risk publication - mark as needs more evidence
         state["risk_score"] = None  # No numeric risk published
         state["investigation_status"] = validation_result["status"]
         state["recommended_next_actions"] = validation_result["recommended_actions"]
         logger.warning(f"🚫 EVIDENCE GATE: Blocked numeric risk publication - {validation_result['status']}")
-    else:
-        # Apply risk cap for discordant signals
-        if validation_result.get("discordant_signals", False):
-            max_allowed = validation_result.get("max_allowed_risk", 0.4)
-            if final_risk > max_allowed:
-                original_risk = final_risk
-                final_risk = max_allowed
-                logger.warning(f"🔒 DISCORDANCE CAP: Risk capped from {fmt_num(original_risk, 3)} to {fmt_num(final_risk, 3)} due to discordant signals")
-            state["discordant_signals"] = True
-            state["investigation_status"] = "discordant_signals"
-        else:
-            state["investigation_status"] = "completed_with_numeric_risk"
+        return  # Exit early for blocked cases
+    
+    # Continue with risk finalization (for both confirmed fraud and evidence-passing cases)
+    # CRITICAL: Apply confirmed fraud risk floor (ground truth adjudication)
+    if confirmed_fraud_detected:
+        original_risk_for_floor = final_risk
+        fraud_floor = 0.60
+        if final_risk is None or final_risk < fraud_floor:
+            final_risk = fraud_floor
+            logger.info(f"🚨 CONFIRMED FRAUD FLOOR: Risk elevated from {fmt_num(original_risk_for_floor, 3)} to {fmt_num(final_risk, 3)} due to ground truth")
+    
+    # Apply risk cap for discordant signals (but respect fraud floor)
+    if validation_result.get("discordant_signals", False):
+        max_allowed = validation_result.get("max_allowed_risk", 0.4)
+        # Don't cap below confirmed fraud floor
+        if state.get("confirmed_fraud_present") and max_allowed < 0.60:
+            max_allowed = 0.60
+            logger.info("🛡️ FRAUD FLOOR PROTECTION: Discordance cap raised to respect confirmed fraud floor")
         
-        # Publish final risk (potentially capped)
-        state["risk_score"] = final_risk
-        logger.debug(f"✅ Evidence gate passed - numeric risk published: {fmt_num(final_risk, 3)}")
+        if final_risk > max_allowed:
+            original_risk = final_risk
+            final_risk = max_allowed
+            logger.warning(f"🔒 DISCORDANCE CAP: Risk capped from {fmt_num(original_risk, 3)} to {fmt_num(final_risk, 3)} due to discordant signals")
+        state["discordant_signals"] = True
+        state["investigation_status"] = "discordant_signals"
+    else:
+        state["investigation_status"] = "completed_with_numeric_risk"
+    
+    # CRITICAL: Run comprehensive linting checks before publishing risk
+    from app.service.agent.orchestration.domain.linter import lint_investigation, assert_investigation_safety
+    from app.service.agent.orchestration.domain.domain_result import DomainResult
+    
+    # Convert state domain findings to DomainResult objects for linting
+    domain_findings = state.get("domain_findings", {})
+    domains_for_linting = []
+    
+    for domain_name in ["logs", "network", "device", "location", "authentication"]:
+        domain_data = domain_findings.get(domain_name, {})
+        if isinstance(domain_data, dict):
+            domain_result = DomainResult(
+                name=domain_name,
+                score=domain_data.get("risk_score"),
+                status="OK" if domain_data.get("risk_score") is not None else "INSUFFICIENT_EVIDENCE",
+                signals=domain_data.get("evidence", [])[:3],  # First 3 evidence items as signals
+                confidence=domain_data.get("confidence", 0.35),
+                narrative=domain_data.get("summary", f"Domain {domain_name} analysis")
+            )
+            domains_for_linting.append(domain_result)
+    
+    # Run comprehensive linting checks
+    lint_errors = lint_investigation(domains_for_linting, final_risk, state)
+    
+    if lint_errors:
+        logger.warning(f"🚨 LINTING VIOLATIONS DETECTED: {len(lint_errors)} issues before publishing risk")
+        for i, error in enumerate(lint_errors[:5], 1):  # Log first 5 errors
+            logger.warning(f"   LINT ERROR {i}: {error}")
+        
+        # Store linting results in state for debugging
+        state["linting_errors"] = lint_errors
+        state["linting_passed"] = False
+    else:
+        logger.info("✅ All linting checks passed before risk publication")
+        state["linting_passed"] = True
+    
+    # Run safety assertions (critical violations will raise AssertionError)
+    try:
+        assert_investigation_safety(domains_for_linting, final_risk, state)
+        logger.debug("✅ Investigation safety assertions passed")
+    except AssertionError as e:
+        logger.error(f"🚨 CRITICAL SAFETY VIOLATION: {e}")
+        # Log critical violation but allow investigation to continue
+        state["safety_violation"] = str(e)
+        state["investigation_warnings"] = state.get("investigation_warnings", [])
+        state["investigation_warnings"].append(f"Safety violation: {e}")
+
+    # Publish final risk (potentially adjusted by floor and cap)
+    state["risk_score"] = final_risk
+    logger.debug(f"✅ Risk finalization complete - numeric risk published: {fmt_num(final_risk, 3)}")
     
     # Generate severity-appropriate action plan based on final risk
     _generate_action_plan(state, final_risk)

@@ -1862,7 +1862,7 @@ class UnifiedAutonomousTestRunner:
             "device": "device",
             "location": "location",
             "logs": "logs",
-            "risk": "risk_aggregation"
+            "risk": "risk"
         }
         
         # Process each domain's findings
@@ -1886,60 +1886,42 @@ class UnifiedAutonomousTestRunner:
                     "confidence": 0.0
                 }
         
-        # Special handling for risk_aggregation - always create a proper aggregated result
-        # This ensures risk_aggregation always has valid analysis even if the "risk" domain wasn't analyzed
-        if graph_result.get("current_phase") == "complete" or len(domains_completed) >= 4:
-            # Calculate aggregated risk from successfully completed domain agents
-            completed_agents = [agent_name for domain, agent_name in domain_mapping.items() 
-                              if domain in domains_completed and agent_name in agent_results]
+        # SINGLE SOURCE OF TRUTH: Use risk aggregation result from single aggregator
+        # The risk domain contains the authoritative final risk score from the single aggregator
+        if "risk" in domain_findings:
+            # Use the result from our single source of truth aggregator
+            risk_findings = domain_findings["risk"]
+            final_risk_score = graph_result.get("risk_score")  # This comes from the single aggregator
+            final_confidence = graph_result.get("confidence_score", 0.0)
             
-            if completed_agents:
-                # Calculate weighted average risk score from completed agents
-                total_risk = 0.0
-                total_confidence = 0.0
-                agent_count = 0
-                
-                for agent_name in completed_agents:
-                    if agent_name != "risk_aggregation" and agent_results[agent_name]["status"] == "success":
-                        total_risk += agent_results[agent_name]["risk_score"]
-                        total_confidence += agent_results[agent_name]["confidence"]
-                        agent_count += 1
-                
-                # Calculate risk from individual agents - no authoritative override
-                aggregated_risk = total_risk / agent_count if agent_count > 0 else 0.0
-                self.logger.info(f"Calculated risk score from {agent_count} agents: {aggregated_risk:.3f}")
-                
-                aggregated_confidence = total_confidence / agent_count if agent_count > 0 else graph_result.get("confidence_score", 0.0)
-                
-                # Create comprehensive risk aggregation result
-                agent_results["risk_aggregation"] = {
-                    "findings": {
-                        "risk_score": aggregated_risk,
-                        "confidence": aggregated_confidence,
-                        "tools_used": len(graph_result.get("tools_used", [])),
-                        "investigation_complete": True,
-                        "aggregated_from_agents": completed_agents,
-                        "analysis": f"Aggregated risk analysis from {len(completed_agents)} domain agents: {', '.join(completed_agents)}"
-                    },
-                    "duration": total_duration * 0.1,  # Risk aggregation is typically quick
-                    "status": "success",
-                    "risk_score": aggregated_risk,
-                    "confidence": aggregated_confidence
-                }
-            else:
-                # Fallback: Use overall graph results
-                agent_results["risk_aggregation"] = {
-                    "findings": {
-                        "risk_score": graph_result.get("risk_score", 0.0),
-                        "confidence": graph_result.get("confidence_score", 0.0),
-                        "tools_used": len(graph_result.get("tools_used", [])),
-                        "investigation_complete": graph_result.get("current_phase") == "complete"
-                    },
-                    "duration": total_duration,
-                    "status": "success" if graph_result.get("current_phase") == "complete" else "partial",
-                    "risk_score": graph_result.get("risk_score", 0.0),
-                    "confidence": graph_result.get("confidence_score", 0.0)
-                }
+            agent_results["risk_aggregation"] = {
+                "findings": {
+                    "risk_score": final_risk_score,
+                    "confidence": final_confidence,
+                    "tools_used": len(graph_result.get("tools_used", [])),
+                    "investigation_complete": graph_result.get("current_phase") == "complete",
+                    "narrative": risk_findings.get("narrative", "Risk synthesis from single aggregator"),
+                    "analysis": risk_findings.get("analysis", {})
+                },
+                "duration": total_duration * 0.1,  # Risk aggregation is typically quick
+                "status": "success" if final_risk_score is not None else "blocked_by_evidence_gating",
+                "risk_score": final_risk_score,
+                "confidence": final_confidence
+            }
+        else:
+            # Fallback: Use overall graph results if risk domain not available
+            agent_results["risk_aggregation"] = {
+                "findings": {
+                    "risk_score": graph_result.get("risk_score"),
+                    "confidence": graph_result.get("confidence_score", 0.0),
+                    "tools_used": len(graph_result.get("tools_used", [])),
+                    "investigation_complete": graph_result.get("current_phase") == "complete"
+                },
+                "duration": total_duration,
+                "status": "success" if graph_result.get("current_phase") == "complete" else "partial",
+                "risk_score": graph_result.get("risk_score"),
+                "confidence": graph_result.get("confidence_score", 0.0)
+            }
         
         # Add Snowflake data if available
         if graph_result.get("snowflake_completed"):
@@ -2521,29 +2503,16 @@ class UnifiedAutonomousTestRunner:
         return 0.0
 
     def _extract_final_risk_score(self, agent_results: Dict[str, Any]) -> float:
-        """Extract final risk score from aggregated results or individual agents"""
-        # Get from risk aggregation agent but treat as fusion input, not authoritative
+        """Extract final risk score from single source of truth aggregator"""
+        # SINGLE SOURCE OF TRUTH: Use only the result from the single aggregator
         risk_agg = agent_results.get("risk_aggregation", {})
-        if risk_agg.get("risk_score", 0.0) > 0:
-            return risk_agg.get("risk_score", 0.0)
+        risk_score = risk_agg.get("risk_score")
         
-        # Fallback: calculate from individual agent scores
-        agent_scores = []
-        for agent_name in ["device", "network", "location", "logs"]:
-            if agent_name in agent_results:
-                agent_data = agent_results[agent_name]
-                if isinstance(agent_data, dict) and "risk_score" in agent_data:
-                    score = agent_data["risk_score"]
-                    if score > 0:
-                        agent_scores.append(score)
-                        self.logger.debug(f"Found {agent_name} risk score: {score}")
+        # Handle None from evidence gating safely
+        if risk_score is not None and isinstance(risk_score, (int, float)):
+            return float(risk_score)
         
-        # Return average of agent scores if any exist
-        if agent_scores:
-            final_score = sum(agent_scores) / len(agent_scores)
-            self.logger.info(f"Calculated final risk score from {len(agent_scores)} agents: {final_score:.3f}")
-            return final_score
-        
+        # Evidence gating blocked the score or no risk aggregation available
         return 0.0
 
     def _extract_confidence_score(self, agent_results: Dict[str, Any]) -> float:

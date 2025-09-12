@@ -145,3 +145,23 @@ def safe_mean(values: list, default: float = 0.0) -> float:
         return default
         
     return sum(valid_values) / len(valid_values)
+
+
+def fmt_risk(risk_score: Optional[Union[int, float]], na: str = "N/A (blocked by evidence gating)") -> str:
+    """
+    CRITICAL FIX: Safe risk score formatting that handles None values from evidence gating.
+    
+    Prevents crashes when risk scores are None due to evidence gating blocking numeric risk publication.
+    
+    Args:
+        risk_score: Risk score value (may be None due to evidence gating)
+        na: String to show for None/blocked values
+        
+    Returns:
+        Formatted risk score string or N/A placeholder
+    """
+    if risk_score is None:
+        return na
+    
+    safe_risk = coerce_float(risk_score, None)
+    return f"{safe_risk:.3f}" if safe_risk is not None else na

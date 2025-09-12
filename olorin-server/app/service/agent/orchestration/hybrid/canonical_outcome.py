@@ -244,7 +244,8 @@ class CanonicalOutcomeBuilder:
     
     def _build_risk_assessment(self, state: HybridInvestigationState) -> RiskAssessment:
         """Build risk assessment from investigation state."""
-        risk_score = float(state.get("risk_score", 0.0))
+        from app.service.agent.orchestration.metrics.safe import coerce_float
+        risk_score = coerce_float(state.get("risk_score"), 0.0)
         
         # Determine fraud likelihood
         if risk_score >= 0.9:

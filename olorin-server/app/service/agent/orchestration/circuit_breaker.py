@@ -52,8 +52,8 @@ def record_node_failure(state: Any, node_name: str, error: Exception) -> None:
         state.errors.append(error_record)
         state._node_failures = node_failures
     
-    # Circuit breaker: disable node after 2 failures
-    FAILURE_THRESHOLD = 2
+    # Circuit breaker: disable node after 3 failures (prevent retry loops)  
+    FAILURE_THRESHOLD = 3
     if failure_count >= FAILURE_THRESHOLD:
         disabled_nodes.add(node_name)
         

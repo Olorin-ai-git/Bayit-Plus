@@ -54,14 +54,31 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
         results = DomainAgentBase.process_snowflake_results(snowflake_data, "network")
         
         if results:
+            # CRITICAL FIX: Apply field whitelisting to prevent cross-domain pollution
+            from app.service.agent.orchestration.domain.field_whitelist import (
+                filter_domain_fields, assert_no_cross_domain_pollution
+            )
+            
+            # Extract raw metrics from Snowflake results
+            raw_metrics = {}
+            for record in results:
+                if isinstance(record, dict):
+                    for field_name, field_value in record.items():
+                        if field_name not in raw_metrics and field_value is not None:
+                            raw_metrics[field_name] = field_value
+            
+            # Apply whitelist filter - HARD BLOCK on MODEL_SCORE and cross-domain fields
+            filtered_metrics = filter_domain_fields("network", raw_metrics)
+            network_findings["metrics"].update(filtered_metrics)
+            
             # Check for proxy/VPN indicators
             _analyze_vpn_proxy_indicators(results, network_findings)
             
             # Check for multiple countries
             _analyze_geographic_patterns(results, network_findings)
             
-            # Process MODEL_SCORE
-            DomainAgentBase.process_model_scores(results, network_findings, "network")
+            # REMOVED: process_model_scores call to prevent MODEL_SCORE pollution
+            # DomainAgentBase.process_model_scores(results, network_findings, "network")
             
             # Analyze IP diversity
             _analyze_ip_diversity(results, network_findings)
@@ -88,6 +105,10 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
         DomainAgentBase.finalize_findings(
             network_findings, snowflake_data, tool_results, analysis_duration, "network"
         )
+        
+        # CRITICAL: Assert no cross-domain pollution occurred
+        from app.service.agent.orchestration.domain.field_whitelist import assert_no_cross_domain_pollution
+        assert_no_cross_domain_pollution(network_findings, "network")
         
         # Complete logging
         log_agent_handover_complete("network", network_findings)

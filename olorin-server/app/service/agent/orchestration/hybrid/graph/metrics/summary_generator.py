@@ -254,8 +254,11 @@ class SummaryGenerator:
             return "N/A"
         
         try:
-            efficiency = float(efficiency)
+            efficiency = float(efficiency) if efficiency is not None else None
         except (TypeError, ValueError):
+            return "N/A"
+            
+        if efficiency is None:
             return "N/A"
             
         if safe_gt(efficiency, 0.7):
@@ -273,9 +276,12 @@ class SummaryGenerator:
         
         # Convert to float safely for valid values only
         try:
-            risk_score = float(risk_score)
+            risk_score = float(risk_score) if risk_score is not None else None
         except (TypeError, ValueError):
             return "N/A"  # Invalid values should not become 0.0
+            
+        if risk_score is None:
+            return "N/A"
             
         if safe_gt(risk_score, 0.7):
             return "High"

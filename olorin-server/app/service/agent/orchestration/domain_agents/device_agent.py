@@ -20,6 +20,11 @@ async def device_agent_node(state: InvestigationState, config: Optional[Dict] = 
     Analyzes device consistency, spoofing indicators, and browser patterns.
     """
     try:
+        # Initialize locals at the start to prevent UnboundLocalError
+        device_findings = None
+        evidence = []
+        metrics = {}
+        
         start_time = time.time()
         logger.info("[Step 5.2.2] 📱 Device agent analyzing investigation")
         
@@ -235,7 +240,7 @@ def _extract_device_signals(tool_name: str, result: Dict[str, Any]) -> Dict[str,
     if nested_count > 0:
         logger.debug(f"[Step 5.2.2.2]     → Processed {nested_count} nested structures")
     
-    logger.debug(f"[Step 5.2.2.2] ✅ Extracted {len(device_signals)} device signals from {tool_name}")
+    logger.debug(f"[Step 5.2.2.2] ✅ Extracted {len(signals)} device signals from {tool_name}")
     return signals
 
 

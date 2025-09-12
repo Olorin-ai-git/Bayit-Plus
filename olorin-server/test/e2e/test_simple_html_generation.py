@@ -248,12 +248,15 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
             })
         
         # Determine risk level for styling
+        from app.service.agent.orchestration.metrics.safe import coerce_float
+        
         risk_class = "risk-low"
         if activity_type in ['agent_decision', 'investigation_progress']:
             risk_score = data.get('decision_outcome', {}).get('risk_score') or data.get('findings_summary', {}).get('risk_score', 0)
-            if risk_score and float(risk_score) > 0.7:
+            safe_risk = coerce_float(risk_score, 0.0)
+            if safe_risk > 0.7:
                 risk_class = "risk-high"
-            elif risk_score and float(risk_score) > 0.4:
+            elif safe_risk > 0.4:
                 risk_class = "risk-medium"
         
         html_content += f"""

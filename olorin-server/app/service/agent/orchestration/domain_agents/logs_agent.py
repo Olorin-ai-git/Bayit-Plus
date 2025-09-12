@@ -52,8 +52,25 @@ async def logs_agent_node(state: InvestigationState, config: Optional[Dict] = No
     results = DomainAgentBase.process_snowflake_results(snowflake_data, "logs")
     
     if results:
-        # Process MODEL_SCORE
-        DomainAgentBase.process_model_scores(results, logs_findings, "logs")
+        # CRITICAL FIX: Apply field whitelisting to prevent cross-domain pollution
+        from app.service.agent.orchestration.domain.field_whitelist import (
+            filter_domain_fields, assert_no_cross_domain_pollution
+        )
+        
+        # Extract raw metrics from Snowflake results
+        raw_metrics = {}
+        for record in results:
+            if isinstance(record, dict):
+                for field_name, field_value in record.items():
+                    if field_name not in raw_metrics and field_value is not None:
+                        raw_metrics[field_name] = field_value
+        
+        # Apply whitelist filter - HARD BLOCK on MODEL_SCORE and cross-domain fields
+        filtered_metrics = filter_domain_fields("logs", raw_metrics)
+        logs_findings["metrics"].update(filtered_metrics)
+        
+        # REMOVED: process_model_scores call to prevent MODEL_SCORE pollution
+        # DomainAgentBase.process_model_scores(results, logs_findings, "logs")
         
         # Analyze failed transaction patterns
         _analyze_failed_transactions(results, logs_findings)
@@ -78,7 +95,7 @@ async def logs_agent_node(state: InvestigationState, config: Optional[Dict] = No
         "metrics_collected": len(logs_findings["metrics"])
     }
     
-    # CRITICAL: Analyze evidence with LLM to generate risk scores
+    # CRITICAL: Use validated domain scorer with whitelist and 0.25 cap
     from .base import analyze_evidence_with_llm
     logs_findings = await analyze_evidence_with_llm(
         domain="logs",
@@ -94,11 +111,18 @@ async def logs_agent_node(state: InvestigationState, config: Optional[Dict] = No
         logs_findings, snowflake_data, tool_results, analysis_duration, "logs"
     )
     
+    # CRITICAL: Assert no cross-domain pollution occurred
+    from app.service.agent.orchestration.domain.field_whitelist import assert_no_cross_domain_pollution
+    assert_no_cross_domain_pollution(logs_findings, "logs")
+    
     # Complete logging
     log_agent_handover_complete("logs", logs_findings)
     complete_chain_of_thought(process_id, logs_findings, "logs")
     
-    logger.info(f"[Step 5.2.4] ✅ Logs analysis complete - Risk: {logs_findings['risk_score']:.2f}")
+    # Safe risk score formatting
+    risk_score = logs_findings.get('risk_score')
+    risk_str = f"{risk_score:.2f}" if risk_score is not None else "N/A"
+    logger.info(f"[Step 5.2.4] ✅ Logs analysis complete - Risk: {risk_str}")
     
     # Update state with findings
     return add_domain_findings(state, "logs", logs_findings)
