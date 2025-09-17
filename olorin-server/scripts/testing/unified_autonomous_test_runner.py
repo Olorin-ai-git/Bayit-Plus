@@ -8,7 +8,8 @@ and extensive validation capabilities.
 
 Features:
 - Unified CLI interface with comprehensive options
-- Multiple test scenarios (predefined and CSV-based)
+- Multiple test scenarios (predefined)
+- Snowflake data integration for realistic testing
 - Enhanced reporting (HTML, JSON, Markdown, Terminal)
 - Real-time progress monitoring
 - Performance benchmarking
@@ -29,8 +30,6 @@ Usage:
     # Monitor specific interactions
     python unified_autonomous_test_runner.py --scenario impossible_travel --show-websocket --show-llm --show-agents
 
-    # CSV-based testing
-    python unified_autonomous_test_runner.py --csv-file data.csv --csv-limit 100 --concurrent 5
 
     # Custom configuration
     python unified_autonomous_test_runner.py --scenario impossible_travel --output-format html --timeout 600 --log-level debug
@@ -64,7 +63,6 @@ except ImportError as e:
 import time
 import random
 import argparse
-import csv
 import webbrowser
 import sys
 import os
@@ -182,8 +180,6 @@ except ImportError:
 DEFAULT_SERVER_URL = "http://localhost:8090"
 DEFAULT_TIMEOUT = 300  # 5 minutes
 DEFAULT_CONCURRENT = 3
-DEFAULT_CSV_LIMIT = 2000  # Changed from 50 to 2000
-DEFAULT_CSV_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "transaction_dataset_10k.csv")  # Default CSV file
 DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_USE_MOCK_IPS = False  # Disable mock IPS cache by default for LIVE runs
 PROGRESS_CHECK_INTERVAL = 2
@@ -220,8 +216,6 @@ class TestConfiguration:
     all_scenarios: bool = False
     entity_id: Optional[str] = None
     entity_type: Optional[str] = None
-    csv_file: Optional[str] = DEFAULT_CSV_FILE  # Use default CSV file
-    csv_limit: int = DEFAULT_CSV_LIMIT
     concurrent: int = DEFAULT_CONCURRENT
     output_format: OutputFormat = OutputFormat.TERMINAL
     output_dir: str = "."
@@ -718,10 +712,8 @@ class UnifiedAutonomousTestRunner:
         # Initialize server log capture
         self.server_log_capture = get_server_log_capture()
         
-        # Data from Snowflake or CSV
+        # Data from Snowflake
         self.snowflake_entities: List[Dict] = []  # High-risk entities from Snowflake
-        self.csv_transactions: List[Dict] = []  # Deprecated - for backward compatibility
-        self.csv_users: List[Dict] = []  # Deprecated - for backward compatibility
         
         self.logger.info(f"Initialized Unified Test Runner with config: {config}")
         
@@ -929,86 +921,27 @@ class UnifiedAutonomousTestRunner:
                     return True
                 else:
                     self.logger.warning("⚠️  No high-risk entities found in Snowflake")
+                    self.logger.info("📊 This may be expected in development/test environments")
                     return False
             else:
-                self.logger.error(f"❌ Failed to fetch from Snowflake: {results.get('error')}")
+                error_msg = results.get('error', 'Unknown error')
+                self.logger.error(f"❌ Failed to fetch from Snowflake: {error_msg}")
+                self.logger.error("🛠️  Please check:")
+                self.logger.error("   1. Snowflake connection configuration")
+                self.logger.error("   2. Database credentials and permissions")
+                self.logger.error("   3. Network connectivity to Snowflake")
+                self.logger.error("   4. Risk analyzer service availability")
                 return False
-                
+
         except Exception as e:
             self.logger.error(f"❌ Error loading Snowflake data: {e}")
+            self.logger.error("🛠️  Common causes:")
+            self.logger.error("   1. Snowflake service unavailable")
+            self.logger.error("   2. Invalid database configuration")
+            self.logger.error("   3. Authentication/authorization issues")
+            self.logger.error("   4. Risk analyzer initialization failure")
             return False
     
-    def load_csv_data(self) -> bool:
-        """Load transaction data from CSV file (deprecated - use Snowflake instead)"""
-        if not self.config.csv_file:
-            return True
-            
-        self.logger.info(f"Loading CSV data from: {self.config.csv_file}")
-        
-        try:
-            with open(self.config.csv_file, 'r', encoding='utf-8') as file:
-                reader = csv.DictReader(file)
-                for i, row in enumerate(reader):
-                    if i >= self.config.csv_limit:
-                        break
-                        
-                    # Extract relevant transaction fields
-                    transaction = {
-                        "tx_id": row.get("TX_ID_KEY", ""),
-                        "unique_user_id": row.get("UNIQUE_USER_ID", ""),
-                        "email": row.get("EMAIL", ""),
-                        "email_normalized": row.get("EMAIL_NORMALIZED", ""),
-                        "first_name": row.get("FIRST_NAME", ""),
-                        "app_id": row.get("APP_ID", ""),
-                        "tx_datetime": row.get("TX_DATETIME", ""),
-                        "tx_received_datetime": row.get("TX_RECEIVED_DATETIME", ""),
-                        "authorization_stage": row.get("AUTHORIZATION_STAGE", ""),
-                        "event_type": row.get("EVENT_TYPE", ""),
-                        "tx_timestamp_ms": row.get("TX_TIMESTAMP_MS", ""),
-                        "store_id": row.get("STORE_ID", ""),
-                        "is_sent_for_nsure_review": row.get("IS_SENT_FOR_NSURE_REVIEW", "0")
-                    }
-                    self.csv_transactions.append(transaction)
-            
-            # Extract unique users
-            self.csv_users = self._extract_csv_user_samples(self.csv_transactions)
-            
-            self.logger.info(f"✅ Loaded {len(self.csv_transactions)} transactions from CSV")
-            self.logger.info(f"✅ Extracted {len(self.csv_users)} unique users")
-            
-            return True
-            
-        except FileNotFoundError:
-            self.logger.error(f"❌ CSV file not found: {self.config.csv_file}")
-            return False
-        except Exception as e:
-            self.logger.error(f"❌ Error loading CSV: {e}")
-            return False
-
-    def _extract_csv_user_samples(self, transactions: List[Dict], sample_size: int = 10) -> List[Dict]:
-        """Extract unique user samples from CSV transactions"""
-        user_groups = {}
-        
-        for tx in transactions:
-            user_id = tx.get('unique_user_id', '')
-            if user_id and user_id not in user_groups:
-                user_groups[user_id] = {
-                    'user_id': user_id,
-                    'email': tx.get('email', ''),
-                    'first_name': tx.get('first_name', ''),
-                    'app_id': tx.get('app_id', ''),
-                    'transaction_count': 1,
-                    'latest_tx_datetime': tx.get('tx_datetime', ''),
-                    'authorization_stages': [tx.get('authorization_stage', '')],
-                    'sample_transactions': [tx]
-                }
-            elif user_id in user_groups:
-                user_groups[user_id]['transaction_count'] += 1
-                user_groups[user_id]['authorization_stages'].append(tx.get('authorization_stage', ''))
-                if len(user_groups[user_id]['sample_transactions']) < 3:
-                    user_groups[user_id]['sample_transactions'].append(tx)
-        
-        return list(user_groups.values())[:sample_size]
 
     async def get_available_scenarios(self) -> List[str]:
         """Get list of available test scenarios"""
@@ -1440,26 +1373,6 @@ class UnifiedAutonomousTestRunner:
             }
             
             self.logger.info(f"Using Snowflake IP address: {snowflake_entity['ip_address']} (Risk Score: {snowflake_entity['risk_score']:.4f})")
-        elif self.csv_users:
-            # Fallback to CSV (deprecated)
-            csv_user = self.csv_users[0]
-            user_data = {
-                "user_id": csv_user['user_id'],
-                "email": csv_user['email'],
-                "first_name": csv_user['first_name'],
-                "app_id": csv_user['app_id'],
-                "transaction_count": csv_user['transaction_count'],
-                "latest_activity": csv_user['latest_tx_datetime']
-            }
-            if 'ip_address' in csv_user:
-                user_data['ip_address'] = csv_user['ip_address']
-            
-            entity_data = {
-                "entity_id": csv_user['user_id'],
-                "entity_type": "user_id",
-                "source": "csv_transactions"
-            }
-            self.logger.info(f"Using CSV user data: {csv_user['user_id']} ({csv_user['email']})")
         else:
             # Generate synthetic data
             if self.scenario_generator:
@@ -1500,14 +1413,7 @@ class UnifiedAutonomousTestRunner:
         context.data_sources["entity"] = entity_data
         context.data_sources["scenario"] = {"name": scenario_name, "test_mode": self.config.mode.value}
         
-        # Add CSV transaction data if available
-        if self.csv_users:
-            context.data_sources["transactions"] = self.csv_users[0]['sample_transactions']
-            context.data_sources["csv_metadata"] = {
-                "total_csv_transactions": len(self.csv_transactions),
-                "user_transaction_count": self.csv_users[0]['transaction_count'],
-                "data_source": "csv_file"
-            }
+        # Transaction data is handled through Snowflake integration
         
         context.current_phase = InvestigationPhase.ANALYSIS
         return context
@@ -2584,14 +2490,10 @@ class UnifiedAutonomousTestRunner:
         snowflake_loaded = await self.load_snowflake_data()
         
         if not snowflake_loaded:
-            self.logger.warning("⚠️  Failed to load Snowflake data, falling back to CSV if available")
-            # Fall back to CSV if Snowflake fails
-            if self.config.csv_file:
-                if not self.load_csv_data():
-                    self.logger.error("❌ Failed to load data from both Snowflake and CSV")
-                    # Continue anyway with synthetic data
-            else:
-                self.logger.info("📊 Will use synthetic data for testing")
+            self.logger.error("❌ Failed to load Snowflake data. This is required for investigation testing.")
+            self.logger.error("❌ Please ensure Snowflake connection is properly configured and accessible.")
+            self.logger.info("📊 Continuing with synthetic data for testing purposes only...")
+            # Note: Some tests may fail without real Snowflake data
         
         # Get test scenarios or handle real entity investigation
         if self.config.entity_id and self.config.entity_type:
@@ -2692,7 +2594,6 @@ class UnifiedAutonomousTestRunner:
                 "average_duration": self.metrics.total_duration / self.metrics.scenarios_tested if self.metrics.scenarios_tested > 0 else 0
             },
             "results": [self._serialize_result(result) for result in self.results],
-            "csv_metadata": self._get_csv_metadata() if self.csv_transactions else None,
             "performance_analysis": self._analyze_performance(),
             "recommendations": self._generate_recommendations()
         }
@@ -2846,16 +2747,6 @@ class UnifiedAutonomousTestRunner:
             "",
         ]
         
-        # CSV Data section if available
-        if report_data.get("csv_metadata"):
-            csv_meta = report_data["csv_metadata"]
-            markdown_lines.extend([
-                "## CSV Data Information",
-                f"- **Transactions Loaded:** {csv_meta['transaction_count']}",
-                f"- **Unique Users:** {csv_meta['unique_users']}",
-                f"- **Date Range:** {csv_meta.get('date_range', 'N/A')}",
-                ""
-            ])
         
         # Individual test results
         markdown_lines.extend([
@@ -2944,14 +2835,6 @@ class UnifiedAutonomousTestRunner:
         logger.info(f"   Total Duration: {summary['total_duration']:.2f}s")
         logger.info("")
         
-        # CSV info if available
-        if report_data.get("csv_metadata"):
-            csv_meta = report_data["csv_metadata"]
-            logger.info(f"📁 CSV DATA")
-            logger.info(f"   Transactions: {csv_meta['transaction_count']}")
-            logger.info(f"   Unique Users: {csv_meta['unique_users']}")
-            logger.info(f"   Date Range: {csv_meta.get('date_range', 'N/A')}")
-            logger.info("")
         
         # Individual results
         logger.info(f"🧪 INDIVIDUAL RESULTS")
@@ -3075,21 +2958,6 @@ class UnifiedAutonomousTestRunner:
             "investigation_folder": result.investigation_folder
         }
 
-    def _get_csv_metadata(self) -> Dict[str, Any]:
-        """Get CSV metadata for reporting"""
-        if not self.csv_transactions:
-            return None
-            
-        return {
-            "file_path": self.config.csv_file,
-            "transaction_count": len(self.csv_transactions),
-            "unique_users": len(self.csv_users),
-            "sample_user_id": self.csv_users[0]["user_id"] if self.csv_users else "N/A",
-            "date_range": (
-                f"{self.csv_transactions[0].get('tx_datetime', 'N/A')} to "
-                f"{self.csv_transactions[-1].get('tx_datetime', 'N/A')}"
-            ) if self.csv_transactions else "N/A"
-        }
 
     def _analyze_performance(self) -> Dict[str, Any]:
         """Analyze performance metrics across all tests"""
@@ -3144,9 +3012,6 @@ class UnifiedAutonomousTestRunner:
         if avg_score < 70:
             recommendations.append("Overall test quality score is below 70 - review test scenarios and validation logic")
         
-        # CSV data recommendations
-        if self.csv_transactions and len(self.csv_users) < 5:
-            recommendations.append("Limited CSV user samples - consider increasing CSV limit for more comprehensive testing")
         
         # Concurrency recommendations
         if self.config.concurrent == 1 and len(self.results) > 3:
@@ -3159,7 +3024,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
     """Create comprehensive command line argument parser"""
     
     parser = argparse.ArgumentParser(
-        description="Unified Autonomous Investigation Test Runner",
+        description="Unified Autonomous Investigation Test Runner - Requires Snowflake connection for data integration",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -3169,8 +3034,6 @@ Examples:
   # Test all scenarios with HTML report
   python unified_autonomous_test_runner.py --all --html-report --open-report
 
-  # CSV-based testing with concurrency
-  python unified_autonomous_test_runner.py --csv-file transactions.csv --csv-limit 100 --concurrent 5
 
   # Custom configuration with timeout
   python unified_autonomous_test_runner.py --scenario impossible_travel --timeout 600 --log-level debug
@@ -3208,18 +3071,6 @@ Examples:
         help="Custom user prompt with highest priority in investigation (e.g., 'Focus on Device Data in Snowflake')"
     )
     
-    # CSV data options
-    parser.add_argument(
-        "--csv-file",
-        default=DEFAULT_CSV_FILE,
-        help=f"Path to CSV file containing transaction data (default: {DEFAULT_CSV_FILE})"
-    )
-    parser.add_argument(
-        "--csv-limit",
-        type=int,
-        default=DEFAULT_CSV_LIMIT,
-        help=f"Maximum number of CSV rows to process (default: {DEFAULT_CSV_LIMIT})"
-    )
     
     # Execution options
     parser.add_argument(
@@ -3359,8 +3210,6 @@ async def main():
         all_scenarios=args.all,
         entity_id=getattr(args, 'entity_id', None),
         entity_type=getattr(args, 'entity_type', None),
-        csv_file=args.csv_file,
-        csv_limit=args.csv_limit,
         concurrent=args.concurrent,
         output_format=OutputFormat(args.output_format),
         output_dir=args.output_dir,
