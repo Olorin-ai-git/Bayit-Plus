@@ -9,7 +9,8 @@
 # Features:
 # - Auto-detection of server status and startup
 # - Firebase secrets integration
-# - Multiple test modes (single scenario, all scenarios, CSV-based)
+# - Multiple test modes (single scenario, all scenarios, entity-based)
+# - Comprehensive dependency validation
 # - Comprehensive logging and reporting
 # - Health checks and validation
 # - Enhanced user experience with progress indicators
@@ -34,8 +35,6 @@ readonly NC='\033[0m' # No Color
 # Configuration defaults
 readonly DEFAULT_SERVER_PORT=8090
 readonly DEFAULT_LOG_LEVEL="INFO"
-readonly DEFAULT_CSV_LIMIT=2000
-readonly DEFAULT_CSV_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/transaction_dataset_10k.csv"
 readonly DEFAULT_CONCURRENT=3
 readonly DEFAULT_TIMEOUT=300
 readonly DEFAULT_PROJECT_ID="olorin-ai"
@@ -51,8 +50,6 @@ SCENARIO=""
 ALL_SCENARIOS=""
 ENTITY_ID=""
 ENTITY_TYPE=""
-CSV_FILE="$DEFAULT_CSV_FILE"
-CSV_LIMIT="$DEFAULT_CSV_LIMIT"
 CONCURRENT="$DEFAULT_CONCURRENT"
 TIMEOUT="$DEFAULT_TIMEOUT"
 SERVER_URL=""
@@ -70,6 +67,10 @@ DRY_RUN=""
 MOCK_IPS_CACHE="true"
 AUTO_START_SERVER="true"
 SKIP_SECRETS=""
+
+# Dependency check options
+SKIP_DEPENDENCY_CHECK=""
+CHECK_DEPENDENCIES_ONLY=""
 
 # Custom prompt configuration
 CUSTOM_PROMPT=""
@@ -111,14 +112,16 @@ show_usage() {
     echo "  $0 --scenario impossible_travel --show-llm --show-websocket"
     echo -e "${CYAN}  # Full investigation visibility (ALL monitoring):${NC}"
     echo "  $0 --all --show-all --follow-logs --html-report"
-    echo -e "${CYAN}  # Test with CSV data and agent conversations:${NC}"
-    echo "  $0 --csv-file ./transactions.csv --csv-limit 50 --show-agents"
+    echo -e "${CYAN}  # Check dependencies before running tests:${NC}"
+    echo "  $0 --check-dependencies-only"
     echo -e "${CYAN}  # Investigate real user entity:${NC}"
     echo "  $0 --mode live --entity-id USER_12345 --entity-type user_id --verbose"
     echo -e "${CYAN}  # Investigate IP address with full monitoring:${NC}"
     echo "  $0 --mode live --entity-id 192.168.1.100 --entity-type ip_address --show-all"
     echo -e "${CYAN}  # Auto-select first high-risk entity from Snowflake:${NC}"
     echo "  $0 --mode live --verbose"
+    echo -e "${CYAN}  # Skip dependency check (advanced users):${NC}"
+    echo "  $0 --scenario device_spoofing --skip-dependency-check"
     echo ""
     echo -e "${WHITE}TEST SELECTION (choose one, or none for Snowflake auto-selection):${NC}"
     echo "  -s, --scenario SCENARIO     Test single scenario:"
@@ -133,11 +136,9 @@ show_usage() {
     echo ""
     echo -e "${WHITE}DATA SOURCE OPTIONS:${NC}"
     echo "  --use-snowflake             Use Snowflake for top risk entities (default: enabled)"
-    echo "  --no-snowflake              Disable Snowflake, use CSV data instead"
+    echo "  --no-snowflake              Disable Snowflake, use synthetic test data instead"
     echo "  --snowflake-time-window     Time window for Snowflake data: 1h, 6h, 24h, 7d, 30d (default: 24h)"
     echo "  --snowflake-top-percent     Top percentage of risk entities (default: 10)"
-    echo "  --csv-file PATH             Path to CSV transaction data file (when not using Snowflake)"
-    echo "  --csv-limit N               Number of CSV rows to process (default: $DEFAULT_CSV_LIMIT)"
     echo ""
     echo -e "${WHITE}SERVER OPTIONS:${NC}"
     echo "  --server-url URL            Server endpoint URL (default: auto-detect)"
@@ -175,6 +176,10 @@ show_usage() {
     echo "  --custom-prompt PROMPT      Custom user prompt with highest priority"
     echo "                              Example: 'Focus on Device Data in Snowflake'"
     echo "                              Example: 'Prioritize network-based anomalies'"
+    echo ""
+    echo -e "${WHITE}DEPENDENCY MANAGEMENT OPTIONS:${NC}"
+    echo "  --check-dependencies-only   Only run dependency check and exit (useful for setup validation)"
+    echo "  --skip-dependency-check     Skip comprehensive dependency validation (for advanced users only)"
     echo ""
     echo -e "${WHITE}OTHER OPTIONS:${NC}"
     echo "  --dry-run                   Show command without executing"
@@ -501,11 +506,6 @@ build_command_args() {
         cmd_args+=(--entity-type "$ENTITY_TYPE")
     fi
     
-    # CSV options
-    if [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
-        cmd_args+=(--csv-file "$CSV_FILE")
-        cmd_args+=(--csv-limit "$CSV_LIMIT")
-    fi
     
     # Execution options
     cmd_args+=(--concurrent "$CONCURRENT")
@@ -564,7 +564,16 @@ build_command_args() {
     if [[ -n "$CUSTOM_PROMPT" ]]; then
         cmd_args+=(--custom-prompt "$CUSTOM_PROMPT")
     fi
-    
+
+    # Dependency check options
+    if [[ "$CHECK_DEPENDENCIES_ONLY" == "true" ]]; then
+        cmd_args+=(--check-dependencies-only)
+    fi
+
+    if [[ "$SKIP_DEPENDENCY_CHECK" == "true" ]]; then
+        cmd_args+=(--skip-dependency-check)
+    fi
+
     echo "${cmd_args[@]}"
 }
 
@@ -588,10 +597,6 @@ show_configuration() {
         echo -e "   Data Source: ${CYAN}Snowflake Top Risk Entities${NC}"
         echo -e "   Time Window: ${CYAN}$SNOWFLAKE_TIME_WINDOW${NC}"
         echo -e "   Top Risk %: ${CYAN}$SNOWFLAKE_TOP_PERCENT%${NC}"
-    elif [[ -n "$CSV_FILE" && -f "$CSV_FILE" ]]; then
-        echo -e "   Data Source: ${CYAN}CSV File${NC}"
-        echo -e "   CSV Path: ${CYAN}$CSV_FILE${NC}"
-        echo -e "   CSV Limit: ${CYAN}$CSV_LIMIT rows${NC}"
     else
         echo -e "   Data Source: ${CYAN}Synthetic Test Data${NC}"
     fi
@@ -664,14 +669,6 @@ parse_arguments() {
                 ;;
             --entity-type)
                 ENTITY_TYPE="$2"
-                shift 2
-                ;;
-            --csv-file)
-                CSV_FILE="$2"
-                shift 2
-                ;;
-            --csv-limit)
-                CSV_LIMIT="$2"
                 shift 2
                 ;;
             -c|--concurrent)
@@ -802,6 +799,14 @@ parse_arguments() {
                 CUSTOM_PROMPT="$2"
                 shift 2
                 ;;
+            --check-dependencies-only)
+                CHECK_DEPENDENCIES_ONLY="true"
+                shift
+                ;;
+            --skip-dependency-check)
+                SKIP_DEPENDENCY_CHECK="true"
+                shift
+                ;;
             -h|--help)
                 show_usage
                 exit 0
@@ -844,12 +849,6 @@ parse_arguments() {
         exit 1
     fi
     
-    # Validate CSV file if specified
-    if [[ -n "$CSV_FILE" && ! -f "$CSV_FILE" ]]; then
-        show_warning "CSV file not found: $CSV_FILE"
-        show_warning "Will use synthetic test data instead"
-        CSV_FILE=""
-    fi
 }
 
 # Run the autonomous investigation
@@ -938,7 +937,20 @@ main() {
     
     # Display banner
     print_banner
-    
+
+    # Handle check-dependencies-only option early
+    if [[ "$CHECK_DEPENDENCIES_ONLY" == "true" ]]; then
+        show_progress "Running dependency check only"
+        cd "$BACKEND_ROOT"
+        if poetry run python "$TEST_RUNNER_SCRIPT" --check-dependencies-only; then
+            show_success "Dependency check completed successfully"
+            exit 0
+        else
+            show_error "Dependency check failed"
+            exit 1
+        fi
+    fi
+
     # CRITICAL: Require explicit user approval for LIVE mode investigations
     if [[ "$MODE" == "live" ]]; then
         echo -e "${RED}⚠️  LIVE MODE INVESTIGATION DETECTED${NC}"

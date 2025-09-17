@@ -46,6 +46,258 @@ if "--mode" in sys.argv and "mock" in sys.argv[sys.argv.index("--mode") + 1]:
     os.environ["TEST_MODE"] = "mock"
     print("🎭🎭🎭 TEST_MODE=mock detected in arguments - MockLLM will be used 🎭🎭🎭")
 
+# Check if this is a dependency-only check before doing any complex imports
+if "--check-dependencies-only" in sys.argv:
+    def check_dependencies_early():
+        """
+        Early dependency check that runs before problematic imports
+        """
+        print("\n" + "="*80)
+        print("🧪 UNIFIED AUTONOMOUS INVESTIGATION TEST RUNNER")
+        print("="*80)
+        print("🔍 Running dependency check...")
+
+        missing_packages = []
+        missing_system_deps = []
+        service_issues = []
+
+        # Core Python packages required for the script
+        required_packages = {
+            # FastAPI and server dependencies
+            'uvicorn': 'FastAPI ASGI server (critical for backend service)',
+            'fastapi': 'FastAPI web framework',
+            'aiohttp': 'Async HTTP client/server',
+            'websocket': 'WebSocket client library (websocket-client package)',
+
+            # LangChain ecosystem
+            'langchain': 'LangChain framework',
+            'langchain_core': 'LangChain core components',
+            'langchain_openai': 'LangChain OpenAI integration',
+            'langchain_anthropic': 'LangChain Anthropic integration',
+            'langgraph': 'LangGraph state management',
+            'langgraph_sdk': 'LangGraph SDK',
+
+            # Testing frameworks
+            'pytest': 'Python testing framework',
+            'pytest_asyncio': 'Async testing support',
+
+            # Data and analytics
+            'snowflake': 'Snowflake connector (snowflake-connector-python)',
+            'pandas': 'Data manipulation library',
+            'numpy': 'Numerical computing',
+
+            # Authentication and security
+            'cryptography': 'Cryptographic operations',
+            'passlib': 'Password hashing',
+            'python_jose': 'JWT token handling (python-jose)',
+            'bcrypt': 'Password hashing',
+
+            # Database and storage
+            'sqlalchemy': 'SQL toolkit and ORM',
+            'asyncpg': 'Async PostgreSQL adapter',
+            'redis': 'Redis client',
+
+            # Firebase and Google Cloud
+            'firebase_admin': 'Firebase Admin SDK',
+            'google.cloud.secretmanager': 'Google Cloud Secret Manager',
+
+            # Reporting and documentation
+            'reportlab': 'PDF generation',
+            'fpdf': 'PDF creation library',
+            'markdown2': 'Markdown processing',
+            'beautifulsoup4': 'HTML parsing',
+            'html2text': 'HTML to text conversion',
+
+            # HTTP and networking
+            'httpx': 'HTTP client library',
+            'requests': 'HTTP library',
+            'httpcore': 'Low-level HTTP library',
+
+            # Utilities
+            'tenacity': 'Retry library',
+            'python_dotenv': 'Environment variable loading',
+            'pyyaml': 'YAML processing',
+            'validators': 'Data validation',
+            'email_validator': 'Email validation',
+
+            # AI and ML
+            'openai': 'OpenAI API client',
+            'sentence_transformers': 'Sentence embeddings',
+            'transformers': 'Hugging Face transformers',
+
+            # Logging and monitoring
+            'structlog': 'Structured logging',
+            'python_json_logger': 'JSON logging',
+            'prometheus_client': 'Prometheus metrics',
+
+            # Development tools
+            'black': 'Code formatter',
+            'isort': 'Import sorter',
+            'mypy': 'Type checker',
+            'tox': 'Testing automation'
+        }
+
+        # Check Python packages
+        print("📦 Checking Python packages...")
+        for package, description in required_packages.items():
+            try:
+                if package == 'websocket':
+                    import websocket
+                elif package == 'snowflake':
+                    import snowflake.connector
+                elif package == 'python_jose':
+                    import jose
+                elif package == 'python_dotenv':
+                    import dotenv
+                elif package == 'python_json_logger':
+                    import pythonjsonlogger
+                elif package == 'firebase_admin':
+                    import firebase_admin
+                elif package == 'google.cloud.secretmanager':
+                    from google.cloud import secretmanager
+                elif package == 'sentence_transformers':
+                    import sentence_transformers
+                elif package == 'pytest_asyncio':
+                    import pytest_asyncio
+                elif package == 'beautifulsoup4':
+                    import bs4
+                elif package == 'pyyaml':
+                    import yaml
+                else:
+                    __import__(package)
+                print(f"  ✅ {package}")
+            except ImportError:
+                missing_packages.append((package, description))
+                print(f"  ❌ {package} - {description}")
+            except Exception as e:
+                # Handle other import issues like TypeError during import
+                print(f"  ⚠️  {package} - {description} (import issue: {str(e)})")
+
+        # Check system dependencies
+        print("\n🔧 Checking system dependencies...")
+        system_deps = {
+            'poetry': 'Python dependency management (required for: poetry install, poetry run)',
+            'npm': 'Node.js package manager (for frontend dependencies)',
+            'node': 'Node.js runtime (for frontend development)',
+            'git': 'Version control system'
+        }
+
+        import subprocess
+        for cmd, description in system_deps.items():
+            try:
+                result = subprocess.run([cmd, '--version'],
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    print(f"  ✅ {cmd}")
+                else:
+                    missing_system_deps.append((cmd, description))
+                    print(f"  ❌ {cmd} - {description}")
+            except (subprocess.TimeoutExpired, FileNotFoundError, subprocess.SubprocessError):
+                missing_system_deps.append((cmd, description))
+                print(f"  ❌ {cmd} - {description}")
+
+        # Check service availability
+        print("\n🚀 Checking service availability...")
+
+        # Check if backend server is running
+        try:
+            import requests
+            response = requests.get("http://localhost:8090/health", timeout=5)
+            if response.status_code == 200:
+                print("  ✅ Backend server (localhost:8090)")
+            else:
+                service_issues.append("Backend server responded with non-200 status")
+                print("  ⚠️  Backend server (localhost:8090) - unexpected response")
+        except Exception as e:
+            service_issues.append(f"Backend server not accessible: {e}")
+            print("  ❌ Backend server (localhost:8090) - not running or not accessible")
+
+        # Check Poetry environment
+        try:
+            result = subprocess.run(['poetry', 'env', 'info'],
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0 and 'Python' in result.stdout:
+                print("  ✅ Poetry environment")
+            else:
+                service_issues.append("Poetry environment not properly configured")
+                print("  ❌ Poetry environment - not properly configured")
+        except Exception as e:
+            service_issues.append(f"Poetry environment check failed: {e}")
+            print("  ❌ Poetry environment - check failed")
+
+        # Print summary and installation instructions
+        print("\n" + "="*80)
+        if missing_packages or missing_system_deps or service_issues:
+            print("❌ DEPENDENCY CHECK FAILED")
+            print("="*80)
+
+            if missing_packages:
+                print("\n📦 MISSING PYTHON PACKAGES:")
+                print("Run the following command to install missing packages:")
+                print(f"cd {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}")
+                print("poetry install")
+                print("\nIf specific packages are still missing after poetry install:")
+                for package, description in missing_packages:
+                    if package == 'websocket':
+                        print(f"  poetry add websocket-client  # {description}")
+                    elif package == 'snowflake':
+                        print(f"  poetry add snowflake-connector-python  # {description}")
+                    elif package == 'python_jose':
+                        print(f"  poetry add python-jose  # {description}")
+                    elif package == 'python_dotenv':
+                        print(f"  poetry add python-dotenv  # {description}")
+                    elif package == 'python_json_logger':
+                        print(f"  poetry add python-json-logger  # {description}")
+                    elif package == 'firebase_admin':
+                        print(f"  poetry add firebase-admin  # {description}")
+                    elif package == 'sentence_transformers':
+                        print(f"  poetry add sentence_transformers  # {description}")
+                    elif package == 'pytest_asyncio':
+                        print(f"  poetry add pytest-asyncio --group dev  # {description}")
+                    else:
+                        print(f"  poetry add {package}  # {description}")
+
+            if missing_system_deps:
+                print("\n🔧 MISSING SYSTEM DEPENDENCIES:")
+                for cmd, description in missing_system_deps:
+                    if cmd == 'poetry':
+                        print(f"  Install Poetry: curl -sSL https://install.python-poetry.org | python3 -")
+                        print(f"  Or: pip install poetry")
+                    elif cmd == 'npm':
+                        print(f"  Install Node.js and npm: https://nodejs.org/")
+                        print(f"  Or on macOS: brew install node")
+                    elif cmd == 'node':
+                        print(f"  Install Node.js: https://nodejs.org/")
+                        print(f"  Or on macOS: brew install node")
+                    elif cmd == 'git':
+                        print(f"  Install Git: https://git-scm.com/downloads")
+                        print(f"  Or on macOS: brew install git")
+                    print(f"  Description: {description}")
+
+            if service_issues:
+                print("\n🚀 SERVICE ISSUES:")
+                for issue in service_issues:
+                    print(f"  • {issue}")
+                print("\nTo start the backend server:")
+                print("  cd olorin-server")
+                print("  poetry run python -m app.local_server")
+                print("  # Or use the unified startup script:")
+                print("  npm run olorin")
+
+            print("\n" + "="*80)
+            print("❌ Please resolve the above issues before running the test script.")
+            print("="*80)
+            return False
+        else:
+            print("✅ ALL DEPENDENCIES SATISFIED")
+            print("="*80)
+            print("🚀 Ready to run autonomous investigations!")
+            return True
+
+    # Run dependency check and exit
+    success = check_dependencies_early()
+    sys.exit(0 if success else 1)
+
 import asyncio
 import aiohttp
 import json
@@ -183,6 +435,256 @@ DEFAULT_CONCURRENT = 3
 DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_USE_MOCK_IPS = False  # Disable mock IPS cache by default for LIVE runs
 PROGRESS_CHECK_INTERVAL = 2
+
+def check_dependencies():
+    """
+    Comprehensive dependency validation for the unified autonomous test runner.
+    Checks for all required Python packages, system dependencies, and services.
+
+    Returns:
+        bool: True if all dependencies are available, False otherwise
+    """
+    print("🔍 Checking dependencies for Unified Autonomous Test Runner...")
+
+    missing_packages = []
+    missing_system_deps = []
+    service_issues = []
+
+    # Core Python packages required for the script
+    required_packages = {
+        # FastAPI and server dependencies
+        'uvicorn': 'FastAPI ASGI server (critical for backend service)',
+        'fastapi': 'FastAPI web framework',
+        'aiohttp': 'Async HTTP client/server',
+        'websocket': 'WebSocket client library (websocket-client package)',
+
+        # LangChain ecosystem
+        'langchain': 'LangChain framework',
+        'langchain_core': 'LangChain core components',
+        'langchain_openai': 'LangChain OpenAI integration',
+        'langchain_anthropic': 'LangChain Anthropic integration',
+        'langgraph': 'LangGraph state management',
+        'langgraph_sdk': 'LangGraph SDK',
+
+        # Testing frameworks
+        'pytest': 'Python testing framework',
+        'pytest_asyncio': 'Async testing support',
+
+        # Data and analytics
+        'snowflake': 'Snowflake connector (snowflake-connector-python)',
+        'pandas': 'Data manipulation library',
+        'numpy': 'Numerical computing',
+
+        # Authentication and security
+        'cryptography': 'Cryptographic operations',
+        'passlib': 'Password hashing',
+        'python_jose': 'JWT token handling (python-jose)',
+        'bcrypt': 'Password hashing',
+
+        # Database and storage
+        'sqlalchemy': 'SQL toolkit and ORM',
+        'asyncpg': 'Async PostgreSQL adapter',
+        'redis': 'Redis client',
+        'aioredis': 'Async Redis client',
+
+        # Firebase and Google Cloud
+        'firebase_admin': 'Firebase Admin SDK',
+        'google.cloud.secretmanager': 'Google Cloud Secret Manager',
+
+        # Reporting and documentation
+        'reportlab': 'PDF generation',
+        'fpdf': 'PDF creation library',
+        'markdown2': 'Markdown processing',
+        'beautifulsoup4': 'HTML parsing',
+        'html2text': 'HTML to text conversion',
+
+        # HTTP and networking
+        'httpx': 'HTTP client library',
+        'requests': 'HTTP library',
+        'httpcore': 'Low-level HTTP library',
+
+        # Utilities
+        'tenacity': 'Retry library',
+        'python_dotenv': 'Environment variable loading',
+        'pyyaml': 'YAML processing',
+        'validators': 'Data validation',
+        'email_validator': 'Email validation',
+
+        # AI and ML
+        'openai': 'OpenAI API client',
+        'sentence_transformers': 'Sentence embeddings',
+        'transformers': 'Hugging Face transformers',
+        'torch': 'PyTorch deep learning framework',
+
+        # Logging and monitoring
+        'structlog': 'Structured logging',
+        'python_json_logger': 'JSON logging',
+        'prometheus_client': 'Prometheus metrics',
+
+        # Development tools
+        'black': 'Code formatter',
+        'isort': 'Import sorter',
+        'mypy': 'Type checker',
+        'tox': 'Testing automation'
+    }
+
+    # Check Python packages
+    print("📦 Checking Python packages...")
+    for package, description in required_packages.items():
+        try:
+            if package == 'websocket':
+                import websocket
+            elif package == 'snowflake':
+                import snowflake.connector
+            elif package == 'python_jose':
+                import jose
+            elif package == 'python_dotenv':
+                import dotenv
+            elif package == 'python_json_logger':
+                import pythonjsonlogger
+            elif package == 'firebase_admin':
+                import firebase_admin
+            elif package == 'google.cloud.secretmanager':
+                from google.cloud import secretmanager
+            elif package == 'sentence_transformers':
+                import sentence_transformers
+            elif package == 'pytest_asyncio':
+                import pytest_asyncio
+            elif package == 'beautifulsoup4':
+                import bs4
+            elif package == 'pyyaml':
+                import yaml
+            else:
+                __import__(package)
+            print(f"  ✅ {package}")
+        except ImportError:
+            missing_packages.append((package, description))
+            print(f"  ❌ {package} - {description}")
+        except Exception as e:
+            # Handle other import issues like TypeError during import
+            missing_packages.append((package, f"{description} (import error: {str(e)})"))
+            print(f"  ⚠️  {package} - {description} (import issue: {str(e)})")
+
+    # Check system dependencies
+    print("\n🔧 Checking system dependencies...")
+    system_deps = {
+        'poetry': 'Python dependency management (required for: poetry install, poetry run)',
+        'npm': 'Node.js package manager (for frontend dependencies)',
+        'node': 'Node.js runtime (for frontend development)',
+        'git': 'Version control system'
+    }
+
+    for cmd, description in system_deps.items():
+        try:
+            import subprocess
+            result = subprocess.run([cmd, '--version'],
+                                  capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                print(f"  ✅ {cmd}")
+            else:
+                missing_system_deps.append((cmd, description))
+                print(f"  ❌ {cmd} - {description}")
+        except (subprocess.TimeoutExpired, FileNotFoundError, subprocess.SubprocessError):
+            missing_system_deps.append((cmd, description))
+            print(f"  ❌ {cmd} - {description}")
+
+    # Check service availability
+    print("\n🚀 Checking service availability...")
+
+    # Check if backend server is running
+    try:
+        import requests
+        response = requests.get("http://localhost:8090/health", timeout=5)
+        if response.status_code == 200:
+            print("  ✅ Backend server (localhost:8090)")
+        else:
+            service_issues.append("Backend server responded with non-200 status")
+            print("  ⚠️  Backend server (localhost:8090) - unexpected response")
+    except Exception as e:
+        service_issues.append(f"Backend server not accessible: {e}")
+        print("  ❌ Backend server (localhost:8090) - not running or not accessible")
+
+    # Check Poetry environment
+    try:
+        result = subprocess.run(['poetry', 'env', 'info'],
+                              capture_output=True, text=True, timeout=10)
+        if result.returncode == 0 and 'Python' in result.stdout:
+            print("  ✅ Poetry environment")
+        else:
+            service_issues.append("Poetry environment not properly configured")
+            print("  ❌ Poetry environment - not properly configured")
+    except Exception as e:
+        service_issues.append(f"Poetry environment check failed: {e}")
+        print("  ❌ Poetry environment - check failed")
+
+    # Print summary and installation instructions
+    print("\n" + "="*80)
+    if missing_packages or missing_system_deps or service_issues:
+        print("❌ DEPENDENCY CHECK FAILED")
+        print("="*80)
+
+        if missing_packages:
+            print("\n📦 MISSING PYTHON PACKAGES:")
+            print("Run the following command to install missing packages:")
+            print(f"cd {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}")
+            print("poetry install")
+            print("\nIf specific packages are still missing after poetry install:")
+            for package, description in missing_packages:
+                if package == 'websocket':
+                    print(f"  poetry add websocket-client  # {description}")
+                elif package == 'snowflake':
+                    print(f"  poetry add snowflake-connector-python  # {description}")
+                elif package == 'python_jose':
+                    print(f"  poetry add python-jose  # {description}")
+                elif package == 'python_dotenv':
+                    print(f"  poetry add python-dotenv  # {description}")
+                elif package == 'python_json_logger':
+                    print(f"  poetry add python-json-logger  # {description}")
+                elif package == 'firebase_admin':
+                    print(f"  poetry add firebase-admin  # {description}")
+                elif package == 'sentence_transformers':
+                    print(f"  poetry add sentence-transformers  # {description}")
+                elif package == 'pytest_asyncio':
+                    print(f"  poetry add pytest-asyncio --group dev  # {description}")
+                else:
+                    print(f"  poetry add {package}  # {description}")
+
+        if missing_system_deps:
+            print("\n🔧 MISSING SYSTEM DEPENDENCIES:")
+            for cmd, description in missing_system_deps:
+                if cmd == 'poetry':
+                    print(f"  Install Poetry: curl -sSL https://install.python-poetry.org | python3 -")
+                    print(f"  Or: pip install poetry")
+                elif cmd == 'npm':
+                    print(f"  Install Node.js and npm: https://nodejs.org/")
+                    print(f"  Or on macOS: brew install node")
+                elif cmd == 'node':
+                    print(f"  Install Node.js: https://nodejs.org/")
+                    print(f"  Or on macOS: brew install node")
+                elif cmd == 'git':
+                    print(f"  Install Git: https://git-scm.com/downloads")
+                    print(f"  Or on macOS: brew install git")
+                print(f"  Description: {description}")
+
+        if service_issues:
+            print("\n🚀 SERVICE ISSUES:")
+            for issue in service_issues:
+                print(f"  • {issue}")
+            print("\nTo start the backend server:")
+            print("  cd olorin-server")
+            print("  poetry run python -m app.local_server")
+            print("  # Or use the unified startup script:")
+            print("  npm run olorin")
+
+        print("\n" + "="*80)
+        print("❌ Please resolve the above issues before running the test script.")
+        print("="*80)
+        return False
+    else:
+        print("✅ ALL DEPENDENCIES SATISFIED")
+        print("="*80)
+        print("🚀 Ready to run autonomous investigations!")
+        return True
 
 # Monitoring colors
 COLORS = {
@@ -3181,16 +3683,56 @@ Examples:
         action="store_true",
         help="Tail server logs in parallel terminal"
     )
-    
+
+    # Dependency management options
+    dependency_group = parser.add_argument_group("dependency management", "Options for dependency validation")
+    dependency_group.add_argument(
+        "--skip-dependency-check",
+        action="store_true",
+        help="Skip comprehensive dependency validation (for advanced users only)"
+    )
+    dependency_group.add_argument(
+        "--check-dependencies-only",
+        action="store_true",
+        help="Only run dependency check and exit (useful for setup validation)"
+    )
+
     return parser
 
 async def main():
     """Main entry point for the unified test runner"""
-    
+
     # Parse command line arguments
     parser = create_argument_parser()
     args = parser.parse_args()
-    
+
+    print("\n" + "="*80)
+    print("🧪 UNIFIED AUTONOMOUS INVESTIGATION TEST RUNNER")
+    print("="*80)
+
+    # Handle dependency check options
+    if getattr(args, 'check_dependencies_only', False):
+        # Only run dependency check and exit
+        success = check_dependencies()
+        sys.exit(0 if success else 1)
+
+    # Run comprehensive dependency check unless explicitly skipped
+    if not getattr(args, 'skip_dependency_check', False):
+        if not check_dependencies():
+            print("\n❌ Dependency check failed. Please install missing dependencies.")
+            print("Script execution terminated to prevent errors.")
+            print("Use --skip-dependency-check to bypass this check (not recommended).")
+            sys.exit(1)
+        print("\n✅ Dependency check passed. Continuing with test runner initialization...\n")
+    else:
+        print("⚠️  Dependency check skipped. Continuing at your own risk...\n")
+
+    # Validate that we have either scenario or all flag
+    if not getattr(args, 'scenario', None) and not getattr(args, 'all', False):
+        print("❌ Error: Either --scenario or --all must be specified.")
+        print("Use --help for usage information.")
+        sys.exit(1)
+
     # Set TEST_MODE immediately if mock mode is requested
     # This MUST happen before any agent imports
     if args.mode == "mock":
