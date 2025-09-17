@@ -951,6 +951,25 @@ main() {
         fi
     fi
 
+    # Run dependency check by default unless explicitly skipped
+    if [[ "$SKIP_DEPENDENCY_CHECK" != "true" ]]; then
+        show_progress "Validating dependencies before investigation"
+        cd "$BACKEND_ROOT"
+        if ! poetry run python "$TEST_RUNNER_SCRIPT" --check-dependencies-only; then
+            show_error "Dependency validation failed"
+            echo ""
+            echo -e "${YELLOW}💡 To skip dependency check (not recommended):${NC}"
+            echo "   $0 $* --skip-dependency-check"
+            echo ""
+            exit 1
+        fi
+        show_success "All dependencies validated successfully"
+        echo ""
+    else
+        show_warning "Dependency check skipped - proceeding at your own risk"
+        echo ""
+    fi
+
     # CRITICAL: Require explicit user approval for LIVE mode investigations
     if [[ "$MODE" == "live" ]]; then
         echo -e "${RED}⚠️  LIVE MODE INVESTIGATION DETECTED${NC}"
