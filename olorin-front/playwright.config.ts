@@ -99,6 +99,19 @@ export default defineConfig({
         viewport: { width: 1920, height: 1080 }
       },
       testMatch: '**/*visual*.e2e.test.ts'
+    },
+
+    /* Performance testing project */
+    {
+      name: 'performance',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+        video: 'off',
+        screenshot: 'off'
+      },
+      testMatch: '**/*performance*.e2e.test.ts',
+      timeout: 120000 // 2 minutes for performance tests
     }
   ],
 

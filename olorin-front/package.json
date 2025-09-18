@@ -71,7 +71,20 @@
     "firebase:login": "firebase login",
     "firebase:projects": "firebase projects:list",
     "health:check": "curl -f http://localhost:3000 || exit 1",
-    "performance:audit": "npm run build && npm run serve:test & sleep 5 && npm run lighthouse:check && pkill -f serve"
+    "performance:audit": "npm run build && npm run serve:test & sleep 5 && npm run lighthouse:check && pkill -f serve",
+    "visual:baseline": "node scripts/visual-regression/generate-baselines.js",
+    "visual:test": "node scripts/visual-regression/run-visual-tests.js",
+    "visual:all": "npm run visual:baseline && npm run visual:test",
+    "e2e": "npx playwright test",
+    "e2e:ui": "npx playwright test --ui",
+    "e2e:visual": "npx playwright test --project=visual-regression",
+    "e2e:microservices": "npx playwright test src/shared/testing/visual-regression/microservices.visual.e2e.test.ts",
+    "e2e:components": "npx playwright test src/shared/testing/visual-regression/components.visual.e2e.test.ts",
+    "perf:test": "npx playwright test src/shared/testing/performance/performance.e2e.test.ts",
+    "perf:lighthouse": "node scripts/performance/lighthouse-audit.js",
+    "perf:bundle": "node scripts/performance/bundle-analyzer.js",
+    "perf:all": "npm run perf:test && npm run perf:lighthouse && npm run perf:bundle",
+    "perf:vitals": "npm start & sleep 30 && npm run perf:test && pkill -f 'react-scripts start'"
   },
   "jest": {
     "testMatch": [
@@ -108,6 +121,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "autoprefixer": "^10.4.14",
+    "chrome-launcher": "1.2.0",
     "compression-webpack-plugin": "^10.0.0",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "customize-cra": "^1.0.0",
@@ -124,6 +138,7 @@
     "eslint-plugin-testing-library": "7.8.0",
     "figma-js": "1.16.1-0",
     "figma-transformer": "2.1.0",
+    "gzip-size": "7.0.0",
     "image-webpack-loader": "^8.1.0",
     "lighthouse": "^11.4.0",
     "playwright": "1.55.0",
