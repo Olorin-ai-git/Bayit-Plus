@@ -309,6 +309,7 @@ check_dependencies_comprehensive() {
         "requests"
         "pytest"
         "structlog"
+        "snowflake"
     )
 
     local missing_critical=()

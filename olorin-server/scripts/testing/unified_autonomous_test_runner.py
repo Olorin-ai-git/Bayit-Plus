@@ -705,6 +705,15 @@ class UnifiedAutonomousTestRunner:
         # Initialize test infrastructure
         self.journey_tracker = LangGraphJourneyTracker()
         self.investigation_logger = AutonomousInvestigationLogger()
+
+        # Disable console output for investigation logger to prevent duplicate messages
+        # (test runner has its own console logger)
+        import sys
+        import logging
+        for handler in self.investigation_logger.investigation_logger.handlers[:]:
+            if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
+                self.investigation_logger.investigation_logger.removeHandler(handler)
+
         self.unified_journey_tracker = get_journey_tracker()
         self.chain_of_thought_logger = ChainOfThoughtLogger()
         self.scenario_generator = RealScenarioGenerator() if RealScenarioGenerator else None
@@ -750,7 +759,10 @@ class UnifiedAutonomousTestRunner:
         
         # Clear existing handlers to avoid duplicates
         logger.handlers.clear()
-        
+
+        # Prevent propagation to root logger to avoid duplicate messages
+        logger.propagate = False
+
         # Store file handler reference for later update
         self.file_handler = None
         
@@ -920,8 +932,20 @@ class UnifiedAutonomousTestRunner:
                     
                     return True
                 else:
-                    self.logger.warning("⚠️  No high-risk entities found in Snowflake")
-                    self.logger.info("📊 This may be expected in development/test environments")
+                    self.logger.error("❌ No high-risk entities found in Snowflake for the last 24 hours")
+                    self.logger.error("❌ Real Snowflake data is required for meaningful investigation testing")
+
+                    # Log Snowflake connection details from .env for debugging
+                    self._log_snowflake_connection_details()
+
+                    self.logger.error("💡 To resolve this:")
+                    self.logger.error("   1. Check if there is actual fraud data in Snowflake")
+                    self.logger.error("   2. Expand the time window (currently 24h):")
+                    self.logger.error("      ./scripts/run-autonomous-investigation.sh --snowflake-time-window 7d")
+                    self.logger.error("      ./scripts/run-autonomous-investigation.sh --snowflake-time-window 30d")
+                    self.logger.error("   3. Lower the risk threshold (currently top 10%):")
+                    self.logger.error("      ./scripts/run-autonomous-investigation.sh --snowflake-top-percent 20")
+                    self.logger.error("   4. Verify Snowflake data pipeline is working correctly")
                     return False
             else:
                 error_msg = results.get('error', 'Unknown error')
@@ -1374,25 +1398,8 @@ class UnifiedAutonomousTestRunner:
             
             self.logger.info(f"Using Snowflake IP address: {snowflake_entity['ip_address']} (Risk Score: {snowflake_entity['risk_score']:.4f})")
         else:
-            # Generate synthetic data
-            if self.scenario_generator:
-                user_data = self.scenario_generator.generate_real_user_data("high_risk")
-                entity_data = self.scenario_generator.generate_real_entity_data()
-            else:
-                # Fallback synthetic data
-                user_data = {
-                    "user_id": f"test_user_{int(time.time())}",
-                    "email": "test@example.com",
-                    "first_name": "Test",
-                    "app_id": "test_app"
-                    # NO mock IP address - agents should skip IP tools if not available
-                }
-                entity_data = {
-                    "entity_id": user_data["user_id"],
-                    "entity_type": "user_id",
-                    "source": "synthetic"
-                }
-            self.logger.info("Using synthetic test data")
+            # No Snowflake data available - terminate the test
+            raise ValueError("No Snowflake entities available for investigation testing. Real data is required.")
         
         # Create investigation context
         # Use appropriate entity type based on what we're investigating
@@ -2492,8 +2499,17 @@ class UnifiedAutonomousTestRunner:
         if not snowflake_loaded:
             self.logger.error("❌ Failed to load Snowflake data. This is required for investigation testing.")
             self.logger.error("❌ Please ensure Snowflake connection is properly configured and accessible.")
-            self.logger.info("📊 Continuing with synthetic data for testing purposes only...")
-            # Note: Some tests may fail without real Snowflake data
+            self.logger.error("❌ Terminating test suite - real Snowflake data is mandatory for investigations.")
+            return {
+                'passed': 0,
+                'failed': 0,
+                'total': 0,
+                'success_rate': 0.0,
+                'average_score': 0.0,
+                'total_duration': 0.0,
+                'results': [],
+                'error': 'No Snowflake data available for testing'
+            }
         
         # Get test scenarios or handle real entity investigation
         if self.config.entity_id and self.config.entity_type:
@@ -3018,6 +3034,47 @@ class UnifiedAutonomousTestRunner:
             recommendations.append("Consider using concurrent execution for faster test suite completion")
         
         return recommendations
+
+    def _log_snowflake_connection_details(self):
+        """Log Snowflake connection details from .env for debugging purposes"""
+        import os
+
+        self.logger.error("🔍 Snowflake connection details being used:")
+
+        # Get Snowflake configuration from environment variables
+        snowflake_config = {
+            'SNOWFLAKE_ACCOUNT': os.getenv('SNOWFLAKE_ACCOUNT', 'Not configured'),
+            'SNOWFLAKE_USER': os.getenv('SNOWFLAKE_USER', 'Not configured'),
+            'SNOWFLAKE_DATABASE': os.getenv('SNOWFLAKE_DATABASE', 'Not configured'),
+            'SNOWFLAKE_SCHEMA': os.getenv('SNOWFLAKE_SCHEMA', 'Not configured'),
+            'SNOWFLAKE_WAREHOUSE': os.getenv('SNOWFLAKE_WAREHOUSE', 'Not configured'),
+            'SNOWFLAKE_ROLE': os.getenv('SNOWFLAKE_ROLE', 'Not configured'),
+        }
+
+        # Log each configuration item
+        for key, value in snowflake_config.items():
+            if value == 'Not configured':
+                self.logger.error(f"   ❌ {key}: {value}")
+            else:
+                # Mask sensitive information but show it's configured
+                if 'PASSWORD' in key or 'SECRET' in key:
+                    masked_value = '***CONFIGURED***' if value else 'Not configured'
+                    self.logger.error(f"   🔐 {key}: {masked_value}")
+                else:
+                    self.logger.error(f"   ✅ {key}: {value}")
+
+        # Check for password/authentication
+        password = os.getenv('SNOWFLAKE_PASSWORD')
+        private_key = os.getenv('SNOWFLAKE_PRIVATE_KEY')
+
+        if password:
+            self.logger.error("   🔐 SNOWFLAKE_PASSWORD: ***CONFIGURED***")
+        elif private_key:
+            self.logger.error("   🔐 SNOWFLAKE_PRIVATE_KEY: ***CONFIGURED***")
+        else:
+            self.logger.error("   ❌ SNOWFLAKE_PASSWORD/PRIVATE_KEY: Not configured")
+
+        self.logger.error("   💡 Verify these settings match your Snowflake environment")
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
