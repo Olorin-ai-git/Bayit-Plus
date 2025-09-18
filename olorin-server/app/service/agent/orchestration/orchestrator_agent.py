@@ -1,4 +1,5 @@
 import json  # CRITICAL FIX: Added for snowflake data parsing
+import os
 """
 Orchestrator Agent for LangGraph Clean Architecture
 
@@ -246,7 +247,7 @@ IMPORTANT: While following the standard investigation process, give special atte
                            DEVICE_ID, DEVICE_FINGERPRINT,
                            USER_AGENT, DEVICE_TYPE,
                            TX_DATETIME
-                           FROM TRANSACTIONS_ENRICHED
+                           FROM {os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
                            WHERE {where_field} = '{entity_id}'
                            ORDER BY TX_DATETIME DESC
                            LIMIT 10"""
@@ -257,8 +258,8 @@ IMPORTANT: While following the standard investigation process, give special atte
                         "name": "snowflake_query_tool",
                         "args": {
                             "query": query,
-                            "database": "FRAUD_ANALYTICS",
-                            "db_schema": "PUBLIC",
+                            "database": os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'),
+                            "db_schema": os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
                             "limit": 100
                         },
                         "id": "tool_call_001",
@@ -441,7 +442,10 @@ IMPORTANT: While following the standard investigation process, give special atte
             return update_phase(state, "tool_execution")
             
         logger.debug("[Step 3.2.4.1] Snowflake analysis not completed - Proceeding with mandatory query execution")
-        logger.debug("[Step 3.2.4.1] Target table: FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED")
+        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+        logger.debug(f"[Step 3.2.4.1] Target table: {database}.{schema}.{table}")
         
         # CRITICAL FIX: Check if any Snowflake ToolMessage already exists
         from langchain_core.messages import ToolMessage
@@ -492,13 +496,17 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         # Create Snowflake query prompt
         logger.debug("[Step 3.2.4.2] Creating Snowflake query prompt for LLM")
+        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
         snowflake_prompt = f"""
         You MUST use the snowflake_query_tool to analyze ALL data for the past {date_range_days} days.
-        
+
         Entity to investigate: {state['entity_type']} = {state['entity_id']}
-        
+
         Required Snowflake queries:
-        1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
+        1. Query {database}.{schema}.{table} table for ALL records where:
            - IP_ADDRESS = '{state['entity_id']}' (if entity is IP)
            - Or related fields match the entity
            - Date range: LAST {date_range_days} DAYS
@@ -546,7 +554,7 @@ Use the snowflake_query_tool immediately."""
         logger.info("🤖 Invoking LLM for Snowflake query generation...")
         logger.info(f"   LLM type: {type(self.llm_with_tools)}")
         logger.info(f"   Messages to LLM: {len(messages)}")
-        logger.debug(f"[Step 3.2.4.2] Expected tool call: snowflake_query_tool with FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED query")
+        logger.debug(f"[Step 3.2.4.2] Expected tool call: snowflake_query_tool with {database}.{schema}.{table} query")
         
         # DEBUG: Detailed LLM interaction logging
         logger.debug("🤖 LLM SNOWFLAKE INTERACTION DEBUG:")

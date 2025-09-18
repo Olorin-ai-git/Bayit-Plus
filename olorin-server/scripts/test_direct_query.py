@@ -21,8 +21,8 @@ def main():
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database='FRAUD_ANALYTICS',
-        schema='PUBLIC',
+        database=os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'),
+        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
     )
@@ -33,10 +33,15 @@ def main():
     hours = 7 * 24  # 7 days
     group_by = 'EMAIL'
     top_decimal = 0.1  # 10%
-    
+
+    # Get table configuration from environment
+    database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     query = f"""
     WITH risk_calculations AS (
-        SELECT 
+        SELECT
             {group_by} as entity,
             COUNT(*) as transaction_count,
             SUM(PAID_AMOUNT_VALUE) as total_amount,
@@ -48,7 +53,7 @@ def main():
             SUM(CASE WHEN TX_STATUS = 'BLOCKED' THEN 1 ELSE 0 END) as rejected_count,
             MAX(TX_DATETIME) as last_transaction,
             MIN(TX_DATETIME) as first_transaction
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {database}.{schema}.{table}
         WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
             AND {group_by} IS NOT NULL
         GROUP BY {group_by}

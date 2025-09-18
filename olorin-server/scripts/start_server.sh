@@ -44,45 +44,71 @@ check_firebase_cli() {
     print_success "Firebase CLI found"
 }
 
-# Function to retrieve a secret from Firebase
+# Function to retrieve a secret (.env first, then Firebase fallback)
 get_secret() {
     local secret_name=$1
     local secret_value
-    
-    # Check if Firebase CLI is authenticated
+
+    # First check .env file for the secret
+    if [ -f ".env" ]; then
+        secret_value=$(grep "^${secret_name}=" .env 2>/dev/null | cut -d'=' -f2- | sed 's/^[\"'\'']*//;s/[\"'\'']*$//')
+        if [ -n "$secret_value" ]; then
+            echo "$secret_value"
+            return 0
+        fi
+    fi
+
+    # Check environment variables as second priority
+    if [ -n "${!secret_name}" ]; then
+        echo "${!secret_name}"
+        return 0
+    fi
+
+    # Fall back to Firebase if not found in .env or environment
     if ! firebase projects:list &>/dev/null; then
-        print_error "Firebase CLI not authenticated. Run: firebase login"
+        print_warning "Firebase CLI not authenticated and secret '$secret_name' not found in .env. Run: firebase login"
         return 1
     fi
-    
-    # Attempt to retrieve secret with timeout
+
+    # Attempt to retrieve secret from Firebase with timeout
     if secret_value=$(timeout 30 firebase functions:secrets:access "$secret_name" --project "$PROJECT_ID" 2>/dev/null); then
         echo "$secret_value"
         return 0
     else
-        print_warning "Failed to retrieve secret: $secret_name"
+        print_warning "Failed to retrieve secret: $secret_name from both .env and Firebase"
         return 1
     fi
 }
 
 # Function to retrieve all required secrets
 retrieve_secrets() {
-    print_status "Retrieving secrets from Firebase project: $PROJECT_ID"
-    
+    print_status "Retrieving secrets (.env first, then Firebase project: $PROJECT_ID)"
+
     # Core secrets
     export JWT_SECRET_KEY=$(get_secret "JWT_SECRET_KEY")
     export ANTHROPIC_API_KEY=$(get_secret "ANTHROPIC_API_KEY")
     export OPENAI_API_KEY=$(get_secret "OPENAI_API_KEY")
     export OLORIN_API_KEY=$(get_secret "OLORIN_API_KEY")
-    
+
     # Database secrets
     export DATABASE_PASSWORD=$(get_secret "DATABASE_PASSWORD")
     export REDIS_API_KEY=$(get_secret "REDIS_API_KEY")
-    
+    export REDIS_PASSWORD=$(get_secret "REDIS_PASSWORD")
+
     # Splunk secrets
     export SPLUNK_USERNAME=$(get_secret "SPLUNK_USERNAME")
     export SPLUNK_PASSWORD=$(get_secret "SPLUNK_PASSWORD")
-    
+
+    # Snowflake secrets (configurable from .env)
+    export SNOWFLAKE_ACCOUNT=$(get_secret "SNOWFLAKE_ACCOUNT")
+    export SNOWFLAKE_USER=$(get_secret "SNOWFLAKE_USER")
+    export SNOWFLAKE_PASSWORD=$(get_secret "SNOWFLAKE_PASSWORD")
+    export SNOWFLAKE_DATABASE=$(get_secret "SNOWFLAKE_DATABASE")
+    export SNOWFLAKE_SCHEMA=$(get_secret "SNOWFLAKE_SCHEMA")
+    export SNOWFLAKE_WAREHOUSE=$(get_secret "SNOWFLAKE_WAREHOUSE")
+    export SNOWFLAKE_ROLE=$(get_secret "SNOWFLAKE_ROLE")
+    export SNOWFLAKE_AUTHENTICATOR=$(get_secret "SNOWFLAKE_AUTHENTICATOR")
+
     # Additional secrets (optional)
     export LANGFUSE_PUBLIC_KEY=$(get_secret "LANGFUSE_PUBLIC_KEY")
     export LANGFUSE_SECRET_KEY=$(get_secret "LANGFUSE_SECRET_KEY")
@@ -90,26 +116,37 @@ retrieve_secrets() {
     
     # Validate critical secrets
     local missing_critical=false
-    
+
     if [ -z "$JWT_SECRET_KEY" ]; then
         print_warning "JWT_SECRET_KEY not found, generating temporary key"
         export JWT_SECRET_KEY=$(openssl rand -base64 64)
     else
         print_success "JWT_SECRET_KEY retrieved"
     fi
-    
+
     if [ -z "$ANTHROPIC_API_KEY" ]; then
         print_warning "ANTHROPIC_API_KEY not found - some features may not work"
     else
         print_success "ANTHROPIC_API_KEY retrieved"
     fi
-    
+
     if [ -z "$OPENAI_API_KEY" ]; then
         print_warning "OPENAI_API_KEY not found - some features may not work"
     else
         print_success "OPENAI_API_KEY retrieved"
     fi
-    
+
+    # Validate Snowflake configuration
+    if [ -z "$SNOWFLAKE_ACCOUNT" ] || [ -z "$SNOWFLAKE_USER" ] || [ -z "$SNOWFLAKE_PASSWORD" ]; then
+        print_warning "Snowflake configuration incomplete - add to .env file:"
+        [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
+        [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
+        [ -z "$SNOWFLAKE_PASSWORD" ] && print_warning "  SNOWFLAKE_PASSWORD=your-password"
+        [ -z "$SNOWFLAKE_DATABASE" ] && print_warning "  SNOWFLAKE_DATABASE=OLORIN_FRAUD_DB"
+    else
+        print_success "Snowflake configuration loaded"
+    fi
+
     print_success "Secrets loaded successfully"
 }
 

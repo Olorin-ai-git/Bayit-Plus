@@ -6,23 +6,26 @@ Handles connection, query validation, and result processing.
 import os
 from typing import Any, Dict, List, Optional
 import asyncio
-# Common query templates using real column names
-COMMON_QUERIES = {
-    "fraud_transactions": """
-        SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX, 
-               TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
-        FROM TRANSACTIONS_ENRICHED 
-        WHERE IS_FRAUD_TX = 1 
-        ORDER BY TX_DATETIME DESC
-    """,
-    "high_risk_scores": """
-        SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE, 
-               NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
-        FROM TRANSACTIONS_ENRICHED 
-        WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
-        ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
-    """
-}
+# Common query templates using real column names - built dynamically
+def get_common_queries():
+    """Get common query templates with configurable table name."""
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+    return {
+        "fraud_transactions": f"""
+            SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX,
+                   TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
+            FROM {table}
+            WHERE IS_FRAUD_TX = 1
+            ORDER BY TX_DATETIME DESC
+        """,
+        "high_risk_scores": f"""
+            SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE,
+                   NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
+            FROM {table}
+            WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
+            ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
+        """
+    }
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -64,8 +67,12 @@ class SnowflakeClient:
             self.connection = None
             self.is_real = False
         
-    async def connect(self, database: str = "FRAUD_ANALYTICS", schema: str = "PUBLIC"):
+    async def connect(self, database: str = None, schema: str = "PUBLIC"):
         """Establish connection to Snowflake."""
+        # Set database from environment if not provided
+        if database is None:
+            database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+
         if self.is_real:
             return await self._real_client.connect(database, schema)
         else:
@@ -108,20 +115,22 @@ class SnowflakeClient:
                 query = f"{query.rstrip(';')} LIMIT {min(limit, 10000)}"
             
             # Ensure main table reference includes full schema
-            full_table_name = f'{self.database}.{self.schema}.TRANSACTIONS_ENRICHED'
-            if 'TRANSACTIONS_ENRICHED' in query_upper and full_table_name not in query_upper:
-                # Only replace if it's just TRANSACTIONS_ENRICHED without schema prefix
-                query = query.replace('TRANSACTIONS_ENRICHED', full_table_name)
+            table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+            full_table_name = f'{self.database}.{self.schema}.{table}'
+            if table in query_upper and full_table_name not in query_upper:
+                # Only replace if it's just table name without schema prefix
+                query = query.replace(table, full_table_name)
             
             return query
         
     def get_common_query(self, query_type: str, **params) -> str:
         """Get a pre-defined common query with parameters."""
-        if query_type not in COMMON_QUERIES:
-            available = ', '.join(COMMON_QUERIES.keys())
+        common_queries = get_common_queries()
+        if query_type not in common_queries:
+            available = ', '.join(common_queries.keys())
             raise ValueError(f"Unknown query type. Available: {available}")
-        
-        query = COMMON_QUERIES[query_type]
+
+        query = common_queries[query_type]
         
         # Replace parameters in query
         for key, value in params.items():

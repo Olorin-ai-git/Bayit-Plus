@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from decimal import Decimal
 import json
+import os
 from .client import SnowflakeClient
 
 class SnowflakeJSONEncoder(json.JSONEncoder):
@@ -57,8 +58,8 @@ class _SnowflakeQueryArgs(BaseModel):
         )
     )
     database: str = Field(
-        "FRAUD_ANALYTICS", 
-        description="The Snowflake database to query (default: FRAUD_ANALYTICS)."
+        default_factory=lambda: os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'),
+        description="The Snowflake database to query (configurable via SNOWFLAKE_DATABASE env var)."
     )
     db_schema: str = Field(
         "PUBLIC", 
@@ -156,17 +157,21 @@ class SnowflakeQueryTool(BaseTool):
         
         return corrected_query
     
-    def _run(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    def _run(self, query: str, database: str = None, db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Synchronous execution wrapper."""
         import asyncio
         return asyncio.run(self._arun(query, database, db_schema, limit))
     
-    async def _arun(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    async def _arun(self, query: str, database: str = None, db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
         """Async execution of the Snowflake query with comprehensive error logging."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret
         import time
-        
+
+        # Set database from environment if not provided
+        if database is None:
+            database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+
         # Get tool execution logger for detailed logging
         tool_logger = get_tool_execution_logger()
         

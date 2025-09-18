@@ -37,7 +37,7 @@ class RealSnowflakeClient:
         self.host = config.get('host', self.account)  # Host can be same as account
         self.user = config.get('user')
         self.password = config.get('password')
-        self.database = config.get('database', 'FRAUD_ANALYTICS')
+        self.database = config.get('database', os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'))
         self.schema = config.get('schema', 'PUBLIC')
         self.warehouse = config.get('warehouse', 'COMPUTE_WH')
         self.role = config.get('role')
@@ -233,7 +233,7 @@ class RealSnowflakeClient:
                 SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value,
                 MAX(MODEL_SCORE) as max_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count
-            FROM {self.database}.{self.schema}.TRANSACTIONS_ENRICHED
+            FROM {self.database}.{self.schema}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
             WHERE TX_DATETIME >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
                 AND {group_by} IS NOT NULL
             GROUP BY {group_by}

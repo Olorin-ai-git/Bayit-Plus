@@ -18,34 +18,74 @@ _secrets_cache: Dict[str, str] = {}
 @lru_cache(maxsize=100)
 def get_firebase_secret(secret_name: str) -> Optional[str]:
     """
-    Retrieve a secret from Firebase Secrets Manager ONLY.
-    
+    Retrieve a secret with priority order: .env first, then Firebase Secrets Manager.
+
     Args:
         secret_name: Name or path of the secret (e.g., 'APP_SECRET')
-        
+
     Returns:
         Secret value as string, or None if not found/error
-        
+
     Examples:
         secret = get_firebase_secret('APP_SECRET')
         db_password = get_firebase_secret('DATABASE_PASSWORD')
     """
-    # NO OVERRIDES ALLOWED - Firebase Secrets Manager is the ONLY source
-    # All secrets MUST come from Firebase, no environment variables, no local overrides
-        
+    # Priority order: .env file -> environment variables -> Firebase Secrets Manager
+
     # Check cache
     global _secrets_cache
     if secret_name in _secrets_cache:
         return _secrets_cache[secret_name]
-    
+
     try:
-        # Use Firebase CLI to retrieve secrets - this is the ONLY method allowed
-        # Firebase CLI ensures we're getting secrets from Firebase Functions secrets, not Google Cloud
+        # First: Check .env file
+        env_value = _get_secret_from_env_file(secret_name)
+        if env_value:
+            _secrets_cache[secret_name] = env_value
+            logger.info(f"Successfully retrieved secret '{secret_name}' from .env file")
+            return env_value
+
+        # Second: Check environment variables
+        env_var_value = os.getenv(secret_name)
+        if env_var_value:
+            _secrets_cache[secret_name] = env_var_value
+            logger.info(f"Successfully retrieved secret '{secret_name}' from environment variables")
+            return env_var_value
+
+        # Third: Fall back to Firebase CLI
         return _get_secret_via_firebase_cli_only(secret_name)
-        
+
     except Exception as e:
-        logger.error(f"Failed to retrieve secret '{secret_name}' from Firebase: {e}")
+        logger.error(f"Failed to retrieve secret '{secret_name}': {e}")
         return None
+
+
+def _get_secret_from_env_file(secret_name: str) -> Optional[str]:
+    """
+    Load secret from .env file in the current working directory.
+
+    Args:
+        secret_name: Name of the secret to load
+
+    Returns:
+        Secret value or None if not found
+    """
+    try:
+        env_file_path = os.path.join(os.getcwd(), '.env')
+        if os.path.exists(env_file_path):
+            with open(env_file_path, 'r') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        if key.strip() == secret_name:
+                            # Remove quotes if present
+                            value = value.strip().strip('"').strip("'")
+                            return value if value else None
+    except Exception as e:
+        logger.debug(f"Error reading .env file for secret '{secret_name}': {e}")
+
+    return None
 
 
 def _get_secret_via_firebase_cli_only(secret_name: str) -> Optional[str]:
@@ -156,6 +196,11 @@ SECRET_MAPPINGS = {
     'SNOWFLAKE_ACCOUNT': 'SNOWFLAKE_ACCOUNT',
     'SNOWFLAKE_USER': 'SNOWFLAKE_USER',
     'SNOWFLAKE_PASSWORD': 'SNOWFLAKE_PASSWORD',
+    'SNOWFLAKE_DATABASE': 'SNOWFLAKE_DATABASE',
+    'SNOWFLAKE_SCHEMA': 'SNOWFLAKE_SCHEMA',
+    'SNOWFLAKE_WAREHOUSE': 'SNOWFLAKE_WAREHOUSE',
+    'SNOWFLAKE_ROLE': 'SNOWFLAKE_ROLE',
+    'SNOWFLAKE_AUTHENTICATOR': 'SNOWFLAKE_AUTHENTICATOR',
     'SNOWFLAKE_PRIVATE_KEY': 'SNOWFLAKE_PRIVATE_KEY',
     
     # Databricks secrets

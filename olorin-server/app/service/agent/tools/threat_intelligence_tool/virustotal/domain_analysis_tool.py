@@ -2,6 +2,7 @@
 
 import ipaddress
 import json
+import os
 from app.service.agent.tools.async_helpers import safe_run_async
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -68,9 +69,15 @@ class DomainAnalysisInput(BaseModel):
                 async def get_email_domain():
                     client = SnowflakeClient()
                     await client.connect()
+
+                    # Get table configuration from environment
+                    database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+                    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+                    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
                     query = f"""
                     SELECT DISTINCT EMAIL
-                    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                    FROM {database}.{schema}.{table}
                     WHERE IP_ADDRESS = '{domain}'
                     LIMIT 1
                     """

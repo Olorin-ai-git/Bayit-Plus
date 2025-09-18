@@ -7,6 +7,7 @@ and retrieving structured business data for fraud investigations.
 
 import asyncio
 import json
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
@@ -23,8 +24,8 @@ class SnowflakeClient:
     Snowflake's cloud data platform for fraud investigation purposes.
     """
 
-    def __init__(self, account: str, username: str, password: str, 
-                 warehouse: str = "COMPUTE_WH", database: str = "FRAUD_ANALYTICS", 
+    def __init__(self, account: str, username: str, password: str,
+                 warehouse: str = "COMPUTE_WH", database: str = None,
                  schema: str = "PUBLIC"):
         """
         Initialize Snowflake client.
@@ -41,7 +42,7 @@ class SnowflakeClient:
         self.username = username
         self.password = password
         self.warehouse = warehouse
-        self.database = database
+        self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
         self.schema = schema
         self.connection = None
         self._executor = ThreadPoolExecutor(max_workers=1)

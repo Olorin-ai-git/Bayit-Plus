@@ -87,15 +87,20 @@ class RiskEntityInvestigator:
     ) -> Dict[str, Any]:
         """
         Fetch historical data for an entity from Snowflake.
-        
+
         Args:
             entity_value: The entity value (email, device_id, or ip_address)
             entity_type: Type of entity
             lookback_days: Days to look back for historical data
-            
+
         Returns:
             Historical data and patterns
         """
+        # Get table configuration from environment
+        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
         try:
             await self.snowflake_client.connect()
             
@@ -113,7 +118,7 @@ class RiskEntityInvestigator:
                     COUNT(DISTINCT IP_ADDRESS) as unique_ips,
                     COUNT(DISTINCT DEVICE_ID) as unique_devices,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 WHERE {entity_type} = '{entity_value}'
                     AND TX_DATETIME >= DATEADD(day, -{lookback_days}, CURRENT_TIMESTAMP())
                 GROUP BY tx_date
@@ -132,11 +137,11 @@ class RiskEntityInvestigator:
                 FROM historical_stats
             ),
             recent_activity AS (
-                SELECT 
+                SELECT
                     COUNT(*) as recent_24h_txns,
                     AVG(MODEL_SCORE) as recent_24h_risk,
                     SUM(PAID_AMOUNT_VALUE) as recent_24h_amount
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 WHERE {entity_type} = '{entity_value}'
                     AND TX_DATETIME >= DATEADD(hour, -24, CURRENT_TIMESTAMP())
             )

@@ -4,6 +4,7 @@ Maps IP addresses to their associated domains for threat intelligence.
 """
 
 import asyncio
+import os
 from typing import Optional, Dict, Any
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
@@ -36,20 +37,24 @@ class IPDomainMapper:
             await self.client.connect()
             
             # Query to find the most common email domain for this IP
+            database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+            schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+            table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
             query = f"""
             WITH ip_domains AS (
-                SELECT 
+                SELECT
                     IP_ADDRESS as ip,
                     EMAIL as email,
                     SUBSTRING(EMAIL, POSITION('@' IN EMAIL) + 1) as domain,
                     COUNT(*) as occurrence_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 WHERE IP_ADDRESS = '{ip_address}'
                     AND EMAIL IS NOT NULL
                     AND EMAIL LIKE '%@%'
                 GROUP BY IP_ADDRESS, EMAIL, domain
             )
-            SELECT 
+            SELECT
                 domain,
                 SUM(occurrence_count) as total_count
             FROM ip_domains

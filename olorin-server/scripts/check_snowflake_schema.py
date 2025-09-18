@@ -25,7 +25,7 @@ def main():
     account = os.getenv('SNOWFLAKE_ACCOUNT')
     user = os.getenv('SNOWFLAKE_USER')
     password = os.getenv('SNOWFLAKE_PASSWORD')
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
     schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
     warehouse = os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
     role = os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
@@ -47,19 +47,20 @@ def main():
         cursor = conn.cursor()
         
         # Get column information
-        query = """
+        table_name = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+        query = f"""
         SELECT column_name, data_type, is_nullable
-        FROM information_schema.columns 
-        WHERE table_name = 'TRANSACTIONS_ENRICHED' 
-        AND table_schema = 'PUBLIC'
-        AND table_catalog = 'FRAUD_ANALYTICS'
+        FROM information_schema.columns
+        WHERE table_name = '{table_name}'
+        AND table_schema = '{schema}'
+        AND table_catalog = '{database}'
         ORDER BY ordinal_position
         """
         
         cursor.execute(query)
         results = cursor.fetchall()
         
-        print("Columns in TRANSACTIONS_ENRICHED table:")
+        print(f"Columns in {table_name} table:")
         print("-" * 60)
         for col_name, data_type, nullable in results:
             print(f"  {col_name:<30} {data_type:<20} {'NULL' if nullable == 'YES' else 'NOT NULL'}")
