@@ -241,6 +241,110 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Comprehensive dependency check function
+check_dependencies_comprehensive() {
+    show_progress "Running comprehensive dependency validation"
+
+    local failed=false
+
+    # Check Poetry
+    if ! command_exists poetry; then
+        show_error "Poetry is not installed or not in PATH"
+        echo "   Install Poetry: https://python-poetry.org/docs/"
+        failed=true
+    else
+        show_success "Poetry is available"
+    fi
+
+    # Check Python
+    if ! command_exists python3; then
+        show_error "Python 3 is not installed or not in PATH"
+        failed=true
+    else
+        show_success "Python 3 is available"
+    fi
+
+    # Check Node.js and npm (for frontend development)
+    if ! command_exists node; then
+        show_warning "Node.js not found - needed for frontend development"
+    else
+        show_success "Node.js is available"
+    fi
+
+    if ! command_exists npm; then
+        show_warning "npm not found - needed for frontend dependencies"
+    else
+        show_success "npm is available"
+    fi
+
+    # Check Git
+    if ! command_exists git; then
+        show_error "Git is not installed or not in PATH"
+        failed=true
+    else
+        show_success "Git is available"
+    fi
+
+    # Check Poetry environment
+    cd "$BACKEND_ROOT"
+    if ! poetry env info >/dev/null 2>&1; then
+        show_error "Poetry environment not configured"
+        echo "   Run: poetry install"
+        failed=true
+    else
+        show_success "Poetry environment is configured"
+    fi
+
+    # Check investigation-critical Python packages
+    show_progress "Validating investigation-critical dependencies"
+
+    # Only the packages that are absolutely required for running investigations
+    local critical_packages=(
+        "fastapi"
+        "uvicorn"
+        "langchain"
+        "langchain_openai"
+        "openai"
+        "aiohttp"
+        "requests"
+        "pytest"
+        "structlog"
+    )
+
+    local missing_critical=()
+
+    # Quick check of critical packages
+    for package in "${critical_packages[@]}"; do
+        if ! poetry run python -c "import $package" 2>/dev/null; then
+            missing_critical+=("$package")
+        fi
+    done
+
+    if [[ ${#missing_critical[@]} -eq 0 ]]; then
+        show_success "All investigation-critical dependencies available"
+    else
+        show_error "Missing critical dependencies: ${missing_critical[*]}"
+        echo "   Run: poetry install"
+        failed=true
+    fi
+
+    if [[ "$failed" == "true" ]]; then
+        echo ""
+        show_error "Dependency validation failed"
+        echo ""
+        echo -e "${YELLOW}💡 To resolve dependencies:${NC}"
+        echo "   1. Install Poetry: curl -sSL https://install.python-poetry.org | python3 -"
+        echo "   2. Install dependencies: cd $BACKEND_ROOT && poetry install"
+        echo "   3. Install Node.js: https://nodejs.org/ (optional, for frontend)"
+        echo ""
+        return 1
+    else
+        echo ""
+        show_success "All dependencies validated successfully"
+        return 0
+    fi
+}
+
 # Validate environment
 validate_environment() {
     show_progress "Validating Olorin environment"
@@ -565,14 +669,6 @@ build_command_args() {
         cmd_args+=(--custom-prompt "$CUSTOM_PROMPT")
     fi
 
-    # Dependency check options
-    if [[ "$CHECK_DEPENDENCIES_ONLY" == "true" ]]; then
-        cmd_args+=(--check-dependencies-only)
-    fi
-
-    if [[ "$SKIP_DEPENDENCY_CHECK" == "true" ]]; then
-        cmd_args+=(--skip-dependency-check)
-    fi
 
     echo "${cmd_args[@]}"
 }
@@ -940,30 +1036,22 @@ main() {
 
     # Handle check-dependencies-only option early
     if [[ "$CHECK_DEPENDENCIES_ONLY" == "true" ]]; then
-        show_progress "Running dependency check only"
-        cd "$BACKEND_ROOT"
-        if poetry run python "$TEST_RUNNER_SCRIPT" --check-dependencies-only; then
-            show_success "Dependency check completed successfully"
+        if check_dependencies_comprehensive; then
             exit 0
         else
-            show_error "Dependency check failed"
             exit 1
         fi
     fi
 
     # Run dependency check by default unless explicitly skipped
     if [[ "$SKIP_DEPENDENCY_CHECK" != "true" ]]; then
-        show_progress "Validating dependencies before investigation"
-        cd "$BACKEND_ROOT"
-        if ! poetry run python "$TEST_RUNNER_SCRIPT" --check-dependencies-only; then
-            show_error "Dependency validation failed"
+        if ! check_dependencies_comprehensive; then
             echo ""
             echo -e "${YELLOW}💡 To skip dependency check (not recommended):${NC}"
             echo "   $0 $* --skip-dependency-check"
             echo ""
             exit 1
         fi
-        show_success "All dependencies validated successfully"
         echo ""
     else
         show_warning "Dependency check skipped - proceeding at your own risk"
