@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests/playwright',
+  testDir: './src/shared/testing/e2e',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -14,7 +14,11 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html', { outputFolder: 'playwright-report' }],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }]
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -28,6 +32,12 @@ export default defineConfig({
 
     /* Record video on failure */
     video: 'retain-on-failure',
+
+    /* Global timeout for each test action */
+    actionTimeout: 10000,
+
+    /* Navigation timeout */
+    navigationTimeout: 30000
   },
 
   /* Configure projects for major browsers */
@@ -35,37 +45,61 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/*.e2e.test.ts'
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      testMatch: '**/*.e2e.test.ts'
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      testMatch: '**/*.e2e.test.ts'
     },
 
     /* Test against mobile viewports. */
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
+      testMatch: '**/investigation-creation.e2e.test.ts' // Selected tests for mobile
     },
     {
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
+      testMatch: '**/investigation-creation.e2e.test.ts' // Selected tests for mobile
     },
 
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    /* Tablet testing */
+    {
+      name: 'iPad',
+      use: { ...devices['iPad Pro'] },
+      testMatch: '**/real-time-monitoring.e2e.test.ts' // Selected tests for tablet
+    },
+
+    /* Performance testing project */
+    {
+      name: 'performance',
+      use: {
+        ...devices['Desktop Chrome'],
+        video: 'off',
+        screenshot: 'off'
+      },
+      testMatch: '**/*performance*.e2e.test.ts',
+      timeout: 60000
+    },
+
+    /* Visual regression testing project */
+    {
+      name: 'visual-regression',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }
+      },
+      testMatch: '**/*visual*.e2e.test.ts'
+    }
   ],
 
   /* Run your local dev server before starting the tests */
@@ -76,9 +110,25 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
 
-  /* Microservices configuration for testing */
-  globalSetup: require.resolve('./tests/playwright/global-setup.ts'),
-  globalTeardown: require.resolve('./tests/playwright/global-teardown.ts'),
+  /* Output directory for test artifacts */
+  outputDir: 'test-results/',
+
+  /* Test metadata */
+  metadata: {
+    'Test Suite': 'Olorin Microservices E2E Tests',
+    'Version': '1.0.0',
+    'Environment': process.env.NODE_ENV || 'development',
+    'Services': [
+      'autonomous-investigation',
+      'manual-investigation',
+      'agent-analytics',
+      'rag-intelligence',
+      'visualization',
+      'reporting',
+      'core-ui',
+      'design-system'
+    ]
+  },
 
   /* Test timeout */
   timeout: 30 * 1000,
