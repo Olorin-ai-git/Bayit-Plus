@@ -298,7 +298,7 @@ interface DesignSystemContextType {
 const DesignSystemContext = createContext<DesignSystemContextType | undefined>(undefined);
 
 // Hook to use design system
-export const useDesignSystem = () => {
+const useDesignSystem = () => {
   const context = useContext(DesignSystemContext);
   if (!context) {
     throw new Error('useDesignSystem must be used within a DesignSystemProvider');

@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { EventBus } from '@shared/events/EventBus';
+import { EventBusManager, eventBus } from '@shared/events/EventBus';
+import './globals';
 import { ServiceDiscovery } from './services/ServiceDiscovery';
 import { ServiceHealthMonitor } from './services/ServiceHealthMonitor';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
@@ -42,8 +43,9 @@ const App: React.FC = () => {
   const initializeShell = async () => {
     try {
       // Initialize event bus
-      const eventBus = new EventBus();
+      const eventBusManager = new EventBusManager();
       window.olorin.eventBus = eventBus;
+      window.olorin.eventBusManager = eventBusManager;
 
       // Initialize service discovery
       const serviceDiscovery = new ServiceDiscovery();

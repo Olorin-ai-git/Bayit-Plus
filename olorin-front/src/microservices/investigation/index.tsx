@@ -1,67 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import InvestigationApp from './InvestigationApp';
+import './styles/tailwind.css';
 
-// Service-specific imports based on environment variable
-const serviceName = process.env.SERVICE_NAME || 'shell';
-
-// Initialize the microservice based on SERVICE_NAME environment variable
-const initializeMicroservice = async () => {
-  console.log(`[Bootstrap] Initializing ${serviceName} microservice...`);
+// Initialize the Investigation Service
+const initializeInvestigationService = async () => {
+  console.log('[Investigation] Initializing Investigation microservice...');
 
   try {
-    let App: React.ComponentType;
-
-    switch (serviceName) {
-      case 'investigation':
-        const { default: InvestigationApp } = await import('./microservices/investigation/InvestigationApp');
-        App = InvestigationApp;
-        break;
-
-      case 'agentAnalytics':
-        const { default: AgentAnalyticsApp } = await import('./microservices/agent-analytics/AgentAnalyticsApp');
-        App = AgentAnalyticsApp;
-        break;
-
-      case 'ragIntelligence':
-        const { default: RagIntelligenceApp } = await import('./microservices/rag-intelligence/RagIntelligenceApp');
-        App = RagIntelligenceApp;
-        break;
-
-      case 'visualization':
-        const { default: VisualizationApp } = await import('./microservices/visualization/VisualizationApp');
-        App = VisualizationApp;
-        break;
-
-      case 'reporting':
-        const { default: ReportingApp } = await import('./microservices/reporting/ReportingApp');
-        App = ReportingApp;
-        break;
-
-      case 'coreUi':
-        const { default: CoreUiApp } = await import('./microservices/core-ui/CoreUiApp');
-        App = CoreUiApp;
-        break;
-
-      case 'designSystem':
-        const { default: DesignSystemApp } = await import('./microservices/design-system/DesignSystemApp');
-        App = DesignSystemApp;
-        break;
-
-      case 'autonomousInvestigation':
-        const { default: AutonomousInvestigationApp } = await import('./microservices/autonomous-investigation/AutonomousInvestigationApp');
-        App = AutonomousInvestigationApp;
-        break;
-
-      case 'manualInvestigation':
-        const { default: ManualInvestigationApp } = await import('./microservices/manual-investigation/App');
-        App = ManualInvestigationApp;
-        break;
-
-      default:
-        throw new Error(`Unknown service: ${serviceName}`);
-    }
-
     // Create root element
     const rootElement = document.getElementById('root');
     if (!rootElement) {
@@ -70,24 +17,24 @@ const initializeMicroservice = async () => {
 
     const root = ReactDOM.createRoot(rootElement);
 
-    // Render the microservice app
+    // Render the Investigation service app
     root.render(
       <React.StrictMode>
         <BrowserRouter>
-          <App />
+          <InvestigationApp />
         </BrowserRouter>
       </React.StrictMode>
     );
 
-    console.log(`[Bootstrap] ${serviceName} microservice initialized successfully`);
+    console.log('[Investigation] Investigation microservice initialized successfully');
 
     // Register service as ready
     if (window.olorin?.eventBus) {
-      window.olorin.eventBus.emit('service:ready', { service: serviceName });
+      window.olorin.eventBus.emit('service:ready', { service: 'investigation' });
     }
 
   } catch (error) {
-    console.error(`[Bootstrap] Failed to initialize ${serviceName} microservice:`, error);
+    console.error('[Investigation] Failed to initialize Investigation microservice:', error);
 
     // Show error UI
     const rootElement = document.getElementById('root');
@@ -125,10 +72,10 @@ const initializeMicroservice = async () => {
               </svg>
             </div>
             <h1 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">
-              Service Initialization Error
+              Investigation Service Error
             </h1>
             <p style="color: #6b7280; margin-bottom: 1rem;">
-              Failed to initialize ${serviceName} microservice. Please check the console for details.
+              Failed to initialize Investigation microservice. Please check the console for details.
             </p>
             <button
               onclick="window.location.reload()"
@@ -160,14 +107,6 @@ const initializeMicroservice = async () => {
       `;
     }
 
-    // Emit service error event
-    if (window.olorin?.eventBus) {
-      window.olorin.eventBus.emit('service:error', {
-        service: serviceName,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-
     throw error;
   }
 };
@@ -190,7 +129,7 @@ if (!window.olorin) {
   // Service registration helper
   window.olorin.registerService = (name: string, service: any) => {
     window.olorin.services[name] = service;
-    console.log(`[Bootstrap] Registered service: ${name}`);
+    console.log(`[Investigation] Registered service: ${name}`);
   };
 
   // Get service helper
@@ -199,10 +138,10 @@ if (!window.olorin) {
   };
 }
 
-// Start the microservice
-initializeMicroservice().catch(error => {
-  console.error('[Bootstrap] Critical initialization error:', error);
+// Start the Investigation microservice
+initializeInvestigationService().catch(error => {
+  console.error('[Investigation] Critical initialization error:', error);
 });
 
 // Export for Module Federation
-export { initializeMicroservice };
+export { initializeInvestigationService };

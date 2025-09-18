@@ -12,16 +12,16 @@ import './styles/tailwind.css';
 
 // Lazy load microservices
 const AutonomousInvestigationApp = React.lazy(() =>
-  import('autonomous-investigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
+  import('autonomousInvestigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
 );
 const ManualInvestigationApp = React.lazy(() =>
-  import('manual-investigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
+  import('manualInvestigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
 );
 const AgentAnalyticsApp = React.lazy(() =>
-  import('agent-analytics/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
+  import('agentAnalytics/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
 );
 const RAGIntelligenceApp = React.lazy(() =>
-  import('rag-intelligence/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
+  import('ragIntelligence/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
 );
 const VisualizationApp = React.lazy(() =>
   import('visualization/App').catch(() => ({ default: () => <div>Service unavailable</div> }))

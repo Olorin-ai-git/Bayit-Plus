@@ -20,6 +20,8 @@ const microservices = {
       ragIntelligence: 'ragIntelligence@http://localhost:3003/remoteEntry.js',
       visualization: 'visualization@http://localhost:3004/remoteEntry.js',
       reporting: 'reporting@http://localhost:3005/remoteEntry.js',
+      autonomousInvestigation: 'autonomousInvestigation@http://localhost:3008/remoteEntry.js',
+      manualInvestigation: 'manualInvestigation@http://localhost:3009/remoteEntry.js',
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
   },
@@ -27,6 +29,7 @@ const microservices = {
     name: 'investigation',
     port: 3001,
     exposes: {
+      './App': './src/microservices/investigation/InvestigationApp.tsx',
       './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard.tsx',
       './AutonomousInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
       './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
@@ -44,6 +47,7 @@ const microservices = {
     name: 'agentAnalytics',
     port: 3002,
     exposes: {
+      './App': './src/microservices/agent-analytics/AgentAnalyticsApp.tsx',
       './AgentAnalyticsDashboard': './src/microservices/agent-analytics/components/AgentAnalyticsDashboard.tsx',
       './PerformanceMetrics': './src/microservices/agent-analytics/components/PerformanceMetrics.tsx',
       './ModelAnalytics': './src/microservices/agent-analytics/components/ModelAnalytics.tsx',
@@ -60,6 +64,7 @@ const microservices = {
     name: 'ragIntelligence',
     port: 3003,
     exposes: {
+      './App': './src/microservices/rag-intelligence/RagIntelligenceApp.tsx',
       './KnowledgeBase': './src/microservices/rag-intelligence/components/KnowledgeBase.tsx',
       './DocumentRetrieval': './src/microservices/rag-intelligence/components/DocumentRetrieval.tsx',
       './IntelligentSearch': './src/microservices/rag-intelligence/components/IntelligentSearch.tsx',
@@ -121,6 +126,28 @@ const microservices = {
       './DesignTokens': './src/microservices/design-system/types/design.ts'
     },
     remotes: {}
+  },
+  autonomousInvestigation: {
+    name: 'autonomousInvestigation',
+    port: 3008,
+    exposes: {
+      './App': './src/microservices/autonomous-investigation/App.tsx'
+    },
+    remotes: {
+      coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
+    }
+  },
+  manualInvestigation: {
+    name: 'manualInvestigation',
+    port: 3009,
+    exposes: {
+      './App': './src/microservices/manual-investigation/App.tsx'
+    },
+    remotes: {
+      coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
+    }
   }
 };
 
@@ -131,6 +158,34 @@ const serviceConfig = microservices[currentService];
 if (!serviceConfig) {
   throw new Error(`Unknown service: ${currentService}`);
 }
+
+// Get entry point for each service
+const getEntryPoint = (service) => {
+  switch (service) {
+    case 'shell':
+      return './src/shell/index.tsx';
+    case 'investigation':
+      return './src/microservices/investigation/index.tsx';
+    case 'agentAnalytics':
+      return './src/microservices/agent-analytics/index.tsx';
+    case 'ragIntelligence':
+      return './src/microservices/rag-intelligence/index.tsx';
+    case 'visualization':
+      return './src/microservices/visualization/index.tsx';
+    case 'reporting':
+      return './src/microservices/reporting/index.tsx';
+    case 'coreUi':
+      return './src/microservices/core-ui/index.tsx';
+    case 'designSystem':
+      return './src/microservices/design-system/index.tsx';
+    case 'autonomousInvestigation':
+      return './src/microservices/autonomous-investigation/index.tsx';
+    case 'manualInvestigation':
+      return './src/microservices/manual-investigation/index.tsx';
+    default:
+      return './src/bootstrap.tsx';
+  }
+};
 
 // Shared dependencies configuration
 const sharedDependencies = {
@@ -181,9 +236,7 @@ module.exports = (env, argv) => {
   return {
     mode: isDevelopment ? 'development' : 'production',
 
-    entry: currentService === 'shell'
-      ? './src/shell/index.tsx'
-      : './src/bootstrap.tsx',
+    entry: getEntryPoint(currentService),
 
     devtool: isDevelopment ? 'eval-source-map' : 'source-map',
 
