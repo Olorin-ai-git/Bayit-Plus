@@ -27,6 +27,10 @@
     "mitt": "3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "chart.js": "^4.2.1",
+    "react-chartjs-2": "^5.2.0",
+    "date-fns": "^2.29.3",
+    "html2canvas": "^1.4.1",
     "react-icons": "5.5.0",
     "react-router-dom": "^6.11.0",
     "react-scripts": "5.0.1",
@@ -36,8 +40,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "npm run start:shell",
+    "build": "npm run build:all",
     "build:staging": "NODE_ENV=production REACT_APP_ENV=staging npm run build",
     "build:production": "NODE_ENV=production REACT_APP_ENV=production npm run build",
     "build:optimized": "NODE_ENV=production npm run build:clean && npm run build:analyze",
@@ -47,6 +51,9 @@
     "test": "react-app-rewired test",
     "test:coverage": "react-app-rewired test --coverage --watchAll=false",
     "test:ci": "CI=true npm run test:coverage",
+    "test:integration": "jest --config src/shared/testing/integration/jest.integration.config.js",
+    "test:integration:watch": "jest --config src/shared/testing/integration/jest.integration.config.js --watch",
+    "test:integration:coverage": "jest --config src/shared/testing/integration/jest.integration.config.js --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint src tests --ext .ts,.tsx --max-warnings 0",
     "lint:fix": "eslint src tests --ext .ts,.tsx --fix",
@@ -102,7 +109,48 @@
     "api:contracts": "node scripts/api/contract-validator.js",
     "api:health": "curl -f http://localhost:8090/api/health || echo 'Backend not available'",
     "api:auth": "node -e \"fetch('http://localhost:8090/api/auth/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: 'test', password: 'test'})}).then(r=>r.json()).then(console.log)\"",
-    "api:all": "npm run api:health && npm run api:test && npm run api:contracts"
+    "api:all": "npm run api:health && npm run api:test && npm run api:contracts",
+
+    "start:shell": "SERVICE=shell webpack serve --mode development",
+    "start:investigation": "SERVICE=investigation webpack serve --mode development",
+    "start:agent-analytics": "SERVICE=agentAnalytics webpack serve --mode development",
+    "start:rag-intelligence": "SERVICE=ragIntelligence webpack serve --mode development",
+    "start:visualization": "SERVICE=visualization webpack serve --mode development",
+    "start:reporting": "SERVICE=reporting webpack serve --mode development",
+    "start:core-ui": "SERVICE=coreUi webpack serve --mode development",
+    "start:design-system": "SERVICE=designSystem webpack serve --mode development",
+
+    "dev:all": "concurrently \"npm run start:shell\" \"npm run start:investigation\" \"npm run start:agent-analytics\" \"npm run start:rag-intelligence\" \"npm run start:visualization\" \"npm run start:reporting\" \"npm run start:core-ui\" \"npm run start:design-system\"",
+    "dev:core": "concurrently \"npm run start:shell\" \"npm run start:core-ui\" \"npm run start:design-system\"",
+    "dev:services": "concurrently \"npm run start:investigation\" \"npm run start:agent-analytics\" \"npm run start:rag-intelligence\" \"npm run start:visualization\" \"npm run start:reporting\"",
+
+    "build:shell": "SERVICE=shell webpack --mode production",
+    "build:investigation": "SERVICE=investigation webpack --mode production",
+    "build:agent-analytics": "SERVICE=agentAnalytics webpack --mode production",
+    "build:rag-intelligence": "SERVICE=ragIntelligence webpack --mode production",
+    "build:visualization": "SERVICE=visualization webpack --mode production",
+    "build:reporting": "SERVICE=reporting webpack --mode production",
+    "build:core-ui": "SERVICE=coreUi webpack --mode production",
+    "build:design-system": "SERVICE=designSystem webpack --mode production",
+    "build:all": "npm run build:design-system && npm run build:core-ui && npm run build:investigation && npm run build:agent-analytics && npm run build:rag-intelligence && npm run build:visualization && npm run build:reporting && npm run build:shell",
+
+    "test:shell": "SERVICE=shell npm run test",
+    "test:investigation": "SERVICE=investigation npm run test",
+    "test:agent-analytics": "SERVICE=agentAnalytics npm run test",
+    "test:rag-intelligence": "SERVICE=ragIntelligence npm run test",
+    "test:visualization": "SERVICE=visualization npm run test",
+    "test:reporting": "SERVICE=reporting npm run test",
+    "test:core-ui": "SERVICE=coreUi npm run test",
+    "test:design-system": "SERVICE=designSystem npm run test",
+    "test:all-services": "npm run test:design-system && npm run test:core-ui && npm run test:investigation && npm run test:agent-analytics && npm run test:rag-intelligence && npm run test:visualization && npm run test:reporting && npm run test:shell",
+
+    "clean:dist": "rm -rf dist",
+    "clean:node_modules": "rm -rf node_modules && npm install",
+    "clean:all": "npm run clean:dist && npm run clean:node_modules",
+
+    "docker:build": "docker build -t olorin-frontend .",
+    "docker:run": "docker run -p 3000:3000 olorin-frontend",
+    "docker:dev": "docker-compose up --build"
   },
   "jest": {
     "testMatch": [
@@ -168,7 +216,16 @@
     "webpack": "5.101.3",
     "webpack-bundle-analyzer": "^4.9.0",
     "webpack-cli": "6.0.1",
-    "workbox-webpack-plugin": "^6.6.0"
+    "workbox-webpack-plugin": "^6.6.0",
+    "@module-federation/webpack": "^0.0.1-alpha.17",
+    "concurrently": "^7.6.0",
+    "ts-loader": "^9.4.2",
+    "tsconfig-paths-webpack-plugin": "^4.0.1",
+    "clean-webpack-plugin": "^4.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.2",
+    "css-loader": "^6.7.3",
+    "postcss-loader": "^7.1.0"
   },
   "engines": {
     "node": ">=18.0.0",
