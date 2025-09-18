@@ -12,11 +12,16 @@ import {
   ExclamationTriangleIcon,
   DocumentTextIcon,
   ChartBarIcon,
-  CogIcon
+  CogIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import { Investigation, AgentProgress, InvestigationEvent } from '../types/investigation';
 import { useInvestigationWorkflow } from '../hooks/useInvestigationWorkflow';
 import { LoadingSpinner } from '../../core-ui/components/LoadingSpinner';
+import { ProgressMonitor } from './ProgressMonitor';
+import { ResultsVisualization } from './ResultsVisualization';
+import { ExportReporting } from './ExportReporting';
+import { useExportReporting } from '../hooks/useExportReporting';
 
 interface InvestigationDetailsProps {
   investigations: Investigation[];
@@ -39,28 +44,385 @@ export const InvestigationDetails: React.FC<InvestigationDetailsProps> = ({
 }) => {
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'timeline' | 'results'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'progress' | 'agents' | 'timeline' | 'results' | 'export'>('overview');
 
   const { getInvestigationEvents } = useInvestigationWorkflow();
+  const { exportInvestigation } = useExportReporting();
 
   const investigation = investigations.find(inv => inv.id === id);
   const events = id ? getInvestigationEvents(id) : [];
 
   if (!investigation) {
     return (
-      <div className=\"p-6\">\n        <div className=\"text-center py-12\">\n          <ExclamationTriangleIcon className=\"h-12 w-12 text-gray-400 mx-auto mb-4\" />\n          <h3 className=\"text-lg font-medium text-gray-900 mb-2\">Investigation Not Found</h3>\n          <p className=\"text-gray-600 mb-4\">The investigation you're looking for doesn't exist or has been deleted.</p>\n          <button\n            onClick={onBack}\n            className=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700\"\n          >\n            <ArrowLeftIcon className=\"h-4 w-4 mr-2\" />\n            Back to Dashboard\n          </button>\n        </div>\n      </div>\n    );\n  }
+      <div className="p-6">
+        <div className="text-center py-12">
+          <ExclamationTriangleIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Investigation Not Found</h3>
+          <p className="text-gray-600 mb-4">The investigation you're looking for doesn't exist or has been deleted.</p>
+          <button
+            onClick={onBack}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  const handleAction = async (action: () => Promise<void>) => {\n    setIsLoading(true);\n    try {\n      await action();\n    } catch (error) {\n      console.error('Action failed:', error);\n    } finally {\n      setIsLoading(false);\n    }\n  };
+  const handleAction = async (action: () => Promise<void>) => {
+    setIsLoading(true);
+    try {
+      await action();
+    } catch (error) {
+      console.error('Action failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const getStatusIcon = (status: string) => {\n    switch (status) {\n      case 'running':\n        return <PlayIcon className=\"h-5 w-5 text-blue-500\" />;\n      case 'completed':\n        return <CheckCircleIcon className=\"h-5 w-5 text-green-500\" />;\n      case 'failed':\n        return <XCircleIcon className=\"h-5 w-5 text-red-500\" />;\n      case 'paused':\n        return <PauseIcon className=\"h-5 w-5 text-yellow-500\" />;\n      case 'stopped':\n        return <StopIcon className=\"h-5 w-5 text-gray-500\" />;\n      default:\n        return <ClockIcon className=\"h-5 w-5 text-gray-500\" />;\n    }\n  };
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'running':
+        return <PlayIcon className="h-5 w-5 text-blue-500" />;
+      case 'completed':
+        return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
+      case 'failed':
+        return <XCircleIcon className="h-5 w-5 text-red-500" />;
+      case 'paused':
+        return <PauseIcon className="h-5 w-5 text-yellow-500" />;
+      case 'stopped':
+        return <StopIcon className="h-5 w-5 text-gray-500" />;
+      default:
+        return <ClockIcon className="h-5 w-5 text-gray-500" />;
+    }
+  };
 
-  const getStatusColor = (status: string) => {\n    switch (status) {\n      case 'running': return 'bg-blue-100 text-blue-800';\n      case 'completed': return 'bg-green-100 text-green-800';\n      case 'failed': return 'bg-red-100 text-red-800';\n      case 'paused': return 'bg-yellow-100 text-yellow-800';\n      case 'stopped': return 'bg-gray-100 text-gray-800';\n      default: return 'bg-gray-100 text-gray-800';\n    }\n  };
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'running': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      case 'paused': return 'bg-yellow-100 text-yellow-800';
+      case 'stopped': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  const canStart = investigation.status === 'pending' || investigation.status === 'stopped';\n  const canPause = investigation.status === 'running';\n  const canResume = investigation.status === 'paused';\n  const canStop = investigation.status === 'running' || investigation.status === 'paused';\n  const canDelete = investigation.status !== 'running';
+  const canStart = investigation.status === 'pending' || investigation.status === 'stopped';
+  const canPause = investigation.status === 'running';
+  const canResume = investigation.status === 'paused';
+  const canStop = investigation.status === 'running' || investigation.status === 'paused';
+  const canDelete = investigation.status !== 'running';
 
-  const formatDate = (dateString: string) => {\n    return new Date(dateString).toLocaleString();\n  };
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
 
-  const formatDuration = (startDate: string, endDate?: string) => {\n    const start = new Date(startDate).getTime();\n    const end = endDate ? new Date(endDate).getTime() : Date.now();\n    const duration = Math.round((end - start) / 1000 / 60); // minutes\n    \n    if (duration < 60) return `${duration}m`;\n    const hours = Math.floor(duration / 60);\n    const minutes = duration % 60;\n    return `${hours}h ${minutes}m`;\n  };
+  const formatDuration = (startDate: string, endDate?: string) => {
+    const start = new Date(startDate).getTime();
+    const end = endDate ? new Date(endDate).getTime() : Date.now();
+    const duration = Math.round((end - start) / 1000 / 60); // minutes
+
+    if (duration < 60) return `${duration}m`;
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
-    <div className=\"p-6 space-y-6\">\n      {/* Header */}\n      <div className=\"flex items-center justify-between\">\n        <div className=\"flex items-center space-x-4\">\n          <button\n            onClick={onBack}\n            className=\"inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50\"\n          >\n            <ArrowLeftIcon className=\"h-4 w-4 mr-2\" />\n            Back\n          </button>\n          <div>\n            <h1 className=\"text-2xl font-bold text-gray-900\">{investigation.title}</h1>\n            <div className=\"flex items-center space-x-4 mt-1\">\n              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(investigation.status)}`}>\n                {getStatusIcon(investigation.status)}\n                <span className=\"ml-1\">{investigation.status.toUpperCase()}</span>\n              </span>\n              <span className=\"text-sm text-gray-500\">ID: {investigation.id}</span>\n              <span className=\"text-sm text-gray-500\">\n                Created {formatDate(investigation.createdAt)}\n              </span>\n            </div>\n          </div>\n        </div>\n        \n        <div className=\"flex items-center space-x-2\">\n          {canStart && (\n            <button\n              onClick={() => handleAction(() => onStartInvestigation(investigation.id))}\n              disabled={isLoading}\n              className=\"inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50\"\n            >\n              <PlayIcon className=\"h-4 w-4 mr-2\" />\n              Start\n            </button>\n          )}\n          {canPause && (\n            <button\n              onClick={() => handleAction(() => onPauseInvestigation(investigation.id))}\n              disabled={isLoading}\n              className=\"inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50\"\n            >\n              <PauseIcon className=\"h-4 w-4 mr-2\" />\n              Pause\n            </button>\n          )}\n          {canResume && (\n            <button\n              onClick={() => handleAction(() => onResumeInvestigation(investigation.id))}\n              disabled={isLoading}\n              className=\"inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50\"\n            >\n              <PlayIcon className=\"h-4 w-4 mr-2\" />\n              Resume\n            </button>\n          )}\n          {canStop && (\n            <button\n              onClick={() => handleAction(() => onStopInvestigation(investigation.id))}\n              disabled={isLoading}\n              className=\"inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50\"\n            >\n              <StopIcon className=\"h-4 w-4 mr-2\" />\n              Stop\n            </button>\n          )}\n          {canDelete && (\n            <button\n              onClick={() => handleAction(() => onDeleteInvestigation(investigation.id))}\n              disabled={isLoading}\n              className=\"inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50\"\n            >\n              <TrashIcon className=\"h-4 w-4 mr-2\" />\n              Delete\n            </button>\n          )}\n        </div>\n      </div>\n\n      {/* Progress Bar */}\n      {investigation.status === 'running' && (\n        <div className=\"bg-white rounded-lg border border-gray-200 p-4\">\n          <div className=\"flex items-center justify-between mb-2\">\n            <span className=\"text-sm font-medium text-gray-700\">Overall Progress</span>\n            <span className=\"text-sm text-gray-500\">{investigation.progress.overall}%</span>\n          </div>\n          <div className=\"w-full bg-gray-200 rounded-full h-2\">\n            <div\n              className=\"bg-blue-600 h-2 rounded-full transition-all duration-300\"\n              style={{ width: `${investigation.progress.overall}%` }}\n            />\n          </div>\n        </div>\n      )}\n\n      {/* Tabs */}\n      <div className=\"border-b border-gray-200\">\n        <nav className=\"-mb-px flex space-x-8\">\n          {[{\n            key: 'overview',\n            label: 'Overview',\n            icon: DocumentTextIcon\n          }, {\n            key: 'agents',\n            label: 'Agents',\n            icon: CogIcon\n          }, {\n            key: 'timeline',\n            label: 'Timeline',\n            icon: ClockIcon\n          }, {\n            key: 'results',\n            label: 'Results',\n            icon: ChartBarIcon\n          }].map(tab => {\n            const isActive = activeTab === tab.key;\n            return (\n              <button\n                key={tab.key}\n                onClick={() => setActiveTab(tab.key as any)}\n                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${\n                  isActive\n                    ? 'border-blue-500 text-blue-600'\n                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'\n                }`}\n              >\n                <tab.icon className=\"h-4 w-4 mr-2\" />\n                {tab.label}\n              </button>\n            );\n          })}\n        </nav>\n      </div>\n\n      {/* Tab Content */}\n      <div className=\"space-y-6\">\n        {activeTab === 'overview' && (\n          <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-6\">\n            {/* Investigation Info */}\n            <div className=\"bg-white rounded-lg border border-gray-200 p-6\">\n              <h3 className=\"text-lg font-medium text-gray-900 mb-4\">Investigation Details</h3>\n              <dl className=\"space-y-3\">\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Description</dt>\n                  <dd className=\"text-sm text-gray-900\">{investigation.description}</dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Priority</dt>\n                  <dd className=\"text-sm text-gray-900 capitalize\">{investigation.priority}</dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Created By</dt>\n                  <dd className=\"text-sm text-gray-900\">{investigation.createdBy}</dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Duration</dt>\n                  <dd className=\"text-sm text-gray-900\">\n                    {investigation.startedAt && formatDuration(investigation.startedAt, investigation.completedAt)}\n                  </dd>\n                </div>\n              </dl>\n            </div>\n\n            {/* Configuration */}\n            <div className=\"bg-white rounded-lg border border-gray-200 p-6\">\n              <h3 className=\"text-lg font-medium text-gray-900 mb-4\">Configuration</h3>\n              <dl className=\"space-y-3\">\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Assigned Agents</dt>\n                  <dd className=\"text-sm text-gray-900\">{investigation.assignedAgents.length} agents</dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Parallel Execution</dt>\n                  <dd className=\"text-sm text-gray-900\">\n                    {investigation.configuration.parameters.parallelAgents ? 'Yes' : 'No'}\n                  </dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Time Range</dt>\n                  <dd className=\"text-sm text-gray-900\">\n                    {investigation.configuration.parameters.timeRange || 'Not specified'}\n                  </dd>\n                </div>\n                <div>\n                  <dt className=\"text-sm font-medium text-gray-500\">Threshold</dt>\n                  <dd className=\"text-sm text-gray-900\">\n                    {investigation.configuration.parameters.threshold || 'Not specified'}\n                  </dd>\n                </div>\n              </dl>\n            </div>\n          </div>\n        )}\n\n        {activeTab === 'agents' && (\n          <div className=\"bg-white rounded-lg border border-gray-200\">\n            <div className=\"px-6 py-4 border-b border-gray-200\">\n              <h3 className=\"text-lg font-medium text-gray-900\">Agent Progress</h3>\n            </div>\n            <div className=\"p-6\">\n              <div className=\"space-y-4\">\n                {investigation.progress.agents.map((agent, index) => (\n                  <div key={agent.agentId} className=\"border border-gray-200 rounded-lg p-4\">\n                    <div className=\"flex items-center justify-between mb-2\">\n                      <div className=\"flex items-center space-x-3\">\n                        {getStatusIcon(agent.status)}\n                        <span className=\"font-medium text-gray-900\">{agent.agentId}</span>\n                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>\n                          {agent.status.toUpperCase()}\n                        </span>\n                      </div>\n                      <span className=\"text-sm text-gray-500\">{agent.progress}%</span>\n                    </div>\n                    <p className=\"text-sm text-gray-600 mb-3\">{agent.message}</p>\n                    <div className=\"w-full bg-gray-200 rounded-full h-2\">\n                      <div\n                        className=\"bg-blue-600 h-2 rounded-full transition-all duration-300\"\n                        style={{ width: `${agent.progress}%` }}\n                      />\n                    </div>\n                    {agent.error && (\n                      <div className=\"mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600\">\n                        Error: {agent.error}\n                      </div>\n                    )}\n                  </div>\n                ))}\n              </div>\n            </div>\n          </div>\n        )}\n\n        {activeTab === 'timeline' && (\n          <div className=\"bg-white rounded-lg border border-gray-200\">\n            <div className=\"px-6 py-4 border-b border-gray-200\">\n              <h3 className=\"text-lg font-medium text-gray-900\">Investigation Timeline</h3>\n            </div>\n            <div className=\"p-6\">\n              {events.length > 0 ? (\n                <div className=\"space-y-4\">\n                  {events.map((event, index) => (\n                    <div key={event.id} className=\"flex items-start space-x-3\">\n                      <div className=\"flex-shrink-0\">\n                        <div className=\"w-2 h-2 bg-blue-600 rounded-full mt-2\"></div>\n                      </div>\n                      <div className=\"flex-1\">\n                        <p className=\"text-sm text-gray-900\">{event.description}</p>\n                        <p className=\"text-xs text-gray-500 mt-1\">\n                          {formatDate(event.timestamp)} • {event.actor}\n                        </p>\n                      </div>\n                    </div>\n                  ))}\n                </div>\n              ) : (\n                <p className=\"text-gray-500 text-center py-4\">No timeline events available</p>\n              )}\n            </div>\n          </div>\n        )}\n\n        {activeTab === 'results' && (\n          <div className=\"bg-white rounded-lg border border-gray-200\">\n            <div className=\"px-6 py-4 border-b border-gray-200\">\n              <h3 className=\"text-lg font-medium text-gray-900\">Investigation Results</h3>\n            </div>\n            <div className=\"p-6\">\n              {investigation.results ? (\n                <div className=\"space-y-6\">\n                  <div>\n                    <h4 className=\"text-sm font-medium text-gray-500 mb-2\">Summary</h4>\n                    <p className=\"text-sm text-gray-900\">{investigation.results.summary}</p>\n                  </div>\n                  \n                  <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">\n                    <div>\n                      <h4 className=\"text-sm font-medium text-gray-500 mb-2\">Risk Score</h4>\n                      <div className=\"text-2xl font-bold text-red-600\">\n                        {Math.round(investigation.results.riskScore * 100)}%\n                      </div>\n                    </div>\n                    <div>\n                      <h4 className=\"text-sm font-medium text-gray-500 mb-2\">Confidence</h4>\n                      <div className=\"text-2xl font-bold text-blue-600\">\n                        {Math.round(investigation.results.confidence * 100)}%\n                      </div>\n                    </div>\n                  </div>\n\n                  <div>\n                    <h4 className=\"text-sm font-medium text-gray-500 mb-2\">Key Findings</h4>\n                    <ul className=\"space-y-1\">\n                      {investigation.results.findings.map((finding, index) => (\n                        <li key={index} className=\"text-sm text-gray-900 flex items-center\">\n                          <span className=\"w-1.5 h-1.5 bg-red-600 rounded-full mr-2\"></span>\n                          {finding}\n                        </li>\n                      ))}\n                    </ul>\n                  </div>\n\n                  <div>\n                    <h4 className=\"text-sm font-medium text-gray-500 mb-2\">Recommendations</h4>\n                    <ul className=\"space-y-1\">\n                      {investigation.results.recommendations.map((recommendation, index) => (\n                        <li key={index} className=\"text-sm text-gray-900 flex items-center\">\n                          <span className=\"w-1.5 h-1.5 bg-green-600 rounded-full mr-2\"></span>\n                          {recommendation}\n                        </li>\n                      ))}\n                    </ul>\n                  </div>\n                </div>\n              ) : (\n                <p className=\"text-gray-500 text-center py-4\">\n                  {investigation.status === 'completed' ? 'No results available' : 'Results will appear when the investigation is complete'}\n                </p>\n              )}\n            </div>\n          </div>\n        )}\n      </div>\n\n      {isLoading && (\n        <div className=\"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50\">\n          <LoadingSpinner size=\"lg\" message=\"Processing...\" />\n        </div>\n      )}\n    </div>\n  );\n};
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={onBack}
+            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-2" />
+            Back
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{investigation.title}</h1>
+            <div className="flex items-center space-x-4 mt-1">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(investigation.status)}`}>
+                {getStatusIcon(investigation.status)}
+                <span className="ml-1">{investigation.status.toUpperCase()}</span>
+              </span>
+              <span className="text-sm text-gray-500">ID: {investigation.id}</span>
+              <span className="text-sm text-gray-500">
+                Created {formatDate(investigation.createdAt)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          {canStart && (
+            <button
+              onClick={() => handleAction(() => onStartInvestigation(investigation.id))}
+              disabled={isLoading}
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+            >
+              <PlayIcon className="h-4 w-4 mr-2" />
+              Start
+            </button>
+          )}
+          {canPause && (
+            <button
+              onClick={() => handleAction(() => onPauseInvestigation(investigation.id))}
+              disabled={isLoading}
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50"
+            >
+              <PauseIcon className="h-4 w-4 mr-2" />
+              Pause
+            </button>
+          )}
+          {canResume && (
+            <button
+              onClick={() => handleAction(() => onResumeInvestigation(investigation.id))}
+              disabled={isLoading}
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            >
+              <PlayIcon className="h-4 w-4 mr-2" />
+              Resume
+            </button>
+          )}
+          {canStop && (
+            <button
+              onClick={() => handleAction(() => onStopInvestigation(investigation.id))}
+              disabled={isLoading}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+            >
+              <StopIcon className="h-4 w-4 mr-2" />
+              Stop
+            </button>
+          )}
+          {canDelete && (
+            <button
+              onClick={() => handleAction(() => onDeleteInvestigation(investigation.id))}
+              disabled={isLoading}
+              className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+            >
+              <TrashIcon className="h-4 w-4 mr-2" />
+              Delete
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      {investigation.status === 'running' && (
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">Overall Progress</span>
+            <span className="text-sm text-gray-500">{investigation.progress.overall}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${investigation.progress.overall}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8">
+          {[{
+            key: 'overview',
+            label: 'Overview',
+            icon: DocumentTextIcon
+          }, {
+            key: 'progress',
+            label: 'Progress',
+            icon: ChartBarIcon
+          }, {
+            key: 'agents',
+            label: 'Agents',
+            icon: CogIcon
+          }, {
+            key: 'timeline',
+            label: 'Timeline',
+            icon: ClockIcon
+          }, {
+            key: 'results',
+            label: 'Results',
+            icon: ChartBarIcon
+          }, {
+            key: 'export',
+            label: 'Export',
+            icon: ArrowDownTrayIcon
+          }].map(tab => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key as any)}
+                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
+                  isActive
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <tab.icon className="h-4 w-4 mr-2" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="space-y-6">
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Investigation Info */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Investigation Details</h3>
+              <dl className="space-y-3">
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Description</dt>
+                  <dd className="text-sm text-gray-900">{investigation.description}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Priority</dt>
+                  <dd className="text-sm text-gray-900 capitalize">{investigation.priority}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Created By</dt>
+                  <dd className="text-sm text-gray-900">{investigation.createdBy}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Duration</dt>
+                  <dd className="text-sm text-gray-900">
+                    {investigation.startedAt && formatDuration(investigation.startedAt, investigation.completedAt)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Configuration */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Configuration</h3>
+              <dl className="space-y-3">
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Assigned Agents</dt>
+                  <dd className="text-sm text-gray-900">{investigation.assignedAgents.length} agents</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Parallel Execution</dt>
+                  <dd className="text-sm text-gray-900">
+                    {investigation.configuration.parameters.parallelAgents ? 'Yes' : 'No'}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Time Range</dt>
+                  <dd className="text-sm text-gray-900">
+                    {investigation.configuration.parameters.timeRange || 'Not specified'}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Threshold</dt>
+                  <dd className="text-sm text-gray-900">
+                    {investigation.configuration.parameters.threshold || 'Not specified'}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'progress' && (
+          <ProgressMonitor investigation={investigation} />
+        )}
+
+        {activeTab === 'agents' && (
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Agent Progress</h3>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {investigation.progress.agents.map((agent, index) => (
+                  <div key={agent.agentId} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        {getStatusIcon(agent.status)}
+                        <span className="font-medium text-gray-900">{agent.agentId}</span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(agent.status)}`}>
+                          {agent.status.toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-500">{agent.progress}%</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{agent.message}</p>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${agent.progress}%` }}
+                      />
+                    </div>
+                    {agent.error && (
+                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+                        Error: {agent.error}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'timeline' && (
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">Investigation Timeline</h3>
+            </div>
+            <div className="p-6">
+              {events.length > 0 ? (
+                <div className="space-y-4">
+                  {events.map((event, index) => (
+                    <div key={event.id} className="flex items-start space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900">{event.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formatDate(event.timestamp)} • {event.actor}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No timeline events available</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'results' && (
+          <ResultsVisualization investigation={investigation} />
+        )}
+
+        {activeTab === 'export' && (
+          <ExportReporting
+            investigation={investigation}
+            onExport={(options) => exportInvestigation(investigation, options)}
+          />
+        )}
+      </div>
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <LoadingSpinner size="lg" message="Processing..." />
+        </div>
+      )}
+    </div>
+  );
+};

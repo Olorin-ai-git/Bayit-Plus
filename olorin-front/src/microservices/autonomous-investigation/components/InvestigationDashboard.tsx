@@ -10,6 +10,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { Investigation, InvestigationStatus } from '../types/investigation';
 import { LoadingSpinner } from '../../core-ui/components/LoadingSpinner';
+import { LiveMetricsDisplay } from './LiveMetricsDisplay';
+import { AlertCenter } from './AlertCenter';
 
 interface InvestigationDashboardProps {
   investigations: Investigation[];
@@ -291,6 +293,16 @@ export const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Live Metrics */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <LiveMetricsDisplay investigations={investigations} />
+          </div>
+
+          {/* Alert Center */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <AlertCenter investigations={investigations} />
           </div>
 
           {/* Recent Investigations */}
