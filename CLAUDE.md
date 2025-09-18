@@ -158,8 +158,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Olorin is an enterprise fraud detection and investigation platform with AI/ML capabilities. It consists of three main components:
 - **Backend (olorin-server)**: Python FastAPI service with LangChain/OpenAI agents
-- **Frontend (olorin-front)**: React TypeScript application for investigations
+- **Frontend (olorin-front)**: React TypeScript application for investigations - CURRENTLY UNDERGOING MAJOR REFACTORING
 - **Web Portal (olorin-web-portal)**: Marketing website with multi-language support
+
+### 🚧 ACTIVE REFACTORING: Frontend Microservices Migration (Branch: 001-refactoring-the-frontend)
+
+**Current Status**: Implementation phase of frontend refactoring from Material-UI to Tailwind CSS with microservices architecture.
+
+**Key Changes in Progress**:
+- **Material-UI Removal**: Complete migration from @mui/material to Tailwind CSS components
+- **Microservices Architecture**: Splitting monolithic React app into 6 independent services
+- **File Size Compliance**: Breaking down 19 oversized files (200+ lines) into compliant modules
+- **Module Federation**: Implementing Webpack 5 Module Federation for runtime composition
+- **Event-Driven Architecture**: Inter-service communication via event bus
+
+**Microservices Being Implemented**:
+1. **Investigation Service** (Port 3001) - Core investigation functionality
+2. **Agent Analytics Service** (Port 3002) - AI agent monitoring and logs
+3. **RAG Intelligence Service** (Port 3003) - Retrieval-augmented generation
+4. **Visualization Service** (Port 3004) - Graphs, maps, data visualization
+5. **Reporting Service** (Port 3005) - PDF generation and exports
+6. **Core UI Service** (Port 3006) - Shared components and authentication
+
+**Critical Implementation Guidelines**:
+- ✅ Use ONLY Tailwind CSS for styling (NO Material-UI imports)
+- ✅ Keep ALL files under 200 lines
+- ✅ Follow microservices patterns with event bus communication
+- ✅ Implement proper error boundaries and fallbacks
+- ✅ Maintain WebSocket integration for real-time updates
 
 ## Essential Commands
 
@@ -191,19 +217,58 @@ tox                                     # Run full test suite
 tox -e lint                             # Run linting only
 ```
 
-### Frontend Development (olorin-front)
+### Frontend Development (olorin-front) - REFACTORING IN PROGRESS
 ```bash
 cd olorin-front
-npm install                             # Install dependencies
-npm start                               # Development server (port 3000)
-npm run build                           # Production build
-TSC_COMPILE_ON_ERROR=true npm run build # Production build ignoring TS warnings
-npm test                                # Run tests in watch mode
-npm test -- --coverage                  # Run with coverage report
-npm run lint                            # Lint code
-npm run format                          # Format code
-npm run webhook                         # Run webhook server
+
+# Current refactoring branch
+git checkout 001-refactoring-the-frontend
+
+# Install dependencies (includes new Webpack 5 Module Federation)
+npm install
+
+# Development - Microservices Mode (NEW)
+npm run dev:shell                       # Main shell app (port 3000)
+npm run dev:investigation               # Investigation service (port 3001)
+npm run dev:agent-analytics             # Agent analytics service (port 3002)
+npm run dev:rag-intelligence            # RAG intelligence service (port 3003)
+npm run dev:visualization               # Visualization service (port 3004)
+npm run dev:reporting                   # Reporting service (port 3005)
+npm run dev:core-ui                     # Core UI service (port 3006)
+
+# Development - All services at once
+npm run dev:all-services                # Start all microservices
+
+# Legacy single app (DEPRECATED - will be removed)
+npm start                               # Single React app (port 3000)
+
+# Testing - Updated for microservices
+npm test                                # Run all service tests
+npm run test:integration                # Cross-service integration tests
+npm run test:coverage                   # Coverage across all services
+
+# Build - Microservices
+npm run build                           # Build all services
+npm run build:shell                     # Build shell app only
+npm run build:service investigation     # Build specific service
+
+# Migration Tools (NEW)
+npm run migration:check                 # Check migration status
+npm run migration:mui-finder            # Find remaining Material-UI usage
+npm run migration:file-sizes            # Check files over 200 lines
+npm run migration:bundle-analysis       # Analyze bundle sizes
+
+# Quality Checks
+npm run lint                            # Lint all services
+npm run format                          # Format all services
+npm run typecheck                       # TypeScript checks across services
 ```
+
+**🚨 CRITICAL REFACTORING NOTES**:
+- **DO NOT USE** `@mui/material`, `@mui/icons-material`, or `styled-components`
+- **USE ONLY** Tailwind CSS classes and custom Headless UI components
+- **FILE SIZE LIMIT**: Every .tsx/.ts file MUST be under 200 lines
+- **SERVICE ISOLATION**: Each microservice must be independently deployable
 
 ### Web Portal Development (olorin-web-portal)
 ```bash
@@ -319,14 +384,56 @@ olorin/
 │   │   └── mcp_server/        # MCP server implementation
 │   ├── test/                  # Backend tests
 │   └── config/                # Configuration files
-├── olorin-front/
+├── olorin-front/ (REFACTORING IN PROGRESS)
 │   ├── src/
-│   │   │   ├── components/        # React components
-│   │   │   ├── services/          # API services
-│   │   │   └── types/             # TypeScript types
-│   │   └── build/                 # Production build output
+│   │   ├── microservices/     # NEW: Microservices architecture
+│   │   │   ├── investigation/     # Investigation service
+│   │   │   ├── agent-analytics/   # Agent analytics service
+│   │   │   ├── rag-intelligence/  # RAG intelligence service
+│   │   │   ├── visualization/     # Visualization service
+│   │   │   ├── reporting/         # Reporting service
+│   │   │   └── core-ui/          # Core UI service
+│   │   ├── shared/            # NEW: Shared components and utilities
+│   │   │   ├── components/        # Tailwind CSS component library
+│   │   │   ├── hooks/            # Shared React hooks
+│   │   │   ├── types/            # TypeScript definitions
+│   │   │   ├── events/           # Event bus implementation
+│   │   │   └── services/         # Shared API services
+│   │   ├── legacy/            # DEPRECATED: Old monolithic components
+│   │   │   ├── components/        # OLD: React components (MIGRATING)
+│   │   │   ├── services/          # OLD: API services (MIGRATING)
+│   │   │   └── types/             # OLD: TypeScript types (MIGRATING)
+│   │   └── config/            # Module federation configurations
+│   ├── specs/001-refactoring-the-frontend/  # NEW: Refactoring documentation
+│   │   ├── plan.md                          # Implementation plan
+│   │   ├── research.md                      # Technical research
+│   │   ├── data-model.md                    # Service data models
+│   │   ├── quickstart.md                    # Implementation guide
+│   │   └── contracts/                       # Service contracts
+│   └── build/                 # Production build output
 └── docs/                      # Comprehensive documentation
 ```
+
+### 🚧 REFACTORING PROGRESS TRACKING
+
+**Files Successfully Migrated**: 0/169 components
+**Material-UI Imports Remaining**: ~50+ (needs verification)
+**Files Over 200 Lines**: 19 files (largest: RAGPage.tsx at 2,273 lines)
+**Microservices Implemented**: 0/6 services
+**Tailwind Components Created**: 0/25 estimated components needed
+
+**Priority Migration Order**:
+1. Core UI Service (authentication, navigation, shared components)
+2. Investigation Service (core functionality)
+3. Agent Analytics Service (AI agent monitoring)
+4. RAG Intelligence Service (already well-structured)
+5. Visualization Service (graphs, maps)
+6. Reporting Service (PDF generation)
+
+**Critical Files Requiring Immediate Attention**:
+- `src/js/pages/RAGPage.tsx` (2,273 lines) - Split into RAG microservice
+- `src/js/pages/InvestigationPage.tsx` (1,913 lines) - Split into Investigation microservice
+- `src/js/components/AgentDetailsTable.tsx` (994 lines) - Move to Agent Analytics service
 
 ## Important Notes
 
