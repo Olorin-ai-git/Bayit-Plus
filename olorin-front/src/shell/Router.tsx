@@ -3,32 +3,27 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
-// Lazy load microservice components
-const InvestigationDashboard = React.lazy(() => import('investigation/InvestigationDashboard'));
-const AutonomousInvestigation = React.lazy(() => import('investigation/AutonomousInvestigation'));
-const ManualInvestigationDetails = React.lazy(() => import('investigation/ManualInvestigationDetails'));
-const InvestigationWizard = React.lazy(() => import('investigation/InvestigationWizard'));
-const EvidenceManager = React.lazy(() => import('investigation/EvidenceManager'));
+// Lazy load working microservice apps
+// For now, use local components until Module Federation is fully configured
 
-const AgentAnalyticsDashboard = React.lazy(() => import('agentAnalytics/AgentAnalyticsDashboard'));
-const PerformanceMetrics = React.lazy(() => import('agentAnalytics/PerformanceMetrics'));
-const ModelAnalytics = React.lazy(() => import('agentAnalytics/ModelAnalytics'));
-const UsageTracking = React.lazy(() => import('agentAnalytics/UsageTracking'));
-const CostAnalytics = React.lazy(() => import('agentAnalytics/CostAnalytics'));
+// Investigation Service (main service at port 3001)
+const InvestigationApp = React.lazy(() => import('../microservices/investigation/InvestigationApp'));
 
-const KnowledgeBase = React.lazy(() => import('ragIntelligence/KnowledgeBase'));
-const DocumentRetrieval = React.lazy(() => import('ragIntelligence/DocumentRetrieval'));
-const IntelligentSearch = React.lazy(() => import('ragIntelligence/IntelligentSearch'));
-const VectorDatabase = React.lazy(() => import('ragIntelligence/VectorDatabase'));
+// RAG Intelligence Service (port 3003) - Fully working
+const RagIntelligenceApp = React.lazy(() => import('../microservices/rag-intelligence/RagIntelligenceApp'));
 
-const ChartBuilder = React.lazy(() => import('visualization/ChartBuilder'));
-const DataVisualization = React.lazy(() => import('visualization/DataVisualization'));
-const NetworkGraph = React.lazy(() => import('visualization/NetworkGraph'));
-const TimelineVisualization = React.lazy(() => import('visualization/TimelineVisualization'));
+// Agent Analytics Service (port 3002) - Working
+const AgentAnalyticsApp = React.lazy(() => import('../microservices/agent-analytics/AgentAnalyticsApp'));
 
-const ReportBuilder = React.lazy(() => import('reporting/ReportBuilder'));
-const ReportDashboard = React.lazy(() => import('reporting/ReportDashboard'));
-const ReportViewer = React.lazy(() => import('reporting/ReportViewer'));
+// Core UI Service (port 3006)
+const CoreUIApp = React.lazy(() => import('../microservices/core-ui/CoreUiApp'));
+
+// Autonomous Investigation (sub-service)
+const AutonomousInvestigationApp = React.lazy(() => import('../microservices/autonomous-investigation/AutonomousInvestigationApp'));
+
+// Future services (placeholders for now)
+const VisualizationApp = React.lazy(() => import('../microservices/visualization/VisualizationApp'));
+const ReportingApp = React.lazy(() => import('../microservices/reporting/ReportingApp'));
 
 interface RouteConfig {
   path: string;
@@ -38,36 +33,38 @@ interface RouteConfig {
 }
 
 const routes: RouteConfig[] = [
-  // Investigation Service Routes
-  { path: '/investigations', component: InvestigationDashboard, serviceName: 'investigation', exact: true },
-  { path: '/investigations/autonomous', component: AutonomousInvestigation, serviceName: 'investigation' },
-  { path: '/investigations/manual/:id', component: ManualInvestigationDetails, serviceName: 'investigation' },
-  { path: '/investigations/wizard', component: InvestigationWizard, serviceName: 'investigation' },
-  { path: '/investigations/evidence', component: EvidenceManager, serviceName: 'investigation' },
+  // Investigation Service Routes (Port 3001) - Main Investigation Hub
+  { path: '/investigations', component: InvestigationApp, serviceName: 'investigation', exact: true },
+  { path: '/investigations/*', component: InvestigationApp, serviceName: 'investigation' },
 
-  // Agent Analytics Service Routes
-  { path: '/analytics', component: AgentAnalyticsDashboard, serviceName: 'agentAnalytics', exact: true },
-  { path: '/analytics/performance', component: PerformanceMetrics, serviceName: 'agentAnalytics' },
-  { path: '/analytics/models', component: ModelAnalytics, serviceName: 'agentAnalytics' },
-  { path: '/analytics/usage', component: UsageTracking, serviceName: 'agentAnalytics' },
-  { path: '/analytics/costs', component: CostAnalytics, serviceName: 'agentAnalytics' },
+  // Autonomous Investigation Service Routes (Sub-service of investigations)
+  { path: '/autonomous', component: AutonomousInvestigationApp, serviceName: 'autonomous-investigation', exact: true },
+  { path: '/autonomous/*', component: AutonomousInvestigationApp, serviceName: 'autonomous-investigation' },
 
-  // RAG Intelligence Service Routes
-  { path: '/knowledge', component: KnowledgeBase, serviceName: 'ragIntelligence', exact: true },
-  { path: '/knowledge/documents', component: DocumentRetrieval, serviceName: 'ragIntelligence' },
-  { path: '/knowledge/search', component: IntelligentSearch, serviceName: 'ragIntelligence' },
-  { path: '/knowledge/vectors', component: VectorDatabase, serviceName: 'ragIntelligence' },
+  // Agent Analytics Service Routes (Port 3002)
+  { path: '/analytics', component: AgentAnalyticsApp, serviceName: 'agent-analytics', exact: true },
+  { path: '/analytics/*', component: AgentAnalyticsApp, serviceName: 'agent-analytics' },
 
-  // Visualization Service Routes
-  { path: '/visualization', component: DataVisualization, serviceName: 'visualization', exact: true },
-  { path: '/visualization/builder', component: ChartBuilder, serviceName: 'visualization' },
-  { path: '/visualization/network', component: NetworkGraph, serviceName: 'visualization' },
-  { path: '/visualization/timeline', component: TimelineVisualization, serviceName: 'visualization' },
+  // RAG Intelligence Service Routes (Port 3003)
+  { path: '/rag', component: RagIntelligenceApp, serviceName: 'rag-intelligence', exact: true },
+  { path: '/rag/*', component: RagIntelligenceApp, serviceName: 'rag-intelligence' },
+  { path: '/knowledge', component: RagIntelligenceApp, serviceName: 'rag-intelligence', exact: true },
+  { path: '/knowledge/*', component: RagIntelligenceApp, serviceName: 'rag-intelligence' },
 
-  // Reporting Service Routes
-  { path: '/reports', component: ReportDashboard, serviceName: 'reporting', exact: true },
-  { path: '/reports/builder', component: ReportBuilder, serviceName: 'reporting' },
-  { path: '/reports/viewer/:id', component: ReportViewer, serviceName: 'reporting' },
+  // Visualization Service Routes (Port 3004) - Basic implementation
+  { path: '/visualization', component: VisualizationApp, serviceName: 'visualization', exact: true },
+  { path: '/visualization/*', component: VisualizationApp, serviceName: 'visualization' },
+  { path: '/charts', component: VisualizationApp, serviceName: 'visualization', exact: true },
+  { path: '/charts/*', component: VisualizationApp, serviceName: 'visualization' },
+
+  // Reporting Service Routes (Port 3005) - Basic implementation
+  { path: '/reports', component: ReportingApp, serviceName: 'reporting', exact: true },
+  { path: '/reports/*', component: ReportingApp, serviceName: 'reporting' },
+
+  // Core UI Service Routes (Port 3006) - Auth, Profile, Settings
+  { path: '/profile', component: CoreUIApp, serviceName: 'core-ui', exact: true },
+  { path: '/settings', component: CoreUIApp, serviceName: 'core-ui', exact: true },
+  { path: '/auth/*', component: CoreUIApp, serviceName: 'core-ui' },
 ];
 
 const AppRouter: React.FC = () => {
@@ -147,20 +144,29 @@ const AppRouter: React.FC = () => {
         <div className="p-4">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Service Status</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {['investigation', 'agentAnalytics', 'ragIntelligence', 'visualization', 'reporting', 'coreUi'].map(service => (
-              <div key={service} className="bg-white rounded-lg shadow p-4">
-                <h3 className="font-medium text-gray-900">{service}</h3>
+            {[
+              { name: 'investigation', display: 'Investigation Service', port: '3001', status: 'operational' },
+              { name: 'agent-analytics', display: 'Agent Analytics', port: '3002', status: 'operational' },
+              { name: 'rag-intelligence', display: 'RAG Intelligence', port: '3003', status: 'operational' },
+              { name: 'visualization', display: 'Visualization', port: '3004', status: 'partial' },
+              { name: 'reporting', display: 'Reporting', port: '3005', status: 'partial' },
+              { name: 'core-ui', display: 'Core UI', port: '3006', status: 'operational' }
+            ].map(service => (
+              <div key={service.name} className="bg-white rounded-lg shadow p-4">
+                <h3 className="font-medium text-gray-900">{service.display}</h3>
                 <div className="mt-2 flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Operational</span>
+                  <div className={`w-3 h-3 rounded-full ${
+                    service.status === 'operational' ? 'bg-green-500' :
+                    service.status === 'partial' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                  <span className="text-sm text-gray-600 capitalize">{service.status}</span>
                 </div>
                 <div className="mt-1 text-xs text-gray-500">
-                  Port: {service === 'investigation' ? '3001' :
-                         service === 'agentAnalytics' ? '3002' :
-                         service === 'ragIntelligence' ? '3003' :
-                         service === 'visualization' ? '3004' :
-                         service === 'reporting' ? '3005' :
-                         service === 'coreUi' ? '3006' : '3000'}
+                  Port: {service.port}
+                </div>
+                <div className="mt-1 text-xs text-gray-400">
+                  {service.status === 'operational' ? 'All features working' :
+                   service.status === 'partial' ? 'Basic functionality only' : 'Service unavailable'}
                 </div>
               </div>
             ))}

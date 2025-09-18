@@ -6,7 +6,7 @@ import ChatInterface from './chat/ChatInterface';
 import FieldMappingForm from './forms/FieldMappingForm';
 import PreparedPromptsManager from './forms/PreparedPromptsManager';
 import { FieldMapping, RexPattern, EvalCommand, PreparedPrompt } from '../types/ragIntelligence';
-import { RAGApiService } from '@shared/services/RAGApiService';
+import RAGApiService from '@shared/services/RAGApiService';
 
 interface RAGConfigurationPageProps {
   className?: string;

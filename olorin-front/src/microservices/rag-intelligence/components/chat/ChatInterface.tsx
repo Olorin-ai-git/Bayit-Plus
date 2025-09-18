@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { EnhancedChatMessage, ViewMode } from '../../types/ragIntelligence';
-import { RAGApiService } from '@shared/services/RAGApiService';
-import { ResponseAnalyzer } from '@shared/services/ResponseAnalyzer';
+import RAGApiService from '@shared/services/RAGApiService';
+import ResponseAnalyzer from '@shared/services/ResponseAnalyzer';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 

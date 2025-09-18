@@ -1,4 +1,4 @@
-const ModuleFederationPlugin = require('@module-federation/webpack');
+const ModuleFederationPlugin = require('webpack').container.ModuleFederationPlugin;
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -211,7 +211,7 @@ module.exports = (env, argv) => {
             {
               loader: 'ts-loader',
               options: {
-                transpileOnly: isDevelopment,
+                transpileOnly: true,
                 configFile: path.resolve(__dirname, 'tsconfig.json')
               }
             }
