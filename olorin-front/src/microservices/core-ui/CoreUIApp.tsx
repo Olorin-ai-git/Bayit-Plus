@@ -6,6 +6,7 @@ import { EventBusProvider } from '../shared/services/EventBus';
 import { WebSocketProvider } from '../shared/services/WebSocketService';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { NotificationSystem } from './components/NotificationSystem';
 import { useAuth } from './hooks/useAuth';
 import './styles/tailwind.css';
 
@@ -242,6 +243,7 @@ export const CoreUIApp: React.FC = () => {
                   }
                 />
               </Routes>
+              <NotificationSystem />
             </WebSocketProvider>
           </EventBusProvider>
         </AuthProvider>
