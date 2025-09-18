@@ -84,7 +84,20 @@
     "perf:lighthouse": "node scripts/performance/lighthouse-audit.js",
     "perf:bundle": "node scripts/performance/bundle-analyzer.js",
     "perf:all": "npm run perf:test && npm run perf:lighthouse && npm run perf:bundle",
-    "perf:vitals": "npm start & sleep 30 && npm run perf:test && pkill -f 'react-scripts start'"
+    "perf:vitals": "npm start & sleep 30 && npm run perf:test && pkill -f 'react-scripts start'",
+    "a11y:test": "npx playwright test src/shared/testing/accessibility/accessibility.e2e.test.ts",
+    "a11y:audit": "node scripts/accessibility/axe-audit.js",
+    "a11y:keyboard": "npx playwright test src/shared/testing/accessibility/accessibility.e2e.test.ts --grep 'keyboard navigation'",
+    "a11y:screen-reader": "npx playwright test src/shared/testing/accessibility/accessibility.e2e.test.ts --grep 'screen reader'",
+    "a11y:contrast": "npx playwright test src/shared/testing/accessibility/accessibility.e2e.test.ts --grep 'color contrast'",
+    "a11y:service": "npx playwright test src/shared/testing/accessibility/accessibility.e2e.test.ts --grep",
+    "a11y:all": "npm run a11y:test && npm run a11y:audit",
+    "browser:test": "npx playwright test src/shared/testing/cross-browser/cross-browser.e2e.test.ts",
+    "browser:chrome": "npx playwright test --project=cross-browser-chrome",
+    "browser:firefox": "npx playwright test --project=cross-browser-firefox",
+    "browser:safari": "npx playwright test --project=cross-browser-safari",
+    "browser:compatibility": "node scripts/cross-browser/compatibility-audit.js",
+    "browser:all": "npm run browser:test && npm run browser:compatibility"
   },
   "jest": {
     "testMatch": [

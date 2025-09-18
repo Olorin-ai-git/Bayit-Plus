@@ -84,11 +84,12 @@ export default defineConfig({
       name: 'performance',
       use: {
         ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
         video: 'off',
         screenshot: 'off'
       },
       testMatch: '**/*performance*.e2e.test.ts',
-      timeout: 60000
+      timeout: 120000 // 2 minutes for performance tests
     },
 
     /* Visual regression testing project */
@@ -101,17 +102,56 @@ export default defineConfig({
       testMatch: '**/*visual*.e2e.test.ts'
     },
 
-    /* Performance testing project */
+    /* Accessibility testing project */
     {
-      name: 'performance',
+      name: 'accessibility',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        video: 'off',
-        screenshot: 'off'
+        viewport: { width: 1920, height: 1080 }
       },
-      testMatch: '**/*performance*.e2e.test.ts',
-      timeout: 120000 // 2 minutes for performance tests
+      testMatch: '**/*accessibility*.e2e.test.ts',
+      timeout: 90000 // 1.5 minutes for accessibility tests
+    },
+
+    /* Cross-browser testing project */
+    {
+      name: 'cross-browser',
+      use: {
+        ...devices['Desktop Chrome']
+      },
+      testMatch: '**/*cross-browser*.e2e.test.ts',
+      timeout: 180000 // 3 minutes for cross-browser tests
+    },
+
+    /* Cross-browser Chrome specific */
+    {
+      name: 'cross-browser-chrome',
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chrome'
+      },
+      testMatch: '**/cross-browser.e2e.test.ts',
+      timeout: 120000
+    },
+
+    /* Cross-browser Firefox specific */
+    {
+      name: 'cross-browser-firefox',
+      use: {
+        ...devices['Desktop Firefox']
+      },
+      testMatch: '**/cross-browser.e2e.test.ts',
+      timeout: 120000
+    },
+
+    /* Cross-browser Safari specific */
+    {
+      name: 'cross-browser-safari',
+      use: {
+        ...devices['Desktop Safari']
+      },
+      testMatch: '**/cross-browser.e2e.test.ts',
+      timeout: 120000
     }
   ],
 
