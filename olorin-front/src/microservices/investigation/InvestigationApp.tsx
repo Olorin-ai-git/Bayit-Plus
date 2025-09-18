@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
+import { InvestigationProvider } from './contexts/InvestigationContext';
 
 // Lazy load components for better performance
 const InvestigationDashboard = React.lazy(() => import('./components/InvestigationDashboard'));
@@ -15,7 +16,8 @@ const CollaborationPanel = React.lazy(() => import('./components/CollaborationPa
 const InvestigationApp: React.FC = () => {
   return (
     <ErrorBoundary serviceName="investigation">
-      <div className="investigation-service min-h-screen bg-gray-50">
+      <InvestigationProvider autoRefresh={true} refreshInterval={30000}>
+        <div className="investigation-service min-h-screen bg-gray-50">
         <Suspense fallback={
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -128,7 +130,8 @@ const InvestigationApp: React.FC = () => {
             } />
           </Routes>
         </Suspense>
-      </div>
+        </div>
+      </InvestigationProvider>
     </ErrorBoundary>
   );
 };

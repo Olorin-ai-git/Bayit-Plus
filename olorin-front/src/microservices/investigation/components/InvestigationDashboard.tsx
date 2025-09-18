@@ -10,6 +10,8 @@ import {
   UserGroupIcon,
   DocumentTextIcon,
 } from '@heroicons/react/24/outline';
+import { useInvestigationContext } from '../contexts/InvestigationContext';
+import { useInvestigationStatistics } from '../hooks/useInvestigation';
 
 interface Investigation {
   id: string;
@@ -33,8 +35,8 @@ interface InvestigationDashboardProps {
 const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
   className = ""
 }) => {
-  const [investigations, setInvestigations] = useState<Investigation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { state, actions } = useInvestigationContext();
+  const { statistics, loading: statsLoading } = useInvestigationStatistics('week');
 
   // Mock data for demonstration
   useEffect(() => {
