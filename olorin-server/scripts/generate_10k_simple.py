@@ -114,25 +114,29 @@ def insert_to_snowflake(transactions):
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database='FRAUD_ANALYTICS',
-        schema='PUBLIC',
+        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
+        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'
     )
     
     cursor = conn.cursor()
     
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     try:
         # Clear previous test data
         print("\n🗑️  Clearing existing large test datasets...")
-        cursor.execute("DELETE FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED WHERE TX_ID_KEY LIKE 'TX1%'")
-        
+        cursor.execute(f"DELETE FROM {database}.{schema}.{table} WHERE TX_ID_KEY LIKE 'TX1%'")
+
         print(f"\n📝 Inserting {len(transactions):,} transactions...")
-        
+
         # Simple insert with just essential columns
-        insert_sql = """
-        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS, 
+        insert_sql = f"""
+        INSERT INTO {database}.{schema}.{table}
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS,
          PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
@@ -160,7 +164,7 @@ def insert_to_snowflake(transactions):
                 AVG(PAID_AMOUNT_VALUE) as avg_amount,
                 MAX(PAID_AMOUNT_VALUE) as max_amount,
                 SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as total_risk_value
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
         """)
         
         stats = cursor.fetchone()
@@ -188,7 +192,7 @@ def insert_to_snowflake(transactions):
                 END as risk_level,
                 COUNT(*) as count,
                 AVG(PAID_AMOUNT_VALUE) as avg_amount
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
             GROUP BY risk_level
             ORDER BY risk_level
         """)
@@ -208,7 +212,7 @@ def insert_to_snowflake(transactions):
                     AVG(MODEL_SCORE) as avg_risk,
                     SUM(PAID_AMOUNT_VALUE) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 WHERE TX_DATETIME >= DATEADD(day, -30, CURRENT_TIMESTAMP())
                 GROUP BY EMAIL
             ),

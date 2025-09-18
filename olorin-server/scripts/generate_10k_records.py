@@ -405,24 +405,28 @@ def insert_to_snowflake(transactions: List[Tuple]):
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database='FRAUD_ANALYTICS',
-        schema='PUBLIC',
+        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
+        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'  # Need ACCOUNTADMIN for bulk insert
     )
     
     cursor = conn.cursor()
     
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     try:
         # Clear existing data (optional - comment out to keep existing)
         print("\n🗑️  Clearing existing test data...")
-        cursor.execute("DELETE FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED WHERE TX_ID_KEY LIKE 'TX%'")
+        cursor.execute(f"DELETE FROM {database}.{schema}.{table} WHERE TX_ID_KEY LIKE 'TX%'")
         
         print(f"\n📝 Inserting {len(transactions):,} transactions...")
         
         # Prepare insert statement for the fields we're populating
-        insert_sql = """
-        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED (
+        insert_sql = f"""
+        INSERT INTO {database}.{schema}.{table} (
             TX_ID_KEY, TX_DATETIME, TX_TYPE, TX_STATUS,
             PAID_AMOUNT_VALUE, PAID_CURRENCY_CODE, ORIGINAL_AMOUNT_VALUE, ORIGINAL_CURRENCY_CODE, EXCHANGE_RATE,
             USER_ID, EMAIL, EMAIL_DOMAIN, USERNAME, FIRST_NAME, LAST_NAME, FULL_NAME, DATE_OF_BIRTH, AGE_AT_TX, GENDER,
@@ -469,7 +473,7 @@ def insert_to_snowflake(transactions: List[Tuple]):
                 SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count,
                 AVG(PAID_AMOUNT_VALUE) as avg_amount,
                 MAX(PAID_AMOUNT_VALUE) as max_amount
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
         """)
         
         stats = cursor.fetchone()
@@ -499,7 +503,7 @@ def insert_to_snowflake(transactions: List[Tuple]):
                     AVG(MODEL_SCORE) as avg_risk,
                     SUM(PAID_AMOUNT_VALUE) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 GROUP BY EMAIL
             )
             SELECT * FROM risk_calc

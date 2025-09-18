@@ -97,7 +97,7 @@ class RiskEntityInvestigator:
             Historical data and patterns
         """
         # Get table configuration from environment
-        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
         schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
         table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 

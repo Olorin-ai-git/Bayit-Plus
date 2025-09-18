@@ -37,9 +37,9 @@ class RealSnowflakeClient:
         self.host = config.get('host', self.account)  # Host can be same as account
         self.user = config.get('user')
         self.password = config.get('password')
-        self.database = config.get('database', os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'))
-        self.schema = config.get('schema', 'PUBLIC')
-        self.warehouse = config.get('warehouse', 'COMPUTE_WH')
+        self.database = config.get('database', os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'))
+        self.schema = config.get('schema', os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'))
+        self.warehouse = config.get('warehouse', os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'))
         self.role = config.get('role')
         self.authenticator = config.get('authenticator', 'snowflake')
         

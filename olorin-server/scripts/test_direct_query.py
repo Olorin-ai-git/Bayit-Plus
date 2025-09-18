@@ -21,7 +21,7 @@ def main():
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'),
+        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
         schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
@@ -35,7 +35,7 @@ def main():
     top_decimal = 0.1  # 10%
 
     # Get table configuration from environment
-    database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
     schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
     table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 

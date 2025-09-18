@@ -37,7 +37,7 @@ class IPDomainMapper:
             await self.client.connect()
             
             # Query to find the most common email domain for this IP
-            database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+            database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
             schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
             table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 

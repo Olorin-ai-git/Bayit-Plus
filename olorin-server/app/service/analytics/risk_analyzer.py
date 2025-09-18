@@ -217,7 +217,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction
-            FROM {os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
+            FROM {os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
             WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
                 AND {group_by} IS NOT NULL{ip_filter}
             GROUP BY {group_by}
@@ -348,7 +348,7 @@ class RiskAnalyzer:
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction
-            FROM {os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
+            FROM {os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
             WHERE {entity_type} = '{entity_value}'
                 AND TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
             """

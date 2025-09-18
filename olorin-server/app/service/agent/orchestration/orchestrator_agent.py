@@ -247,7 +247,7 @@ IMPORTANT: While following the standard investigation process, give special atte
                            DEVICE_ID, DEVICE_FINGERPRINT,
                            USER_AGENT, DEVICE_TYPE,
                            TX_DATETIME
-                           FROM {os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
+                           FROM {os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
                            WHERE {where_field} = '{entity_id}'
                            ORDER BY TX_DATETIME DESC
                            LIMIT 10"""
@@ -258,7 +258,7 @@ IMPORTANT: While following the standard investigation process, give special atte
                         "name": "snowflake_query_tool",
                         "args": {
                             "query": query,
-                            "database": os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB'),
+                            "database": os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
                             "db_schema": os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
                             "limit": 100
                         },
@@ -442,7 +442,7 @@ IMPORTANT: While following the standard investigation process, give special atte
             return update_phase(state, "tool_execution")
             
         logger.debug("[Step 3.2.4.1] Snowflake analysis not completed - Proceeding with mandatory query execution")
-        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
         schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
         table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
         logger.debug(f"[Step 3.2.4.1] Target table: {database}.{schema}.{table}")
@@ -496,7 +496,7 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         # Create Snowflake query prompt
         logger.debug("[Step 3.2.4.2] Creating Snowflake query prompt for LLM")
-        database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+        database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
         schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
         table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 

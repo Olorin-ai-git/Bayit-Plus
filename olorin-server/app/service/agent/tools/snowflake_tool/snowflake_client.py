@@ -25,8 +25,8 @@ class SnowflakeClient:
     """
 
     def __init__(self, account: str, username: str, password: str,
-                 warehouse: str = "COMPUTE_WH", database: str = None,
-                 schema: str = "PUBLIC"):
+                 warehouse: str = None, database: str = None,
+                 schema: str = None):
         """
         Initialize Snowflake client.
         
@@ -41,9 +41,9 @@ class SnowflakeClient:
         self.account = account
         self.username = username
         self.password = password
-        self.warehouse = warehouse
-        self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
-        self.schema = schema
+        self.warehouse = warehouse or os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
+        self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+        self.schema = schema or os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
         self.connection = None
         self._executor = ThreadPoolExecutor(max_workers=1)
         

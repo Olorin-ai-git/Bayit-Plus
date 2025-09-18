@@ -67,11 +67,13 @@ class SnowflakeClient:
             self.connection = None
             self.is_real = False
         
-    async def connect(self, database: str = None, schema: str = "PUBLIC"):
+    async def connect(self, database: str = None, schema: str = None):
         """Establish connection to Snowflake."""
-        # Set database from environment if not provided
+        # Set database and schema from environment if not provided
         if database is None:
-            database = os.getenv('SNOWFLAKE_DATABASE', 'OLORIN_FRAUD_DB')
+            database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+        if schema is None:
+            schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
 
         if self.is_real:
             return await self._real_client.connect(database, schema)

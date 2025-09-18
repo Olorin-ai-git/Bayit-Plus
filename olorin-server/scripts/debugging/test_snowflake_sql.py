@@ -20,13 +20,13 @@ async def test_sql_queries():
     client = RealSnowflakeClient()
     
     try:
-        await client.connect("FRAUD_ANALYTICS", "PUBLIC")
+        await client.connect(os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'), os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'))
         print("✅ Connected to Snowflake successfully")
         
         # Test 1: Simple query first
         simple_query = """
         SELECT COUNT(*) as record_count 
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+        FROM {os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')} 
         LIMIT 1
         """
         
@@ -48,7 +48,7 @@ async def test_sql_queries():
         print("🔍 Testing transaction details query...")
         entity_query = """
         SELECT TX_ID_KEY, EMAIL, IP_ADDRESS, MODEL_SCORE, IS_FRAUD_TX
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+        FROM {os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')}.{os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')} 
         WHERE IP_ADDRESS = '102.159.115.190'
         LIMIT 5
         """

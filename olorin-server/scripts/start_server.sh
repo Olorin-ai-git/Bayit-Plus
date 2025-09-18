@@ -142,7 +142,7 @@ retrieve_secrets() {
         [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
         [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
         [ -z "$SNOWFLAKE_PASSWORD" ] && print_warning "  SNOWFLAKE_PASSWORD=your-password"
-        [ -z "$SNOWFLAKE_DATABASE" ] && print_warning "  SNOWFLAKE_DATABASE=OLORIN_FRAUD_DB"
+        [ -z "$SNOWFLAKE_DATABASE" ] && print_warning "  SNOWFLAKE_DATABASE=FRAUD_ANALYTICS"
     else
         print_success "Snowflake configuration loaded"
     fi

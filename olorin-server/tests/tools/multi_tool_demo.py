@@ -218,7 +218,7 @@ Let me query all three systems to get a complete picture."""
                     AND t.amount > 1000
                     ORDER BY t.transaction_date DESC
                     """,
-                    "database": "FRAUD_DB",
+                    "database": "FRAUD_ANALYTICS",
                     "schema": "PUBLIC"
                 }
             })
