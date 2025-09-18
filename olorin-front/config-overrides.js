@@ -10,9 +10,72 @@ const { override, addWebpackPlugin, addWebpackModuleRule } = require('customize-
 const CompressionPlugin = require('compression-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
+const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 
 // Bundle analyzer configuration
 const shouldAnalyze = process.env.ANALYZE === 'true';
+
+// Module Federation configuration for 8 microservices
+const moduleFederationConfig = {
+  name: 'shell',
+  filename: 'remoteEntry.js',
+  remotes: {
+    autonomousInvestigation: 'autonomousInvestigation@http://localhost:3001/remoteEntry.js',
+    manualInvestigation: 'manualInvestigation@http://localhost:3002/remoteEntry.js',
+    agentAnalytics: 'agentAnalytics@http://localhost:3003/remoteEntry.js',
+    ragIntelligence: 'ragIntelligence@http://localhost:3004/remoteEntry.js',
+    visualization: 'visualization@http://localhost:3005/remoteEntry.js',
+    reporting: 'reporting@http://localhost:3006/remoteEntry.js',
+    coreUI: 'coreUI@http://localhost:3007/remoteEntry.js',
+    designSystem: 'designSystem@http://localhost:3008/remoteEntry.js',
+  },
+  exposes: {
+    './App': './src/App',
+    './SharedComponents': './src/shared/components',
+    './SharedHooks': './src/shared/hooks',
+    './SharedServices': './src/shared/services',
+    './SharedTypes': './src/shared/types',
+    './SharedUtils': './src/shared/utils',
+    './DesignTokens': './src/shared/figma/design-tokens',
+    './EventBus': './src/shared/events/eventBus',
+  },
+  shared: {
+    react: {
+      singleton: true,
+      requiredVersion: '^18.2.0',
+      eager: true,
+    },
+    'react-dom': {
+      singleton: true,
+      requiredVersion: '^18.2.0',
+      eager: true,
+    },
+    'react-router-dom': {
+      singleton: true,
+      requiredVersion: '^6.11.0',
+    },
+    '@headlessui/react': {
+      singleton: true,
+      requiredVersion: '^2.0.0',
+    },
+    'tailwindcss': {
+      singleton: true,
+      requiredVersion: '^3.3.0',
+    },
+    mitt: {
+      singleton: true,
+      requiredVersion: '^3.0.1',
+    },
+    axios: {
+      singleton: true,
+      requiredVersion: '^1.4.0',
+    },
+    typescript: {
+      singleton: true,
+      requiredVersion: '^4.9.5',
+    },
+  },
+};
 
 // Performance optimization configuration
 const performanceConfig = (config) => {
@@ -246,6 +309,9 @@ const serviceWorkerConfig = (config) => {
 
 // Plugin configurations
 const plugins = [
+  // Module Federation plugin (always enabled)
+  addWebpackPlugin(new ModuleFederationPlugin(moduleFederationConfig)),
+
   // Compression plugin for gzip
   process.env.NODE_ENV === 'production' &&
     addWebpackPlugin(

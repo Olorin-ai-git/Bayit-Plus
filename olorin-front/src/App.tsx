@@ -28,9 +28,7 @@ function App() {
         <DemoModeProvider>
           <AuthGuard>
             <SandboxProvider>
-              <Router
-                future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-              >
+              <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <Layout>
                   <AppRoutes />
                 </Layout>

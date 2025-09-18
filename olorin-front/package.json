@@ -49,10 +49,14 @@
     "test:coverage": "react-app-rewired test --coverage --watchAll=false",
     "test:ci": "CI=true npm run test:coverage",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint src tests --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint src tests --ext .ts,.tsx --fix",
+    "lint:microservices": "eslint src/microservices --ext .ts,.tsx --max-warnings 0",
+    "lint:shared": "eslint src/shared --ext .ts,.tsx --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\" \"tests/**/*.{ts,tsx,js,jsx}\" \"*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\" \"tests/**/*.{ts,tsx,js,jsx}\" \"*.{ts,tsx,js,jsx,json,md}\"",
+    "format:microservices": "prettier --write \"src/microservices/**/*.{ts,tsx}\"",
+    "format:shared": "prettier --write \"src/shared/**/*.{ts,tsx}\"",
     "bundle:check": "npx bundle-analyzer build/static/js/*.js --json > bundle-analysis.json",
     "bundle:visualize": "npx webpack-bundle-analyzer build/static/js/*.js",
     "lighthouse:check": "npx lighthouse http://localhost:3000 --output json --output-path lighthouse-report.json",
@@ -69,12 +73,6 @@
     "firebase:projects": "firebase projects:list",
     "health:check": "curl -f http://localhost:3000 || exit 1",
     "performance:audit": "npm run build && npm run serve:test & sleep 5 && npm run lighthouse:check && pkill -f serve"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "jest": {
     "testMatch": [
@@ -114,10 +112,15 @@
     "customize-cra": "^1.0.0",
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-cypress": "^2.13.3",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-playwright": "2.2.2",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-testing-library": "7.8.0",
     "figma-js": "1.16.1-0",
     "figma-transformer": "2.1.0",
     "image-webpack-loader": "^8.1.0",
