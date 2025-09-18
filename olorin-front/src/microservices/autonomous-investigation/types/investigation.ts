@@ -237,3 +237,57 @@ export interface InvestigationSearchParams {
   page?: number;
   limit?: number;
 }
+
+// Investigation Step Types
+export enum StepStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  SKIPPED = 'skipped'
+}
+
+export enum LogLevel {
+  DEBUG = 'debug',
+  INFO = 'info',
+  WARNING = 'warning',
+  ERROR = 'error',
+  SUCCESS = 'success'
+}
+
+export interface InvestigationStep {
+  id: string;
+  title: string;
+  description: string;
+  agent: string;
+  status: StepStatus;
+  startedAt?: string;
+  completedAt?: string;
+  duration?: number;
+  details?: any;
+  error?: string;
+  order: number;
+  dependencies?: string[];
+  required: boolean;
+  parameters?: Record<string, any>;
+}
+
+// Entity Types for Investigation
+export type EntityType = 'userId' | 'deviceId';
+
+export interface InvestigationEntityParams {
+  entityId: string;
+  entityType: EntityType;
+  timeRange: string;
+}
+
+// Log Entry Types
+export interface LogEntry {
+  id: string;
+  timestamp: number;
+  message: string;
+  type: LogLevel;
+  agentName?: string;
+  stepId?: string;
+  investigationId?: string;
+}

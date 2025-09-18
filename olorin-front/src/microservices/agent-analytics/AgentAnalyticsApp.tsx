@@ -10,6 +10,11 @@ const ModelAnalytics = React.lazy(() => import('./components/ModelAnalytics'));
 const UsageTracking = React.lazy(() => import('./components/UsageTracking'));
 const CostAnalytics = React.lazy(() => import('./components/CostAnalytics'));
 
+// New migrated components
+const AgentDetailsViewer = React.lazy(() => import('./components/AgentDetailsViewer'));
+const AgentLogMonitor = React.lazy(() => import('./components/AgentLogMonitor'));
+const AgentResultsAnalyzer = React.lazy(() => import('./components/AgentResultsAnalyzer'));
+
 const AgentAnalyticsApp: React.FC = () => {
   return (
     <ErrorBoundary serviceName="agentAnalytics">
@@ -34,6 +39,11 @@ const AgentAnalyticsApp: React.FC = () => {
             <Route path="/models" element={<ModelAnalytics />} />
             <Route path="/usage" element={<UsageTracking />} />
             <Route path="/costs" element={<CostAnalytics />} />
+
+            {/* Agent Details and Monitoring */}
+            <Route path="/details" element={<AgentDetailsViewer details={{}} agentType="Unknown Agent" />} />
+            <Route path="/logs" element={<AgentLogMonitor isOpen={true} onClose={() => {}} logs={[]} onClearLogs={() => {}} />} />
+            <Route path="/results" element={<AgentResultsAnalyzer results={[]} />} />
 
             {/* Detailed Analytics Routes */}
             <Route path="/agent/:id/*" element={
