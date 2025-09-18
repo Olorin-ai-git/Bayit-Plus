@@ -187,46 +187,110 @@ const getEntryPoint = (service) => {
   }
 };
 
-// Shared dependencies configuration
-const sharedDependencies = {
-  react: {
-    singleton: true,
-    requiredVersion: '^18.2.0',
-    eager: true
+// Service-specific optimization configurations
+const serviceOptimizations = {
+  shell: {
+    eager: ['react', 'react-dom', 'react-router-dom'],
+    priority: ['routing', 'authentication', 'service-discovery']
   },
-  'react-dom': {
-    singleton: true,
-    requiredVersion: '^18.2.0',
-    eager: true
+  investigation: {
+    eager: ['react', 'react-dom'],
+    priority: ['investigation-core', 'data-processing', 'websocket']
   },
-  'react-router-dom': {
-    singleton: true,
-    requiredVersion: '^6.8.1'
+  agentAnalytics: {
+    eager: ['react', 'react-dom', 'chart.js'],
+    priority: ['analytics', 'charting', 'metrics']
   },
-  '@headlessui/react': {
-    singleton: true,
-    requiredVersion: '^1.7.17'
+  ragIntelligence: {
+    eager: ['react', 'react-dom'],
+    priority: ['rag-core', 'search', 'ai-processing']
   },
-  '@heroicons/react': {
-    singleton: true,
-    requiredVersion: '^2.0.18'
+  visualization: {
+    eager: ['react', 'react-dom', 'chart.js'],
+    priority: ['charts', 'graphs', 'data-viz']
   },
-  'chart.js': {
-    singleton: true,
-    requiredVersion: '^4.2.1'
+  reporting: {
+    eager: ['react', 'react-dom'],
+    priority: ['reports', 'pdf-generation', 'export']
   },
-  'react-chartjs-2': {
-    singleton: true,
-    requiredVersion: '^5.2.0'
+  coreUi: {
+    eager: ['react', 'react-dom', '@headlessui/react'],
+    priority: ['ui-components', 'layout', 'design-system']
   },
-  axios: {
-    singleton: true,
-    requiredVersion: '^1.6.7'
+  designSystem: {
+    eager: ['react', 'react-dom', '@headlessui/react'],
+    priority: ['design-tokens', 'components', 'figma-sync']
   },
-  'date-fns': {
-    singleton: true,
-    requiredVersion: '^2.29.3'
+  autonomousInvestigation: {
+    eager: ['react', 'react-dom'],
+    priority: ['autonomous-agents', 'ai-processing', 'investigation']
+  },
+  manualInvestigation: {
+    eager: ['react', 'react-dom'],
+    priority: ['manual-workflow', 'collaboration', 'investigation']
   }
+};
+
+// Enhanced shared dependencies with service-specific eager loading
+const getSharedDependencies = (service) => {
+  const serviceOpts = serviceOptimizations[service] || serviceOptimizations.shell;
+
+  return {
+    react: {
+      singleton: true,
+      requiredVersion: '^18.2.0',
+      eager: serviceOpts.eager.includes('react')
+    },
+    'react-dom': {
+      singleton: true,
+      requiredVersion: '^18.2.0',
+      eager: serviceOpts.eager.includes('react-dom')
+    },
+    'react-router-dom': {
+      singleton: true,
+      requiredVersion: '^6.11.0',
+      eager: serviceOpts.eager.includes('react-router-dom')
+    },
+    '@headlessui/react': {
+      singleton: true,
+      requiredVersion: '^2.2.8',
+      eager: serviceOpts.eager.includes('@headlessui/react')
+    },
+    '@heroicons/react': {
+      singleton: true,
+      requiredVersion: '^2.0.18'
+    },
+    'chart.js': {
+      singleton: true,
+      requiredVersion: '^4.2.1',
+      eager: serviceOpts.eager.includes('chart.js')
+    },
+    'react-chartjs-2': {
+      singleton: true,
+      requiredVersion: '^5.2.0',
+      eager: serviceOpts.eager.includes('chart.js')
+    },
+    axios: {
+      singleton: true,
+      requiredVersion: '^1.4.0'
+    },
+    'date-fns': {
+      singleton: true,
+      requiredVersion: '^2.29.3'
+    },
+    'lucide-react': {
+      singleton: true,
+      requiredVersion: '^0.263.0'
+    },
+    mitt: {
+      singleton: true,
+      requiredVersion: '3.0.1'
+    },
+    'react-hot-toast': {
+      singleton: true,
+      requiredVersion: '2.6.0'
+    }
+  };
 };
 
 module.exports = (env, argv) => {
@@ -313,7 +377,7 @@ module.exports = (env, argv) => {
         filename: 'remoteEntry.js',
         exposes: serviceConfig.exposes || {},
         remotes: serviceConfig.remotes || {},
-        shared: sharedDependencies
+        shared: getSharedDependencies(currentService)
       }),
 
       new HtmlWebpackPlugin({
@@ -324,13 +388,26 @@ module.exports = (env, argv) => {
         favicon: './public/favicon.ico'
       }),
 
-      // Environment variables
+      // Environment variables with service-specific configurations
       new (require('webpack').DefinePlugin)({
         'process.env.NODE_ENV': JSON.stringify(argv.mode || 'development'),
         'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
         'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
         'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090'),
-        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090')
+        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
+        'process.env.REACT_APP_MF_SHELL_URL': JSON.stringify('http://localhost:3000'),
+        'process.env.REACT_APP_MF_INVESTIGATION_URL': JSON.stringify('http://localhost:3001'),
+        'process.env.REACT_APP_MF_AGENT_ANALYTICS_URL': JSON.stringify('http://localhost:3002'),
+        'process.env.REACT_APP_MF_RAG_INTELLIGENCE_URL': JSON.stringify('http://localhost:3003'),
+        'process.env.REACT_APP_MF_VISUALIZATION_URL': JSON.stringify('http://localhost:3004'),
+        'process.env.REACT_APP_MF_REPORTING_URL': JSON.stringify('http://localhost:3005'),
+        'process.env.REACT_APP_MF_CORE_UI_URL': JSON.stringify('http://localhost:3006'),
+        'process.env.REACT_APP_MF_DESIGN_SYSTEM_URL': JSON.stringify('http://localhost:3007'),
+        'process.env.REACT_APP_MF_AUTONOMOUS_INVESTIGATION_URL': JSON.stringify('http://localhost:3008'),
+        'process.env.REACT_APP_MF_MANUAL_INVESTIGATION_URL': JSON.stringify('http://localhost:3009'),
+        'process.env.REACT_APP_SERVICE_OPTIMIZATION': JSON.stringify(serviceOptimizations[currentService]?.priority || []),
+        'process.env.REACT_APP_BUILD_TIMESTAMP': JSON.stringify(new Date().toISOString()),
+        'process.env.REACT_APP_BUILD_HASH': JSON.stringify(require('crypto').randomBytes(8).toString('hex'))
       })
     ],
 
@@ -343,33 +420,102 @@ module.exports = (env, argv) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-        'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+        'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+        'X-Service-Name': serviceConfig.name,
+        'X-Service-Version': '1.0.0',
+        'X-Build-Timestamp': new Date().toISOString()
       },
       client: {
         overlay: {
           errors: true,
-          warnings: false
-        }
+          warnings: isDevelopment && currentService === 'shell' // Only show warnings for shell in dev
+        },
+        logging: currentService === 'shell' ? 'info' : 'warn', // Verbose logging only for shell
+        progress: true,
+        reconnect: 5
       },
       static: {
         directory: path.join(__dirname, 'public'),
-        publicPath: '/'
-      }
+        publicPath: '/',
+        watch: {
+          ignored: /node_modules/,
+          usePolling: false,
+          interval: 100
+        }
+      },
+      devMiddleware: {
+        stats: {
+          preset: 'minimal',
+          colors: true,
+          chunks: false,
+          modules: false,
+          children: false,
+          timings: true,
+          assets: currentService === 'shell' // Only show assets for shell
+        },
+        writeToDisk: false
+      },
+      // Service-specific proxy configurations for API calls
+      proxy: currentService === 'shell' ? {
+        '/api': {
+          target: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
+          changeOrigin: true,
+          secure: false,
+          logLevel: 'warn'
+        },
+        '/ws': {
+          target: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
+          ws: true,
+          changeOrigin: true,
+          secure: false
+        }
+      } : undefined,
+      compress: true,
+      open: currentService === 'shell' // Only auto-open shell service
     },
 
     optimization: {
       minimize: isProduction,
       splitChunks: {
         chunks: 'async',
+        minSize: isDevelopment ? 0 : 20000,
+        maxSize: isDevelopment ? 0 : 244000,
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
-            enforce: true
+            priority: 10,
+            enforce: true,
+            reuseExistingChunk: true
+          },
+          shared: {
+            test: /[\\/]src[\\/]shared[\\/]/,
+            name: `shared-${currentService}`,
+            chunks: 'all',
+            priority: 8,
+            reuseExistingChunk: true,
+            minChunks: 1
+          },
+          serviceSpecific: {
+            test: new RegExp(`[\\\\/]src[\\\\/]microservices[\\\\/]${currentService.replace(/([A-Z])/g, '-$1').toLowerCase()}[\\\\/]`),
+            name: `${currentService}-core`,
+            chunks: 'all',
+            priority: 6,
+            reuseExistingChunk: true,
+            minChunks: 1
+          },
+          common: {
+            name: 'common',
+            chunks: 'all',
+            priority: 1,
+            reuseExistingChunk: true,
+            minChunks: 2
           }
         }
-      }
+      },
+      moduleIds: isDevelopment ? 'named' : 'deterministic',
+      chunkIds: isDevelopment ? 'named' : 'deterministic'
     },
 
     output: {

@@ -49,6 +49,55 @@ export type EntityType = 'user_id' | 'email' | 'phone' | 'device_id' | 'ip_addre
 export type InvestigationStatus = 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
 export type Priority = 'low' | 'medium' | 'high' | 'critical';
 
+// WebSocket Types
+export type ServiceName =
+  | 'shell'
+  | 'autonomous-investigation'
+  | 'manual-investigation'
+  | 'agent-analytics'
+  | 'rag-intelligence'
+  | 'visualization'
+  | 'reporting'
+  | 'core-ui'
+  | 'design-system'
+  | 'broadcast';
+
+export type WebSocketConnectionState = 'connecting' | 'connected' | 'disconnected' | 'reconnecting';
+
+export interface WebSocketConfig {
+  url: string;
+  protocols?: string[];
+  reconnectEnabled?: boolean;
+  heartbeatInterval?: number;
+  messageQueueSize?: number;
+  debug?: boolean;
+}
+
+export interface WebSocketMessage {
+  id?: string;
+  type: string;
+  event?: string;
+  data?: any;
+  target?: ServiceName;
+  source?: ServiceName;
+  timestamp?: string;
+}
+
+export interface WebSocketEvent {
+  type: string;
+  data: any;
+  timestamp: Date;
+}
+
+export interface WebSocketSubscription {
+  id: string;
+  eventType: string;
+  handler: (data: any) => void;
+  service?: ServiceName;
+  once: boolean;
+  createdAt: Date;
+}
+
 // Autonomous Investigation Types
 export interface AutonomousInvestigation extends Investigation {
   aiMode: AIMode;
