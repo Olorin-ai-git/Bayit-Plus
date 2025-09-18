@@ -1,624 +1,381 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import {
-  ReportConfig,
-  ReportTemplate,
-  ReportBuilderStep,
-  ReportPreview,
-  ReportParameter,
-  ReportFilter,
-  ReportFormat,
-  ReportSchedule,
-  ReportSection,
-  ReportDataSource
-} from '../types/reporting';
+import React, { useState, useCallback } from 'react';
+import { FileText, Download, Settings, Eye, Save, Trash2, Plus } from 'lucide-react';
+
+interface ReportSection {
+  id: string;
+  type: 'summary' | 'risk-analysis' | 'timeline' | 'evidence' | 'recommendations' | 'custom';
+  title: string;
+  content: string;
+  order: number;
+  enabled: boolean;
+}
+
+interface ReportTemplate {
+  id: string;
+  name: string;
+  description: string;
+  sections: ReportSection[];
+  format: 'pdf' | 'docx' | 'html';
+  createdAt: string;
+  lastModified: string;
+}
 
 interface ReportBuilderProps {
-  initialConfig?: Partial<ReportConfig>;
-  templates?: ReportTemplate[];
-  dataSources?: ReportDataSource[];
-  onConfigChange?: (config: ReportConfig) => void;
-  onPreview?: (config: ReportConfig) => Promise<ReportPreview>;
-  onSave?: (config: ReportConfig) => Promise<void>;
-  onGenerate?: (config: ReportConfig) => Promise<void>;
+  investigationId?: string;
+  onSave?: (template: ReportTemplate) => void;
+  onExport?: (template: ReportTemplate, format: string) => void;
   className?: string;
 }
 
 const ReportBuilder: React.FC<ReportBuilderProps> = ({
-  initialConfig,
-  templates = [],
-  dataSources = [],
-  onConfigChange,
-  onPreview,
+  investigationId,
   onSave,
-  onGenerate,
-  className
+  onExport,
+  className = '',
 }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [config, setConfig] = useState<Partial<ReportConfig>>(initialConfig || {});
-  const [selectedTemplate, setSelectedTemplate] = useState<ReportTemplate | null>(null);
-  const [preview, setPreview] = useState<ReportPreview | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [template, setTemplate] = useState<ReportTemplate>({
+    id: `template-${Date.now()}`,
+    name: 'Investigation Report Template',
+    description: 'Comprehensive fraud investigation report',
+    format: 'pdf',
+    createdAt: new Date().toISOString(),
+    lastModified: new Date().toISOString(),
+    sections: [
+      {
+        id: '1',
+        type: 'summary',
+        title: 'Executive Summary',
+        content: 'Investigation overview and key findings...',
+        order: 1,
+        enabled: true,
+      },
+      {
+        id: '2',
+        type: 'risk-analysis',
+        title: 'Risk Analysis',
+        content: 'Detailed risk assessment and scoring...',
+        order: 2,
+        enabled: true,
+      },
+      {
+        id: '3',
+        type: 'timeline',
+        title: 'Investigation Timeline',
+        content: 'Chronological sequence of investigation steps...',
+        order: 3,
+        enabled: true,
+      },
+      {
+        id: '4',
+        type: 'evidence',
+        title: 'Evidence Summary',
+        content: 'Key evidence and supporting documentation...',
+        order: 4,
+        enabled: true,
+      },
+      {
+        id: '5',
+        type: 'recommendations',
+        title: 'Recommendations',
+        content: 'Proposed actions and next steps...',
+        order: 5,
+        enabled: true,
+      },
+    ],
+  });
 
-  const steps: ReportBuilderStep[] = [
-    {
-      id: 'template',
-      title: 'Select Template',
-      description: 'Choose a template for your report',
-      component: 'template',
-      completed: !!config.templateId,
-      validation: {
-        required: ['templateId']
-      }
-    },
-    {
-      id: 'parameters',
-      title: 'Configure Parameters',
-      description: 'Set parameter values for your report',
-      component: 'parameters',
-      completed: !!config.parameters && Object.keys(config.parameters).length > 0,
-      validation: {
-        required: ['parameters']
-      }
-    },
-    {
-      id: 'filters',
-      title: 'Apply Filters',
-      description: 'Filter the data for your report',
-      component: 'filters',
-      completed: true, // Filters are optional
-      validation: {
-        required: []
-      }
-    },
-    {
-      id: 'format',
-      title: 'Output Format',
-      description: 'Choose output format and options',
-      component: 'sections',
-      completed: !!config.format && config.format.length > 0,
-      validation: {
-        required: ['format']
-      }
-    },
-    {
-      id: 'schedule',
-      title: 'Schedule (Optional)',
-      description: 'Set up automatic report generation',
-      component: 'schedule',
-      completed: true, // Scheduling is optional
-      validation: {
-        required: []
-      }
-    },
-    {
-      id: 'preview',
-      title: 'Preview & Generate',
-      description: 'Preview your report and generate it',
-      component: 'preview',
-      completed: false,
-      validation: {
-        required: ['name', 'templateId', 'format']
-      }
-    }
-  ];
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [selectedSection, setSelectedSection] = useState<string>('1');
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleConfigUpdate = useCallback((updates: Partial<ReportConfig>) => {
-    const newConfig = { ...config, ...updates };
-    setConfig(newConfig);
-    onConfigChange?.(newConfig as ReportConfig);
-  }, [config, onConfigChange]);
-
-  const handleTemplateSelect = (template: ReportTemplate) => {
-    setSelectedTemplate(template);
-    handleConfigUpdate({
-      templateId: template.id,
-      parameters: {},
-      filters: []
-    });
+  const sectionTypeConfig = {
+    summary: { icon: FileText, color: 'blue', label: 'Executive Summary' },
+    'risk-analysis': { icon: Settings, color: 'red', label: 'Risk Analysis' },
+    timeline: { icon: Plus, color: 'green', label: 'Timeline' },
+    evidence: { icon: Eye, color: 'purple', label: 'Evidence' },
+    recommendations: { icon: Save, color: 'orange', label: 'Recommendations' },
+    custom: { icon: FileText, color: 'gray', label: 'Custom Section' },
   };
 
-  const handleParameterChange = (parameterId: string, value: any) => {
-    const newParameters = {
-      ...config.parameters,
-      [parameterId]: value
+  const updateSection = useCallback((sectionId: string, updates: Partial<ReportSection>) => {
+    setTemplate(prev => ({
+      ...prev,
+      sections: prev.sections.map(section =>
+        section.id === sectionId ? { ...section, ...updates } : section
+      ),
+      lastModified: new Date().toISOString(),
+    }));
+  }, []);
+
+  const addSection = useCallback(() => {
+    const newSection: ReportSection = {
+      id: `section-${Date.now()}`,
+      type: 'custom',
+      title: 'New Section',
+      content: 'Enter section content here...',
+      order: template.sections.length + 1,
+      enabled: true,
     };
-    handleConfigUpdate({ parameters: newParameters });
-  };
 
-  const handleFilterChange = (filters: ReportFilter[]) => {
-    handleConfigUpdate({ filters });
-  };
+    setTemplate(prev => ({
+      ...prev,
+      sections: [...prev.sections, newSection],
+      lastModified: new Date().toISOString(),
+    }));
+  }, [template.sections.length]);
 
-  const handlePreview = async () => {
-    if (!onPreview || !isConfigValid()) return;
+  const removeSection = useCallback((sectionId: string) => {
+    setTemplate(prev => ({
+      ...prev,
+      sections: prev.sections.filter(section => section.id !== sectionId),
+      lastModified: new Date().toISOString(),
+    }));
+  }, []);
 
-    setLoading(true);
-    setError(null);
-
+  const handleExport = async (format: 'pdf' | 'docx' | 'html') => {
+    setIsGenerating(true);
     try {
-      const previewResult = await onPreview(config as ReportConfig);
-      setPreview(previewResult);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Preview failed');
+      // Simulate report generation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      if (onExport) {
+        onExport({ ...template, format }, format);
+      }
+
+      // In production, this would trigger actual file download
+      console.log(`Exporting report as ${format.toUpperCase()}...`);
+    } catch (error) {
+      console.error('Export failed:', error);
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  const handleSave = async () => {
-    if (!onSave || !isConfigValid()) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await onSave(config as ReportConfig);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
-    } finally {
-      setLoading(false);
+  const handleSave = () => {
+    if (onSave) {
+      onSave(template);
     }
+    console.log('Template saved:', template);
   };
 
-  const handleGenerate = async () => {
-    if (!onGenerate || !isConfigValid()) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await onGenerate(config as ReportConfig);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Generation failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const isConfigValid = () => {
-    const currentStepData = steps[currentStep];
-    if (!currentStepData.validation) return true;
-
-    return currentStepData.validation.required.every(field => {
-      const value = (config as any)[field];
-      return value !== undefined && value !== null && value !== '';
-    });
-  };
-
-  const canProceedToNext = () => {
-    return isConfigValid() && currentStep < steps.length - 1;
-  };
-
-  const canGoBack = () => {
-    return currentStep > 0;
-  };
-
-  const nextStep = () => {
-    if (canProceedToNext()) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const previousStep = () => {
-    if (canGoBack()) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const renderStepContent = () => {
-    const step = steps[currentStep];
-
-    switch (step.component) {
-      case 'template':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Choose a Report Template</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {templates.map((template) => (
-                  <div
-                    key={template.id}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedTemplate?.id === template.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => handleTemplateSelect(template)}
-                  >
-                    <h4 className="font-medium text-gray-900">{template.name}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{template.description}</p>
-                    <div className="mt-3 flex items-center justify-between">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {template.type.replace('_', ' ').toUpperCase()}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {template.sections.length} sections
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'parameters':
-        if (!selectedTemplate) return null;
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Configure Parameters</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Report Name</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={config.name || ''}
-                    onChange={(e) => handleConfigUpdate({ name: e.target.value })}
-                    placeholder="Enter report name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    rows={3}
-                    value={config.description || ''}
-                    onChange={(e) => handleConfigUpdate({ description: e.target.value })}
-                    placeholder="Enter report description (optional)"
-                  />
-                </div>
-                {selectedTemplate.parameters.map((param) => (
-                  <div key={param.id}>
-                    <label className="block text-sm font-medium text-gray-700">
-                      {param.label}
-                      {param.required && <span className="text-red-500 ml-1">*</span>}
-                    </label>
-                    {param.type === 'select' || param.type === 'multiselect' ? (
-                      <select
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        value={config.parameters?.[param.id] || param.defaultValue || ''}
-                        onChange={(e) => handleParameterChange(param.id, e.target.value)}
-                        multiple={param.type === 'multiselect'}
-                      >
-                        <option value="">Select {param.label.toLowerCase()}</option>
-                        {param.options?.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : param.type === 'boolean' ? (
-                      <div className="mt-1">
-                        <label className="inline-flex items-center">
-                          <input
-                            type="checkbox"
-                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            checked={config.parameters?.[param.id] || param.defaultValue || false}
-                            onChange={(e) => handleParameterChange(param.id, e.target.checked)}
-                          />
-                          <span className="ml-2 text-sm text-gray-600">Enable {param.label.toLowerCase()}</span>
-                        </label>
-                      </div>
-                    ) : (
-                      <input
-                        type={param.type === 'number' ? 'number' : param.type === 'date' ? 'date' : 'text'}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        value={config.parameters?.[param.id] || param.defaultValue || ''}
-                        onChange={(e) => handleParameterChange(param.id, e.target.value)}
-                        placeholder={`Enter ${param.label.toLowerCase()}`}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'filters':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Apply Filters (Optional)</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">
-                  Filters will be applied to limit the data included in your report.
-                  You can skip this step if you want to include all available data.
-                </p>
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Add Filter
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'sections':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Output Format</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Select Output Formats
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {(['pdf', 'html', 'docx', 'csv', 'xlsx'] as ReportFormat[]).map((format) => (
-                      <label key={format} className="inline-flex items-center">
-                        <input
-                          type="checkbox"
-                          className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                          checked={config.format?.includes(format) || false}
-                          onChange={(e) => {
-                            const currentFormats = config.format || [];
-                            const newFormats = e.target.checked
-                              ? [...currentFormats, format]
-                              : currentFormats.filter(f => f !== format);
-                            handleConfigUpdate({ format: newFormats });
-                          }}
-                        />
-                        <span className="ml-2 text-sm text-gray-700 uppercase">{format}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'schedule':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Schedule Report (Optional)</h3>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    checked={!!config.schedule}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        handleConfigUpdate({
-                          schedule: {
-                            type: 'once' as ReportSchedule,
-                            startDate: new Date().toISOString().split('T')[0],
-                            timezone: 'UTC',
-                            recipients: []
-                          }
-                        });
-                      } else {
-                        handleConfigUpdate({ schedule: undefined });
-                      }
-                    }}
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Enable scheduled generation</span>
-                </div>
-
-                {config.schedule && (
-                  <div className="ml-6 space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Frequency</label>
-                      <select
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        value={config.schedule.type}
-                        onChange={(e) => handleConfigUpdate({
-                          schedule: {
-                            ...config.schedule!,
-                            type: e.target.value as ReportSchedule
-                          }
-                        })}
-                      >
-                        <option value="once">Once</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Start Date</label>
-                      <input
-                        type="date"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        value={config.schedule.startDate}
-                        onChange={(e) => handleConfigUpdate({
-                          schedule: {
-                            ...config.schedule!,
-                            startDate: e.target.value
-                          }
-                        })}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'preview':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Preview & Generate</h3>
-
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <h4 className="font-medium text-gray-900 mb-2">Report Configuration Summary</h4>
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Name:</dt>
-                    <dd className="text-sm text-gray-900">{config.name || 'Untitled Report'}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Template:</dt>
-                    <dd className="text-sm text-gray-900">{selectedTemplate?.name}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Formats:</dt>
-                    <dd className="text-sm text-gray-900">
-                      {config.format?.map(f => f.toUpperCase()).join(', ') || 'None selected'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Scheduled:</dt>
-                    <dd className="text-sm text-gray-900">
-                      {config.schedule ? `Yes (${config.schedule.type})` : 'No'}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-
-              <div className="flex space-x-3">
-                <button
-                  type="button"
-                  onClick={handlePreview}
-                  disabled={loading || !isConfigValid()}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  {loading ? 'Loading...' : 'Preview Report'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={loading || !isConfigValid()}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                  Save Report
-                </button>
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={loading || !isConfigValid()}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                >
-                  Generate Report
-                </button>
-              </div>
-
-              {preview && (
-                <div className="mt-6 border rounded-lg bg-white">
-                  <div className="px-4 py-3 border-b">
-                    <h4 className="font-medium text-gray-900">Report Preview</h4>
-                    <p className="text-sm text-gray-600">
-                      {preview.metadata.pageCount} pages • {preview.metadata.dataPoints} data points
-                    </p>
-                  </div>
-                  <div
-                    className="p-4 max-h-96 overflow-auto"
-                    dangerouslySetInnerHTML={{ __html: preview.html }}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        );
-
-      default:
-        return <div>Step content not implemented</div>;
-    }
-  };
+  const selectedSectionData = template.sections.find(s => s.id === selectedSection);
 
   return (
-    <div className={`max-w-4xl mx-auto ${className || ''}`}>
-      {/* Step Navigation */}
-      <nav className="mb-8">
-        <ol className="flex items-center">
-          {steps.map((step, index) => (
-            <li key={step.id} className={`relative ${index !== steps.length - 1 ? 'pr-8 sm:pr-20' : ''}`}>
-              <div className="flex items-center">
-                <div
-                  className={`relative flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                    index < currentStep
-                      ? 'bg-blue-600 border-blue-600'
-                      : index === currentStep
-                      ? 'border-blue-600 bg-white'
-                      : 'border-gray-300 bg-white'
-                  }`}
-                >
-                  {index < currentStep ? (
-                    <svg className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <span className={`text-sm font-medium ${index === currentStep ? 'text-blue-600' : 'text-gray-500'}`}>
-                      {index + 1}
-                    </span>
-                  )}
-                </div>
-                <span className={`ml-4 text-sm font-medium ${index === currentStep ? 'text-blue-600' : 'text-gray-500'}`}>
-                  {step.title}
-                </span>
-              </div>
-              {index !== steps.length - 1 && (
-                <div className="absolute top-4 left-4 -ml-px mt-0.5 h-full w-0.5 bg-gray-300" />
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
-
-      {/* Error Display */}
-      {error && (
-        <div className="mb-6 rounded-md bg-red-50 p-4">
-          <div className="flex">
-            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{error}</p>
-            </div>
+    <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>
+      {/* Header */}
+      <div className="border-b border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">Report Builder</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {investigationId ? `Investigation ${investigationId}` : 'Create and customize investigation reports'}
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsPreviewMode(!isPreviewMode)}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm rounded-md transition-colors ${
+                isPreviewMode
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+              <span>{isPreviewMode ? 'Edit' : 'Preview'}</span>
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save Template</span>
+            </button>
           </div>
         </div>
-      )}
 
-      {/* Step Content */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        {renderStepContent()}
+        {/* Template Info */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Template Name</label>
+            <input
+              type="text"
+              value={template.name}
+              onChange={(e) => setTemplate(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <input
+              type="text"
+              value={template.description}
+              onChange={(e) => setTemplate(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Export Format</label>
+            <select
+              value={template.format}
+              onChange={(e) => setTemplate(prev => ({ ...prev, format: e.target.value as 'pdf' | 'docx' | 'html' }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="pdf">PDF Document</option>
+              <option value="docx">Word Document</option>
+              <option value="html">HTML Report</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between">
-        <button
-          type="button"
-          onClick={previousStep}
-          disabled={!canGoBack()}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Previous
-        </button>
+      {/* Content */}
+      <div className="flex h-96">
+        {/* Sections List */}
+        <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium text-gray-900">Report Sections</h3>
+            <button
+              onClick={addSection}
+              className="flex items-center space-x-1 px-2 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Add</span>
+            </button>
+          </div>
 
-        {currentStep < steps.length - 1 ? (
-          <button
-            type="button"
-            onClick={nextStep}
-            disabled={!canProceedToNext()}
-            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            Next
-            <svg className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        ) : null}
+          <div className="space-y-2">
+            {template.sections
+              .sort((a, b) => a.order - b.order)
+              .map((section) => {
+                const config = sectionTypeConfig[section.type];
+                const IconComponent = config.icon;
+
+                return (
+                  <div
+                    key={section.id}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      selectedSection === section.id
+                        ? 'border-blue-300 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setSelectedSection(section.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={section.enabled}
+                            onChange={(e) => updateSection(section.id, { enabled: e.target.checked })}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <IconComponent className={`w-4 h-4 text-${config.color}-600`} />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm text-gray-900">
+                            {section.title}
+                          </div>
+                          <div className="text-xs text-gray-500 capitalize">
+                            {config.label}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-gray-400">
+                          {section.order}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeSection(section.id);
+                          }}
+                          className="text-red-500 hover:text-red-700 p-1"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Section Editor */}
+        <div className="flex-1 p-4">
+          {selectedSectionData ? (
+            <div className="h-full flex flex-col">
+              <div className="mb-4">
+                <input
+                  type="text"
+                  value={selectedSectionData.title}
+                  onChange={(e) => updateSection(selectedSectionData.id, { title: e.target.value })}
+                  className="w-full px-3 py-2 text-lg font-medium border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Section title..."
+                />
+              </div>
+
+              {isPreviewMode ? (
+                <div className="flex-1 p-4 bg-gray-50 rounded-lg overflow-y-auto">
+                  <div className="prose prose-sm max-w-none">
+                    <h3 className="text-lg font-semibold mb-3">{selectedSectionData.title}</h3>
+                    <div className="whitespace-pre-wrap">{selectedSectionData.content}</div>
+                  </div>
+                </div>
+              ) : (
+                <textarea
+                  value={selectedSectionData.content}
+                  onChange={(e) => updateSection(selectedSectionData.id, { content: e.target.value })}
+                  className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md resize-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter section content..."
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              <div className="text-center">
+                <FileText className="w-12 h-12 mx-auto mb-2" />
+                <p>Select a section to edit</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-gray-200 p-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-500">
+            {template.sections.filter(s => s.enabled).length} of {template.sections.length} sections enabled
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => handleExport('html')}
+              disabled={isGenerating}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              <Download className="w-4 h-4" />
+              <span>HTML</span>
+            </button>
+            <button
+              onClick={() => handleExport('docx')}
+              disabled={isGenerating}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              <Download className="w-4 h-4" />
+              <span>Word</span>
+            </button>
+            <button
+              onClick={() => handleExport('pdf')}
+              disabled={isGenerating}
+              className="flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              <Download className="w-4 h-4" />
+              <span>{isGenerating ? 'Generating...' : 'Export PDF'}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

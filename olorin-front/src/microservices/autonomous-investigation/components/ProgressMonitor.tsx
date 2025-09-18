@@ -7,10 +7,9 @@ import {
   CheckCircleIcon,
   PlayIcon,
   PauseIcon,
-  StopIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
-import { Investigation, AgentProgress, InvestigationEvent } from '../types/investigation';
+import { Investigation, InvestigationEvent } from '../types/investigation';
 import { useInvestigationWorkflow } from '../hooks/useInvestigationWorkflow';
 import { useEventBus } from '../../shared/services/EventBus';
 
@@ -66,7 +65,7 @@ export const ProgressMonitor: React.FC<ProgressMonitorProps> = ({
     const interval = setInterval(updateMetrics, 2000); // Update every 2 seconds
 
     return () => clearInterval(interval);
-  }, [investigation.id]);
+  }, [investigation.id, updateMetrics]);
 
   useEffect(() => {
     if (!eventBus) return;
@@ -105,13 +104,12 @@ export const ProgressMonitor: React.FC<ProgressMonitorProps> = ({
       eventBus.off('agent:failed', handleAgentEvent);
       eventBus.off('investigation:progress', handleInvestigationProgress);
     };
-  }, [eventBus, investigation.id]);
+  }, [eventBus, investigation.id, updateMetrics]);
 
   const updateMetrics = () => {
     // Update agent metrics
     const metrics: AgentMetrics[] = investigation.assignedAgents.map(agentId => {
       const progress = getAgentProgress(investigation.id, agentId);
-      const agent = investigation.progress.agents.find(a => a.agentId === agentId);
 
       return {
         agentId,

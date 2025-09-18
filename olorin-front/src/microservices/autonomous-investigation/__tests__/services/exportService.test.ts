@@ -272,7 +272,6 @@ describe('ExportService', () => {
     it('simulates PDF generation delay', async () => {
       const options: ExportOptions = { ...defaultExportOptions, format: 'pdf' };
 
-      const startTime = Date.now();
       await exportService.exportInvestigation(mockInvestigation, options);
 
       // Verify setTimeout was called (simulating delay)

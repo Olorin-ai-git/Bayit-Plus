@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
 
+// Setup React Testing Library global config
+import { configure } from '@testing-library/react';
+
 // Global test setup
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder as any;
@@ -295,9 +298,6 @@ SVGElement.prototype.getBBox = jest.fn(() => ({
   width: 100,
   height: 100,
 })) as any;
-
-// Setup React Testing Library global config
-import { configure } from '@testing-library/react';
 
 configure({
   testIdAttribute: 'data-testid',

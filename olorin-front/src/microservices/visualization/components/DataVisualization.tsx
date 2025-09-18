@@ -1,621 +1,350 @@
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  RadialLinearScale,
-  Filler,
-  ScatterController,
-  BubbleController
-} from 'chart.js';
-import { Chart, getElementAtEvent, getDatasetAtEvent, getElementsAtEvent } from 'react-chartjs-2';
-import {
-  ChartConfig,
-  ChartType,
-  VisualizationTheme,
-  ExportOptions,
-  VisualizationError,
-  DrillDownAction,
-  VisualizationEvent
-} from '../types/visualization';
+import React, { useState, useMemo } from 'react';
+import { BarChart3, PieChart, TrendingUp, Map, Download, Filter, RefreshCw, Eye } from 'lucide-react';
+import LocationMap from './LocationMap';
+import RiskScoreDisplay from './RiskScoreDisplay';
+import OverallRiskScore from './OverallRiskScore';
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  RadialLinearScale,
-  Filler,
-  ScatterController,
-  BubbleController
-);
-
-// Props interface
-interface DataVisualizationProps {
-  config: ChartConfig;
-  data?: any;
-  theme?: VisualizationTheme;
-  width?: number;
-  height?: number;
-  responsive?: boolean;
-  maintainAspectRatio?: boolean;
-  enableInteractions?: boolean;
-  enableDrillDown?: boolean;
-  enableExport?: boolean;
-  enableFullscreen?: boolean;
-  refreshInterval?: number;
-  loading?: boolean;
-  error?: VisualizationError | null;
-  className?: string;
-  onDataClick?: (event: VisualizationEvent) => void;
-  onDataHover?: (event: VisualizationEvent) => void;
-  onDrillDown?: (action: DrillDownAction) => void;
-  onExport?: (options: ExportOptions) => Promise<void>;
-  onError?: (error: VisualizationError) => void;
-  onRender?: (chart: ChartJS) => void;
+interface ChartData {
+  id: string;
+  name: string;
+  value: number;
+  color: string;
+  trend?: 'up' | 'down' | 'stable';
+  change?: number;
 }
 
-// Loading skeleton component
-const LoadingSkeleton: React.FC<{ height: number }> = ({ height }) => (
-  <div
-    className="animate-pulse bg-gray-200 rounded-lg flex items-center justify-center"
-    style={{ height: `${height}px` }}
-  >
-    <div className="text-gray-400 text-center">
-      <div className="w-12 h-12 bg-gray-300 rounded-full mx-auto mb-4"></div>
-      <div className="h-4 bg-gray-300 rounded w-32 mx-auto mb-2"></div>
-      <div className="h-3 bg-gray-300 rounded w-24 mx-auto"></div>
-    </div>
-  </div>
-);
+interface TimeSeriesPoint {
+  timestamp: string;
+  value: number;
+  category?: string;
+}
 
-// Error display component
-const ErrorDisplay: React.FC<{ error: VisualizationError; onRetry?: () => void }> = ({ error, onRetry }) => (
-  <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-    <div className="text-red-600 text-4xl mb-4">⚠️</div>
-    <h3 className="text-lg font-semibold text-red-800 mb-2">Visualization Error</h3>
-    <p className="text-red-700 mb-4">{error.message}</p>
-    {error.suggestions && error.suggestions.length > 0 && (
-      <div className="text-left bg-white rounded-lg p-4 mb-4">
-        <h4 className="font-medium text-red-800 mb-2">Suggestions:</h4>
-        <ul className="text-sm text-red-700 space-y-1">
-          {error.suggestions.map((suggestion, index) => (
-            <li key={index}>• {suggestion}</li>
-          ))}
-        </ul>
-      </div>
-    )}
-    {onRetry && error.recoverable && (
-      <button
-        onClick={onRetry}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-      >
-        Try Again
-      </button>
-    )}
-  </div>
-);
+interface DataVisualizationProps {
+  className?: string;
+  investigationId?: string;
+  realTime?: boolean;
+}
 
-// Chart toolbar component
-const ChartToolbar: React.FC<{
-  onExport?: () => void;
-  onFullscreen?: () => void;
-  onRefresh?: () => void;
-  enableExport: boolean;
-  enableFullscreen: boolean;
-}> = ({ onExport, onFullscreen, onRefresh, enableExport, enableFullscreen }) => (
-  <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-t-lg border-b">
-    <div className="flex-1"></div>
-    {onRefresh && (
-      <button
-        onClick={onRefresh}
-        title="Refresh"
-        className="p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded transition-colors"
-      >
-        🔄
-      </button>
-    )}
-    {enableExport && onExport && (
-      <button
-        onClick={onExport}
-        title="Export"
-        className="p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded transition-colors"
-      >
-        📊
-      </button>
-    )}
-    {enableFullscreen && onFullscreen && (
-      <button
-        onClick={onFullscreen}
-        title="Fullscreen"
-        className="p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded transition-colors"
-      >
-        ⛶
-      </button>
-    )}
-  </div>
-);
-
-export const DataVisualization: React.FC<DataVisualizationProps> = ({
-  config,
-  data,
-  theme,
-  width,
-  height = 400,
-  responsive = true,
-  maintainAspectRatio,
-  enableInteractions = true,
-  enableDrillDown = false,
-  enableExport = false,
-  enableFullscreen = false,
-  refreshInterval,
-  loading = false,
-  error = null,
+const DataVisualization: React.FC<DataVisualizationProps> = ({
   className = '',
-  onDataClick,
-  onDataHover,
-  onDrillDown,
-  onExport,
-  onError,
-  onRender
+  investigationId,
+  realTime = false,
 }) => {
-  // Refs
-  const chartRef = useRef<ChartJS>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeView, setActiveView] = useState<'overview' | 'risk' | 'geographic' | 'trends'>('overview');
+  const [timeRange, setTimeRange] = useState<'1h' | '6h' | '24h' | '7d' | '30d'>('24h');
+  const [showFilters, setShowFilters] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // State
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [chartInstance, setChartInstance] = useState<ChartJS | null>(null);
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  // Mock data for visualization - in production, this would come from props or API
+  const mockRiskMetrics = {
+    overallScore: 74,
+    behavioralRisk: 65,
+    technicalRisk: 82,
+    locationRisk: 45,
+    deviceRisk: 78,
+    networkRisk: 71,
+    accountAge: 32,
+    transactionVolume: 15420,
+    anomalyCount: 8,
+    lastUpdated: new Date().toISOString(),
+  };
 
-  // Auto-refresh effect
-  useEffect(() => {
-    if (!refreshInterval || refreshInterval <= 0) return;
+  const mockRiskFactors = [
+    {
+      id: '1',
+      name: 'Multiple Device Access',
+      score: 85,
+      weight: 2.5,
+      description: 'Account accessed from multiple devices in short timeframe',
+      category: 'device' as const,
+      status: 'critical' as const,
+    },
+    {
+      id: '2',
+      name: 'Unusual Location Pattern',
+      score: 72,
+      weight: 2.0,
+      description: 'Login from geographically impossible location',
+      category: 'location' as const,
+      status: 'warning' as const,
+    },
+    {
+      id: '3',
+      name: 'High Transaction Velocity',
+      score: 68,
+      weight: 1.8,
+      description: 'Rapid succession of transactions',
+      category: 'behavioral' as const,
+      status: 'warning' as const,
+    },
+  ];
 
-    const interval = setInterval(() => {
-      setRefreshCounter(prev => prev + 1);
-    }, refreshInterval);
-
-    return () => clearInterval(interval);
-  }, [refreshInterval]);
-
-  // Apply theme to chart configuration
-  const themedConfig = useMemo(() => {
-    if (!theme) return config;
-
-    const themedChartConfig = { ...config };
-
-    // Apply theme colors to datasets if not explicitly set
-    if (themedChartConfig.datasets) {
-      themedChartConfig.datasets = themedChartConfig.datasets.map((dataset, index) => ({
-        ...dataset,
-        backgroundColor: dataset.backgroundColor || theme.colors.primary[index % theme.colors.primary.length],
-        borderColor: dataset.borderColor || theme.colors.primary[index % theme.colors.primary.length]
-      }));
-    }
-
-    // Apply theme to chart elements
-    if (themedChartConfig.scales) {
-      Object.keys(themedChartConfig.scales).forEach(key => {
-        const scale = themedChartConfig.scales![key];
-        if (scale.grid) {
-          scale.grid.color = scale.grid.color || theme.chart.gridColor;
-        }
-        if (scale.ticks) {
-          scale.ticks.color = scale.ticks.color || theme.chart.tickColor;
-        }
-      });
-    }
-
-    // Apply theme to tooltip
-    if (themedChartConfig.tooltip) {
-      themedChartConfig.tooltip.backgroundColor = themedChartConfig.tooltip.backgroundColor || theme.chart.tooltipBackground;
-      themedChartConfig.tooltip.borderColor = themedChartConfig.tooltip.borderColor || theme.chart.tooltipBorder;
-      themedChartConfig.tooltip.titleColor = themedChartConfig.tooltip.titleColor || theme.text.primary;
-      themedChartConfig.tooltip.bodyColor = themedChartConfig.tooltip.bodyColor || theme.text.secondary;
-    }
-
-    return themedChartConfig;
-  }, [config, theme]);
-
-  // Convert config to Chart.js format
-  const chartData = useMemo(() => {
-    const datasets = themedConfig.datasets.map(dataset => ({
-      label: dataset.label,
-      data: dataset.data.map(point => ({
-        x: point.x,
-        y: point.y,
-        r: point.size || 3 // For bubble charts
-      })),
-      backgroundColor: dataset.backgroundColor,
-      borderColor: dataset.borderColor,
-      borderWidth: dataset.borderWidth || 2,
-      fill: dataset.fill || false,
-      tension: dataset.tension || 0,
-      pointRadius: dataset.pointRadius || 3,
-      pointHoverRadius: dataset.pointHoverRadius || 5,
-      hidden: dataset.hidden || false,
-      yAxisID: dataset.yAxisID,
-      xAxisID: dataset.xAxisID
-    }));
-
-    return {
-      labels: themedConfig.labels || [],
-      datasets
-    };
-  }, [themedConfig]);
-
-  // Chart options
-  const chartOptions = useMemo(() => {
-    const options: any = {
-      responsive: responsive,
-      maintainAspectRatio: maintainAspectRatio ?? false,
-      interaction: {
-        mode: themedConfig.interaction?.mode || 'nearest',
-        intersect: themedConfig.interaction?.intersect ?? false
-      },
-      plugins: {
-        title: {
-          display: themedConfig.title?.display || false,
-          text: themedConfig.title?.text || '',
-          position: themedConfig.title?.position || 'top',
-          font: themedConfig.title?.font || {},
-          color: themedConfig.title?.color || theme?.text.primary,
-          padding: themedConfig.title?.padding || 20
-        },
-        legend: {
-          display: themedConfig.legend?.display ?? true,
-          position: themedConfig.legend?.position || 'top',
-          align: themedConfig.legend?.align || 'center',
-          maxHeight: themedConfig.legend?.maxHeight,
-          maxWidth: themedConfig.legend?.maxWidth,
-          fullSize: themedConfig.legend?.fullSize,
-          reverse: themedConfig.legend?.reverse,
-          labels: {
-            color: themedConfig.legend?.labels?.color || theme?.chart.legendColor,
-            font: themedConfig.legend?.labels?.font || {},
-            padding: themedConfig.legend?.labels?.padding || 10,
-            usePointStyle: themedConfig.legend?.labels?.usePointStyle || false
-          }
-        },
-        tooltip: {
-          enabled: themedConfig.tooltip?.enabled ?? true,
-          mode: themedConfig.tooltip?.mode || 'nearest',
-          intersect: themedConfig.tooltip?.intersect ?? false,
-          position: themedConfig.tooltip?.position || 'average',
-          backgroundColor: themedConfig.tooltip?.backgroundColor || theme?.chart.tooltipBackground || 'rgba(0,0,0,0.8)',
-          titleColor: themedConfig.tooltip?.titleColor || theme?.text.inverse || '#fff',
-          bodyColor: themedConfig.tooltip?.bodyColor || theme?.text.inverse || '#fff',
-          borderColor: themedConfig.tooltip?.borderColor || theme?.chart.tooltipBorder,
-          borderWidth: themedConfig.tooltip?.borderWidth || 1,
-          cornerRadius: themedConfig.tooltip?.cornerRadius || 6,
-          displayColors: themedConfig.tooltip?.displayColors ?? true,
-          callbacks: themedConfig.tooltip?.callbacks || {}
-        }
-      },
-      animation: themedConfig.animation || {
-        duration: 750,
-        easing: 'easeInOutQuart'
-      },
-      onClick: enableInteractions ? (event: any, elements: any[]) => {
-        if (elements.length > 0 && onDataClick) {
-          const element = elements[0];
-          const datasetIndex = element.datasetIndex;
-          const index = element.index;
-          const dataset = chartData.datasets[datasetIndex];
-          const dataPoint = dataset.data[index];
-
-          const visualizationEvent: VisualizationEvent = {
-            type: 'click',
-            target: themedConfig.datasets[datasetIndex]?.id || `dataset-${datasetIndex}`,
-            data: {
-              datasetIndex,
-              index,
-              dataset: dataset.label,
-              value: dataPoint,
-              originalData: themedConfig.datasets[datasetIndex]?.data[index]
-            },
-            position: {
-              x: event.native?.offsetX || 0,
-              y: event.native?.offsetY || 0
-            },
-            timestamp: new Date().toISOString()
-          };
-
-          onDataClick(visualizationEvent);
-        }
-      } : undefined,
-      onHover: enableInteractions ? (event: any, elements: any[]) => {
-        if (elements.length > 0 && onDataHover) {
-          const element = elements[0];
-          const datasetIndex = element.datasetIndex;
-          const index = element.index;
-          const dataset = chartData.datasets[datasetIndex];
-          const dataPoint = dataset.data[index];
-
-          const visualizationEvent: VisualizationEvent = {
-            type: 'hover',
-            target: themedConfig.datasets[datasetIndex]?.id || `dataset-${datasetIndex}`,
-            data: {
-              datasetIndex,
-              index,
-              dataset: dataset.label,
-              value: dataPoint,
-              originalData: themedConfig.datasets[datasetIndex]?.data[index]
-            },
-            position: {
-              x: event.native?.offsetX || 0,
-              y: event.native?.offsetY || 0
-            },
-            timestamp: new Date().toISOString()
-          };
-
-          onDataHover(visualizationEvent);
-        }
-      } : undefined
-    };
-
-    // Add scales configuration
-    if (themedConfig.scales) {
-      options.scales = {};
-      Object.entries(themedConfig.scales).forEach(([key, scale]) => {
-        options.scales[key] = {
-          type: scale.type,
-          position: scale.position,
-          display: scale.display ?? true,
-          min: scale.min,
-          max: scale.max,
-          suggestedMin: scale.suggestedMin,
-          suggestedMax: scale.suggestedMax,
-          title: {
-            display: scale.title?.display || false,
-            text: scale.title?.text || '',
-            font: scale.title?.font || {},
-            color: scale.title?.color || theme?.text.primary
-          },
-          ticks: {
-            stepSize: scale.ticks?.stepSize,
-            maxTicksLimit: scale.ticks?.maxTicksLimit,
-            color: scale.ticks?.callback ? undefined : (theme?.chart.tickColor || theme?.text.secondary),
-            callback: scale.ticks?.callback
-          },
-          grid: {
-            display: scale.grid?.display ?? true,
-            color: scale.grid?.color || theme?.chart.gridColor,
-            lineWidth: scale.grid?.lineWidth || 1,
-            drawBorder: scale.grid?.drawBorder ?? true,
-            drawOnChartArea: scale.grid?.drawOnChartArea ?? true,
-            drawTicks: scale.grid?.drawTicks ?? true
-          },
-          time: scale.time
-        };
-      });
-    }
-
-    // Add axis-specific configurations
-    if (themedConfig.xAxis && !themedConfig.scales?.x) {
-      options.scales = options.scales || {};
-      options.scales.x = {
-        type: themedConfig.xAxis.type || 'category',
-        position: themedConfig.xAxis.position || 'bottom',
-        display: themedConfig.xAxis.display ?? true,
-        title: {
-          display: themedConfig.xAxis.title?.display || false,
-          text: themedConfig.xAxis.title?.text || '',
-          font: themedConfig.xAxis.title?.font || {},
-          color: themedConfig.xAxis.title?.color || theme?.text.primary
-        },
-        ticks: {
-          color: theme?.chart.tickColor || theme?.text.secondary,
-          ...themedConfig.xAxis.ticks
-        },
-        grid: {
-          display: themedConfig.xAxis.grid?.display ?? true,
-          color: themedConfig.xAxis.grid?.color || theme?.chart.gridColor,
-          ...themedConfig.xAxis.grid
-        }
-      };
-    }
-
-    if (themedConfig.yAxis && !themedConfig.scales?.y) {
-      options.scales = options.scales || {};
-      options.scales.y = {
-        type: themedConfig.yAxis.type || 'linear',
-        position: themedConfig.yAxis.position || 'left',
-        display: themedConfig.yAxis.display ?? true,
-        title: {
-          display: themedConfig.yAxis.title?.display || false,
-          text: themedConfig.yAxis.title?.text || '',
-          font: themedConfig.yAxis.title?.font || {},
-          color: themedConfig.yAxis.title?.color || theme?.text.primary
-        },
-        ticks: {
-          color: theme?.chart.tickColor || theme?.text.secondary,
-          ...themedConfig.yAxis.ticks
-        },
-        grid: {
-          display: themedConfig.yAxis.grid?.display ?? true,
-          color: themedConfig.yAxis.grid?.color || theme?.chart.gridColor,
-          ...themedConfig.yAxis.grid
-        }
-      };
-    }
-
-    return options;
-  }, [themedConfig, theme, responsive, maintainAspectRatio, enableInteractions, chartData, onDataClick, onDataHover]);
-
-  // Handle chart reference
-  const handleChartRef = useCallback((chart: ChartJS | null) => {
-    setChartInstance(chart);
-    if (chart && onRender) {
-      onRender(chart);
-    }
-  }, [onRender]);
-
-  // Handle export
-  const handleExport = useCallback(async () => {
-    if (!chartInstance || !onExport) return;
-
-    try {
-      const exportOptions: ExportOptions = {
-        format: 'png',
-        quality: 1,
-        dimensions: {
-          width: chartInstance.width,
-          height: chartInstance.height
-        },
-        backgroundColor: theme?.background.surface || '#ffffff',
-        title: themedConfig.title?.text
-      };
-
-      await onExport(exportOptions);
-    } catch (error) {
-      const vizError: VisualizationError = {
-        type: 'render',
-        message: 'Failed to export chart',
-        details: error,
-        timestamp: new Date().toISOString(),
-        recoverable: true,
-        suggestions: ['Try again', 'Check if chart is fully loaded']
-      };
-
-      onError?.(vizError);
-    }
-  }, [chartInstance, onExport, theme, themedConfig.title, onError]);
-
-  // Handle fullscreen
-  const handleFullscreen = useCallback(() => {
-    if (!containerRef.current) return;
-
-    if (isFullscreen) {
-      document.exitFullscreen?.();
-      setIsFullscreen(false);
-    } else {
-      containerRef.current.requestFullscreen?.();
-      setIsFullscreen(true);
-    }
-  }, [isFullscreen]);
-
-  // Handle refresh
-  const handleRefresh = useCallback(() => {
-    setRefreshCounter(prev => prev + 1);
-  }, []);
-
-  // Handle fullscreen change events
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
-
-  // Handle chart errors
-  const handleChartError = useCallback((error: Error) => {
-    const vizError: VisualizationError = {
-      type: 'render',
-      message: error.message || 'Chart rendering failed',
-      details: error,
+  const mockLocations = [
+    {
+      id: '1',
+      lat: 40.7128,
+      lng: -74.0060,
+      type: 'risk' as const,
+      title: 'Suspicious Login - New York',
+      description: 'High-risk login detected',
       timestamp: new Date().toISOString(),
-      recoverable: true,
-      suggestions: [
-        'Check data format and configuration',
-        'Ensure all required chart.js plugins are registered',
-        'Try refreshing the chart'
-      ]
-    };
+      riskLevel: 'high' as const,
+    },
+    {
+      id: '2',
+      lat: 34.0522,
+      lng: -118.2437,
+      type: 'transaction' as const,
+      title: 'Large Transaction - Los Angeles',
+      description: '$5,000 wire transfer',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      riskLevel: 'medium' as const,
+    },
+  ];
 
-    onError?.(vizError);
-  }, [onError]);
+  const fraudTrendsData: ChartData[] = [
+    { id: '1', name: 'Account Takeover', value: 34, color: 'bg-red-500', trend: 'up', change: 12 },
+    { id: '2', name: 'Payment Fraud', value: 28, color: 'bg-orange-500', trend: 'down', change: -5 },
+    { id: '3', name: 'Identity Theft', value: 22, color: 'bg-yellow-500', trend: 'up', change: 8 },
+    { id: '4', name: 'Synthetic ID', value: 16, color: 'bg-purple-500', trend: 'stable', change: 0 },
+  ];
 
-  // Render loading state
-  if (loading) {
-    return (
-      <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
-        {(enableExport || enableFullscreen || refreshInterval) && (
-          <ChartToolbar
-            enableExport={false}
-            enableFullscreen={false}
+  const timeSeriesData: TimeSeriesPoint[] = useMemo(() => {
+    const now = new Date();
+    const points: TimeSeriesPoint[] = [];
+    const hours = timeRange === '1h' ? 1 : timeRange === '6h' ? 6 : timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720;
+
+    for (let i = hours; i >= 0; i--) {
+      const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000));
+      const baseValue = 50 + Math.sin(i * 0.1) * 20;
+      const noise = (Math.random() - 0.5) * 10;
+      points.push({
+        timestamp: timestamp.toISOString(),
+        value: Math.max(0, Math.min(100, baseValue + noise)),
+      });
+    }
+    return points;
+  }, [timeRange]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    // Simulate API refresh
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsRefreshing(false);
+  };
+
+  const handleExport = () => {
+    // In production, this would export the current visualization data
+    console.log('Exporting visualization data...');
+  };
+
+  const getTrendIcon = (trend?: string) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="w-4 h-4 text-red-500" />;
+      case 'down':
+        return <TrendingUp className="w-4 h-4 text-green-500 transform rotate-180" />;
+      default:
+        return <div className="w-4 h-4 bg-gray-400 rounded-full" />;
+    }
+  };
+
+  const renderOverview = () => (
+    <div className="space-y-6">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <OverallRiskScore
+            metrics={mockRiskMetrics}
+            size="md"
+            showDetails={true}
+            animated={true}
           />
-        )}
-        <div className="p-4">
-          <LoadingSkeleton height={height} />
+        </div>
+        <div className="space-y-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="font-semibold text-gray-900 mb-3">Fraud Types</h3>
+            <div className="space-y-3">
+              {fraudTrendsData.map((item) => (
+                <div key={item.id} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                    <span className="text-sm text-gray-700">{item.name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-gray-900">{item.value}%</span>
+                    {getTrendIcon(item.trend)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-    );
-  }
 
-  // Render error state
-  if (error) {
-    return (
-      <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
-        {(enableExport || enableFullscreen || refreshInterval) && (
-          <ChartToolbar
-            enableExport={false}
-            enableFullscreen={false}
-          />
-        )}
-        <div className="p-4">
-          <ErrorDisplay
-            error={error}
-            onRetry={error.recoverable ? handleRefresh : undefined}
-          />
+      {/* Time Series Chart */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Risk Score Trend</h3>
+          <div className="flex items-center space-x-2">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as any)}
+              className="text-sm border border-gray-300 rounded-md px-2 py-1"
+            >
+              <option value="1h">Last Hour</option>
+              <option value="6h">Last 6 Hours</option>
+              <option value="24h">Last 24 Hours</option>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+            </select>
+          </div>
+        </div>
+        <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+            <p className="text-gray-600">Risk trend visualization would appear here</p>
+            <p className="text-sm text-gray-500 mt-1">{timeSeriesData.length} data points over {timeRange}</p>
+          </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
-  // Main render
+  const renderRiskView = () => (
+    <div className="space-y-6">
+      <RiskScoreDisplay
+        overallScore={mockRiskMetrics.overallScore}
+        riskFactors={mockRiskFactors}
+        size="lg"
+        showDetails={true}
+        animated={true}
+      />
+    </div>
+  );
+
+  const renderGeographicView = () => (
+    <div className="space-y-6">
+      <LocationMap
+        locations={mockLocations}
+        height="500px"
+        showControls={true}
+        showFilters={true}
+        clustered={true}
+        onLocationClick={(location) => console.log('Location clicked:', location)}
+      />
+    </div>
+  );
+
+  const renderTrendsView = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="font-semibold text-gray-900 mb-4">Fraud Detection Trends</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {fraudTrendsData.map((item) => (
+            <div key={item.id} className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className={`w-16 h-16 ${item.color} rounded-full mx-auto mb-3 flex items-center justify-center`}>
+                <span className="text-white font-bold text-lg">{item.value}%</span>
+              </div>
+              <h4 className="font-medium text-gray-900">{item.name}</h4>
+              <div className="flex items-center justify-center mt-2">
+                {getTrendIcon(item.trend)}
+                <span className={`text-sm ml-1 ${
+                  item.trend === 'up' ? 'text-red-600' :
+                  item.trend === 'down' ? 'text-green-600' : 'text-gray-600'
+                }`}>
+                  {item.change !== 0 ? `${item.change > 0 ? '+' : ''}${item.change}%` : 'No change'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div
-      ref={containerRef}
-      className={`bg-white rounded-lg shadow-sm border ${isFullscreen ? 'fixed inset-0 z-50' : ''} ${className}`}
-    >
-      {/* Toolbar */}
-      {(enableExport || enableFullscreen || refreshInterval) && (
-        <ChartToolbar
-          onExport={enableExport ? handleExport : undefined}
-          onFullscreen={enableFullscreen ? handleFullscreen : undefined}
-          onRefresh={refreshInterval ? handleRefresh : undefined}
-          enableExport={enableExport}
-          enableFullscreen={enableFullscreen}
-        />
-      )}
+    <div className={`min-h-screen bg-gray-50 ${className}`}>
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Data Visualization</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                {investigationId ? `Investigation ${investigationId}` : 'Real-time fraud detection analytics'}
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center space-x-2 px-3 py-2 text-sm rounded-md transition-colors ${
+                  showFilters ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Filter className="w-4 h-4" />
+                <span>Filters</span>
+              </button>
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </button>
+              <button
+                onClick={handleExport}
+                className="flex items-center space-x-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export</span>
+              </button>
+            </div>
+          </div>
 
-      {/* Chart Container */}
-      <div
-        className="p-4"
-        style={{
-          width: width ? `${width}px` : '100%',
-          height: isFullscreen ? 'calc(100vh - 60px)' : `${height}px`
-        }}
-      >
-        <Chart
-          ref={(chart) => {
-            chartRef.current = chart;
-            handleChartRef(chart);
-          }}
-          type={themedConfig.type as any}
-          data={chartData}
-          options={chartOptions}
-          onError={handleChartError}
-          key={`${themedConfig.type}-${refreshCounter}`}
-        />
+          {/* Navigation Tabs */}
+          <div className="flex space-x-1 mt-4">
+            {[
+              { id: 'overview', label: 'Overview', icon: Eye },
+              { id: 'risk', label: 'Risk Analysis', icon: TrendingUp },
+              { id: 'geographic', label: 'Geographic', icon: Map },
+              { id: 'trends', label: 'Trends', icon: PieChart },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveView(tab.id as any)}
+                className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  activeView === tab.id
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {activeView === 'overview' && renderOverview()}
+        {activeView === 'risk' && renderRiskView()}
+        {activeView === 'geographic' && renderGeographicView()}
+        {activeView === 'trends' && renderTrendsView()}
+      </div>
+
+      {/* Real-time indicator */}
+      {realTime && (
+        <div className="fixed bottom-4 right-4 bg-green-100 border border-green-300 text-green-800 px-3 py-2 rounded-lg shadow-sm">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-medium">Live Data</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

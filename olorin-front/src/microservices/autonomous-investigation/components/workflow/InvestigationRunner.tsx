@@ -27,8 +27,6 @@ const InvestigationRunner: React.FC<InvestigationRunnerProps> = ({
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [stepStartTimes, setStepStartTimes] = useState<Record<string, Date>>({});
-  const [stepEndTimes, setStepEndTimes] = useState<Record<string, Date>>({});
 
   // Initialize API service
   const olorinService = useMemo(() => new OlorinService(), []);
@@ -85,7 +83,7 @@ const InvestigationRunner: React.FC<InvestigationRunnerProps> = ({
       onLogAdd(`Failed to start investigation: ${error}`, LogLevel.ERROR);
       toast.error('Failed to start investigation');
     }
-  }, [canStart, steps, onInvestigationUpdate, onLogAdd]);
+  }, [canStart, steps, onInvestigationUpdate, onLogAdd, executeStep]);
 
   // Pause investigation
   const pauseInvestigation = useCallback(() => {
@@ -110,7 +108,7 @@ const InvestigationRunner: React.FC<InvestigationRunnerProps> = ({
     if (currentStep && currentStep.status === StepStatus.IN_PROGRESS) {
       await executeStep(currentStepIndex);
     }
-  }, [canResume, currentStep, currentStepIndex, onInvestigationUpdate, onLogAdd]);
+  }, [canResume, currentStep, currentStepIndex, onInvestigationUpdate, onLogAdd, executeStep]);
 
   // Stop investigation
   const stopInvestigation = useCallback(() => {

@@ -148,14 +148,6 @@ export const ExportHistory: React.FC<ExportHistoryProps> = ({
     }, {} as Record<string, number>);
   }, [exportHistory]);
 
-  const handleSort = (newSortBy: SortBy) => {
-    if (sortBy === newSortBy) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(newSortBy);
-      setSortOrder('desc');
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200">

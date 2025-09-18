@@ -4,10 +4,8 @@ import {
   DocumentTextIcon,
   TableCellsIcon,
   CodeBracketIcon,
-  ChartBarIcon,
   PrinterIcon,
   ShareIcon,
-  Cog6ToothIcon,
   CheckCircleIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';

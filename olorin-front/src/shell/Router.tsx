@@ -21,8 +21,10 @@ const CoreUIApp = React.lazy(() => import('../microservices/core-ui/CoreUiApp'))
 // Autonomous Investigation (sub-service)
 const AutonomousInvestigationApp = React.lazy(() => import('../microservices/autonomous-investigation/AutonomousInvestigationApp'));
 
-// Future services (placeholders for now)
+// Visualization Service (port 3004) - Fully implemented
 const VisualizationApp = React.lazy(() => import('../microservices/visualization/VisualizationApp'));
+
+// Reporting Service (port 3005) - Fully implemented
 const ReportingApp = React.lazy(() => import('../microservices/reporting/ReportingApp'));
 
 interface RouteConfig {
@@ -51,15 +53,23 @@ const routes: RouteConfig[] = [
   { path: '/knowledge', component: RagIntelligenceApp, serviceName: 'rag-intelligence', exact: true },
   { path: '/knowledge/*', component: RagIntelligenceApp, serviceName: 'rag-intelligence' },
 
-  // Visualization Service Routes (Port 3004) - Basic implementation
+  // Visualization Service Routes (Port 3004) - Fully implemented
   { path: '/visualization', component: VisualizationApp, serviceName: 'visualization', exact: true },
   { path: '/visualization/*', component: VisualizationApp, serviceName: 'visualization' },
   { path: '/charts', component: VisualizationApp, serviceName: 'visualization', exact: true },
   { path: '/charts/*', component: VisualizationApp, serviceName: 'visualization' },
+  { path: '/maps', component: VisualizationApp, serviceName: 'visualization', exact: true },
+  { path: '/maps/*', component: VisualizationApp, serviceName: 'visualization' },
+  { path: '/risk-analysis', component: VisualizationApp, serviceName: 'visualization', exact: true },
+  { path: '/risk-analysis/*', component: VisualizationApp, serviceName: 'visualization' },
 
-  // Reporting Service Routes (Port 3005) - Basic implementation
+  // Reporting Service Routes (Port 3005) - Fully implemented
   { path: '/reports', component: ReportingApp, serviceName: 'reporting', exact: true },
   { path: '/reports/*', component: ReportingApp, serviceName: 'reporting' },
+  { path: '/templates', component: ReportingApp, serviceName: 'reporting', exact: true },
+  { path: '/templates/*', component: ReportingApp, serviceName: 'reporting' },
+  { path: '/exports', component: ReportingApp, serviceName: 'reporting', exact: true },
+  { path: '/exports/*', component: ReportingApp, serviceName: 'reporting' },
 
   // Core UI Service Routes (Port 3006) - Auth, Profile, Settings
   { path: '/profile', component: CoreUIApp, serviceName: 'core-ui', exact: true },
@@ -148,8 +158,8 @@ const AppRouter: React.FC = () => {
               { name: 'investigation', display: 'Investigation Service', port: '3001', status: 'operational' },
               { name: 'agent-analytics', display: 'Agent Analytics', port: '3002', status: 'operational' },
               { name: 'rag-intelligence', display: 'RAG Intelligence', port: '3003', status: 'operational' },
-              { name: 'visualization', display: 'Visualization', port: '3004', status: 'partial' },
-              { name: 'reporting', display: 'Reporting', port: '3005', status: 'partial' },
+              { name: 'visualization', display: 'Visualization', port: '3004', status: 'operational' },
+              { name: 'reporting', display: 'Reporting', port: '3005', status: 'operational' },
               { name: 'core-ui', display: 'Core UI', port: '3006', status: 'operational' }
             ].map(service => (
               <div key={service.name} className="bg-white rounded-lg shadow p-4">

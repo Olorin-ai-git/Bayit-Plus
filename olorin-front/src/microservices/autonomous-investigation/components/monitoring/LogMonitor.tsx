@@ -103,9 +103,7 @@ const LogMonitor: React.FC<LogMonitorProps> = ({
   investigationId
 }) => {
   const logContainerRef = useRef<HTMLDivElement>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
   const [visibleLogs, setVisibleLogs] = useState<LogEntry[]>([]);
   const [currentLogIndex, setCurrentLogIndex] = useState(0);
 

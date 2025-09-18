@@ -135,17 +135,17 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
   const getStatusIcon = (status: InvestigationStatus) => {
     switch (status) {
       case 'running':
-        return <PlayIcon className=\"h-4 w-4 text-blue-500\" />;
+        return <PlayIcon className="h-4 w-4 text-blue-500" />;
       case 'completed':
-        return <CheckCircleIcon className=\"h-4 w-4 text-green-500\" />;
+        return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
       case 'failed':
-        return <XCircleIcon className=\"h-4 w-4 text-red-500\" />;
+        return <XCircleIcon className="h-4 w-4 text-red-500" />;
       case 'paused':
-        return <PauseIcon className=\"h-4 w-4 text-yellow-500\" />;
+        return <PauseIcon className="h-4 w-4 text-yellow-500" />;
       case 'stopped':
-        return <StopIcon className=\"h-4 w-4 text-gray-500\" />;
+        return <StopIcon className="h-4 w-4 text-gray-500" />;
       default:
-        return <ClockIcon className=\"h-4 w-4 text-gray-500\" />;
+        return <ClockIcon className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -184,54 +184,54 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
   const priorityOptions: InvestigationPriority[] = ['low', 'medium', 'high', 'critical'];
 
   return (
-    <div className=\"p-6 space-y-6\">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className=\"flex items-center justify-between\">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className=\"text-2xl font-bold text-gray-900\">All Investigations</h1>
-          <p className=\"text-gray-600\">Manage and monitor your autonomous investigations</p>
+          <h1 className="text-2xl font-bold text-gray-900">All Investigations</h1>
+          <p className="text-gray-600">Manage and monitor your autonomous investigations</p>
         </div>
-        <div className=\"flex items-center space-x-3\">
+        <div className="flex items-center space-x-3">
           <button
             onClick={onRefresh}
             disabled={isLoading}
-            className=\"inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50\"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={onCreateInvestigation}
-            className=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500\"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
-            <PlusIcon className=\"h-4 w-4 mr-2\" />
+            <PlusIcon className="h-4 w-4 mr-2" />
             New Investigation
           </button>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className=\"bg-white rounded-lg border border-gray-200 p-4\">
-        <div className=\"flex items-center justify-between space-x-4\">
-          <div className=\"flex-1 max-w-lg\">
-            <div className=\"relative\">
-              <MagnifyingGlassIcon className=\"h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400\" />
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center justify-between space-x-4">
+          <div className="flex-1 max-w-lg">
+            <div className="relative">
+              <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                type=\"text\"
-                placeholder=\"Search investigations...\"
+                type="text"
+                placeholder="Search investigations..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className=\"block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500\"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
 
-          <div className=\"flex items-center space-x-3\">
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className=\"inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50\"
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
-              <FunnelIcon className=\"h-4 w-4 mr-2\" />
+              <FunnelIcon className="h-4 w-4 mr-2" />
               Filters
             </button>
 
@@ -242,28 +242,28 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
                 setSortBy(field as any);
                 setSortOrder(order as any);
               }}
-              className=\"border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500\"
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value=\"updatedAt-desc\">Last Updated</option>
-              <option value=\"createdAt-desc\">Newest First</option>
-              <option value=\"createdAt-asc\">Oldest First</option>
-              <option value=\"priority-desc\">High Priority</option>
-              <option value=\"status-asc\">Status</option>
+              <option value="updatedAt-desc">Last Updated</option>
+              <option value="createdAt-desc">Newest First</option>
+              <option value="createdAt-asc">Oldest First</option>
+              <option value="priority-desc">High Priority</option>
+              <option value="status-asc">Status</option>
             </select>
           </div>
         </div>
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className=\"mt-4 pt-4 border-t border-gray-200\">
-            <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4\">
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className=\"block text-sm font-medium text-gray-700 mb-2\">Status</label>
-                <div className=\"space-y-2\">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <div className="space-y-2">
                   {statusOptions.map(status => (
-                    <label key={status} className=\"flex items-center\">
+                    <label key={status} className="flex items-center">
                       <input
-                        type=\"checkbox\"
+                        type="checkbox"
                         checked={filters.status.includes(status)}
                         onChange={(e) => {
                           if (e.target.checked) {
@@ -272,21 +272,21 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
                             setFilters(prev => ({ ...prev, status: prev.status.filter(s => s !== status) }));
                           }
                         }}
-                        className=\"rounded border-gray-300 text-blue-600 focus:ring-blue-500\"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className=\"ml-2 text-sm text-gray-700 capitalize\">{status}</span>
+                      <span className="ml-2 text-sm text-gray-700 capitalize">{status}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className=\"block text-sm font-medium text-gray-700 mb-2\">Priority</label>
-                <div className=\"space-y-2\">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <div className="space-y-2">
                   {priorityOptions.map(priority => (
-                    <label key={priority} className=\"flex items-center\">
+                    <label key={priority} className="flex items-center">
                       <input
-                        type=\"checkbox\"
+                        type="checkbox"
                         checked={filters.priority.includes(priority)}
                         onChange={(e) => {
                           if (e.target.checked) {
@@ -295,25 +295,25 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
                             setFilters(prev => ({ ...prev, priority: prev.priority.filter(p => p !== priority) }));
                           }
                         }}
-                        className=\"rounded border-gray-300 text-blue-600 focus:ring-blue-500\"
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className=\"ml-2 text-sm text-gray-700 capitalize\">{priority}</span>
+                      <span className="ml-2 text-sm text-gray-700 capitalize">{priority}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className=\"block text-sm font-medium text-gray-700 mb-2\">Date Range</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
                 <select
                   value={filters.dateRange}
                   onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value as any }))}
-                  className=\"block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500\"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value=\"all\">All Time</option>
-                  <option value=\"7d\">Last 7 Days</option>
-                  <option value=\"30d\">Last 30 Days</option>
-                  <option value=\"90d\">Last 90 Days</option>
+                  <option value="all">All Time</option>
+                  <option value="7d">Last 7 Days</option>
+                  <option value="30d">Last 30 Days</option>
+                  <option value="90d">Last 90 Days</option>
                 </select>
               </div>
             </div>
@@ -322,16 +322,16 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
       </div>
 
       {/* Results */}
-      <div className=\"bg-white rounded-lg border border-gray-200\">
-        <div className=\"px-6 py-4 border-b border-gray-200\">
-          <div className=\"flex items-center justify-between\">
-            <h3 className=\"text-lg font-medium text-gray-900\">
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900">
               {filteredAndSortedInvestigations.length} Investigation{filteredAndSortedInvestigations.length !== 1 ? 's' : ''}
             </h3>
             {(filters.search || filters.status.length > 0 || filters.priority.length > 0 || filters.dateRange !== 'all') && (
               <button
                 onClick={() => setFilters({ search: '', status: [], priority: [], dateRange: 'all' })}
-                className=\"text-sm text-blue-600 hover:text-blue-800\"
+                className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Clear Filters
               </button>
@@ -340,27 +340,27 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
         </div>
 
         {isLoading ? (
-          <div className=\"flex items-center justify-center py-12\">
-            <LoadingSpinner size=\"lg\" message=\"Loading investigations...\" />
+          <div className="flex items-center justify-center py-12">
+            <LoadingSpinner size="lg" message="Loading investigations..." />
           </div>
         ) : filteredAndSortedInvestigations.length > 0 ? (
-          <div className=\"divide-y divide-gray-200\">
+          <div className="divide-y divide-gray-200">
             {filteredAndSortedInvestigations.map(investigation => (
-              <div key={investigation.id} className=\"p-6 hover:bg-gray-50\">
-                <div className=\"flex items-center justify-between\">
-                  <div className=\"flex-1 min-w-0\">
-                    <div className=\"flex items-center space-x-3 mb-2\">
-                      <h4 className=\"text-lg font-medium text-gray-900 truncate\">{investigation.title}</h4>
+              <div key={investigation.id} className="p-6 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h4 className="text-lg font-medium text-gray-900 truncate">{investigation.title}</h4>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(investigation.status)}`}>
                         {getStatusIcon(investigation.status)}
-                        <span className=\"ml-1\">{investigation.status.toUpperCase()}</span>
+                        <span className="ml-1">{investigation.status.toUpperCase()}</span>
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(investigation.priority)}`}>
                         {investigation.priority.toUpperCase()}
                       </span>
                     </div>
-                    <p className=\"text-sm text-gray-600 mb-3\">{investigation.description}</p>
-                    <div className=\"flex items-center space-x-6 text-sm text-gray-500\">
+                    <p className="text-sm text-gray-600 mb-3">{investigation.description}</p>
+                    <div className="flex items-center space-x-6 text-sm text-gray-500">
                       <span>ID: {investigation.id}</span>
                       <span>{investigation.assignedAgents.length} agents</span>
                       {investigation.progress && (
@@ -370,14 +370,14 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
                     </div>
 
                     {investigation.status === 'running' && investigation.progress && (
-                      <div className=\"mt-3 max-w-md\">
-                        <div className=\"flex items-center justify-between text-xs text-gray-600 mb-1\">
+                      <div className="mt-3 max-w-md">
+                        <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
                           <span>Progress</span>
                           <span>{investigation.progress.overall}%</span>
                         </div>
-                        <div className=\"w-full bg-gray-200 rounded-full h-2\">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className=\"bg-blue-600 h-2 rounded-full transition-all duration-300\"
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${investigation.progress.overall}%` }}
                           />
                         </div>
@@ -385,21 +385,21 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
                     )}
                   </div>
 
-                  <div className=\"flex items-center space-x-2 ml-4\">
+                  <div className="flex items-center space-x-2 ml-4">
                     <button
                       onClick={() => onViewInvestigation(investigation.id)}
-                      className=\"inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50\"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                     >
-                      <EyeIcon className=\"h-4 w-4 mr-2\" />
+                      <EyeIcon className="h-4 w-4 mr-2" />
                       View
                     </button>
 
                     {investigation.status !== 'running' && (
                       <button
                         onClick={() => onDeleteInvestigation(investigation.id)}
-                        className=\"inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200\"
+                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
                       >
-                        <TrashIcon className=\"h-4 w-4 mr-2\" />
+                        <TrashIcon className="h-4 w-4 mr-2" />
                         Delete
                       </button>
                     )}
@@ -409,10 +409,10 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
             ))}
           </div>
         ) : (
-          <div className=\"text-center py-12\">
-            <MagnifyingGlassIcon className=\"h-12 w-12 text-gray-400 mx-auto mb-4\" />
-            <h3 className=\"text-lg font-medium text-gray-900 mb-2\">No investigations found</h3>
-            <p className=\"text-gray-600 mb-4\">
+          <div className="text-center py-12">
+            <MagnifyingGlassIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No investigations found</h3>
+            <p className="text-gray-600 mb-4">
               {filters.search || filters.status.length > 0 || filters.priority.length > 0 || filters.dateRange !== 'all'
                 ? 'Try adjusting your search criteria or filters.'
                 : 'Create your first autonomous investigation to get started.'
@@ -421,9 +421,9 @@ export const InvestigationList: React.FC<InvestigationListProps> = ({
             {!(filters.search || filters.status.length > 0 || filters.priority.length > 0 || filters.dateRange !== 'all') && (
               <button
                 onClick={onCreateInvestigation}
-                className=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700\"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
               >
-                <PlusIcon className=\"h-4 w-4 mr-2\" />
+                <PlusIcon className="h-4 w-4 mr-2" />
                 Create Investigation
               </button>
             )}

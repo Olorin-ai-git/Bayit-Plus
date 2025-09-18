@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useExportReporting } from '../../hooks/useExportReporting';
 import { Investigation } from '../../types/investigation';
 import { ExportOptions } from '../../components/ExportReporting';
+import { exportService } from '../../services/exportService';
 
 // Mock the export service
 jest.mock('../../services/exportService', () => ({
@@ -9,8 +10,6 @@ jest.mock('../../services/exportService', () => ({
     exportInvestigation: jest.fn()
   }
 }));
-
-import { exportService } from '../../services/exportService';
 
 // Mock localStorage
 const mockLocalStorage = {

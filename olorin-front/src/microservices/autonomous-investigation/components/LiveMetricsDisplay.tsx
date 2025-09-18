@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   ChartBarIcon,
   ClockIcon,
-  CpuChipIcon,
   SignalIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,

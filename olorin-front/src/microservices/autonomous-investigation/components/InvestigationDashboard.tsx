@@ -5,7 +5,6 @@ import {
   ChartBarIcon,
   ClockIcon,
   CheckCircleIcon,
-  ExclamationTriangleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Investigation, InvestigationStatus } from '../types/investigation';

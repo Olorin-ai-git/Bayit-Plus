@@ -5,9 +5,7 @@ import { CreateInvestigation } from './components/CreateInvestigation';
 import { InvestigationDetails } from './components/InvestigationDetails';
 import { InvestigationList } from './components/InvestigationList';
 import { AgentConfiguration } from './components/AgentConfiguration';
-import { LoadingSpinner } from '../core-ui/components/LoadingSpinner';
 import { useInvestigationWorkflow } from './hooks/useInvestigationWorkflow';
-import { Investigation } from './types/investigation';
 
 export const AutonomousInvestigationApp: React.FC = () => {
   const navigate = useNavigate();

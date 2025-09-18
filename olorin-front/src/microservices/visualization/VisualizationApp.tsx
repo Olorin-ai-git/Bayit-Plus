@@ -1,198 +1,325 @@
-import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import DataVisualization from './components/DataVisualization';
+import LocationMap from './components/LocationMap';
+import RiskScoreDisplay from './components/RiskScoreDisplay';
+import OverallRiskScore from './components/OverallRiskScore';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
-// Lazy load components for better performance
-const ChartBuilder = React.lazy(() => import('./components/ChartBuilder'));
-const DataVisualization = React.lazy(() => import('./components/DataVisualization'));
-const NetworkGraph = React.lazy(() => import('./components/NetworkGraph'));
-const TimelineVisualization = React.lazy(() => import('./components/TimelineVisualization'));
+// Mock data for standalone component testing
+const mockVisualizationData = {
+  riskMetrics: {
+    overallScore: 74,
+    behavioralRisk: 65,
+    technicalRisk: 82,
+    locationRisk: 45,
+    deviceRisk: 78,
+    networkRisk: 71,
+    accountAge: 32,
+    transactionVolume: 15420,
+    anomalyCount: 8,
+    lastUpdated: new Date().toISOString(),
+  },
+  riskFactors: [
+    {
+      id: '1',
+      name: 'Multiple Device Access',
+      score: 85,
+      weight: 2.5,
+      description: 'Account accessed from multiple devices in short timeframe',
+      category: 'device' as const,
+      status: 'critical' as const,
+    },
+    {
+      id: '2',
+      name: 'Unusual Location Pattern',
+      score: 72,
+      weight: 2.0,
+      description: 'Login from geographically impossible location',
+      category: 'location' as const,
+      status: 'warning' as const,
+    },
+  ],
+  locations: [
+    {
+      id: '1',
+      lat: 40.7128,
+      lng: -74.0060,
+      type: 'risk' as const,
+      title: 'Suspicious Login - New York',
+      description: 'High-risk login detected',
+      timestamp: new Date().toISOString(),
+      riskLevel: 'high' as const,
+    },
+    {
+      id: '2',
+      lat: 34.0522,
+      lng: -118.2437,
+      type: 'transaction' as const,
+      title: 'Large Transaction - Los Angeles',
+      description: '$5,000 wire transfer',
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      riskLevel: 'medium' as const,
+    },
+  ],
+};
 
-const VisualizationApp: React.FC = () => {
+interface VisualizationAppProps {
+  className?: string;
+  investigationId?: string;
+  realTime?: boolean;
+}
+
+const VisualizationApp: React.FC<VisualizationAppProps> = ({
+  className = '',
+  investigationId,
+  realTime = false,
+}) => {
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [serviceReady, setServiceReady] = useState(false);
+
+  useEffect(() => {
+    const initializeService = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Simulate service initialization
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Register service with event bus if available
+        if (window.olorin?.eventBus) {
+          window.olorin.eventBus.emit('service:ready', {
+            service: 'visualization',
+            timestamp: new Date().toISOString(),
+            capabilities: ['maps', 'charts', 'risk-visualization', 'data-export']
+          });
+
+          // Listen for investigation updates
+          window.olorin.eventBus.on('investigation:updated', (data: any) => {
+            console.log('[Visualization Service] Investigation updated:', data);
+          });
+
+          // Listen for risk score updates
+          window.olorin.eventBus.on('risk:updated', (data: any) => {
+            console.log('[Visualization Service] Risk score updated:', data);
+          });
+        }
+
+        setServiceReady(true);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('[Visualization Service] Initialization failed:', err);
+        setError(err instanceof Error ? err.message : 'Service initialization failed');
+        setIsLoading(false);
+      }
+    };
+
+    initializeService();
+
+    // Cleanup event listeners on unmount
+    return () => {
+      if (window.olorin?.eventBus) {
+        window.olorin.eventBus.off('investigation:updated');
+        window.olorin.eventBus.off('risk:updated');
+      }
+    };
+  }, []);
+
+  // Service health check
+  const getServiceHealth = () => {
+    return {
+      status: serviceReady ? 'healthy' : error ? 'error' : 'initializing',
+      timestamp: new Date().toISOString(),
+      capabilities: ['maps', 'charts', 'risk-visualization', 'data-export'],
+      version: '1.0.0',
+    };
+  };
+
+  // Expose service health for monitoring
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).olorinVisualizationHealth = getServiceHealth;
+    }
+  }, [serviceReady, error]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <h2 className="mt-4 text-lg font-semibold text-gray-900">
+            Loading Visualization Service
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Initializing data visualization components...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 mb-4">
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            Visualization Service Error
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Retry Service Initialization
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ErrorBoundary serviceName="visualization">
-      <div className="visualization-service min-h-screen bg-gray-50">
-        <Suspense fallback={
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <LoadingSpinner size="md" />
-              <p className="mt-2 text-sm text-gray-600">
-                Loading Visualization Service...
-              </p>
+      <div className={`visualization-service ${className}`}>
+        <Routes>
+          {/* Main Dashboard Route */}
+          <Route
+            path="/"
+            element={
+              <DataVisualization
+                investigationId={investigationId}
+                realTime={realTime}
+              />
+            }
+          />
+
+          {/* Standalone Map Route */}
+          <Route
+            path="/map"
+            element={
+              <div className="min-h-screen bg-gray-50 p-6">
+                <div className="mb-6">
+                  <h1 className="text-2xl font-bold text-gray-900">Geographic View</h1>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Interactive map showing investigation locations and risk hotspots
+                  </p>
+                </div>
+                <LocationMap
+                  locations={mockVisualizationData.locations}
+                  height="calc(100vh - 200px)"
+                  showControls={true}
+                  showFilters={true}
+                  clustered={true}
+                  onLocationClick={(location) => console.log('Location clicked:', location)}
+                />
+              </div>
+            }
+          />
+
+          {/* Standalone Risk Analysis Route */}
+          <Route
+            path="/risk"
+            element={
+              <div className="min-h-screen bg-gray-50 p-6">
+                <div className="mb-6">
+                  <h1 className="text-2xl font-bold text-gray-900">Risk Analysis</h1>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Detailed risk scoring and factor breakdown
+                  </p>
+                </div>
+                <div className="space-y-6">
+                  <OverallRiskScore
+                    metrics={mockVisualizationData.riskMetrics}
+                    size="lg"
+                    showDetails={true}
+                    animated={true}
+                  />
+                  <RiskScoreDisplay
+                    overallScore={mockVisualizationData.riskMetrics.overallScore}
+                    riskFactors={mockVisualizationData.riskFactors}
+                    size="lg"
+                    showDetails={true}
+                    animated={true}
+                  />
+                </div>
+              </div>
+            }
+          />
+
+          {/* Charts and Trends Route */}
+          <Route
+            path="/charts"
+            element={
+              <div className="min-h-screen bg-gray-50 p-6">
+                <div className="mb-6">
+                  <h1 className="text-2xl font-bold text-gray-900">Charts & Analytics</h1>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Statistical analysis and trending data visualization
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg border border-gray-200 p-8">
+                  <div className="text-center">
+                    <div className="text-gray-400 mb-4">
+                      <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Advanced Charts Coming Soon
+                    </h3>
+                    <p className="text-gray-600">
+                      Interactive charts and statistical analysis tools will be available in the next update.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+          />
+
+          {/* Service Health Route */}
+          <Route
+            path="/health"
+            element={
+              <div className="min-h-screen bg-gray-50 p-6">
+                <div className="max-w-2xl mx-auto">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-6">
+                    Visualization Service Health
+                  </h1>
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <pre className="text-sm text-gray-700 whitespace-pre-wrap">
+                      {JSON.stringify(getServiceHealth(), null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            }
+          />
+
+          {/* Default Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+
+        {/* Service Status Indicator */}
+        <div className="fixed bottom-4 left-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 px-3 py-2">
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${
+                serviceReady ? 'bg-green-500' : 'bg-yellow-500'
+              }`} />
+              <span className="text-xs font-medium text-gray-700">
+                Visualization Service
+              </span>
             </div>
           </div>
-        }>
-          <Routes>
-            {/* Main Visualization Dashboard */}
-            <Route path="/" element={<DataVisualization />} />
-            <Route path="/dashboard" element={<DataVisualization />} />
-
-            {/* Visualization Tools */}
-            <Route path="/builder" element={<ChartBuilder />} />
-            <Route path="/charts" element={<DataVisualization />} />
-            <Route path="/network" element={<NetworkGraph />} />
-            <Route path="/timeline" element={<TimelineVisualization />} />
-
-            {/* Chart Type Routes */}
-            <Route path="/chart/:type/*" element={
-              <Routes>
-                <Route path="/" element={<DataVisualization />} />
-                <Route path="/builder" element={<ChartBuilder />} />
-                <Route path="/data" element={<DataVisualization />} />
-                <Route path="*" element={<Navigate to="/chart/:type" replace />} />
-              </Routes>
-            } />
-
-            {/* Network Analysis Routes */}
-            <Route path="/network/*" element={
-              <Routes>
-                <Route path="/" element={<NetworkGraph />} />
-                <Route path="/graph" element={<NetworkGraph />} />
-                <Route path="/analysis" element={<NetworkGraph />} />
-                <Route path="*" element={<Navigate to="/network" replace />} />
-              </Routes>
-            } />
-
-            {/* Timeline Analysis Routes */}
-            <Route path="/timeline/*" element={
-              <Routes>
-                <Route path="/" element={<TimelineVisualization />} />
-                <Route path="/analysis" element={<TimelineVisualization />} />
-                <Route path="/events" element={<TimelineVisualization />} />
-                <Route path="*" element={<Navigate to="/timeline" replace />} />
-              </Routes>
-            } />
-
-            {/* Health and Metrics Endpoints */}
-            <Route path="/health" element={
-              <div className="p-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center">
-                    <div className="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
-                    <div>
-                      <h3 className="text-lg font-medium text-green-800">
-                        Visualization Service Health Check
-                      </h3>
-                      <p className="text-green-700 mt-1">
-                        Service is running and operational
-                      </p>
-                      <div className="mt-2 text-sm text-green-600">
-                        <div>Port: 3004</div>
-                        <div>Status: Ready</div>
-                        <div>Components: 4 loaded</div>
-                        <div>Chart.js: Loaded</div>
-                        <div>vis.js: Loaded</div>
-                        <div>Active Charts: 23</div>
-                        <div>Last Check: {new Date().toLocaleTimeString()}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            } />
-
-            <Route path="/metrics" element={
-              <div className="p-4">
-                <h2 className="text-xl font-bold mb-4">Visualization Service Metrics</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Active Charts</h3>
-                    <div className="text-2xl font-bold text-blue-600 mt-2">23</div>
-                    <div className="text-sm text-gray-500 mt-1">Currently rendering</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Charts Created</h3>
-                    <div className="text-2xl font-bold text-green-600 mt-2">1,567</div>
-                    <div className="text-sm text-gray-500 mt-1">This month</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Data Points</h3>
-                    <div className="text-2xl font-bold text-purple-600 mt-2">2.4M</div>
-                    <div className="text-sm text-gray-500 mt-1">Total visualized</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Render Time</h3>
-                    <div className="text-2xl font-bold text-orange-600 mt-2">125ms</div>
-                    <div className="text-sm text-gray-500 mt-1">Average</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Network Graphs</h3>
-                    <div className="text-2xl font-bold text-red-600 mt-2">89</div>
-                    <div className="text-sm text-gray-500 mt-1">Fraud networks</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Timeline Events</h3>
-                    <div className="text-2xl font-bold text-indigo-600 mt-2">3,456</div>
-                    <div className="text-sm text-gray-500 mt-1">Investigation events</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Export Requests</h3>
-                    <div className="text-2xl font-bold text-yellow-600 mt-2">234</div>
-                    <div className="text-sm text-gray-500 mt-1">Last 7 days</div>
-                  </div>
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <h3 className="font-medium text-gray-900">Memory Usage</h3>
-                    <div className="text-2xl font-bold text-pink-600 mt-2">45MB</div>
-                    <div className="text-sm text-gray-500 mt-1">Chart cache</div>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Popular Chart Types</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded p-3 text-center">
-                      <div className="text-lg font-bold text-blue-600">345</div>
-                      <div className="text-sm text-blue-800">Line Charts</div>
-                    </div>
-                    <div className="bg-green-50 border border-green-200 rounded p-3 text-center">
-                      <div className="text-lg font-bold text-green-600">289</div>
-                      <div className="text-sm text-green-800">Bar Charts</div>
-                    </div>
-                    <div className="bg-purple-50 border border-purple-200 rounded p-3 text-center">
-                      <div className="text-lg font-bold text-purple-600">156</div>
-                      <div className="text-sm text-purple-800">Pie Charts</div>
-                    </div>
-                    <div className="bg-orange-50 border border-orange-200 rounded p-3 text-center">
-                      <div className="text-lg font-bold text-orange-600">89</div>
-                      <div className="text-sm text-orange-800">Networks</div>
-                    </div>
-                    <div className="bg-red-50 border border-red-200 rounded p-3 text-center">
-                      <div className="text-lg font-bold text-red-600">67</div>
-                      <div className="text-sm text-red-800">Timelines</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            } />
-
-            {/* Catch-all route */}
-            <Route path="*" element={
-              <div className="flex items-center justify-center h-64">
-                <div className="text-center">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                    Visualization Page Not Found
-                  </h1>
-                  <p className="text-gray-600 mb-4">
-                    The requested visualization page could not be found.
-                  </p>
-                  <button
-                    onClick={() => window.history.back()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors mr-2"
-                  >
-                    Go Back
-                  </button>
-                  <button
-                    onClick={() => window.location.href = '/visualization'}
-                    className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
-                  >
-                    Visualization Dashboard
-                  </button>
-                </div>
-              </div>
-            } />
-          </Routes>
-        </Suspense>
+        </div>
       </div>
     </ErrorBoundary>
   );

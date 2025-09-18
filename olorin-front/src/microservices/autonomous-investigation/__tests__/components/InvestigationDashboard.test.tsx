@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { jest } from '@jest/globals';
 import { InvestigationDashboard } from '../../components/InvestigationDashboard';
 import { Investigation, InvestigationStatus } from '../../types/investigation';
@@ -213,11 +213,9 @@ describe('InvestigationDashboard', () => {
     it('calls onViewInvestigation when investigation card is clicked', async () => {
       render(<InvestigationDashboard {...defaultProps} />);
 
-      const investigationCard = screen.getByText('Test Investigation 1').closest('div');
-      if (investigationCard) {
-        fireEvent.click(investigationCard);
-        expect(defaultProps.onViewInvestigation).toHaveBeenCalledWith('inv-1');
-      }
+      const investigationCard = screen.getByText('Test Investigation 1');
+      fireEvent.click(investigationCard);
+      expect(defaultProps.onViewInvestigation).toHaveBeenCalledWith('inv-1');
     });
 
     it('calls onViewInvestigation with "list" when view all is clicked', async () => {
@@ -315,7 +313,7 @@ describe('InvestigationDashboard', () => {
       const refreshButton = screen.getByRole('button', { name: /refresh/i });
       refreshButton.focus();
 
-      expect(document.activeElement).toBe(refreshButton);
+      expect(refreshButton).toHaveFocus();
     });
   });
 

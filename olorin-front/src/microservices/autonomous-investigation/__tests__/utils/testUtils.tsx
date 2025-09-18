@@ -3,6 +3,9 @@ import { render, RenderOptions } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Investigation, InvestigationStatus, AgentProgress } from '../../types/investigation';
 
+// Re-export screen for convenience
+import { screen } from '@testing-library/react';
+
 // Test providers wrapper
 interface TestProvidersProps {
   children: React.ReactNode;
@@ -360,7 +363,4 @@ export const mockLocalStorage = () => {
 // Export everything including the custom render
 export * from '@testing-library/react';
 export { customRender as render };
-
-// Re-export screen for convenience
-import { screen } from '@testing-library/react';
 export { screen };

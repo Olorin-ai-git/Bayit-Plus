@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { jest } from '@jest/globals';
 
 // Import components
@@ -107,16 +107,13 @@ interface TestAppProps {
 const TestApp: React.FC<TestAppProps> = ({ initialInvestigations, handlers }) => {
   const [investigations, setInvestigations] = React.useState(initialInvestigations);
   const [currentView, setCurrentView] = React.useState<'dashboard' | 'details'>('dashboard');
-  const [currentInvestigationId, setCurrentInvestigationId] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleViewInvestigation = (id: string) => {
     if (id === 'list') {
       setCurrentView('dashboard');
-      setCurrentInvestigationId(null);
     } else {
       setCurrentView('details');
-      setCurrentInvestigationId(id);
     }
     handlers.onViewInvestigation(id);
   };
@@ -170,7 +167,6 @@ const TestApp: React.FC<TestAppProps> = ({ initialInvestigations, handlers }) =>
 
     setInvestigations(prev => prev.filter(inv => inv.id !== id));
     setCurrentView('dashboard');
-    setCurrentInvestigationId(null);
     setIsLoading(false);
   };
 
@@ -182,7 +178,6 @@ const TestApp: React.FC<TestAppProps> = ({ initialInvestigations, handlers }) =>
 
   const handleBack = () => {
     setCurrentView('dashboard');
-    setCurrentInvestigationId(null);
     handlers.onBack();
   };
 
@@ -238,7 +233,7 @@ describe('Investigation E2E Flow', () => {
       expect(screen.getByText('Pending')).toBeInTheDocument();
 
       // 2. Navigate to investigation details
-      await user.click(screen.getByText('Pending Investigation').closest('div')!);
+      await user.click(screen.getByText('Pending Investigation'));
 
       expect(mockHandlers.onViewInvestigation).toHaveBeenCalledWith('inv-1');
 
@@ -306,7 +301,7 @@ describe('Investigation E2E Flow', () => {
       );
 
       // Navigate to details
-      await user.click(screen.getByText('Test Investigation').closest('div')!);
+      await user.click(screen.getByText('Test Investigation'));
 
       // Delete investigation
       await user.click(screen.getByRole('button', { name: /delete/i }));
@@ -332,7 +327,7 @@ describe('Investigation E2E Flow', () => {
       );
 
       // Navigate to details
-      await user.click(screen.getByText(completedInvestigation.title).closest('div')!);
+      await user.click(screen.getByText(completedInvestigation.title));
 
       // Test Overview tab (default)
       expect(screen.getByText('Investigation Details')).toBeInTheDocument();
@@ -437,7 +432,7 @@ describe('Investigation E2E Flow', () => {
       );
 
       // Navigate to details
-      await user.click(screen.getByText(runningInvestigation.title).closest('div')!);
+      await user.click(screen.getByText(runningInvestigation.title));
 
       // Check initial progress
       expect(screen.getByText('25%')).toBeInTheDocument();
@@ -491,7 +486,7 @@ describe('Investigation E2E Flow', () => {
         </MemoryRouter>
       );
 
-      const { rerender } = render(<TestAppWithInvalidId />);
+      render(<TestAppWithInvalidId />);
 
       expect(screen.getByText('Investigation Not Found')).toBeInTheDocument();
 
@@ -528,7 +523,7 @@ describe('Investigation E2E Flow', () => {
       );
 
       // Navigate to details
-      await user.click(screen.getByText(investigation.title).closest('div')!);
+      await user.click(screen.getByText(investigation.title));
 
       // Start investigation (which will be slow)
       await user.click(screen.getByRole('button', { name: /start/i }));
@@ -555,7 +550,7 @@ describe('Investigation E2E Flow', () => {
       );
 
       // Navigate to details
-      await user.click(screen.getByText(investigation.title).closest('div')!);
+      await user.click(screen.getByText(investigation.title));
 
       // Verify we're in details view
       expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();

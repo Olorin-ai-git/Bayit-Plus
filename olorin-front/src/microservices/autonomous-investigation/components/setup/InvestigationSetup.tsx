@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Play, Settings, User, Monitor, Timer, Database } from 'lucide-react';
-import { Investigation, EntityType, InvestigationEntityParams } from '../../types/investigation';
+import { EntityType, InvestigationEntityParams } from '../../types/investigation';
 
 interface InvestigationSetupProps {
   onStartInvestigation: (params: InvestigationEntityParams & {

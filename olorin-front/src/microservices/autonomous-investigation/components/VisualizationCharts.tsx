@@ -1,5 +1,5 @@
 import React from 'react';
-import { Investigation, AgentProgress } from '../types/investigation';
+import { Investigation } from '../types/investigation';
 
 interface ChartData {
   label: string;

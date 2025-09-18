@@ -338,8 +338,6 @@ describe('InvestigationDetails', () => {
 
   describe('Loading States', () => {
     it('shows loading overlay when action is in progress', async () => {
-      const slowOnPause = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
-
       renderInvestigationDetails();
 
       const pauseButton = screen.getByRole('button', { name: /pause/i });

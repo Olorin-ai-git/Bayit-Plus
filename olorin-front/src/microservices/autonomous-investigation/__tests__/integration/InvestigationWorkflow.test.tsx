@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { jest } from '@jest/globals';
 import { InvestigationDashboard } from '../../components/InvestigationDashboard';
@@ -146,8 +146,7 @@ describe('Investigation Workflow Integration', () => {
       );
 
       // Click on an investigation
-      const investigationCard = screen.getByText('Test Investigation').closest('div');
-      fireEvent.click(investigationCard!);
+      fireEvent.click(screen.getByText('Test Investigation'));
 
       expect(mockHandlers.onViewInvestigation).toHaveBeenCalledWith('inv-1');
 

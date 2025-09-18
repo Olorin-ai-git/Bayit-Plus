@@ -1,4 +1,10 @@
 // Main RAG Intelligence hook
+// Composite hooks for common use cases
+import { useKnowledgeBase } from './useKnowledgeBase';
+import { useDocuments } from './useDocuments';
+import { useSearch } from './useSearch';
+import { useRAGGeneration } from './useRAGGeneration';
+
 export {
   useRAGIntelligence,
   default as useRAGIntelligenceDefault
@@ -56,12 +62,6 @@ export type {
   ConversationTurn,
   StreamingState
 } from './useRAGGeneration';
-
-// Composite hooks for common use cases
-import { useKnowledgeBase } from './useKnowledgeBase';
-import { useDocuments } from './useDocuments';
-import { useSearch } from './useSearch';
-import { useRAGGeneration } from './useRAGGeneration';
 
 // Combined hook for complete RAG workflow
 export const useRAGWorkflow = (knowledgeBaseIds: string[]) => {

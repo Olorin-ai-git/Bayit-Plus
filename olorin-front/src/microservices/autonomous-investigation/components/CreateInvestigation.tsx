@@ -3,7 +3,6 @@ import {
   XMarkIcon,
   InformationCircleIcon,
   CheckIcon,
-  CogIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
 import { Investigation, InvestigationPriority, AgentConfiguration } from '../types/investigation';
@@ -134,14 +133,6 @@ export const CreateInvestigation: React.FC<CreateInvestigationProps> = ({
     });
   };
 
-  const handleAgentConfigChange = (agentId: string, config: Record<string, any>) => {
-    setFormData(prev => ({
-      ...prev,
-      agents: prev.agents.map(agent =>
-        agent.id === agentId ? { ...agent, config } : agent
-      ),
-    }));
-  };
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && tagInput.trim()) {

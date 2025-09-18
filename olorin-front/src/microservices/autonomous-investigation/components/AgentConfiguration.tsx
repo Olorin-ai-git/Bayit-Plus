@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  CogIcon,
   CheckIcon,
   XMarkIcon,
-  InformationCircleIcon,
   ExclamationTriangleIcon,
-  PlayIcon,
-  PauseIcon,
-  TrashIcon,
-  PlusIcon,
   DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { AIAgent, AgentConfiguration as AgentConfig } from '../types/investigation';
@@ -232,7 +226,6 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
   initialConfigurations = [],
 }) => {
   const [configurations, setConfigurations] = useState<AgentConfig[]>(initialConfigurations);
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [templates, setTemplates] = useState<AgentTemplate[]>(defaultTemplates);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [showAdvanced, setShowAdvanced] = useState<Record<string, boolean>>({});
@@ -248,7 +241,7 @@ export const AgentConfiguration: React.FC<AgentConfigurationProps> = ({
         }))
       );
     }
-  }, []);
+  }, [configurations.length]);
 
   const getAgentDefinition = (agentId: string): AIAgent | undefined => {
     return agentDefinitions.find(agent => agent.id === agentId);

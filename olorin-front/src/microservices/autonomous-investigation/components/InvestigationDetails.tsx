@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   PlayIcon,
@@ -15,7 +15,7 @@ import {
   CogIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
-import { Investigation, AgentProgress, InvestigationEvent } from '../types/investigation';
+import { Investigation } from '../types/investigation';
 import { useInvestigationWorkflow } from '../hooks/useInvestigationWorkflow';
 import { LoadingSpinner } from '../../core-ui/components/LoadingSpinner';
 import { ProgressMonitor } from './ProgressMonitor';
