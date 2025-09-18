@@ -97,7 +97,12 @@
     "browser:firefox": "npx playwright test --project=cross-browser-firefox",
     "browser:safari": "npx playwright test --project=cross-browser-safari",
     "browser:compatibility": "node scripts/cross-browser/compatibility-audit.js",
-    "browser:all": "npm run browser:test && npm run browser:compatibility"
+    "browser:all": "npm run browser:test && npm run browser:compatibility",
+    "api:test": "npx playwright test src/shared/testing/api/api-integration.e2e.test.ts",
+    "api:contracts": "node scripts/api/contract-validator.js",
+    "api:health": "curl -f http://localhost:8090/api/health || echo 'Backend not available'",
+    "api:auth": "node -e \"fetch('http://localhost:8090/api/auth/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: 'test', password: 'test'})}).then(r=>r.json()).then(console.log)\"",
+    "api:all": "npm run api:health && npm run api:test && npm run api:contracts"
   },
   "jest": {
     "testMatch": [
