@@ -16,8 +16,25 @@ export interface ButtonProps {
   className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
-  return <button {...props}>{children}</button>;
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variant,
+  size,
+  disabled,
+  loading,
+  onClick,
+  className,
+  ...props
+}) => {
+  return React.createElement('button', {
+    ...props,
+    variant,
+    size,
+    disabled,
+    loading: loading ? 'true' : undefined,
+    onClick,
+    className
+  }, children);
 };
 
 export interface CardProps {
@@ -26,12 +43,12 @@ export interface CardProps {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ title, children, className }) => {
-  return (
-    <div className={className}>
-      {title && <h3>{title}</h3>}
-      {children}
-    </div>
+export const Card: React.FC<CardProps> = ({ title, children, className, ...props }) => {
+  return React.createElement(
+    'div',
+    { ...props, className },
+    title && React.createElement('h3', null, title),
+    children
   );
 };
 
@@ -41,11 +58,11 @@ export interface LoadingProps {
 }
 
 export const Loading: React.FC<LoadingProps> = ({ size = 'md', message }) => {
-  return (
-    <div>
-      <div>Loading...</div>
-      {message && <p>{message}</p>}
-    </div>
+  return React.createElement(
+    'div',
+    null,
+    React.createElement('div', null, 'Loading...'),
+    message && React.createElement('p', null, message)
   );
 };
 
