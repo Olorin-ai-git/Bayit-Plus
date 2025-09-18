@@ -598,3 +598,59 @@ export interface PaginatedRAGResponse<T> {
   hasNext: boolean;
   hasPrevious: boolean;
 }
+
+// Chat Interface Types
+export type ViewMode = 'enhanced' | 'table' | 'raw';
+
+export interface EnhancedChatMessage {
+  id: string;
+  sender: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+  natural_query?: string;
+  translated_query?: string;
+  query_metadata?: {
+    execution_time?: number;
+    result_count?: number;
+    sources?: any[];
+    confidence?: number;
+  };
+  structured_data?: {
+    data: Record<string, any>[];
+    columns: string[];
+    metadata: {
+      confidence: number;
+      total_count: number;
+      field_mapping: Record<string, any>;
+      source_info: Record<string, any>;
+    };
+  };
+}
+
+export interface FieldMapping {
+  category: string;
+  fields: string[];
+}
+
+export interface RexPattern {
+  field_name: string;
+  pattern: string;
+}
+
+export interface EvalCommand {
+  command: string;
+}
+
+export interface PreparedPrompt {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  template: string;
+  variables: string[];
+  created_at?: string;
+  updated_at?: string;
+  // Legacy fields for backward compatibility
+  prompt?: string;
+  example_output?: string;
+}

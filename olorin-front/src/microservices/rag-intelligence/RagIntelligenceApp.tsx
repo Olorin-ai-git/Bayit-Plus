@@ -8,6 +8,8 @@ const KnowledgeBase = React.lazy(() => import('./components/KnowledgeBase'));
 const DocumentRetrieval = React.lazy(() => import('./components/DocumentRetrieval'));
 const IntelligentSearch = React.lazy(() => import('./components/IntelligentSearch'));
 const VectorDatabase = React.lazy(() => import('./components/VectorDatabase'));
+const ChatInterface = React.lazy(() => import('./components/chat/ChatInterface'));
+const RAGConfigurationPage = React.lazy(() => import('./components/RAGConfigurationPage'));
 
 const RagIntelligenceApp: React.FC = () => {
   return (
@@ -24,11 +26,15 @@ const RagIntelligenceApp: React.FC = () => {
           </div>
         }>
           <Routes>
-            {/* Main Knowledge Base */}
-            <Route path="/" element={<KnowledgeBase />} />
-            <Route path="/knowledge" element={<KnowledgeBase />} />
+            {/* Main RAG Configuration Page - Primary RAG Feature */}
+            <Route path="/" element={<RAGConfigurationPage />} />
+            <Route path="/config" element={<RAGConfigurationPage />} />
+
+            {/* Direct Chat Interface */}
+            <Route path="/chat" element={<ChatInterface />} />
 
             {/* Core RAG Modules */}
+            <Route path="/knowledge" element={<KnowledgeBase />} />
             <Route path="/documents" element={<DocumentRetrieval />} />
             <Route path="/search" element={<IntelligentSearch />} />
             <Route path="/vectors" element={<VectorDatabase />} />
@@ -48,6 +54,7 @@ const RagIntelligenceApp: React.FC = () => {
               <Routes>
                 <Route path="/" element={<IntelligentSearch />} />
                 <Route path="/search" element={<IntelligentSearch />} />
+                <Route path="/chat" element={<ChatInterface />} />
                 <Route path="/documents" element={<DocumentRetrieval />} />
                 <Route path="*" element={<Navigate to="/query" replace />} />
               </Routes>
