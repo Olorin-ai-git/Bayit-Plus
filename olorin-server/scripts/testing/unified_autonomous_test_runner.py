@@ -938,6 +938,9 @@ class UnifiedAutonomousTestRunner:
                     # Log Snowflake connection details from .env for debugging
                     self._log_snowflake_connection_details()
 
+                    # Log the SQL query that was executed for debugging
+                    self._log_snowflake_query(results.get('sql_query', 'Query not available'))
+
                     self.logger.error("💡 To resolve this:")
                     self.logger.error("   1. Check if there is actual fraud data in Snowflake")
                     self.logger.error("   2. Expand the time window (currently 24h):")
@@ -3075,6 +3078,19 @@ class UnifiedAutonomousTestRunner:
             self.logger.error("   ❌ SNOWFLAKE_PASSWORD/PRIVATE_KEY: Not configured")
 
         self.logger.error("   💡 Verify these settings match your Snowflake environment")
+
+    def _log_snowflake_query(self, sql_query: str):
+        """Log the Snowflake SQL query that was executed for debugging purposes"""
+        self.logger.error("🔍 Snowflake SQL query that was executed:")
+        self.logger.error("" + "="*80)
+
+        # Split query into lines for better readability
+        query_lines = sql_query.strip().split('\n')
+        for line in query_lines:
+            self.logger.error(f"   {line}")
+
+        self.logger.error("" + "="*80)
+        self.logger.error("💡 This query can be run directly in Snowflake console for debugging")
 
 
 def create_argument_parser() -> argparse.ArgumentParser:

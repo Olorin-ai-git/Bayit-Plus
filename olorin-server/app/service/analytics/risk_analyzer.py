@@ -119,9 +119,12 @@ class RiskAnalyzer:
             logger.info(f"🔍 Executing Snowflake query for {group_by} filtering:")
             logger.info(f"Query: {query[:500]}...")
             results = await self.client.execute_query(query)
-            
+
             # Process results
             analysis = self._process_results(results, time_window, group_by, top_percentage)
+
+            # Store the SQL query in the analysis for debugging purposes
+            analysis['sql_query'] = query
             
             # Handle case where IP filtering removed all results - try longer time window for external IPs
             if group_by.upper() == "IP_ADDRESS" and len(analysis.get('entities', [])) == 0:
@@ -137,9 +140,11 @@ class RiskAnalyzer:
                     analysis = self._process_results(extended_results, '7d', group_by, top_percentage)
                     analysis['fallback_used'] = True
                     analysis['original_time_window'] = time_window
+                    analysis['sql_query'] = extended_query  # Store the extended query
                 else:
                     logger.warning("⚠️ No external IPs found even in 7-day window")
                     analysis['fallback_used'] = False
+                    analysis['sql_query'] = extended_query  # Store the query even if no results
             
             # Update cache
             self._cache[cache_key] = analysis
