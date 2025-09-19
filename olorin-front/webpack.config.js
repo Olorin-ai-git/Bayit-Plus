@@ -79,6 +79,7 @@ const microservices = {
     name: 'visualization',
     port: 3004,
     exposes: {
+      './App': './src/microservices/visualization/VisualizationApp.tsx',
       './ChartBuilder': './src/microservices/visualization/components/ChartBuilder.tsx',
       './DataVisualization': './src/microservices/visualization/components/DataVisualization.tsx',
       './NetworkGraph': './src/microservices/visualization/components/NetworkGraph.tsx',
@@ -93,6 +94,7 @@ const microservices = {
     name: 'reporting',
     port: 3005,
     exposes: {
+      './App': './src/microservices/reporting/ReportingApp.tsx',
       './ReportBuilder': './src/microservices/reporting/components/ReportBuilder.tsx',
       './ReportDashboard': './src/microservices/reporting/components/ReportDashboard.tsx',
       './ReportViewer': './src/microservices/reporting/components/ReportViewer.tsx'
@@ -107,6 +109,7 @@ const microservices = {
     name: 'coreUi',
     port: 3006,
     exposes: {
+      './App': './src/microservices/core-ui/CoreUIApp.tsx',
       './Navigation': './src/microservices/core-ui/components/Navigation.tsx',
       './Header': './src/microservices/core-ui/components/Header.tsx',
       './Sidebar': './src/microservices/core-ui/components/Sidebar.tsx',
@@ -122,6 +125,7 @@ const microservices = {
     name: 'designSystem',
     port: 3007,
     exposes: {
+      './App': './src/microservices/design-system/DesignSystemApp.tsx',
       './DesignSystemFoundation': './src/microservices/design-system/components/DesignSystemFoundation.tsx',
       './DesignTokens': './src/microservices/design-system/types/design.ts'
     },
@@ -131,7 +135,7 @@ const microservices = {
     name: 'autonomousInvestigation',
     port: 3008,
     exposes: {
-      './App': './src/microservices/autonomous-investigation/App.tsx'
+      './App': './src/microservices/autonomous-investigation/AutonomousInvestigationApp.tsx'
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
@@ -239,56 +243,63 @@ const getSharedDependencies = (service) => {
     react: {
       singleton: true,
       requiredVersion: '^18.2.0',
-      eager: serviceOpts.eager.includes('react')
+      eager: true // React should always be eager for proper initialization
     },
     'react-dom': {
       singleton: true,
       requiredVersion: '^18.2.0',
-      eager: serviceOpts.eager.includes('react-dom')
+      eager: true // React-dom should always be eager for proper initialization
     },
     'react-router-dom': {
       singleton: true,
       requiredVersion: '^6.11.0',
-      eager: serviceOpts.eager.includes('react-router-dom')
+      eager: service === 'shell' // Only shell needs eager router
     },
     '@headlessui/react': {
       singleton: true,
       requiredVersion: '^2.2.8',
-      eager: serviceOpts.eager.includes('@headlessui/react')
+      eager: false // Never eager to prevent loading issues
     },
     '@heroicons/react': {
       singleton: true,
-      requiredVersion: '^2.0.18'
+      requiredVersion: '^2.0.18',
+      eager: false
     },
     'chart.js': {
       singleton: true,
       requiredVersion: '^4.2.1',
-      eager: serviceOpts.eager.includes('chart.js')
+      eager: false // Charts are not critical for initial load
     },
     'react-chartjs-2': {
       singleton: true,
       requiredVersion: '^5.2.0',
-      eager: serviceOpts.eager.includes('chart.js')
+      eager: false
     },
     axios: {
       singleton: true,
-      requiredVersion: '^1.4.0'
+      requiredVersion: '^1.4.0',
+      eager: false
     },
     'date-fns': {
       singleton: true,
-      requiredVersion: '^2.29.3'
+      requiredVersion: '^2.29.3',
+      eager: false
     },
     'lucide-react': {
       singleton: true,
-      requiredVersion: '^0.263.0'
+      requiredVersion: '^0.263.0',
+      eager: false
     },
     mitt: {
       singleton: true,
-      requiredVersion: '3.0.1'
+      requiredVersion: '3.0.1',
+      eager: false, // Prevent eager consumption errors
+      strictVersion: false // Allow version flexibility
     },
     'react-hot-toast': {
       singleton: true,
-      requiredVersion: '2.6.0'
+      requiredVersion: '2.6.0',
+      eager: false
     }
   };
 };

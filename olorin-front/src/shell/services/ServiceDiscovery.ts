@@ -168,6 +168,38 @@ export class ServiceDiscovery {
           './DesignTokens': './src/microservices/design-system/types/design.ts'
         },
         remotes: {}
+      },
+      autonomousInvestigation: {
+        name: 'autonomousInvestigation',
+        port: 3008,
+        url: `${baseUrl}:3008`,
+        remoteEntry: `${baseUrl}:3008/remoteEntry.js`,
+        status: 'loading',
+        exposes: {
+          './AutonomousInvestigationDashboard': './src/microservices/autonomous-investigation/components/AutonomousInvestigationDashboard.tsx',
+          './AIAgentManager': './src/microservices/autonomous-investigation/components/AIAgentManager.tsx'
+        },
+        remotes: {
+          coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+          designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
+          agentAnalytics: 'agentAnalytics@http://localhost:3002/remoteEntry.js'
+        }
+      },
+      manualInvestigation: {
+        name: 'manualInvestigation',
+        port: 3009,
+        url: `${baseUrl}:3009`,
+        remoteEntry: `${baseUrl}:3009/remoteEntry.js`,
+        status: 'loading',
+        exposes: {
+          './ManualInvestigationDashboard': './src/microservices/manual-investigation/components/ManualInvestigationDashboard.tsx',
+          './InvestigationTools': './src/microservices/manual-investigation/components/InvestigationTools.tsx'
+        },
+        remotes: {
+          coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+          designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
+          visualization: 'visualization@http://localhost:3004/remoteEntry.js'
+        }
       }
     };
   }
@@ -199,15 +231,16 @@ export class ServiceDiscovery {
     const startTime = Date.now();
 
     try {
-      const healthUrl = `${service.url}/health`;
+      // Check if remoteEntry.js is available instead of health endpoint
+      const remoteEntryUrl = service.remoteEntry;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.discoveryTimeout);
 
-      const response = await fetch(healthUrl, {
-        method: 'GET',
+      const response = await fetch(remoteEntryUrl, {
+        method: 'HEAD', // Use HEAD to check availability without downloading
         signal: controller.signal,
         headers: {
-          'Accept': 'application/json',
+          'Accept': 'application/javascript',
           'X-Service-Discovery': 'true'
         }
       });
@@ -224,7 +257,7 @@ export class ServiceDiscovery {
           uptime: responseTime
         };
 
-        console.log(`[Service Discovery] ${service.name} is healthy (${responseTime}ms)`);
+        console.log(`[Service Discovery] ${service.name} is ready - remoteEntry available (${responseTime}ms)`);
         return true;
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -233,10 +266,10 @@ export class ServiceDiscovery {
       const responseTime = Date.now() - startTime;
 
       if (error instanceof Error && error.name === 'AbortError') {
-        console.warn(`[Service Discovery] ${service.name} health check timeout after ${this.discoveryTimeout}ms`);
+        console.warn(`[Service Discovery] ${service.name} check timeout after ${this.discoveryTimeout}ms`);
         service.status = 'offline';
       } else {
-        console.warn(`[Service Discovery] ${service.name} health check failed:`, error);
+        console.warn(`[Service Discovery] ${service.name} check failed:`, error);
         service.status = 'error';
       }
 

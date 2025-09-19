@@ -4,7 +4,7 @@
  */
 
 // Core Event Bus
-export { EventBusManager, useEventBus } from './eventBus';
+export { EventBusManager, useEventBus, eventBus } from './eventBus';
 export {
   AutonomousInvestigationEvents,
   ManualInvestigationEvents,
