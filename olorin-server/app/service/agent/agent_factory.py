@@ -20,7 +20,6 @@ try:
         create_tool_recommender
     )
     from .rag_enhanced_agent import RAGEnhancedInvestigationAgent, create_rag_enhanced_agent
-    from .tools.tool_registry import tool_registry
     RAG_AVAILABLE = True
     logger.info("RAG modules loaded successfully")
 except ImportError as e:
@@ -64,6 +63,8 @@ class AgentFactory:
                 self.rag_orchestrator = get_rag_orchestrator()
                 # Initialize tool recommender for RAG-enhanced tool selection
                 if RAG_AVAILABLE:
+                    # Import tool_registry here to avoid circular imports during module initialization
+                    from .tools.tool_registry import tool_registry
                     self.tool_recommender = create_tool_recommender(
                         rag_orchestrator=self.rag_orchestrator,
                         tool_registry=tool_registry

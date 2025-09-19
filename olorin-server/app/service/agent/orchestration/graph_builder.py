@@ -69,19 +69,27 @@ logger = get_bridge_logger(__name__)
 async def create_resilient_memory():
     """
     Create a resilient memory saver with bulletproof fallback handling.
-    
+
     Attempts to use Redis for persistence but falls back to MemorySaver if
-    Redis is unavailable. This ensures investigations continue even when
+    Redis is unavailable or disabled. This ensures investigations continue even when
     external services fail.
-    
+
     Returns:
         Either Redis-based saver (preferred) or MemorySaver (fallback)
     """
+    import os
     from app.service.config import get_settings_for_env
     from app.service.redis_client import test_redis_connection
-    
+
     settings = get_settings_for_env()
-    
+
+    # Check if Redis is enabled in configuration
+    use_redis = os.getenv('USE_REDIS', 'true').lower() == 'true'
+    if not use_redis:
+        logger.info("🛡️ Redis disabled in configuration - using MemorySaver")
+        from langgraph.checkpoint.memory import MemorySaver
+        return MemorySaver()
+
     # First, try to use a proper LangGraph Redis saver if available
     try:
         # Test Redis connection first

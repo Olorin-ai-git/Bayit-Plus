@@ -298,50 +298,6 @@ class ConfigLoader:
             "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY")
         }
     
-    def load_snowflake_config(self) -> dict:
-        """
-        Load Snowflake configuration from secrets.
-        
-        Returns:
-            Dictionary with Snowflake configuration
-        """
-        return {
-            "account": self.load_secret("SNOWFLAKE_ACCOUNT"),
-            "user": self.load_secret("SNOWFLAKE_USER"),
-            "password": self.load_secret("SNOWFLAKE_PASSWORD"),
-            "private_key": self.load_secret("SNOWFLAKE_PRIVATE_KEY"),
-            "database": self.load_secret("SNOWFLAKE_DATABASE"),
-            "schema": self.load_secret("SNOWFLAKE_SCHEMA"),
-            "warehouse": self.load_secret("SNOWFLAKE_WAREHOUSE"),
-            "role": self.load_secret("SNOWFLAKE_ROLE"),
-            "authenticator": self.load_secret("SNOWFLAKE_AUTHENTICATOR") or "snowflake"
-        }
-    
-    def load_all_secrets(self) -> dict:
-        """
-        Load all secrets and return as a dictionary.
-        
-        Returns:
-            Dictionary with all loaded secrets
-        """
-        return {
-            # API Keys - USED
-            "anthropic_api_key": self.load_api_key("anthropic_api_key"),  # USED: Core LLM functionality
-            # "openai_api_key": self.load_api_key("openai_api_key"),  # UNUSED: Replaced by Anthropic
-            "olorin_api_key": self.load_api_key("olorin_api_key"),  # USED: Internal API calls
-            # "databricks_token": self.load_api_key("databricks_token"),  # UNUSED: Mock implementation only
-            
-            # Service Configurations - Only load configs that actually fetch secrets
-            # "database": self.load_database_config(),  # UNUSED: Using SQLite, not PostgreSQL
-            "redis": self.load_redis_config(),  # USED: Caching system (only api_key from secrets)
-            "jwt": self.load_jwt_config(),  # USED: Authentication (only secret_key from secrets)
-            "splunk": self.load_splunk_config(),  # USED: Log analysis
-            # "sumo_logic": self.load_sumo_logic_config(),  # UNUSED: Mock implementation only
-            # "snowflake": self.load_snowflake_config(),  # UNUSED: Mock implementation only
-            
-            # App Secret
-            # "app_secret": self.load_secret("APP_SECRET")  # UNUSED: Not referenced in codebase
-        }
 
 
 # Global instance
