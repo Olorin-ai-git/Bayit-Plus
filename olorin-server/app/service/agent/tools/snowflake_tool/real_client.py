@@ -50,15 +50,22 @@ class RealSnowflakeClient:
         self.query_timeout = int(config.get('query_timeout', '300'))
         
         # Validate critical configuration
-        if not all([self.account, self.user, self.password, self.database]):
+        # For externalbrowser authenticator, password is not required (OAuth/SAML)
+        required_fields = [self.account, self.user, self.database]
+        if self.authenticator != 'externalbrowser':
+            required_fields.append(self.password)
+
+        if not all(required_fields):
             missing = []
             if not self.account: missing.append('SNOWFLAKE_ACCOUNT')
             if not self.user: missing.append('SNOWFLAKE_USER')
-            if not self.password: missing.append('SNOWFLAKE_PASSWORD')
             if not self.database: missing.append('SNOWFLAKE_DATABASE')
-            
-            logger.error(f"Missing critical Snowflake configuration: {', '.join(missing)}")
-            logger.error("Please configure these in your .env file")
+            if self.authenticator != 'externalbrowser' and not self.password:
+                missing.append('SNOWFLAKE_PASSWORD')
+
+            if missing:
+                logger.error(f"Missing critical Snowflake configuration: {', '.join(missing)}")
+                logger.error("Please configure these in your .env file")
             # Don't raise exception - just warn (as per requirements)
     
     def _get_connection(self):
@@ -71,13 +78,16 @@ class RealSnowflakeClient:
                 conn_params = {
                     'account': self.account,
                     'user': self.user,
-                    'password': self.password,
                     'database': self.database,
                     'schema': self.schema,
                     'warehouse': self.warehouse,
                     'network_timeout': self.query_timeout,
                     'login_timeout': 60,
                 }
+
+                # Only add password if not using externalbrowser authenticator
+                if self.authenticator != 'externalbrowser' and self.password:
+                    conn_params['password'] = self.password
                 
                 # Add optional parameters
                 if self.role:
