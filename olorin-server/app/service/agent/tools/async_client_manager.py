@@ -161,6 +161,10 @@ def get_client_manager() -> AsyncClientManager:
     global _client_manager
     if _client_manager is None:
         _client_manager = AsyncClientManager()
+        # Auto-register cleanup on first access
+        if not _client_manager._cleanup_registered:
+            register_cleanup_on_shutdown()
+            _client_manager._cleanup_registered = True
     return _client_manager
 
 
@@ -192,19 +196,43 @@ async def http_session(
 def register_cleanup_on_shutdown():
     """Register cleanup handler for application shutdown."""
     import atexit
-    
+    import signal
+
     def sync_cleanup():
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
+            # Force cleanup all sessions immediately
+            loop = None
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                pass
+
+            if loop and loop.is_running():
                 # Schedule cleanup task if loop is running
-                loop.create_task(cleanup_async_clients())
+                task = loop.create_task(cleanup_async_clients())
+                # Give it a moment to complete
+                try:
+                    loop.run_until_complete(asyncio.wait_for(task, timeout=2.0))
+                except (asyncio.TimeoutError, RuntimeError):
+                    logger.warning("📡 Cleanup task timed out or failed")
             else:
                 # Run cleanup if loop is not running
-                loop.run_until_complete(cleanup_async_clients())
-        except RuntimeError:
-            # No event loop available - create one for cleanup
-            asyncio.run(cleanup_async_clients())
-    
+                try:
+                    asyncio.run(cleanup_async_clients())
+                except RuntimeError as e:
+                    logger.warning(f"📡 Direct cleanup failed: {e}")
+        except Exception as e:
+            logger.warning(f"📡 Cleanup registration failed: {e}")
+
+    # Register for both normal exit and signal termination
     atexit.register(sync_cleanup)
+
+    # Also handle SIGTERM and SIGINT
+    for sig in [signal.SIGTERM, signal.SIGINT]:
+        try:
+            signal.signal(sig, lambda signum, frame: sync_cleanup())
+        except (OSError, ValueError):
+            # Some signals may not be available on all platforms
+            pass
+
     logger.debug("📡 Registered async client cleanup on application shutdown")

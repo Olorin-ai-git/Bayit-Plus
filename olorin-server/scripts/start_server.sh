@@ -210,11 +210,52 @@ start_server() {
     echo -e "${GREEN}   Health: http://localhost:$PORT/health${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
     
-    # Run the server with error handling
-    if ! poetry run python -m app.local_server; then
-        print_error "Server failed to start. Check logs above for details."
-        exit 1
-    fi
+    # Start server in background briefly to verify it can start
+    poetry run python -m app.local_server &
+    SERVER_PID=$!
+
+    # Wait for server to initialize and check health multiple times
+    print_status "Waiting for server to initialize (this may take 10-15 seconds)..."
+    local max_attempts=15
+    local attempt=1
+
+    while [ $attempt -le $max_attempts ]; do
+        sleep 1
+
+        # Check if server process is still running
+        if ! kill -0 $SERVER_PID 2>/dev/null; then
+            print_error "❌ Server process died during startup"
+            exit 1
+        fi
+
+        # Try health check
+        if curl -s -f "http://localhost:$PORT/health" > /dev/null 2>&1; then
+            print_success "✅ Server started successfully and is responding on port $PORT"
+            print_success "Health check passed - server is ready to accept requests"
+
+            # Server is working! Just bring it to foreground to show logs
+            print_status "Server is working! Bringing to foreground to display request logs..."
+            print_status "Note: 'Unclosed client session' warnings are normal during startup and can be ignored"
+            echo ""
+            echo -e "${GREEN}🚀 Server is ready and running in foreground - you can now see all request logs!${NC}"
+            echo ""
+
+            # Simply wait for the existing background server - don't kill it!
+            wait $SERVER_PID
+            return
+        fi
+
+        if [ $((attempt % 3)) -eq 0 ]; then
+            print_status "Attempt $attempt/$max_attempts - still waiting for server startup..."
+        fi
+        attempt=$((attempt + 1))
+    done
+
+    # If we get here, health checks failed
+    print_error "❌ Server failed to respond to health checks after $max_attempts attempts"
+    print_error "The server might be starting but not ready yet, or there may be an error"
+    kill $SERVER_PID 2>/dev/null
+    exit 1
 }
 
 # Function to display usage
