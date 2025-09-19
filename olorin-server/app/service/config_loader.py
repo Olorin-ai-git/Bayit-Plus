@@ -185,9 +185,16 @@ class ConfigLoader:
             logger.warning("Please add these to your .env file for complete configuration")
         
         # Check critical fields but don't fail - just warn
-        critical_fields = ['account', 'user', 'password', 'database']
+        # For externalbrowser authenticator, password is not required (OAuth/SAML)
+        authenticator = config.get('authenticator', '').lower()
+        if authenticator == 'externalbrowser':
+            critical_fields = ['account', 'user', 'database']
+            logger.info("Using externalbrowser authenticator - password not required for OAuth/SAML")
+        else:
+            critical_fields = ['account', 'user', 'password', 'database']
+
         missing_critical = [f for f in critical_fields if not config.get(f)]
-        
+
         if missing_critical:
             logger.error(f"CRITICAL: Missing required Snowflake configuration: {missing_critical}")
             logger.error("Snowflake connection will not be possible without these values")
