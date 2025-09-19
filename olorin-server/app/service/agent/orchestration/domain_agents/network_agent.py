@@ -146,7 +146,7 @@ def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> No
 
 def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze geographic patterns in the data."""
-    countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+    countries = set(r.get("IP_COUNTRY_CODE") for r in results if r.get("IP_COUNTRY_CODE"))
     
     if len(countries) > 3:
         findings["risk_indicators"].append(f"Activity from {len(countries)} different countries")
@@ -164,7 +164,7 @@ def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> Non
 
 def _analyze_ip_diversity(results: list, findings: Dict[str, Any]) -> None:
     """Analyze IP country diversity patterns."""
-    ip_countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+    ip_countries = set(r.get("IP_COUNTRY_CODE") for r in results if r.get("IP_COUNTRY_CODE"))
     findings["analysis"]["unique_ip_countries"] = len(ip_countries)
     findings["metrics"]["unique_ip_country_count"] = len(ip_countries)
     

@@ -78,7 +78,7 @@ class DomainAnalysisInput(BaseModel):
                     query = f"""
                     SELECT DISTINCT EMAIL
                     FROM {database}.{schema}.{table}
-                    WHERE IP_ADDRESS = '{domain}'
+                    WHERE IP = '{domain}'
                     LIMIT 1
                     """
                     results = await client.execute_query(query)

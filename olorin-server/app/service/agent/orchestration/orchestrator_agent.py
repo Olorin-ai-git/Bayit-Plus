@@ -223,11 +223,11 @@ IMPORTANT: While following the standard investigation process, give special atte
                 
                 # Build appropriate WHERE clause based on entity type
                 if entity_type == 'ip_address':
-                    where_field = 'IP_ADDRESS'
+                    where_field = 'IP'  # CSV schema uses IP column
                 elif entity_type == 'user_id':
                     where_field = 'USER_ID'
                 else:
-                    where_field = 'IP_ADDRESS'  # Default to IP
+                    where_field = 'IP'  # Default to IP
                 
                 # Get date range from state context if available, default to 7 days
                 date_range = 7  # Default fallback
@@ -242,8 +242,7 @@ IMPORTANT: While following the standard investigation process, give special atte
                            DISPUTES,
                            FRAUD_ALERTS,
                            PAID_AMOUNT_VALUE,
-                           IP_ADDRESS,
-                           IP_COUNTRY, IP_CITY,
+                           IP, IP_COUNTRY_CODE,
                            DEVICE_ID, DEVICE_FINGERPRINT,
                            USER_AGENT, DEVICE_TYPE,
                            TX_DATETIME
@@ -507,7 +506,7 @@ IMPORTANT: While following the standard investigation process, give special atte
 
         Required Snowflake queries:
         1. Query {database}.{schema}.{table} table for ALL records where:
-           - IP_ADDRESS = '{state['entity_id']}' (if entity is IP)
+           - IP = '{state['entity_id']}' (if entity is IP address)
            - Or related fields match the entity
            - Date range: LAST {date_range_days} DAYS
         

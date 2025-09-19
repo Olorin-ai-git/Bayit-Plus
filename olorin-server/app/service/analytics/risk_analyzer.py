@@ -127,7 +127,7 @@ class RiskAnalyzer:
             analysis['sql_query'] = query
             
             # Handle case where IP filtering removed all results - try longer time window for external IPs
-            if group_by.upper() == "IP_COUNTRY" and len(analysis.get('entities', [])) == 0:
+            if group_by.upper() == "IP_COUNTRY_CODE" and len(analysis.get('entities', [])) == 0:
                 logger.info(f"🔄 No external IPs found in {time_window}, trying longer time window...")
                 
                 # Try 7 days window for external IPs
@@ -326,7 +326,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                 COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                COUNT(DISTINCT IP_COUNTRY) as unique_ip_countries,
+                COUNT(DISTINCT IP_COUNTRY_CODE) as unique_ip_countries,
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction

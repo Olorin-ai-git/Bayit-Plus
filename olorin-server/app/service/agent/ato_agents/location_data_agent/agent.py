@@ -88,8 +88,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 # Query for customer location patterns
                 location_query = f"""
                 SELECT DISTINCT
-                    IP_ADDRESS,
-                    IP_COUNTRY,
+                    IP,
+                    IP_COUNTRY_CODE,
                     IP_CITY,
                     IP_REGION,
                     TX_DATETIME,
@@ -108,8 +108,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 if location_results:
                     for result in location_results:
                         location = {
-                            "ip_address": result.get('IP_ADDRESS', ''),
-                            "country": result.get('IP_COUNTRY', ''),
+                            "ip_address": result.get('IP', ''),
+                            "country": result.get('IP_COUNTRY_CODE', ''),
                             "city": result.get('IP_CITY', ''),
                             "region": result.get('IP_REGION', ''),
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
@@ -180,8 +180,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 # Query for business-related location patterns
                 business_query = f"""
                 SELECT 
-                    IP_ADDRESS,
-                    IP_COUNTRY,
+                    IP,
+                    IP_COUNTRY_CODE,
                     IP_CITY,
                     PAID_AMOUNT_VALUE,
                     TX_DATETIME,
@@ -201,8 +201,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 if business_results:
                     for result in business_results:
                         business_location = {
-                            "ip_address": result.get('IP_ADDRESS', ''),
-                            "country": result.get('IP_COUNTRY', ''),
+                            "ip_address": result.get('IP', ''),
+                            "country": result.get('IP_COUNTRY_CODE', ''),
                             "city": result.get('IP_CITY', ''),
                             "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
@@ -279,7 +279,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 SELECT DISTINCT
                     EMAIL,
                     DEVICE_ID,
-                    IP_COUNTRY,
+                    IP_COUNTRY_CODE,
                     IP_CITY,
                     TX_DATETIME,
                     PAID_AMOUNT_VALUE,
@@ -299,7 +299,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
                         registration = {
                             "email": result.get('EMAIL', ''),
                             "device_id": result.get('DEVICE_ID', ''),
-                            "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                            "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY_CODE', '')}",
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
                             "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
                             "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,
@@ -464,7 +464,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 pattern_query = f"""
                 SELECT 
                     TX_DATETIME,
-                    IP_COUNTRY,
+                    IP_COUNTRY_CODE,
                     IP_CITY,
                     DEVICE_TYPE,
                     DEVICE_ID,
@@ -491,7 +491,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
                         login_hour = result.get('LOGIN_HOUR')
                         login_day = result.get('LOGIN_DAY')
                         device_type = result.get('DEVICE_TYPE', 'Unknown')
-                        location = f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}"
+                        location = f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY_CODE', '')}"
                         
                         # Count patterns
                         hour_counts[login_hour] = hour_counts.get(login_hour, 0) + 1
@@ -689,8 +689,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 DEVICE_ID,
                 DEVICE_TYPE,
                 USER_AGENT,
-                IP_ADDRESS,
-                IP_COUNTRY,
+                IP,
+                IP_COUNTRY_CODE,
                 IP_CITY,
                 TX_DATETIME
             FROM TRANSACTIONS_ENRICHED
@@ -708,8 +708,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                     "device_id": result.get('DEVICE_ID', ''),
                     "device_type": result.get('DEVICE_TYPE', ''),
                     "user_agent": result.get('USER_AGENT', ''),
-                    "ip_address": result.get('IP_ADDRESS', ''),
-                    "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                    "ip_address": result.get('IP', ''),
+                    "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY_CODE', '')}",
                     "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else ''
                 })
             

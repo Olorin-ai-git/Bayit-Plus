@@ -115,7 +115,7 @@ class RiskEntityInvestigator:
                     MAX(MODEL_SCORE) as max_daily_risk,
                     COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                     COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                    COUNT(DISTINCT IP_ADDRESS) as unique_ips,
+                    COUNT(DISTINCT IP_COUNTRY_CODE) as unique_ip_countries,
                     COUNT(DISTINCT DEVICE_ID) as unique_devices,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
                 FROM {database}.{schema}.{table}
