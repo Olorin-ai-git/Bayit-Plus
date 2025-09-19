@@ -8,7 +8,7 @@ module.exports = (env, argv) => {
   return {
     mode: isDevelopment ? 'development' : 'production',
 
-    entry: './src/shell/index.tsx',
+    entry: './src/index.tsx',
 
     devtool: isDevelopment ? 'eval-source-map' : 'source-map',
 
@@ -69,9 +69,11 @@ module.exports = (env, argv) => {
 
     plugins: [
       new HtmlWebpackPlugin({
-        template: './public/index.html',
+        template: './public/index.simple.html',
         title: 'Olorin Shell',
-        favicon: './public/favicon.ico'
+        favicon: './public/favicon.ico',
+        inject: true,
+        minify: false
       }),
 
       new (require('webpack').DefinePlugin)({
