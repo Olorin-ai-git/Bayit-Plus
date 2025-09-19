@@ -127,7 +127,7 @@ class RiskAnalyzer:
             analysis['sql_query'] = query
             
             # Handle case where IP filtering removed all results - try longer time window for external IPs
-            if group_by.upper() == "IP_ADDRESS" and len(analysis.get('entities', [])) == 0:
+            if group_by.upper() == "IP_COUNTRY" and len(analysis.get('entities', [])) == 0:
                 logger.info(f"🔄 No external IPs found in {time_window}, trying longer time window...")
                 
                 # Try 7 days window for external IPs
@@ -182,26 +182,8 @@ class RiskAnalyzer:
         # Convert percentage to decimal
         top_decimal = top_percentage / 100.0
         
-        # Add IP filtering condition if grouping by IP
+        # No IP filtering needed since IP_ADDRESS column removed
         ip_filter = ""
-        if group_by.upper() == "IP_ADDRESS":
-            # Filter out private IP addresses (RFC 1918, link-local, loopback) - EXTERNAL IPs ONLY
-            # Using LIKE patterns for better Snowflake compatibility
-            ip_filter = f"""
-                -- CRITICAL: Exclude ALL private/internal IP ranges (RFC 1918 and special ranges)
-                AND {group_by} NOT LIKE '10.%'                    -- RFC 1918: 10.0.0.0/8
-                AND {group_by} NOT LIKE '192.168.%'               -- RFC 1918: 192.168.0.0/16  
-                AND {group_by} NOT LIKE '172.16.%'                -- RFC 1918: 172.16.0.0/12
-                AND {group_by} NOT LIKE '172.17.%' AND {group_by} NOT LIKE '172.18.%' AND {group_by} NOT LIKE '172.19.%'
-                AND {group_by} NOT LIKE '172.2_.%' AND {group_by} NOT LIKE '172.30.%' AND {group_by} NOT LIKE '172.31.%'
-                AND {group_by} NOT LIKE '127.%'                   -- Loopback: 127.0.0.0/8
-                AND {group_by} NOT LIKE '169.254.%'               -- Link-local: 169.254.0.0/16
-                AND {group_by} NOT LIKE 'fe80:%' AND {group_by} NOT LIKE 'fc00:%' AND {group_by} NOT LIKE 'fd00:%'  -- IPv6 private
-                -- Exclude empty, null, or invalid IPs
-                AND {group_by} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
-                -- Only include external/public IP addresses with real activity
-                AND MODEL_SCORE > 0.01
-            """
         
         query = f"""
         WITH risk_calculations AS (
@@ -344,7 +326,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                 COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                COUNT(DISTINCT IP_ADDRESS) as unique_ips,
+                COUNT(DISTINCT IP_COUNTRY) as unique_ip_countries,
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction

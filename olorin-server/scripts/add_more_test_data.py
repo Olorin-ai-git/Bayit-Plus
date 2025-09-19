@@ -86,8 +86,7 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
-                    amount,
+                                        amount,
                     risk_score,
                     random.choice([True, False, False]),  # Some fraud
                     'PURCHASE',
@@ -105,8 +104,7 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
-                    amount,
+                                        amount,
                     risk_score,
                     False,
                     'PURCHASE',
@@ -124,8 +122,7 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
-                    amount,
+                                        amount,
                     risk_score,
                     False,
                     'PURCHASE',
@@ -137,9 +134,9 @@ def main():
 
     insert_sql = f"""
     INSERT INTO {database}.{schema}.{table}
-    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS,
+    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID,
      PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
     cursor.executemany(insert_sql, test_data)

@@ -19,19 +19,19 @@ class IPDomainMapper:
         self.client = SnowflakeClient()
         self._cache: Dict[str, str] = {}
     
-    async def get_domain_for_ip(self, ip_address: str) -> Optional[str]:
+    async def get_domain_for_ip_country(self, ip_country: str) -> Optional[str]:
         """
-        Get the most common domain associated with an IP address.
-        
+        Get the most common domain associated with an IP country.
+
         Args:
-            ip_address: The IP address to look up
-            
+            ip_country: The IP country code to look up
+
         Returns:
-            The domain associated with the IP, or None if not found
+            The domain associated with the IP country, or None if not found
         """
         # Check cache first
-        if ip_address in self._cache:
-            return self._cache[ip_address]
+        if ip_country in self._cache:
+            return self._cache[ip_country]
         
         try:
             await self.client.connect()
@@ -44,15 +44,15 @@ class IPDomainMapper:
             query = f"""
             WITH ip_domains AS (
                 SELECT
-                    IP_ADDRESS as ip,
+                    IP_COUNTRY as ip_country,
                     EMAIL as email,
                     SUBSTRING(EMAIL, POSITION('@' IN EMAIL) + 1) as domain,
                     COUNT(*) as occurrence_count
                 FROM {database}.{schema}.{table}
-                WHERE IP_ADDRESS = '{ip_address}'
+                WHERE IP_COUNTRY = '{ip_country}'
                     AND EMAIL IS NOT NULL
                     AND EMAIL LIKE '%@%'
-                GROUP BY IP_ADDRESS, EMAIL, domain
+                GROUP BY IP_COUNTRY, EMAIL, domain
             )
             SELECT
                 domain,
@@ -69,15 +69,15 @@ class IPDomainMapper:
                 domain = results[0].get('DOMAIN') or results[0].get('domain')
                 if domain:
                     # Cache the result
-                    self._cache[ip_address] = domain
-                    logger.info(f"Found domain {domain} for IP {ip_address}")
+                    self._cache[ip_country] = domain
+                    logger.info(f"Found domain {domain} for IP country {ip_country}")
                     return domain
             
-            logger.warning(f"No domain found for IP {ip_address}")
+            logger.warning(f"No domain found for IP country {ip_country}")
             return None
             
         except Exception as e:
-            logger.error(f"Error getting domain for IP {ip_address}: {e}")
+            logger.error(f"Error getting domain for IP country {ip_country}: {e}")
             return None
         finally:
             try:

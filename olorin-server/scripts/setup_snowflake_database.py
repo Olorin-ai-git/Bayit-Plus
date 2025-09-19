@@ -135,7 +135,6 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
             SESSION_DURATION_SECONDS NUMBER,
             
             -- Location Fields
-            IP_ADDRESS VARCHAR(45),
             IP_COUNTRY VARCHAR(2),
             IP_REGION VARCHAR(100),
             IP_CITY VARCHAR(100),
@@ -499,15 +498,15 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         print("\n📝 Inserting sample data for testing...")
         
         sample_data_sql = """
-        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS, 
+        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID,
          PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         SELECT * FROM VALUES
-        ('TX001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 5000.00, 0.95, FALSE, 'PURCHASE', 'COMPLETED'),
-        ('TX002', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 3000.00, 0.88, FALSE, 'PURCHASE', 'COMPLETED'),
-        ('TX003', CURRENT_TIMESTAMP(), 'medium.risk@example.com', 'DEV002', '192.168.1.2', 1500.00, 0.65, FALSE, 'PURCHASE', 'COMPLETED'),
-        ('TX004', CURRENT_TIMESTAMP(), 'low.risk@example.com', 'DEV003', '192.168.1.3', 500.00, 0.15, FALSE, 'PURCHASE', 'COMPLETED'),
-        ('TX005', CURRENT_TIMESTAMP(), 'fraud.user@example.com', 'DEV004', '192.168.1.4', 10000.00, 0.99, TRUE, 'PURCHASE', 'BLOCKED');
+        ('TX001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', 5000.00, 0.95, FALSE, 'PURCHASE', 'COMPLETED'),
+        ('TX002', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', 3000.00, 0.88, FALSE, 'PURCHASE', 'COMPLETED'),
+        ('TX003', CURRENT_TIMESTAMP(), 'medium.risk@example.com', 'DEV002', 1500.00, 0.65, FALSE, 'PURCHASE', 'COMPLETED'),
+        ('TX004', CURRENT_TIMESTAMP(), 'low.risk@example.com', 'DEV003', 500.00, 0.15, FALSE, 'PURCHASE', 'COMPLETED'),
+        ('TX005', CURRENT_TIMESTAMP(), 'fraud.user@example.com', 'DEV004', 10000.00, 0.99, TRUE, 'PURCHASE', 'BLOCKED');
         """
         
         cursor.execute(sample_data_sql)

@@ -163,17 +163,17 @@ def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> Non
 
 
 def _analyze_ip_diversity(results: list, findings: Dict[str, Any]) -> None:
-    """Analyze IP address diversity patterns."""
-    ips = set(r.get("IP_ADDRESS") for r in results if r.get("IP_ADDRESS"))
-    findings["analysis"]["unique_ips"] = len(ips)
-    findings["metrics"]["unique_ip_count"] = len(ips)
+    """Analyze IP country diversity patterns."""
+    ip_countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+    findings["analysis"]["unique_ip_countries"] = len(ip_countries)
+    findings["metrics"]["unique_ip_country_count"] = len(ip_countries)
     
-    if len(ips) > 10:
-        findings["risk_indicators"].append(f"High IP diversity: {len(ips)} unique IPs")
+    if len(ip_countries) > 5:
+        findings["risk_indicators"].append(f"High IP country diversity: {len(ip_countries)} unique countries")
         findings["risk_score"] += 0.2
-        findings["evidence"].append(f"Suspicious IP diversity pattern: {len(ips)} unique addresses")
-    elif len(ips) > 5:
-        findings["evidence"].append(f"Moderate IP diversity: {len(ips)} unique addresses")
+        findings["evidence"].append(f"Suspicious IP country diversity pattern: {len(ip_countries)} unique countries")
+    elif len(ip_countries) > 3:
+        findings["evidence"].append(f"Moderate IP country diversity: {len(ip_countries)} unique countries")
 
 
 def _analyze_threat_intelligence(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:

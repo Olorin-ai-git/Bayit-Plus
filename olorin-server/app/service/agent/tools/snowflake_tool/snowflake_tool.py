@@ -30,7 +30,7 @@ class SnowflakeJSONEncoder(json.JSONEncoder):
 REAL_COLUMNS = [
     'TX_ID_KEY', 'EMAIL', 'MODEL_SCORE', 'IS_FRAUD_TX', 'NSURE_LAST_DECISION',
     'PAID_AMOUNT_VALUE', 'TX_DATETIME', 'PAYMENT_METHOD', 'CARD_BRAND',
-    'IP_ADDRESS', 'IP_COUNTRY', 'DEVICE_ID', 'USER_AGENT', 'DEVICE_TYPE',
+    'IP_COUNTRY', 'DEVICE_ID', 'USER_AGENT', 'DEVICE_TYPE',
     'USER_ID', 'FIRST_NAME', 'LAST_NAME', 'PHONE_NUMBER', 'CARD_BIN', 'CARD_LAST4',
     'CARD_ISSUER', 'PAYMENT_PROCESSOR', 'FRAUD_RULES_TRIGGERED', 'MAXMIND_RISK_SCORE'
 ]
@@ -50,7 +50,7 @@ class _SnowflakeQueryArgs(BaseModel):
             "IMPORTANT - Use these EXACT column names: TX_ID_KEY (transaction ID), EMAIL (user email), "
             "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
             "NSURE_LAST_DECISION (approval/reject decision), PAID_AMOUNT_VALUE (transaction amount), "
-            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS (client IP address), "
+            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, "
             "IP_COUNTRY (country from IP), "
             "DEVICE_ID (NOT SMART_ID), PROXY_RISK_SCORE (NOT IS_PROXY), USER_AGENT, "
             "DEVICE_TYPE, DEVICE_FINGERPRINT. "
@@ -81,7 +81,7 @@ class SnowflakeQueryTool(BaseTool):
         "transaction records, user profiles, payment methods, risk scores, fraud indicators, "
         "disputes, and business intelligence data. Main table is TRANSACTIONS_ENRICHED with "
         "300+ columns. CRITICAL - Use EXACT column names: TX_ID_KEY, EMAIL, MODEL_SCORE (0-1), "
-        "PAYMENT_METHOD, CARD_BRAND, IP_ADDRESS, IP_COUNTRY, IP_CITY, DEVICE_ID, DEVICE_FINGERPRINT, "
+        "PAYMENT_METHOD, CARD_BRAND, IP_COUNTRY, IP_CITY, DEVICE_ID, DEVICE_FINGERPRINT, "
         "NSURE_LAST_DECISION, PROXY_RISK_SCORE, FRAUD_RULES_TRIGGERED (NOT TRIGGERED_RULES), DISPUTES, "
         "FRAUD_ALERTS, PAID_AMOUNT_VALUE (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
         "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "
@@ -115,9 +115,8 @@ class SnowflakeQueryTool(BaseTool):
             'DISPUTE_FLAG': 'DISPUTES',  # Map DISPUTE_FLAG to DISPUTES for consistency
             # Map all TX_ID variants to the correct TX_ID_KEY column
             'ORIGINAL_TX_ID': 'TX_ID_KEY',
-            'SURROGATE_APP_TX_ID': 'TX_ID_KEY', 
-            'NSURE_UNIQUE_TX_ID': 'TX_ID_KEY',
-            'IP\b': 'IP_ADDRESS',  # Replace standalone IP with IP_ADDRESS
+            'SURROGATE_APP_TX_ID': 'TX_ID_KEY',
+            'NSURE_UNIQUE_TX_ID': 'TX_ID_KEY'
         }
         
         import re
@@ -125,11 +124,7 @@ class SnowflakeQueryTool(BaseTool):
         for wrong, correct in corrections.items():
             # Use word boundaries for more accurate replacement
             pattern = r'\b' + wrong + r'\b'
-            if wrong != 'IP\\b':  # Special handling for IP pattern
-                corrected_query = re.sub(pattern, correct, corrected_query, flags=re.IGNORECASE)
-            else:
-                # For IP, only replace if it's not part of another word
-                corrected_query = re.sub(r'\bIP\b(?!_)', 'IP_ADDRESS', corrected_query, flags=re.IGNORECASE)
+            corrected_query = re.sub(pattern, correct, corrected_query, flags=re.IGNORECASE)
         
         # Additional step: Remove problematic columns that don't exist in the real database
         # This is a temporary fix until the real schema columns are confirmed
