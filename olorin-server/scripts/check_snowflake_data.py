@@ -26,7 +26,7 @@ async def main():
     print("📊 CHECKING SNOWFLAKE DATA")
     print("="*70)
 
-    # Get table configuration from environment
+    # Get environment variables for database configuration
     database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
     schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
     table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')

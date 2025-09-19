@@ -400,22 +400,23 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
 def insert_to_snowflake(transactions: List[Tuple]):
     """Insert transactions into Snowflake."""
     print(f"\n📤 Connecting to Snowflake...")
-    
+
+    # Get environment variables for database configuration
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
-        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'  # Need ACCOUNTADMIN for bulk insert
     )
-    
+
     cursor = conn.cursor()
-    
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 
     try:
         # Clear existing data (optional - comment out to keep existing)

@@ -109,22 +109,23 @@ def insert_to_snowflake(transactions):
     """Insert transactions into Snowflake."""
     
     print(f"\n📤 Connecting to Snowflake...")
-    
+
+    # Get environment variables for database configuration
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
-        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'
     )
-    
+
     cursor = conn.cursor()
-    
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 
     try:
         # Clear previous test data
@@ -153,8 +154,8 @@ def insert_to_snowflake(transactions):
         # Show statistics
         print("\n📊 Verifying data...")
         
-        cursor.execute("""
-            SELECT 
+        cursor.execute(f"""
+            SELECT
                 COUNT(*) as total_records,
                 COUNT(DISTINCT EMAIL) as unique_emails,
                 MIN(TX_DATETIME) as earliest_tx,
@@ -183,9 +184,9 @@ def insert_to_snowflake(transactions):
         
         # Show risk distribution
         print("\n📊 Risk Distribution:")
-        cursor.execute("""
-            SELECT 
-                CASE 
+        cursor.execute(f"""
+            SELECT
+                CASE
                     WHEN MODEL_SCORE < 0.3 THEN 'Low (0-0.3)'
                     WHEN MODEL_SCORE < 0.7 THEN 'Medium (0.3-0.7)'
                     ELSE 'High (0.7-1.0)'
@@ -203,9 +204,9 @@ def insert_to_snowflake(transactions):
         # Show top 10% calculation
         print("\n🎯 TOP 10% RISK ENTITIES (Top Risk-Weighted Values):")
         
-        cursor.execute("""
+        cursor.execute(f"""
             WITH risk_calc AS (
-                SELECT 
+                SELECT
                     EMAIL,
                     COUNT(*) as tx_count,
                     SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,

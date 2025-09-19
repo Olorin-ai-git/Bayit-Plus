@@ -15,28 +15,28 @@ def main():
     print("\n" + "="*70)
     print("🔍 TESTING DIRECT SNOWFLAKE QUERY")
     print("="*70)
-    
+
+    # Get table configuration from environment
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+
     # Connect to Snowflake
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
-        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
     )
-    
+
     cursor = conn.cursor()
-    
+
     # This is the query the risk analyzer uses
     hours = 7 * 24  # 7 days
     group_by = 'EMAIL'
     top_decimal = 0.1  # 10%
-
-    # Get table configuration from environment
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
     table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 
     query = f"""

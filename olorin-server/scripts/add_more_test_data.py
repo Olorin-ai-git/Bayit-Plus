@@ -22,14 +22,19 @@ def main():
     print("\n" + "="*70)
     print("📝 ADDING MORE TEST DATA TO SNOWFLAKE")
     print("="*70)
-    
+
+    # Get environment variables for database configuration
+    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     # Connect to Snowflake
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'),
-        schema=os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'),
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
     )
@@ -129,10 +134,6 @@ def main():
     
     # Insert the data
     print(f"\nInserting {len(test_data)} transactions...")
-    
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
 
     insert_sql = f"""
     INSERT INTO {database}.{schema}.{table}
