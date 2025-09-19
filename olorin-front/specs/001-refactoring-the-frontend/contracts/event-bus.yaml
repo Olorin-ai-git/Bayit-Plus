@@ -1,0 +1,491 @@
+asyncapi: 2.6.0
+info:
+  title: Frontend Event Bus API
+  description: Event bus specification for inter-service communication
+  version: 1.0.0
+
+servers:
+  event-bus:
+    url: 'ws://localhost:3001/events'
+    protocol: ws
+    description: Local event bus server
+
+channels:
+  investigation/started:
+    description: Investigation started event
+    publish:
+      summary: Investigation has been started
+      message:
+        $ref: '#/components/messages/InvestigationStarted'
+
+  investigation/updated:
+    description: Investigation updated event
+    publish:
+      summary: Investigation has been updated
+      message:
+        $ref: '#/components/messages/InvestigationUpdated'
+
+  investigation/completed:
+    description: Investigation completed event
+    publish:
+      summary: Investigation has been completed
+      message:
+        $ref: '#/components/messages/InvestigationCompleted'
+
+  agent/execution/started:
+    description: Agent execution started
+    publish:
+      summary: Agent execution has started
+      message:
+        $ref: '#/components/messages/AgentExecutionStarted'
+
+  agent/execution/progress:
+    description: Agent execution progress update
+    publish:
+      summary: Agent execution progress updated
+      message:
+        $ref: '#/components/messages/AgentExecutionProgress'
+
+  agent/execution/completed:
+    description: Agent execution completed
+    publish:
+      summary: Agent execution has completed
+      message:
+        $ref: '#/components/messages/AgentExecutionCompleted'
+
+  agent/log:
+    description: Agent log entry
+    publish:
+      summary: New agent log entry
+      message:
+        $ref: '#/components/messages/AgentLog'
+
+  rag/query/started:
+    description: RAG query started
+    publish:
+      summary: RAG query has been initiated
+      message:
+        $ref: '#/components/messages/RAGQueryStarted'
+
+  rag/insight/generated:
+    description: RAG insight generated
+    publish:
+      summary: New RAG insight has been generated
+      message:
+        $ref: '#/components/messages/RAGInsightGenerated'
+
+  rag/analytics/updated:
+    description: RAG analytics updated
+    publish:
+      summary: RAG analytics have been updated
+      message:
+        $ref: '#/components/messages/RAGAnalyticsUpdated'
+
+  visualization/data/loaded:
+    description: Visualization data loaded
+    publish:
+      summary: Visualization data has been loaded
+      message:
+        $ref: '#/components/messages/VisualizationDataLoaded'
+
+  visualization/selection/changed:
+    description: Visualization selection changed
+    publish:
+      summary: User changed visualization selection
+      message:
+        $ref: '#/components/messages/VisualizationSelectionChanged'
+
+  report/generation/started:
+    description: Report generation started
+    publish:
+      summary: Report generation has started
+      message:
+        $ref: '#/components/messages/ReportGenerationStarted'
+
+  report/generation/completed:
+    description: Report generation completed
+    publish:
+      summary: Report generation has completed
+      message:
+        $ref: '#/components/messages/ReportGenerationCompleted'
+
+  report/generation/failed:
+    description: Report generation failed
+    publish:
+      summary: Report generation has failed
+      message:
+        $ref: '#/components/messages/ReportGenerationFailed'
+
+  ui/navigation:
+    description: UI navigation event
+    publish:
+      summary: User navigated to a new page
+      message:
+        $ref: '#/components/messages/UINavigation'
+
+  ui/notification:
+    description: UI notification event
+    publish:
+      summary: New notification to display
+      message:
+        $ref: '#/components/messages/UINotification'
+
+  ui/theme/changed:
+    description: UI theme changed
+    publish:
+      summary: User changed the UI theme
+      message:
+        $ref: '#/components/messages/UIThemeChanged'
+
+components:
+  messages:
+    InvestigationStarted:
+      name: InvestigationStarted
+      title: Investigation Started
+      summary: An investigation has been started
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationStartedPayload'
+
+    InvestigationUpdated:
+      name: InvestigationUpdated
+      title: Investigation Updated
+      summary: An investigation has been updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationUpdatedPayload'
+
+    InvestigationCompleted:
+      name: InvestigationCompleted
+      title: Investigation Completed
+      summary: An investigation has been completed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationCompletedPayload'
+
+    AgentExecutionStarted:
+      name: AgentExecutionStarted
+      title: Agent Execution Started
+      summary: An agent execution has started
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentExecutionStartedPayload'
+
+    AgentExecutionProgress:
+      name: AgentExecutionProgress
+      title: Agent Execution Progress
+      summary: Agent execution progress update
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentExecutionProgressPayload'
+
+    AgentExecutionCompleted:
+      name: AgentExecutionCompleted
+      title: Agent Execution Completed
+      summary: An agent execution has completed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentExecutionCompletedPayload'
+
+    AgentLog:
+      name: AgentLog
+      title: Agent Log
+      summary: New agent log entry
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentLogPayload'
+
+    RAGQueryStarted:
+      name: RAGQueryStarted
+      title: RAG Query Started
+      summary: A RAG query has been initiated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGQueryStartedPayload'
+
+    RAGInsightGenerated:
+      name: RAGInsightGenerated
+      title: RAG Insight Generated
+      summary: A new RAG insight has been generated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGInsightGeneratedPayload'
+
+    RAGAnalyticsUpdated:
+      name: RAGAnalyticsUpdated
+      title: RAG Analytics Updated
+      summary: RAG analytics have been updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGAnalyticsUpdatedPayload'
+
+    VisualizationDataLoaded:
+      name: VisualizationDataLoaded
+      title: Visualization Data Loaded
+      summary: Visualization data has been loaded
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/VisualizationDataLoadedPayload'
+
+    VisualizationSelectionChanged:
+      name: VisualizationSelectionChanged
+      title: Visualization Selection Changed
+      summary: User changed visualization selection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/VisualizationSelectionChangedPayload'
+
+    ReportGenerationStarted:
+      name: ReportGenerationStarted
+      title: Report Generation Started
+      summary: Report generation has started
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ReportGenerationStartedPayload'
+
+    ReportGenerationCompleted:
+      name: ReportGenerationCompleted
+      title: Report Generation Completed
+      summary: Report generation has completed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ReportGenerationCompletedPayload'
+
+    ReportGenerationFailed:
+      name: ReportGenerationFailed
+      title: Report Generation Failed
+      summary: Report generation has failed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ReportGenerationFailedPayload'
+
+    UINavigation:
+      name: UINavigation
+      title: UI Navigation
+      summary: User navigated to a new page
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UINavigationPayload'
+
+    UINotification:
+      name: UINotification
+      title: UI Notification
+      summary: New notification to display
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UINotificationPayload'
+
+    UIThemeChanged:
+      name: UIThemeChanged
+      title: UI Theme Changed
+      summary: User changed the UI theme
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UIThemeChangedPayload'
+
+  schemas:
+    InvestigationStartedPayload:
+      type: object
+      properties:
+        investigation:
+          $ref: '#/components/schemas/Investigation'
+
+    InvestigationUpdatedPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        updates:
+          type: object
+
+    InvestigationCompletedPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        results:
+          type: object
+
+    AgentExecutionStartedPayload:
+      type: object
+      properties:
+        execution:
+          $ref: '#/components/schemas/AgentExecution'
+
+    AgentExecutionProgressPayload:
+      type: object
+      properties:
+        executionId:
+          type: string
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    AgentExecutionCompletedPayload:
+      type: object
+      properties:
+        executionId:
+          type: string
+        results:
+          type: object
+
+    AgentLogPayload:
+      type: object
+      properties:
+        executionId:
+          type: string
+        log:
+          $ref: '#/components/schemas/AgentLog'
+
+    RAGQueryStartedPayload:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        query:
+          type: object
+
+    RAGInsightGeneratedPayload:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        insight:
+          type: object
+
+    RAGAnalyticsUpdatedPayload:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        analytics:
+          type: object
+
+    VisualizationDataLoadedPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        data:
+          type: object
+
+    VisualizationSelectionChangedPayload:
+      type: object
+      properties:
+        nodeIds:
+          type: array
+          items:
+            type: string
+        edgeIds:
+          type: array
+          items:
+            type: string
+
+    ReportGenerationStartedPayload:
+      type: object
+      properties:
+        reportId:
+          type: string
+
+    ReportGenerationCompletedPayload:
+      type: object
+      properties:
+        reportId:
+          type: string
+        report:
+          type: object
+
+    ReportGenerationFailedPayload:
+      type: object
+      properties:
+        reportId:
+          type: string
+        error:
+          type: string
+
+    UINavigationPayload:
+      type: object
+      properties:
+        path:
+          type: string
+        params:
+          type: object
+
+    UINotificationPayload:
+      type: object
+      properties:
+        notification:
+          $ref: '#/components/schemas/Notification'
+
+    UIThemeChangedPayload:
+      type: object
+      properties:
+        theme:
+          type: object
+
+    Investigation:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        entityType:
+          type: string
+        status:
+          type: string
+        type:
+          type: string
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+
+    AgentExecution:
+      type: object
+      properties:
+        id:
+          type: string
+        agentId:
+          type: string
+        investigationId:
+          type: string
+        status:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        progress:
+          type: integer
+
+    AgentLog:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        level:
+          type: string
+        message:
+          type: string
+        data:
+          type: object
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [info, success, warning, error]
+        title:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

@@ -1,0 +1,474 @@
+asyncapi: 2.6.0
+info:
+  title: WebSocket Events API
+  description: WebSocket events specification for real-time backend communication
+  version: 1.0.0
+
+servers:
+  backend-websocket:
+    url: 'ws://localhost:8090/ws'
+    protocol: ws
+    description: Backend WebSocket server
+
+channels:
+  investigation_progress:
+    description: Investigation progress updates from backend
+    subscribe:
+      summary: Receive investigation progress updates
+      message:
+        $ref: '#/components/messages/InvestigationProgress'
+
+  investigation_completed:
+    description: Investigation completion notification
+    subscribe:
+      summary: Receive investigation completion notification
+      message:
+        $ref: '#/components/messages/InvestigationCompleted'
+
+  agent_log:
+    description: Agent log updates
+    subscribe:
+      summary: Receive real-time agent log entries
+      message:
+        $ref: '#/components/messages/AgentLogUpdate'
+
+  agent_status:
+    description: Agent status updates
+    subscribe:
+      summary: Receive agent status changes
+      message:
+        $ref: '#/components/messages/AgentStatusUpdate'
+
+  rag_query_result:
+    description: RAG query results
+    subscribe:
+      summary: Receive RAG query results
+      message:
+        $ref: '#/components/messages/RAGQueryResult'
+
+  rag_insight:
+    description: RAG insight updates
+    subscribe:
+      summary: Receive new RAG insights
+      message:
+        $ref: '#/components/messages/RAGInsightUpdate'
+
+  system_status:
+    description: System status updates
+    subscribe:
+      summary: Receive system health and status updates
+      message:
+        $ref: '#/components/messages/SystemStatus'
+
+  error:
+    description: Error notifications
+    subscribe:
+      summary: Receive error notifications
+      message:
+        $ref: '#/components/messages/ErrorEvent'
+
+  # Client to server events
+  investigation_control:
+    description: Investigation control commands
+    publish:
+      summary: Send investigation control commands
+      message:
+        $ref: '#/components/messages/InvestigationControl'
+
+  agent_control:
+    description: Agent control commands
+    publish:
+      summary: Send agent control commands
+      message:
+        $ref: '#/components/messages/AgentControl'
+
+  rag_query:
+    description: RAG query requests
+    publish:
+      summary: Send RAG query requests
+      message:
+        $ref: '#/components/messages/RAGQuery'
+
+components:
+  messages:
+    InvestigationProgress:
+      name: InvestigationProgress
+      title: Investigation Progress Update
+      summary: Real-time investigation progress update
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationProgressPayload'
+
+    InvestigationCompleted:
+      name: InvestigationCompleted
+      title: Investigation Completed
+      summary: Investigation has been completed
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationCompletedPayload'
+
+    AgentLogUpdate:
+      name: AgentLogUpdate
+      title: Agent Log Update
+      summary: New agent log entry
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentLogUpdatePayload'
+
+    AgentStatusUpdate:
+      name: AgentStatusUpdate
+      title: Agent Status Update
+      summary: Agent status change
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentStatusUpdatePayload'
+
+    RAGQueryResult:
+      name: RAGQueryResult
+      title: RAG Query Result
+      summary: Result of a RAG query
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGQueryResultPayload'
+
+    RAGInsightUpdate:
+      name: RAGInsightUpdate
+      title: RAG Insight Update
+      summary: New RAG insight generated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGInsightUpdatePayload'
+
+    SystemStatus:
+      name: SystemStatus
+      title: System Status Update
+      summary: System health and status information
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SystemStatusPayload'
+
+    ErrorEvent:
+      name: ErrorEvent
+      title: Error Event
+      summary: Error notification from backend
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ErrorEventPayload'
+
+    InvestigationControl:
+      name: InvestigationControl
+      title: Investigation Control Command
+      summary: Command to control investigation execution
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/InvestigationControlPayload'
+
+    AgentControl:
+      name: AgentControl
+      title: Agent Control Command
+      summary: Command to control agent execution
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AgentControlPayload'
+
+    RAGQuery:
+      name: RAGQuery
+      title: RAG Query Request
+      summary: Request to execute a RAG query
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RAGQueryPayload'
+
+  schemas:
+    InvestigationProgressPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        progress:
+          type: object
+          properties:
+            percentage:
+              type: integer
+              minimum: 0
+              maximum: 100
+            currentStep:
+              type: string
+            completedSteps:
+              type: array
+              items:
+                type: string
+            estimatedTimeRemaining:
+              type: integer
+        riskScore:
+          type: number
+          minimum: 0
+          maximum: 100
+        agentStates:
+          type: array
+          items:
+            type: object
+            properties:
+              agentId:
+                type: string
+              status:
+                type: string
+                enum: [queued, running, completed, failed]
+              progress:
+                type: integer
+                minimum: 0
+                maximum: 100
+
+    InvestigationCompletedPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        status:
+          type: string
+          enum: [completed, failed]
+        results:
+          type: object
+          properties:
+            riskScore:
+              type: number
+            findings:
+              type: array
+              items:
+                type: object
+            summary:
+              type: string
+            recommendations:
+              type: array
+              items:
+                type: string
+        duration:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    AgentLogUpdatePayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        agentId:
+          type: string
+        executionId:
+          type: string
+        log:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            level:
+              type: string
+              enum: [debug, info, warning, error]
+            message:
+              type: string
+            context:
+              type: object
+            data:
+              type: object
+
+    AgentStatusUpdatePayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        agentId:
+          type: string
+        executionId:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed, cancelled]
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        error:
+          type: string
+
+    RAGQueryResultPayload:
+      type: object
+      properties:
+        queryId:
+          type: string
+        sessionId:
+          type: string
+        investigationId:
+          type: string
+        result:
+          type: object
+          properties:
+            answer:
+              type: string
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  relevance:
+                    type: number
+                  snippet:
+                    type: string
+            confidence:
+              type: number
+              minimum: 0
+              maximum: 1
+        timestamp:
+          type: string
+          format: date-time
+
+    RAGInsightUpdatePayload:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        investigationId:
+          type: string
+        insight:
+          type: object
+          properties:
+            id:
+              type: string
+            type:
+              type: string
+              enum: [pattern, anomaly, recommendation, correlation]
+            title:
+              type: string
+            description:
+              type: string
+            severity:
+              type: string
+              enum: [low, medium, high, critical]
+            confidence:
+              type: number
+              minimum: 0
+              maximum: 1
+            sources:
+              type: array
+              items:
+                type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    SystemStatusPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, error]
+        services:
+          type: object
+          properties:
+            api:
+              type: object
+              properties:
+                status:
+                  type: string
+                responseTime:
+                  type: number
+            database:
+              type: object
+              properties:
+                status:
+                  type: string
+                connectionCount:
+                  type: integer
+            agents:
+              type: object
+              properties:
+                available:
+                  type: integer
+                running:
+                  type: integer
+                failed:
+                  type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    ErrorEventPayload:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [validation, processing, system, network]
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+        message:
+          type: string
+        details:
+          type: object
+        investigationId:
+          type: string
+        agentId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        retryable:
+          type: boolean
+
+    InvestigationControlPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        command:
+          type: string
+          enum: [start, stop, pause, resume]
+        parameters:
+          type: object
+
+    AgentControlPayload:
+      type: object
+      properties:
+        investigationId:
+          type: string
+        agentId:
+          type: string
+        executionId:
+          type: string
+        command:
+          type: string
+          enum: [start, stop, pause, resume]
+        parameters:
+          type: object
+
+    RAGQueryPayload:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        investigationId:
+          type: string
+        query:
+          type: string
+        context:
+          type: object
+        sources:
+          type: array
+          items:
+            type: string
+        maxResults:
+          type: integer
+          default: 10
