@@ -45,7 +45,7 @@ async def test_snowflake_tool_mock():
         # Test a typical query that would return high-risk data
         query = """
         SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, 
-               NSURE_LAST_DECISION, PAID_AMOUNT_VALUE, TX_DATETIME
+               NSURE_LAST_DECISION, PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME
         FROM TRANSACTIONS_ENRICHED 
         WHERE IP = '192.168.1.100'
         ORDER BY TX_DATETIME DESC
@@ -119,9 +119,9 @@ async def test_domain_agents_processing():
                     "MODEL_SCORE": 0.9900,  # Very high fraud score
                     "IS_FRAUD_TX": 1,
                     "IP": "192.168.1.100",
-                    "IP_COUNTRY": "XX",
+                    "IP_COUNTRY_CODE": "XX",
                     "NSURE_LAST_DECISION": "reject",
-                    "PAID_AMOUNT_VALUE": 1000.00
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 1000.00
                 },
                 {
                     "TX_ID_KEY": "tx_002", 
@@ -129,9 +129,9 @@ async def test_domain_agents_processing():
                     "MODEL_SCORE": 0.8500,  # High fraud score
                     "IS_FRAUD_TX": 0,
                     "IP": "192.168.1.100",
-                    "IP_COUNTRY": "YY",  # Different country 
+                    "IP_COUNTRY_CODE": "YY",  # Different country 
                     "NSURE_LAST_DECISION": "approve",
-                    "PAID_AMOUNT_VALUE": 2500.00
+                    "PAID_AMOUNT_VALUE_IN_CURRENCY": 2500.00
                 }
             ],
             "row_count": 2,

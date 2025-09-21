@@ -148,7 +148,7 @@ def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> No
 
 def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze geographic patterns in the data."""
-    countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+    countries = set(r.get("IP_COUNTRY_CODE") for r in results if r.get("IP_COUNTRY_CODE"))
     
     if len(countries) > 3:
         findings["risk_indicators"].append(f"Activity from {len(countries)} different countries")

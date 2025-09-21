@@ -6,21 +6,27 @@ Handles connection, query validation, and result processing.
 import os
 from typing import Any, Dict, List, Optional
 import asyncio
-# Common query templates using real column names
+
+from .schema_constants import (
+    TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE, TX_DATETIME, PAYMENT_METHOD,
+    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
+    FRAUD_RULES_TRIGGERED
+)
+# Common query templates using schema constants
 COMMON_QUERIES = {
-    "fraud_transactions": """
-        SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX, 
-               TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
-        FROM TRANSACTIONS_ENRICHED 
-        WHERE IS_FRAUD_TX = 1 
-        ORDER BY TX_DATETIME DESC
+    "fraud_transactions": f"""
+        SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
+               {TX_DATETIME}, {PAID_AMOUNT_VALUE}, {FRAUD_RULES_TRIGGERED}
+        FROM TRANSACTIONS_ENRICHED
+        WHERE {IS_FRAUD_TX} = 1
+        ORDER BY {TX_DATETIME} DESC
     """,
-    "high_risk_scores": """
-        SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE, 
-               NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
-        FROM TRANSACTIONS_ENRICHED 
-        WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
-        ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
+    "high_risk_scores": f"""
+        SELECT {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, {MAXMIND_RISK_SCORE},
+               {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE}
+        FROM TRANSACTIONS_ENRICHED
+        WHERE {MODEL_SCORE} > 0.8 OR {MAXMIND_RISK_SCORE} > 80
+        ORDER BY {MODEL_SCORE} DESC, {MAXMIND_RISK_SCORE} DESC
     """
 }
 from app.service.logging import get_bridge_logger
