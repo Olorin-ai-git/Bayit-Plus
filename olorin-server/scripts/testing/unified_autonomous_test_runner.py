@@ -223,7 +223,7 @@ class TestConfiguration:
     csv_file: Optional[str] = DEFAULT_CSV_FILE  # Use default CSV file
     csv_limit: int = DEFAULT_CSV_LIMIT
     concurrent: int = DEFAULT_CONCURRENT
-    output_format: OutputFormat = OutputFormat.TERMINAL
+    output_format: OutputFormat = OutputFormat.HTML
     output_dir: str = "."
     verbose: bool = False
     server_url: str = DEFAULT_SERVER_URL
@@ -3260,8 +3260,8 @@ Examples:
     parser.add_argument(
         "--output-format", "-f",
         choices=[fmt.value for fmt in OutputFormat],
-        default=OutputFormat.TERMINAL.value,
-        help=f"Output format (default: {OutputFormat.TERMINAL.value})"
+        default=OutputFormat.HTML.value,
+        help=f"Output format (default: {OutputFormat.HTML.value})"
     )
     parser.add_argument(
         "--output-dir", "-o",
