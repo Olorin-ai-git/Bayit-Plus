@@ -741,7 +741,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ✅ COMPLETED")
         
         # Allow sufficient loops for all 6 domain agents to execute sequentially
-        domain_threshold = 20 if is_test_mode else 25  # INCREASED: Need sufficient loops for 6 domain agents
+        domain_threshold = 30 if is_test_mode else 35  # INCREASED: Need sufficient loops for 6 domain agents including risk agent
         logger.debug(f"      Domain threshold for this mode: {domain_threshold}")
         logger.debug(f"      Predicted loops: {orchestrator_loops}")
         
@@ -769,9 +769,9 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     
     # Step 7.1.3: Fallback forced progression mechanisms - CRITICAL FIX: Prevent infinite default loops
     logger.debug(f"[Step 7.1.3] ❓ FALLBACK ROUTING - Safety mechanisms for unhandled cases")
-    final_threshold = 22 if is_test_mode else 30  # INCREASED: Allow domain agents to complete
+    final_threshold = 40 if is_test_mode else 50  # INCREASED: Allow risk agent execution in sequence
     logger.debug(f"[Step 7.1.3]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
-    logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 22' if is_test_mode else 'LIVE: 30'})")
+    logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 40' if is_test_mode else 'LIVE: 50'})")
     logger.debug(f"[Step 7.1.3]   Current predicted loops: {orchestrator_loops}")
     logger.debug(f"[Step 7.1.3]   Final threshold exceeded: {orchestrator_loops >= final_threshold}")
     

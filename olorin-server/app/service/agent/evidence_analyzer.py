@@ -375,28 +375,23 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on domai
         """Parse LLM response to extract structured analysis."""
         import re
         
-        # CRITICAL FIX: Use computed score as authoritative when provided (SPLIT-BRAIN FIX)
-        if computed_risk_score is not None:
+        # PRIORITY 1: Extract LLM-determined risk score (primary authority)
+        risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
+        risk_match = re.search(risk_pattern, llm_response.lower())
+
+        if risk_match:
+            # LLM provided a risk score - use it as primary authority
+            risk_score = float(risk_match.group(1))
+            logger.debug(f"🤖 Using LLM-determined risk score: {risk_score:.3f}")
+        elif computed_risk_score is not None:
+            # FALLBACK: Use computed score when LLM doesn't provide one
             risk_score = computed_risk_score
-            logger.debug(f"🧮 Using COMPUTED risk score: {risk_score:.3f} (LLM echoing requirement - prevents split-brain)")
-            
-            # VALIDATION: Check if LLM actually echoed the score correctly
-            risk_pattern = r"risk[_\s]*score[\":\s]*([\d.]+)"
-            risk_match = re.search(risk_pattern, llm_response.lower())
-            if risk_match:
-                llm_extracted_score = float(risk_match.group(1))
-                if abs(llm_extracted_score - computed_risk_score) > 0.01:
-                    logger.warning(f"⚠️ SPLIT-BRAIN DETECTED: LLM extracted {llm_extracted_score:.3f} vs computed {computed_risk_score:.3f}")
-                else:
-                    logger.debug(f"✅ LLM correctly echoed computed score: {llm_extracted_score:.3f}")
-            else:
-                logger.warning(f"⚠️ SPLIT-BRAIN RISK: Could not verify LLM echoed computed score in response")
+            logger.warning(f"⚠️ LLM did not provide risk score, using algorithmic fallback: {risk_score:.3f}")
         else:
-            # Fallback: Extract risk score from LLM response
-            risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
-            risk_match = re.search(risk_pattern, llm_response.lower())
-            risk_score = float(risk_match.group(1)) if risk_match else 0.2
-            logger.debug(f"🤖 Extracted LLM risk score: {risk_score:.3f}")
+            # CRITICAL FAILURE: Neither LLM nor algorithmic scoring provided valid score
+            error_msg = f"CRITICAL: Neither LLM nor algorithmic risk scoring provided valid score for {domain} domain (LLM provided: {llm_response[:100] if llm_response else 'None'})"
+            logger.error(f"❌ {error_msg}")
+            raise RuntimeError(error_msg)
         
         # Extract confidence
         conf_pattern = r"confidence[:\s]*(\d*\.?\d+)"

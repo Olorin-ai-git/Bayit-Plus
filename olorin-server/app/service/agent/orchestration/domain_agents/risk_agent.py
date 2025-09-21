@@ -73,12 +73,12 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             facts.get("manual_case_outcome") == "fraud"
         )
         
-        # Initialize risk findings with compatibility keys to prevent KeyError
+        # Initialize risk findings with numeric score for infrastructure compatibility
         risk_findings = {
             "domain": "risk",
             "name": "risk",  # Compatibility with domain normalization
-            "score": None,   # Narrative domain - no numeric score
-            "risk_score": None,  # Legacy key to prevent KeyError crashes
+            "score": 0.5,   # Default score for narrative synthesis
+            "risk_score": 0.5,  # Infrastructure expects numeric value
             "status": "OK",  # Always OK for narrative synthesis
             "signals": [],   # No numeric signals for narrative domain
             "confidence": 0.5,  # Moderate confidence in narrative synthesis
@@ -140,12 +140,12 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         from app.service.agent.orchestration.circuit_breaker import record_node_failure
         record_node_failure(state, "risk_agent", e)
         
-        # Return compatible error result to prevent KeyError crashes
+        # Return compatible error result with numeric scores for infrastructure
         error_risk_findings = {
             "domain": "risk",
             "name": "risk",
-            "score": None,
-            "risk_score": None,  # Compatibility key
+            "score": 0.0,
+            "risk_score": 0.0,  # Infrastructure expects numeric value
             "status": "ERROR",
             "signals": [],
             "confidence": 0.0,
