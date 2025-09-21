@@ -247,10 +247,14 @@ reflect that in your confidence score.
 MODEL_SCORE BAN: You are FORBIDDEN from using MODEL_SCORE values to justify risk levels.
 Focus on behavioral patterns, threat intelligence, technical indicators, and fraud signals.
 
+DATA AVAILABILITY CHECK: CRITICAL - Only make claims about data that was actually provided.
+If evidence shows "data not available" or "fields not queried", DO NOT invent conclusions about that data.
+Example: If evidence says "Browser/OS data not available", DO NOT claim "No browser variations detected".
+
 RENDER CONTEXT LOCK: When engine-computed scores are provided, use EXACTLY those values.
 Do not calculate, estimate, or invent numeric scores in your analysis prose.
 Focus on qualitative interpretation of the provided quantitative values."""
-    
+
     def _create_evidence_analysis_prompt(
         self, 
         domain: str,
@@ -274,18 +278,32 @@ Focus on qualitative interpretation of the provided quantitative values."""
         
         # CRITICAL PATCH C: Create render context with only engine values (prevent LLM invention)
         if computed_risk_score is not None:
-            # Lock down completely - LLM can only use provided numeric values
-            risk_instruction = f"""1. **RISK SCORE**: {computed_risk_score:.3f} - THIS IS THE FINAL ENGINE-COMPUTED SCORE.
-   
-   CRITICAL RULES:
-   - You MUST use exactly {computed_risk_score:.3f} as the risk score
-   - You MUST NOT calculate, estimate, or infer any numeric scores
-   - You MUST NOT create additional numeric assessments in your prose
-   - Focus ONLY on qualitative analysis around the provided score
-   - If asked about scoring, refer only to the engine-computed value: {computed_risk_score:.3f}
-   
-   STRICT REQUIREMENT: Your response MUST contain "risk_score": {computed_risk_score:.3f} exactly as shown.
-   FORBIDDEN: Do not write phrases like "I assess...", "I estimate...", "appears to be around...", or any invented numeric values."""
+            # CRITICAL FIX: Validate computed_risk_score is a valid number before formatting
+            try:
+                # Convert to float if it's a string, validate range
+                risk_score_float = float(computed_risk_score)
+                if not (0.0 <= risk_score_float <= 1.0):
+                    logger.warning(f"⚠️ Invalid computed_risk_score range ({risk_score_float}), using fallback")
+                    risk_score_float = max(0.0, min(1.0, risk_score_float))  # Clamp to valid range
+
+                # Lock down completely - LLM can only use provided numeric values
+                score_str = f"{risk_score_float:.3f}"
+                risk_instruction = f"""1. **RISK SCORE**: {score_str} - THIS IS THE FINAL ENGINE-COMPUTED SCORE.
+
+CRITICAL RULES:
+- You MUST use exactly {score_str} as the risk score
+- You MUST NOT calculate, estimate, or infer any numeric scores
+- You MUST NOT create additional numeric assessments in your prose
+- Focus ONLY on qualitative analysis around the provided score
+- If asked about scoring, refer only to the engine-computed value: {score_str}
+
+STRICT REQUIREMENT: Your response MUST contain "risk_score": {score_str} exactly as shown.
+FORBIDDEN: Do not write phrases like "I assess...", "I estimate...", "appears to be around...", or any invented numeric values."""
+            except (ValueError, TypeError) as e:
+                # FALLBACK: If computed_risk_score is invalid, fall back to LLM-determined scoring
+                logger.error(f"❌ Invalid computed_risk_score value ({computed_risk_score}): {e}")
+                logger.warning("🔄 Falling back to LLM-determined risk scoring due to invalid computed score")
+                risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
         else:
             risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
         
@@ -359,10 +377,13 @@ REMINDER: Do not create numeric scores in your prose - use only the provided eng
             model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
             fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
             
+            avg_model_score = sum(model_scores)/len(model_scores) if model_scores else 0
+            avg_score_str = f"{avg_model_score:.3f}"
+            high_risk_count = len([s for s in model_scores if s > 0.7])
             context = f"""Snowflake Transaction Context:
 - Total Records: {total_records}
-- Average Model Score: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
-- High Risk Transactions (>0.7): {len([s for s in model_scores if s > 0.7])}
+- Average Model Score: {avg_score_str}
+- High Risk Transactions (>0.7): {high_risk_count}
 - Confirmed Fraud: {len(fraud_flags)}
 
 NOTE: MODEL_SCORE is for reference only - your analysis should be based on domain-specific evidence."""
@@ -385,8 +406,17 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on domai
             logger.debug(f"🤖 Using LLM-determined risk score: {risk_score:.3f}")
         elif computed_risk_score is not None:
             # FALLBACK: Use computed score when LLM doesn't provide one
-            risk_score = computed_risk_score
-            logger.warning(f"⚠️ LLM did not provide risk score, using algorithmic fallback: {risk_score:.3f}")
+            try:
+                # Validate computed_risk_score is a valid number
+                risk_score = float(computed_risk_score)
+                if not (0.0 <= risk_score <= 1.0):
+                    logger.warning(f"⚠️ Invalid computed_risk_score range ({risk_score}), clamping to valid range")
+                    risk_score = max(0.0, min(1.0, risk_score))  # Clamp to valid range
+                logger.warning(f"⚠️ LLM did not provide risk score, using algorithmic fallback: {risk_score:.3f}")
+            except (ValueError, TypeError) as e:
+                logger.error(f"❌ Invalid computed_risk_score in parse function ({computed_risk_score}): {e}")
+                logger.error("🚨 Both LLM and computed risk scores are invalid, using emergency fallback")
+                risk_score = 0.5  # Emergency fallback
         else:
             # CRITICAL FAILURE: Neither LLM nor algorithmic scoring provided valid score
             error_msg = f"CRITICAL: Neither LLM nor algorithmic risk scoring provided valid score for {domain} domain (LLM provided: {llm_response[:100] if llm_response else 'None'})"

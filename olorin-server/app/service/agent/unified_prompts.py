@@ -8,7 +8,7 @@ Replaces scattered Gaia and Olorin prompt systems.
 from typing import List, Dict, Any, Optional
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    IP, IP_COUNTRY_CODE, IP_CITY, DEVICE_ID, USER_AGENT,
+    IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT,
     TX_DATETIME, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION
 )
 

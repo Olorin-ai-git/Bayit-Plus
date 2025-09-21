@@ -110,6 +110,97 @@ def test_unique_ip_minimum_for_ip_entity():
     assert metrics3["unique_ip_count"] == 0
 
 
+def test_geographic_data_consistency():
+    """Test that multi-country domain analysis is preserved over external tool canonicalization."""
+
+    # Test case 1: Multi-country scenario (should preserve domain analysis)
+    state = {
+        "entity_type": "ip",
+        "entity_id": "1.2.3.4",
+        "domain_findings": {
+            "network": {
+                "metrics": {"unique_countries": 9},  # 9 countries from Snowflake data
+                "analysis": {}
+            }
+        },
+        "tool_results": {
+            "virustotal_ip_analysis": {
+                "success": True,
+                "data": {
+                    "network_information": {
+                        "country": "US"  # Single country from external tool
+                    }
+                }
+            }
+        }
+    }
+
+    compute_network_metrics(state)
+
+    # Should preserve domain analysis (9 countries), not override with external tool (1 country)
+    metrics = state["domain_findings"]["network"]["metrics"]
+    assert metrics["unique_countries"] == 9  # Preserved from domain analysis
+    assert "country" not in metrics  # Should not override with external tool country
+
+    # Test case 2: Single country scenario (should use external tool canonicalization)
+    state2 = {
+        "entity_type": "ip",
+        "entity_id": "8.8.8.8",
+        "domain_findings": {
+            "network": {
+                "metrics": {"unique_countries": 0},  # No countries from domain analysis
+                "analysis": {}
+            }
+        },
+        "tool_results": {
+            "virustotal_ip_analysis": {
+                "success": True,
+                "data": {
+                    "network_information": {
+                        "country": "US"
+                    }
+                }
+            }
+        }
+    }
+
+    compute_network_metrics(state2)
+
+    # Should apply external tool canonicalization for single/no country scenarios
+    metrics2 = state2["domain_findings"]["network"]["metrics"]
+    assert metrics2["unique_countries"] == 1  # Updated from external tool
+    assert metrics2["country"] == "US"  # Set from external tool
+
+    # Test case 3: Edge case - exactly 1 country from domain analysis
+    state3 = {
+        "entity_type": "ip",
+        "entity_id": "5.6.7.8",
+        "domain_findings": {
+            "network": {
+                "metrics": {"unique_countries": 1},  # Exactly 1 country from domain analysis
+                "analysis": {}
+            }
+        },
+        "tool_results": {
+            "virustotal_ip_analysis": {
+                "success": True,
+                "data": {
+                    "network_information": {
+                        "country": "CA"
+                    }
+                }
+            }
+        }
+    }
+
+    compute_network_metrics(state3)
+
+    # Should apply external tool canonicalization since 1 <= 1
+    metrics3 = state3["domain_findings"]["network"]["metrics"]
+    assert metrics3["unique_countries"] == 1  # Maintained
+    assert metrics3["country"] == "CA"  # Set from external tool
+
+
 def test_confirmed_fraud_floor():
     """Test that confirmed fraud signals trigger 0.90 risk floor."""
     
@@ -177,10 +268,13 @@ if __name__ == "__main__":
     test_duration_is_filled_when_end_missing()
     print("✅ test_duration_is_filled_when_end_missing passed")
     
-    test_unique_ip_minimum_for_ip_entity()  
+    test_unique_ip_minimum_for_ip_entity()
     print("✅ test_unique_ip_minimum_for_ip_entity passed")
-    
+
+    test_geographic_data_consistency()
+    print("✅ test_geographic_data_consistency passed")
+
     test_confirmed_fraud_floor()
     print("✅ test_confirmed_fraud_floor passed")
-    
+
     print("\n🎉 All mini tests passed! Core fixes are working correctly.")

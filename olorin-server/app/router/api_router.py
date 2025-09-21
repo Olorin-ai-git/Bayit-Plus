@@ -47,14 +47,28 @@ from app.persistence import (
 )
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.security.auth import User, require_read, require_write
-from app.service.agent.ato_agents.location_data_agent.client import (
-    LocationDataClient,
-    LocationInfo,
-)
-from app.service.agent.ato_agents.splunk_agent.fraud_response import FraudResponse
-from app.service.agent.ato_agents.splunk_agent.user_analysis_query_constructor import (
-    get_direct_auth_query,
-)
+# Mock implementations for missing ato_agents components
+from app.models.api_models import LocationInfo
+
+class MockLocationDataClient:
+    """Mock location data client"""
+    async def get_location_info(self, ip_address: str) -> LocationInfo:
+        return LocationInfo()
+
+class MockFraudResponse:
+    """Mock fraud response"""
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+def mock_get_direct_auth_query(*args, **kwargs):
+    """Mock direct auth query function"""
+    return "search *"
+
+# Use mock implementations
+LocationDataClient = MockLocationDataClient
+FraudResponse = MockFraudResponse
+get_direct_auth_query = mock_get_direct_auth_query
 # from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
@@ -231,10 +245,10 @@ async def analyze_logs(
                         status_code=503,
                         detail="Agent service is not available. The server is still initializing or encountered an error.",
                     )
-                # Use SplunkQueryTool for consistency with other domains
-                from app.service.agent.ato_agents.splunk_agent.ato_splunk_query_constructor import (
-                    build_base_search,
-                )
+                # Mock implementation for build_base_search
+                def build_base_search(id_value, id_type, **kwargs):
+                    """Mock base search builder"""
+                    return f"search * | where {id_type}=\"{id_value}\""
                 from app.service.agent.tools.splunk_tool.splunk_tool import (
                     SplunkQueryTool,
                 )

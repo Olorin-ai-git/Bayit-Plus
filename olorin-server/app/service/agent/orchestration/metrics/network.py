@@ -14,12 +14,18 @@ logger = get_bridge_logger(__name__)
 
 def compute_network_metrics(state: Dict[str, Any]) -> None:
     """
-    Canonicalize network facts with single source of truth.
-    
+    Canonicalize network facts with conditional override logic.
+
     Fixes inconsistencies:
-    - unique_ips vs unique_ip_count 
+    - unique_ips vs unique_ip_count
     - is_public conflicts between providers
     - Ensures IP investigations have minimum unique count of 1
+    - Preserves domain analysis for multi-country scenarios (>= 2 countries)
+    - Only applies external tool canonicalization for single/no country scenarios (<= 1 countries)
+
+    Data source precedence:
+    - Domain analysis (Snowflake): Primary source for multi-country data
+    - External tools (VT/AbuseIPDB): Fallback for single-country validation
     """
     try:
         # Ensure network domain findings exist
@@ -52,18 +58,31 @@ def compute_network_metrics(state: Dict[str, Any]) -> None:
                     metrics["is_public"] = is_public
                     analysis["is_public"] = is_public
                     
-                    # CANONICAL: Set country if available from tool results
-                    tool_results = state.get("tool_results", {})
-                    country = _extract_canonical_country(tool_results, entity_id)
-                    if country:
-                        metrics["country"] = country
-                        analysis["country"] = country
-                        metrics["unique_countries"] = 1
+                    # CANONICAL: Set country with conditional override logic
+                    # Only canonicalize if domain analysis found 0 or 1 countries
+                    # Preserve domain analysis for multi-country scenarios (≥ 2 countries)
+                    existing_countries = metrics.get("unique_countries", 0)
+
+                    if existing_countries <= 1:
+                        # Apply external tool canonicalization for single/no country scenarios
+                        tool_results = state.get("tool_results", {})
+                        country = _extract_canonical_country(tool_results, entity_id)
+                        if country:
+                            metrics["country"] = country
+                            analysis["country"] = country
+                            metrics["unique_countries"] = 1
+                            logger.debug(f"Applied external tool canonicalization: country={country}")
+                        else:
+                            metrics["unique_countries"] = 0
+                            logger.debug("No country found in external tools, set unique_countries=0")
                     else:
-                        metrics["unique_countries"] = 0
+                        # Preserve domain analysis for multi-country scenarios
+                        logger.debug(f"Preserving domain analysis: {existing_countries} countries found from Snowflake data")
                     
+                    final_countries = metrics.get("unique_countries", 0)
+                    final_country = metrics.get("country", "unknown")
                     logger.debug(f"Canonicalized network facts for IP {entity_id}: "
-                               f"unique_ips=1, is_public={is_public}, country={country}")
+                               f"unique_ips=1, is_public={is_public}, unique_countries={final_countries}, country={final_country}")
                     
                 except (ipaddress.AddressValueError, ValueError):
                     logger.debug(f"Entity {entity_id} is not a valid IP address, leaving metrics unchanged")

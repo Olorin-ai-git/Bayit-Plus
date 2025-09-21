@@ -14,12 +14,14 @@ from datetime import datetime
 from decimal import Decimal
 import json
 from .client import SnowflakeClient
+from .query_builder import SnowflakeQueryBuilder, get_recommended_query_for_entity
 from .schema_constants import (
     TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
     PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
     IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
-    CARD_ISSUER, MAXMIND_RISK_SCORE
+    CARD_ISSUER, MAXMIND_RISK_SCORE, DEVICE_MODEL, DEVICE_OS_VERSION,
+    PARSED_USER_AGENT, build_safe_select_columns, is_valid_column
 )
 
 class SnowflakeJSONEncoder(json.JSONEncoder):
@@ -32,14 +34,75 @@ class SnowflakeJSONEncoder(json.JSONEncoder):
         elif hasattr(obj, '__dict__'):
             return obj.__dict__
         return super().default(obj)
-# Real column names from Snowflake schema - using schema constants
-REAL_COLUMNS = [
-    TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
-    PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
-    IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
-    UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
-    CARD_ISSUER, MAXMIND_RISK_SCORE
+# Comprehensive column selection for fraud investigation evidence
+# Organized by investigation category for optimal query construction
+
+# Core Transaction Fields - Always Required
+CORE_TRANSACTION_FIELDS = [
+    TX_ID_KEY, TX_DATETIME, EMAIL, UNIQUE_USER_ID,
+    PAID_AMOUNT_VALUE_IN_CURRENCY, PAYMENT_METHOD
 ]
+
+# Risk and Fraud Analysis Fields
+RISK_ANALYSIS_FIELDS = [
+    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
+    "TRIGGERED_RULES", "COUNT_TRIGGERED_RULES", "RULE_DECISION"
+]
+
+# User Identity and Profile Fields
+USER_IDENTITY_FIELDS = [
+    FIRST_NAME, LAST_NAME, PHONE_NUMBER, "DATE_OF_BIRTH",
+    "EMAIL_FIRST_SEEN", "DAYS_FROM_FIRST_EMAIL_SEEN_TO_TX"
+]
+
+# Device Analysis Fields
+DEVICE_ANALYSIS_FIELDS = [
+    DEVICE_ID, USER_AGENT, DEVICE_TYPE, DEVICE_MODEL,
+    DEVICE_OS_VERSION, PARSED_USER_AGENT, "IS_DEVICE_ID_AUTHENTICATED"
+]
+
+# Network and Location Fields
+NETWORK_LOCATION_FIELDS = [
+    IP, IP_COUNTRY_CODE, "ASN", "ISP", "MAXMIND_IP_RISK_SCORE"
+]
+
+# Payment Method Analysis Fields
+PAYMENT_ANALYSIS_FIELDS = [
+    CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, "CARD_TYPE",
+    "IS_CARD_COMMERCIAL", "IS_CARD_PREPAID", "BIN_COUNTRY_CODE"
+]
+
+# Behavioral and Temporal Fields
+BEHAVIORAL_FIELDS = [
+    "DAYS_FROM_FIRST_TX_ATTEMPT_TO_TX", "IS_USER_FIRST_TX_ATTEMPT",
+    "IS_RECURRING_USER", "DAYS_FROM_FIRST_USER_ACCOUNT_ACTIVITY_DATE_TO_TX"
+]
+
+# Dispute and Fraud History Fields
+FRAUD_HISTORY_FIELDS = [
+    "DISPUTES", "COUNT_DISPUTES", "FRAUD_ALERTS", "COUNT_FRAUD_ALERTS",
+    "LAST_DISPUTE_REASON", "IS_LAST_DISPUTE_FRAUD_RELATED_REASON"
+]
+
+# Comprehensive column set for fraud investigations
+REAL_COLUMNS = (
+    CORE_TRANSACTION_FIELDS +
+    RISK_ANALYSIS_FIELDS +
+    USER_IDENTITY_FIELDS +
+    DEVICE_ANALYSIS_FIELDS +
+    NETWORK_LOCATION_FIELDS +
+    PAYMENT_ANALYSIS_FIELDS +
+    BEHAVIORAL_FIELDS +
+    FRAUD_HISTORY_FIELDS
+)
+
+# Priority fields for initial queries (most critical evidence)
+PRIORITY_EVIDENCE_FIELDS = (
+    CORE_TRANSACTION_FIELDS +
+    RISK_ANALYSIS_FIELDS +
+    DEVICE_ANALYSIS_FIELDS +
+    NETWORK_LOCATION_FIELDS
+)
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.enhanced_tool_execution_logger import get_tool_execution_logger
 
@@ -52,15 +115,17 @@ class _SnowflakeQueryArgs(BaseModel):
         ..., 
         description=(
             "The SQL query to execute against Snowflake data warehouse. "
-            "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
-            "IMPORTANT - Use these EXACT column names: TX_ID_KEY (transaction ID), EMAIL (user email), "
-            "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
-            f"NSURE_LAST_DECISION (approval/reject decision), {PAID_AMOUNT_VALUE_IN_CURRENCY} (transaction amount), "
-            "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP (client IP address), "
-            f"{IP_COUNTRY_CODE} (country from IP), "
-            "DEVICE_ID (NOT SMART_ID), USER_AGENT, "
-            "DEVICE_TYPE, DEVICE_ID. "
-            "Use LIMIT clause for large result sets."
+            "Main table: TRANSACTIONS_ENRICHED with 333+ evidence columns. "
+            "COMPREHENSIVE EVIDENCE FIELDS AVAILABLE: "
+            "CORE: TX_ID_KEY, TX_DATETIME, EMAIL, UNIQUE_USER_ID, PAID_AMOUNT_VALUE_IN_CURRENCY, PAYMENT_METHOD | "
+            "RISK: MODEL_SCORE (0-1), IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE, TRIGGERED_RULES | "
+            "DEVICE: DEVICE_ID, USER_AGENT, DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION, PARSED_USER_AGENT | "
+            "NETWORK: IP, IP_COUNTRY_CODE, ASN, ISP, MAXMIND_IP_RISK_SCORE | "
+            "PAYMENT: CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, CARD_TYPE, IS_CARD_COMMERCIAL | "
+            "USER: FIRST_NAME, LAST_NAME, PHONE_NUMBER, DATE_OF_BIRTH, EMAIL_FIRST_SEEN | "
+            "FRAUD_HISTORY: DISPUTES, FRAUD_ALERTS, COUNT_DISPUTES, LAST_DISPUTE_REASON. "
+            "For comprehensive investigations, SELECT all relevant evidence fields. "
+            "Use LIMIT clause for large result sets. NEVER use: GMV, SMART_ID, IS_PROXY."
         )
     )
     database: str = Field(
@@ -83,15 +148,18 @@ class SnowflakeQueryTool(BaseTool):
     
     name: str = "snowflake_query_tool" 
     description: str = (
-        "Queries comprehensive Snowflake fraud detection data warehouse containing detailed "
-        "transaction records, user profiles, payment methods, risk scores, fraud indicators, "
-        "disputes, and business intelligence data. Main table is TRANSACTIONS_ENRICHED with "
-        "300+ columns. CRITICAL - Use EXACT column names: TX_ID_KEY, EMAIL, MODEL_SCORE (0-1), "
-        f"PAYMENT_METHOD, CARD_BRAND, {IP}, {IP_COUNTRY_CODE}, IP_CITY, {DEVICE_ID}, "
-        "NSURE_LAST_DECISION, DISPUTES, "
-        f"FRAUD_ALERTS, {PAID_AMOUNT_VALUE_IN_CURRENCY} (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
-        "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "
-        "Supports complex queries with JOINs, aggregations, time-based filtering, and statistical analysis."
+        "Queries comprehensive Snowflake fraud detection data warehouse with 333+ columns of "
+        "evidence including: DEVICE ANALYSIS (USER_AGENT, DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION, "
+        "PARSED_USER_AGENT), USER IDENTITY (UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER), "
+        "RISK ANALYSIS (MODEL_SCORE, IS_FRAUD_TX, MAXMIND_RISK_SCORE, TRIGGERED_RULES), "
+        "PAYMENT ANALYSIS (BIN, LAST_FOUR, CARD_ISSUER, CARD_TYPE, IS_CARD_COMMERCIAL), "
+        "NETWORK ANALYSIS (IP, IP_COUNTRY_CODE, ASN, ISP, MAXMIND_IP_RISK_SCORE), "
+        "FRAUD HISTORY (DISPUTES, FRAUD_ALERTS, LAST_DISPUTE_REASON). "
+        f"Main table: TRANSACTIONS_ENRICHED. Core fields: {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, "
+        f"{PAYMENT_METHOD}, {CARD_BRAND}, {IP}, {IP_COUNTRY_CODE}, {DEVICE_ID}, "
+        f"{PAID_AMOUNT_VALUE_IN_CURRENCY}, {NSURE_LAST_DECISION}. "
+        "NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. Supports comprehensive fraud investigations "
+        "with complete evidence collection, device fingerprinting, user profiling, and risk assessment."
     )
     
     # Explicit args schema for strict tool parsing
@@ -107,6 +175,184 @@ class SnowflakeQueryTool(BaseTool):
         description="Snowflake warehouse for query execution"
     )
     
+    def build_comprehensive_investigation_query(
+        self,
+        entity_type: str,
+        entity_id: str,
+        date_range_days: int = 7,
+        include_priority_only: bool = False
+    ) -> str:
+        """
+        Build a comprehensive investigation query with all available evidence fields.
+
+        Args:
+            entity_type: Type of entity (IP, EMAIL, DEVICE_ID, etc.)
+            entity_id: The entity identifier to search for
+            date_range_days: Number of days to look back
+            include_priority_only: If True, use only priority fields for performance
+
+        Returns:
+            SQL query string with comprehensive field selection
+        """
+        # Select field set based on performance requirements
+        if include_priority_only:
+            columns_to_use = PRIORITY_EVIDENCE_FIELDS
+            logger.info(f"🎯 Using priority evidence fields ({len(PRIORITY_EVIDENCE_FIELDS)} columns)")
+        else:
+            columns_to_use = REAL_COLUMNS
+            logger.info(f"📊 Using comprehensive evidence fields ({len(REAL_COLUMNS)} columns)")
+
+        # Build safe column selection
+        safe_columns = build_safe_select_columns(columns_to_use)
+
+        # Build WHERE clause based on entity type
+        where_clause = self._build_entity_where_clause(entity_type, entity_id)
+
+        # Build date filter
+        date_filter = f"TX_DATETIME >= DATEADD(day, -{date_range_days}, CURRENT_TIMESTAMP())"
+
+        query = f"""
+        SELECT {safe_columns}
+        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        WHERE {where_clause}
+          AND {date_filter}
+        ORDER BY TX_DATETIME DESC
+        LIMIT 1000
+        """
+
+        logger.debug(f"📝 Built comprehensive query for {entity_type}={entity_id}")
+        logger.debug(f"   Date range: {date_range_days} days")
+        logger.debug(f"   Field count: {len(columns_to_use)}")
+
+        return query.strip()
+
+    def get_optimized_investigation_query(
+        self,
+        entity_type: str,
+        entity_id: str,
+        investigation_focus: str = "comprehensive",
+        date_range_days: int = 7
+    ) -> Dict[str, Any]:
+        """
+        Get an optimized investigation query using the query builder.
+
+        Args:
+            entity_type: Type of entity to investigate
+            entity_id: Entity identifier
+            investigation_focus: Investigation focus (minimal, core_fraud, comprehensive, etc.)
+            date_range_days: Number of days to look back
+
+        Returns:
+            Dictionary with query, metadata, and validation info
+        """
+        query_info = SnowflakeQueryBuilder.build_investigation_query(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            investigation_focus=investigation_focus,
+            date_range_days=date_range_days
+        )
+
+        logger.info(f"🎨 Generated optimized {investigation_focus} query for {entity_type}={entity_id}")
+        logger.info(f"   Evidence coverage: {query_info['validation']['evidence_coverage_score']}")
+        logger.info(f"   Performance tier: {query_info['metadata']['performance_estimate']['performance_tier']}")
+
+        return query_info
+
+    def _build_entity_where_clause(self, entity_type: str, entity_id: str) -> str:
+        """
+        Build WHERE clause for different entity types.
+
+        Args:
+            entity_type: Type of entity to search for
+            entity_id: The entity identifier
+
+        Returns:
+            WHERE clause string
+        """
+        entity_type_upper = entity_type.upper()
+
+        if entity_type_upper == "IP":
+            return f"{IP} = '{entity_id}'"
+        elif entity_type_upper == "EMAIL":
+            return f"({EMAIL} = '{entity_id}' OR {EMAIL} LIKE '%{entity_id}%')"
+        elif entity_type_upper == "DEVICE_ID":
+            return f"{DEVICE_ID} = '{entity_id}'"
+        elif entity_type_upper == "USER_ID" or entity_type_upper == "UNIQUE_USER_ID":
+            return f"{UNIQUE_USER_ID} = '{entity_id}'"
+        elif entity_type_upper == "PHONE":
+            return f"{PHONE_NUMBER} = '{entity_id}'"
+        elif entity_type_upper == "CARD" or entity_type_upper == "BIN":
+            return f"({BIN} = '{entity_id}' OR {LAST_FOUR} = '{entity_id[-4:]}' OR {CARD_ISSUER} LIKE '%{entity_id}%')"
+        else:
+            # Fallback: search across multiple key fields
+            logger.warning(f"⚠️ Unknown entity type '{entity_type}', using multi-field search")
+            return f"("\
+                   f"{IP} = '{entity_id}' OR "\
+                   f"{EMAIL} = '{entity_id}' OR "\
+                   f"{DEVICE_ID} = '{entity_id}' OR "\
+                   f"{UNIQUE_USER_ID} = '{entity_id}' OR "\
+                   f"{PHONE_NUMBER} = '{entity_id}'"\
+                   f")"
+
+    def validate_query_fields(self, query: str) -> Dict[str, Any]:
+        """
+        Validate that query includes critical evidence fields.
+
+        Args:
+            query: SQL query to validate
+
+        Returns:
+            Validation result with missing fields and recommendations
+        """
+        import re
+
+        # Extract SELECT columns from query
+        select_match = re.search(r'SELECT\s+(.+?)\s+FROM', query, re.IGNORECASE | re.DOTALL)
+        if not select_match:
+            return {
+                "valid": False,
+                "error": "Could not parse SELECT clause",
+                "missing_critical_fields": [],
+                "recommendations": ["Use proper SELECT ... FROM syntax"]
+            }
+
+        select_clause = select_match.group(1)
+
+        # Define critical fields that should always be included
+        critical_fields = [
+            TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX, DEVICE_ID,
+            USER_AGENT, IP, IP_COUNTRY_CODE, MAXMIND_RISK_SCORE
+        ]
+
+        missing_fields = []
+        for field in critical_fields:
+            if field not in select_clause:
+                missing_fields.append(field)
+
+        recommendations = []
+        if missing_fields:
+            recommendations.append(f"Add missing critical fields: {', '.join(missing_fields)}")
+
+        # Check for evidence completeness
+        device_fields = [DEVICE_ID, USER_AGENT, DEVICE_TYPE, DEVICE_MODEL]
+        device_coverage = sum(1 for field in device_fields if field in select_clause)
+        if device_coverage < 2:
+            recommendations.append("Include more device analysis fields for better device fingerprinting")
+
+        risk_fields = [MODEL_SCORE, IS_FRAUD_TX, MAXMIND_RISK_SCORE]
+        risk_coverage = sum(1 for field in risk_fields if field in select_clause)
+        if risk_coverage < 2:
+            recommendations.append("Include more risk analysis fields for comprehensive fraud assessment")
+
+        return {
+            "valid": len(missing_fields) == 0,
+            "missing_critical_fields": missing_fields,
+            "device_field_coverage": f"{device_coverage}/{len(device_fields)}",
+            "risk_field_coverage": f"{risk_coverage}/{len(risk_fields)}",
+            "recommendations": recommendations,
+            "total_evidence_score": max(0.0, 1.0 - (len(missing_fields) / len(critical_fields)))
+        }
+
     def _correct_column_names(self, query: str) -> str:
         """Auto-correct common column name mistakes in queries."""
         corrections = {
@@ -115,7 +361,7 @@ class SnowflakeQueryTool(BaseTool):
             'IS_PROXY': 'NULL AS IS_PROXY',  # Column doesn't exist
             'GMV': PAID_AMOUNT_VALUE_IN_CURRENCY,
             'GEO_IP_COUNTRY': IP_COUNTRY_CODE,
-            'GEO_IP_CITY': 'IP_CITY',
+            'GEO_IP_CITY': 'NULL AS IP_CITY',  # Column doesn't exist
             'GEO_IP_REGION': 'IP_REGION',
             'TRIGGERED_RULES': 'NULL AS TRIGGERED_RULES',  # Column doesn't exist
             'PROXY_RISK_SCORE': 'NULL AS PROXY_RISK_SCORE',  # Column doesn't exist
@@ -325,6 +571,9 @@ class SnowflakeQueryTool(BaseTool):
                 # Convert results to JSON-serializable format
                 json_safe_results = json.loads(json.dumps(results, cls=SnowflakeJSONEncoder))
                 
+                # Validate query for evidence completeness
+                query_validation = self.validate_query_fields(corrected_query)
+
                 # Create comprehensive result object
                 result_object = {
                     "results": json_safe_results,
@@ -334,11 +583,25 @@ class SnowflakeQueryTool(BaseTool):
                     "schema": db_schema,
                     "table": "TRANSACTIONS_ENRICHED",
                     "query_insights": query_insights,
+                    "query_validation": query_validation,
+                    "evidence_completeness": {
+                        "total_available_fields": len(REAL_COLUMNS),
+                        "fields_retrieved": len(columns),
+                        "coverage_percentage": round((len(columns) / len(REAL_COLUMNS)) * 100, 1),
+                        "critical_fields_included": len([c for c in columns if c in [TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX, DEVICE_ID, USER_AGENT, IP]])
+                    },
                     "query_status": "success",
                     "execution_timestamp": datetime.now().isoformat(),
                     "execution_duration_ms": execution_duration_ms,
                     "schema_info": {
-                        "available_columns": REAL_COLUMNS,
+                        "available_evidence_fields": len(REAL_COLUMNS),
+                        "priority_fields": len(PRIORITY_EVIDENCE_FIELDS),
+                        "field_categories": {
+                            "core_transaction": len([f for f in columns if f in [TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY]]),
+                            "risk_analysis": len([f for f in columns if f in [MODEL_SCORE, IS_FRAUD_TX, MAXMIND_RISK_SCORE]]),
+                            "device_analysis": len([f for f in columns if f in [DEVICE_ID, USER_AGENT, DEVICE_TYPE]]),
+                            "network_analysis": len([f for f in columns if f in [IP, IP_COUNTRY_CODE]])
+                        },
                         "main_table": "TRANSACTIONS_ENRICHED"
                     }
                 }

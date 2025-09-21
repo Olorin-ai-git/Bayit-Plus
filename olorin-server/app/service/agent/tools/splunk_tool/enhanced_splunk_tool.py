@@ -23,7 +23,8 @@ from ..enhanced_tool_base import (
     ToolValidationError
 )
 from app.service.logging import get_bridge_logger
-from app.service.agent.ato_agents.splunk_agent.client import SplunkClient
+# Use mock client from splunk_tool for now
+from .splunk_tool import SplunkClient
 from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret
 

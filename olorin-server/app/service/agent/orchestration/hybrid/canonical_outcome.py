@@ -12,6 +12,7 @@ from enum import Enum
 
 from .hybrid_state_schema import HybridInvestigationState, AIConfidenceLevel, InvestigationStrategy
 from .evidence_config import EvidenceQualityLevel, get_evidence_validator
+from ..metrics.safe import coerce_float
 
 from app.service.logging import get_bridge_logger
 
@@ -244,7 +245,6 @@ class CanonicalOutcomeBuilder:
     
     def _build_risk_assessment(self, state: HybridInvestigationState) -> RiskAssessment:
         """Build risk assessment from investigation state."""
-        from app.service.agent.orchestration.metrics.safe import coerce_float
         risk_score = coerce_float(state.get("risk_score"), 0.0)
         
         # Determine fraud likelihood
@@ -264,7 +264,7 @@ class CanonicalOutcomeBuilder:
             fraud_likelihood=fraud_likelihood,
             risk_factors=state.get("risk_factors", []),
             risk_indicators=state.get("risk_indicators", []),
-            confidence_score=float(state.get("ai_confidence", 0.0)),
+            confidence_score=coerce_float(state.get("ai_confidence"), 0.0),
             mitigation_recommendations=self._generate_mitigation_recommendations(risk_score)
         )
     
@@ -290,9 +290,9 @@ class CanonicalOutcomeBuilder:
         return EvidenceAssessment(
             overall_quality=evidence_quality,
             quality_level=self.evidence_validator.get_evidence_quality_level(evidence_quality),
-            snowflake_quality=float(state.get("snowflake_quality", 0.0)),
-            tools_quality=float(state.get("tools_quality", 0.0)),
-            domains_quality=float(state.get("domains_quality", 0.0)),
+            snowflake_quality=coerce_float(state.get("snowflake_quality"), 0.0),
+            tools_quality=coerce_float(state.get("tools_quality"), 0.0),
+            domains_quality=coerce_float(state.get("domains_quality"), 0.0),
             evidence_sources=self._extract_evidence_sources(state),
             quality_factors=state.get("confidence_factors", {}),
             validation_passed=validation_passed,
@@ -306,15 +306,15 @@ class CanonicalOutcomeBuilder:
             orchestrator_loops=int(state.get("orchestrator_loops", 0)),
             domains_completed=len(state.get("domains_completed", [])),
             tools_executed=len(state.get("tools_used", [])),
-            investigation_efficiency=float(state.get("investigation_efficiency", 0.0)),
+            investigation_efficiency=coerce_float(state.get("investigation_efficiency"), 0.0),
             resource_utilization=self._assess_resource_utilization(state),
-            optimization_applied=state.get("ai_confidence", 0.0) > 0.8
+            optimization_applied=coerce_float(state.get("ai_confidence"), 0.0) > 0.8
         )
     
     def _build_ai_intelligence_metrics(self, state: HybridInvestigationState) -> AIIntelligenceMetrics:
         """Build AI intelligence metrics from investigation state."""
         return AIIntelligenceMetrics(
-            final_confidence=float(state.get("ai_confidence", 0.0)),
+            final_confidence=coerce_float(state.get("ai_confidence"), 0.0),
             confidence_level=state.get("ai_confidence_level", AIConfidenceLevel.UNKNOWN),
             ai_decisions_count=len(state.get("ai_decisions", [])),
             strategy_used=state.get("investigation_strategy", InvestigationStrategy.ADAPTIVE),
@@ -331,7 +331,7 @@ class CanonicalOutcomeBuilder:
             validation_checks_passed=len(quality_gates),
             validation_checks_failed=0,  # Could be calculated from errors
             safety_concerns_raised=safety_concerns,
-            data_quality_score=float(state.get("evidence_strength", 0.0)),
+            data_quality_score=coerce_float(state.get("evidence_strength"), 0.0),
             compliance_status="compliant" if safety_concerns == 0 else "concerns_noted",
             audit_trail=state.get("decision_audit_trail", [])
         )
@@ -340,8 +340,8 @@ class CanonicalOutcomeBuilder:
         """Generate human-readable summary text."""
         investigation_id = state.get("investigation_id", "Unknown")
         entity_id = state.get("entity_id", "unknown")
-        risk_score = state.get("risk_score", 0.0)
-        confidence = state.get("ai_confidence", 0.0)
+        risk_score = coerce_float(state.get("risk_score"), 0.0)
+        confidence = coerce_float(state.get("ai_confidence"), 0.0)
         
         risk_score_safe = risk_score if risk_score is not None else 0.0
         confidence_safe = confidence if confidence is not None else 0.0

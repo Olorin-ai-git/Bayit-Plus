@@ -38,20 +38,22 @@ def safe_gt(a: Optional[Union[int, float]], b: Optional[Union[int, float]], defa
 def coerce_float(value: Optional[Union[int, float, str]], default: Optional[float] = None) -> Optional[float]:
     """
     Safely coerce value to float with None handling.
-    
+
     CRITICAL FIX: Converts None and invalid values to float safely.
     Enhanced to handle finite values only.
-    
+
     Args:
         value: Value to convert (may be None)
         default: Default float value if conversion fails
-        
+
     Returns:
         Float value, default, or None
     """
+    # CRITICAL FIX: Check for None BEFORE calling float() to prevent TypeError
+    if value is None:
+        return default
+
     try:
-        if value is None:
-            return default
         f = float(value)
         return f if math.isfinite(f) else default
     except (ValueError, TypeError):

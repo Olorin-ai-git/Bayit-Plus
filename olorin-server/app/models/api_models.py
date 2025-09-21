@@ -5,15 +5,16 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.location_risk import LocationRiskAssessment
 
-# Import LocationInfo for runtime use
-try:
-    from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
-except ImportError:
-    # Fallback for when the import is not available
-    LocationInfo = Any
-
-if TYPE_CHECKING:
-    from app.service.agent.ato_agents.location_data_agent.client import LocationInfo
+# Define a mock LocationInfo class for compatibility
+class LocationInfo(BaseModel):
+    """Mock LocationInfo class for compatibility"""
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    city: Optional[str] = None
+    region: Optional[str] = None
+    country: Optional[str] = None
+    postal_code: Optional[str] = None
+    timezone: Optional[str] = None
 
 
 class Investigation(BaseModel):

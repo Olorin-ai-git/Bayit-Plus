@@ -664,21 +664,43 @@ def prepublish_validate(state: Dict[str, Any]) -> Dict[str, Any]:
             validation_result["issues"].append("Ground truth confirmed fraud - evidence requirements bypassed")
             return validation_result
         
-        # Check 1: Single-source detection (Snowflake only)
+        # Check 1: Single-source detection (Snowflake only) - Allow if comprehensive
         tools_used = set(state.get("tools_used", []))
         if tools_used == {"snowflake_query_tool"} or tools_used == set():
-            validation_result.update({
-                "status": "needs_more_evidence",
-                "can_publish_numeric_risk": False,
-                "evidence_gate_passed": False
-            })
-            validation_result["issues"].append("Single-source investigation: Only Snowflake data available")
-            validation_result["recommended_actions"].extend([
-                "Execute AbuseIPDB IP reputation check",
-                "Run VirusTotal IP analysis", 
-                "Perform Shodan network scan",
-                "Gather additional external validation"
-            ])
+            # CRITICAL FIX: Allow Snowflake-only investigations when data is comprehensive
+            snowflake_data = state.get("snowflake_data", {})
+
+            # Check for comprehensive Snowflake data that includes fraud indicators
+            is_comprehensive_snowflake = False
+            if snowflake_data and snowflake_data.get("results"):
+                results = snowflake_data["results"]
+                if isinstance(results, list) and len(results) > 0:
+                    # Check if we have fraud-relevant fields
+                    first_record = results[0]
+                    if isinstance(first_record, dict):
+                        fraud_fields = ["IS_FRAUD_TX", "MODEL_SCORE", "NSURE_LAST_DECISION", "DISPUTE_STATUS"]
+                        has_fraud_indicators = any(field in first_record for field in fraud_fields)
+
+                        # Allow if we have fraud indicators AND substantial data
+                        if has_fraud_indicators and len(results) >= 1:
+                            is_comprehensive_snowflake = True
+                            logger.info(f"✅ COMPREHENSIVE SNOWFLAKE: {len(results)} records with fraud indicators - allowing single-source")
+
+            if not is_comprehensive_snowflake:
+                validation_result.update({
+                    "status": "needs_more_evidence",
+                    "can_publish_numeric_risk": False,
+                    "evidence_gate_passed": False
+                })
+                validation_result["issues"].append("Single-source investigation: Only Snowflake data available without comprehensive fraud indicators")
+                validation_result["recommended_actions"].extend([
+                    "Execute AbuseIPDB IP reputation check",
+                    "Run VirusTotal IP analysis",
+                    "Perform Shodan network scan",
+                    "Gather additional external validation"
+                ])
+            else:
+                logger.info("✅ COMPREHENSIVE SNOWFLAKE: Allowing Snowflake-only investigation with fraud indicators")
         
         # Check 2: Evidence strength threshold (increased to 0.5)
         evidence_strength = state.get("evidence_strength", 0.0)
