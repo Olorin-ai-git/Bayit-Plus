@@ -28,7 +28,7 @@ async def run_investigation_test():
         state = create_initial_state(
             investigation_id="verification_test",
             entity_id="192.168.1.100", 
-            entity_type="ip_address"
+            entity_type="ip"
         )
         
         print(f"✅ Initial state created: {state['entity_type']} - {state['entity_id']}")
@@ -39,7 +39,7 @@ async def run_investigation_test():
         client = SnowflakeClient()
         await client.connect()
         
-        query = "SELECT TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX FROM TRANSACTIONS_ENRICHED WHERE IP_ADDRESS = '192.168.1.100' LIMIT 3"
+        query = "SELECT TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX FROM TRANSACTIONS_ENRICHED WHERE IP = '192.168.1.100' LIMIT 3"
         results = await client.execute_query(query)
         
         print(f"✅ Snowflake query successful: {len(results)} results")

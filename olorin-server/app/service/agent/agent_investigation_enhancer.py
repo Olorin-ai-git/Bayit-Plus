@@ -444,7 +444,7 @@ def _extract_device_info(context: Any) -> Dict[str, Any]:
     return {
         "device_id": getattr(context, 'device_id', 'unknown'),
         "user_agent": getattr(context, 'user_agent', 'unknown'),
-        "ip_address": getattr(context, 'ip_address', 'unknown')
+        "ip": getattr(context, 'ip', 'unknown')
     }
 
 

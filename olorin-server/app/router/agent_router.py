@@ -43,10 +43,64 @@ async def agenerate_chat_response(
     )
     try:
         if agent_input_request.agent.name == "fraud_investigation":
-            # Only the fraud investigation agent triggers the LangGraph flow
-            response_str, trace_id = await agent_service.ainvoke_agent(
-                req, agent_context
+            # CRITICAL FIX: Use clean graph orchestration system instead of old agent service
+            # This completes Option C: Remove old system and use only clean graph system for fraud investigations
+            logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for fraud investigation agent")
+
+            from app.service.agent.orchestration.hybrid.migration_utilities import (
+                get_investigation_graph,
+                get_feature_flags
             )
+            from app.service.agent.orchestration.state_schema import create_initial_state
+            from langchain_core.messages import HumanMessage
+
+            # Create investigation ID from context
+            investigation_id = f"FRAUD_AGENT_{agent_context.thread_id}"
+
+            # Extract entity info from agent context metadata or input
+            entity_id = getattr(agent_context.metadata, 'additionalMetadata', {}).get('entity_id', 'unknown')
+            entity_type = getattr(agent_context.metadata, 'additionalMetadata', {}).get('entity_type', 'user_id')
+
+            # Create initial state for clean graph execution
+            initial_state = create_initial_state(
+                investigation_id=investigation_id,
+                entity_id=entity_id,
+                entity_type=entity_type,
+                parallel_execution=True,
+                max_tools=52
+            )
+
+            # Add investigation query to messages
+            investigation_query = agent_context.input or f"Investigate {entity_type}: {entity_id} for fraud patterns"
+            initial_state["messages"] = [HumanMessage(content=investigation_query)]
+
+            # Get appropriate graph (hybrid or clean based on feature flags)
+            graph = await get_investigation_graph(
+                investigation_id=investigation_id,
+                entity_type=entity_type
+            )
+
+            # Set recursion limit for production mode
+            recursion_limit = 100
+            config = {"recursion_limit": recursion_limit}
+
+            # Add thread configuration if using hybrid graph
+            feature_flags = get_feature_flags()
+            if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+                config["configurable"] = {"thread_id": investigation_id}
+                logger.info(f"🧠 Using Hybrid Intelligence graph for fraud investigation: {investigation_id}")
+            else:
+                logger.info(f"🔄 Using Clean graph orchestration for fraud investigation: {investigation_id}")
+
+            # Execute the clean graph system
+            langgraph_result = await graph.ainvoke(
+                initial_state,
+                config=config
+            )
+
+            # Extract result from LangGraph execution
+            response_str = str(langgraph_result.get("messages", [])[-1].content if langgraph_result.get("messages") else "Investigation completed")
+            trace_id = investigation_id  # Use investigation ID as trace ID
         else:
             # Other chat agents: simple echo (no graph)
             response_str = agent_context.input
@@ -150,9 +204,60 @@ async def astart_investigation(
         )
         logger.info(f"AgentContext created successfully")
 
-        # Kick off the LangGraph flow
-        logger.info("Calling agent_service.ainvoke_agent for autonomous investigation")
-        response_str, trace_id = await agent_service.ainvoke_agent(req, agent_context)
+        # CRITICAL FIX: Use clean graph orchestration system instead of old agent service
+        # This completes Option C: Remove old system and use only clean graph system
+        logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for autonomous investigation")
+
+        from app.service.agent.orchestration.hybrid.migration_utilities import (
+            get_investigation_graph,
+            get_feature_flags
+        )
+        from app.service.agent.orchestration.state_schema import create_initial_state
+        from langchain_core.messages import HumanMessage
+
+        # Create investigation ID
+        investigation_id = f"AGENT_ROUTER_{entity_id}_{entity_type}"
+
+        # Create initial state for clean graph execution
+        initial_state = create_initial_state(
+            investigation_id=investigation_id,
+            entity_id=entity_id,
+            entity_type=entity_type,
+            parallel_execution=True,
+            max_tools=52
+        )
+
+        # Add investigation query to messages
+        investigation_query = f"Investigate {entity_type}: {entity_id} for fraud patterns and risk indicators"
+        initial_state["messages"] = [HumanMessage(content=investigation_query)]
+
+        # Get appropriate graph (hybrid or clean based on feature flags)
+        graph = await get_investigation_graph(
+            investigation_id=investigation_id,
+            entity_type=entity_type
+        )
+
+        # Set recursion limit for production mode
+        recursion_limit = 100
+        config = {"recursion_limit": recursion_limit}
+
+        # Add thread configuration if using hybrid graph
+        feature_flags = get_feature_flags()
+        if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+            config["configurable"] = {"thread_id": investigation_id}
+            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
+        else:
+            logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
+
+        # Execute the clean graph system
+        langgraph_result = await graph.ainvoke(
+            initial_state,
+            config=config
+        )
+
+        # Extract result from LangGraph execution
+        response_str = str(langgraph_result.get("messages", [])[-1].content if langgraph_result.get("messages") else "Investigation completed")
+        trace_id = investigation_id  # Use investigation ID as trace ID
 
         logger.info(
             f"Autonomous investigation completed successfully with trace_id={trace_id}"

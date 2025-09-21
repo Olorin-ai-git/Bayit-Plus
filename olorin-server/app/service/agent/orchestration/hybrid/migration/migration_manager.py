@@ -54,7 +54,7 @@ class MigrationManager:
     async def get_investigation_graph(
         self,
         investigation_id: str,
-        entity_type: str = "ip_address",
+        entity_type: str = "ip",
         force_graph_type: Optional[GraphType] = None,
         service_context: Optional[Dict[str, Any]] = None
     ) -> StateGraph:
@@ -404,7 +404,7 @@ _migration_manager = None
 
 async def get_investigation_graph(
     investigation_id: str,
-    entity_type: str = "ip_address",
+    entity_type: str = "ip",
     force_graph_type: Optional[GraphType] = None
 ) -> StateGraph:
     """

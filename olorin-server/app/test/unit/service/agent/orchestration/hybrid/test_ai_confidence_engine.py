@@ -27,7 +27,7 @@ class TestAIConfidenceEngine:
         return create_hybrid_initial_state(
             investigation_id="test-001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
     
     @pytest.mark.asyncio

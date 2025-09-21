@@ -20,10 +20,10 @@ class ToolParameterMapper:
     # Common parameter name mappings
     PARAMETER_MAPPINGS = {
         # IP address mappings
-        'ip': 'ip_address',
-        'ip_addr': 'ip_address',
-        'target': 'ip_address',  # Only for IP-related tools
-        'address': 'ip_address',
+        'ip': 'ip',
+        'ip_addr': 'ip',
+        'target': 'ip',  # Only for IP-related tools
+        'address': 'ip',
         
         # Domain mappings
         'domain_name': 'domain',
@@ -59,7 +59,7 @@ class ToolParameterMapper:
     TOOL_PARAMETERS = {
         # AbuseIPDB tools
         'abuseipdb_ip_reputation': {
-            'required': ['ip_address'],
+            'required': ['ip'],
             'optional': ['max_age_days', 'include_details'],
             'defaults': {'max_age_days': 90, 'include_details': True}
         },
@@ -69,14 +69,14 @@ class ToolParameterMapper:
             'defaults': {'limit': 100, 'plain_text': False, 'confidence_minimum': 75}
         },
         'abuseipdb_abuse_reporting': {
-            'required': ['ip_address', 'categories'],
+            'required': ['ip', 'categories'],
             'optional': ['comment'],
             'defaults': {}
         },
         
         # VirusTotal tools
         'virustotal_ip_analysis': {
-            'required': ['ip_address'],
+            'required': ['ip'],
             'optional': ['include_vendor_details'],
             'defaults': {'include_vendor_details': False}
         },
@@ -98,7 +98,7 @@ class ToolParameterMapper:
         
         # Shodan tools
         'shodan_infrastructure_analysis': {
-            'required': ['ip_address'],
+            'required': ['ip'],
             'optional': ['include_history', 'include_vulnerabilities', 'include_services'],
             'defaults': {
                 'include_history': False,
@@ -157,9 +157,9 @@ class ToolParameterMapper:
             
             # Special handling for 'target' parameter
             if original_key.lower() == 'target':
-                # Determine if target should be ip_address or domain
+                # Determine if target should be ip or domain
                 if cls._is_ip_address(value):
-                    mapped_key = 'ip_address' if 'ip_address' in tool_spec['required'] else 'target'
+                    mapped_key = 'ip' if 'ip' in tool_spec['required'] else 'target'
                 elif cls._is_domain(value):
                     mapped_key = 'domain' if 'domain' in tool_spec['required'] else 'target'
                 else:
@@ -177,11 +177,11 @@ class ToolParameterMapper:
         for required_param in tool_spec['required']:
             if required_param not in fixed_args:
                 # Try to infer from other parameters
-                if required_param == 'ip_address':
+                if required_param == 'ip':
                     # Check if we have something that looks like an IP
                     for key, value in args.items():
                         if cls._is_ip_address(str(value)):
-                            fixed_args['ip_address'] = str(value)
+                            fixed_args['ip'] = str(value)
                             break
                 elif required_param == 'domain':
                     # Check if we have something that looks like a domain
@@ -237,7 +237,7 @@ class ToolParameterMapper:
                 if re.match(pattern, value):
                     return False
             
-            ipaddress.ip_address(value.strip())
+            ipaddress.ip(value.strip())
             return True
         except (ValueError, AttributeError):
             return False

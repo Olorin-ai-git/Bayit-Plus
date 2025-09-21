@@ -102,7 +102,7 @@ async def _hybrid_aware_assistant(
 - Validate all domain agents receive data
 
 ### 5.2 Integration Testing
-- Test with various entity types (ip_address, user_id, etc.)
+- Test with various entity types (ip, user_id, etc.)
 - Verify tool execution sequence is correct
 - Ensure investigation quality scores improve
 - Validate performance metrics are collected

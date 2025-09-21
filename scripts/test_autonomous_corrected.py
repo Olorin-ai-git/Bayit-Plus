@@ -44,7 +44,7 @@ async def start_autonomous_investigation():
             "device_info": {
                 "device_id": "device-autonomous-001",
                 "user_agent": "Mozilla/5.0 (WebSocket Test Browser) AppleWebKit/537.36",
-                "ip_address": "192.168.1.100",
+                "ip": "192.168.1.100",
                 "screen_resolution": "1920x1080",
                 "timezone": "America/New_York",
                 "language": "en-US"

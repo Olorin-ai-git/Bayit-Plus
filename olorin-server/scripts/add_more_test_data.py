@@ -132,7 +132,7 @@ def main():
     
     insert_sql = """
     INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS, 
+    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
      PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """

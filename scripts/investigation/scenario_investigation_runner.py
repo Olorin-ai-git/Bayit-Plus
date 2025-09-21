@@ -537,23 +537,23 @@ class ScenarioInvestigationRunner:
     async def _execute_ip_anomaly_investigation(
         self,
         template: InvestigationScenarioTemplate,
-        ip_address: str,
+        ip: str,
         mode: str
     ) -> Dict[str, Any]:
         """Execute specialized IP-based anomaly detection investigation."""
         
-        print(f"🔍 Executing comprehensive IP anomaly detection for {ip_address}...")
+        print(f"🔍 Executing comprehensive IP anomaly detection for {ip}...")
         print(f"📅 Analyzing 30-day lookback period")
         print(f"🤖 Deploying all domain agents for comprehensive analysis")
         
         # Validate IP address format
         import ipaddress
         try:
-            ipaddress.ip_address(ip_address)
+            ipaddress.ip(ip)
         except ValueError:
             # If not a valid IP, treat as entity ID and look up associated IPs
-            print(f"⚠️  '{ip_address}' is not a valid IP address - treating as entity ID")
-            ip_address = await self._extract_ip_from_entity(ip_address)
+            print(f"⚠️  '{ip}' is not a valid IP address - treating as entity ID")
+            ip = await self._extract_ip_from_entity(ip)
         
         # Simulate comprehensive analysis with realistic timing
         await asyncio.sleep(2.0)  # Longer processing for comprehensive analysis
@@ -565,8 +565,8 @@ class ScenarioInvestigationRunner:
         # Generate comprehensive IP investigation results
         investigation_result = {
             "scenario_id": "ip_anomaly_detection",
-            "ip_address": ip_address,
-            "entity_id": ip_address,
+            "ip": ip,
+            "entity_id": ip,
             "mode": mode,
             "timestamp": end_date.isoformat(),
             "investigation_period": {
@@ -588,12 +588,12 @@ class ScenarioInvestigationRunner:
             
             # Domain-specific findings
             "domain_findings": {
-                "network": await self._simulate_network_analysis(ip_address, mode),
-                "device": await self._simulate_device_analysis(ip_address, mode),
-                "location": await self._simulate_location_analysis(ip_address, mode),
-                "logs": await self._simulate_logs_analysis(ip_address, mode),
-                "authentication": await self._simulate_authentication_analysis(ip_address, mode),
-                "threat_intelligence": await self._simulate_threat_intelligence_analysis(ip_address, mode)
+                "network": await self._simulate_network_analysis(ip, mode),
+                "device": await self._simulate_device_analysis(ip, mode),
+                "location": await self._simulate_location_analysis(ip, mode),
+                "logs": await self._simulate_logs_analysis(ip, mode),
+                "authentication": await self._simulate_authentication_analysis(ip, mode),
+                "threat_intelligence": await self._simulate_threat_intelligence_analysis(ip, mode)
             },
             
             # Overall findings
@@ -604,7 +604,7 @@ class ScenarioInvestigationRunner:
                 "indicators_found": template.expected_indicators,
                 "anomaly_count": 14,
                 "cross_domain_correlations": 3,
-                "recommendations": self._get_ip_specific_recommendations(ip_address)
+                "recommendations": self._get_ip_specific_recommendations(ip)
             },
             
             # Execution metrics
@@ -644,7 +644,7 @@ class ScenarioInvestigationRunner:
         print(f"✅ Found primary IP address: {selected_ip}")
         return selected_ip
     
-    async def _simulate_network_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_network_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate network domain agent analysis."""
         await asyncio.sleep(0.2)
         
@@ -666,7 +666,7 @@ class ScenarioInvestigationRunner:
             "confidence": 0.82
         }
     
-    async def _simulate_device_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_device_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate device domain agent analysis."""
         await asyncio.sleep(0.15)
         
@@ -687,7 +687,7 @@ class ScenarioInvestigationRunner:
             "confidence": 0.77
         }
     
-    async def _simulate_location_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_location_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate location domain agent analysis."""
         await asyncio.sleep(0.18)
         
@@ -708,7 +708,7 @@ class ScenarioInvestigationRunner:
             "confidence": 0.89
         }
     
-    async def _simulate_logs_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_logs_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate logs domain agent analysis."""
         await asyncio.sleep(0.25)
         
@@ -730,7 +730,7 @@ class ScenarioInvestigationRunner:
             "confidence": 0.75
         }
     
-    async def _simulate_authentication_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_authentication_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate authentication domain agent analysis."""
         await asyncio.sleep(0.22)
         
@@ -752,7 +752,7 @@ class ScenarioInvestigationRunner:
             "confidence": 0.91
         }
     
-    async def _simulate_threat_intelligence_analysis(self, ip_address: str, mode: str) -> Dict[str, Any]:
+    async def _simulate_threat_intelligence_analysis(self, ip: str, mode: str) -> Dict[str, Any]:
         """Simulate threat intelligence analysis across all sources."""
         await asyncio.sleep(0.35)
         
@@ -775,11 +775,11 @@ class ScenarioInvestigationRunner:
             "confidence": 0.87
         }
     
-    def _get_ip_specific_recommendations(self, ip_address: str) -> List[str]:
+    def _get_ip_specific_recommendations(self, ip: str) -> List[str]:
         """Get IP-specific investigation recommendations."""
         
         return [
-            f"🚨 IMMEDIATE ACTION: Block all traffic from {ip_address}",
+            f"🚨 IMMEDIATE ACTION: Block all traffic from {ip}",
             "🔍 Investigate all user accounts that accessed from this IP",
             "📊 Review transaction patterns from this IP over 30-day period",
             "🔒 Implement enhanced monitoring for this IP range",

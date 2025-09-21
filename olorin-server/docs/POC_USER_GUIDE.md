@@ -220,7 +220,7 @@ poetry run python scripts/investigate_top_risk_entities.py \
 # Investigate suspicious IP addresses with full monitoring
 poetry run python scripts/investigate_top_risk_entities.py \
     --time-window 12h \
-    --group-by ip_address \
+    --group-by ip \
     --top 10 \
     --max-investigations 10 \
     --mode demo
@@ -230,7 +230,7 @@ poetry run python scripts/investigate_top_risk_entities.py \
 
 1. **Entity Selection**: The system queries Snowflake for top risk entities based on:
    - Risk-weighted value: Σ(MODEL_SCORE × PAID_AMOUNT_VALUE)
-   - Configurable grouping: email, device_id, or ip_address
+   - Configurable grouping: email, device_id, or ip
    - Adjustable time windows: 1h to 30d
 
 2. **Historical Analysis**: For each entity, the system retrieves:
@@ -315,14 +315,14 @@ Best for: Device spoofing, compromised devices, bot detection
 
 **By IP Address** (Network-centric investigation):
 ```bash
-poetry run python scripts/investigate_top_risk_entities.py --group-by ip_address
+poetry run python scripts/investigate_top_risk_entities.py --group-by ip
 ```
 Best for: Geographic anomalies, VPN/proxy detection, coordinated attacks
 
 #### Integration with UI Search
 
 Once you have identified high-risk entities, you can use the Olorin UI to:
-1. Search for the specific entity (email, device_id, or ip_address)
+1. Search for the specific entity (email, device_id, or ip)
 2. View all related transactions and patterns
 3. Examine the investigation timeline
 4. Access detailed agent findings
@@ -454,7 +454,7 @@ poetry run python scripts/investigate_top_risk_entities.py \
 
 # IP-focused investigation
 poetry run python scripts/investigate_top_risk_entities.py \
-    --group-by ip_address \
+    --group-by ip \
     --top 10 \
     --max-investigations 5
 ```
@@ -519,7 +519,7 @@ poetry run python scripts/get_top_risk_entities.py --time-window 30d
 poetry run python scripts/get_top_risk_entities.py --group-by device_id
 
 # Group by IP address
-poetry run python scripts/get_top_risk_entities.py --group-by ip_address
+poetry run python scripts/get_top_risk_entities.py --group-by ip
 
 # Force refresh (bypass cache)
 poetry run python scripts/get_top_risk_entities.py --force-refresh
@@ -535,7 +535,7 @@ poetry run python scripts/get_top_risk_entities.py --time-window 7d --top 5 --gr
 | Parameter | Description | Options | Default |
 |-----------|-------------|---------|---------|
 | `--time-window` | Time period to analyze | `1h`, `6h`, `12h`, `24h`, `7d`, `30d` | `24h` |
-| `--group-by` | Entity to group by | `email`, `device_id`, `ip_address` | `email` |
+| `--group-by` | Entity to group by | `email`, `device_id`, `ip` | `email` |
 | `--top` | Top percentage to return | Any number 1-100 | `10` |
 | `--force-refresh` | Bypass cache | Flag (no value) | False |
 | `--json` | Output as JSON | Flag (no value) | False |
@@ -736,7 +736,7 @@ SNOWFLAKE_QUERY_TIMEOUT=300
 ANALYTICS_DEFAULT_TIME_WINDOW=24h
 
 # Default grouping field for risk analysis
-# Options: email, device_id, ip_address
+# Options: email, device_id, ip
 ANALYTICS_DEFAULT_GROUP_BY=email
 
 # Default top percentage to return (1-100)
@@ -1058,7 +1058,7 @@ GET /api/v1/analytics/risk/top-entities?time_window=7d&group_by=email&top_percen
 
 Parameters:
 - time_window: 1h, 6h, 12h, 24h, 7d, 30d
-- group_by: email, device_id, ip_address
+- group_by: email, device_id, ip
 - top_percentage: 1-100
 - force_refresh: true/false
 
@@ -1120,7 +1120,7 @@ Response:
   "default_top_percentage": 10,
   "cache_ttl": 300,
   "available_time_windows": ["1h", "6h", "12h", "24h", "7d", "30d"],
-  "available_groupings": ["email", "device_id", "ip_address"]
+  "available_groupings": ["email", "device_id", "ip"]
 }
 ```
 

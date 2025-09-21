@@ -271,9 +271,9 @@ class SecurityValidationRules:
             fraud_score += 0.3
         
         # Check IP reputation
-        ip_address = user_data.get('ip_address', '')
-        if ip_address:
-            ip_risk = self._assess_ip_reputation(ip_address)
+        ip = user_data.get('ip', '')
+        if ip:
+            ip_risk = self._assess_ip_reputation(ip)
             if ip_risk['is_risky']:
                 fraud_indicators.extend(ip_risk['reasons'])
                 fraud_score += ip_risk['risk_score']
@@ -426,10 +426,10 @@ class SecurityValidationRules:
         
         return threats
     
-    def _assess_ip_reputation(self, ip_address: str) -> Dict[str, Any]:
+    def _assess_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Assess IP address reputation and risk"""
         try:
-            ip_obj = ipaddress.ip_address(ip_address)
+            ip_obj = ipaddress.ip(ip)
             reasons = []
             risk_score = 0.0
             

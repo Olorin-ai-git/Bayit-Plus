@@ -137,7 +137,7 @@ async def stop_ab_test():
         print(f"❌ Error stopping A/B test: {e}")
 
 
-async def test_investigation_routing(investigation_id: str, entity_type: str = "ip_address"):
+async def test_investigation_routing(investigation_id: str, entity_type: str = "ip"):
     """Test graph selection for a specific investigation."""
     try:
         from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph, GraphType
@@ -188,7 +188,7 @@ def main():
     # Test routing command
     test_parser = subparsers.add_parser('test_routing', help='Test graph selection for an investigation')
     test_parser.add_argument('investigation_id', help='Investigation ID to test')
-    test_parser.add_argument('--entity_type', default='ip_address', help='Entity type (default: ip_address)')
+    test_parser.add_argument('--entity_type', default='ip', help='Entity type (default: ip)')
     
     args = parser.parse_args()
     

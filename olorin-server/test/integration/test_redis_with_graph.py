@@ -73,7 +73,7 @@ async def test_redis_with_simple_graph():
             'user_id': 'test_user_123',
             'transaction_amount': 2500.00,
             'device_fingerprint': 'suspicious_device_fp',
-            'ip_address': '203.0.113.42'
+            'ip': '203.0.113.42'
         }
         
         # Create initial state

@@ -166,7 +166,7 @@ Network signals are extracted from Splunk results with comprehensive data handli
 ```python
 extracted_signals = []
 for event in splunk_results:
-    ip_address = event.get("true_ip")
+    ip = event.get("true_ip")
     isp = event.get("isp")
     organization = event.get("organization")
     tm_sessionid = event.get("tm_sessionid")
@@ -174,7 +174,7 @@ for event in splunk_results:
     
     # Include all records, even if some fields are missing
     extracted_signals.append({
-        "ip_address": ip_address,
+        "ip": ip,
         "isp": isp,
         "organization": organization,
         "tm_sessionid": tm_sessionid,
@@ -189,7 +189,7 @@ The system uses structured data models for type safety:
 ```python
 class DeviceNetworkSignal(BaseModel):
     device_id: Optional[str] = None
-    ip_address: Optional[str] = None
+    ip: Optional[str] = None
     isp: Optional[str] = None
     country: Optional[str] = None  # Country associated with the IP/ISP
     timestamp: Optional[str] = None
@@ -202,7 +202,7 @@ Country mapping and signal enhancement:
 ```python
 device_country_map = {}
 for signal in extracted_signals:
-    device_id = signal["ip_address"]
+    device_id = signal["ip"]
     device_id_key = device_id if device_id is not None else "__NO_DEVICE_ID__"
     signal["countries"] = list(sorted(device_country_map.get(device_id_key, [])))
 ```
@@ -562,7 +562,7 @@ Null value filtering is performed efficiently:
 ```python
 extracted_signals.append({
     k: v for k, v in {
-        "ip_address": ip_address,
+        "ip": ip,
         "isp": isp,
         "organization": organization,
         "tm_sessionid": tm_sessionid,
@@ -626,13 +626,13 @@ For user ID `4621097846089147992` with 90-day network analysis:
      "raw_splunk_results_count": 15,
      "extracted_network_signals": [
        {
-         "ip_address": "203.192.12.34",
+         "ip": "203.192.12.34",
          "isp": "Reliance Jio",
          "organization": "Jio Platforms",
          "_time": "2025-05-15T07:08:39.584-07:00"
        },
        {
-         "ip_address": "98.234.56.78",
+         "ip": "98.234.56.78",
          "isp": "Comcast Cable",
          "organization": "Comcast Corporation",
          "_time": "2025-05-15T06:31:46.027-07:00"

@@ -138,7 +138,7 @@ class AuditLog(Base, TimestampMixin):
     
     # Action details
     details = Column(JSON, nullable=True)
-    ip_address = Column(String, nullable=True)
+    ip = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)
     
     # Status

@@ -69,7 +69,7 @@ class TestOpenAIMultiAgentPattern:
         # Test ATO investigation routing
         context_ato = {
             "investigation_type": "ato",
-            "data_types": ["ip_address", "device_fingerprint", "location_data", "logs"]
+            "data_types": ["ip", "device_fingerprint", "location_data", "logs"]
         }
         
         agents = await multi_agent_pattern._coordinator.route_investigation(context_ato)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         print("Multi-agent pattern components initialized successfully")
         
         # Test routing
-        context = {"investigation_type": "ato", "data_types": ["ip_address", "device_fingerprint"]}
+        context = {"investigation_type": "ato", "data_types": ["ip", "device_fingerprint"]}
         agents = await pattern._coordinator.route_investigation(context)
         print(f"Routed to agents: {agents}")
         

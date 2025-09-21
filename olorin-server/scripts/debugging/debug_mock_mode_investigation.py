@@ -42,7 +42,7 @@ async def debug_mock_investigation():
     # Step 2: Create test investigation
     investigation_id = "debug_mock_test_123"
     entity_id = "192.168.1.100"
-    entity_type = "ip_address"
+    entity_type = "ip"
     
     print(f"🔍 Creating test investigation:")
     print(f"   Investigation ID: {investigation_id}")

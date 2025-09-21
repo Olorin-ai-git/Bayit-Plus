@@ -807,7 +807,7 @@ class TestDualFrameworkIntegration:
             entity_data={
                 "email": "test@example.com",
                 "user_agent": "Mozilla/5.0...",
-                "ip_address": "192.168.1.100"
+                "ip": "192.168.1.100"
             }
         )
     

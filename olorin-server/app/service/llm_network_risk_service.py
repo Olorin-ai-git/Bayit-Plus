@@ -98,7 +98,7 @@ class LLMNetworkRiskService(BaseLLMRiskService[NetworkRiskLLMAssessment]):
                     unique_orgs.add(str(org).lower())
 
                 # IP analysis
-                ip = signal.get("ip_address") or signal.get("true_ip")
+                ip = signal.get("ip") or signal.get("true_ip")
                 if ip:
                     unique_ips.add(ip)
 

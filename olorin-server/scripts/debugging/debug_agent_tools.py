@@ -54,7 +54,7 @@ async def test_basic_agent_functionality():
         # Create test context
         context = AutonomousInvestigationContext(
             investigation_id="debug-test-001",
-            entity_type=EntityType.IP_ADDRESS,
+            entity_type=EntityType.IP,
             entity_value="192.168.1.1",
             additional_context={"source": "debug_test"}
         )

@@ -166,7 +166,7 @@ This plan outlines the integration of web search and web scraping tools into Olo
        "description": "Investigate domain reputation using web sources",
        "investigation_data": {
            "domain": "suspicious-example.com",
-           "ip_address": "192.168.1.100"
+           "ip": "192.168.1.100"
        },
        "expected_web_tools": ["web_search", "web_scrape"],
        "expected_searches": [

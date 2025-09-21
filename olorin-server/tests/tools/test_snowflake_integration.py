@@ -42,7 +42,7 @@ async def test_snowflake_fraud_queries():
         queries = [
             "SELECT COUNT(*) as transaction_count FROM transactions WHERE amount > 10000",
             "SELECT DISTINCT device_id FROM user_sessions WHERE login_failures > 5", 
-            "SELECT ip_address, COUNT(*) as login_attempts FROM authentication_logs GROUP BY ip_address HAVING COUNT(*) > 100"
+            "SELECT ip, COUNT(*) as login_attempts FROM authentication_logs GROUP BY ip HAVING COUNT(*) > 100"
         ]
         
         for i, query in enumerate(queries, 1):

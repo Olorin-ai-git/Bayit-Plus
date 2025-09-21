@@ -23,7 +23,7 @@ search index=security_logs user_id="user_1736943425_5678" earliest=-24h@h
     success=="false", 0.6,
     1==1, 0.3
 )
-| stats count by event_type, location, ip_address, event_risk_score
+| stats count by event_type, location, ip, event_risk_score
 | sort -event_risk_score
 ```
 
@@ -46,7 +46,7 @@ The SplunkQueryTool returned realistic fraud investigation data:
       "_time": "2025-01-15T14:30:25.123Z",
       "user_id": "user_1736943425_5678",
       "event_type": "login_attempt", 
-      "ip_address": "198.51.100.42",
+      "ip": "198.51.100.42",
       "location": "San Francisco, CA, US",
       "device_fingerprint": "chrome_119_mac_fp_98765",
       "success": "true",

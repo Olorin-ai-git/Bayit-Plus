@@ -22,7 +22,7 @@ logger = get_bridge_logger(__name__)
 class VirusTotalIPAnalysisInput(BaseModel):
     """Input schema for VirusTotal IP analysis."""
     
-    ip_address: str = Field(
+    ip: str = Field(
         ...,
         description="IP address to analyze for threat intelligence",
         examples=["192.168.1.1", "8.8.8.8", "1.1.1.1"]
@@ -32,12 +32,12 @@ class VirusTotalIPAnalysisInput(BaseModel):
         description="Include detailed results from individual antivirus vendors"
     )
     
-    @validator('ip_address')
+    @validator('ip')
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         import ipaddress
         try:
-            ipaddress.ip_address(v)
+            ipaddress.ip(v)
             return v
         except ValueError:
             raise ValueError(f"Invalid IP address format: {v}")
@@ -70,7 +70,7 @@ class VirusTotalIPAnalysisTool(BaseTool):
             self._client = VirusTotalClient(self._virustotal_config)
         return self._client
 
-    def _generate_ip_analysis(self, response, ip_address: str, include_vendor_details: bool) -> Dict[str, Any]:
+    def _generate_ip_analysis(self, response, ip: str, include_vendor_details: bool) -> Dict[str, Any]:
         """Generate comprehensive IP analysis from VirusTotal response."""
         if not response.success:
             return {"error": response.error or "VirusTotal IP analysis failed"}
@@ -97,7 +97,7 @@ class VirusTotalIPAnalysisTool(BaseTool):
         
         # Generate threat summary
         threat_summary = {
-            "ip_address": ip_address,
+            "ip": ip,
             "overall_risk_level": risk_level,
             "threat_score": risk_score,
             "detection_summary": {
@@ -308,7 +308,7 @@ class VirusTotalIPAnalysisTool(BaseTool):
 
     async def _arun(
         self,
-        ip_address: str,
+        ip: str,
         include_vendor_details: bool = False,
         **kwargs
     ) -> str:
@@ -320,9 +320,9 @@ class VirusTotalIPAnalysisTool(BaseTool):
             
             if test_mode:
                 # Return mock response for test mode
-                logger.info(f"Mock mode active - returning mock response for IP {ip_address}")
+                logger.info(f"Mock mode active - returning mock response for IP {ip}")
                 return json.dumps({
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "status": "clean",
                     "risk_level": "LOW",
                     "reputation_score": 0,
@@ -342,17 +342,17 @@ class VirusTotalIPAnalysisTool(BaseTool):
                     "mock_mode": True
                 }, indent=2)
             
-            logger.info(f"Starting VirusTotal IP analysis for: {ip_address}")
+            logger.info(f"Starting VirusTotal IP analysis for: {ip}")
             
             # Query VirusTotal
             client = self._get_client()
-            vt_response = await client.analyze_ip(ip_address)
+            vt_response = await client.analyze_ip(ip)
             
             if vt_response.success:
                 # Generate comprehensive analysis
-                analysis_data = self._generate_ip_analysis(vt_response, ip_address, include_vendor_details)
+                analysis_data = self._generate_ip_analysis(vt_response, ip, include_vendor_details)
                 
-                logger.info(f"VirusTotal IP analysis completed for {ip_address}")
+                logger.info(f"VirusTotal IP analysis completed for {ip}")
                 
                 return json.dumps({
                     "success": True,
@@ -362,16 +362,16 @@ class VirusTotalIPAnalysisTool(BaseTool):
                 return json.dumps({
                     "success": False,
                     "error": vt_response.error or "Unknown error",
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "source": "VirusTotal"
                 }, indent=2)
                 
         except Exception as e:
-            logger.error(f"VirusTotal IP analysis failed for {ip_address}: {e}")
+            logger.error(f"VirusTotal IP analysis failed for {ip}: {e}")
             return json.dumps({
                 "success": False,
                 "error": str(e),
-                "ip_address": ip_address,
+                "ip": ip,
                 "source": "VirusTotal"
             }, indent=2)
 

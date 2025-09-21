@@ -7,7 +7,7 @@ import asyncio
 from typing import Optional, Dict, Any
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
-from app.service.agent.tools.snowflake_tool.schema_constants import IP_ADDRESS, EMAIL
+from app.service.agent.tools.snowflake_tool.schema_constants import IP, EMAIL
 
 logger = get_bridge_logger(__name__)
 
@@ -19,19 +19,19 @@ class IPDomainMapper:
         self.client = SnowflakeClient()
         self._cache: Dict[str, str] = {}
     
-    async def get_domain_for_ip(self, ip_address: str) -> Optional[str]:
+    async def get_domain_for_ip(self, ip: str) -> Optional[str]:
         """
         Get the most common domain associated with an IP address.
         
         Args:
-            ip_address: The IP address to look up
+            ip: The IP address to look up
             
         Returns:
             The domain associated with the IP, or None if not found
         """
         # Check cache first
-        if ip_address in self._cache:
-            return self._cache[ip_address]
+        if ip in self._cache:
+            return self._cache[ip]
         
         try:
             await self.client.connect()
@@ -40,15 +40,15 @@ class IPDomainMapper:
             query = f"""
             WITH ip_domains AS (
                 SELECT
-                    {IP_ADDRESS} as ip,
+                    {IP} as ip,
                     {EMAIL} as email,
                     SUBSTRING({EMAIL}, POSITION('@' IN {EMAIL}) + 1) as domain,
                     COUNT(*) as occurrence_count
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
-                WHERE {IP_ADDRESS} = '{ip_address}'
+                WHERE {IP} = '{ip}'
                     AND {EMAIL} IS NOT NULL
                     AND {EMAIL} LIKE '%@%'
-                GROUP BY {IP_ADDRESS}, {EMAIL}, domain
+                GROUP BY {IP}, {EMAIL}, domain
             )
             SELECT 
                 domain,
@@ -65,15 +65,15 @@ class IPDomainMapper:
                 domain = results[0].get('DOMAIN') or results[0].get('domain')
                 if domain:
                     # Cache the result
-                    self._cache[ip_address] = domain
-                    logger.info(f"Found domain {domain} for IP {ip_address}")
+                    self._cache[ip] = domain
+                    logger.info(f"Found domain {domain} for IP {ip}")
                     return domain
             
-            logger.warning(f"No domain found for IP {ip_address}")
+            logger.warning(f"No domain found for IP {ip}")
             return None
             
         except Exception as e:
-            logger.error(f"Error getting domain for IP {ip_address}: {e}")
+            logger.error(f"Error getting domain for IP {ip}: {e}")
             return None
         finally:
             try:

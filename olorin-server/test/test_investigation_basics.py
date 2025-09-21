@@ -58,7 +58,7 @@ def test_unique_ip_minimum_for_ip_entity():
     
     # Test case 1: IP entity with missing metrics
     state = {
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "entity_id": "192.168.1.100",
         "domain_findings": {}
     }
@@ -73,7 +73,7 @@ def test_unique_ip_minimum_for_ip_entity():
     
     # Test case 2: IP entity with existing 0 count
     state2 = {
-        "entity_type": "ip_address", 
+        "entity_type": "ip", 
         "entity_id": "10.0.0.1",
         "domain_findings": {
             "network": {

@@ -29,7 +29,7 @@ logger = get_bridge_logger(__name__)
 def create_hybrid_initial_state(
     investigation_id: str,
     entity_id: str,
-    entity_type: str = "ip_address",
+    entity_type: str = "ip",
     parallel_execution: bool = True,
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,

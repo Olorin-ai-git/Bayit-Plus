@@ -56,7 +56,7 @@ class TestCompleteValidationWorkflow:
             'amount': '299.99',
             'currency': 'USD',
             'email': 'customer@example.com',
-            'ip_address': '192.168.1.100',
+            'ip': '192.168.1.100',
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'country_code': 'US',
             'payment_method': 'credit_card',
@@ -81,7 +81,7 @@ class TestCompleteValidationWorkflow:
         
         # Check specific validations
         expected_validations = [
-            'amount.amount', 'currency.currency', 'email.email', 'ip_address.ip_address',
+            'amount.amount', 'currency.currency', 'email.email', 'ip.ip',
             'transaction_id.transaction_id', 'timestamp.timestamp'
         ]
         
@@ -98,7 +98,7 @@ class TestCompleteValidationWorkflow:
             'amount': '-500.00',  # Negative amount
             'currency': 'INVALID',  # Invalid currency
             'email': 'test@10minutemail.com',  # Temporary email
-            'ip_address': '192.168.1.300',  # Invalid IP
+            'ip': '192.168.1.300',  # Invalid IP
             'user_agent': 'curl/7.68.0',  # Bot user agent
             'country_code': 'XX',  # Invalid country
             'payment_method': 'credit_card',
@@ -119,7 +119,7 @@ class TestCompleteValidationWorkflow:
         assert not results['amount.amount'].is_valid, "Should detect negative amount"
         assert not results['currency.currency'].is_valid, "Should detect invalid currency"
         assert not results['email.email'].is_valid, "Should flag temporary email"
-        assert not results['ip_address.ip_address'].is_valid, "Should detect invalid IP"
+        assert not results['ip.ip'].is_valid, "Should detect invalid IP"
         
         # Check risk scores
         high_risk_results = [result for result in results.values() if result.risk_score > 0.7]
@@ -130,7 +130,7 @@ class TestCompleteValidationWorkflow:
         # Data with geographic inconsistencies
         inconsistent_data = {
             EntityType.COUNTRY_CODE: {'billing_country': 'US'},
-            EntityType.IP_ADDRESS: {'client_ip': '103.240.201.110'},  # IP from different country
+            EntityType.IP: {'client_ip': '103.240.201.110'},  # IP from different country
             EntityType.CURRENCY: {'transaction_currency': 'EUR'},     # Currency from different region
             EntityType.PHONE: {'phone_number': '+81-90-1234-5678'},   # Phone from different country
             EntityType.POSTAL_CODE: {'postal_code': '100-0001'},      # Japanese postal code
@@ -149,7 +149,7 @@ class TestCompleteValidationWorkflow:
         
         # Check individual entity validations
         assert results['country_code.billing_country'].is_valid is True, "Country code should be valid"
-        assert results['ip_address.client_ip'].is_valid is True, "IP should be valid format"
+        assert results['ip.client_ip'].is_valid is True, "IP should be valid format"
         assert results['currency.transaction_currency'].is_valid is True, "Currency should be valid"
 
     def test_high_volume_validation_performance(self, comprehensive_validator):
@@ -278,7 +278,7 @@ class TestSecurityIntegration:
             'amount': '1.00',  # Testing amount
             'currency': 'USD',
             'email': 'test@guerrillamail.com',  # Disposable email
-            'ip_address': '192.168.1.1',  # Private IP (suspicious for e-commerce)
+            'ip': '192.168.1.1',  # Private IP (suspicious for e-commerce)
             'user_agent': 'curl/7.68.0',  # Bot user agent
             'country_code': 'NG',  # High-risk country
             'payment_method': 'credit_card',
@@ -314,7 +314,7 @@ class TestSecurityIntegration:
             'amount': '100.00',
             'currency': 'USD',
             'email': 'user@example.com',
-            'ip_address': '8.8.8.8',  # Public IP
+            'ip': '8.8.8.8',  # Public IP
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'device_fingerprint': 'secure_fingerprint_123'
         }
@@ -361,7 +361,7 @@ class TestRealWorldScenarios:
                 'amount': '1.00',  # Small test amount
                 'currency': 'USD',
                 'email': f'cardholder{i}@example.com',
-                'ip_address': '192.168.1.100',  # Same IP
+                'ip': '192.168.1.100',  # Same IP
                 'payment_method': 'credit_card',
                 'card_bin': f'41111{i}',  # Different cards
                 'card_last_four': f'111{i}',
@@ -404,7 +404,7 @@ class TestRealWorldScenarios:
             'amount': '50.00',
             'currency': 'USD',
             'email': 'customer@gmail.com',
-            'ip_address': '74.125.224.72',  # US IP
+            'ip': '74.125.224.72',  # US IP
             'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
             'country_code': 'US',
             'device_fingerprint': 'known_device_fingerprint',
@@ -415,7 +415,7 @@ class TestRealWorldScenarios:
             'amount': '2000.00',  # Much larger amount
             'currency': 'USD',
             'email': 'customer@gmail.com',  # Same email
-            'ip_address': '103.240.201.110',  # Different country IP
+            'ip': '103.240.201.110',  # Different country IP
             'user_agent': 'curl/7.68.0',  # Different user agent (bot)
             'country_code': 'IN',  # Different country
             'device_fingerprint': 'unknown_device_fingerprint',  # Different device
@@ -567,7 +567,7 @@ class TestPerformanceAndScalability:
                 'amount': f'{(i % 1000) + 1}.00',
                 'currency': 'USD',
                 'email': f'user{i % 100}@example.com',
-                'ip_address': f'192.168.1.{(i % 254) + 1}',
+                'ip': f'192.168.1.{(i % 254) + 1}',
             }
             
             try:
@@ -656,7 +656,7 @@ class TestSystemIntegration:
                     'amount': '100.00',
                     'currency': 'USD',
                     'email': 'user@example.com',
-                    'ip_address': '8.8.8.8',
+                    'ip': '8.8.8.8',
                     'payment_method': 'credit_card',
                     'card_bin': '411111',
                 }

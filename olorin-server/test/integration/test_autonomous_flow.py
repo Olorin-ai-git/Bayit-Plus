@@ -36,7 +36,7 @@ async def test_autonomous_flow():
             'timezone': 'America/New_York'
         },
         'network_info': {
-            'ip_address': '203.0.113.42',
+            'ip': '203.0.113.42',
             'country': 'Romania',
             'city': 'Bucharest',
             'isp': 'Anonymous VPN Service'

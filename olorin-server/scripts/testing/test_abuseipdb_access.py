@@ -59,7 +59,7 @@ async def test_abuseipdb_access():
             result = await client.check_ip_reputation(test_ip)
         if result and result.success and result.ip_info:
             print(f"   ✅ IP check successful!")
-            print(f"   - IP Address: {result.ip_info.ip_address}")
+            print(f"   - IP Address: {result.ip_info.ip}")
             print(f"   - Abuse Confidence Score: {result.ip_info.abuse_confidence_percentage}%")
             print(f"   - Usage Type: {result.ip_info.usage_type}")
             print(f"   - ISP: {result.ip_info.isp}")
@@ -81,7 +81,7 @@ async def test_abuseipdb_access():
         from app.service.agent.tools.threat_intelligence_tool.abuseipdb.ip_reputation_tool import IPReputationTool
         
         tool = IPReputationTool()
-        tool_result = await tool._arun(ip_address=test_ip)
+        tool_result = await tool._arun(ip=test_ip)
         print(f"   ✅ Tool execution successful")
         print(f"   Tool output preview: {tool_result[:200]}...")
     except Exception as e:

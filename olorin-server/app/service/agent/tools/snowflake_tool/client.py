@@ -164,13 +164,13 @@ class SnowflakeClient:
             query_lower = safe_query.lower()
             
             # Check for risk entity queries (CTEs)
-            if 'risk_calculations' in query_lower and ('ip_address' in query_lower or 'group by ip_address' in query_lower):
+            if 'risk_calculations' in query_lower and ('ip' in query_lower or 'group by ip' in query_lower):
                 # Return mock high-risk IP addresses from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('ip_address_results', [])
             elif 'risk_calculations' in query_lower and ('email' in query_lower or 'group by email' in query_lower):
                 # Return mock high-risk emails from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('email_results', [])
-            elif ('where ip_address' in query_lower or 'where ip_address=' in query_lower):
+            elif ('where ip' in query_lower or 'where ip=' in query_lower):
                 # Entity-specific IP query - return transaction data for that IP
                 mock_results = mock_data.get('entity_queries', {}).get('default_ip_results', [])
             elif 'where email' in query_lower:

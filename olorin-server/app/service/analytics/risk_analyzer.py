@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE, IP_ADDRESS, IP_COUNTRY_CODE, MODEL_SCORE,
+    PAID_AMOUNT_VALUE, IP, IP_COUNTRY_CODE, MODEL_SCORE,
     IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME
 )
 
@@ -128,7 +128,7 @@ class RiskAnalyzer:
             analysis = self._process_results(results, time_window, group_by, top_percentage)
             
             # Handle case where IP filtering removed all results - try longer time window for external IPs
-            if group_by.upper() == "IP_ADDRESS" and len(analysis.get('entities', [])) == 0:
+            if group_by.upper() == IP.upper() and len(analysis.get('entities', [])) == 0:
                 logger.info(f"🔄 No external IPs found in {time_window}, trying longer time window...")
                 
                 # Try 7 days window for external IPs
@@ -183,29 +183,32 @@ class RiskAnalyzer:
         
         # Add IP filtering condition if grouping by IP
         ip_filter = ""
-        if group_by.upper() == "IP_ADDRESS":
+        if group_by.upper() == IP.upper():
             # Filter out private IP addresses (RFC 1918, link-local, loopback) - EXTERNAL IPs ONLY
             # Using LIKE patterns for better Snowflake compatibility
             ip_filter = f"""
                 -- CRITICAL: Exclude ALL private/internal IP ranges (RFC 1918 and special ranges)
-                AND {group_by} NOT LIKE '10.%'                    -- RFC 1918: 10.0.0.0/8
-                AND {group_by} NOT LIKE '192.168.%'               -- RFC 1918: 192.168.0.0/16  
-                AND {group_by} NOT LIKE '172.16.%'                -- RFC 1918: 172.16.0.0/12
-                AND {group_by} NOT LIKE '172.17.%' AND {group_by} NOT LIKE '172.18.%' AND {group_by} NOT LIKE '172.19.%'
-                AND {group_by} NOT LIKE '172.2_.%' AND {group_by} NOT LIKE '172.30.%' AND {group_by} NOT LIKE '172.31.%'
-                AND {group_by} NOT LIKE '127.%'                   -- Loopback: 127.0.0.0/8
-                AND {group_by} NOT LIKE '169.254.%'               -- Link-local: 169.254.0.0/16
-                AND {group_by} NOT LIKE 'fe80:%' AND {group_by} NOT LIKE 'fc00:%' AND {group_by} NOT LIKE 'fd00:%'  -- IPv6 private
+                AND {IP} NOT LIKE '10.%'                    -- RFC 1918: 10.0.0.0/8
+                AND {IP} NOT LIKE '192.168.%'               -- RFC 1918: 192.168.0.0/16
+                AND {IP} NOT LIKE '172.16.%'                -- RFC 1918: 172.16.0.0/12
+                AND {IP} NOT LIKE '172.17.%' AND {IP} NOT LIKE '172.18.%' AND {IP} NOT LIKE '172.19.%'
+                AND {IP} NOT LIKE '172.2_.%' AND {IP} NOT LIKE '172.30.%' AND {IP} NOT LIKE '172.31.%'
+                AND {IP} NOT LIKE '127.%'                   -- Loopback: 127.0.0.0/8
+                AND {IP} NOT LIKE '169.254.%'               -- Link-local: 169.254.0.0/16
+                AND {IP} NOT LIKE 'fe80:%' AND {IP} NOT LIKE 'fc00:%' AND {IP} NOT LIKE 'fd00:%'  -- IPv6 private
                 -- Exclude empty, null, or invalid IPs
-                AND {group_by} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
+                AND {IP} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
                 -- Only include external/public IP addresses with real activity
                 AND MODEL_SCORE > 0.01
             """
         
+        # Use the correct column name - if group_by is IP-related, use the IP constant
+        column_name = IP if group_by.upper() == IP.upper() else group_by
+
         query = f"""
         WITH risk_calculations AS (
-            SELECT 
-                {group_by} as entity,
+            SELECT
+                {column_name} as entity,
                 COUNT(*) as transaction_count,
                 SUM({PAID_AMOUNT_VALUE}) as total_amount,
                 AVG({MODEL_SCORE}) as avg_risk_score,
@@ -218,8 +221,8 @@ class RiskAnalyzer:
                 MIN(TX_DATETIME) as first_transaction
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
             WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
-                AND {group_by} IS NOT NULL{ip_filter}
-            GROUP BY {group_by}
+                AND {column_name} IS NOT NULL{ip_filter}
+            GROUP BY {column_name}
             HAVING COUNT(*) >= 1
         ),
         ranked AS (
@@ -343,7 +346,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                 COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                COUNT(DISTINCT {IP_ADDRESS}) as unique_ips,
+                COUNT(DISTINCT {IP}) as unique_ips,
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction

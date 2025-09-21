@@ -163,7 +163,7 @@ def create_query_context(
     Args:
         investigation_id: Unique investigation identifier
         entity_id: Entity being investigated
-        entity_type: Type of entity (ip_address, user_id, etc.)
+        entity_type: Type of entity (ip, user_id, etc.)
         date_range_days: Number of days to look back for data
         
     Returns:

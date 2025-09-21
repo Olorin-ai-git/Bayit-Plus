@@ -126,7 +126,7 @@ async def test_state_management():
         initial_state = create_hybrid_initial_state(
             investigation_id="test_investigation_123",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             parallel_execution=True
         )
         

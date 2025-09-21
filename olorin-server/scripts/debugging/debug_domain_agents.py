@@ -70,7 +70,7 @@ async def debug_graph_selection():
         from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph, GraphType
         
         investigation_id = "test-investigation-123"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         print(f"📋 Testing graph selection for:")
         print(f"   Investigation ID: {investigation_id}")
@@ -175,7 +175,7 @@ async def debug_domain_agent_direct():
                         messages=[HumanMessage(content="Test message for domain agent")],
                         investigation_metadata={
                             "investigation_id": "test-investigation-123",
-                            "entity_type": "ip_address",
+                            "entity_type": "ip",
                             "entity_value": "192.168.1.100"
                         },
                         phase_results={},
@@ -183,7 +183,7 @@ async def debug_domain_agent_direct():
                         safety_status={"level": "safe"},
                         routing_decisions=[],
                         investigation_context={
-                            "entity_type": "ip_address",
+                            "entity_type": "ip",
                             "entity_value": "192.168.1.100"
                         }
                     )
@@ -248,7 +248,7 @@ async def debug_investigation_execution():
         # Create test agent context
         additional_metadata = AdditionalMetadata(
             investigationId="test-investigation-123",
-            entity_type="ip_address",
+            entity_type="ip",
             entity_value="192.168.1.100"
         )
         

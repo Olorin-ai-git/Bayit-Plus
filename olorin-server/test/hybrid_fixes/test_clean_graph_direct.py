@@ -37,7 +37,7 @@ async def test_clean_graph_simple():
         initial_state = create_initial_state(
             investigation_id="TEST_CLEAN_001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("✅ Initial state created")
         print(f"   Initial tools_used: {len(initial_state.get('tools_used', []))}")

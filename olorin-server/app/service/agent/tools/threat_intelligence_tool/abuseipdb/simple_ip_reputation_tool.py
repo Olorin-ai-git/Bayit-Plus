@@ -22,7 +22,7 @@ logger = get_bridge_logger(__name__)
 class IPReputationInput(BaseModel):
     """Input schema for IP reputation check."""
     
-    ip_address: str = Field(
+    ip: str = Field(
         ..., 
         description="IP address to check (IPv4 or IPv6)",
         examples=["192.168.1.1", "2001:db8::1"]
@@ -34,12 +34,12 @@ class IPReputationInput(BaseModel):
         le=365
     )
     
-    @validator('ip_address')
+    @validator('ip')
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         import ipaddress
         try:
-            ipaddress.ip_address(v)
+            ipaddress.ip(v)
             return v
         except ValueError:
             raise ValueError(f"Invalid IP address format: {v}")
@@ -110,7 +110,7 @@ class SimpleIPReputationTool(BaseTool):
             recommendations.append("✅ Standard monitoring sufficient")
         
         analysis = {
-            "ip_address": ip_info.ip_address,
+            "ip": ip_info.ip,
             "reputation_summary": {
                 "abuse_confidence": confidence,
                 "risk_level": risk_level,
@@ -144,7 +144,7 @@ class SimpleIPReputationTool(BaseTool):
 
     async def _arun(
         self,
-        ip_address: str,
+        ip: str,
         max_age_days: int = 90,
         **kwargs
     ) -> str:
@@ -153,7 +153,7 @@ class SimpleIPReputationTool(BaseTool):
             # Query AbuseIPDB
             client = self._get_client()
             reputation_response = await client.check_ip_reputation(
-                ip_address=ip_address,
+                ip=ip,
                 max_age_days=max_age_days,
                 verbose=True
             )
@@ -169,7 +169,7 @@ class SimpleIPReputationTool(BaseTool):
                 return json.dumps({
                     "success": False,
                     "error": reputation_response.error or "Unknown error",
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "source": "AbuseIPDB"
                 }, indent=2)
                 
@@ -178,7 +178,7 @@ class SimpleIPReputationTool(BaseTool):
             return json.dumps({
                 "success": False,
                 "error": str(e),
-                "ip_address": ip_address,
+                "ip": ip,
                 "source": "AbuseIPDB"
             }, indent=2)
 

@@ -50,7 +50,7 @@ def _extract_valid_ips_from_context(autonomous_context) -> List[str]:
         for source_name, source_data in data_sources.items():
             if isinstance(source_data, dict):
                 # Look for common IP address fields
-                ip_fields = ['ip_address', 'source_ip', 'dest_ip', 'client_ip', 'remote_ip', 'origin_ip']
+                ip_fields = ['ip', 'source_ip', 'dest_ip', 'client_ip', 'remote_ip', 'origin_ip']
                 
                 for field in ip_fields:
                     if field in source_data:
@@ -127,7 +127,7 @@ def _is_valid_ip_address(ip_str: str) -> bool:
     """Check if string is a valid IP address (not an entity ID)."""
     try:
         # Entity IDs like 'K1F6HIIGBVHH20TX' will fail this validation
-        ipaddress.ip_address(ip_str.strip())
+        ipaddress.ip(ip_str.strip())
         return True
     except (ValueError, AttributeError):
         return False

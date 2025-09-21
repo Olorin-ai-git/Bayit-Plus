@@ -5,11 +5,18 @@ Now includes Hybrid Intelligence Graph System integration
 with feature flags and confidence-based routing.
 """
 
-from app.service.agent.orchestration.graph_builder import (
-    create_parallel_agent_graph,
-    create_sequential_agent_graph,
-    create_and_get_agent_graph
-)
+# Import graph builder functions lazily to avoid circular imports
+def create_parallel_agent_graph(*args, **kwargs):
+    from app.service.agent.orchestration.graph_builder import create_parallel_agent_graph as _create_parallel_agent_graph
+    return _create_parallel_agent_graph(*args, **kwargs)
+
+def create_sequential_agent_graph(*args, **kwargs):
+    from app.service.agent.orchestration.graph_builder import create_sequential_agent_graph as _create_sequential_agent_graph
+    return _create_sequential_agent_graph(*args, **kwargs)
+
+def create_and_get_agent_graph(*args, **kwargs):
+    from app.service.agent.orchestration.graph_builder import create_and_get_agent_graph as _create_and_get_agent_graph
+    return _create_and_get_agent_graph(*args, **kwargs)
 from app.service.agent.orchestration.investigation_coordinator import start_investigation
 from app.service.agent.orchestration.assistant import assistant
 from app.service.agent.orchestration.enhanced_mcp_client_manager import (

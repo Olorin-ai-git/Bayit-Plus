@@ -135,7 +135,7 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
             SESSION_DURATION_SECONDS NUMBER,
             
             -- Location Fields
-            IP_ADDRESS VARCHAR(45),
+            IP VARCHAR(45),
             IP_COUNTRY VARCHAR(2),
             IP_REGION VARCHAR(100),
             IP_CITY VARCHAR(100),
@@ -500,7 +500,7 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         
         sample_data_sql = """
         INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS, 
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
          PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         SELECT * FROM VALUES
         ('TX001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 5000.00, 0.95, FALSE, 'PURCHASE', 'COMPLETED'),

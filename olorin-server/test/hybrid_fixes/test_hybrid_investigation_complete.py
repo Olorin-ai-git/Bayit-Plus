@@ -42,7 +42,7 @@ async def test_hybrid_investigation_complete():
         # Create test investigation state
         investigation_id = f"test_hybrid_complete_{int(datetime.now().timestamp())}"
         entity_id = "67.76.8.209"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         print(f"🔍 Creating test investigation:")
         print(f"   ID: {investigation_id}")

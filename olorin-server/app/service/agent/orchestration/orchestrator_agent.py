@@ -20,7 +20,7 @@ from app.service.agent.orchestration.state_schema import (
 from app.utils.firebase_secrets import get_firebase_secret
 from app.service.config import get_settings_for_env
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE, IP_ADDRESS, IP_COUNTRY_CODE, IP_CITY,
+    PAID_AMOUNT_VALUE, IP, IP_COUNTRY_CODE,
     DEVICE_ID, USER_AGENT, TX_DATETIME, TX_ID_KEY,
     MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, PAYMENT_METHOD,
     DEVICE_TYPE, FRAUD_RULES_TRIGGERED, PROXY_RISK_SCORE,
@@ -180,44 +180,30 @@ IMPORTANT: While following the standard investigation process, give special atte
             # Create a mock response with Snowflake tool call
             async def mock_ainvoke(messages, *args, **kwargs):
                 from langchain_core.messages import AIMessage
-                
+
                 logger.info("🧪 Mock LLM invoked")
-                
-                # Check what phase we're in based on message content
-                is_tool_execution = False
+
+                # CRITICAL FIX: Analyze all message content to determine phase and appropriate response
+                message_content = ""
                 for msg in messages:
                     if hasattr(msg, 'content'):
-                        content = str(msg.content)
-                        if 'select and use additional tools' in content.lower():
-                            is_tool_execution = True
-                            break
+                        message_content += str(msg.content).lower() + " "
+
+                logger.info(f"🧪 Mock LLM: Analyzing message content: {message_content[:200]}...")
+
+                # Determine orchestrator phase based on message content
+                is_initialization = 'starting comprehensive fraud investigation' in message_content
+                is_snowflake_analysis = 'snowflake analysis' in message_content or 'entity to investigate' in message_content
+                is_tool_execution = 'select and use additional tools' in message_content or 'additional tool execution' in message_content
+                is_domain_analysis = 'domain analysis' in message_content or 'specialized agents' in message_content
+                is_summary = 'summary' in message_content or 'final report' in message_content
+
+                logger.info(f"🧪 Phase detection: init={is_initialization}, snowflake={is_snowflake_analysis}, tools={is_tool_execution}, domains={is_domain_analysis}, summary={is_summary}")
                 
-                if is_tool_execution:
-                    logger.info("🧪 Mock LLM: Generating tool calls for domain analysis")
-                    # Fix 2: Generate tool calls for different domains instead of skipping
-                    # Need tools for: network, device, location, logs, risk_aggregation
-                    
-                    # Simulate tool selection for comprehensive domain coverage
-                    domain_tools = [
-                        {"name": "virustotal_ip_analysis", "args": {"ip_address": entity_id}},  # network domain
-                        {"name": "splunk_query", "args": {"entity_id": entity_id, "query_type": "device_analysis"}},  # device domain  
-                        {"name": "geoip_lookup", "args": {"ip_address": entity_id}},  # location domain
-                        {"name": "sumo_logic_query", "args": {"entity_id": entity_id, "query_type": "behavior_logs"}},  # logs domain
-                        {"name": "ml_anomaly_detection", "args": {"entity_id": entity_id, "entity_type": entity_type}}  # risk analysis
-                    ]
-                    
-                    # Return AIMessage with tool calls for domain analysis
-                    return AIMessage(
-                        content="Selecting tools for comprehensive domain analysis: network reputation, device patterns, location analysis, behavior logs, and anomaly detection.",
-                        tool_calls=domain_tools
-                    )
-                
-                logger.info("🧪 Mock LLM: Generating Snowflake tool call")
-                
-                # Extract entity info from the messages (since state is not accessible here)
-                entity_id = '192.168.1.100'  # Default
-                entity_type = 'ip_address'  # Default
-                
+                # Extract entity info from the messages
+                entity_id = '192.168.1.1'  # Default from user's test
+                entity_type = 'ip'  # Default
+
                 # Try to extract entity info from the system message
                 for msg in messages:
                     if hasattr(msg, 'content') and 'Entity to investigate:' in str(msg.content):
@@ -226,14 +212,55 @@ IMPORTANT: While following the standard investigation process, give special atte
                         if match:
                             entity_type = match.group(1).lower()
                             entity_id = match.group(2)
+                    elif hasattr(msg, 'content') and 'Entity:' in str(msg.content):
+                        import re
+                        match = re.search(r'Entity: (\w+) - ([\w\.]+)', str(msg.content))
+                        if match:
+                            entity_type = match.group(1).lower()
+                            entity_id = match.group(2)
+
+                # CRITICAL FIX: Handle all orchestrator phases properly
+                if is_tool_execution:
+                    logger.info("🧪 Mock LLM: Tool execution phase - generating domain analysis tools")
+                    # Generate tool calls for different domains instead of skipping
+                    domain_tools = [
+                        {"name": "virustotal_ip_analysis", "args": {"ip": entity_id}, "id": "tool_call_002", "type": "tool_call"},
+                        {"name": "splunk_query", "args": {"entity_id": entity_id, "query_type": "device_analysis"}, "id": "tool_call_003", "type": "tool_call"},
+                        {"name": "geoip_lookup", "args": {"ip": entity_id}, "id": "tool_call_004", "type": "tool_call"}
+                    ]
+
+                    return AIMessage(
+                        content="Selecting tools for comprehensive domain analysis: network reputation, device patterns, and location analysis.",
+                        tool_calls=domain_tools
+                    )
+
+                elif is_domain_analysis:
+                    logger.info("🧪 Mock LLM: Domain analysis phase - should route to domain agents (no tool calls)")
+                    return AIMessage(
+                        content="Domain analysis phase: Ready to route to specialized domain agents for network, device, location, logs, authentication, and risk analysis."
+                    )
+
+                elif is_summary:
+                    logger.info("🧪 Mock LLM: Summary phase - generating final report")
+                    return AIMessage(
+                        content="Investigation complete. Generating final summary report with risk assessment and recommendations."
+                    )
+
+                elif is_initialization or is_snowflake_analysis:
+                    logger.info("🧪 Mock LLM: Initialization/Snowflake phase - generating Snowflake tool call")
+                
+                else:
+                    logger.info("🧪 Mock LLM: Default case - generating Snowflake tool call")
+                
+                # Entity info already extracted above
                 
                 # Build appropriate WHERE clause based on entity type
-                if entity_type == 'ip_address':
-                    where_field = IP_ADDRESS
+                if entity_type == 'ip':
+                    where_field = IP
                 elif entity_type == 'user_id':
                     where_field = 'USER_ID'
                 else:
-                    where_field = IP_ADDRESS  # Default to IP
+                    where_field = IP  # Default to IP
                 
                 # Get date range from state context if available, default to 7 days
                 date_range = 7  # Default fallback
@@ -248,8 +275,8 @@ IMPORTANT: While following the standard investigation process, give special atte
                            DISPUTES,
                            FRAUD_ALERTS,
                            {PAID_AMOUNT_VALUE},
-                           {IP_ADDRESS},
-                           {IP_COUNTRY_CODE}, {IP_CITY},
+                           {IP},
+                           {IP_COUNTRY_CODE},
                            {DEVICE_ID}, DEVICE_FINGERPRINT,
                            {USER_AGENT}, {DEVICE_TYPE},
                            {TX_DATETIME}
@@ -387,6 +414,7 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         elif current_phase == "domain_analysis":
             logger.debug("   → Handling domain analysis phase")
+            logger.info(f"🎯 ORCHESTRATOR: domain_analysis phase detected - calling _handle_domain_analysis")
             return await self._handle_domain_analysis(state)
         
         elif current_phase == "summary":
@@ -506,7 +534,7 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         Required Snowflake queries:
         1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
-           - {IP_ADDRESS} = '{state['entity_id']}' (if entity is IP)
+           - {IP} = '{state['entity_id']}' (if entity is IP)
            - Or related fields match the entity
            - Date range: LAST {date_range_days} DAYS
 
@@ -515,7 +543,7 @@ IMPORTANT: While following the standard investigation process, give special atte
            - {MODEL_SCORE}, {IS_FRAUD_TX}
            - {NSURE_LAST_DECISION}
            - {PAID_AMOUNT_VALUE}, {PAYMENT_METHOD}
-           - {IP_COUNTRY_CODE}, {IP_CITY}
+           - {IP_COUNTRY_CODE}
            - {DEVICE_ID}, {USER_AGENT}
            - Any fraud indicators
         
@@ -757,17 +785,18 @@ Use the snowflake_query_tool immediately."""
         import os
         test_mode = os.getenv('TEST_MODE', '').lower()
         
-        # In mock mode: Skip additional tools after Snowflake
+        # In mock mode: Move to domain analysis after Snowflake is complete
         logger.debug(f"[SAFETY-CHECK-2] 🔒 TOOL EXECUTION SAFETY CHECK (MOCK MODE)")
         logger.debug(f"[SAFETY-CHECK-2]   Test mode: {test_mode}")
         logger.debug(f"[SAFETY-CHECK-2]   Tools used count: {len(tools_used)}")
-        # Fix 2: Mock Mode Domain Completion - Need tools for all 5 domains
-        min_tools_for_domains = 5  # network, device, location, logs, risk_aggregation
-        logger.debug(f"[SAFETY-CHECK-2]   Mock mode skip condition: {test_mode == 'mock' and len(tools_used) >= min_tools_for_domains}")
-        
-        if test_mode == 'mock' and len(tools_used) >= min_tools_for_domains:
-            logger.debug(f"[SAFETY-CHECK-2]   ✅ TRIGGERED: Mock mode skip after {len(tools_used)} tools (sufficient for all domains)")
-            logger.info(f"🎭 Mock mode: Skipping to domain analysis after {len(tools_used)} tools (allows all 5 domains)")
+        logger.debug(f"[SAFETY-CHECK-2]   Snowflake completed: {snowflake_data is not None}")
+        # CRITICAL FIX: In mock mode, move to domain analysis after Snowflake is complete, not after 5 tools
+        mock_mode_ready = test_mode == 'mock' and snowflake_data is not None
+        logger.debug(f"[SAFETY-CHECK-2]   Mock mode ready for domain analysis: {mock_mode_ready}")
+
+        if mock_mode_ready:
+            logger.debug(f"[SAFETY-CHECK-2]   ✅ TRIGGERED: Mock mode moving to domain analysis after Snowflake completion")
+            logger.info(f"🎭 Mock mode: Moving to domain analysis after Snowflake completion ({len(tools_used)} tools used)")
             return update_phase(state, "domain_analysis")
         
         # In live mode: Allow adequate tool execution for domain analysis
@@ -775,7 +804,7 @@ Use the snowflake_query_tool immediately."""
         orchestrator_loops = state.get("orchestrator_loops", 0)
         max_attempts = 4  # Increased to allow more tool attempts for proper domain analysis
         max_tools = 10  # Increased to allow domain-specific tools
-        max_orchestrator_loops = 12  # Increased safety valve for proper analysis
+        max_orchestrator_loops = 25  # INCREASED: Increased safety valve for proper analysis
         
         logger.debug(f"[SAFETY-CHECK-3] 🔒 TOOL EXECUTION SAFETY CHECK (LIVE MODE)")
         logger.debug(f"[SAFETY-CHECK-3]   Tool execution attempts: {tool_execution_attempts}/{max_attempts}")
@@ -954,7 +983,9 @@ Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich da
     
     async def _handle_domain_analysis(self, state: InvestigationState) -> Dict[str, Any]:
         """Handle domain analysis phase - route to specialized agents."""
-        
+
+        logger.info(f"🎯 ORCHESTRATOR: _handle_domain_analysis called - Domain phase starting")
+
         # Domain agents handle mock mode internally - don't skip them
         import os
         test_mode = os.getenv('TEST_MODE', '').lower()
@@ -967,7 +998,7 @@ Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich da
         domains_completed = state.get("domains_completed", [])
         orchestrator_loops = state.get("orchestrator_loops", 0)
         min_domains_required = 5  # Require at least 5 domains (network, device, location, logs, authentication)
-        max_orchestrator_loops = 15  # Allow more loops for complete analysis
+        max_orchestrator_loops = 25  # INCREASED: Allow more loops for complete analysis
         
         logger.debug(f"[SAFETY-CHECK-5] 🔒 DOMAIN ANALYSIS SAFETY CHECK (LIVE MODE)")
         logger.debug(f"[SAFETY-CHECK-5]   Domains completed: {domains_completed}")
@@ -986,9 +1017,10 @@ Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich da
                 triggered_condition.append(f"sufficient_domains({len(domains_completed)}>={min_domains_required})")
             if orchestrator_loops >= max_orchestrator_loops:
                 triggered_condition.append(f"max_loops({orchestrator_loops}>={max_orchestrator_loops})")
-            
+
             logger.debug(f"[SAFETY-CHECK-5]   ✅ TRIGGERED: Domain analysis completion - {', '.join(triggered_condition)}")
             logger.info(f"✅ Domain analysis sufficient: {len(domains_completed)} domains, {orchestrator_loops} loops - moving to summary")
+            logger.info(f"🎯 ORCHESTRATOR: Force completing domain analysis - reason: {', '.join(triggered_condition)}")
             return update_phase(state, "summary")
         
         # Check if all domains are complete

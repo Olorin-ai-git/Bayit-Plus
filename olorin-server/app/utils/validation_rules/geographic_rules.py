@@ -285,12 +285,12 @@ class GeographicValidationRules:
         
         return is_consistent, error_message, consistency_analysis
     
-    def validate_ip_geolocation(self, ip_address: str, stated_location: Dict[str, Any]) -> Tuple[bool, Optional[str], Dict[str, Any]]:
+    def validate_ip_geolocation(self, ip: str, stated_location: Dict[str, Any]) -> Tuple[bool, Optional[str], Dict[str, Any]]:
         """
         Validate IP geolocation against stated location.
         
         Args:
-            ip_address: IP address to geolocate
+            ip: IP address to geolocate
             stated_location: User's stated location
             
         Returns:

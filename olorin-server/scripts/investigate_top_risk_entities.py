@@ -89,7 +89,7 @@ class RiskEntityInvestigator:
         Fetch historical data for an entity from Snowflake.
         
         Args:
-            entity_value: The entity value (email, device_id, or ip_address)
+            entity_value: The entity value (email, device_id, or ip)
             entity_type: Type of entity
             lookback_days: Days to look back for historical data
             
@@ -110,7 +110,7 @@ class RiskEntityInvestigator:
                     MAX(MODEL_SCORE) as max_daily_risk,
                     COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                     COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                    COUNT(DISTINCT IP_ADDRESS) as unique_ips,
+                    COUNT(DISTINCT IP) as unique_ips,
                     COUNT(DISTINCT DEVICE_ID) as unique_devices,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
@@ -205,7 +205,7 @@ class RiskEntityInvestigator:
         
         Args:
             entity_value: The entity to investigate
-            entity_type: Type of entity (email, device_id, ip_address)
+            entity_type: Type of entity (email, device_id, ip)
             historical_data: Historical patterns for context
             mode: Investigation mode (demo, mock, live)
             
@@ -473,7 +473,7 @@ async def main():
     parser.add_argument(
         '--group-by',
         default='email',
-        choices=['email', 'device_id', 'ip_address'],
+        choices=['email', 'device_id', 'ip'],
         help='Field to group by'
     )
     

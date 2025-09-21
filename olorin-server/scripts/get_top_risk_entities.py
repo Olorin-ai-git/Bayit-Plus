@@ -31,7 +31,7 @@ async def main():
     parser.add_argument('--time-window', default='24h', 
                         help='Time window: 1h, 6h, 12h, 24h, 7d, 30d (default: 24h)')
     parser.add_argument('--group-by', default='email',
-                        help='Group by field: email, device_id, ip_address (default: email)')
+                        help='Group by field: email, device_id, ip (default: email)')
     parser.add_argument('--top', type=float, default=10,
                         help='Top percentage to return (default: 10)')
     parser.add_argument('--force-refresh', action='store_true',

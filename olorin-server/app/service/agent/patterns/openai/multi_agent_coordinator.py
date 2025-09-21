@@ -41,7 +41,7 @@ class MultiAgentCoordinator:
             required_agents.extend(["network", "device", "location", "logs"])
         
         # Filter based on available data
-        if "ip_address" not in available_data and "network" in required_agents:
+        if "ip" not in available_data and "network" in required_agents:
             required_agents.remove("network")
         if "device_fingerprint" not in available_data and "device" in required_agents:
             required_agents.remove("device")

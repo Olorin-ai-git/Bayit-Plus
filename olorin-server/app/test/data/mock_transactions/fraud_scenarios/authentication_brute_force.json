@@ -106,7 +106,7 @@
     }
   },
   "network": {
-    "ip_address": "203.0.113.87",
+    "ip": "203.0.113.87",
     "proxy_detected": true,
     "vpn_detected": false,
     "tor_detected": false,

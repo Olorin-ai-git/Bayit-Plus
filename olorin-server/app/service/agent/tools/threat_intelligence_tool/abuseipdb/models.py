@@ -51,7 +51,7 @@ class AbuseIPDBConfig(BaseModel):
 class IPInfo(BaseModel):
     """IP address information from AbuseIPDB."""
     
-    ip_address: str = Field(..., description="IP address")
+    ip: str = Field(..., description="IP address")
     is_public: bool = Field(..., description="Whether IP is public")
     ip_version: int = Field(..., description="IP version (4 or 6)")
     is_whitelisted: bool = Field(..., description="Whether IP is whitelisted")
@@ -95,7 +95,7 @@ class IPReputationResponse(BaseModel):
 class BulkIPData(BaseModel):
     """Individual IP data in bulk response."""
     
-    ip_address: str = Field(..., description="IP address")
+    ip: str = Field(..., description="IP address")
     country_code: Optional[str] = Field(default=None, description="Country code")
     usage_type: Optional[str] = Field(default=None, description="Usage type")
     isp: Optional[str] = Field(default=None, description="ISP")
@@ -166,7 +166,7 @@ class AbuseReportResponse(BaseModel):
     
     success: bool = Field(..., description="Whether report was successful")
     report_id: Optional[str] = Field(default=None, description="Report ID if successful")
-    ip_address: str = Field(..., description="Reported IP address")
+    ip: str = Field(..., description="Reported IP address")
     message: Optional[str] = Field(default=None, description="Response message")
     error: Optional[str] = Field(default=None, description="Error message if any")
     response_time_ms: int = Field(..., description="Response time in milliseconds")

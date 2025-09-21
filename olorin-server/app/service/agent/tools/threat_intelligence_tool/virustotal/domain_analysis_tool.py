@@ -55,7 +55,7 @@ class DomainAnalysisInput(BaseModel):
         
         # Check if input is an IP address and try to get email domain from Snowflake
         try:
-            ipaddress.ip_address(domain)
+            ipaddress.ip(domain)
             # It's an IP address, try to get associated email domain from Snowflake
             logger = get_bridge_logger(__name__)
             logger.info(f"IP address {domain} detected, fetching associated email domain from Snowflake")
@@ -71,7 +71,7 @@ class DomainAnalysisInput(BaseModel):
                     query = f"""
                     SELECT DISTINCT EMAIL
                     FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
-                    WHERE IP_ADDRESS = '{domain}'
+                    WHERE IP = '{domain}'
                     LIMIT 1
                     """
                     results = await client.execute_query(query)

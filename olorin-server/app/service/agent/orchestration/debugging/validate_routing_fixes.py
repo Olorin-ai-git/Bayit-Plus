@@ -125,7 +125,7 @@ def test_routing_scenarios():
     state1 = {
         "investigation_id": "test_001",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "initialization",
         "snowflake_completed": False,
         "tools_used": [],
@@ -148,7 +148,7 @@ def test_routing_scenarios():
     state2 = {
         "investigation_id": "test_002",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "snowflake_analysis",
         "snowflake_data": {"test": "data"},
         "snowflake_completed": True,
@@ -172,7 +172,7 @@ def test_routing_scenarios():
     state3 = {
         "investigation_id": "test_003",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "tool_execution",
         "snowflake_data": {"test": "data"},
         "snowflake_completed": True,
@@ -204,7 +204,7 @@ def test_routing_scenarios():
     state4 = {
         "investigation_id": "test_004",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "domain_analysis",
         "snowflake_data": {"test": "data"},
         "snowflake_completed": True,
@@ -232,7 +232,7 @@ def test_routing_scenarios():
     state5 = {
         "investigation_id": "test_005",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "domain_analysis",
         "snowflake_data": {"test": "data"},
         "snowflake_completed": True,

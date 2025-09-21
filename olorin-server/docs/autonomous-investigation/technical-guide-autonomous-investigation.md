@@ -346,7 +346,7 @@ llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
         "name": "splunk_query_tool",
         "args": {
             "query": "search index=fraud user_id=4621097846089147992 
-                     | stats count by action, ip_address, timestamp
+                     | stats count by action, ip, timestamp
                      | where count > 5"
         }
     }]

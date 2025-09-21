@@ -25,7 +25,7 @@ def wrap_agent_for_graph(agent_func):
         # Extract investigation context from state
         investigation_id = state.get("investigation_id")
         entity_id = state.get("entity_id")
-        entity_type = state.get("entity_type", "ip_address")
+        entity_type = state.get("entity_type", "ip")
         
         # If not in state directly, check messages for context
         if not investigation_id or not entity_id:
@@ -38,7 +38,7 @@ def wrap_agent_for_graph(agent_func):
                     if not entity_id:
                         entity_id = kwargs.get("entity_id")
                     if not entity_type:
-                        entity_type = kwargs.get("entity_type", "ip_address")
+                        entity_type = kwargs.get("entity_type", "ip")
                     if investigation_id and entity_id:
                         break
         

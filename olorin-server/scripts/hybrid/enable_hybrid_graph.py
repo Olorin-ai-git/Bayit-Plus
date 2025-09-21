@@ -63,7 +63,7 @@ async def test_graph_creation():
         from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph, GraphType
         
         investigation_id = "test-investigation-123"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         print(f"📋 Creating hybrid graph for investigation: {investigation_id}")
         

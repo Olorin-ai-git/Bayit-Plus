@@ -32,7 +32,7 @@ class EntityType(Enum):
     TRANSACTION = "transaction"
     SESSION = "session"
     BEHAVIOR_PATTERN = "behavior_pattern"
-    IP_ADDRESS = "ip_address"
+    IP = "ip"
     PHONE_NUMBER = "phone_number"
     EMAIL = "email"
     PAYMENT_METHOD = "payment_method"
@@ -149,7 +149,6 @@ class EntityType(Enum):
     
     # Device and session entities (extended)
     DEVICE_ID = "device_id"  # DEVICE_ID - Already exists but ensuring coverage
-    IP = "ip"  # IP
     USER_AGENT = "user_agent"  # USER_AGENT
     SESSION_INFO_LANGUAGE = "session_info_language"  # SESSION_INFO_LANGUAGE
     SESSION_INFO_ADDITIONAL_DATA = "session_info_additional_data"  # SESSION_INFO_ADDITIONAL_DATA

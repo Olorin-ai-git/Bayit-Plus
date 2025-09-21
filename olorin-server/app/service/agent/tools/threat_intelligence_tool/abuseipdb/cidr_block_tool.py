@@ -113,7 +113,7 @@ class CIDRBlockAnalysisTool(BaseTool):
         for ip_data in reported_ips:
             confidence = ip_data.abuse_confidence_percentage
             ip_entry = {
-                "ip_address": ip_data.ip_address,
+                "ip": ip_data.ip,
                 "confidence": confidence,
                 "country": ip_data.country_code,
                 "isp": ip_data.isp,

@@ -20,7 +20,7 @@ def simulate_orchestrator_state(loop_count: int = 0, phase: str = "initializatio
     return {
         "investigation_id": "test_routing_123",
         "entity_id": "192.168.1.100", 
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": phase,
         "orchestrator_loops": loop_count,
         "messages": [],

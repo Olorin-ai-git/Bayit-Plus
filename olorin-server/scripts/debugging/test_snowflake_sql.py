@@ -38,7 +38,7 @@ async def test_sql_queries():
         print("🔍 Testing risk entities query...")
         results = await client.get_top_risk_entities(
             time_window_hours=24,
-            group_by='IP_ADDRESS',
+            group_by='IP',
             top_percentage=0.1,
             min_transactions=1
         )
@@ -47,9 +47,9 @@ async def test_sql_queries():
         # Test 3: Transaction details query  
         print("🔍 Testing transaction details query...")
         entity_query = """
-        SELECT TX_ID_KEY, EMAIL, IP_ADDRESS, MODEL_SCORE, IS_FRAUD_TX
+        SELECT TX_ID_KEY, EMAIL, IP, MODEL_SCORE, IS_FRAUD_TX
         FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        WHERE IP_ADDRESS = '102.159.115.190'
+        WHERE IP = '102.159.115.190'
         LIMIT 5
         """
         

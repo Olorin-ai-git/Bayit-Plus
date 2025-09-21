@@ -276,7 +276,7 @@ class CSVScenarioGenerator:
             # User data
             "user_email": scenario.user_data.get("email", f"test{index}@example.com"),
             "user_phone": scenario.user_data.get("phone", f"+1415555{random.randint(1000, 9999)}"),
-            "ip_address": scenario.user_data.get("ip_address", f"192.0.2.{random.randint(1, 254)}"),
+            "ip": scenario.user_data.get("ip", f"192.0.2.{random.randint(1, 254)}"),
             "account_age_days": self._calculate_account_age(scenario.user_data.get("account_created")),
             
             # Risk indicators

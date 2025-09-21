@@ -1,0 +1,178 @@
+{
+  "verification_timestamp": "2025-09-20T22:55:14.973332",
+  "table_info": {
+    "total_records": 2847,
+    "total_columns": 0,
+    "columns_metadata": []
+  },
+  "column_analysis": {
+    "TX_ID_KEY": {
+      "null_count": 0,
+      "empty_count": 0,
+      "missing_count": 0,
+      "distinct_count": 5000,
+      "completeness_percentage": 100.0,
+      "has_data": true
+    },
+    "EMAIL": {
+      "null_count": 0,
+      "empty_count": 0,
+      "missing_count": 0,
+      "distinct_count": 5000,
+      "completeness_percentage": 100.0,
+      "has_data": true
+    },
+    "IP": {
+      "null_count": 50,
+      "empty_count": 10,
+      "missing_count": 60,
+      "distinct_count": 4500,
+      "completeness_percentage": 98.8,
+      "has_data": true
+    },
+    "IP_COUNTRY": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "IP_CITY": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "MODEL_SCORE": {
+      "null_count": 5,
+      "empty_count": 0,
+      "missing_count": 5,
+      "distinct_count": 4900,
+      "completeness_percentage": 99.9,
+      "has_data": true
+    },
+    "PAID_AMOUNT_VALUE": {
+      "null_count": 5,
+      "empty_count": 0,
+      "missing_count": 5,
+      "distinct_count": 4900,
+      "completeness_percentage": 99.9,
+      "has_data": true
+    },
+    "IS_FRAUD_TX": {
+      "null_count": 5,
+      "empty_count": 0,
+      "missing_count": 5,
+      "distinct_count": 4900,
+      "completeness_percentage": 99.9,
+      "has_data": true
+    },
+    "NSURE_LAST_DECISION": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "TX_DATETIME": {
+      "null_count": 0,
+      "empty_count": 0,
+      "missing_count": 0,
+      "distinct_count": 5000,
+      "completeness_percentage": 100.0,
+      "has_data": true
+    },
+    "DEVICE_ID": {
+      "null_count": 50,
+      "empty_count": 10,
+      "missing_count": 60,
+      "distinct_count": 4500,
+      "completeness_percentage": 98.8,
+      "has_data": true
+    },
+    "USER_AGENT": {
+      "null_count": 50,
+      "empty_count": 10,
+      "missing_count": 60,
+      "distinct_count": 4500,
+      "completeness_percentage": 98.8,
+      "has_data": true
+    },
+    "BROWSER_NAME": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "OS_NAME": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "PROXY_RISK_SCORE": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "PAYMENT_METHOD": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "CARD_BRAND": {
+      "null_count": 1000,
+      "empty_count": 100,
+      "missing_count": 1100,
+      "distinct_count": 3500,
+      "completeness_percentage": 78.0,
+      "has_data": true
+    },
+    "FRAUD_RULES_TRIGGERED": {
+      "null_count": 250,
+      "empty_count": 50,
+      "missing_count": 300,
+      "distinct_count": 4200,
+      "completeness_percentage": 94.0,
+      "has_data": true
+    },
+    "DISPUTES": {
+      "null_count": 1000,
+      "empty_count": 100,
+      "missing_count": 1100,
+      "distinct_count": 3500,
+      "completeness_percentage": 78.0,
+      "has_data": true
+    }
+  },
+  "data_quality_summary": {
+    "total_columns_analyzed": 19,
+    "columns_with_100_percent_completeness": 3,
+    "columns_with_90_plus_percent_completeness": 17,
+    "columns_with_50_plus_percent_completeness": 19,
+    "columns_with_less_than_50_percent_completeness": 0,
+    "average_completeness_percentage": 94.95,
+    "min_completeness_percentage": 78.0,
+    "max_completeness_percentage": 100.0
+  },
+  "issues_found": [],
+  "execution_info": {
+    "script_version": "1.0",
+    "verification_mode": "MOCK",
+    "total_issues_found": 0
+  }
+}

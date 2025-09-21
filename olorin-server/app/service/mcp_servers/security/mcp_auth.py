@@ -104,7 +104,7 @@ class MCPSecurityContext(BaseModel):
     roles: List[str]
     permissions: List[str]
     session_id: str
-    ip_address: str
+    ip: str
     user_agent: str
     expires_at: datetime
     server_context: Optional[str] = None
@@ -118,7 +118,7 @@ class MCPAuditEvent(BaseModel):
     event_type: str
     user_id: str
     username: str
-    ip_address: str
+    ip: str
     user_agent: str
     server_name: Optional[str] = None
     tool_name: Optional[str] = None
@@ -209,7 +209,7 @@ class MCPAuthenticationService:
     async def validate_mcp_token(
         self,
         token: str,
-        ip_address: str,
+        ip: str,
         user_agent: str,
         required_permissions: List[MCPPermission] = None,
         server_context: str = None,
@@ -218,12 +218,12 @@ class MCPAuthenticationService:
         """Validate MCP token and create security context."""
         try:
             # Check rate limiting first
-            if not await self._check_rate_limit(ip_address):
+            if not await self._check_rate_limit(ip):
                 await self._audit_event(
                     event_type="RATE_LIMIT_EXCEEDED",
                     user_id="unknown",
                     username="unknown",
-                    ip_address=ip_address,
+                    ip=ip,
                     user_agent=user_agent,
                     operation="token_validation",
                     success=False,
@@ -232,24 +232,24 @@ class MCPAuthenticationService:
                 return None, "Rate limit exceeded"
                 
             # Check if IP is locked out
-            if self._is_ip_locked_out(ip_address):
+            if self._is_ip_locked_out(ip):
                 return None, "IP address temporarily locked due to suspicious activity"
             
             # Validate base JWT token using existing service
             user, validation_result = await self.base_auth.validate_token(
                 token=token,
-                ip_address=ip_address,
+                ip=ip,
                 user_agent=user_agent
             )
             
             if not user:
-                await self._handle_failed_attempt(ip_address)
+                await self._handle_failed_attempt(ip)
                 return None, validation_result
                 
             # Create MCP security context
             mcp_context = await self._create_security_context(
                 user=user,
-                ip_address=ip_address,
+                ip=ip,
                 user_agent=user_agent,
                 server_context=server_context,
                 tool_context=tool_context
@@ -263,7 +263,7 @@ class MCPAuthenticationService:
                         event_type="PERMISSION_DENIED",
                         user_id=user.username,
                         username=user.username,
-                        ip_address=ip_address,
+                        ip=ip,
                         user_agent=user_agent,
                         operation="permission_check",
                         success=False,
@@ -273,16 +273,16 @@ class MCPAuthenticationService:
                     return None, f"Insufficient permissions: {missing_permissions}"
             
             # Reset failed attempts on successful validation
-            if ip_address in self.failed_attempts:
-                del self.failed_attempts[ip_address]
-                if ip_address in self.lockout_until:
-                    del self.lockout_until[ip_address]
+            if ip in self.failed_attempts:
+                del self.failed_attempts[ip]
+                if ip in self.lockout_until:
+                    del self.lockout_until[ip]
                     
             await self._audit_event(
                 event_type="TOKEN_VALIDATED",
                 user_id=user.username,
                 username=user.username,
-                ip_address=ip_address,
+                ip=ip,
                 user_agent=user_agent,
                 operation="token_validation",
                 success=True,
@@ -293,17 +293,17 @@ class MCPAuthenticationService:
             return mcp_context, "success"
             
         except JWTError as e:
-            await self._handle_failed_attempt(ip_address)
+            await self._handle_failed_attempt(ip)
             return None, f"JWT validation error: {str(e)}"
         except Exception as e:
             logger.error(f"MCP token validation error: {e}")
-            await self._handle_failed_attempt(ip_address)
+            await self._handle_failed_attempt(ip)
             return None, "Token validation failed"
     
     async def _create_security_context(
         self,
         user: SecureUser,
-        ip_address: str,
+        ip: str,
         user_agent: str,
         server_context: str = None,
         tool_context: str = None
@@ -324,7 +324,7 @@ class MCPAuthenticationService:
             roles=user.scopes,
             permissions=permissions,
             session_id=secrets.token_urlsafe(16),  # Generate new session for MCP
-            ip_address=ip_address,
+            ip=ip,
             user_agent=user_agent,
             expires_at=datetime.utcnow() + timedelta(minutes=self.config.token_expire_minutes),
             server_context=server_context,
@@ -343,13 +343,13 @@ class MCPAuthenticationService:
                 missing.append(perm.value)
         return missing
     
-    async def _check_rate_limit(self, ip_address: str) -> bool:
+    async def _check_rate_limit(self, ip: str) -> bool:
         """Check if IP address is within rate limits."""
         if not self.config.redis_client:
             return True  # Skip if no Redis
             
         try:
-            key = f"mcp_rate_limit:{ip_address}"
+            key = f"mcp_rate_limit:{ip}"
             current_count = await self.config.redis_client.get(key)
             
             if current_count is None:
@@ -366,34 +366,34 @@ class MCPAuthenticationService:
             logger.warning(f"Rate limit check failed: {e}")
             return True  # Allow on Redis errors
     
-    def _is_ip_locked_out(self, ip_address: str) -> bool:
+    def _is_ip_locked_out(self, ip: str) -> bool:
         """Check if IP is currently locked out."""
-        if ip_address in self.lockout_until:
-            if datetime.utcnow() < self.lockout_until[ip_address]:
+        if ip in self.lockout_until:
+            if datetime.utcnow() < self.lockout_until[ip]:
                 return True
             else:
                 # Lockout expired
-                del self.lockout_until[ip_address]
-                if ip_address in self.failed_attempts:
-                    del self.failed_attempts[ip_address]
+                del self.lockout_until[ip]
+                if ip in self.failed_attempts:
+                    del self.failed_attempts[ip]
         return False
     
-    async def _handle_failed_attempt(self, ip_address: str):
+    async def _handle_failed_attempt(self, ip: str):
         """Handle failed authentication attempt."""
-        self.failed_attempts[ip_address] = self.failed_attempts.get(ip_address, 0) + 1
+        self.failed_attempts[ip] = self.failed_attempts.get(ip, 0) + 1
         
-        if self.failed_attempts[ip_address] >= self.config.max_failed_attempts:
-            self.lockout_until[ip_address] = datetime.utcnow() + timedelta(
+        if self.failed_attempts[ip] >= self.config.max_failed_attempts:
+            self.lockout_until[ip] = datetime.utcnow() + timedelta(
                 minutes=self.config.lockout_duration_minutes
             )
-            logger.warning(f"IP {ip_address} locked out after {self.failed_attempts[ip_address]} failed attempts")
+            logger.warning(f"IP {ip} locked out after {self.failed_attempts[ip]} failed attempts")
     
     async def _audit_event(
         self,
         event_type: str,
         user_id: str,
         username: str,
-        ip_address: str,
+        ip: str,
         user_agent: str,
         operation: str,
         success: bool,
@@ -413,7 +413,7 @@ class MCPAuthenticationService:
             event_type=event_type,
             user_id=user_id,
             username=username,
-            ip_address=ip_address,
+            ip=ip,
             user_agent=user_agent,
             server_name=server_name,
             tool_name=tool_name,
@@ -515,7 +515,7 @@ class MCPAuthenticationService:
             event_type="TOOL_EXECUTION",
             user_id=context.user_id,
             username=context.username,
-            ip_address=context.ip_address,
+            ip=context.ip,
             user_agent=context.user_agent,
             server_name=server_name,
             tool_name=tool_name,

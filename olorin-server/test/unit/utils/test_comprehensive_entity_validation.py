@@ -190,7 +190,7 @@ class TestIPAddressValidation:
     ])
     def test_validate_ip_valid_addresses(self, validator, valid_ip):
         """Test validation of valid IP addresses"""
-        is_valid, error = validator.validate_entity(EntityType.IP_ADDRESS, 'ip_address', valid_ip)
+        is_valid, error = validator.validate_entity(EntityType.IP, 'ip', valid_ip)
         assert is_valid is True, f"IP {valid_ip} should be valid"
         assert error is None
 
@@ -203,7 +203,7 @@ class TestIPAddressValidation:
     ])
     def test_validate_ip_invalid_addresses(self, validator, invalid_ip):
         """Test validation of invalid IP addresses"""
-        is_valid, error = validator.validate_entity(EntityType.IP_ADDRESS, 'ip_address', invalid_ip)
+        is_valid, error = validator.validate_entity(EntityType.IP, 'ip', invalid_ip)
         assert is_valid is False, f"IP {invalid_ip} should be invalid"
         assert "Invalid IP address format" in error
 
@@ -492,7 +492,7 @@ class TestMultiEntityValidation:
             EntityType.EMAIL: {'email': 'user@example.com'},
             EntityType.AMOUNT: {'amount': '100.50'},
             EntityType.CURRENCY: {'currency': 'USD'},
-            EntityType.IP_ADDRESS: {'ip': '192.168.1.1'}
+            EntityType.IP: {'ip': '192.168.1.1'}
         }
         
         errors = validator.validate_multiple_entities(entity_data)
@@ -504,7 +504,7 @@ class TestMultiEntityValidation:
             EntityType.EMAIL: {'email': 'invalid-email'},
             EntityType.AMOUNT: {'amount': '100.50'},
             EntityType.CURRENCY: {'currency': 'INVALID'},
-            EntityType.IP_ADDRESS: {'ip': '192.168.1.1'}
+            EntityType.IP: {'ip': '192.168.1.1'}
         }
         
         errors = validator.validate_multiple_entities(entity_data)
@@ -524,14 +524,14 @@ class TestMultiEntityValidation:
             EntityType.EMAIL: {'email': 'invalid-email'},
             EntityType.AMOUNT: {'amount': '-100'},
             EntityType.CURRENCY: {'currency': 'INVALID'},
-            EntityType.IP_ADDRESS: {'ip': 'not-an-ip'}
+            EntityType.IP: {'ip': 'not-an-ip'}
         }
         
         errors = validator.validate_multiple_entities(entity_data)
         
         # Should have errors for all entities
         assert len(errors) == 4, "Should have errors for all invalid entities"
-        assert all(entity_type in errors for entity_type in ['email', 'amount', 'currency', 'ip_address'])
+        assert all(entity_type in errors for entity_type in ['email', 'amount', 'currency', 'ip'])
 
 
 class TestPerformanceRequirements:
@@ -545,7 +545,7 @@ class TestPerformanceRequirements:
         """Test single validation completes within performance requirement"""
         test_data = [
             (EntityType.EMAIL, 'email', 'user@example.com'),
-            (EntityType.IP_ADDRESS, 'ip', '192.168.1.1'),
+            (EntityType.IP, 'ip', '192.168.1.1'),
             (EntityType.AMOUNT, 'amount', '100.50'),
             (EntityType.CURRENCY, 'currency', 'USD'),
             (EntityType.TX_TIMESTAMP, 'timestamp', '2024-01-01T00:00:00Z')

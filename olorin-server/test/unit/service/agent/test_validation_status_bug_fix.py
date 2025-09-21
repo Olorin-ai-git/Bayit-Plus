@@ -60,7 +60,7 @@ class TestValidationStatusBugFix:
         """Create a mock investigation context"""
         return AutonomousInvestigationContext(
             entity_id="67.76.8.209",
-            entity_type=EntityType.IP_ADDRESS,
+            entity_type=EntityType.IP,
             investigation_id="test_validation_fix_001"
         )
     
@@ -70,7 +70,7 @@ class TestValidationStatusBugFix:
         result = InvestigationResult(
             investigation_id="test_validation_fix_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             status="running"  # Initial status
         )
         result.validation_results = {}
@@ -125,7 +125,7 @@ class TestValidationStatusBugFix:
         result = InvestigationResult(
             investigation_id="test_low_score_001",
             entity_id="67.76.8.209", 
-            entity_type="ip_address",
+            entity_type="ip",
             status="completed"
         )
         result.validation_results = {
@@ -172,7 +172,7 @@ class TestValidationStatusBugFix:
         result = InvestigationResult(
             investigation_id="test_high_score_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address", 
+            entity_type="ip", 
             status="completed"
         )
         result.validation_results = {
@@ -208,7 +208,7 @@ class TestValidationStatusBugFix:
         result = InvestigationResult(
             investigation_id="test_invalid_status_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             status="unknown"  # Invalid status
         )
         result.validation_results = {"overall_score": 50.0}
@@ -242,7 +242,7 @@ class TestValidationStatusBugFix:
         result = InvestigationResult(
             investigation_id="unified_test_real_investigation_ip_address_1757512703",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             status="running"
         )
         

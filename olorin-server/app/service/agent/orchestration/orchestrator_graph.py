@@ -31,13 +31,12 @@ from app.service.agent.orchestration.enhanced_tool_executor import (
     ToolHealthManager
 )
 from app.service.logging import get_bridge_logger
-from app.service.agent.autonomous_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
-)
+# Import clean graph domain agents directly
+from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
+from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
+from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 from app.service.agent.orchestration.investigation_coordinator import start_investigation
 from app.service.agent.orchestration.assistant import assistant
 from app.service.agent.nodes.raw_data_node import raw_data_node
@@ -270,11 +269,11 @@ async def create_orchestrator_driven_graph(
         builder.add_node("orchestration_processor", orchestration_decision_node)
         
         # Add autonomous agent nodes
-        builder.add_node("network_agent", autonomous_network_agent)
-        builder.add_node("device_agent", autonomous_device_agent)
-        builder.add_node("location_agent", autonomous_location_agent)
-        builder.add_node("logs_agent", autonomous_logs_agent)
-        builder.add_node("risk_agent", autonomous_risk_agent)
+        builder.add_node("network_agent", network_agent_node)
+        builder.add_node("device_agent", device_agent_node)
+        builder.add_node("location_agent", location_agent_node)
+        builder.add_node("logs_agent", logs_agent_node)
+        builder.add_node("risk_agent", risk_agent_node)
         
         # Configure tools with bulletproof patterns
         tools = _get_orchestrator_tools()
@@ -378,11 +377,11 @@ async def create_hybrid_orchestration_graph(
         builder.add_node("orchestration_processor", orchestration_decision_node)
         
         # Agent nodes
-        builder.add_node("network_agent", autonomous_network_agent)
-        builder.add_node("device_agent", autonomous_device_agent)
-        builder.add_node("location_agent", autonomous_location_agent)
-        builder.add_node("logs_agent", autonomous_logs_agent)
-        builder.add_node("risk_agent", autonomous_risk_agent)
+        builder.add_node("network_agent", network_agent_node)
+        builder.add_node("device_agent", device_agent_node)
+        builder.add_node("location_agent", location_agent_node)
+        builder.add_node("logs_agent", logs_agent_node)
+        builder.add_node("risk_agent", risk_agent_node)
         
         # Tools configuration
         tools = _get_orchestrator_tools()

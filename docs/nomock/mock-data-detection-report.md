@@ -63,7 +63,7 @@ This comprehensive detection report documents **systematic and extensive violati
       {
         "TX_ID_KEY": "TX_2024_001234",
         "EMAIL": "john.smith@suspicious-domain.com",
-        "IP_ADDRESS": "192.0.2.123",
+        "IP": "192.0.2.123",
         "MODEL_SCORE": 0.7234,
         "PAID_AMOUNT_VALUE": 1250.00,
         "IS_FRAUD_TX": 0,

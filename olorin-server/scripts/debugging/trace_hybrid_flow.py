@@ -76,7 +76,7 @@ async def trace_hybrid_flow():
         # Create test state
         investigation_id = f"trace_hybrid_{int(datetime.now().timestamp())}"
         entity_id = "67.76.8.209"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         initial_state = create_hybrid_initial_state(
             investigation_id=investigation_id,

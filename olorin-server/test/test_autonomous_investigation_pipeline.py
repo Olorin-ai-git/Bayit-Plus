@@ -47,7 +47,7 @@ async def test_snowflake_tool_mock():
         SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, 
                NSURE_LAST_DECISION, PAID_AMOUNT_VALUE, TX_DATETIME
         FROM TRANSACTIONS_ENRICHED 
-        WHERE IP_ADDRESS = '192.168.1.100'
+        WHERE IP = '192.168.1.100'
         ORDER BY TX_DATETIME DESC
         LIMIT 10
         """
@@ -107,7 +107,7 @@ async def test_domain_agents_processing():
         test_state = create_initial_state(
             investigation_id="test_001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         
         # Add high-risk Snowflake data (properly structured)
@@ -118,7 +118,7 @@ async def test_domain_agents_processing():
                     "EMAIL": "suspicious@test.com",
                     "MODEL_SCORE": 0.9900,  # Very high fraud score
                     "IS_FRAUD_TX": 1,
-                    "IP_ADDRESS": "192.168.1.100",
+                    "IP": "192.168.1.100",
                     "IP_COUNTRY": "XX",
                     "NSURE_LAST_DECISION": "reject",
                     "PAID_AMOUNT_VALUE": 1000.00
@@ -128,7 +128,7 @@ async def test_domain_agents_processing():
                     "EMAIL": "suspicious@test.com",
                     "MODEL_SCORE": 0.8500,  # High fraud score
                     "IS_FRAUD_TX": 0,
-                    "IP_ADDRESS": "192.168.1.100",
+                    "IP": "192.168.1.100",
                     "IP_COUNTRY": "YY",  # Different country 
                     "NSURE_LAST_DECISION": "approve",
                     "PAID_AMOUNT_VALUE": 2500.00
@@ -253,7 +253,7 @@ async def test_json_parsing_in_orchestrator():
                     "EMAIL": "test@fraud.com",
                     "MODEL_SCORE": 0.9800,
                     "IS_FRAUD_TX": 1,
-                    "IP_ADDRESS": "10.0.0.1"
+                    "IP": "10.0.0.1"
                 }
             ],
             "row_count": 1,

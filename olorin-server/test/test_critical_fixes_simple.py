@@ -167,7 +167,7 @@ async def test_snowflake_tool_with_high_risk():
         client = SnowflakeClient()
         await client.connect()
         
-        query = "SELECT * FROM TRANSACTIONS_ENRICHED WHERE IP_ADDRESS = '192.168.1.100' LIMIT 5"
+        query = "SELECT * FROM TRANSACTIONS_ENRICHED WHERE IP = '192.168.1.100' LIMIT 5"
         results = await client.execute_query(query)
         
         print(f"   Query returned {len(results)} results")

@@ -526,14 +526,14 @@ For user `4621097846089147992`, the LLM receives processed network signals:
   "user_id": "4621097846089147992",
   "network_signals": [
     {
-      "ip_address": "207.207.181.8",
+      "ip": "207.207.181.8",
       "isp": "olorin inc.",
       "organization": "olorin inc.",
       "tm_sessionid": "1a977456cfcd4778f2670e3e0cd56efb",
       "_time": "2025-05-15T06:31:46.027-07:00"
     },
     {
-      "ip_address": "223.185.128.58",
+      "ip": "223.185.128.58",
       "isp": "bharti airtel ltd.",
       "organization": "bharti airtel ltd.",
       "tm_sessionid": "5f4a0c8b7e6d4958fb3c1d2a9e8b7c6a",

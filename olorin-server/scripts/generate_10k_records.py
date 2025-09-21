@@ -259,7 +259,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
             amount = generator.generate_amount(risk_level, is_fraud)
             risk_score = generator.generate_risk_score(risk_level, is_fraud)
             device_id = generator.generate_device_id(user_id)
-            ip_address = generator.generate_ip(risk_level)
+            ip = generator.generate_ip(risk_level)
             card_bin, card_last4 = generator.generate_card_info()
             merchant_name, merchant_cat, mcc = generator.generate_merchant(risk_level)
             
@@ -319,7 +319,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
                 random.randint(60, 3600),  # SESSION_DURATION_SECONDS
                 
                 # Location fields
-                ip_address,  # IP_ADDRESS
+                ip,  # IP
                 location['country'],  # IP_COUNTRY
                 f"{location['country']}_Region",  # IP_REGION
                 location['city'],  # IP_CITY
@@ -430,7 +430,7 @@ def insert_to_snowflake(transactions: List[Tuple]):
             ACCOUNT_VERIFICATION_STATUS, KYC_STATUS, KYC_LEVEL,
             DEVICE_ID, DEVICE_TYPE, DEVICE_OS, DEVICE_OS_VERSION, DEVICE_BROWSER, DEVICE_BROWSER_VERSION,
             DEVICE_FINGERPRINT, SESSION_ID, SESSION_DURATION_SECONDS,
-            IP_ADDRESS, IP_COUNTRY, IP_REGION, IP_CITY, IP_POSTAL_CODE, IP_LATITUDE, IP_LONGITUDE,
+            IP, IP_COUNTRY, IP_REGION, IP_CITY, IP_POSTAL_CODE, IP_LATITUDE, IP_LONGITUDE,
             IP_ISP, IP_ORG, IP_ASN, IP_TYPE,
             CARD_BIN, CARD_LAST4, CARD_TYPE, CARD_BRAND, CARD_ISSUER, CARD_ISSUER_COUNTRY,
             CARD_FUNDING_TYPE, PAYMENT_METHOD, PAYMENT_PROCESSOR,

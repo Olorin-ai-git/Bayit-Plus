@@ -74,7 +74,7 @@ def get_authentication_objectives(rag_enabled: bool = False) -> List[str]:
     objectives = [
         "STEP 1: CHECK if context.data_sources contains 'email' or 'user_id' fields for authentication analysis",
         "STEP 2: Use Snowflake to analyze authentication transaction data focusing on:",
-        "  - Login attempt patterns using TX_DATETIME, EMAIL, IP_ADDRESS, DEVICE_ID",
+        "  - Login attempt patterns using TX_DATETIME, EMAIL, IP, DEVICE_ID",
         "  - Failed authentication ratios and suspicious timing patterns",
         "  - Geographic authentication anomalies using IP_COUNTRY data",
         "  - Device fingerprint changes during authentication events",

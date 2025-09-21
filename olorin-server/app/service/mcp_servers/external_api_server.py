@@ -29,7 +29,7 @@ class ReputationLevel(str, Enum):
 # Tool input schemas
 class IPReputationInput(BaseModel):
     """Input schema for IP reputation check."""
-    ip_address: str = Field(..., description="IP address to check reputation for")
+    ip: str = Field(..., description="IP address to check reputation for")
     include_details: bool = Field(True, description="Include detailed reputation information")
 
 
@@ -59,7 +59,7 @@ class CreditBureauInput(BaseModel):
 # MCP Server Tools
 @tool("check_ip_reputation", args_schema=IPReputationInput)
 async def check_ip_reputation(
-    ip_address: str,
+    ip: str,
     include_details: bool = True
 ) -> Dict[str, Any]:
     """
@@ -69,11 +69,11 @@ async def check_ip_reputation(
     if an IP address is associated with malicious activity.
     """
     try:
-        logger.info(f"Checking IP reputation: {ip_address}")
+        logger.info(f"Checking IP reputation: {ip}")
         
         reputation_data = {
             "status": "success",
-            "ip_address": ip_address,
+            "ip": ip,
             "reputation_level": ReputationLevel.UNKNOWN,
             "risk_score": 0.0,
             "is_proxy": False,
@@ -106,7 +106,7 @@ async def check_ip_reputation(
         # Simulate basic IP validation
         import ipaddress
         try:
-            ip = ipaddress.ip_address(ip_address)
+            ip = ipaddress.ip(ip)
             if ip.is_private:
                 reputation_data["reputation_level"] = ReputationLevel.CLEAN
                 reputation_data["risk_score"] = 0.1

@@ -1,7 +1,7 @@
 import { InvestigationStepId, StepStatus } from '../constants/definitions';
 
 export interface ExtractedNetworkSignal {
-  ip_address?: string;
+  ip?: string;
   isp?: string;
   organization?: string;
   tm_sessionid?: string;

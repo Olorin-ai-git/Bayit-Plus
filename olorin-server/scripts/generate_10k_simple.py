@@ -74,7 +74,7 @@ def generate_transactions(num_records: int = 10000):
         
         # Generate other essential fields
         device_id = f"DEV_{hash(email) % 10000:05d}_{random.randint(1, 3)}"
-        ip_address = f"{random.randint(1, 223)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
+        ip = f"{random.randint(1, 223)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"
         
         # Transaction status based on risk
         if risk_score > 0.85:
@@ -89,7 +89,7 @@ def generate_transactions(num_records: int = 10000):
             tx_datetime,  # TX_DATETIME
             email,  # EMAIL
             device_id,  # DEVICE_ID
-            ip_address,  # IP_ADDRESS
+            ip,  # IP
             amount,  # PAID_AMOUNT_VALUE
             risk_score,  # MODEL_SCORE
             is_fraud,  # IS_FRAUD_TX
@@ -132,7 +132,7 @@ def insert_to_snowflake(transactions):
         # Simple insert with just essential columns
         insert_sql = """
         INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP_ADDRESS, 
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
          PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """

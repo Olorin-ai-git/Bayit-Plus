@@ -137,7 +137,7 @@ def test_functional_creation():
         state = create_hybrid_initial_state(
             investigation_id="test-001",
             entity_id="127.0.0.1",
-            entity_type="ip_address",
+            entity_type="ip",
             initial_strategy=InvestigationStrategy.ADAPTIVE,
             force_confidence_level=AIConfidenceLevel.MEDIUM
         )

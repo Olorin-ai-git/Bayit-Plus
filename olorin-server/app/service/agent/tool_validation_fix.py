@@ -5,7 +5,7 @@ Fixes tool provider invocation errors by validating inputs before calling extern
 
 Symptoms:
 - VirusTotal _arun() missing arg 'domain'
-- Shodan _arun() missing arg 'ip_address' 
+- Shodan _arun() missing arg 'ip' 
 - IP reputation 422 "The ip address must be valid IPv4/IPv6 address"
 
 Root Cause:
@@ -144,14 +144,14 @@ class ToolInputValidator:
         )
     
     def _validate_shodan_input(self, **kwargs) -> ValidationResult:
-        """Validate Shodan tool input - requires ip_address"""
+        """Validate Shodan tool input - requires ip"""
         
-        ip_address = kwargs.get('ip_address', '').strip()
+        ip = kwargs.get('ip', '').strip()
         
-        if not ip_address:
+        if not ip:
             return ValidationResult(
                 valid=False,
-                error_message="Shodan requires 'ip_address' parameter",
+                error_message="Shodan requires 'ip' parameter",
                 suggestions=[
                     "Extract IP from network logs",
                     "Resolve domain to IP",
@@ -160,7 +160,7 @@ class ToolInputValidator:
             )
         
         # Clean and validate IP address
-        cleaned_ip = self._clean_ip_address(ip_address)
+        cleaned_ip = self._clean_ip_address(ip)
         ip_validation = self._validate_ip_address_format(cleaned_ip)
         
         if not ip_validation.valid:
@@ -176,23 +176,23 @@ class ToolInputValidator:
         
         return ValidationResult(
             valid=True,
-            cleaned_input={'ip_address': cleaned_ip},
+            cleaned_input={'ip': cleaned_ip},
             warnings=ip_validation.warnings
         )
     
     def _validate_ip_reputation_input(self, **kwargs) -> ValidationResult:
         """Validate IP reputation tool input"""
         
-        ip_address = kwargs.get('ip_address', '').strip()
+        ip = kwargs.get('ip', '').strip()
         
-        if not ip_address:
+        if not ip:
             return ValidationResult(
                 valid=False,
-                error_message="IP reputation check requires 'ip_address' parameter"
+                error_message="IP reputation check requires 'ip' parameter"
             )
         
         # Clean and validate IP address
-        cleaned_ip = self._clean_ip_address(ip_address)
+        cleaned_ip = self._clean_ip_address(ip)
         ip_validation = self._validate_ip_address_format(cleaned_ip)
         
         if not ip_validation.valid:
@@ -204,7 +204,7 @@ class ToolInputValidator:
         
         return ValidationResult(
             valid=True,
-            cleaned_input={'ip_address': cleaned_ip},
+            cleaned_input={'ip': cleaned_ip},
             warnings=ip_validation.warnings
         )
     
@@ -265,12 +265,12 @@ class ToolInputValidator:
     def _validate_whois_input(self, **kwargs) -> ValidationResult:
         """Validate WHOIS tool input"""
         
-        target = kwargs.get('domain') or kwargs.get('ip_address', '').strip()
+        target = kwargs.get('domain') or kwargs.get('ip', '').strip()
         
         if not target:
             return ValidationResult(
                 valid=False,
-                error_message="WHOIS requires 'domain' or 'ip_address' parameter"
+                error_message="WHOIS requires 'domain' or 'ip' parameter"
             )
         
         # Try as IP first, then as domain
@@ -279,7 +279,7 @@ class ToolInputValidator:
             if ip_validation.valid:
                 return ValidationResult(
                     valid=True,
-                    cleaned_input={'ip_address': target}
+                    cleaned_input={'ip': target}
                 )
         
         # Try as domain
@@ -394,7 +394,7 @@ class ToolInputValidator:
             )
         
         try:
-            ip_obj = ipaddress.ip_address(ip)
+            ip_obj = ipaddress.ip(ip)
             
             warnings = []
             
@@ -467,7 +467,7 @@ class ToolInputValidator:
     def _is_ip_address(self, value: str) -> bool:
         """Check if value is an IP address"""
         try:
-            ipaddress.ip_address(value)
+            ipaddress.ip(value)
             return True
         except ValueError:
             return False
@@ -475,7 +475,7 @@ class ToolInputValidator:
     def _is_ipv6(self, value: str) -> bool:
         """Check if value is IPv6"""
         try:
-            ip = ipaddress.ip_address(value)
+            ip = ipaddress.ip(value)
             return isinstance(ip, ipaddress.IPv6Address)
         except ValueError:
             return False

@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS TRANSACTIONS_ENRICHED (
     -- ==========================================
     -- NETWORK & IP INFORMATION
     -- ==========================================
-    IP_ADDRESS VARCHAR(45),
+    IP VARCHAR(45),
     IP_COUNTRY VARCHAR(100),
     IP_CITY VARCHAR(100),
     IP_REGION VARCHAR(100),
@@ -421,7 +421,7 @@ INSERT INTO TRANSACTIONS_ENRICHED (
     GMV,
     PAYMENT_METHOD,
     CARD_BRAND,
-    IP_ADDRESS,
+    IP,
     IP_COUNTRY,
     MERCHANT_NAME,
     NSURE_LAST_DECISION,

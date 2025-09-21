@@ -111,7 +111,7 @@
     }
   },
   "network": {
-    "ip_address": "198.51.100.201",
+    "ip": "198.51.100.201",
     "proxy_detected": false,
     "vpn_detected": false,
     "tor_detected": false,

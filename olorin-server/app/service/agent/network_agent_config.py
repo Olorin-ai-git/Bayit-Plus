@@ -59,9 +59,9 @@ def get_network_objectives(rag_enabled: bool = False, mcp_enhanced: bool = False
     """Get network analysis objectives with optional RAG enhancement."""
     
     objectives = [
-        "STEP 1: CHECK if context.data_sources['user'] contains an 'ip_address' field",
-        "STEP 2: If NO 'ip_address' field exists, DO NOT USE these tools: abuseipdb_ip_reputation, shodan_infrastructure_analysis, virustotal (for IP)",
-        "STEP 3: If 'ip_address' field EXISTS and contains a valid IP (like 192.168.1.1), then use IP-based tools",
+        "STEP 1: CHECK if context.data_sources['user'] contains an 'ip' field",
+        "STEP 2: If NO 'ip' field exists, DO NOT USE these tools: abuseipdb_ip_reputation, shodan_infrastructure_analysis, virustotal (for IP)",
+        "STEP 3: If 'ip' field EXISTS and contains a valid IP (like 192.168.1.1), then use IP-based tools",
         "CRITICAL WARNING: Entity IDs (like 'K1F6HIIGBVHH20TX' or 'TESTUSER123456') are NOT IP addresses - NEVER pass them to IP tools",
         "When NO IP is available, focus on: log analysis, behavioral patterns, transaction analysis, user activity patterns",
         "Analyze network patterns for suspicious connections and anomalies using available data",

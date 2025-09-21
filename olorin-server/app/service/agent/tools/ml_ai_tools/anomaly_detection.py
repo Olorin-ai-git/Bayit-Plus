@@ -355,7 +355,7 @@ class AnomalyDetectionTool(BaseTool):
         
         # Analyze frequency patterns in categorical data
         for feature_name, feature_value in categorical_features.items():
-            if feature_name in ["user_agent", "ip_address", "device_id"]:
+            if feature_name in ["user_agent", "ip", "device_id"]:
                 # Check for suspicious patterns
                 if self._is_suspicious_pattern(feature_value):
                     behavioral_results["behavior_changes"].append({
@@ -406,9 +406,9 @@ class AnomalyDetectionTool(BaseTool):
         categorical_features = processed_data.get("categorical_features", {})
         
         # Geographic context anomalies
-        if "ip_address" in categorical_features and "location" in categorical_features:
+        if "ip" in categorical_features and "location" in categorical_features:
             ip_location_mismatch = self._check_ip_location_consistency(
-                categorical_features["ip_address"],
+                categorical_features["ip"],
                 categorical_features["location"]
             )
             if ip_location_mismatch:
@@ -443,8 +443,8 @@ class AnomalyDetectionTool(BaseTool):
         numerical_features = processed_data.get("numerical_features", {})
         
         # IP address anomalies
-        if "ip_address" in categorical_features:
-            ip_anomalies = self._analyze_ip_anomalies(categorical_features["ip_address"])
+        if "ip" in categorical_features:
+            ip_anomalies = self._analyze_ip_anomalies(categorical_features["ip"])
             network_results["connection_anomalies"].extend(ip_anomalies)
         
         # Network traffic patterns
@@ -977,19 +977,19 @@ class AnomalyDetectionTool(BaseTool):
         
         return deviations
     
-    def _check_ip_location_consistency(self, ip_address: str, location: str) -> Optional[Dict[str, Any]]:
+    def _check_ip_location_consistency(self, ip: str, location: str) -> Optional[Dict[str, Any]]:
         """Check consistency between IP address and claimed location."""
         # This is a placeholder for actual geolocation checking
         # In a real implementation, this would use IP geolocation services
         
         # For demonstration, flag certain patterns as suspicious
-        if "vpn" in ip_address.lower() or "proxy" in location.lower():
+        if "vpn" in ip.lower() or "proxy" in location.lower():
             return {
                 "type": "ip_location_mismatch",
                 "feature": "ip_location_consistency",
                 "anomaly_score": 0.8,
                 "description": "Potential VPN/Proxy usage detected",
-                "ip_address": ip_address,
+                "ip": ip,
                 "claimed_location": location
             }
         
@@ -1040,31 +1040,31 @@ class AnomalyDetectionTool(BaseTool):
         
         return anomalies
     
-    def _analyze_ip_anomalies(self, ip_address: str) -> List[Dict[str, Any]]:
+    def _analyze_ip_anomalies(self, ip: str) -> List[Dict[str, Any]]:
         """Analyze IP address for potential anomalies."""
         anomalies = []
         
         # Check for suspicious IP patterns
         suspicious_indicators = ["10.0.0.", "192.168.", "127.0.0.", "169.254."]
         for indicator in suspicious_indicators:
-            if ip_address.startswith(indicator):
+            if ip.startswith(indicator):
                 anomalies.append({
                     "type": "private_ip_usage",
-                    "feature": "ip_address",
-                    "value": ip_address,
+                    "feature": "ip",
+                    "value": ip,
                     "anomaly_score": 0.3,
-                    "description": f"Private/internal IP address detected: {ip_address}"
+                    "description": f"Private/internal IP address detected: {ip}"
                 })
                 break
         
         # Check for known suspicious patterns
-        if any(pattern in ip_address.lower() for pattern in ["unknown", "null", "0.0.0.0"]):
+        if any(pattern in ip.lower() for pattern in ["unknown", "null", "0.0.0.0"]):
             anomalies.append({
                 "type": "invalid_ip",
-                "feature": "ip_address",
-                "value": ip_address,
+                "feature": "ip",
+                "value": ip,
                 "anomaly_score": 0.7,
-                "description": f"Invalid or suspicious IP address: {ip_address}"
+                "description": f"Invalid or suspicious IP address: {ip}"
             })
         
         return anomalies

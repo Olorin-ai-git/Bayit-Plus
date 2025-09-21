@@ -165,9 +165,9 @@ class TestValidationEngine:
         assert 'financial' in mapping[EntityType.AMOUNT]
         assert 'security' in mapping[EntityType.AMOUNT]
         
-        assert EntityType.IP_ADDRESS in mapping
-        assert 'network' in mapping[EntityType.IP_ADDRESS]
-        assert 'security' in mapping[EntityType.IP_ADDRESS]
+        assert EntityType.IP in mapping
+        assert 'network' in mapping[EntityType.IP]
+        assert 'security' in mapping[EntityType.IP]
         
         assert EntityType.EMAIL in mapping
         assert 'security' in mapping[EntityType.EMAIL]
@@ -356,7 +356,7 @@ class TestTransactionValidation:
             'amount': '100.50',
             'currency': 'USD',
             'email': 'user@example.com',
-            'ip_address': '192.168.1.1',
+            'ip': '192.168.1.1',
             'transaction_id': 'tx_12345',
             'timestamp': '2024-01-01T00:00:00Z'
         }
@@ -369,7 +369,7 @@ class TestTransactionValidation:
         # Check that transaction fields are mapped correctly
         expected_keys = [
             'amount.amount', 'currency.currency', 'email.email', 
-            'ip_address.ip_address', 'transaction_id.transaction_id', 'timestamp.timestamp'
+            'ip.ip', 'transaction_id.transaction_id', 'timestamp.timestamp'
         ]
         
         for key in expected_keys:
@@ -495,7 +495,7 @@ class TestSpecializedValidation:
         """Test network validation is applied for network entities"""
         mock_network.return_value = (True, None, {})
         
-        result = ValidationResult(EntityType.IP_ADDRESS, 'ip', '192.168.1.1')
+        result = ValidationResult(EntityType.IP, 'ip', '192.168.1.1')
         
         engine._apply_network_validation(result, None)
         
@@ -638,7 +638,7 @@ class TestPerformanceAndScalability:
         test_cases = [
             (EntityType.EMAIL, 'email', 'user@example.com'),
             (EntityType.AMOUNT, 'amount', '100.50'),
-            (EntityType.IP_ADDRESS, 'ip', '192.168.1.1'),
+            (EntityType.IP, 'ip', '192.168.1.1'),
             (EntityType.CURRENCY, 'currency', 'USD'),
             (EntityType.TX_TIMESTAMP, 'timestamp', '2024-01-01T00:00:00Z')
         ]
@@ -683,7 +683,7 @@ class TestPerformanceAndScalability:
             'amount': '100.50',
             'currency': 'USD',
             'email': 'user@example.com',
-            'ip_address': '192.168.1.1',
+            'ip': '192.168.1.1',
             'user_agent': 'Mozilla/5.0...',
             'country_code': 'US',
             'payment_method': 'card',

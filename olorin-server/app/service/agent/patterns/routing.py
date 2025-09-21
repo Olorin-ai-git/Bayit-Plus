@@ -94,7 +94,7 @@ class RoutingPattern(BasePattern):
             
             "location_investigation": {
                 "keywords": ["location", "geolocation", "ip", "country", "city", "coordinates"],
-                "entity_types": ["location", "ip_address"],
+                "entity_types": ["location", "ip"],
                 "complexity_threshold": 0.6,
                 "tool_requirement": True,
                 "description": "Geographic and location-based analysis"
@@ -102,7 +102,7 @@ class RoutingPattern(BasePattern):
             
             "network_investigation": {
                 "keywords": ["network", "ip", "proxy", "vpn", "connection", "routing"],
-                "entity_types": ["ip_address", "network"],
+                "entity_types": ["ip", "network"],
                 "complexity_threshold": 0.7,
                 "tool_requirement": True,
                 "description": "Network behavior and security analysis"

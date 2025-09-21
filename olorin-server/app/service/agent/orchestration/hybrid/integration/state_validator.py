@@ -279,7 +279,7 @@ class StateValidator:
                 "cancelled"
             ],
             "valid_entity_types": [
-                "ip_address",
+                "ip",
                 "domain",
                 "email",
                 "hash",

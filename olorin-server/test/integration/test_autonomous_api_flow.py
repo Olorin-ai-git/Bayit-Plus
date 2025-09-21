@@ -74,7 +74,7 @@ class AutonomousAPITester:
                 
                 # Network/Location data
                 "network": {
-                    "ip_address": "203.0.113.42",
+                    "ip": "203.0.113.42",
                     "country": "Romania",
                     "city": "Bucharest", 
                     "region": "Bucuresti",

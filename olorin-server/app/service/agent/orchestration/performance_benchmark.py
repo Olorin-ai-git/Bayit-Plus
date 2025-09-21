@@ -328,7 +328,7 @@ class InvestigationPerformanceBenchmark:
                 data["device_fingerprint"] = f"fp_{i}"
                 data["device_signals"] = {"suspicious": i % 10 == 0}
             elif investigation_type == "network_fraud":
-                data["ip_address"] = f"192.168.{i % 256}.{i % 256}"
+                data["ip"] = f"192.168.{i % 256}.{i % 256}"
                 data["network_signals"] = {"vpn": i % 5 == 0}
             elif investigation_type == "location_fraud":
                 data["location"] = {"lat": 40.7 + i * 0.01, "lon": -74.0 + i * 0.01}

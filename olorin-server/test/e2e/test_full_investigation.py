@@ -44,7 +44,7 @@ def create_investigation_context():
                     'timezone': 'America/New_York'
                 },
                 'network_info': {
-                    'ip_address': '203.0.113.42',
+                    'ip': '203.0.113.42',
                     'country': 'Romania',
                     'city': 'Bucharest',
                     'isp': 'Anonymous VPN Service'
@@ -99,7 +99,7 @@ DEVICE ANALYSIS NEEDED:
 - User Agent: {investigation_data['device_info']['user_agent']}
 
 NETWORK ANALYSIS NEEDED:
-- IP Address: {investigation_data['network_info']['ip_address']}
+- IP Address: {investigation_data['network_info']['ip']}
 - Location: {investigation_data['network_info']['city']}, {investigation_data['network_info']['country']}
 
 Please conduct a comprehensive fraud investigation using all available agents.

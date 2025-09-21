@@ -98,7 +98,7 @@ def sample_activities():
                 "agent_name": "risk_agent",
                 "execution_id": "tool_001",
                 "input_parameters": {
-                    "ip_address": "192.168.1.100",
+                    "ip": "192.168.1.100",
                     "user_id": "user_123"
                 },
                 "output_data": {

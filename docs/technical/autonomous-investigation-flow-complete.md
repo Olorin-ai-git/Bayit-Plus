@@ -47,7 +47,7 @@ The autonomous investigation system uses a **LangGraph-based orchestration archi
 #### H.1.1 Investigation ID-Based Selection (`agent_service.py:ainvoke_agent`)
 - **Step H.1.1.1**: Investigation metadata extraction
   - `investigation_id = md.get("investigationId") or md.get("investigation_id")`
-  - `entity_type = md.get("entity_type") or "ip_address"`
+  - `entity_type = md.get("entity_type") or "ip"`
   - **VERIFIED**: Lines 79-84 in agent_service.py
 - **Step H.1.1.2**: Hybrid system availability check
   - `from app.service.agent.orchestration.hybrid.migration_utilities import get_investigation_graph`

@@ -31,7 +31,7 @@ async def test_tool_error_handling():
     
     try:
         result = await shodan_tool._arun(
-            ip_address="8.8.8.8",
+            ip="8.8.8.8",
             include_vulnerabilities=True,
             include_services=True,
             include_history=False
@@ -77,7 +77,7 @@ async def test_tool_error_handling():
     
     try:
         result = await abuseipdb_tool.analyze_ip_reputation(
-            ip_address="8.8.8.8",
+            ip="8.8.8.8",
             max_age_days=90,  # This might trigger subscription error
             include_country_match=True,
             include_usage_type=True

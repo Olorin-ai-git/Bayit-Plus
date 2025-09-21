@@ -889,7 +889,7 @@ class UnifiedAutonomousTestRunner:
     async def load_snowflake_data(self) -> bool:
         """Load top risk entities from Snowflake"""
         from app.service.analytics.risk_analyzer import get_risk_analyzer
-        from app.service.agent.tools.snowflake_tool.schema_constants import IP_ADDRESS
+        from app.service.agent.tools.snowflake_tool.schema_constants import IP
         
         self.logger.info("❄️ Loading top risk entities from Snowflake...")
         
@@ -900,7 +900,7 @@ class UnifiedAutonomousTestRunner:
             # Fetch top 10% risk entities by IP address
             results = await analyzer.get_top_risk_entities(
                 time_window='24h',
-                group_by=IP_ADDRESS,
+                group_by=IP,
                 top_percentage=10,
                 force_refresh=False
             )
@@ -914,7 +914,7 @@ class UnifiedAutonomousTestRunner:
                     for entity in entities:
                         # Each entity is a high-risk IP address
                         entity_data = {
-                            'ip_address': entity.get('entity'),  # Actual IP address
+                            'ip': entity.get('entity'),  # Actual IP address
                             'risk_score': float(entity.get('risk_score', 0)),
                             'risk_weighted_value': float(entity.get('risk_weighted_value', 0)),
                             'transaction_count': entity.get('transaction_count', 0),
@@ -925,7 +925,7 @@ class UnifiedAutonomousTestRunner:
                     
                     self.logger.info(f"✅ Loaded {len(self.snowflake_entities)} high-risk IP addresses from Snowflake")
                     for i, entity in enumerate(self.snowflake_entities[:5], 1):
-                        self.logger.info(f"  {i}. IP: {entity['ip_address']}, Risk Score: {entity['risk_score']:.4f}")
+                        self.logger.info(f"  {i}. IP: {entity['ip']}, Risk Score: {entity['risk_score']:.4f}")
                     
                     return True
                 else:
@@ -1382,8 +1382,8 @@ class UnifiedAutonomousTestRunner:
             }
             
             # Determine entity type enum
-            if self.config.entity_type == "ip_address":
-                entity_type_enum = EntityType.IP_ADDRESS
+            if self.config.entity_type == "ip":
+                entity_type_enum = EntityType.IP
             elif self.config.entity_type == "user_id":
                 entity_type_enum = EntityType.USER_ID
             elif self.config.entity_type == "device_id":
@@ -1424,7 +1424,7 @@ class UnifiedAutonomousTestRunner:
             
             # Create user data from Snowflake entity
             user_data = {
-                "ip_address": snowflake_entity['ip_address'],  # This is the actual IP address
+                "ip": snowflake_entity['ip'],  # This is the actual IP address
                 "risk_score": snowflake_entity['risk_score'],
                 "risk_weighted_value": snowflake_entity['risk_weighted_value'],
                 "transaction_count": snowflake_entity['transaction_count'],
@@ -1434,13 +1434,13 @@ class UnifiedAutonomousTestRunner:
             
             # Entity data for investigation - using IP address as the entity
             entity_data = {
-                "entity_id": snowflake_entity['ip_address'],  # Use IP address as entity ID
-                "entity_type": "ip_address",
+                "entity_id": snowflake_entity['ip'],  # Use IP address as entity ID
+                "entity_type": "ip",
                 "source": "snowflake",
                 "risk_score": snowflake_entity['risk_score']  # Include risk score for MockLLM
             }
             
-            self.logger.info(f"Using Snowflake IP address: {snowflake_entity['ip_address']} (Risk Score: {snowflake_entity['risk_score']:.4f})")
+            self.logger.info(f"Using Snowflake IP address: {snowflake_entity['ip']} (Risk Score: {snowflake_entity['risk_score']:.4f})")
         elif self.csv_users:
             # Fallback to CSV (deprecated)
             csv_user = self.csv_users[0]
@@ -1452,8 +1452,8 @@ class UnifiedAutonomousTestRunner:
                 "transaction_count": csv_user['transaction_count'],
                 "latest_activity": csv_user['latest_tx_datetime']
             }
-            if 'ip_address' in csv_user:
-                user_data['ip_address'] = csv_user['ip_address']
+            if 'ip' in csv_user:
+                user_data['ip'] = csv_user['ip']
             
             entity_data = {
                 "entity_id": csv_user['user_id'],
@@ -1484,8 +1484,8 @@ class UnifiedAutonomousTestRunner:
         
         # Create investigation context
         # Use appropriate entity type based on what we're investigating
-        if entity_data.get("entity_type") == "ip_address":
-            entity_type = EntityType.IP_ADDRESS
+        if entity_data.get("entity_type") == "ip":
+            entity_type = EntityType.IP
         else:
             entity_type = EntityType.USER_ID
             
@@ -1765,7 +1765,7 @@ class UnifiedAutonomousTestRunner:
             # Store initial risk score from Snowflake if available
             if self.snowflake_entities and context:
                 for entity in self.snowflake_entities:
-                    if entity.get('ip_address') == context.entity_id:
+                    if entity.get('ip') == context.entity_id:
                         result.initial_risk_score = entity.get('risk_score', 0.99)
                         break
             
@@ -1965,7 +1965,7 @@ class UnifiedAutonomousTestRunner:
                 elif self.snowflake_entities:
                     # Find matching entity from Snowflake data
                     for entity in self.snowflake_entities:
-                        if entity.get('ip_address') == context.entity_id:
+                        if entity.get('ip') == context.entity_id:
                             initial_context['snowflake_risk_score'] = entity.get('risk_score', 0.99)
                             break
                 
@@ -2608,8 +2608,8 @@ class UnifiedAutonomousTestRunner:
         elif self.snowflake_entities and len(self.snowflake_entities) > 0:
             # Fallback: Use first Snowflake entity when no scenario or entity is specified
             first_entity = self.snowflake_entities[0]
-            self.config.entity_id = first_entity['ip_address']
-            self.config.entity_type = 'ip_address'
+            self.config.entity_id = first_entity['ip']
+            self.config.entity_type = 'ip'
             scenarios = [f"real_investigation_{self.config.entity_type}"]
             self.logger.info(f"🎯 No scenario specified, using first Snowflake entity for investigation: {self.config.entity_type} = {self.config.entity_id} (Risk Score: {first_entity['risk_score']:.4f})")
         else:
@@ -3200,7 +3200,7 @@ Examples:
     )
     parser.add_argument(
         "--entity-type",
-        help="Entity type: user_id, device_id, ip_address, transaction_id, etc."
+        help="Entity type: user_id, device_id, ip, transaction_id, etc."
     )
     
     # Custom investigation options

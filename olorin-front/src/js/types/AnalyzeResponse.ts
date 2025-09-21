@@ -4,7 +4,7 @@ export interface HistoryEntry {
 }
 
 export interface NetworkHistory extends HistoryEntry {
-  ip_address?: string;
+  ip?: string;
   isp?: string;
   location?: string;
 }

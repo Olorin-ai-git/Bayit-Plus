@@ -40,7 +40,7 @@ class MockEnhancedAuthService:
     def __init__(self):
         pass
         
-    async def validate_token(self, token, ip_address, user_agent):
+    async def validate_token(self, token, ip, user_agent):
         # Mock implementation for testing
         return None, "Mock validation"
 
@@ -118,7 +118,7 @@ class TestMCPAuthenticationService:
         # Test
         context, result = await mcp_auth_service.validate_mcp_token(
             token="valid_token",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0"
         )
         
@@ -138,7 +138,7 @@ class TestMCPAuthenticationService:
         # Test with valid permission
         context, result = await mcp_auth_service.validate_mcp_token(
             token="valid_token",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             required_permissions=[MCPPermission.FRAUD_QUERY_DATABASE]
         )
@@ -150,7 +150,7 @@ class TestMCPAuthenticationService:
         # Test with invalid permission
         context, result = await mcp_auth_service.validate_mcp_token(
             token="valid_token",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             required_permissions=[MCPPermission.ADMIN_CONFIG_MANAGE]
         )
@@ -167,7 +167,7 @@ class TestMCPAuthenticationService:
         # Test
         context, result = await mcp_auth_service.validate_mcp_token(
             token="invalid_token",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0"
         )
         
@@ -186,7 +186,7 @@ class TestMCPAuthenticationService:
         # Test
         context, result = await mcp_auth_service.validate_mcp_token(
             token="valid_token",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0"
         )
         
@@ -196,7 +196,7 @@ class TestMCPAuthenticationService:
     
     async def test_ip_lockout(self, mcp_auth_service, mock_base_auth):
         """Test IP lockout after failed attempts."""
-        ip_address = "192.168.1.100"
+        ip = "192.168.1.100"
         
         # Setup - simulate failed attempts
         mock_base_auth.validate_token.return_value = (None, "Invalid credentials")
@@ -205,7 +205,7 @@ class TestMCPAuthenticationService:
         for i in range(mcp_auth_service.config.max_failed_attempts):
             context, result = await mcp_auth_service.validate_mcp_token(
                 token="invalid_token",
-                ip_address=ip_address,
+                ip=ip,
                 user_agent="TestAgent/1.0"
             )
             assert context is None
@@ -213,7 +213,7 @@ class TestMCPAuthenticationService:
         # Next attempt should be locked out
         context, result = await mcp_auth_service.validate_mcp_token(
             token="another_invalid_token",
-            ip_address=ip_address,
+            ip=ip,
             user_agent="TestAgent/1.0"
         )
         
@@ -227,7 +227,7 @@ class TestMCPAuthenticationService:
             event_type="TEST_EVENT",
             user_id="test_user",
             username="test_user",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             operation="test_operation",
             success=True,
@@ -247,7 +247,7 @@ class TestMCPAuthenticationService:
             roles=sample_user.scopes,
             permissions=["mcp:fraud:database"],
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )
@@ -275,7 +275,7 @@ class TestMCPAuthenticationService:
             roles=[MCPRole.FRAUD_INVESTIGATOR],
             permissions=[MCPPermission.FRAUD_QUERY_DATABASE.value, MCPPermission.TOOL_EXECUTE.value],
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )
@@ -338,7 +338,7 @@ class TestMCPSecurityContext:
             roles=[MCPRole.FRAUD_INVESTIGATOR],
             permissions=[MCPPermission.FRAUD_QUERY_DATABASE.value],
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )
@@ -357,7 +357,7 @@ class TestMCPSecurityContext:
             roles=["fraud_investigator"],
             permissions=["mcp:fraud:database"],
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )
@@ -376,7 +376,7 @@ class TestMCPAuditEvent:
             event_type="TOOL_EXECUTION",
             user_id="test_user",
             username="test_user",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             server_name="fraud_server",
             tool_name="query_tool",
@@ -398,7 +398,7 @@ class TestMCPAuditEvent:
             event_type="TOOL_EXECUTION",
             user_id="test_user",
             username="test_user",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             operation="test_operation",
             success=True
@@ -430,7 +430,7 @@ class TestMCPAuthorizationDecorator:
             roles=[MCPRole.FRAUD_INVESTIGATOR],
             permissions=[MCPPermission.TOOL_EXECUTE.value],
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )
@@ -472,7 +472,7 @@ class TestMCPAuthorizationDecorator:
             roles=[MCPRole.FRAUD_INVESTIGATOR],
             permissions=[MCPPermission.TOOL_EXECUTE.value],  # No admin permissions
             session_id="test_session",
-            ip_address="192.168.1.1",
+            ip="192.168.1.1",
             user_agent="TestAgent/1.0",
             expires_at=datetime.utcnow() + timedelta(minutes=15)
         )

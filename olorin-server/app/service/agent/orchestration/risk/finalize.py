@@ -645,7 +645,7 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
         entity_id = state.get("entity_id", "")
         
         # IP investigation business logic assertions
-        if entity_type == "ip_address" or (entity_id and _looks_like_ip(entity_id)):
+        if entity_type == "ip" or (entity_id and _looks_like_ip(entity_id)):
             domain_findings = state.get("domain_findings", {})
             network_findings = domain_findings.get("network", {})
             
@@ -730,7 +730,7 @@ def _looks_like_ip(value: str) -> bool:
     """Check if a value looks like an IP address."""
     try:
         import ipaddress
-        ipaddress.ip_address(value)
+        ipaddress.ip(value)
         return True
     except (ipaddress.AddressValueError, ValueError):
         return False

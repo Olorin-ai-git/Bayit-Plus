@@ -439,7 +439,7 @@ class TestEndToEndErrorLogging:
         state = create_hybrid_initial_state(
             investigation_id=investigation_id,
             entity_id="192.168.1.100", 
-            entity_type="ip_address"
+            entity_type="ip"
         )
         
         # Verify errors field exists and is empty

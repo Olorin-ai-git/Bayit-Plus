@@ -196,7 +196,7 @@ class TestMCPInputValidator:
         ]
         
         for ip in valid_ips:
-            result = validator.validate(ip, InputType.IP_ADDRESS)
+            result = validator.validate(ip, InputType.IP)
             assert result.is_valid, f"IP {ip} should be valid"
     
     def test_ip_address_validation_failure(self, validator):
@@ -209,7 +209,7 @@ class TestMCPInputValidator:
         ]
         
         for ip in invalid_ips:
-            result = validator.validate(ip, InputType.IP_ADDRESS)
+            result = validator.validate(ip, InputType.IP)
             assert not result.is_valid, f"IP {ip} should be invalid"
     
     def test_sql_query_validation_success(self, validator):
@@ -467,7 +467,7 @@ class TestInputTypeDetection:
         assert validator._determine_input_type("device_id", "test", None) == InputType.DEVICE_ID
         assert validator._determine_input_type("email_address", "test", None) == InputType.EMAIL
         assert validator._determine_input_type("api_url", "test", None) == InputType.URL
-        assert validator._determine_input_type("ip_address", "test", None) == InputType.IP_ADDRESS
+        assert validator._determine_input_type("ip", "test", None) == InputType.IP
     
     def test_determine_input_type_by_value(self):
         """Test input type detection by value type."""

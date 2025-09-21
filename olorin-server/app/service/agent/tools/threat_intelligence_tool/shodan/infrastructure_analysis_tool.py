@@ -18,7 +18,7 @@ logger = get_bridge_logger(__name__)
 class InfrastructureAnalysisInput(BaseModel):
     """Input schema for infrastructure analysis."""
     
-    ip_address: str = Field(..., description="IP address to analyze")
+    ip: str = Field(..., description="IP address to analyze")
     include_history: bool = Field(
         default=False,
         description="Include historical scan data"
@@ -32,7 +32,7 @@ class InfrastructureAnalysisInput(BaseModel):
         description="Include detailed service information"
     )
     
-    @validator('ip_address')
+    @validator('ip')
     def validate_ip(cls, v):
         """Validate IP address format."""
         import ipaddress
@@ -50,7 +50,7 @@ class InfrastructureAnalysisInput(BaseModel):
                 raise ValueError(f"Entity ID detected where IP address expected: {v}. Please extract actual IP addresses from the investigation context data sources.")
         
         try:
-            ipaddress.ip_address(v)
+            ipaddress.ip(v)
             return v
         except ValueError:
             raise ValueError(f"Invalid IP address format: {v}. Expected IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., 2001:db8::1) address.")
@@ -88,7 +88,7 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
     
     async def _arun(
         self,
-        ip_address: str,
+        ip: str,
         include_history: bool = False,
         include_vulnerabilities: bool = True,
         include_services: bool = True,
@@ -98,7 +98,7 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
         try:
             # Query Shodan for host information
             host_data = await self.client.host_info(
-                ip=ip_address,
+                ip=ip,
                 history=include_history,
                 minify=False
             )
@@ -106,7 +106,7 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
             # Build comprehensive analysis result
             analysis_result = await self._build_infrastructure_analysis(
                 host_data=host_data,
-                ip_address=ip_address,
+                ip=ip,
                 include_vulnerabilities=include_vulnerabilities,
                 include_services=include_services
             )
@@ -116,31 +116,31 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
         except ValueError as e:
             # Handle specific known errors gracefully (like subscription requirements)
             if "paid subscription" in str(e).lower():
-                logger.debug(f"Shodan analysis skipped for {ip_address}: paid subscription required")
+                logger.debug(f"Shodan analysis skipped for {ip}: paid subscription required")
                 return json.dumps({
                     "status": "skipped",
                     "reason": "Shodan requires paid subscription for this endpoint",
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "timestamp": datetime.now().isoformat(),
                     "source": "Shodan"
                 }, indent=2)
             else:
                 # Other ValueError cases
-                logger.warning(f"Shodan analysis failed for {ip_address}: {str(e)}")
+                logger.warning(f"Shodan analysis failed for {ip}: {str(e)}")
                 return json.dumps({
                     "status": "failed",
                     "error": str(e),
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "timestamp": datetime.now().isoformat(),
                     "source": "Shodan"
                 }, indent=2)
         except Exception as e:
             # Handle all other exceptions gracefully
-            logger.warning(f"Shodan analysis unavailable for {ip_address}: {type(e).__name__}")
+            logger.warning(f"Shodan analysis unavailable for {ip}: {type(e).__name__}")
             return json.dumps({
                 "status": "unavailable",
                 "reason": f"Service temporarily unavailable ({type(e).__name__})",
-                "ip_address": ip_address,
+                "ip": ip,
                 "timestamp": datetime.now().isoformat(),
                 "source": "Shodan"
             }, indent=2)
@@ -148,7 +148,7 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
     async def _build_infrastructure_analysis(
         self,
         host_data: ShodanHostResponse,
-        ip_address: str,
+        ip: str,
         include_vulnerabilities: bool,
         include_services: bool
     ) -> Dict[str, Any]:
@@ -156,7 +156,7 @@ class ShodanInfrastructureAnalysisTool(BaseTool):
         
         # Basic host information
         host_info = {
-            "ip_address": ip_address,
+            "ip": ip,
             "analysis_timestamp": datetime.now().isoformat(),
             "source": "Shodan",
             "last_scan": str(host_data.last_update) if host_data.last_update else None

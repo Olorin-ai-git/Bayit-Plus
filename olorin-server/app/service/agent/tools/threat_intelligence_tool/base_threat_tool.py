@@ -240,8 +240,8 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
             if self.config.enable_caching and response.success:
                 # Tag cache entries for intelligent invalidation
                 cache_tags = {f"tool:{self.name}", f"query_type:{query_type}"}
-                if "ip_address" in query_data:
-                    cache_tags.add(f"ip:{query_data['ip_address']}")
+                if "ip" in query_data:
+                    cache_tags.add(f"ip:{query_data['ip']}")
                 
                 await self._cache.set(
                     key=cache_key,

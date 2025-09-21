@@ -225,7 +225,7 @@ class ComprehensiveEntityValidator:
             return self._validate_phone(str_value)
         
         # IP address validation
-        if 'ip' in field_name.lower() or entity_type in [EntityType.IP_ADDRESS, EntityType.CLIENT_IP]:
+        if 'ip' in field_name.lower() or entity_type in [EntityType.IP, EntityType.CLIENT_IP]:
             return self._validate_ip_address(str_value)
         
         # Currency validation
@@ -283,7 +283,7 @@ class ComprehensiveEntityValidator:
     def _validate_ip_address(self, value: str) -> Tuple[bool, Optional[str]]:
         """Validate IPv4 or IPv6 address"""
         try:
-            ipaddress.ip_address(value)
+            ipaddress.ip(value)
             return True, None
         except ValueError:
             return False, "Invalid IP address format"

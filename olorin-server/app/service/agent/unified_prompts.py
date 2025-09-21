@@ -8,7 +8,7 @@ Replaces scattered Gaia and Olorin prompt systems.
 from typing import List, Dict, Any, Optional
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    IP_ADDRESS, IP_COUNTRY_CODE, IP_CITY, DEVICE_ID, USER_AGENT,
+    IP, IP_COUNTRY_CODE, IP_CITY, DEVICE_ID, USER_AGENT,
     TX_DATETIME, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION
 )
 
@@ -78,7 +78,7 @@ Based on the entity type and available data, you should:
 
 ⚡ INVESTIGATION WORKFLOW:
 1. 🔴 SNOWFLAKE FIRST (30-DAY ANALYSIS):
-   - Network Agent: Query {IP_ADDRESS}, {IP_COUNTRY_CODE}, ISP_NAME, VPN_INDICATOR fields
+   - Network Agent: Query {IP}, {IP_COUNTRY_CODE}, ISP_NAME, VPN_INDICATOR fields
    - Device Agent: Query {DEVICE_ID}, {USER_AGENT}, BROWSER_NAME, OS_NAME fields
    - Location Agent: Query {IP_COUNTRY_CODE} (Note: IP_CITY not available in schema)
    - Logs Agent: Query {TX_DATETIME}, EVENT_TYPE, ERROR_CODES, SESSION_DATA fields

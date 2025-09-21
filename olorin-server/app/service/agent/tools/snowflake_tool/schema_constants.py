@@ -20,7 +20,7 @@ PHONE_NUMBER = "PHONE_NUMBER"
 PHONE_COUNTRY_CODE = "PHONE_COUNTRY_CODE"
 
 # Network and Location Fields
-IP_ADDRESS = "IP"  # Correct column name (not IP_ADDRESS)
+IP = "IP"  # Correct column name (not IP)
 IP_COUNTRY_CODE = "IP_COUNTRY_CODE"  # Correct column name
 # Note: IP_CITY is not available in the schema
 
@@ -91,9 +91,9 @@ FIELD_MAPPINGS = {
     "PAID_AMOUNT": PAID_AMOUNT_VALUE,
 
     # Network fields
-    "IP_ADDRESS": IP_ADDRESS,
+    "IP": IP,
     "IP_COUNTRY": IP_COUNTRY_CODE,
-    "IP": IP_ADDRESS,
+    "IP": IP,
 
     # Non-existent columns mapped to NULL
     "IP_CITY": IP_CITY,

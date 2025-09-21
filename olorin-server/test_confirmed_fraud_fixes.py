@@ -25,7 +25,7 @@ def test_canonical_outcome_no_crash():
         "risk_score": None,  # This should not cause float(None) crash
         "ai_confidence": 0.7,
         "investigation_id": "test-123",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "entity_id": "192.168.1.1",
         "start_time": "2025-09-12T10:00:00Z",
         "end_time": "2025-09-12T10:05:00Z",
@@ -51,7 +51,7 @@ def test_confirmed_fraud_bypass():
     # Mock state with confirmed fraud in Snowflake
     state = {
         "entity_id": "test-ip",
-        "entity_type": "ip_address", 
+        "entity_type": "ip", 
         "start_time": "2025-09-12T10:00:00Z",
         "end_time": "2025-09-12T10:05:00Z",
         "total_duration_ms": 30000,
@@ -126,7 +126,7 @@ def test_evidence_gate_still_works():
     # Mock state without confirmed fraud - should be blocked
     state = {
         "entity_id": "test-ip-2", 
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "start_time": "2025-09-12T10:00:00Z",
         "end_time": "2025-09-12T10:05:00Z",
         "total_duration_ms": 30000,

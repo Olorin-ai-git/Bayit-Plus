@@ -368,10 +368,10 @@ class InvestigationToolBuilder:
             input_schema={
                 "type": "object",
                 "properties": {
-                    "ip_address": {"type": "string", "description": "IP address"},
+                    "ip": {"type": "string", "description": "IP address"},
                     "claimed_location": {"type": "object", "description": "Claimed location data"}
                 },
-                "required": ["ip_address"]
+                "required": ["ip"]
             },
             output_schema={
                 "type": "object",
@@ -599,13 +599,13 @@ def example_tool_creation():
     
     # Create tool from function
     @builder.create_from_function
-    def check_ip_reputation(ip_address: str, threshold: float = 0.5) -> dict:
+    def check_ip_reputation(ip: str, threshold: float = 0.5) -> dict:
         """Check IP address reputation score."""
         # Simulate IP check
         import random
         score = random.random()
         return {
-            "ip": ip_address,
+            "ip": ip,
             "reputation_score": score,
             "is_suspicious": score > threshold
         }

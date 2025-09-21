@@ -43,7 +43,7 @@ def test_original_bug_scenario():
     result = MockInvestigationResult(
         investigation_id="unified_test_real_investigation_ip_address_1757512703",
         entity_id="67.76.8.209",
-        entity_type="ip_address",
+        entity_type="ip",
         status="running"
     )
     
@@ -119,7 +119,7 @@ def test_low_quality_score_fix():
     result = MockInvestigationResult(
         investigation_id="test_low_quality_001", 
         entity_id="67.76.8.209",
-        entity_type="ip_address",
+        entity_type="ip",
         status="completed"  # Marked as completed initially
     )
     result.validation_results = {
@@ -155,7 +155,7 @@ def test_high_quality_remains_completed():
     result = MockInvestigationResult(
         investigation_id="test_high_quality_001",
         entity_id="67.76.8.209", 
-        entity_type="ip_address",
+        entity_type="ip",
         status="completed"
     )
     result.validation_results = {
@@ -188,7 +188,7 @@ def test_comprehensive_fix_validation():
         MockInvestigationResult(
             investigation_id="validation_failure_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address", 
+            entity_type="ip", 
             status="failed",  # Set by validation
             validation_results={"overall_score": 15.0, "validation_status": "FAILED"},
             errors=["Critical validation failure"]
@@ -198,7 +198,7 @@ def test_comprehensive_fix_validation():
         MockInvestigationResult(
             investigation_id="low_quality_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             status="completed",  # Initially completed  
             validation_results={"overall_score": 35.0, "validation_status": "WARNING"}
         ),
@@ -207,7 +207,7 @@ def test_comprehensive_fix_validation():
         MockInvestigationResult(
             investigation_id="high_quality_001",
             entity_id="67.76.8.209",
-            entity_type="ip_address",
+            entity_type="ip",
             status="completed",
             validation_results={"overall_score": 85.0, "validation_status": "PASSED"}
         ),
@@ -216,7 +216,7 @@ def test_comprehensive_fix_validation():
         MockInvestigationResult(
             investigation_id="invalid_status_001",
             entity_id="67.76.8.209", 
-            entity_type="ip_address",
+            entity_type="ip",
             status="unknown"  # Invalid status
         )
     ]

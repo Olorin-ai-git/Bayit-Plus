@@ -20,7 +20,7 @@
     "browser": "Chrome",
     "device_first_seen": "2025-08-29T15:30:00.000Z",
     "device_trusted": false,
-    "ip_address": "185.220.100.245",
+    "ip": "185.220.100.245",
     "proxy_detected": true,
     "vpn_detected": true,
     "tor_detected": false,
@@ -45,7 +45,7 @@
     "typical_spending_category": "groceries",
     "fraud_indicators": "device_spoofing,proxy_usage,location_mismatch,velocity_anomaly",
     "risk_score": 0.95,
-    "_raw": "2025-08-30T10:15:30.000Z transaction_id=txn_fraud_001_device_spoofing amount=2547.99 currency=USD user_id=user_victim_001 device_id=device_suspicious_001 ip_address=185.220.100.245 merchant_name=ElectronicsStore_Premium fraud_indicators=\"device_spoofing,proxy_usage,location_mismatch,velocity_anomaly\" risk_score=0.95"
+    "_raw": "2025-08-30T10:15:30.000Z transaction_id=txn_fraud_001_device_spoofing amount=2547.99 currency=USD user_id=user_victim_001 device_id=device_suspicious_001 ip=185.220.100.245 merchant_name=ElectronicsStore_Premium fraud_indicators=\"device_spoofing,proxy_usage,location_mismatch,velocity_anomaly\" risk_score=0.95"
   },
   {
     "_time": "2025-08-30T11:22:45.000Z",
@@ -68,7 +68,7 @@
     "browser": "Chrome",
     "device_first_seen": "2025-08-30T11:20:00.000Z",
     "device_trusted": false,
-    "ip_address": "91.134.232.101",
+    "ip": "91.134.232.101",
     "proxy_detected": false,
     "vpn_detected": true,
     "tor_detected": false,
@@ -93,7 +93,7 @@
     "typical_spending_category": "home_garden",
     "fraud_indicators": "account_takeover,new_device,vpn_usage,behavioral_anomaly",
     "risk_score": 0.88,
-    "_raw": "2025-08-30T11:22:45.000Z transaction_id=txn_fraud_002_account_takeover amount=899.00 currency=USD user_id=user_victim_002 device_id=device_suspicious_002 ip_address=91.134.232.101 merchant_name=FashionHub_Online fraud_indicators=\"account_takeover,new_device,vpn_usage,behavioral_anomaly\" risk_score=0.88"
+    "_raw": "2025-08-30T11:22:45.000Z transaction_id=txn_fraud_002_account_takeover amount=899.00 currency=USD user_id=user_victim_002 device_id=device_suspicious_002 ip=91.134.232.101 merchant_name=FashionHub_Online fraud_indicators=\"account_takeover,new_device,vpn_usage,behavioral_anomaly\" risk_score=0.88"
   },
   {
     "_time": "2025-08-30T12:08:12.000Z",
@@ -116,7 +116,7 @@
     "browser": "Chrome",
     "device_first_seen": "2025-08-25T09:15:00.000Z",
     "device_trusted": false,
-    "ip_address": "198.50.177.221",
+    "ip": "198.50.177.221",
     "proxy_detected": true,
     "vpn_detected": false,
     "tor_detected": true,
@@ -141,7 +141,7 @@
     "typical_spending_category": "",
     "fraud_indicators": "synthetic_identity,new_account,tor_usage,proxy_usage,unusual_session",
     "risk_score": 0.92,
-    "_raw": "2025-08-30T12:08:12.000Z transaction_id=txn_fraud_003_synthetic_identity amount=1250.00 currency=USD user_id=user_synthetic_001 device_id=device_suspicious_003 ip_address=198.50.177.221 merchant_name=GamingWorld_Store fraud_indicators=\"synthetic_identity,new_account,tor_usage,proxy_usage,unusual_session\" risk_score=0.92"
+    "_raw": "2025-08-30T12:08:12.000Z transaction_id=txn_fraud_003_synthetic_identity amount=1250.00 currency=USD user_id=user_synthetic_001 device_id=device_suspicious_003 ip=198.50.177.221 merchant_name=GamingWorld_Store fraud_indicators=\"synthetic_identity,new_account,tor_usage,proxy_usage,unusual_session\" risk_score=0.92"
   },
   {
     "_time": "2025-08-30T13:45:22.000Z",
@@ -164,7 +164,7 @@
     "browser": "Firefox",
     "device_first_seen": "2024-08-30T13:45:00.000Z",
     "device_trusted": true,
-    "ip_address": "203.0.113.195",
+    "ip": "203.0.113.195",
     "proxy_detected": false,
     "vpn_detected": false,
     "tor_detected": false,
@@ -189,7 +189,7 @@
     "typical_spending_category": "entertainment",
     "fraud_indicators": "velocity_attack,automated_behavior,rapid_transactions",
     "risk_score": 0.78,
-    "_raw": "2025-08-30T13:45:22.000Z transaction_id=txn_fraud_004_velocity_attack amount=49.99 currency=USD user_id=user_victim_003 device_id=device_compromised_001 ip_address=203.0.113.195 merchant_name=StreamingService_Pro fraud_indicators=\"velocity_attack,automated_behavior,rapid_transactions\" risk_score=0.78"
+    "_raw": "2025-08-30T13:45:22.000Z transaction_id=txn_fraud_004_velocity_attack amount=49.99 currency=USD user_id=user_victim_003 device_id=device_compromised_001 ip=203.0.113.195 merchant_name=StreamingService_Pro fraud_indicators=\"velocity_attack,automated_behavior,rapid_transactions\" risk_score=0.78"
   },
   {
     "_time": "2025-08-30T14:30:55.000Z",
@@ -212,7 +212,7 @@
     "browser": "Automated",
     "device_first_seen": "2025-08-30T14:25:00.000Z",
     "device_trusted": false,
-    "ip_address": "104.244.72.115",
+    "ip": "104.244.72.115",
     "proxy_detected": true,
     "vpn_detected": false,
     "tor_detected": false,
@@ -237,7 +237,7 @@
     "typical_spending_category": "",
     "fraud_indicators": "card_testing,automated_bot,proxy_usage,micro_transaction,new_account",
     "risk_score": 0.99,
-    "_raw": "2025-08-30T14:30:55.000Z transaction_id=txn_fraud_005_card_testing amount=1.00 currency=USD user_id=user_fraudster_001 device_id=device_automated_001 ip_address=104.244.72.115 merchant_name=TestMerchant_Small fraud_indicators=\"card_testing,automated_bot,proxy_usage,micro_transaction,new_account\" risk_score=0.99"
+    "_raw": "2025-08-30T14:30:55.000Z transaction_id=txn_fraud_005_card_testing amount=1.00 currency=USD user_id=user_fraudster_001 device_id=device_automated_001 ip=104.244.72.115 merchant_name=TestMerchant_Small fraud_indicators=\"card_testing,automated_bot,proxy_usage,micro_transaction,new_account\" risk_score=0.99"
   },
   {
     "_time": "2025-08-30T15:12:08.000Z",
@@ -260,7 +260,7 @@
     "browser": "Safari",
     "device_first_seen": "2022-01-15T08:30:00.000Z",
     "device_trusted": true,
-    "ip_address": "210.172.183.92",
+    "ip": "210.172.183.92",
     "proxy_detected": false,
     "vpn_detected": false,
     "tor_detected": false,
@@ -285,6 +285,6 @@
     "typical_spending_category": "restaurants",
     "fraud_indicators": "geographic_velocity,location_impossible,high_value_transaction",
     "risk_score": 0.85,
-    "_raw": "2025-08-30T15:12:08.000Z transaction_id=txn_fraud_006_geo_velocity amount=3200.00 currency=USD user_id=user_victim_004 device_id=device_legitimate_001 ip_address=210.172.183.92 merchant_name=LuxuryJewelry_Elite fraud_indicators=\"geographic_velocity,location_impossible,high_value_transaction\" risk_score=0.85"
+    "_raw": "2025-08-30T15:12:08.000Z transaction_id=txn_fraud_006_geo_velocity amount=3200.00 currency=USD user_id=user_victim_004 device_id=device_legitimate_001 ip=210.172.183.92 merchant_name=LuxuryJewelry_Elite fraud_indicators=\"geographic_velocity,location_impossible,high_value_transaction\" risk_score=0.85"
   }
 ]

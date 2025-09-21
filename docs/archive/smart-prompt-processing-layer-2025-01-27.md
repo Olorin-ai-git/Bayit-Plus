@@ -42,7 +42,7 @@ class SmartParameterInferenceService:
     Features:
     - Investigation Type Detection: 5 categories (fraud_detection, user_behavior, device_analysis, network_analysis, security_check)
     - Priority Detection: 3 levels (high, medium, low) with keyword matching
-    - Entity Extraction: 4 entity types (user_id, device_id, ip_address, email) using regex patterns
+    - Entity Extraction: 4 entity types (user_id, device_id, ip, email) using regex patterns
     - Confidence Scoring: Intelligent scoring based on detection quality (0.0-1.0)
     - Parameter Optimization: Dynamic temperature and max_tokens based on investigation type
 ```
@@ -134,7 +134,7 @@ Input: "Analyze network connections from IP 192.168.1.100 for security threats"
 Inference Results:
 - Investigation Type: "network_analysis" (100% accuracy)
 - Priority: "medium" (default)
-- Entity Extraction: ip_address "192.168.1.100" (100% accuracy)
+- Entity Extraction: ip "192.168.1.100" (100% accuracy)
 - Temperature: 0.3 (optimized for network analysis)
 - Max Tokens: 1500 (appropriate for network investigation)
 - Confidence Score: 0.425 (acceptable confidence)

@@ -32,7 +32,7 @@ async def test_virustotal_ip_analysis_in_event_loop():
         
         # This should NOT crash with "asyncio.run() cannot be called from a running event loop"
         print("   Calling tool._run() from within async event loop...")
-        result = tool._run(ip_address="8.8.8.8", include_vendor_details=False)
+        result = tool._run(ip="8.8.8.8", include_vendor_details=False)
         
         print(f"   Result type: {type(result)}")
         assert isinstance(result, str), "Should return string result"
@@ -40,9 +40,9 @@ async def test_virustotal_ip_analysis_in_event_loop():
         # Parse result to ensure it's valid JSON
         import json
         parsed_result = json.loads(result)
-        print(f"   Success: {parsed_result.get('ip_address')} analysis completed")
-        assert "ip_address" in parsed_result
-        assert parsed_result["ip_address"] == "8.8.8.8"
+        print(f"   Success: {parsed_result.get('ip')} analysis completed")
+        assert "ip" in parsed_result
+        assert parsed_result["ip"] == "8.8.8.8"
         
         print("   ✅ VirusTotal IP analysis working in event loop")
         return True
@@ -108,7 +108,7 @@ async def test_multiple_tools_concurrently():
         
         async def run_ip():
             # Call sync method from async context (this was the problematic scenario)
-            return ip_tool._run(ip_address="1.1.1.1")
+            return ip_tool._run(ip="1.1.1.1")
             
         async def run_domain():
             return domain_tool._run(domain="cloudflare.com")
@@ -123,7 +123,7 @@ async def test_multiple_tools_concurrently():
         ip_data = json.loads(ip_result)
         domain_data = json.loads(domain_result)
         
-        print(f"   IP result: {ip_data.get('ip_address', 'unknown')}")
+        print(f"   IP result: {ip_data.get('ip', 'unknown')}")
         print(f"   Domain result: {domain_data.get('domain', 'unknown')}")
         
         print("   ✅ Concurrent VirusTotal tools working")

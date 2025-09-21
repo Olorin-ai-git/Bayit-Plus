@@ -34,7 +34,7 @@ class TestAdvancedSafetyManager:
         return create_hybrid_initial_state(
             investigation_id="safety-test-001",
             entity_id="192.168.1.200",
-            entity_type="ip_address"
+            entity_type="ip"
         )
     
     def test_validate_current_state_basic(self, safety_manager, mock_state):

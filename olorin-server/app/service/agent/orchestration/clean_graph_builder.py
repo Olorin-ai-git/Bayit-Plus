@@ -21,14 +21,13 @@ from app.service.agent.orchestration.state_schema import (
     _normalize_snowflake_data_type
 )
 from app.service.agent.orchestration.orchestrator_agent import orchestrator_node
-from app.service.agent.orchestration.domain_agents import (
-    network_agent_node,
-    device_agent_node,
-    location_agent_node,
-    logs_agent_node,
-    authentication_agent_node,
-    risk_agent_node
-)
+# Import domain agents directly to avoid circular imports via domain_agents/__init__.py
+from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
+from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
+from app.service.agent.orchestration.domain_agents.authentication_agent import authentication_agent_node
+from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 
 logger = get_bridge_logger(__name__)
 
@@ -454,13 +453,11 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     snowflake_completed = state.get("snowflake_completed", False)
     tools_used = state.get("tools_used", [])
     
-    # CRITICAL FIX: Increment orchestrator_loops FIRST to prevent infinite recursion
-    # The orchestrator_agent.py increments this counter, but routing happens before that increment is saved
-    # So we need to predict the next loop count for proper routing decisions
-    base_orchestrator_loops = state.get("orchestrator_loops", 0)
-    # Since routing happens AFTER orchestrator execution, we should use the incremented value
-    # The orchestrator increments by 1, so we use the incremented value for routing decisions
-    orchestrator_loops = base_orchestrator_loops + 1
+    # DEBUG FIX: Use actual orchestrator_loops without artificial increment
+    # The artificial +1 increment was causing premature recursion safety triggering
+    # Let the orchestrator itself handle the increment properly
+    orchestrator_loops = state.get("orchestrator_loops", 0)
+    base_orchestrator_loops = orchestrator_loops  # Keep for logging consistency
     
     # Track routing decisions for debugging (collect them to return with result)
     routing_decisions = state.get("routing_decisions", []).copy()
@@ -483,18 +480,25 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         # The state updates would need to be handled by the target node
         return next_node
     
-    # Step 7.1.1: Orchestrator loop limits - TEST: 12 loops, LIVE: 25 loops maximum
+    # Step 7.1.1: Orchestrator loop limits - ALIGNED with LangGraph recursion limits
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
-    max_loops = 12 if is_test_mode else 25  # Reduced limits to prevent long waits
+    max_loops = 45 if is_test_mode else 55  # ALIGNED: Well below LangGraph recursion limits (50/60)
     
     logger.debug(f"[Step 7.1.1] 🔄 ORCHESTRATOR LOOP LIMITS - Configuration check")
     logger.debug(f"[Step 7.1.1]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
-    logger.debug(f"[Step 7.1.1]   Max loops allowed: {max_loops} ({'TEST: 12' if is_test_mode else 'LIVE: 25'})")
+    logger.debug(f"[Step 7.1.1]   Max loops allowed: {max_loops} ({'TEST: 45' if is_test_mode else 'LIVE: 55'})")
     logger.debug(f"[Step 7.1.1]   Base orchestrator loops: {base_orchestrator_loops}")
     logger.debug(f"[Step 7.1.1]   Predicted orchestrator loops: {orchestrator_loops}")
     logger.debug(f"[Step 7.1.1]   Loop prevention status: {'ACTIVE' if orchestrator_loops < max_loops else 'TRIGGERED'}")
+    logger.debug(f"[Step 7.1.1]   LangGraph recursion limit: {50 if is_test_mode else 60} (safely above routing limits)")
     
-    logger.info(f"🔀 Routing from orchestrator (predicted loop {orchestrator_loops}/{max_loops}, base: {base_orchestrator_loops})")
+    logger.info(f"🔀 Routing from orchestrator (actual loop {orchestrator_loops}/{max_loops})")
+    logger.debug(f"🔀 ROUTING DEBUG - Loop count analysis:")
+    logger.debug(f"   Actual orchestrator_loops from state: {orchestrator_loops}")
+    logger.debug(f"   Max loops allowed: {max_loops}")
+    logger.debug(f"   Loop safety will trigger at: {max_loops}")
+    logger.debug(f"   Current phase: {current_phase}")
+    logger.debug(f"   Snowflake completed: {snowflake_completed}")
     
     # CRITICAL: Early termination to prevent infinite loops
     if orchestrator_loops >= max_loops:
@@ -613,7 +617,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             loop_threshold = 6 if is_test_mode else 8  # Allow more loops for proper execution
             logger.debug(f"[Step 7.1.2] 📊 SNOWFLAKE PHASE THRESHOLDS - Threshold configuration")
             logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
-            logger.debug(f"[Step 7.1.2]   Snowflake loop threshold: {loop_threshold} ({'TEST: 3' if is_test_mode else 'LIVE: 6'})")
+            logger.debug(f"[Step 7.1.2]   Snowflake loop threshold: {loop_threshold} ({'TEST: 6' if is_test_mode else 'LIVE: 8'})")
             logger.debug(f"[Step 7.1.2]   Current predicted loops: {orchestrator_loops}")
             logger.debug(f"[Step 7.1.2]   Snowflake ToolMessage detected: {snowflake_tool_found}")
             logger.debug(f"[Step 7.1.2]   Threshold exceeded: {orchestrator_loops >= loop_threshold}")
@@ -640,6 +644,10 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     
     elif current_phase == "tool_execution":
         logger.debug(f"   🔧 TOOL EXECUTION PHASE")
+        logger.info(f"🔧 TOOL EXECUTION PHASE ENTRY - Evaluating domain analysis transition")
+        logger.info(f"   Orchestrator loops: {orchestrator_loops}/{max_loops}")
+        logger.info(f"   Snowflake completed: {snowflake_completed}")
+        logger.info(f"   Tools used count: {len(tools_used)}")
         
         # ARCHITECTURE FIX: Prevent infinite loops in tool execution phase
         tool_execution_attempts = state.get("tool_execution_attempts", 0)
@@ -651,8 +659,8 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         
         logger.debug(f"[Step 7.1.2] 🔧 TOOL EXECUTION PHASE THRESHOLDS - Threshold configuration")
         logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
-        logger.debug(f"[Step 7.1.2]   Tool execution loop threshold: {loop_threshold} ({'TEST: 5' if is_test_mode else 'LIVE: 8'})")
-        logger.debug(f"[Step 7.1.2]   Tool usage threshold: {tool_threshold} ({'TEST: 5' if is_test_mode else 'LIVE: 8'})")
+        logger.debug(f"[Step 7.1.2]   Tool execution loop threshold: {loop_threshold} ({'TEST: 8' if is_test_mode else 'LIVE: 10'})")
+        logger.debug(f"[Step 7.1.2]   Tool usage threshold: {tool_threshold} ({'TEST: 8' if is_test_mode else 'LIVE: 10'})")
         logger.debug(f"[Step 7.1.2]   Max execution attempts: {max_attempts}")
         logger.debug(f"[Step 7.1.2]   Current tool execution attempts: {tool_execution_attempts}/{max_attempts}")
         logger.debug(f"[Step 7.1.2]   Current tools used: {len(tools_used)}/{tool_threshold}")
@@ -689,18 +697,30 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             logger.debug(f"[Step 7.1.3]   Expected next: Orchestrator will set current_phase = 'domain_analysis'")
             
             logger.info(f"  → FORCED move to domain analysis (attempts: {tool_execution_attempts}, tools: {len(tools_used)}, loops: {orchestrator_loops})")
+            logger.info(f"      🎯 CRITICAL: Routing back to orchestrator to change phase to 'domain_analysis'")
             logger.debug(f"      Progression reasons: {', '.join(reasons)}")
-            return "orchestrator"  # Orchestrator will change phase to domain_analysis
+            return route_with_logging(
+                "orchestrator",
+                f"Force progression to domain_analysis - {', '.join(reasons)}",
+                {"attempts": tool_execution_attempts, "tools": len(tools_used), "loops": orchestrator_loops}
+            )
         else:
             logger.info(f"  → Continuing tool execution (tools: {len(tools_used)}, attempts: {tool_execution_attempts})")
             logger.debug(f"      Continuing in tool execution phase")
-            return "orchestrator"
+            return route_with_logging(
+                "orchestrator",
+                f"Continue tool execution - below thresholds",
+                {"attempts": tool_execution_attempts, "tools": len(tools_used), "loops": orchestrator_loops}
+            )
     
     elif current_phase == "domain_analysis":
         logger.debug(f"   🎯 DOMAIN ANALYSIS PHASE")
-        
+        logger.info(f"🎯 DOMAIN ANALYSIS PHASE ENTRY - Sequential domain agent execution")
+
         domains_completed = state.get("domains_completed", [])
-        logger.debug(f"      Domains completed: {domains_completed}")
+        logger.info(f"   Domains completed so far: {domains_completed}")
+        logger.info(f"   Orchestrator loops: {orchestrator_loops}/{max_loops}")
+        logger.debug(f"      Domain analysis phase active - executing domain agents sequentially")
         
         # Step 5.1.1: Domain execution order
         domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
@@ -721,7 +741,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ✅ COMPLETED")
         
         # Allow sufficient loops for all 6 domain agents to execute sequentially
-        domain_threshold = 12 if is_test_mode else 15  # Need at least 6 loops for 6 domain agents
+        domain_threshold = 20 if is_test_mode else 25  # INCREASED: Need sufficient loops for 6 domain agents
         logger.debug(f"      Domain threshold for this mode: {domain_threshold}")
         logger.debug(f"      Predicted loops: {orchestrator_loops}")
         
@@ -749,9 +769,9 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     
     # Step 7.1.3: Fallback forced progression mechanisms - CRITICAL FIX: Prevent infinite default loops
     logger.debug(f"[Step 7.1.3] ❓ FALLBACK ROUTING - Safety mechanisms for unhandled cases")
-    final_threshold = 13 if is_test_mode else 12  # Allow domain agents to complete
+    final_threshold = 22 if is_test_mode else 30  # INCREASED: Allow domain agents to complete
     logger.debug(f"[Step 7.1.3]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
-    logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 6' if is_test_mode else 'LIVE: 10'})")
+    logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 22' if is_test_mode else 'LIVE: 30'})")
     logger.debug(f"[Step 7.1.3]   Current predicted loops: {orchestrator_loops}")
     logger.debug(f"[Step 7.1.3]   Final threshold exceeded: {orchestrator_loops >= final_threshold}")
     
@@ -778,8 +798,8 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     logger.debug(f"         Predicted loops: {orchestrator_loops}")
     
     # CRITICAL FIX: Allow sufficient loops for domain agents to execute
-    # Need at least 10 loops in test mode to complete: Snowflake (3) + Tool execution (2) + Domain agents (6) = 11 loops minimum
-    max_orchestrator_loops = 15 if is_test_mode else 8  # Increased from 4 to allow domain agents
+    # Need at least 20 loops in test mode to complete: Snowflake (5) + Tool execution (5) + Domain agents (12) = 22 loops minimum
+    max_orchestrator_loops = 23 if is_test_mode else 32  # INCREASED: Allow full domain agent execution
 
     if orchestrator_loops >= max_orchestrator_loops:  # Allow more loops for domain agents
         logger.debug(f"[Step 7.1.3]   Tier 1 Safety: {orchestrator_loops} >= {max_orchestrator_loops} loops - CONTROLLED TERMINATION")
@@ -990,7 +1010,7 @@ def build_clean_investigation_graph() -> StateGraph:
 
 async def run_investigation(
     entity_id: str,
-    entity_type: str = "ip_address",
+    entity_type: str = "ip",
     investigation_id: str = None,
     custom_user_prompt: Optional[str] = None
 ) -> Dict[str, Any]:
@@ -1035,14 +1055,14 @@ async def run_investigation(
     # Check if we're in TEST_MODE or live environment
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
     
-    # CRITICAL FIX: Much more aggressive limits to prevent infinite loops
-    recursion_limit = 20 if is_test_mode else 35  # Lower recursion limits
+    # CRITICAL FIX: Align recursion limits with routing logic to prevent premature termination
+    recursion_limit = 50 if is_test_mode else 60  # Allow sufficient loops for domain analysis
     timeout = 60.0 if is_test_mode else 180.0  # Reasonable timeouts: 1-3 minutes max
     
     logger.debug(f"[Step 8.2.1] ⏱️ TIMEOUT MANAGEMENT - Investigation timeout configuration")
     logger.debug(f"[Step 8.2.1]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
     logger.debug(f"[Step 8.2.1]   Investigation timeout: {timeout}s ({'TEST: 60s' if is_test_mode else 'LIVE: 180s'})")
-    logger.debug(f"[Step 8.2.1]   Recursion limit: {recursion_limit} ({'TEST: 20' if is_test_mode else 'LIVE: 35'})")
+    logger.debug(f"[Step 8.2.1]   Recursion limit: {recursion_limit} ({'TEST: 50' if is_test_mode else 'LIVE: 60'})")
     logger.debug(f"[Step 8.2.1]   Timeout rationale: {'Quick tests need short timeouts' if is_test_mode else 'Complex investigations need longer timeouts'}")
     logger.debug(f"[Step 8.2.1]   Deadlock detection: Will warn at {timeout * 0.8}s (80% of timeout)")
     

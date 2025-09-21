@@ -107,7 +107,7 @@ async def investigate_with_patterns(
     thread_id: Optional[str] = None,
     parallel: bool = True,
     investigation_id: Optional[str] = None,
-    entity_type: str = "ip_address"
+    entity_type: str = "ip"
 ):
     """Execute pattern-based investigation using hybrid intelligence graph selection."""
     logger.info(f"Starting investigation: pattern_type={pattern_type}, investigation_id={investigation_id}")

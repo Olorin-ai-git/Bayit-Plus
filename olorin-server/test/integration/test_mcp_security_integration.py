@@ -92,7 +92,7 @@ class TestMCPSecurityIntegration:
         # 2. Validate token and get security context
         context, result = await auth_service.validate_mcp_token(
             token="valid_jwt_token",
-            ip_address="192.168.1.100",
+            ip="192.168.1.100",
             user_agent="OlorinAgent/1.0",
             required_permissions=[MCPPermission.FRAUD_QUERY_DATABASE]
         )
@@ -151,7 +151,7 @@ class TestMCPSecurityIntegration:
         # Try to access admin tool with investigator permissions
         context, result = await auth_service.validate_mcp_token(
             token="valid_jwt_token",
-            ip_address="192.168.1.100",
+            ip="192.168.1.100",
             user_agent="OlorinAgent/1.0",
             required_permissions=[MCPPermission.ADMIN_CONFIG_MANAGE]  # Admin permission required
         )
@@ -213,7 +213,7 @@ class TestMCPSecurityIntegration:
         # Should be rate limited
         context, result = await auth_service.validate_mcp_token(
             token="valid_jwt_token",
-            ip_address="192.168.1.100",
+            ip="192.168.1.100",
             user_agent="OlorinAgent/1.0"
         )
         
@@ -283,7 +283,7 @@ class TestMCPSecurityIntegration:
         # Step 1: Authenticate and authorize
         context, auth_result = await auth_service.validate_mcp_token(
             token="investigation_token",
-            ip_address="10.0.1.50",
+            ip="10.0.1.50",
             user_agent="Olorin-Investigator/2.0",
             required_permissions=[
                 MCPPermission.FRAUD_QUERY_DATABASE,

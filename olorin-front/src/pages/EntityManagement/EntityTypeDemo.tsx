@@ -101,9 +101,9 @@ const mockEntityTypes: EntityType[] = [
     dataType: 'string'
   },
   {
-    id: 'ip_address',
+    id: 'ip',
     name: 'IP Address',
-    value: 'ip_address',
+    value: 'ip',
     description: 'Client IP address for geolocation and security analysis',
     category: 'Security',
     subcategory: 'Network Analysis',

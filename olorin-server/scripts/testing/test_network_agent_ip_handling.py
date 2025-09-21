@@ -29,7 +29,7 @@ async def test_network_agent_without_ip():
         "email": "test@example.com",
         "first_name": "Test",
         "app_id": "test_app"
-        # NO ip_address field
+        # NO ip field
     }
     
     context.data_sources["entity"] = {
@@ -83,7 +83,7 @@ async def test_network_agent_with_ip():
         "email": "test@example.com",
         "first_name": "Test",
         "app_id": "test_app",
-        "ip_address": "198.51.100.42"  # TEST-NET-2 range
+        "ip": "198.51.100.42"  # TEST-NET-2 range
     }
     
     context.data_sources["entity"] = {

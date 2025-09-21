@@ -119,21 +119,21 @@ class NetworkValidationRules:
         self.domain_cache = {}
         self.user_agent_cache = {}
     
-    def validate_ip_address(self, ip_address: str) -> Tuple[bool, Optional[str], Dict[str, Any]]:
+    def validate_ip_address(self, ip: str) -> Tuple[bool, Optional[str], Dict[str, Any]]:
         """
         Comprehensive IP address validation and analysis.
         
         Args:
-            ip_address: IP address string to validate
+            ip: IP address string to validate
             
         Returns:
             Tuple of (is_valid, error_message, ip_analysis)
         """
-        if not ip_address:
+        if not ip:
             return False, "IP address cannot be empty", {}
         
         try:
-            ip_obj = ipaddress.ip_address(ip_address)
+            ip_obj = ipaddress.ip(ip)
             
             # Basic validation passed, now analyze characteristics
             ip_analysis = self._analyze_ip_address(ip_obj)
@@ -156,12 +156,12 @@ class NetworkValidationRules:
                 risk_score += 0.8
             
             # Check against suspicious networks
-            if self._is_suspicious_ip(ip_address):
+            if self._is_suspicious_ip(ip):
                 risk_factors.append("Suspicious network range")
                 risk_score += 0.7
             
             # Check if it's a hosting provider
-            if self._is_hosting_provider_ip(ip_address):
+            if self._is_hosting_provider_ip(ip):
                 risk_factors.append("Hosting provider IP")
                 risk_score += 0.3
             
@@ -334,14 +334,14 @@ class NetworkValidationRules:
         inconsistencies = []
         consistency_score = 1.0
         
-        ip_address = network_data.get('ip_address', '')
+        ip = network_data.get('ip', '')
         user_agent = network_data.get('user_agent', '')
         headers = network_data.get('headers', {})
         fingerprint = network_data.get('fingerprint', '')
         
         # Validate individual components first
-        if ip_address:
-            ip_valid, ip_error, ip_analysis = self.validate_ip_address(ip_address)
+        if ip:
+            ip_valid, ip_error, ip_analysis = self.validate_ip_address(ip)
             if not ip_valid:
                 inconsistencies.append(f"Invalid IP: {ip_error}")
                 consistency_score -= 0.3
@@ -353,8 +353,8 @@ class NetworkValidationRules:
                 consistency_score -= 0.2
         
         # Cross-validate network parameters
-        if ip_address and user_agent:
-            geo_consistency = self._check_geo_consistency(ip_address, user_agent)
+        if ip and user_agent:
+            geo_consistency = self._check_geo_consistency(ip, user_agent)
             if not geo_consistency['is_consistent']:
                 inconsistencies.extend(geo_consistency['issues'])
                 consistency_score -= 0.3
@@ -457,10 +457,10 @@ class NetworkValidationRules:
         
         return analysis
     
-    def _is_suspicious_ip(self, ip_address: str) -> bool:
+    def _is_suspicious_ip(self, ip: str) -> bool:
         """Check if IP is in suspicious network ranges"""
         try:
-            ip_obj = ipaddress.ip_address(ip_address)
+            ip_obj = ipaddress.ip(ip)
             
             # Check against known suspicious ranges
             for network_range in self.SUSPICIOUS_NETWORKS.get('hosting_providers', set()):
@@ -474,11 +474,11 @@ class NetworkValidationRules:
         except ValueError:
             return True  # Invalid IP is suspicious
     
-    def _is_hosting_provider_ip(self, ip_address: str) -> bool:
+    def _is_hosting_provider_ip(self, ip: str) -> bool:
         """Check if IP belongs to a hosting provider"""
         # This would typically query a database of hosting provider ranges
         # For now, return basic check
-        return self._is_suspicious_ip(ip_address)
+        return self._is_suspicious_ip(ip)
     
     def _has_suspicious_characters(self, domain: str) -> bool:
         """Check for suspicious characters that might indicate homograph attacks"""
@@ -515,7 +515,7 @@ class NetworkValidationRules:
         else:
             return 'Unknown'
     
-    def _check_geo_consistency(self, ip_address: str, user_agent: str) -> Dict[str, Any]:
+    def _check_geo_consistency(self, ip: str, user_agent: str) -> Dict[str, Any]:
         """Check consistency between IP geolocation and user agent locale info"""
         # This would typically use geolocation services
         # For now, return basic structure

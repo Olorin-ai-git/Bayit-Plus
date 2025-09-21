@@ -53,7 +53,7 @@ class BulkIPAnalysisInput(BaseModel):
         import ipaddress
         for ip in ips:
             try:
-                ipaddress.ip_address(ip)
+                ipaddress.ip(ip)
             except ValueError:
                 raise ValueError(f"Invalid IP address format: {ip}")
         
@@ -104,11 +104,11 @@ class BulkIPAnalysisTool(BaseTool):
                 # Already in high_risk_ips
                 pass
             elif confidence >= 50:
-                medium_risk_ips.append(ip_data.ip_address)
+                medium_risk_ips.append(ip_data.ip)
             elif confidence >= 25:
-                low_risk_ips.append(ip_data.ip_address)
+                low_risk_ips.append(ip_data.ip)
             else:
-                clean_ips.append(ip_data.ip_address)
+                clean_ips.append(ip_data.ip)
         
         # Generate risk summary
         risk_summary = {
@@ -125,7 +125,7 @@ class BulkIPAnalysisTool(BaseTool):
         detailed_analysis = []
         for ip_data in response.ips_analyzed:
             analysis = {
-                "ip_address": ip_data.ip_address,
+                "ip": ip_data.ip,
                 "abuse_confidence": ip_data.abuse_confidence_percentage,
                 "risk_level": self._get_risk_level(ip_data.abuse_confidence_percentage),
                 "country_code": ip_data.country_code,

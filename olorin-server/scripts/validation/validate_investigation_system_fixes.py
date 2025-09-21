@@ -28,7 +28,7 @@ async def validate_investigation_fixes():
     test_results = {
         "timestamp": datetime.now().isoformat(),
         "test_entity": "67.76.8.209",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "fixes_applied": [
             "AsyncIO event loop conflicts fixed",
             "Tool result processing pipeline fixed", 
@@ -107,7 +107,7 @@ async def validate_investigation_fixes():
             state = create_hybrid_initial_state(
                 investigation_id="validation_test_123",
                 entity_id="67.76.8.209", 
-                entity_type="ip_address",
+                entity_type="ip",
                 parallel_execution=True
             )
             

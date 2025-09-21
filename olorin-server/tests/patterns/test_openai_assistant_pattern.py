@@ -474,7 +474,7 @@ class OpenAIAssistantPatternTest:
                         "transaction_id": "txn_fraud_123",
                         "amount": 5000.00,
                         "user_id": "user_suspicious",
-                        "ip_address": "192.168.1.100",
+                        "ip": "192.168.1.100",
                         "device_id": "device_unknown",
                         "risk_indicators": ["unusual_amount", "new_device", "suspicious_location"]
                     }

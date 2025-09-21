@@ -16,12 +16,11 @@ from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
-from app.service.agent.autonomous_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-)
+# Import clean graph domain agents directly
+from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
+from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
 from app.service.logging import get_bridge_logger
 from app.service.agent.investigators.domain_agents import (
     network_agent, location_agent, logs_agent, device_agent
@@ -156,7 +155,7 @@ class DeviceAnalysisSubgraph(BaseDomainSubgraph):
         try:
             # Use appropriate agent based on autonomous setting
             if self.autonomous:
-                result = await autonomous_device_agent(state)
+                result = await device_agent_node(state)
             else:
                 result = await device_agent(state)
             
@@ -248,7 +247,7 @@ class NetworkAnalysisSubgraph(BaseDomainSubgraph):
         try:
             # Use appropriate agent
             if self.autonomous:
-                result = await autonomous_network_agent(state)
+                result = await network_agent_node(state)
             else:
                 result = await network_agent(state)
             
@@ -352,7 +351,7 @@ class LocationAnalysisSubgraph(BaseDomainSubgraph):
         """Analyze geographic patterns."""
         try:
             if self.autonomous:
-                result = await autonomous_location_agent(state)
+                result = await location_agent_node(state)
             else:
                 result = await location_agent(state)
             
@@ -436,7 +435,7 @@ class LogsAnalysisSubgraph(BaseDomainSubgraph):
         """Analyze activity patterns in logs."""
         try:
             if self.autonomous:
-                result = await autonomous_logs_agent(state)
+                result = await logs_agent_node(state)
             else:
                 result = await logs_agent(state)
             

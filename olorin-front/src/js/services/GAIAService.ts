@@ -703,7 +703,7 @@ export class OlorinService {
           raw_splunk_results_count: 23,
           extracted_network_signals: [
             {
-              ip_address: '223.185.128.58',
+              ip: '223.185.128.58',
               isp: 'bharti airtel ltd.',
               organization: 'bharti',
               tm_sessionid: 'f002651918d540e374a0f1861bd779bb',
@@ -715,7 +715,7 @@ export class OlorinService {
               countries: [],
             },
             {
-              ip_address: '207.207.181.8',
+              ip: '207.207.181.8',
               isp: 'olorin inc.',
               organization: 'olorin inc.',
               tm_sessionid: '1a977456cfcd4778f2670e3e0cd56efb',
