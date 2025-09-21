@@ -19,7 +19,23 @@ async def orchestrator_node(state: Dict[str, Any], config: Optional[Dict] = None
     """
     # Initialize tools
     initialize_tools()
-    tools = get_tools_for_agent()  # Get all available tools
+    tools = get_tools_for_agent(
+        categories=[
+            "olorin",           # Snowflake, Splunk, SumoLogic
+            "threat_intelligence",  # AbuseIPDB, VirusTotal, Shodan
+            "database",         # Database query tools
+            "search",           # Vector search
+            "blockchain",       # Crypto analysis
+            "intelligence",     # OSINT, social media
+            "ml_ai",           # ML-powered analysis
+            "web",             # Web search and scraping
+            "file_system",     # File operations
+            "api",             # HTTP and JSON API tools
+            "mcp_clients",     # External MCP connections
+            "mcp_servers",     # Internal MCP servers (fraud database, external API, graph analysis)
+            "utility"          # Utility tools
+        ]
+    )
 
     # Create orchestrator instance
     orchestrator = InvestigationOrchestrator(tools)

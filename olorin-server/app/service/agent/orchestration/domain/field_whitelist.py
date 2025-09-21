@@ -13,14 +13,15 @@ logger = get_bridge_logger(__name__)
 # CRITICAL: Domain-specific field whitelists to prevent cross-domain pollution
 LOGS_ALLOWED = {
     "transaction_count",
-    "failed_transaction_count", 
+    "failed_transaction_count",
     "error_count",
     "total_transaction_count",
     "unique_error_codes",
     "transaction_types",
     "error_patterns",
     "timing_patterns",
-    "failure_sequences"
+    "failure_sequences",
+    "failure_rate"  # Added to fix logs domain whitelist warning
 }
 
 NETWORK_ALLOWED = {

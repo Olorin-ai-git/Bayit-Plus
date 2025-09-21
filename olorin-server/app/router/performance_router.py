@@ -200,22 +200,48 @@ async def get_investigation_performance(investigation_id: str):
     try:
         perf_manager = get_perf_manager()
         
-        # For now, return general performance data
-        # TODO: Implement investigation-specific tracking
-        base_metrics = {
-            "investigation_id": investigation_id,
-            "performance_metrics": {
-                "total_execution_time_ms": 0,
-                "agent_execution_times": {
-                    "device_analysis": 0,
-                    "location_analysis": 0,
-                    "network_analysis": 0,
-                    "logs_analysis": 0
+        # Implement investigation-specific tracking
+        if perf_manager:
+            # Get investigation-specific metrics from performance manager
+            investigation_metrics = perf_manager.get_investigation_metrics(investigation_id)
+        else:
+            investigation_metrics = None
+
+        # Query investigation data from persistence layer
+        from app.persistence import get_investigation
+        try:
+            investigation = get_investigation(investigation_id)
+            investigation_exists = investigation is not None
+        except Exception:
+            investigation_exists = False
+
+        if investigation_metrics:
+            # Use real investigation metrics
+            base_metrics = {
+                "investigation_id": investigation_id,
+                "investigation_exists": investigation_exists,
+                "performance_metrics": {
+                    "total_execution_time_ms": investigation_metrics.get("total_time_ms", 0),
+                    "agent_execution_times": investigation_metrics.get("agent_times", {}),
+                    "tool_execution_times": investigation_metrics.get("tool_times", {}),
+                    "start_time": investigation_metrics.get("start_time"),
+                    "end_time": investigation_metrics.get("end_time"),
+                    "status": investigation_metrics.get("status", "unknown")
                 },
-                "tool_execution_times": {
-                    "splunk_query": 0,
-                    "database_lookup": 0,
-                    "external_api_calls": 0
+        else:
+            # No performance data available - return empty metrics
+            if not investigation_exists:
+                raise HTTPException(status_code=404, detail=f"Investigation {investigation_id} not found")
+
+            base_metrics = {
+                "investigation_id": investigation_id,
+                "investigation_exists": investigation_exists,
+                "performance_metrics": {
+                    "total_execution_time_ms": None,
+                    "agent_execution_times": {},
+                    "tool_execution_times": {},
+                    "status": "no_performance_data_available",
+                    "message": "Performance tracking not enabled for this investigation"
                 },
                 "llm_call_count": 0,
                 "total_tokens_used": 0,

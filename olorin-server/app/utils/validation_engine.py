@@ -214,7 +214,7 @@ class ValidationEngine:
             EntityType.IP: ['network', 'security'],
             EntityType.CLIENT_IP: ['network', 'security'],
             EntityType.USER_AGENT: ['network', 'security'],
-            EntityType.DEVICE_FINGERPRINT: ['network', 'security'],
+            EntityType.DEVICE_ID: ['network', 'security'],
             
             # Security entities
             EntityType.EMAIL: ['security'],

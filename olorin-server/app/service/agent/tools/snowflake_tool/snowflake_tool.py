@@ -59,7 +59,7 @@ class _SnowflakeQueryArgs(BaseModel):
             "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP (client IP address), "
             f"{IP_COUNTRY_CODE} (country from IP), "
             "DEVICE_ID (NOT SMART_ID), USER_AGENT, "
-            "DEVICE_TYPE, DEVICE_FINGERPRINT. "
+            "DEVICE_TYPE, DEVICE_ID. "
             "Use LIMIT clause for large result sets."
         )
     )
@@ -87,7 +87,7 @@ class SnowflakeQueryTool(BaseTool):
         "transaction records, user profiles, payment methods, risk scores, fraud indicators, "
         "disputes, and business intelligence data. Main table is TRANSACTIONS_ENRICHED with "
         "300+ columns. CRITICAL - Use EXACT column names: TX_ID_KEY, EMAIL, MODEL_SCORE (0-1), "
-        f"PAYMENT_METHOD, CARD_BRAND, {IP}, {IP_COUNTRY_CODE}, IP_CITY, {DEVICE_ID}, DEVICE_FINGERPRINT, "
+        f"PAYMENT_METHOD, CARD_BRAND, {IP}, {IP_COUNTRY_CODE}, IP_CITY, {DEVICE_ID}, "
         "NSURE_LAST_DECISION, DISPUTES, "
         f"FRAUD_ALERTS, {PAID_AMOUNT_VALUE_IN_CURRENCY} (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
         "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "

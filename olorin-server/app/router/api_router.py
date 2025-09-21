@@ -163,9 +163,36 @@ async def get_online_identity_info(user_id: str, request: Request) -> Dict[str, 
         return demo_cache[user_id]["oii"]
     auth_header = request.headers.get("authorization")
     logger.info(f"Authorization header: {auth_header}")
-    """Retrieve online identity information directly from the OII Tool."""
-    # TODO: OIITool has been removed - implement alternative or remove this endpoint
-    raise HTTPException(status_code=501, detail="OII Tool functionality not available")
+    """Retrieve online identity information using intelligence tools."""
+    try:
+        # Use the people search and social media profiling tools as OII replacement
+        from app.service.agent.tools.intelligence_tools.people_search import PeopleSearchTool
+        from app.service.agent.tools.intelligence_tools.social_media_profiling import SocialMediaProfilingTool
+
+        # Initialize tools
+        people_tool = PeopleSearchTool()
+        social_tool = SocialMediaProfilingTool()
+
+        # Search for identity information
+        people_result = people_tool._run(user_id)
+        social_result = social_tool._run(user_id)
+
+        # Combine results into OII-like format
+        oii_result = {
+            "user_id": user_id,
+            "identity_verification": people_result.get("identity_verification", {}),
+            "background_records": people_result.get("background_records", {}),
+            "social_media_presence": social_result.get("profiles", {}),
+            "risk_indicators": people_result.get("risk_indicators", []),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "data_sources": ["people_search", "social_media_profiling"]
+        }
+
+        return oii_result
+
+    except Exception as e:
+        logger.error(f"Online identity information lookup failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Identity lookup failed: {str(e)}")
 
 
 @router.get("/logs/{user_id}")
