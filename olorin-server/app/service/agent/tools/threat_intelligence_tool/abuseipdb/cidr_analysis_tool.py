@@ -14,7 +14,7 @@ from ..base_threat_tool import BaseThreatIntelligenceTool, ThreatIntelligenceCon
 
 class CIDRAnalysisInput(BaseModel):
     """Input schema for CIDR block analysis."""
-    cidr_network: str = Field(..., description="CIDR network block (e.g., 192.168.1.0/24)")
+    cidr_network: str = Field(..., description="CIDR network block (e.g., [NETWORK]/24)")
     max_age_days: int = Field(default=90, description="Maximum age of reports (1-365 days)")
 
 

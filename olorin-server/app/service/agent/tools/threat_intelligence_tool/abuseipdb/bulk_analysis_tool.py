@@ -25,7 +25,7 @@ class BulkIPAnalysisInput(BaseModel):
     ip_addresses: str = Field(
         ...,
         description="Comma or newline-separated IP addresses to check (max 10,000)",
-        examples=["192.168.1.1,10.0.0.1", "192.168.1.1\n10.0.0.1\n172.16.0.1"]
+        examples=["[IP1],[IP2]", "[IP1]\n[IP2]\n[IP3]"]
     )
     max_age_days: int = Field(
         default=90,

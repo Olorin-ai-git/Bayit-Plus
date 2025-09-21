@@ -363,7 +363,7 @@ class AbuseIPDBClient:
         Check CIDR network block for reported IPs.
         
         Args:
-            cidr_network: CIDR network (e.g., "192.168.1.0/24")
+            cidr_network: CIDR network (e.g., "[NETWORK]/24")
             max_age_days: Maximum age of reports to consider
             
         Returns:

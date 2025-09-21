@@ -25,8 +25,8 @@ class CIDRAnalysisInput(BaseModel):
     
     cidr_network: str = Field(
         ...,
-        description="CIDR network block to analyze (e.g., '192.168.1.0/24', '10.0.0.0/16')",
-        examples=["192.168.1.0/24", "10.0.0.0/16", "172.16.0.0/12"]
+        description="CIDR network block to analyze (e.g., '[NETWORK]/24', '[NETWORK]/16')",
+        examples=["[NETWORK]/24", "[NETWORK]/16", "[NETWORK]/12"]
     )
     max_age_days: int = Field(
         default=90,

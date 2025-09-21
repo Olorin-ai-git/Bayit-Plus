@@ -26,7 +26,7 @@ class IPReputationInput(BaseModel):
     ip: str = Field(
         ..., 
         description="IP address to check (IPv4 or IPv6)",
-        examples=["192.168.1.1", "2001:db8::1"]
+        examples=["[IP_ADDRESS]", "[IPv6_ADDRESS]"]
     )
     max_age_days: int = Field(
         default=90,
@@ -60,7 +60,7 @@ class IPReputationInput(BaseModel):
             ipaddress.ip_address(v)
             return v
         except ValueError:
-            raise ValueError(f"Invalid IP address format: {v}. Expected IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., 2001:db8::1) address.")
+            raise ValueError(f"Invalid IP address format: {v}. Expected valid IPv4 or IPv6 address format.")
 
 
 class IPReputationTool(BaseThreatIntelligenceTool):
