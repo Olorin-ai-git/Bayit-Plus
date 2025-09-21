@@ -7,7 +7,7 @@ from .schema_constants import (
     TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE, TX_DATETIME, PAYMENT_METHOD,
     CARD_BRAND, CARD_TYPE, CARD_ISSUER, IP, IP_COUNTRY_CODE, DEVICE_ID,
     USER_AGENT, DEVICE_TYPE, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
-    MAXMIND_RISK_SCORE, FRAUD_RULES_TRIGGERED
+    MAXMIND_RISK_SCORE
 )
 
 # Comprehensive Snowflake table schema for fraud detection platform
@@ -61,7 +61,7 @@ SNOWFLAKE_SCHEMA_INFO = {
         "model_score": "MODEL_SCORE",
         "model_decision": "MODEL_DECISION",
         "risk_score": "MAXMIND_RISK_SCORE",
-        "triggered_rules": "FRAUD_RULES_TRIGGERED",
+        # "triggered_rules": Column doesn't exist in schema
         
         # Fraud Indicators
         "is_fraud": "IS_FRAUD_TX",
@@ -93,7 +93,7 @@ SNOWFLAKE_SCHEMA_INFO = {
     "common_queries": {
         "fraud_transactions": f"""
             SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
-                   {TX_DATETIME}, {PAID_AMOUNT_VALUE}, {FRAUD_RULES_TRIGGERED}
+                   {TX_DATETIME}, {PAID_AMOUNT_VALUE}
             FROM TRANSACTIONS_ENRICHED
             WHERE {IS_FRAUD_TX} = 1
             ORDER BY {TX_DATETIME} DESC
