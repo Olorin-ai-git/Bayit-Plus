@@ -52,7 +52,7 @@ class ServiceAdapter:
     async def get_investigation_graph(
         self,
         investigation_id: str,
-        entity_type: str = "ip_address",
+        entity_type: str = "ip",
         service_context: Optional[Dict[str, Any]] = None,
         force_graph_type: Optional[GraphType] = None
     ) -> StateGraph:

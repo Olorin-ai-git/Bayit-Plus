@@ -309,7 +309,7 @@ os.environ.pop('LANGSMITH_API_KEY', None)
                     # Add IP parameter checking
                     fixed_content = content.replace(
                         'ShodanInfrastructureAnalysisTool._arun()',
-                        'ShodanInfrastructureAnalysisTool._arun(ip_address="8.8.8.8") if hasattr(ShodanInfrastructureAnalysisTool, "_arun") else None'
+                        'ShodanInfrastructureAnalysisTool._arun(ip="8.8.8.8") if hasattr(ShodanInfrastructureAnalysisTool, "_arun") else None'
                     )
                     
                     if fixed_content != content:

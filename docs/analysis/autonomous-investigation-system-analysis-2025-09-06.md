@@ -345,7 +345,7 @@ autonomous_llm.bind_tools(tools, strict=True)
 ```
 Failed to send compressed multipart ingest: langsmith.utils.LangSmithAuthError
 Provider virustotal query failed: missing required positional argument 'domain'
-Provider shodan query failed: missing required positional argument 'ip_address'
+Provider shodan query failed: missing required positional argument 'ip'
 ```
 
 **Resilience Characteristics:**
@@ -475,7 +475,7 @@ Proper service authentication patterns
 
 **2. External Service Integration:**
 - Multiple service authentication failures
-- Some tools missing required parameters (domain, ip_address)
+- Some tools missing required parameters (domain, ip)
 - Service availability monitoring needed
 
 **3. Error Message Consistency:**

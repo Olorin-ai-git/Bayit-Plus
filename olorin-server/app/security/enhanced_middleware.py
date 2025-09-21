@@ -263,29 +263,29 @@ class RateLimiter:
             "reset_time": int(current_time + window)
         }
     
-    def block_ip(self, ip_address: str, duration_minutes: int):
+    def block_ip(self, ip: str, duration_minutes: int):
         """Block an IP address temporarily."""
         block_until = time.time() + (duration_minutes * 60)
-        self.blocked_ips[ip_address] = block_until
+        self.blocked_ips[ip] = block_until
         
         if self.redis_client:
-            key = f"blocked_ip:{ip_address}"
+            key = f"blocked_ip:{ip}"
             self.redis_client.setex(key, duration_minutes * 60, str(block_until))
     
-    def is_ip_blocked(self, ip_address: str) -> bool:
+    def is_ip_blocked(self, ip: str) -> bool:
         """Check if IP address is currently blocked."""
         current_time = time.time()
         
         # Check memory store
-        if ip_address in self.blocked_ips:
-            if self.blocked_ips[ip_address] > current_time:
+        if ip in self.blocked_ips:
+            if self.blocked_ips[ip] > current_time:
                 return True
             else:
-                del self.blocked_ips[ip_address]
+                del self.blocked_ips[ip]
         
         # Check Redis
         if self.redis_client:
-            key = f"blocked_ip:{ip_address}"
+            key = f"blocked_ip:{ip}"
             blocked_until = self.redis_client.get(key)
             if blocked_until and float(blocked_until) > current_time:
                 return True
@@ -311,7 +311,7 @@ class SecurityEventLogger:
             "timestamp": datetime.utcnow().isoformat(),
             "event_type": event_type,
             "severity": severity,
-            "ip_address": request.client.host,
+            "ip": request.client.host,
             "user_agent": request.headers.get("user-agent", ""),
             "method": request.method,
             "url": str(request.url),
@@ -586,7 +586,7 @@ class EnhancedSecurityMiddleware(BaseHTTPMiddleware):
         """Log request details for monitoring."""
         log_data = {
             "timestamp": datetime.utcnow().isoformat(),
-            "ip_address": self._get_client_ip(request),
+            "ip": self._get_client_ip(request),
             "method": request.method,
             "url": str(request.url),
             "status_code": response.status_code,

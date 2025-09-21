@@ -287,7 +287,7 @@ from app.service.agent.orchestration.hybrid.hybrid_state_schema import create_hy
 state = create_hybrid_initial_state(
     investigation_id="inv_123",
     entity_id="192.168.1.1",
-    entity_type="ip_address"
+    entity_type="ip"
 )
 
 # Errors field is automatically initialized

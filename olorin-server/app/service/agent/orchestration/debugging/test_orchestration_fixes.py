@@ -88,7 +88,7 @@ class OrchestrationTestSuite:
         state_with_tool_results = create_initial_state(
             investigation_id="test_routing_001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         
         # Simulate state after tool execution

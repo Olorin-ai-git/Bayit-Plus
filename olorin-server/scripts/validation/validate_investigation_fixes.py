@@ -24,7 +24,7 @@ async def test_snowflake_data_parsing():
                 "TX_ID_KEY": "tx_001",
                 "EMAIL": "test@example.com",
                 "MODEL_SCORE": 0.9900,
-                "IP_ADDRESS": "192.168.1.100",
+                "IP": "192.168.1.100",
                 "IS_FRAUD_TX": 1
             }
         ],
@@ -61,14 +61,14 @@ async def test_risk_score_calculation():
                 "TX_ID_KEY": "tx_001",
                 "EMAIL": "test@example.com", 
                 "MODEL_SCORE": 0.9900,  # High fraud score
-                "IP_ADDRESS": "192.168.1.100",
+                "IP": "192.168.1.100",
                 "IS_FRAUD_TX": 1
             },
             {
                 "TX_ID_KEY": "tx_002",
                 "EMAIL": "test@example.com",
                 "MODEL_SCORE": 0.8500,  # High fraud score
-                "IP_ADDRESS": "192.168.1.100", 
+                "IP": "192.168.1.100", 
                 "IS_FRAUD_TX": 0
             }
         ],

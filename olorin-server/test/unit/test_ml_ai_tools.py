@@ -318,7 +318,7 @@ class TestFraudDetectionTool:
             "user_id": "user_123",
             "payment_method": "credit_card",
             "device_info": {
-                "ip_address": "192.168.1.100",
+                "ip": "192.168.1.100",
                 "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                 "device_id": "device_456"
             },
@@ -389,7 +389,7 @@ class TestFraudDetectionTool:
             "timestamp": "2024-01-01T14:00:00Z",
             "user_id": "user_123",
             "payment_method": "credit_card",
-            "device_info": {"ip_address": "192.168.1.1"},
+            "device_info": {"ip": "192.168.1.1"},
             "user_history": {
                 "avg_transaction_amount": 45.0,
                 "usual_locations": ["US"],

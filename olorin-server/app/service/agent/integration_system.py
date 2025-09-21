@@ -605,7 +605,7 @@ class IntegratedAgentSystem:
                 'title': 'Network Analysis Techniques',
                 'content': 'Network analysis involves examining IP addresses, geolocation patterns, connection types, and network infrastructure to identify suspicious network activity and potential fraud.',
                 'document_type': 'guide',
-                'entity_types': {'network', 'ip_address', 'geolocation'},
+                'entity_types': {'network', 'ip', 'geolocation'},
                 'investigation_types': {'network', 'fraud_investigation'},
                 'tags': {'network_analysis', 'ip_analysis', 'geolocation'}
             }

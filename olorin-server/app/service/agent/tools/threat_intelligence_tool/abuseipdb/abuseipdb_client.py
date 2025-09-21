@@ -138,7 +138,7 @@ class AbuseIPDBClient:
 
     async def check_ip_reputation(
         self,
-        ip_address: str,
+        ip: str,
         max_age_days: int = 90,
         verbose: bool = True
     ) -> IPReputationResponse:
@@ -146,7 +146,7 @@ class AbuseIPDBClient:
         Check IP address reputation.
         
         Args:
-            ip_address: IP address to check
+            ip: IP address to check
             max_age_days: Maximum age of reports to consider (1-365)
             verbose: Include verbose response data
             
@@ -157,7 +157,7 @@ class AbuseIPDBClient:
         
         try:
             params = {
-                "ipAddress": ip_address,
+                "ipAddress": ip,
                 "maxAgeInDays": min(max(max_age_days, 1), 365),
                 "verbose": "true" if verbose else "false"
             }
@@ -167,7 +167,7 @@ class AbuseIPDBClient:
             
             # Parse response data
             ip_info = IPInfo(
-                ip_address=response_data.get("ipAddress", ip_address),
+                ip=response_data.get("ipAddress", ip),
                 is_public=response_data.get("isPublic", False),
                 ip_version=response_data.get("ipVersion", 4),
                 is_whitelisted=response_data.get("isWhitelisted", False),
@@ -193,7 +193,7 @@ class AbuseIPDBClient:
         except AbuseIPDBError:
             raise
         except Exception as e:
-            logger.error(f"IP reputation check failed for {ip_address}: {e}")
+            logger.error(f"IP reputation check failed for {ip}: {e}")
             return IPReputationResponse(
                 success=False,
                 error=str(e),
@@ -249,7 +249,7 @@ class AbuseIPDBClient:
             
             for ip_data in response_data.get("data", []):
                 bulk_ip = BulkIPData(
-                    ip_address=ip_data.get("ipAddress", ""),
+                    ip=ip_data.get("ipAddress", ""),
                     country_code=ip_data.get("countryCode"),
                     usage_type=ip_data.get("usageType"),
                     isp=ip_data.get("isp"),
@@ -263,7 +263,7 @@ class AbuseIPDBClient:
                 
                 # Flag high-risk IPs (>75% confidence)
                 if bulk_ip.abuse_confidence_percentage >= 75:
-                    high_risk_ips.append(bulk_ip.ip_address)
+                    high_risk_ips.append(bulk_ip.ip)
             
             return BulkAnalysisResponse(
                 success=True,
@@ -315,7 +315,7 @@ class AbuseIPDBClient:
                         from .models import BulkIPData
                         ip_info = ip_response.ip_info
                         bulk_ip = BulkIPData(
-                            ip_address=ip,
+                            ip=ip,
                             country_code=ip_info.country_code,
                             usage_type=ip_info.usage_type,
                             isp=ip_info.isp,
@@ -327,7 +327,7 @@ class AbuseIPDBClient:
                         
                         # Flag high-risk IPs (>75% confidence)
                         if bulk_ip.abuse_confidence_percentage >= 75:
-                            high_risk_ips.append(bulk_ip.ip_address)
+                            high_risk_ips.append(bulk_ip.ip)
                     
                     # Add small delay to avoid rate limiting
                     import asyncio
@@ -397,7 +397,7 @@ class AbuseIPDBClient:
             reported_ips = []
             for ip_data in response_data.get("reportedAddress", []):
                 reported_ip = BulkIPData(
-                    ip_address=ip_data.get("ipAddress", ""),
+                    ip=ip_data.get("ipAddress", ""),
                     country_code=ip_data.get("countryCode"),
                     usage_type=ip_data.get("usageType"),
                     isp=ip_data.get("isp"),
@@ -464,7 +464,7 @@ class AbuseIPDBClient:
             return AbuseReportResponse(
                 success=True,
                 report_id=response_data.get("reportId"),
-                ip_address=report_request.ip,
+                ip=report_request.ip,
                 message=response_data.get("message"),
                 response_time_ms=response_time
             )
@@ -475,7 +475,7 @@ class AbuseIPDBClient:
             logger.error(f"IP abuse report failed for {report_request.ip}: {e}")
             return AbuseReportResponse(
                 success=False,
-                ip_address=report_request.ip,
+                ip=report_request.ip,
                 error=str(e),
                 response_time_ms=int((time.time() - start_time) * 1000)
             )

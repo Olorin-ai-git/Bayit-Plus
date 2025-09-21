@@ -293,7 +293,7 @@ class ErrorHandler:
                 "minimal_state": {
                     "investigation_id": context.investigation_id or "unknown",
                     "entity_value": "unknown",
-                    "entity_type": "ip_address",
+                    "entity_type": "ip",
                     "status": "initialized",
                     "tool_results": {},
                     "analysis_complete": False

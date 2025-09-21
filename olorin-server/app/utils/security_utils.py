@@ -17,7 +17,7 @@ SENSITIVE_PATTERNS = {
     'ssn': re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),
     'credit_card': re.compile(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'),
     'phone': re.compile(r'\b\d{3}-\d{3}-\d{4}\b|\(\d{3}\)\s\d{3}-\d{4}\b'),
-    'ip_address': re.compile(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'),
+    'ip': re.compile(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'),
     'jwt_token': re.compile(r'\beyJ[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]*\b'),
     'bearer_token': re.compile(r'\bBearer\s+[A-Za-z0-9+/=]+\b', re.IGNORECASE),
     'password_field': re.compile(r'(password|passwd|pwd)["\s]*[:=]["\s]*[^\s"]+', re.IGNORECASE),

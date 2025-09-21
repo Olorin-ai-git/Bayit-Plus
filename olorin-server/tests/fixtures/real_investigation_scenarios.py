@@ -64,7 +64,7 @@ class RealScenarioGenerator:
             "user_id": f"user_{timestamp}_{random.randint(1000, 9999)}",
             "email": f"real.user.{timestamp}@testdomain.com",
             "phone": f"+1415555{random.randint(1000, 9999)}",
-            "ip_address": self._generate_test_ip(),
+            "ip": self._generate_test_ip(),
             "device_fingerprint": self._generate_device_fingerprint(),
             "account_created": (datetime.now() - timedelta(
                 days=random.randint(1, 1000) if risk_profile == "normal" 
@@ -242,7 +242,7 @@ class RealScenarioGenerator:
                     hours=random.randint(0, 23)
                 )).isoformat(),
                 "success": success,
-                "ip_address": self._generate_test_ip() if pattern_type != "normal" else self._generate_test_ip()[:-1] + "1",
+                "ip": self._generate_test_ip() if pattern_type != "normal" else self._generate_test_ip()[:-1] + "1",
                 "duration_seconds": random.randint(1, 300),
             })
         

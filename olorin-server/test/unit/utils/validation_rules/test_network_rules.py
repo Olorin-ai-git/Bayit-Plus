@@ -434,7 +434,7 @@ class TestNetworkSecurityValidation:
         
         # Simulate high request rate
         rate_limit_data = {
-            'ip_address': test_ip,
+            'ip': test_ip,
             'requests_per_minute': 1000,  # Very high rate
             'requests_per_hour': 50000,   # Very high rate
             'failed_requests': 500        # Many failures
@@ -516,14 +516,14 @@ class TestPerformanceRequirements:
     def test_batch_validation_performance(self, network_validator):
         """Test batch validation performance"""
         network_data = {
-            'ip_address': '192.168.1.1',
+            'ip': '192.168.1.1',
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'device_fingerprint': 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
         }
         
         start_time = time.time()
         for _ in range(25):
-            network_validator.validate_ip_address(network_data['ip_address'])
+            network_validator.validate_ip_address(network_data['ip'])
             network_validator.validate_user_agent(network_data['user_agent'])
             network_validator.validate_device_fingerprint(network_data['device_fingerprint'])
         end_time = time.time()

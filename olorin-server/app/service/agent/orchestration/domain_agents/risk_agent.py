@@ -73,15 +73,21 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             facts.get("manual_case_outcome") == "fraud"
         )
         
-        # Initialize risk findings with compatibility keys to prevent KeyError
+        # Calculate REAL risk score from domain findings
+        real_risk_score = _calculate_real_risk_score(domain_findings, facts)
+
+        # Calculate REAL confidence from domain analysis quality
+        real_confidence = _calculate_real_confidence(domain_findings, tools_used, state)
+
+        # Initialize risk findings with REAL calculated values
         risk_findings = {
             "domain": "risk",
             "name": "risk",  # Compatibility with domain normalization
-            "score": None,   # Narrative domain - no numeric score
-            "risk_score": None,  # Legacy key to prevent KeyError crashes
-            "status": "OK",  # Always OK for narrative synthesis
+            "score": real_risk_score,   # REAL score calculated from domain data
+            "risk_score": real_risk_score,  # REAL risk score from domain analysis
+            "status": "OK" if real_confidence > 0.3 else "LOW_CONFIDENCE",
             "signals": [],   # No numeric signals for narrative domain
-            "confidence": 0.5,  # Moderate confidence in narrative synthesis
+            "confidence": real_confidence,  # REAL confidence from domain quality
             "narrative": _build_risk_narrative(aggregation_narrative, fraud_floor, other_domains),
             "provenance": ["aggregator:v1"],  # Track source of narrative
             "risk_indicators": [],
@@ -112,7 +118,7 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         risk_findings["evidence_summary"] = {
             "domains_synthesized": len(domain_findings),
             "total_risk_indicators": len(risk_indicators),
-            "confidence_level": risk_findings.get("confidence", 0.5)
+            "confidence_level": risk_findings["confidence"]  # Use REAL calculated confidence
         }
         
         # NARRATIVE-ONLY: Generate synthesis narrative (no LLM scoring)
@@ -140,12 +146,12 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         from app.service.agent.orchestration.circuit_breaker import record_node_failure
         record_node_failure(state, "risk_agent", e)
         
-        # Return compatible error result to prevent KeyError crashes
+        # Return compatible error result with numeric scores for infrastructure
         error_risk_findings = {
             "domain": "risk",
             "name": "risk",
-            "score": None,
-            "risk_score": None,  # Compatibility key
+            "score": 0.0,
+            "risk_score": 0.0,  # Infrastructure expects numeric value
             "status": "ERROR",
             "signals": [],
             "confidence": 0.0,
@@ -306,3 +312,127 @@ def _calculate_investigation_confidence(state: InvestigationState, risk_findings
         f"Investigation confidence: {risk_findings['confidence']:.2f} based on "
         f"{len(tools_used)} tools and {len(domain_findings)} domains"
     )
+
+
+def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str, Any]) -> float:
+    """Calculate REAL risk score based on actual domain analysis results."""
+    # Check for confirmed fraud indicators
+    if facts.get("IS_FRAUD_TX") is True:
+        return 1.0
+    if facts.get("chargeback_confirmed") is True:
+        return 0.95
+    if facts.get("manual_case_outcome") == "fraud":
+        return 0.9
+
+    # Collect REAL risk scores from domain analyses
+    domain_scores = []
+    weighted_scores = []
+
+    for domain, findings in domain_findings.items():
+        if isinstance(findings, dict) and "risk_score" in findings:
+            score = findings["risk_score"]
+            if score is not None:
+                domain_scores.append(score)
+
+                # Weight domains based on their analysis quality
+                confidence = findings.get("confidence", 0.0)
+                evidence_count = len(findings.get("evidence", []))
+
+                # Higher weight for high-confidence domains with more evidence
+                weight = confidence * (1.0 + min(evidence_count / 10.0, 1.0))
+                weighted_scores.append((score, weight))
+
+    if not weighted_scores:
+        # No valid domain scores - use transaction data
+        model_scores = []
+        if isinstance(facts, dict) and "results" in facts:
+            for result in facts["results"]:
+                if isinstance(result, dict) and "MODEL_SCORE" in result:
+                    model_scores.append(result["MODEL_SCORE"])
+
+        if model_scores:
+            return sum(model_scores) / len(model_scores)
+        else:
+            raise ValueError("CRITICAL: No REAL data available for risk calculation - all values must be REAL")
+
+    # Calculate weighted average of domain scores
+    total_weight = sum(weight for _, weight in weighted_scores)
+    if total_weight > 0:
+        weighted_avg = sum(score * weight for score, weight in weighted_scores) / total_weight
+    else:
+        weighted_avg = sum(domain_scores) / len(domain_scores)
+
+    return min(1.0, max(0.0, weighted_avg))
+
+
+def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List[str], state: Dict[str, Any]) -> float:
+    """Calculate REAL confidence based on actual analysis quality and data availability."""
+    confidence_factors = []
+
+    # Factor 1: Domain analysis quality
+    domain_confidences = []
+    domain_evidence_counts = []
+
+    for domain, findings in domain_findings.items():
+        if isinstance(findings, dict):
+            # Use LLM confidence if available (higher priority)
+            llm_analysis = findings.get("llm_analysis", {})
+            if "confidence" in llm_analysis:
+                domain_confidences.append(llm_analysis["confidence"])
+            elif "confidence" in findings:
+                domain_confidences.append(findings["confidence"])
+
+            # Count evidence points
+            evidence_count = len(findings.get("evidence", []))
+            domain_evidence_counts.append(evidence_count)
+
+    if domain_confidences:
+        avg_domain_confidence = sum(domain_confidences) / len(domain_confidences)
+        confidence_factors.append(avg_domain_confidence)
+
+    # Factor 2: Data completeness
+    snowflake_data = state.get("snowflake_data", {})
+    if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+        results = snowflake_data["results"]
+        if isinstance(results, list) and len(results) > 0:
+            # More transactions = higher confidence
+            transaction_confidence = min(1.0, len(results) / 10.0)
+            confidence_factors.append(transaction_confidence)
+
+            # Check data quality (non-null fields)
+            total_fields = 0
+            null_fields = 0
+            for result in results:
+                if isinstance(result, dict):
+                    for key, value in result.items():
+                        total_fields += 1
+                        if value is None:
+                            null_fields += 1
+
+            if total_fields > 0:
+                data_quality = 1.0 - (null_fields / total_fields)
+                confidence_factors.append(data_quality)
+
+    # Factor 3: Tool execution success
+    if tools_used:
+        tool_confidence = min(1.0, len(tools_used) / 5.0)  # Optimal around 5 tools
+        confidence_factors.append(tool_confidence)
+
+    # Factor 4: Evidence volume
+    total_evidence = sum(domain_evidence_counts) if domain_evidence_counts else 0
+    if total_evidence > 0:
+        evidence_confidence = min(1.0, total_evidence / 20.0)  # Good confidence at 20+ evidence points
+        confidence_factors.append(evidence_confidence)
+
+    if not confidence_factors:
+        raise ValueError("CRITICAL: No REAL data available for confidence calculation - all values must be REAL")
+
+    # Calculate weighted average with emphasis on domain quality
+    if len(confidence_factors) >= 2:
+        # Weight domain confidence higher than other factors
+        weighted_confidence = (confidence_factors[0] * 0.5 +
+                             sum(confidence_factors[1:]) * 0.5 / (len(confidence_factors) - 1))
+    else:
+        weighted_confidence = confidence_factors[0]
+
+    return min(1.0, max(0.0, weighted_confidence))

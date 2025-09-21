@@ -96,7 +96,7 @@ def mock_knowledge_context():
         content="threat_intelligence_scanner achieved 95% success rate in network fraud detection cases with high confidence scores",
         metadata=DocumentMetadata(
             tags={"network", "threat_intelligence", "effectiveness"},
-            entity_types={"ip_address", "network_connection"}
+            entity_types={"ip", "network_connection"}
         )
     )
     critical_chunk.similarity_score = 0.92
@@ -107,7 +107,7 @@ def mock_knowledge_context():
         content="network_analyzer and abuse_ip_checker combination showed excellent results in similar fraud investigations",
         metadata=DocumentMetadata(
             tags={"network", "case_study"},
-            entity_types={"ip_address"}
+            entity_types={"ip"}
         )
     )
     supporting_chunk.similarity_score = 0.78
@@ -116,7 +116,7 @@ def mock_knowledge_context():
         investigation_id="inv_12345",
         domain="network",
         entity_id="192.168.1.100",
-        entity_type="ip_address",
+        entity_type="ip",
         critical_knowledge=[critical_chunk],
         supporting_knowledge=[supporting_chunk],
         background_knowledge=[],
@@ -147,7 +147,7 @@ def investigation_context():
     return AutonomousInvestigationContext(
         investigation_id="inv_12345",
         entity_id="192.168.1.100", 
-        entity_type=EntityType.IP_ADDRESS,
+        entity_type=EntityType.IP,
         investigation_type="fraud_investigation"
     )
 

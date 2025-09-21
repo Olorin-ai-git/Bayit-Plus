@@ -246,12 +246,12 @@ class InvestigationFixesManager:
                 'validation': 'domain must be non-empty and valid FQDN'
             },
             'shodan': {
-                'required_args': ['ip_address'],
-                'validation': 'ip_address must be valid IPv4 or IPv6'
+                'required_args': ['ip'],
+                'validation': 'ip must be valid IPv4 or IPv6'
             },
             'ip_reputation': {
-                'required_args': ['ip_address'],
-                'validation': 'ip_address must be valid IPv4 or IPv6 format'
+                'required_args': ['ip'],
+                'validation': 'ip must be valid IPv4 or IPv6 format'
             }
         }
         
@@ -343,14 +343,14 @@ def validate_tool_inputs(tool_name: str, **kwargs) -> Tuple[bool, str]:
             return False, f"Invalid domain: '{domain}'"
             
     elif tool_name == 'shodan':
-        ip_address = kwargs.get('ip_address', '')
-        if not manager.validate_ip_address(ip_address):
-            return False, f"Invalid IP address: '{ip_address}'"
+        ip = kwargs.get('ip', '')
+        if not manager.validate_ip_address(ip):
+            return False, f"Invalid IP address: '{ip}'"
             
     elif tool_name == 'ip_reputation':
-        ip_address = kwargs.get('ip_address', '')
-        if not manager.validate_ip_address(ip_address):
-            return False, f"Invalid IP address format: '{ip_address}'"
+        ip = kwargs.get('ip', '')
+        if not manager.validate_ip_address(ip):
+            return False, f"Invalid IP address format: '{ip}'"
     
     return True, "Validation passed"
 

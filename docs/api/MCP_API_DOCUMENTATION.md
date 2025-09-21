@@ -756,7 +756,7 @@ for rec in assessment['recommendations']:
             },
             "entity_type": {
                 "type": "string",
-                "enum": ["user", "account", "device", "ip_address", "payment_method", "email"],
+                "enum": ["user", "account", "device", "ip", "payment_method", "email"],
                 "description": "Type of primary entity"
             },
             "relationship_types": {

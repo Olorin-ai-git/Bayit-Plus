@@ -23,7 +23,7 @@ def test_investigation_via_api():
     
     # Test payload
     payload = {
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "entity_value": "192.168.1.100", 
         "investigationId": f"test-api-{int(time.time())}",
         "username": "debug_test",

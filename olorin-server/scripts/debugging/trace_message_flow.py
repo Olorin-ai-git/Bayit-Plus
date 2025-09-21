@@ -36,7 +36,7 @@ async def trace_message_flow():
             content="I need to query the database for IP information",
             tool_calls=[{
                 'name': 'snowflake_query_tool',
-                'args': {'query': 'SELECT * FROM TRANSACTIONS WHERE IP_ADDRESS = \'67.76.8.209\' LIMIT 5'},
+                'args': {'query': 'SELECT * FROM TRANSACTIONS WHERE IP = \'67.76.8.209\' LIMIT 5'},
                 'id': 'test_tool_call_12345',  # This is the critical ID
                 'type': 'tool_call'
             }]

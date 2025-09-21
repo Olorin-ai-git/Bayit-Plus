@@ -27,7 +27,7 @@ poetry run python scripts/get_top_risk_entities.py --force-refresh
 | Flag | Options | Default |
 |------|---------|---------|
 | `--time-window` | `1h`, `6h`, `12h`, `24h`, `7d`, `30d` | `24h` |
-| `--group-by` | `email`, `device_id`, `ip_address` | `email` |
+| `--group-by` | `email`, `device_id`, `ip` | `email` |
 | `--top` | 1-100 (percentage) | `10` |
 | `--force-refresh` | (flag only) | False |
 | `--json` | (flag only) | False |

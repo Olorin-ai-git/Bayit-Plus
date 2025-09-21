@@ -6,26 +6,28 @@ Handles connection, query validation, and result processing.
 import os
 from typing import Any, Dict, List, Optional
 import asyncio
-# Common query templates using real column names - built dynamically
-def get_common_queries():
-    """Get common query templates with configurable table name."""
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-    return {
-        "fraud_transactions": f"""
-            SELECT TX_ID_KEY, EMAIL, NSURE_LAST_DECISION, MODEL_SCORE, IS_FRAUD_TX,
-                   TX_DATETIME, PAID_AMOUNT_VALUE, FRAUD_RULES_TRIGGERED
-            FROM {table}
-            WHERE IS_FRAUD_TX = 1
-            ORDER BY TX_DATETIME DESC
-        """,
-        "high_risk_scores": f"""
-            SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, MAXMIND_RISK_SCORE,
-                   NSURE_LAST_DECISION, TX_DATETIME, PAID_AMOUNT_VALUE
-            FROM {table}
-            WHERE MODEL_SCORE > 0.8 OR MAXMIND_RISK_SCORE > 80
-            ORDER BY MODEL_SCORE DESC, MAXMIND_RISK_SCORE DESC
-        """
-    }
+
+from .schema_constants import (
+    TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD,
+    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE
+)
+# Common query templates using schema constants
+COMMON_QUERIES = {
+    "fraud_transactions": f"""
+        SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
+               {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
+        FROM TRANSACTIONS_ENRICHED
+        WHERE {IS_FRAUD_TX} = 1
+        ORDER BY {TX_DATETIME} DESC
+    """,
+    "high_risk_scores": f"""
+        SELECT {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, {MAXMIND_RISK_SCORE},
+               {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
+        FROM TRANSACTIONS_ENRICHED
+        WHERE {MODEL_SCORE} > 0.8 OR {MAXMIND_RISK_SCORE} > 80
+        ORDER BY {MODEL_SCORE} DESC, {MAXMIND_RISK_SCORE} DESC
+    """
+}
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -67,14 +69,8 @@ class SnowflakeClient:
             self.connection = None
             self.is_real = False
         
-    async def connect(self, database: str = None, schema: str = None):
+    async def connect(self, database: str = "FRAUD_ANALYTICS", schema: str = "PUBLIC"):
         """Establish connection to Snowflake."""
-        # Set database and schema from environment if not provided
-        if database is None:
-            database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-        if schema is None:
-            schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-
         if self.is_real:
             return await self._real_client.connect(database, schema)
         else:
@@ -117,22 +113,20 @@ class SnowflakeClient:
                 query = f"{query.rstrip(';')} LIMIT {min(limit, 10000)}"
             
             # Ensure main table reference includes full schema
-            table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-            full_table_name = f'{self.database}.{self.schema}.{table}'
-            if table in query_upper and full_table_name not in query_upper:
-                # Only replace if it's just table name without schema prefix
-                query = query.replace(table, full_table_name)
+            full_table_name = f'{self.database}.{self.schema}.TRANSACTIONS_ENRICHED'
+            if 'TRANSACTIONS_ENRICHED' in query_upper and full_table_name not in query_upper:
+                # Only replace if it's just TRANSACTIONS_ENRICHED without schema prefix
+                query = query.replace('TRANSACTIONS_ENRICHED', full_table_name)
             
             return query
         
     def get_common_query(self, query_type: str, **params) -> str:
         """Get a pre-defined common query with parameters."""
-        common_queries = get_common_queries()
-        if query_type not in common_queries:
-            available = ', '.join(common_queries.keys())
+        if query_type not in COMMON_QUERIES:
+            available = ', '.join(COMMON_QUERIES.keys())
             raise ValueError(f"Unknown query type. Available: {available}")
-
-        query = common_queries[query_type]
+        
+        query = COMMON_QUERIES[query_type]
         
         # Replace parameters in query
         for key, value in params.items():
@@ -175,13 +169,13 @@ class SnowflakeClient:
             query_lower = safe_query.lower()
             
             # Check for risk entity queries (CTEs)
-            if 'risk_calculations' in query_lower and ('ip_address' in query_lower or 'group by ip_address' in query_lower):
+            if 'risk_calculations' in query_lower and ('ip' in query_lower or 'group by ip' in query_lower):
                 # Return mock high-risk IP addresses from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('ip_address_results', [])
             elif 'risk_calculations' in query_lower and ('email' in query_lower or 'group by email' in query_lower):
                 # Return mock high-risk emails from real data
                 mock_results = mock_data.get('risk_entity_results', {}).get('email_results', [])
-            elif ('where ip_address' in query_lower or 'where ip_address=' in query_lower):
+            elif ('where ip' in query_lower or 'where ip=' in query_lower):
                 # Entity-specific IP query - return transaction data for that IP
                 mock_results = mock_data.get('entity_queries', {}).get('default_ip_results', [])
             elif 'where email' in query_lower:

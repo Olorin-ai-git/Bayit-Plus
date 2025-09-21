@@ -147,23 +147,23 @@ class VirusTotalClient:
                 return None
         return None
     
-    async def analyze_ip(self, ip_address: str) -> VirusTotalIPResponse:
+    async def analyze_ip(self, ip: str) -> VirusTotalIPResponse:
         """
         Analyze IP address reputation and threat intelligence.
         
         Args:
-            ip_address: IP address to analyze
+            ip: IP address to analyze
             
         Returns:
             VirusTotalIPResponse with analysis results
         """
         try:
-            result = await self._make_request(f"ip_addresses/{ip_address}")
+            result = await self._make_request(f"ip_addresses/{ip}")
             
             if not result["success"]:
                 return VirusTotalIPResponse(
                     success=False,
-                    ip_address=ip_address,
+                    ip=ip,
                     error="Failed to retrieve data from VirusTotal",
                     response_time_ms=result.get("response_time_ms", 0)
                 )
@@ -187,7 +187,7 @@ class VirusTotalClient:
             
             response = VirusTotalIPResponse(
                 success=True,
-                ip_address=ip_address,
+                ip=ip,
                 analysis_stats=analysis_stats,
                 vendor_results=vendor_results,
                 country=attributes.get("country"),
@@ -204,10 +204,10 @@ class VirusTotalClient:
             return response
             
         except (VirusTotalError, Exception) as e:
-            logger.error(f"VirusTotal IP analysis failed for {ip_address}: {e}")
+            logger.error(f"VirusTotal IP analysis failed for {ip}: {e}")
             return VirusTotalIPResponse(
                 success=False,
-                ip_address=ip_address,
+                ip=ip,
                 error=str(e)
             )
     

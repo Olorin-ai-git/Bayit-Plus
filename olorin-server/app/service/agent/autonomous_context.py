@@ -41,7 +41,7 @@ class EntityType(Enum):
     DEVICE_ID = "device_id"
     ACCOUNT_ID = "account_id"
     TRANSACTION_ID = "transaction_id"
-    IP_ADDRESS = "ip_address"
+    IP = "ip"
     EMAIL = "email"
 
 
@@ -491,8 +491,8 @@ Failed: {', '.join(self.progress.failed_domains) or 'None'}
                 if isinstance(source_data, dict):
                     # Extract key fields like IP addresses for threat intelligence tools
                     important_fields = []
-                    if 'ip_address' in source_data:
-                        important_fields.append(f"IP Address: {source_data['ip_address']}")
+                    if 'ip' in source_data:
+                        important_fields.append(f"IP Address: {source_data['ip']}")
                     if 'email' in source_data:
                         important_fields.append(f"Email: {source_data['email']}")
                     if 'user_id' in source_data:
@@ -638,7 +638,7 @@ Key principles:
         for source_name, source_data in self.data_sources.items():
             if isinstance(source_data, dict):
                 # Look for common IP address fields
-                ip_fields = ['ip_address', 'ip', 'source_ip', 'dest_ip', 'client_ip', 
+                ip_fields = ['ip', 'ip', 'source_ip', 'dest_ip', 'client_ip', 
                             'server_ip', 'remote_ip', 'local_ip', 'public_ip', 'private_ip']
                 
                 for field in ip_fields:
@@ -664,8 +664,8 @@ Key principles:
                                     if isinstance(ip, str) and self._is_valid_ip(ip):
                                         ip_addresses.add(ip)
         
-        # If no IPs found but entity_type is IP_ADDRESS, use entity_id if it's a valid IP
-        if not ip_addresses and self.entity_type == EntityType.IP_ADDRESS:
+        # If no IPs found but entity_type is IP, use entity_id if it's a valid IP
+        if not ip_addresses and self.entity_type == EntityType.IP:
             if self._is_valid_ip(self.entity_id):
                 ip_addresses.add(self.entity_id)
         

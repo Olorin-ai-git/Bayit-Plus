@@ -190,7 +190,7 @@ Response:
   "default_group_by": "email",
   "default_top_percentage": 10,
   "cache_ttl": 300,
-  "available_groupings": ["email", "device_id", "ip_address"],
+  "available_groupings": ["email", "device_id", "ip"],
   "available_time_windows": ["1h", "6h", "12h", "24h", "7d", "30d"]
 }
 ```
@@ -383,7 +383,7 @@ The `TRANSACTIONS_ENRICHED` table contains 300+ columns including:
 ### Entity Columns
 - `EMAIL` - User email
 - `DEVICE_ID` - Device identifier
-- `IP_ADDRESS` - IP address
+- `IP` - IP address
 - `CARD_BIN` - Card BIN
 - `MERCHANT_NAME` - Merchant
 

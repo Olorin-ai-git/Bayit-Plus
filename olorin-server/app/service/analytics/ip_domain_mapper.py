@@ -4,10 +4,10 @@ Maps IP addresses to their associated domains for threat intelligence.
 """
 
 import asyncio
-import os
 from typing import Optional, Dict, Any
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+from app.service.agent.tools.snowflake_tool.schema_constants import IP, EMAIL
 
 logger = get_bridge_logger(__name__)
 
@@ -19,42 +19,38 @@ class IPDomainMapper:
         self.client = SnowflakeClient()
         self._cache: Dict[str, str] = {}
     
-    async def get_domain_for_ip_country(self, ip_country: str) -> Optional[str]:
+    async def get_domain_for_ip(self, ip: str) -> Optional[str]:
         """
-        Get the most common domain associated with an IP country.
-
+        Get the most common domain associated with an IP address.
+        
         Args:
-            ip_country: The IP country code to look up
-
+            ip: The IP address to look up
+            
         Returns:
-            The domain associated with the IP country, or None if not found
+            The domain associated with the IP, or None if not found
         """
         # Check cache first
-        if ip_country in self._cache:
-            return self._cache[ip_country]
+        if ip in self._cache:
+            return self._cache[ip]
         
         try:
             await self.client.connect()
             
             # Query to find the most common email domain for this IP
-            database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-            schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-            table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-
             query = f"""
             WITH ip_domains AS (
                 SELECT
-                    IP_COUNTRY as ip_country,
-                    EMAIL as email,
-                    SUBSTRING(EMAIL, POSITION('@' IN EMAIL) + 1) as domain,
+                    {IP} as ip,
+                    {EMAIL} as email,
+                    SUBSTRING({EMAIL}, POSITION('@' IN {EMAIL}) + 1) as domain,
                     COUNT(*) as occurrence_count
-                FROM {database}.{schema}.{table}
-                WHERE IP_COUNTRY = '{ip_country}'
-                    AND EMAIL IS NOT NULL
-                    AND EMAIL LIKE '%@%'
-                GROUP BY IP_COUNTRY, EMAIL, domain
+                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                WHERE {IP} = '{ip}'
+                    AND {EMAIL} IS NOT NULL
+                    AND {EMAIL} LIKE '%@%'
+                GROUP BY {IP}, {EMAIL}, domain
             )
-            SELECT
+            SELECT 
                 domain,
                 SUM(occurrence_count) as total_count
             FROM ip_domains
@@ -69,15 +65,15 @@ class IPDomainMapper:
                 domain = results[0].get('DOMAIN') or results[0].get('domain')
                 if domain:
                     # Cache the result
-                    self._cache[ip_country] = domain
-                    logger.info(f"Found domain {domain} for IP country {ip_country}")
+                    self._cache[ip] = domain
+                    logger.info(f"Found domain {domain} for IP {ip}")
                     return domain
             
-            logger.warning(f"No domain found for IP country {ip_country}")
+            logger.warning(f"No domain found for IP {ip}")
             return None
             
         except Exception as e:
-            logger.error(f"Error getting domain for IP country {ip_country}: {e}")
+            logger.error(f"Error getting domain for IP {ip}: {e}")
             return None
         finally:
             try:

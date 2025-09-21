@@ -11,6 +11,7 @@ from typing import Dict, Any, Optional
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
 from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_of_thought
+from app.service.agent.tools.snowflake_tool.schema_constants import IP, MAXMIND_RISK_SCORE
 
 logger = get_bridge_logger(__name__)
 
@@ -130,7 +131,8 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
 
 def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> None:
     """Analyze results for VPN/proxy indicators."""
-    vpn_columns = ["VPN_INDICATOR", "PROXY_RISK_SCORE", "IS_VPN", "IS_PROXY"]
+    # Note: PROXY_RISK_SCORE not available in schema
+    vpn_columns = ["VPN_INDICATOR", "IS_VPN", "IS_PROXY"]
     
     for r in results:
         for col in vpn_columns:
@@ -163,17 +165,17 @@ def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> Non
 
 
 def _analyze_ip_diversity(results: list, findings: Dict[str, Any]) -> None:
-    """Analyze IP country diversity patterns."""
-    ip_countries = set(r.get("IP_COUNTRY_CODE") for r in results if r.get("IP_COUNTRY_CODE"))
-    findings["analysis"]["unique_ip_countries"] = len(ip_countries)
-    findings["metrics"]["unique_ip_country_count"] = len(ip_countries)
+    """Analyze IP address diversity patterns."""
+    ips = set(r.get("IP") for r in results if r.get("IP"))  # Using correct column name
+    findings["analysis"]["unique_ips"] = len(ips)
+    findings["metrics"]["unique_ip_count"] = len(ips)
     
-    if len(ip_countries) > 5:
-        findings["risk_indicators"].append(f"High IP country diversity: {len(ip_countries)} unique countries")
+    if len(ips) > 10:
+        findings["risk_indicators"].append(f"High IP diversity: {len(ips)} unique IPs")
         findings["risk_score"] += 0.2
-        findings["evidence"].append(f"Suspicious IP country diversity pattern: {len(ip_countries)} unique countries")
-    elif len(ip_countries) > 3:
-        findings["evidence"].append(f"Moderate IP country diversity: {len(ip_countries)} unique countries")
+        findings["evidence"].append(f"Suspicious IP diversity pattern: {len(ips)} unique addresses")
+    elif len(ips) > 5:
+        findings["evidence"].append(f"Moderate IP diversity: {len(ips)} unique addresses")
 
 
 def _analyze_threat_intelligence(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:

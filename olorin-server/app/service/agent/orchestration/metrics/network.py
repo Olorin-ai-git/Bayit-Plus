@@ -36,7 +36,7 @@ def compute_network_metrics(state: Dict[str, Any]) -> None:
         analysis = state["domain_findings"]["network"]["analysis"]
         
         # Canonicalize network facts for IP entity investigations
-        if state.get("entity_type") == "ip_address":
+        if state.get("entity_type") == "ip":
             entity_id = state.get("entity_id")
             if entity_id:
                 try:
@@ -75,7 +75,7 @@ def compute_network_metrics(state: Dict[str, Any]) -> None:
         logger.warning(f"Failed to compute network metrics: {e}")
 
 
-def _extract_canonical_country(tool_results: Dict[str, Any], ip_address: str) -> str:
+def _extract_canonical_country(tool_results: Dict[str, Any], ip: str) -> str:
     """
     Extract canonical country from tool results with preference order.
     
@@ -111,6 +111,6 @@ def _extract_canonical_country(tool_results: Dict[str, Any], ip_address: str) ->
                     return country_code
                     
     except Exception as e:
-        logger.debug(f"Failed to extract canonical country for {ip_address}: {e}")
+        logger.debug(f"Failed to extract canonical country for {ip}: {e}")
     
     return None

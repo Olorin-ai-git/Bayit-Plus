@@ -34,7 +34,7 @@ def normalize_abuseipdb(payload: Dict[str, Any]) -> Dict[str, Any]:
             payload = json.loads(payload)
         
         data = payload.get("data", {})
-        ip_str = data.get("ip_address", "")
+        ip_str = data.get("ip", "")
         
         if not ip_str:
             return payload

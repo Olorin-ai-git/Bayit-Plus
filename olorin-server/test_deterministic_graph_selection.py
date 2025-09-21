@@ -47,7 +47,7 @@ class TestDeterministicGraphSelection:
             test_cases = [
                 {
                     "investigation_id": "test-001",
-                    "entity_type": "ip_address"
+                    "entity_type": "ip"
                 },
                 {
                     "investigation_id": "test-002", 

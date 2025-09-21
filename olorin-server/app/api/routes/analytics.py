@@ -23,7 +23,7 @@ class RiskAnalyticsRequest(BaseModel):
     )
     group_by: Optional[str] = Field(
         None,
-        description="Field to group by (e.g., 'EMAIL', 'DEVICE_ID', 'IP_COUNTRY')"
+        description="Field to group by (e.g., 'EMAIL', 'DEVICE_ID', 'IP')"
     )
     top_percentage: Optional[float] = Field(
         None,
@@ -45,7 +45,7 @@ class EntityAnalysisRequest(BaseModel):
     )
     entity_type: str = Field(
         "email",
-        description="Type of entity (email, device_id, ip_address, etc.)"
+        description="Type of entity (email, device_id, ip, etc.)"
     )
     time_window: str = Field(
         "30d",
@@ -69,7 +69,7 @@ async def analytics_health():
 async def get_top_risk_entities(
     request: Request,
     time_window: Optional[str] = Query(None, description="Time window (e.g., '24h', '7d')"),
-    group_by: Optional[str] = Query(None, description="Group by field (e.g., 'EMAIL', 'DEVICE_ID', 'IP_COUNTRY')"),
+    group_by: Optional[str] = Query(None, description="Group by field (e.g., 'EMAIL', 'DEVICE_ID', 'IP')"),
     top_percentage: Optional[float] = Query(None, description="Top percentage (1-100)"),
     force_refresh: bool = Query(False, description="Force refresh cache")
 ):
@@ -206,6 +206,6 @@ async def get_analytics_config():
         "default_group_by": os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'EMAIL'),
         "default_top_percentage": float(os.getenv('ANALYTICS_DEFAULT_TOP_PERCENTAGE', '10')),
         "cache_ttl": int(os.getenv('ANALYTICS_CACHE_TTL', '300')),
-        "available_groupings": ["EMAIL", "DEVICE_ID", "IP_COUNTRY", "BIN", "MERCHANT_NAME"],
+        "available_groupings": ["EMAIL", "DEVICE_ID", "IP", "BIN", "MERCHANT_NAME"],
         "available_time_windows": ["1h", "6h", "12h", "24h", "7d", "30d"]
     }

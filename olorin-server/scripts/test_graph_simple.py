@@ -37,7 +37,7 @@ async def test_step_by_step():
     state = create_initial_state(
         investigation_id="test-001",
         entity_id="192.168.1.100",
-        entity_type="ip_address"
+        entity_type="ip"
     )
     print(f"   ✓ State created with phase: {state['current_phase']}")
     print(f"   ✓ Snowflake completed: {state['snowflake_completed']}")

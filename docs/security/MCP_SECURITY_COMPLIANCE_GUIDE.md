@@ -206,7 +206,7 @@ class SecureJWTManager:
             'permissions': permissions,
             'device_id': user.device_id,
             'session_id': user.session_id,
-            'ip_address': user.ip_address,
+            'ip': user.ip,
             'mfa_verified': user.mfa_verified,
             'risk_score': user.risk_score
         }
@@ -814,7 +814,7 @@ class EnterpriseAuditFramework:
             username=user.username,
             role=user.role,
             session_id=user.session_id,
-            ip_address=user.ip_address,
+            ip=user.ip,
             user_agent=user.user_agent,
             activity_type=activity_type,
             investigation_id=investigation_id,

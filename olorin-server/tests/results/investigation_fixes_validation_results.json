@@ -1,7 +1,7 @@
 {
   "timestamp": "2025-09-10T11:25:04.080161",
   "test_entity": "67.76.8.209",
-  "entity_type": "ip_address",
+  "entity_type": "ip",
   "fixes_applied": [
     "AsyncIO event loop conflicts fixed",
     "Tool result processing pipeline fixed",

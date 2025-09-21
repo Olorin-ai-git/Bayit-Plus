@@ -161,7 +161,7 @@ async def test_graph_selection():
         try:
             graph = await get_investigation_graph(
                 investigation_id=investigation_id,
-                entity_type="ip_address",
+                entity_type="ip",
                 force_graph_type=GraphType.CLEAN
             )
             print("✅ Graph selection successful")

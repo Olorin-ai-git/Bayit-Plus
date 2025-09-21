@@ -7,10 +7,6 @@ import asyncio
 import os
 import sys
 from pathlib import Path
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 # Add the parent directory to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -19,23 +15,18 @@ from app.service.agent.tools.snowflake_tool.real_client import RealSnowflakeClie
 
 async def test_sql_queries():
     """Test all SQL queries that might be causing compilation errors."""
-
-    # Get configuration from environment variables
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-
+    
     # Test the risk entities query that's causing issues
     client = RealSnowflakeClient()
-
+    
     try:
-        await client.connect(database, schema)
+        await client.connect("FRAUD_ANALYTICS", "PUBLIC")
         print("✅ Connected to Snowflake successfully")
-
+        
         # Test 1: Simple query first
-        simple_query = f"""
-        SELECT COUNT(*) as record_count
-        FROM {database}.{schema}.{table}
+        simple_query = """
+        SELECT COUNT(*) as record_count 
+        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
         LIMIT 1
         """
         
@@ -47,18 +38,18 @@ async def test_sql_queries():
         print("🔍 Testing risk entities query...")
         results = await client.get_top_risk_entities(
             time_window_hours=24,
-            group_by='IP_ADDRESS',
+            group_by='IP',
             top_percentage=0.1,
             min_transactions=1
         )
         print(f"✅ Risk entities query works: found {len(results)} entities")
         
-        # Test 3: Transaction details query
+        # Test 3: Transaction details query  
         print("🔍 Testing transaction details query...")
-        entity_query = f"""
-        SELECT TX_ID_KEY, EMAIL, IP_ADDRESS, MODEL_SCORE, IS_FRAUD_TX
-        FROM {database}.{schema}.{table}
-        WHERE IP_ADDRESS = '102.159.115.190'
+        entity_query = """
+        SELECT TX_ID_KEY, EMAIL, IP, MODEL_SCORE, IS_FRAUD_TX
+        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+        WHERE IP = '102.159.115.190'
         LIMIT 5
         """
         

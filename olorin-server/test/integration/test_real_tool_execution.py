@@ -141,7 +141,7 @@ async def run_monitored_investigation():
         context = AutonomousInvestigationContext(
             investigation_id="tool_test_001",
             entity_id="192.168.1.100",
-            entity_type=EntityType.IP_ADDRESS,
+            entity_type=EntityType.IP,
             investigation_type="fraud_investigation"
         )
         

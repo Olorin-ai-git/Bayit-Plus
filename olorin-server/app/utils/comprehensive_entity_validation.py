@@ -225,7 +225,7 @@ class ComprehensiveEntityValidator:
             return self._validate_phone(str_value)
         
         # IP address validation
-        if 'ip' in field_name.lower() or entity_type in [EntityType.IP_ADDRESS, EntityType.CLIENT_IP]:
+        if 'ip' in field_name.lower() or entity_type in [EntityType.IP, EntityType.CLIENT_IP]:
             return self._validate_ip_address(str_value)
         
         # Currency validation

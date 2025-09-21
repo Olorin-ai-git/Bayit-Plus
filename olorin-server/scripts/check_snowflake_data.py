@@ -4,7 +4,6 @@ Check what data exists in Snowflake table.
 """
 
 import asyncio
-import os
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
@@ -25,31 +24,26 @@ async def main():
     print("\n" + "="*70)
     print("📊 CHECKING SNOWFLAKE DATA")
     print("="*70)
-
-    # Get environment variables for database configuration
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-
+    
     client = SnowflakeClient()
     await client.connect()
-
+    
     # Check total records
     print("\n1. Total Records:")
-    query1 = f"SELECT COUNT(*) as total FROM {database}.{schema}.{table}"
+    query1 = "SELECT COUNT(*) as total FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED"
     result1 = await client.execute_query(query1)
     print(f"   Total records: {result1[0]['TOTAL'] if result1 else 0}")
     
     # Check data by email
     print("\n2. Records by Email:")
-    query2 = f"""
-    SELECT
+    query2 = """
+    SELECT 
         EMAIL,
         COUNT(*) as tx_count,
-        SUM(PAID_AMOUNT_VALUE) as total_amount,
+        SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
         AVG(MODEL_SCORE) as avg_risk,
-        SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value
-    FROM {database}.{schema}.{table}
+        SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value
+    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     GROUP BY EMAIL
     ORDER BY risk_value DESC
     """
@@ -66,12 +60,12 @@ async def main():
     
     # Check time range of data
     print("\n3. Time Range of Data:")
-    query3 = f"""
-    SELECT
+    query3 = """
+    SELECT 
         MIN(TX_DATETIME) as earliest,
         MAX(TX_DATETIME) as latest,
         DATEDIFF(hour, MIN(TX_DATETIME), MAX(TX_DATETIME)) as hours_span
-    FROM {database}.{schema}.{table}
+    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     """
     result3 = await client.execute_query(query3)
     if result3 and result3[0]:
@@ -81,21 +75,21 @@ async def main():
     
     # Check sample of actual data
     print("\n4. Sample Records:")
-    query4 = f"""
+    query4 = """
     SELECT
         TX_ID_KEY,
         EMAIL,
-        PAID_AMOUNT_VALUE,
+        PAID_AMOUNT_VALUE_IN_CURRENCY,
         MODEL_SCORE,
         IS_FRAUD_TX,
         TX_DATETIME
-    FROM {database}.{schema}.{table}
+    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     LIMIT 5
     """
     result4 = await client.execute_query(query4)
     if result4:
         for row in result4:
-            print(f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE']:.2f} (Risk: {row['MODEL_SCORE']:.2f})")
+            print(f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE_IN_CURRENCY']:.2f} (Risk: {row['MODEL_SCORE']:.2f})")
     
     await client.disconnect()
     print("\n" + "="*70)

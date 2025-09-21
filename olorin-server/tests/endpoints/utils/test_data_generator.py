@@ -165,7 +165,7 @@ class TestDataGenerator:
                 }
             ],
             "ip_information": {
-                "ip_address": "198.51.100.42",  # Documentation IP
+                "ip": "198.51.100.42",  # Documentation IP
                 "city": "New York",
                 "state": "NY", 
                 "country": "United States",
@@ -335,7 +335,7 @@ class TestDataGenerator:
                     "_time": (now - timedelta(hours=2)).isoformat(),
                     "event_type": "user_login",
                     "user_id": user_id,
-                    "ip_address": "198.51.100.42",
+                    "ip": "198.51.100.42",
                     "success": True,
                     "location": "New York, NY"
                 },

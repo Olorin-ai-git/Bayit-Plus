@@ -30,7 +30,7 @@ async def test_journey_initialization():
     # Create test investigation context
     investigation_id = "test-journey-init-001"
     entity_id = "test-entity-123"
-    entity_type = EntityType.IP_ADDRESS
+    entity_type = EntityType.IP
     
     # Create agent context
     agent_context = AgentContext(

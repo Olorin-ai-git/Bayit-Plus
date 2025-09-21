@@ -35,7 +35,7 @@ This plan outlines the implementation of a new AuthenticationAgent for the Olori
 #### **1.2 Authentication Domain Specification**
 - **Authentication Fraud Patterns**: Login anomalies, account takeover, brute force, credential stuffing
 - **Data Source Integration**: 
-  - **Snowflake**: TX_DATETIME, EMAIL, IP_ADDRESS, DEVICE_ID, FRAUD_RULES_TRIGGERED
+  - **Snowflake**: TX_DATETIME, EMAIL, IP, DEVICE_ID, FRAUD_RULES_TRIGGERED
   - **SumoLogic**: Application authentication logs, API authentication events
 - **Risk Scoring Framework**: Authentication-specific risk indicators and confidence calculation
 

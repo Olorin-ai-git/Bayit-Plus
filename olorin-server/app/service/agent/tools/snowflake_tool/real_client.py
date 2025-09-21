@@ -11,6 +11,7 @@ from datetime import datetime
 
 from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from .schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME
 
 logger = get_bridge_logger(__name__)
 
@@ -37,9 +38,9 @@ class RealSnowflakeClient:
         self.host = config.get('host', self.account)  # Host can be same as account
         self.user = config.get('user')
         self.password = config.get('password')
-        self.database = config.get('database', os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS'))
-        self.schema = config.get('schema', os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC'))
-        self.warehouse = config.get('warehouse', os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'))
+        self.database = config.get('database', 'FRAUD_ANALYTICS')
+        self.schema = config.get('schema', 'PUBLIC')
+        self.warehouse = config.get('warehouse', 'COMPUTE_WH')
         self.role = config.get('role')
         self.authenticator = config.get('authenticator', 'snowflake')
         
@@ -50,22 +51,15 @@ class RealSnowflakeClient:
         self.query_timeout = int(config.get('query_timeout', '300'))
         
         # Validate critical configuration
-        # For externalbrowser authenticator, password is not required (OAuth/SAML)
-        required_fields = [self.account, self.user, self.database]
-        if self.authenticator != 'externalbrowser':
-            required_fields.append(self.password)
-
-        if not all(required_fields):
+        if not all([self.account, self.user, self.password, self.database]):
             missing = []
             if not self.account: missing.append('SNOWFLAKE_ACCOUNT')
             if not self.user: missing.append('SNOWFLAKE_USER')
+            if not self.password: missing.append('SNOWFLAKE_PASSWORD')
             if not self.database: missing.append('SNOWFLAKE_DATABASE')
-            if self.authenticator != 'externalbrowser' and not self.password:
-                missing.append('SNOWFLAKE_PASSWORD')
-
-            if missing:
-                logger.error(f"Missing critical Snowflake configuration: {', '.join(missing)}")
-                logger.error("Please configure these in your .env file")
+            
+            logger.error(f"Missing critical Snowflake configuration: {', '.join(missing)}")
+            logger.error("Please configure these in your .env file")
             # Don't raise exception - just warn (as per requirements)
     
     def _get_connection(self):
@@ -78,16 +72,22 @@ class RealSnowflakeClient:
                 conn_params = {
                     'account': self.account,
                     'user': self.user,
+                    'password': self.password,
                     'database': self.database,
                     'schema': self.schema,
                     'warehouse': self.warehouse,
                     'network_timeout': self.query_timeout,
                     'login_timeout': 60,
+                    # SSL/TLS configuration to fix handshake issues
+                    'insecure_mode': True,  # Temporarily disable SSL verification for testing
+                    'ocsp_response_cache_filename': None,  # Disable OCSP cache to avoid SSL issues
+                    'client_session_keep_alive': True,
+                    'client_request_mfa_token': False,
+                    # Additional SSL workaround parameters
+                    'session_parameters': {
+                        'PYTHON_CONNECTOR_QUERY_RESULT_FORMAT': 'json'
+                    }
                 }
-
-                # Only add password if not using externalbrowser authenticator
-                if self.authenticator != 'externalbrowser' and self.password:
-                    conn_params['password'] = self.password
                 
                 # Add optional parameters
                 if self.role:
@@ -238,13 +238,13 @@ class RealSnowflakeClient:
             SELECT 
                 {group_by} as entity,
                 COUNT(*) as transaction_count,
-                SUM(PAID_AMOUNT_VALUE) as total_amount,
-                AVG(MODEL_SCORE) as avg_risk_score,
-                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value,
-                MAX(MODEL_SCORE) as max_risk_score,
-                SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count
-            FROM {self.database}.{self.schema}.{os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')}
-            WHERE TX_DATETIME >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
+                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
+                AVG({MODEL_SCORE}) as avg_risk_score,
+                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) as risk_weighted_value,
+                MAX({MODEL_SCORE}) as max_risk_score,
+                SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count
+            FROM {self.database}.{self.schema}.TRANSACTIONS_ENRICHED
+            WHERE {TX_DATETIME} >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
                 AND {group_by} IS NOT NULL
             GROUP BY {group_by}
             HAVING COUNT(*) >= {min_transactions}

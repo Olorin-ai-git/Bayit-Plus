@@ -43,7 +43,7 @@ const ws = new WebSocket('ws://localhost:8090/ws/investigation-id?parallel=false
       {
         "entity_id": "4621097846089147992",
         "timestamp": "2025-05-15T07:08:47.527-07:00",
-        "ip_address": "192.168.1.1",
+        "ip": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
         "isp": "olorin inc.",

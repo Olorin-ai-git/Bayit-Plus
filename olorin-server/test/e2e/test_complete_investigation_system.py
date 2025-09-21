@@ -155,7 +155,7 @@ def test_complete_investigation_system():
             agent_name="network_analysis_agent",
             tool_name="geolocation_validator",
             tool_parameters={
-                "ip_address": "192.168.1.100",
+                "ip": "192.168.1.100",
                 "claimed_location": "New York, USA",
                 "validation_level": "comprehensive",
                 "check_vpn": True,

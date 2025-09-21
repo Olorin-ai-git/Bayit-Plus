@@ -47,7 +47,7 @@ class MockSplunkClient:
                 {
                     "_time": "2025-01-15T14:30:25.123Z",
                     "event_type": "failed_login",
-                    "ip_address": "198.51.100.42",
+                    "ip": "198.51.100.42",
                     "location": "Russia",
                     "user_id": "user_fraud_demo",
                     "failure_reason": "invalid_password",
@@ -56,7 +56,7 @@ class MockSplunkClient:
                 {
                     "_time": "2025-01-15T14:35:10.456Z",
                     "event_type": "successful_login",
-                    "ip_address": "198.51.100.42",
+                    "ip": "198.51.100.42",
                     "location": "Russia",
                     "user_id": "user_fraud_demo",
                     "device_fingerprint": "unknown_device_xyz",
@@ -191,7 +191,7 @@ Let me query all three systems to get a complete picture."""
                 "id": "call_splunk_001",
                 "name": "splunk_query_tool",
                 "args": {
-                    "query": 'search index=security user_id="user_fraud_demo" (failed_login OR successful_login) | stats count by event_type, ip_address'
+                    "query": 'search index=security user_id="user_fraud_demo" (failed_login OR successful_login) | stats count by event_type, ip'
                 }
             })
         

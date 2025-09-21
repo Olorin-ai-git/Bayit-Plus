@@ -637,7 +637,7 @@ def test_analyze_network_malformed_authorization_header(client):
 
 def test_analyze_network_prompt_trimming_large_input(client):
     clear_demo_mode()
-    large_logs = [{"ip_address": f"1.2.3.{i}", "isp": f"ISP{i%3}"} for i in range(50)]
+    large_logs = [{"ip": f"1.2.3.{i}", "isp": f"ISP{i%3}"} for i in range(50)]
     with patch(
         "app.service.network_analysis_service.get_settings_for_env",
         return_value=MagicMock(splunk_host="dummy_host"),

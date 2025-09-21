@@ -72,7 +72,7 @@ class VirusTotalIPResponse(BaseModel):
     """VirusTotal IP analysis response."""
     
     success: bool = Field(..., description="Whether the query was successful")
-    ip_address: str = Field(..., description="Analyzed IP address")
+    ip: str = Field(..., description="Analyzed IP address")
     
     # Analysis results
     analysis_stats: Optional[VirusTotalAnalysisStats] = Field(None, description="Analysis statistics")

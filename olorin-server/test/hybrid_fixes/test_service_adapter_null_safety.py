@@ -53,7 +53,7 @@ async def test_graph_selection_null_safety():
     adapter.graph_selector = None
     
     try:
-        await adapter.get_investigation_graph("test-id", "ip_address")
+        await adapter.get_investigation_graph("test-id", "ip")
         assert False, "Should have raised RuntimeError"
     except RuntimeError as e:
         print(f"   Caught expected error: {str(e)}")
@@ -185,7 +185,7 @@ async def test_investigation_completion_null_safety():
     
     # Add a mock investigation
     adapter.active_investigations["test-123"] = {
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "start_time": "2024-01-01T00:00:00",
         "service_context": {},
         "graph_type": "hybrid"

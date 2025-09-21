@@ -915,7 +915,7 @@ const ws = new WebSocket(
     "extracted_network_signals": [
       {
         "timestamp": "2024-01-15T10:30:00Z",
-        "ip_address": "192.168.1.1",
+        "ip": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
         "isp": "olorin inc."
@@ -1164,7 +1164,7 @@ investigation agents:
     "extracted_network_signals": [
       {
         "timestamp": "2024-01-15T10:30:00Z",
-        "ip_address": "192.168.1.1",
+        "ip": "192.168.1.1",
         "country": "US",
         "city": "Mountain View",
         "isp": "olorin inc."

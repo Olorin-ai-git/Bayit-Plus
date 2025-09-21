@@ -470,7 +470,7 @@ async def test_full_investigation():
     result = await graph.ainvoke({
         "investigation_id": "test-123",
         "entity_id": "192.168.1.1",
-        "entity_type": "ip_address"
+        "entity_type": "ip"
     })
     assert result["current_phase"] == "complete"
     assert len(result["tools_used"]) > 10

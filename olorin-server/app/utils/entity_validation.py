@@ -73,7 +73,7 @@ def get_entity_type_categories() -> Dict[str, List[str]]:
         "identity": [
             EntityType.EMAIL.value,
             EntityType.PHONE_NUMBER.value,
-            EntityType.IP_ADDRESS.value,
+            EntityType.IP.value,
             EntityType.BIOMETRIC.value,
             EntityType.API_KEY.value,
             EntityType.CERTIFICATE.value,

@@ -23,7 +23,7 @@ logger = get_bridge_logger(__name__)
 class IPReputationInput(BaseModel):
     """Input schema for IP reputation check."""
     
-    ip_address: str = Field(
+    ip: str = Field(
         ..., 
         description="IP address to check (IPv4 or IPv6)",
         examples=["192.168.1.1", "2001:db8::1"]
@@ -39,7 +39,7 @@ class IPReputationInput(BaseModel):
         description="Include detailed information about the IP"
     )
     
-    @validator('ip_address')
+    @validator('ip')
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         import ipaddress
@@ -121,13 +121,13 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         """Execute IP reputation query via AbuseIPDB API."""
         try:
             # Extract parameters
-            ip_address = query_data["ip_address"]
+            ip = query_data["ip"]
             max_age_days = query_data.get("max_age_days", 90)
             include_details = query_data.get("include_details", True)
             
             # Query AbuseIPDB
             reputation_response = await self.client.check_ip_reputation(
-                ip_address=ip_address,
+                ip=ip,
                 max_age_days=max_age_days,
                 verbose=include_details
             )
@@ -154,7 +154,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         except AbuseIPDBError as e:
             # Handle specific subscription errors gracefully
             if e.status_code == 402:
-                logger.debug(f"AbuseIPDB analysis skipped for {ip_address}: subscription required")
+                logger.debug(f"AbuseIPDB analysis skipped for {ip}: subscription required")
                 return ThreatIntelligenceResponse(
                     success=False,
                     error="AbuseIPDB subscription required for this endpoint",
@@ -163,7 +163,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
                     status="subscription_required"
                 )
             elif "subscription" in str(e).lower():
-                logger.debug(f"AbuseIPDB analysis limited for {ip_address}: subscription required")
+                logger.debug(f"AbuseIPDB analysis limited for {ip}: subscription required")
                 return ThreatIntelligenceResponse(
                     success=False,
                     error=str(e),
@@ -172,7 +172,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
                     status="subscription_required"
                 )
             else:
-                logger.warning(f"AbuseIPDB analysis failed for {ip_address}: {type(e).__name__}")
+                logger.warning(f"AbuseIPDB analysis failed for {ip}: {type(e).__name__}")
                 return ThreatIntelligenceResponse(
                     success=False,
                     error=f"AbuseIPDB API error: {str(e)}",
@@ -181,7 +181,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
                     status="api_error"
                 )
         except Exception as e:
-            logger.warning(f"AbuseIPDB analysis unavailable for {ip_address}: {type(e).__name__}")
+            logger.warning(f"AbuseIPDB analysis unavailable for {ip}: {type(e).__name__}")
             return ThreatIntelligenceResponse(
                 success=False,
                 error=f"Service temporarily unavailable ({type(e).__name__})",
@@ -203,7 +203,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         
         # Core IP information
         analysis = {
-            "ip_address": ip_info.ip_address,
+            "ip": ip_info.ip,
             "reputation_summary": {
                 "abuse_confidence": ip_info.abuse_confidence_percentage,
                 "risk_level": risk_level,
@@ -534,7 +534,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
 
     async def _arun(
         self,
-        ip_address: str,
+        ip: str,
         max_age_days: int = 90,
         include_details: bool = True,
         **kwargs
@@ -542,7 +542,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
         """Execute IP reputation check."""
         try:
             query_data = {
-                "ip_address": ip_address,
+                "ip": ip,
                 "max_age_days": max_age_days,
                 "include_details": include_details
             }
@@ -558,7 +558,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
                 return json.dumps({
                     "success": False,
                     "error": response.error,
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "source": "AbuseIPDB"
                 }, indent=2)
                 
@@ -567,7 +567,7 @@ class IPReputationTool(BaseThreatIntelligenceTool):
             return json.dumps({
                 "success": False,
                 "error": str(e),
-                "ip_address": ip_address,
+                "ip": ip,
                 "source": "AbuseIPDB"
             }, indent=2)
 

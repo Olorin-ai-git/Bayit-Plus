@@ -43,7 +43,7 @@ async def test_investigation_with_domain_agents():
         
         # Create test investigation
         investigation_id = f"test-investigation-{int(time.time())}"
-        entity_type = "ip_address"
+        entity_type = "ip"
         entity_value = "192.168.1.100"
         
         print(f"📋 Test Investigation Details:")

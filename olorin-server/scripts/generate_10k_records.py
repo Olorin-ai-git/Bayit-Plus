@@ -259,7 +259,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
             amount = generator.generate_amount(risk_level, is_fraud)
             risk_score = generator.generate_risk_score(risk_level, is_fraud)
             device_id = generator.generate_device_id(user_id)
-            ip_address = generator.generate_ip(risk_level)
+            ip = generator.generate_ip(risk_level)
             card_bin, card_last4 = generator.generate_card_info()
             merchant_name, merchant_cat, mcc = generator.generate_merchant(risk_level)
             
@@ -279,7 +279,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
                 tx_status,  # TX_STATUS
                 
                 # Amount fields
-                amount,  # PAID_AMOUNT_VALUE
+                amount,  # PAID_AMOUNT_VALUE_IN_CURRENCY
                 'USD',  # PAID_CURRENCY_CODE
                 amount,  # ORIGINAL_AMOUNT_VALUE
                 'USD',  # ORIGINAL_CURRENCY_CODE
@@ -319,6 +319,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
                 random.randint(60, 3600),  # SESSION_DURATION_SECONDS
                 
                 # Location fields
+                ip,  # IP
                 location['country'],  # IP_COUNTRY
                 f"{location['country']}_Region",  # IP_REGION
                 location['city'],  # IP_CITY
@@ -399,42 +400,37 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
 def insert_to_snowflake(transactions: List[Tuple]):
     """Insert transactions into Snowflake."""
     print(f"\n📤 Connecting to Snowflake...")
-
-    # Get environment variables for database configuration
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-
+    
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=database,
-        schema=schema,
+        database='FRAUD_ANALYTICS',
+        schema='PUBLIC',
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'  # Need ACCOUNTADMIN for bulk insert
     )
-
+    
     cursor = conn.cursor()
-
+    
     try:
         # Clear existing data (optional - comment out to keep existing)
         print("\n🗑️  Clearing existing test data...")
-        cursor.execute(f"DELETE FROM {database}.{schema}.{table} WHERE TX_ID_KEY LIKE 'TX%'")
+        cursor.execute("DELETE FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED WHERE TX_ID_KEY LIKE 'TX%'")
         
         print(f"\n📝 Inserting {len(transactions):,} transactions...")
         
         # Prepare insert statement for the fields we're populating
-        insert_sql = f"""
-        INSERT INTO {database}.{schema}.{table} (
+        insert_sql = """
+        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED (
             TX_ID_KEY, TX_DATETIME, TX_TYPE, TX_STATUS,
-            PAID_AMOUNT_VALUE, PAID_CURRENCY_CODE, ORIGINAL_AMOUNT_VALUE, ORIGINAL_CURRENCY_CODE, EXCHANGE_RATE,
+            PAID_AMOUNT_VALUE_IN_CURRENCY, PAID_CURRENCY_CODE, ORIGINAL_AMOUNT_VALUE, ORIGINAL_CURRENCY_CODE, EXCHANGE_RATE,
             USER_ID, EMAIL, EMAIL_DOMAIN, USERNAME, FIRST_NAME, LAST_NAME, FULL_NAME, DATE_OF_BIRTH, AGE_AT_TX, GENDER,
             ACCOUNT_ID, ACCOUNT_TYPE, ACCOUNT_STATUS, ACCOUNT_CREATED_DATE, ACCOUNT_AGE_DAYS, 
             ACCOUNT_VERIFICATION_STATUS, KYC_STATUS, KYC_LEVEL,
             DEVICE_ID, DEVICE_TYPE, DEVICE_OS, DEVICE_OS_VERSION, DEVICE_BROWSER, DEVICE_BROWSER_VERSION,
             DEVICE_FINGERPRINT, SESSION_ID, SESSION_DURATION_SECONDS,
-            IP_COUNTRY, IP_REGION, IP_CITY, IP_POSTAL_CODE, IP_LATITUDE, IP_LONGITUDE,
+            IP, IP_COUNTRY, IP_REGION, IP_CITY, IP_POSTAL_CODE, IP_LATITUDE, IP_LONGITUDE,
             IP_ISP, IP_ORG, IP_ASN, IP_TYPE,
             CARD_BIN, CARD_LAST4, CARD_TYPE, CARD_BRAND, CARD_ISSUER, CARD_ISSUER_COUNTRY,
             CARD_FUNDING_TYPE, PAYMENT_METHOD, PAYMENT_PROCESSOR,
@@ -471,9 +467,9 @@ def insert_to_snowflake(transactions: List[Tuple]):
                 MAX(TX_DATETIME) as latest_tx,
                 AVG(MODEL_SCORE) as avg_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count,
-                AVG(PAID_AMOUNT_VALUE) as avg_amount,
-                MAX(PAID_AMOUNT_VALUE) as max_amount
-            FROM {database}.{schema}.{table}
+                AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount,
+                MAX(PAID_AMOUNT_VALUE_IN_CURRENCY) as max_amount
+            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
         """)
         
         stats = cursor.fetchone()
@@ -499,11 +495,11 @@ def insert_to_snowflake(transactions: List[Tuple]):
                 SELECT 
                     EMAIL,
                     COUNT(*) as tx_count,
-                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,
+                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
                     AVG(MODEL_SCORE) as avg_risk,
-                    SUM(PAID_AMOUNT_VALUE) as total_amount,
+                    SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM {database}.{schema}.{table}
+                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
                 GROUP BY EMAIL
             )
             SELECT * FROM risk_calc

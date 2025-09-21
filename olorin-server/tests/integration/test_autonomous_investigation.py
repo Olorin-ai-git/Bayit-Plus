@@ -322,7 +322,7 @@ class TestAutonomousInvestigationE2E:
                         "name": f"Concurrent Test User {i}",
                         "email": f"subject{i}@concurrent.test",
                         "phone": f"+1415555000{i}",
-                        "ip_address": "192.168.1.100",  # Test IP
+                        "ip": "192.168.1.100",  # Test IP
                         "device_fingerprint": {"browser": "Chrome", "os": "Windows"}
                     }),
                     risk_score=0.5,
@@ -605,7 +605,7 @@ class TestScenarioBasedInvestigations:
                     "user_id": scenario.user_data["user_id"],
                     "email": scenario.user_data["email"],
                     "phone": scenario.user_data["phone"],
-                    "ip_address": scenario.user_data["ip_address"],
+                    "ip": scenario.user_data["ip"],
                     "device_fingerprint": scenario.user_data["device_fingerprint"],
                     **scenario.entity_data
                 }),
@@ -1017,7 +1017,7 @@ class TestWebToolsIntegration:
             "suspicious_domains": ["malicious-phishing-site.com", "fake-bank-domain.org"],
             "email": "john.doe@suspicious-domain.com",  # Contains PII that should be sanitized
             "phone": "555-123-4567",  # Contains PII that should be sanitized
-            "ip_address": "192.168.1.100"
+            "ip": "192.168.1.100"
         })
         
         config = RunnableConfig(
@@ -1309,7 +1309,7 @@ class TestWebToolsIntegration:
             "ssn": "987-65-4321",
             "credit_card": "4111-1111-1111-1111",
             "bank_account": "123456789",
-            "ip_address": "203.0.113.50",
+            "ip": "203.0.113.50",
             "suspicious_domains": ["phishing-site.com", "malware-host.org"],
             "business_name": "Suspicious Enterprises Inc",
             "business_address": "456 Fraud Avenue, Scam City, NY 10001"

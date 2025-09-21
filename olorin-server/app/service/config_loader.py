@@ -185,16 +185,9 @@ class ConfigLoader:
             logger.warning("Please add these to your .env file for complete configuration")
         
         # Check critical fields but don't fail - just warn
-        # For externalbrowser authenticator, password is not required (OAuth/SAML)
-        authenticator = config.get('authenticator', '').lower()
-        if authenticator == 'externalbrowser':
-            critical_fields = ['account', 'user', 'database']
-            logger.info("Using externalbrowser authenticator - password not required for OAuth/SAML")
-        else:
-            critical_fields = ['account', 'user', 'password', 'database']
-
+        critical_fields = ['account', 'user', 'password', 'database']
         missing_critical = [f for f in critical_fields if not config.get(f)]
-
+        
         if missing_critical:
             logger.error(f"CRITICAL: Missing required Snowflake configuration: {missing_critical}")
             logger.error("Snowflake connection will not be possible without these values")
@@ -305,6 +298,32 @@ class ConfigLoader:
             "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY")
         }
     
+    
+    def load_all_secrets(self) -> dict:
+        """
+        Load all secrets and return as a dictionary.
+        
+        Returns:
+            Dictionary with all loaded secrets
+        """
+        return {
+            # API Keys - USED
+            "anthropic_api_key": self.load_api_key("anthropic_api_key"),  # USED: Core LLM functionality
+            # "openai_api_key": self.load_api_key("openai_api_key"),  # UNUSED: Replaced by Anthropic
+            "olorin_api_key": self.load_api_key("olorin_api_key"),  # USED: Internal API calls
+            # "databricks_token": self.load_api_key("databricks_token"),  # UNUSED: Mock implementation only
+            
+            # Service Configurations - Only load configs that actually fetch secrets
+            # "database": self.load_database_config(),  # UNUSED: Using SQLite, not PostgreSQL
+            "redis": self.load_redis_config(),  # USED: Caching system (only api_key from secrets)
+            "jwt": self.load_jwt_config(),  # USED: Authentication (only secret_key from secrets)
+            "splunk": self.load_splunk_config(),  # USED: Log analysis
+            # "sumo_logic": self.load_sumo_logic_config(),  # UNUSED: Mock implementation only
+            # "snowflake": self.load_snowflake_config(),  # UNUSED: Mock implementation only
+            
+            # App Secret
+            # "app_secret": self.load_secret("APP_SECRET")  # UNUSED: Not referenced in codebase
+        }
 
 
 # Global instance

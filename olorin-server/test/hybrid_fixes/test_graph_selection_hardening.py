@@ -32,7 +32,7 @@ async def test_typed_graph_selection():
     print("\n1. Testing valid graph selection...")
     result = await selector.select_investigation_graph(
         investigation_id="test_typed_001",
-        entity_type="ip_address"
+        entity_type="ip"
     )
     
     print(f"   Result type: {type(result).__name__}")
@@ -51,7 +51,7 @@ async def test_typed_graph_selection():
     print("\n2. Testing invalid investigation ID...")
     result = await selector.select_investigation_graph(
         investigation_id="",  # Empty ID should fail
-        entity_type="ip_address"
+        entity_type="ip"
     )
     
     if is_failure(result):
@@ -65,7 +65,7 @@ async def test_typed_graph_selection():
     print("\n3. Testing forced graph type...")
     result = await selector.select_investigation_graph(
         investigation_id="test_forced_001",
-        entity_type="ip_address",
+        entity_type="ip",
         force_graph_type=GraphType.CLEAN
     )
     
@@ -94,7 +94,7 @@ async def test_fallback_counter():
     # Normal selection should not increment counter
     result = await selector.select_investigation_graph(
         investigation_id="test_counter_001",
-        entity_type="ip_address"
+        entity_type="ip"
     )
     
     if is_success(result) and not result.fallback_occurred:
@@ -122,7 +122,7 @@ async def test_legacy_method_compatibility():
     try:
         graph = await selector.get_investigation_graph(
             investigation_id="test_legacy_001",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("   ✅ Legacy method returned graph successfully")
         print(f"     Graph type: {type(graph).__name__}")
@@ -135,7 +135,7 @@ async def test_legacy_method_compatibility():
     try:
         graph = await selector.get_investigation_graph(
             investigation_id="",  # Empty ID should fail
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("   ❌ Legacy method should have raised exception")
         return False
@@ -159,7 +159,7 @@ async def test_selection_stats():
     selector = GraphSelector()
     
     # Perform a few selections
-    await selector.select_investigation_graph("test_stats_001", "ip_address")
+    await selector.select_investigation_graph("test_stats_001", "ip")
     await selector.select_investigation_graph("test_stats_002", "user_id")
     
     stats = selector.get_selection_stats()

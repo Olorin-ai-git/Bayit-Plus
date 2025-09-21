@@ -269,9 +269,9 @@ class VirusTotalURLAnalysisTool(BaseTool):
             url_info["screenshot_info"] = screenshot_info
         
         # Network and hosting information
-        if hasattr(url_response, 'ip_address') and url_response.ip_address:
+        if hasattr(url_response, 'ip') and url_response.ip:
             url_info["hosting_info"] = {
-                "ip_address": url_response.ip_address,
+                "ip": url_response.ip,
                 "server": getattr(url_response, 'server', 'Unknown'),
                 "country": getattr(url_response, 'country', 'Unknown')
             }

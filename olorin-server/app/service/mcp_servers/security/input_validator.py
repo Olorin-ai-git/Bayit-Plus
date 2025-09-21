@@ -69,7 +69,7 @@ class InputType(str, Enum):
     FILE_PATH = "file_path"
     URL = "url"
     EMAIL = "email"
-    IP_ADDRESS = "ip_address"
+    IP = "ip"
     
     # MCP-specific types
     TOOL_NAME = "tool_name"
@@ -356,7 +356,7 @@ class MCPInputValidator:
                 result.errors.append(f"{field_name} is not a valid URL")
                 return result
         
-        elif input_type == InputType.IP_ADDRESS:
+        elif input_type == InputType.IP:
             if not isinstance(value, str):
                 result.is_valid = False
                 result.errors.append(f"{field_name} must be a string")
@@ -655,7 +655,7 @@ class MCPInputValidator:
         elif 'url' in field_name_lower or 'link' in field_name_lower:
             return InputType.URL
         elif 'ip' in field_name_lower or 'address' in field_name_lower:
-            return InputType.IP_ADDRESS
+            return InputType.IP
         elif 'query' in field_name_lower and 'sql' in field_name_lower:
             return InputType.SQL_QUERY
         elif 'path' in field_name_lower or 'file' in field_name_lower:

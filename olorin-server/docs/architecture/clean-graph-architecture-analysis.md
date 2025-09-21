@@ -177,7 +177,7 @@ class InvestigationState(TypedDict):
 initial_state = {
     "investigation_id": "investigation_uuid",
     "entity_id": "192.168.1.4", 
-    "entity_type": "ip_address",
+    "entity_type": "ip",
     "current_phase": "initialization"
 }
 ```
@@ -187,7 +187,7 @@ initial_state = {
 # Orchestrator generates Snowflake tool call
 snowflake_query = """
 SELECT * FROM TRANSACTIONS_ENRICHED 
-WHERE IP_ADDRESS = '192.168.1.4' 
+WHERE IP = '192.168.1.4' 
 AND TX_DATETIME >= DATEADD(day, -30, CURRENT_DATE()) 
 LIMIT 100
 """

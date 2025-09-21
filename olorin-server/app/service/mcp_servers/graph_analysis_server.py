@@ -22,7 +22,7 @@ class EntityType(str, Enum):
     """Types of entities in the fraud graph."""
     USER = "user"
     DEVICE = "device"
-    IP_ADDRESS = "ip_address"
+    IP = "ip"
     EMAIL = "email"
     PHONE = "phone"
     PAYMENT_METHOD = "payment_method"

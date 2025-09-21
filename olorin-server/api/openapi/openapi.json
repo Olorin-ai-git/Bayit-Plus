@@ -1983,7 +1983,7 @@
             ],
             "title": "Device Id"
           },
-          "ip_address": {
+          "ip": {
             "anyOf": [
               {
                 "type": "string"
@@ -2033,7 +2033,7 @@
       },
       "DeviceSignalDetail": {
         "properties": {
-          "ip_address": {
+          "ip": {
             "anyOf": [
               {
                 "type": "string"

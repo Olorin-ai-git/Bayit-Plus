@@ -65,7 +65,7 @@ agent_section(
     "Network",
     "Analyzes network access patterns, device IDs, IP addresses, ISPs, and geolocations to assess risk. Detects anomalies such as rapid country changes, inconsistent device usage, and suspicious access times.",
     "You are a security analyst specializing in network-based risk assessment.\nBased on the provided network signal data for a user, analyze all available information.\nThe data includes IP address, ISP, country, timestamps, and device ID.\nYour response MUST be a JSON object strictly conforming to the following Pydantic model schema: ...\nFocus your analysis on factors like: Geographic anomalies, consistency of device IDs and ISPs, time-based patterns.\nIMPORTANT: Base your risk score and risk factors PRIMARILY on geographic inconsistencies and device ID patterns.\nThe input data is as follows:",
-    "- Extracted network signals from Splunk (device_id, ip_address, isp, country, timestamp)\n- user_id, time_range (from API request)",
+    "- Extracted network signals from Splunk (device_id, ip, isp, country, timestamp)\n- user_id, time_range (from API request)",
     ["Splunk"],
 )
 
@@ -83,7 +83,7 @@ agent_section(
     "Device",
     "Analyzes device usage patterns, device IDs, geolocations, and challenges. Detects device switching, geographic conflicts, and unusual device activity. Now also retrieves session and device info from Chronos, and calls the DI Tool with sessionId and user_id for device intelligence scoring.",
     "You are a security analyst specializing in device-based risk assessment.\nBased on the provided device signal data for a user, analyze all available information.\nThe data includes IP address, geo-location (city, country, region), timestamps, and device ID.\nYour response MUST be a JSON object strictly conforming to the following Pydantic model schema: ...\nCRITICAL ANALYSIS REQUIREMENTS: Geographic analysis, device pattern analysis, risk scoring guidelines.\nThe input data is as follows:",
-    "- Extracted device signals from Splunk (device_id, ip_address, city, country, region, timestamp, challenges)\n- user_id, time_range (from API request)\n- Chronos session and device info (sessionId, entities)\n- DI Tool response (device intelligence scoring)",
+    "- Extracted device signals from Splunk (device_id, ip, city, country, region, timestamp, challenges)\n- user_id, time_range (from API request)\n- Chronos session and device info (sessionId, entities)\n- DI Tool response (device intelligence scoring)",
     ["Splunk", "Chronos", "DI Tool"],
 )
 

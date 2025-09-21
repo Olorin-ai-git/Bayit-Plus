@@ -43,7 +43,7 @@ async def test_domain_agents_via_agent_service():
         
         investigation_id = f"test-{int(time.time())}"
         entity_value = "192.168.1.100"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         print(f"📋 Investigation: {investigation_id}")
         print(f"🎯 Target: {entity_value} ({entity_type})")

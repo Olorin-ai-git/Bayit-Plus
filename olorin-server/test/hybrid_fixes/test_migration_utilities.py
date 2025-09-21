@@ -38,7 +38,7 @@ async def test_hybrid_graph_selection():
         print("🎯 Getting hybrid investigation graph...")
         graph = await get_investigation_graph(
             investigation_id="TEST_HYBRID_001",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("✅ Hybrid graph obtained successfully")
         
@@ -49,7 +49,7 @@ async def test_hybrid_graph_selection():
         initial_state = create_hybrid_initial_state(
             investigation_id="TEST_HYBRID_001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("✅ Hybrid initial state created")
         print(f"   Initial tools_used: {len(initial_state.get('tools_used', []))}")

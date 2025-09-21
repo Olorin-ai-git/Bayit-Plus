@@ -120,7 +120,7 @@
     "network": {
       "type": "object",
       "properties": {
-        "ip_address": {
+        "ip": {
           "type": "string",
           "format": "ipv4"
         },
@@ -144,7 +144,7 @@
           "type": "string"
         }
       },
-      "required": ["ip_address", "country_code"]
+      "required": ["ip", "country_code"]
     },
     "behavioral_signals": {
       "type": "object",

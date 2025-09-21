@@ -23,7 +23,7 @@ logger = get_bridge_logger(__name__)
 class AbuseReportInput(BaseModel):
     """Input schema for abuse reporting."""
     
-    ip_address: str = Field(
+    ip: str = Field(
         ...,
         description="IP address to report for abuse",
         examples=["192.168.1.1", "10.0.0.1"]
@@ -40,7 +40,7 @@ class AbuseReportInput(BaseModel):
         max_length=1024
     )
     
-    @validator('ip_address')
+    @validator('ip')
     def validate_ip_address(cls, v):
         """Validate IP address format."""
         import ipaddress
@@ -121,7 +121,7 @@ class AbuseReportingTool(BaseTool):
         except ValueError:
             return ["Invalid Categories"]
 
-    def _generate_report_analysis(self, response, ip_address: str, categories: str, comment: str) -> Dict[str, Any]:
+    def _generate_report_analysis(self, response, ip: str, categories: str, comment: str) -> Dict[str, Any]:
         """Generate comprehensive analysis from AbuseIPDB report response."""
         if not response.success:
             return {"error": response.error or "Report submission failed"}
@@ -132,7 +132,7 @@ class AbuseReportingTool(BaseTool):
         recommendations = self._generate_reporting_recommendations(category_names)
         
         analysis = {
-            "ip_address": ip_address,
+            "ip": ip,
             "report_status": "SUCCESS" if response.success else "FAILED",
             "submission_details": {
                 "categories_reported": category_names,
@@ -216,14 +216,14 @@ class AbuseReportingTool(BaseTool):
 
     async def _arun(
         self,
-        ip_address: str,
+        ip: str,
         categories: str,
         comment: str,
         **kwargs
     ) -> str:
         """Execute IP abuse reporting asynchronously."""
         try:
-            logger.info(f"Starting abuse report for IP: {ip_address}")
+            logger.info(f"Starting abuse report for IP: {ip}")
             
             # Parse category IDs
             category_ids = [int(cat.strip()) for cat in categories.split(',')]
@@ -231,16 +231,16 @@ class AbuseReportingTool(BaseTool):
             # Query AbuseIPDB
             client = self._get_client()
             report_response = await client.report_ip_abuse(
-                ip_address=ip_address,
+                ip=ip,
                 categories=category_ids,
                 comment=comment
             )
             
             if report_response.success:
                 # Generate comprehensive analysis
-                analysis_data = self._generate_report_analysis(report_response, ip_address, categories, comment)
+                analysis_data = self._generate_report_analysis(report_response, ip, categories, comment)
                 
-                logger.info(f"Abuse report submitted successfully for IP: {ip_address}")
+                logger.info(f"Abuse report submitted successfully for IP: {ip}")
                 
                 return json.dumps({
                     "success": True,
@@ -250,16 +250,16 @@ class AbuseReportingTool(BaseTool):
                 return json.dumps({
                     "success": False,
                     "error": report_response.error or "Unknown error",
-                    "ip_address": ip_address,
+                    "ip": ip,
                     "source": "AbuseIPDB"
                 }, indent=2)
                 
         except Exception as e:
-            logger.error(f"Abuse reporting failed for {ip_address}: {e}")
+            logger.error(f"Abuse reporting failed for {ip}: {e}")
             return json.dumps({
                 "success": False,
                 "error": str(e),
-                "ip_address": ip_address,
+                "ip": ip,
                 "source": "AbuseIPDB"
             }, indent=2)
 

@@ -211,7 +211,7 @@ class ValidationEngine:
             EntityType.UPDATED_AT: ['temporal'],
             
             # Network entities
-            EntityType.IP_ADDRESS: ['network', 'security'],
+            EntityType.IP: ['network', 'security'],
             EntityType.CLIENT_IP: ['network', 'security'],
             EntityType.USER_AGENT: ['network', 'security'],
             EntityType.DEVICE_FINGERPRINT: ['network', 'security'],
@@ -348,7 +348,7 @@ class ValidationEngine:
         entity_type = result.entity_type
         value = result.value
         
-        if entity_type in [EntityType.IP_ADDRESS, EntityType.CLIENT_IP]:
+        if entity_type in [EntityType.IP, EntityType.CLIENT_IP]:
             is_valid, error_msg, network_analysis = self.network_validator.validate_ip_address(str(value))
             result.network_analysis = network_analysis
             if not is_valid:
@@ -388,7 +388,7 @@ class ValidationEngine:
             'amount': EntityType.AMOUNT,
             'currency': EntityType.CURRENCY,
             'email': EntityType.EMAIL,
-            'ip_address': EntityType.IP_ADDRESS,
+            'ip': EntityType.IP,
             'user_agent': EntityType.USER_AGENT,
             'country_code': EntityType.COUNTRY_CODE,
             'payment_method': EntityType.PAYMENT_METHOD,

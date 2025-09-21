@@ -88,7 +88,7 @@ def create_test_investigation():
                     "agent_name": "risk_assessor",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "decision_type": "risk_assessment",
-                    "context": {"entity_type": "ip_address", "entity_id": "192.168.1.100"},
+                    "context": {"entity_type": "ip", "entity_id": "192.168.1.100"},
                     "reasoning": "Multiple suspicious indicators suggest coordinated account takeover attempt",
                     "decision_outcome": {"risk_score": 0.89, "category": "high_risk"},
                     "confidence_score": 0.92,
@@ -104,7 +104,7 @@ def create_test_investigation():
                     "agent_name": "location_analyzer",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "tool_name": "geolocation_checker",
-                    "tool_parameters": {"ip_address": "192.168.1.100", "detailed_lookup": True},
+                    "tool_parameters": {"ip": "192.168.1.100", "detailed_lookup": True},
                     "selection_reasoning": "Need to verify claimed location against actual geolocation data",
                     "execution_result": {
                         "country": "US",
@@ -145,7 +145,7 @@ def create_test_investigation():
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "node_name": "location_verification",
                     "node_type": "tool",
-                    "input_data": {"ip_address": "192.168.1.100"},
+                    "input_data": {"ip": "192.168.1.100"},
                     "output_data": {"location_verified": True, "country": "US"},
                     "duration_ms": 340,
                     "status": "completed"

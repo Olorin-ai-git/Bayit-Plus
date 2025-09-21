@@ -23,7 +23,7 @@ class PIIType(str, Enum):
     BANK_ACCOUNT = "bank_account"
     DRIVER_LICENSE = "driver_license"
     PASSPORT = "passport"
-    IP_ADDRESS = "ip_address"
+    IP = "ip"
     MAC_ADDRESS = "mac_address"
     FULL_NAME = "full_name"
     ADDRESS = "address"
@@ -72,7 +72,7 @@ class PIISanitizer:
                 r'\b[A-Z]{2}\d{7}\b',  # US passport format
                 r'\b\d{9}\b'  # Passport numbers
             ],
-            PIIType.IP_ADDRESS: [
+            PIIType.IP: [
                 r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
             ],
             PIIType.MAC_ADDRESS: [

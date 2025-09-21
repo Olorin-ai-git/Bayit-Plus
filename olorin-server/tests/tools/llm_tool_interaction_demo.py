@@ -72,7 +72,7 @@ class MockSplunkClient:
                     "_time": "2025-01-15T14:30:25.123Z",
                     "user_id": "user_1736943425_5678",
                     "event_type": "login_attempt", 
-                    "ip_address": "198.51.100.42",
+                    "ip": "198.51.100.42",
                     "location": "San Francisco, CA, US",
                     "device_fingerprint": "chrome_119_mac_fp_98765",
                     "success": "true",
@@ -85,7 +85,7 @@ class MockSplunkClient:
                     "event_type": "transaction",
                     "amount": "2500.00",
                     "merchant": "Electronics Store ABC",
-                    "ip_address": "203.0.113.78",
+                    "ip": "203.0.113.78",
                     "location": "New York, NY, US", 
                     "velocity_minutes": "5",
                     "risk_indicators": "high_amount,geo_velocity"
@@ -94,7 +94,7 @@ class MockSplunkClient:
                     "_time": "2025-01-15T14:20:05.789Z",
                     "user_id": "user_1736943425_5678", 
                     "event_type": "failed_login",
-                    "ip_address": "192.0.2.123",
+                    "ip": "192.0.2.123",
                     "location": "Unknown",
                     "failure_reason": "invalid_password",
                     "attempt_count": "7"
@@ -128,7 +128,7 @@ class MockLLMResponse:
                         success=="false", 0.6,
                         1==1, 0.3
                     )
-                    | stats count by event_type, location, ip_address, event_risk_score
+                    | stats count by event_type, location, ip, event_risk_score
                     | sort -event_risk_score"""
                 },
                 "id": "call_splunk_001"

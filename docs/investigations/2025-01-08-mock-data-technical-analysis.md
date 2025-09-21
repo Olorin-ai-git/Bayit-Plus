@@ -15,12 +15,12 @@
 ```json
 {
   "entity_queries": {
-    "description": "Mock data for entity-specific queries (WHERE IP_ADDRESS = 'X' or EMAIL = 'X')",
+    "description": "Mock data for entity-specific queries (WHERE IP = 'X' or EMAIL = 'X')",
     "default_ip_results": [
       {
         "TX_ID_KEY": "TX_2024_001234",
         "EMAIL": "john.smith@suspicious-domain.com",
-        "IP_ADDRESS": "192.0.2.123",
+        "IP": "192.0.2.123",
         "IP_COUNTRY": "US",
         "MODEL_SCORE": 0.7234,
         "PAID_AMOUNT_VALUE": 1250.00,

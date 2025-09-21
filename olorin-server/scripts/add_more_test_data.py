@@ -22,19 +22,14 @@ def main():
     print("\n" + "="*70)
     print("📝 ADDING MORE TEST DATA TO SNOWFLAKE")
     print("="*70)
-
-    # Get environment variables for database configuration
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
-
+    
     # Connect to Snowflake
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database=database,
-        schema=schema,
+        database='FRAUD_ANALYTICS',
+        schema='PUBLIC',
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
     )
@@ -86,7 +81,8 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                                        amount,
+                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
+                    amount,
                     risk_score,
                     random.choice([True, False, False]),  # Some fraud
                     'PURCHASE',
@@ -104,7 +100,8 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                                        amount,
+                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
+                    amount,
                     risk_score,
                     False,
                     'PURCHASE',
@@ -122,7 +119,8 @@ def main():
                     tx_date - timedelta(hours=random.randint(0, 23)),
                     email,
                     f'DEV{tx_id}',
-                                        amount,
+                    f'192.168.{random.randint(1, 255)}.{random.randint(1, 255)}',
+                    amount,
                     risk_score,
                     False,
                     'PURCHASE',
@@ -131,12 +129,12 @@ def main():
     
     # Insert the data
     print(f"\nInserting {len(test_data)} transactions...")
-
-    insert_sql = f"""
-    INSERT INTO {database}.{schema}.{table}
-    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID,
-     PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+    
+    insert_sql = """
+    INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
+     PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
     cursor.executemany(insert_sql, test_data)
@@ -151,8 +149,8 @@ def main():
             MIN(TX_DATETIME) as earliest,
             MAX(TX_DATETIME) as latest,
             AVG(MODEL_SCORE) as avg_risk,
-            SUM(PAID_AMOUNT_VALUE) as total_amount
-        FROM {database}.{schema}.{table}
+            SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount
+        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     """)
     
     stats = cursor.fetchone()
@@ -168,9 +166,9 @@ def main():
         SELECT 
             EMAIL,
             COUNT(*) as tx_count,
-            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,
+            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
             AVG(MODEL_SCORE) as avg_risk
-        FROM {database}.{schema}.{table}
+        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
         WHERE TX_DATETIME >= DATEADD(day, -7, CURRENT_TIMESTAMP())
         GROUP BY EMAIL
         ORDER BY risk_value DESC

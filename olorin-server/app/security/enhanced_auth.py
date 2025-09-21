@@ -231,7 +231,7 @@ class EnhancedAuthService:
         self, 
         username: str, 
         password: str, 
-        ip_address: str,
+        ip: str,
         user_agent: str
     ) -> Tuple[Optional[SecureUser], str]:
         """Enhanced user authentication with security logging."""
@@ -242,24 +242,24 @@ class EnhancedAuthService:
             if not db_user:
                 # Prevent username enumeration - same timing
                 self.pwd_context.hash("dummy_password")
-                self._log_security_event("LOGIN_FAILED", username, ip_address, "Invalid username")
+                self._log_security_event("LOGIN_FAILED", username, ip, "Invalid username")
                 return None, "Invalid credentials"
             
             # Check account lockout
             if db_user.account_locked_until and db_user.account_locked_until > datetime.utcnow():
                 remaining = (db_user.account_locked_until - datetime.utcnow()).seconds // 60
-                self._log_security_event("LOGIN_BLOCKED", username, ip_address, f"Account locked for {remaining} minutes")
+                self._log_security_event("LOGIN_BLOCKED", username, ip, f"Account locked for {remaining} minutes")
                 return None, f"Account locked. Try again in {remaining} minutes."
             
             # Verify password
             if not self.pwd_context.verify(password, db_user.hashed_password):
-                await self._handle_failed_login(db_user, ip_address)
-                self._log_security_event("LOGIN_FAILED", username, ip_address, "Invalid password")
+                await self._handle_failed_login(db_user, ip)
+                self._log_security_event("LOGIN_FAILED", username, ip, "Invalid password")
                 return None, "Invalid credentials"
             
             # Check if account is disabled
             if db_user.disabled:
-                self._log_security_event("LOGIN_FAILED", username, ip_address, "Account disabled")
+                self._log_security_event("LOGIN_FAILED", username, ip, "Account disabled")
                 return None, "Account is disabled"
             
             # Reset failed attempts on successful login
@@ -281,15 +281,15 @@ class EnhancedAuthService:
                 mfa_enabled=db_user.mfa_enabled
             )
             
-            self._log_security_event("LOGIN_SUCCESS", username, ip_address, "Authentication successful")
+            self._log_security_event("LOGIN_SUCCESS", username, ip, "Authentication successful")
             return user, "success"
             
         except Exception as e:
             logger.error(f"Authentication error: {e}")
-            self._log_security_event("LOGIN_ERROR", username, ip_address, f"Authentication error: {str(e)}")
+            self._log_security_event("LOGIN_ERROR", username, ip, f"Authentication error: {str(e)}")
             return None, "Authentication service error"
     
-    async def _handle_failed_login(self, user: UserInDB, ip_address: str) -> None:
+    async def _handle_failed_login(self, user: UserInDB, ip: str) -> None:
         """Handle failed login attempt with progressive lockout."""
         user.failed_login_attempts += 1
         
@@ -301,13 +301,13 @@ class EnhancedAuthService:
             self._log_security_event(
                 "ACCOUNT_LOCKED", 
                 user.username, 
-                ip_address, 
+                ip, 
                 f"Account locked after {user.failed_login_attempts} failed attempts"
             )
         
         self.db.commit()
     
-    def create_tokens(self, user: SecureUser, ip_address: str) -> Dict[str, Any]:
+    def create_tokens(self, user: SecureUser, ip: str) -> Dict[str, Any]:
         """Create access and refresh tokens with enhanced security."""
         session_id = secrets.token_urlsafe(32)
         
@@ -321,7 +321,7 @@ class EnhancedAuthService:
             "aud": "olorin-api",
             "iss": "olorin-auth",
             "jti": secrets.token_urlsafe(16),  # JWT ID for blacklisting
-            "ip": hashlib.sha256(ip_address.encode()).hexdigest()[:16]  # Hashed IP
+            "ip": hashlib.sha256(ip.encode()).hexdigest()[:16]  # Hashed IP
         }
         
         # Refresh token claims  
@@ -343,7 +343,7 @@ class EnhancedAuthService:
             session_data = {
                 "username": user.username,
                 "scopes": user.scopes,
-                "ip_address": ip_address,
+                "ip": ip,
                 "created_at": datetime.utcnow().isoformat(),
                 "last_activity": datetime.utcnow().isoformat()
             }
@@ -366,7 +366,7 @@ class EnhancedAuthService:
     async def validate_token(
         self, 
         token: str, 
-        ip_address: str,
+        ip: str,
         required_scopes: List[str] = None
     ) -> Tuple[Optional[SecureUser], str]:
         """Enhanced token validation with security checks."""
@@ -390,9 +390,9 @@ class EnhancedAuthService:
                 return None, "Invalid token claims"
             
             # Check IP address (optional security feature)
-            current_ip_hash = hashlib.sha256(ip_address.encode()).hexdigest()[:16]
+            current_ip_hash = hashlib.sha256(ip.encode()).hexdigest()[:16]
             if token_ip_hash and token_ip_hash != current_ip_hash:
-                self._log_security_event("TOKEN_IP_MISMATCH", username, ip_address, "IP address mismatch")
+                self._log_security_event("TOKEN_IP_MISMATCH", username, ip, "IP address mismatch")
                 # Could return None here for strict IP binding, but allowing for now
             
             # Check if token is blacklisted (if Redis available)
@@ -438,7 +438,7 @@ class EnhancedAuthService:
                     self._log_security_event(
                         "INSUFFICIENT_SCOPE", 
                         username, 
-                        ip_address, 
+                        ip, 
                         f"Missing scopes: {missing_scopes}"
                     )
                     return None, f"Insufficient permissions. Required: {missing_scopes}"
@@ -480,13 +480,13 @@ class EnhancedAuthService:
             
         return False
     
-    def _log_security_event(self, event_type: str, username: str, ip_address: str, details: str):
+    def _log_security_event(self, event_type: str, username: str, ip: str, details: str):
         """Log security events for monitoring."""
         event = {
             "timestamp": datetime.utcnow().isoformat(),
             "event_type": event_type,
             "username": username,
-            "ip_address": ip_address,
+            "ip": ip,
             "details": details
         }
         

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class DeviceNetworkSignal(BaseModel):
     device_id: Optional[str] = None
-    ip_address: Optional[str] = None
+    ip: Optional[str] = None
     isp: Optional[str] = None
     country: Optional[str] = None  # Country associated with the IP/ISP
     timestamp: Optional[str] = None

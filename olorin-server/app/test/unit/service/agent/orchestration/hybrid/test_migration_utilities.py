@@ -467,7 +467,7 @@ class TestGlobalFunctions:
             # Assert
             mock_selector.get_investigation_graph.assert_called_once_with(
                 investigation_id="test-001",
-                entity_type="ip_address",
+                entity_type="ip",
                 force_graph_type=None
             )
             assert graph is not None

@@ -35,7 +35,7 @@ async def test_recursion_prevention():
         {
             "name": "IP Address Investigation",
             "entity_id": "192.168.1.100",
-            "entity_type": "ip_address",
+            "entity_type": "ip",
             "expected_timeout": False
         },
         {
@@ -47,7 +47,7 @@ async def test_recursion_prevention():
         {
             "name": "LIVE Mode Test",
             "entity_id": "102.159.115.190",
-            "entity_type": "ip_address",
+            "entity_type": "ip",
             "expected_timeout": False,
             "mode": "live"
         }
@@ -142,7 +142,7 @@ async def test_specific_recursion_scenario():
     try:
         result = await run_investigation(
             entity_id=entity_id,
-            entity_type="ip_address",
+            entity_type="ip",
             investigation_id=investigation_id,
             custom_user_prompt="Focus on fraud patterns and suspicious activity"
         )

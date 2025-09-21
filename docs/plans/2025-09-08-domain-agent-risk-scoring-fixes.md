@@ -38,7 +38,7 @@ This plan addresses critical issues in the autonomous investigation system where
   - Verify live Snowflake connection and query execution
   - Validate transaction records (TX_2024_001234, etc.) are real data
   - Confirm MODEL_SCORE values (0.7234, 0.8567, 0.9234) from actual ML models
-  - Check IP_ADDRESS, FRAUD_RULES_TRIGGERED, and other fields contain real data
+  - Check IP, FRAUD_RULES_TRIGGERED, and other fields contain real data
 
 ## ⏳ Phase 2: Domain Agent Failure Analysis 🔧
 

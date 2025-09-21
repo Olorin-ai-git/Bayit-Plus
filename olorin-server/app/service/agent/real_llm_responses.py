@@ -147,7 +147,7 @@ Confidence: 75%""",
                     "function": {
                         "name": "check_ip_reputation",
                         "arguments": json.dumps({
-                            "ip_address": "{entity_id}",
+                            "ip": "{entity_id}",
                             "verbose": True
                         })
                     }
@@ -158,7 +158,7 @@ Confidence: 75%""",
                     "function": {
                         "name": "detect_proxy_usage",
                         "arguments": json.dumps({
-                            "ip_address": "{entity_id}",
+                            "ip": "{entity_id}",
                             "deep_scan": True
                         })
                     }
@@ -204,7 +204,7 @@ Recommendation: Immediate blocking required""",
                     "function": {
                         "name": "verify_geolocation",
                         "arguments": json.dumps({
-                            "ip_address": "{entity_id}",
+                            "ip": "{entity_id}",
                             "validate_consistency": True
                         })
                     }
@@ -317,7 +317,7 @@ class RealLLMResponseDatabase:
         domain: str, 
         risk_level: str, 
         entity_id: str,
-        entity_type: str = "ip_address",
+        entity_type: str = "ip",
         scenario: Optional[str] = None
     ) -> Dict[str, Any]:
         """

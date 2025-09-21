@@ -254,10 +254,13 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
     # Get metrics and facts for domain scoring
     metrics = findings.get('metrics', {})
     facts = {}
-    
+
+    # CRITICAL FIX: Define evidence outside conditional blocks to prevent UnboundLocalError
+    evidence = findings.get('evidence', [])
+
     # CRITICAL: DO NOT pass MODEL_SCORE or IS_FRAUD_TX to domain scorers
     # This prevents the cross-domain pollution that causes narrative/score mismatches
-    
+
     # Use validated domain scorers
     risk_score = None
     domain_result = None
@@ -271,56 +274,53 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
             "total_transaction_count": metrics.get('transaction_count', 0)
         }
         domain_result = score_logs_domain(logs_metrics, facts)
-        
+
     elif domain == 'network':
         # Use network scorer with signal requirements
-        evidence = findings.get('evidence', [])
-        
+
         # Extract network-specific signals
         ti_hits = []
         if any('abuse' in str(e).lower() for e in evidence):
             ti_hits.append({"provider": "AbuseIPDB", "confidence": 75})
-            
+
         proxy_vpn = any('vpn' in str(e).lower() or 'proxy' in str(e).lower() for e in evidence)
         tor_detected = any('tor' in str(e).lower() for e in evidence)
         asn_risk = any('high-risk' in str(e).lower() and 'asn' in str(e).lower() for e in evidence)
         geo_anomaly = any('geo' in str(e).lower() and ('anomaly' in str(e).lower() or 'suspicious' in str(e).lower()) for e in evidence)
-        
+
         # Get IP from entity_id or fallback
         ip_str = findings.get('entity_id', '127.0.0.1')
-        
+
         domain_result = score_network_domain(ti_hits, proxy_vpn, tor_detected, asn_risk, geo_anomaly, ip_str)
-        
+
     elif domain == 'device':
         # Fallback to deterministic scoring for device domain (not implemented in new scorers yet)
         from .deterministic_scoring import compute_device_risk
-        
+
         device_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         fingerprint_anomaly = any('fingerprint' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
         browser_spoofing = any('spoofing' in str(e).lower() for e in evidence)
         device_velocity = metrics.get('unique_device_count', 1)
-        
+
         # CRITICAL: Pass None for model_score to prevent pollution
         risk_score = compute_device_risk(device_consistency, fingerprint_anomaly, browser_spoofing, device_velocity, "MINIMAL", None)
-        
+
     elif domain == 'location':
         # Fallback to deterministic scoring for location domain
         from .deterministic_scoring import compute_location_risk
-        
-        evidence = findings.get('evidence', [])
+
         impossible_travel = any('impossible travel' in str(e).lower() for e in evidence)
         travel_confidence = 0.8 if impossible_travel else 0.0
         location_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         high_risk_country = any('high-risk' in str(e).lower() and 'country' in str(e).lower() for e in evidence)
-        
+
         # CRITICAL: Pass None for model_score to prevent pollution
         risk_score = compute_location_risk(impossible_travel, travel_confidence, location_consistency, high_risk_country, "MINIMAL", None)
-        
+
     elif domain == 'authentication':
         # Fallback to deterministic scoring for authentication domain
         from .deterministic_scoring import compute_authentication_risk
-        
-        evidence = findings.get('evidence', [])
+
         failed_attempts = metrics.get('max_login_attempts', 0)
         mfa_bypass = any('mfa bypass' in str(e).lower() for e in evidence)
         credential_stuffing = any('credential stuffing' in str(e).lower() for e in evidence)
@@ -359,13 +359,10 @@ async def analyze_evidence_with_llm(
     step = DomainAgentBase._get_domain_step(domain)
     logger.debug(f"[Step {step}.4] 🧠 LLM Evidence Analysis - Analyzing {len(findings.get('evidence', []))} evidence points")
     
-    # CRITICAL FIX: Compute risk score algorithmically BEFORE LLM analysis
-    computed_risk_score = _compute_algorithmic_risk_score(domain, findings, snowflake_data)
-    
     try:
         evidence_analyzer = get_evidence_analyzer()
-        
-        # Analyze evidence with LLM for independent assessment
+
+        # PRIORITY 1: Try LLM-determined risk score first
         llm_analysis = await evidence_analyzer.analyze_domain_evidence(
             domain=domain,
             evidence=findings.get('evidence', []),
@@ -374,18 +371,29 @@ async def analyze_evidence_with_llm(
             entity_type=entity_type,
             entity_id=entity_id
         )
-        
-        # Use LLM risk score for proper risk fusion (no authoritative override)
-        llm_risk_score = llm_analysis.get("risk_score", computed_risk_score)
-        
-        # CRITICAL FIX: Use only computed algorithmic score, isolate LLM narrative
-        # Store LLM risk assessment separately as "claimed_risk" to prevent contamination
-        if "llm_analysis" in findings and "risk_score" in llm_analysis:
-            findings["llm_analysis"]["claimed_risk"] = llm_analysis.pop("risk_score", None)
-        
-        # Use ONLY the computed algorithmic score for domain risk
-        findings["risk_score"] = computed_risk_score
-        findings["confidence"] = llm_analysis["confidence"]
+
+        # Check if LLM provided a valid risk score
+        llm_risk_score = llm_analysis.get("risk_score")
+        if llm_risk_score is not None and isinstance(llm_risk_score, (int, float)) and 0.0 <= llm_risk_score <= 1.0:
+            # Use LLM risk score as primary authority
+            findings["risk_score"] = llm_risk_score
+            findings["confidence"] = llm_analysis.get("confidence", 0.7)
+            logger.debug(f"[Step {step}.4] ✅ Using LLM-determined risk score: {llm_risk_score:.3f}")
+        else:
+            # FALLBACK: Compute algorithmic risk score when LLM fails
+            logger.warning(f"[Step {step}.4] ⚠️ LLM risk score invalid ({llm_risk_score}), attempting algorithmic fallback")
+            computed_risk_score = _compute_algorithmic_risk_score(domain, findings, snowflake_data)
+
+            # Validate algorithmic score
+            if computed_risk_score is not None and isinstance(computed_risk_score, (int, float)) and 0.0 <= computed_risk_score <= 1.0:
+                findings["risk_score"] = computed_risk_score
+                findings["confidence"] = llm_analysis.get("confidence", 0.5)
+                logger.warning(f"[Step {step}.4] 🔄 Using algorithmic fallback: {computed_risk_score:.3f}")
+            else:
+                # CRITICAL FAILURE: Both LLM and algorithmic scoring failed
+                error_msg = f"CRITICAL: Both LLM (score: {llm_risk_score}) and algorithmic (score: {computed_risk_score}) risk scoring failed for {domain} domain"
+                logger.error(f"[Step {step}.4] ❌ {error_msg}")
+                raise RuntimeError(error_msg)
         
         # Clean and deduplicate all text content before storing
         from app.service.text.clean import write_llm_sections, deduplicate_recommendations
@@ -423,14 +431,30 @@ async def analyze_evidence_with_llm(
         return findings
         
     except Exception as e:
-        logger.error(f"[Step {step}.4] ❌ LLM evidence analysis failed: {e}")
-        
-        # Keep existing 0.0 baseline if LLM fails
-        findings["confidence"] = 0.3  # Lower confidence due to analysis failure
-        findings["evidence"].append(f"LLM analysis failed: {str(e)}")
-        findings["risk_indicators"].append("LLM evidence analysis unavailable")
-        
-        return findings
+        logger.error(f"[Step {step}.4] ❌ LLM evidence analysis completely failed: {e}")
+
+        # FALLBACK: Use algorithmic scoring when LLM completely fails
+        try:
+            computed_risk_score = _compute_algorithmic_risk_score(domain, findings, snowflake_data)
+
+            # Validate algorithmic score
+            if computed_risk_score is not None and isinstance(computed_risk_score, (int, float)) and 0.0 <= computed_risk_score <= 1.0:
+                findings["risk_score"] = computed_risk_score
+                findings["confidence"] = 0.3  # Lower confidence due to LLM failure
+                findings["evidence"].append(f"LLM analysis failed, using algorithmic fallback: {str(e)}")
+                findings["risk_indicators"].append("LLM evidence analysis unavailable - algorithmic score used")
+                logger.warning(f"[Step {step}.4] 🔄 LLM completely failed, using algorithmic fallback: {computed_risk_score:.3f}")
+                return findings
+            else:
+                # CRITICAL FAILURE: Both LLM and algorithmic scoring failed
+                error_msg = f"CRITICAL: Both LLM (exception: {str(e)}) and algorithmic (score: {computed_risk_score}) risk scoring failed for {domain} domain"
+                logger.error(f"[Step {step}.4] ❌ {error_msg}")
+                raise RuntimeError(error_msg)
+        except Exception as algorithmic_error:
+            # CRITICAL FAILURE: Algorithmic scoring also threw an exception
+            error_msg = f"CRITICAL: Both LLM (exception: {str(e)}) and algorithmic (exception: {str(algorithmic_error)}) risk scoring failed for {domain} domain"
+            logger.error(f"[Step {step}.4] ❌ {error_msg}")
+            raise RuntimeError(error_msg)
 
 
 def complete_chain_of_thought(process_id: str, findings: Dict[str, Any], domain: str) -> None:

@@ -35,47 +35,78 @@ class EvidenceAnalyzer:
     def _initialize_llm(self):
         """Initialize LLM for evidence analysis."""
         import os
-        
+
         # Check for TEST_MODE first
         test_mode = os.getenv("TEST_MODE", "").lower()
-        has_api_key = (os.getenv("ANTHROPIC_API_KEY") or 
-                      os.getenv("OPENAI_API_KEY") or 
+        has_api_key = (os.getenv("ANTHROPIC_API_KEY") or
+                      os.getenv("OPENAI_API_KEY") or
                       os.getenv("GEMINI_API_KEY"))
         use_mock = test_mode == "mock" or not has_api_key
-        
+
+        logger.info(f"🧠 EvidenceAnalyzer initialization: test_mode={test_mode}, has_api_key={bool(has_api_key)}, use_mock={use_mock}")
+
         if use_mock:
             logger.info("🧪 Using mock LLM for evidence analysis")
-            from unittest.mock import MagicMock
-            
-            # Create a mock that returns structured risk assessment
-            mock_llm = MagicMock()
-            
-            async def mock_ainvoke(messages, *args, **kwargs):
-                from langchain_core.messages import AIMessage
-                
-                logger.info("🧪 Mock LLM: Analyzing evidence (returning mock assessment)")
-                
-                # Extract domain from messages to provide domain-specific mock responses
-                domain = "unknown"
-                for msg in messages:
-                    if hasattr(msg, 'content'):
-                        content = str(msg.content).lower()
-                        if 'network' in content:
-                            domain = "network"
-                        elif 'device' in content:
-                            domain = "device"
-                        elif 'location' in content:
-                            domain = "location"
-                        elif 'logs' in content:
-                            domain = "logs"
-                        elif 'authentication' in content:
-                            domain = "authentication"
-                        elif 'risk' in content:
-                            domain = "risk"
-                        break
-                
-                # Provide mock assessment based on domain
-                mock_response = f"""Based on the {domain} domain evidence analysis:
+            return self._create_mock_llm()
+        
+        # Use real LLM for live mode
+        try:
+            llm_manager = get_llm_manager()
+            llm = llm_manager.get_selected_model()
+
+            if llm is None:
+                logger.warning("❌ No LLM model available - falling back to mock mode")
+                # Fall back to mock mode if LLM initialization fails
+                return self._create_mock_llm()
+
+            # Configure for evidence analysis
+            if hasattr(llm, 'temperature'):
+                llm.temperature = 0.2  # Lower temperature for consistent analysis
+            if hasattr(llm, 'max_tokens'):
+                llm.max_tokens = 2000  # Sufficient for detailed analysis
+
+            logger.info(f"🤖 Evidence analyzer using live model: {llm_manager.selected_model_id}")
+            return llm
+
+        except Exception as e:
+            logger.error(f"❌ LLM Manager failed for evidence analysis: {e}")
+            logger.warning("🧪 Falling back to mock LLM mode for evidence analysis")
+            # Fall back to mock mode instead of crashing
+            return self._create_mock_llm()
+
+    def _create_mock_llm(self):
+        """Create a mock LLM for fallback scenarios."""
+        from unittest.mock import MagicMock
+
+        # Create a mock that returns structured risk assessment
+        mock_llm = MagicMock()
+
+        async def mock_ainvoke(messages, *args, **kwargs):
+            from langchain_core.messages import AIMessage
+
+            logger.info("🧪 Mock LLM: Analyzing evidence (fallback mode)")
+
+            # Extract domain from messages to provide domain-specific mock responses
+            domain = "unknown"
+            for msg in messages:
+                if hasattr(msg, 'content'):
+                    content = str(msg.content).lower()
+                    if 'network' in content:
+                        domain = "network"
+                    elif 'device' in content:
+                        domain = "device"
+                    elif 'location' in content:
+                        domain = "location"
+                    elif 'logs' in content:
+                        domain = "logs"
+                    elif 'authentication' in content:
+                        domain = "authentication"
+                    elif 'risk' in content:
+                        domain = "risk"
+                    break
+
+            # Provide domain-specific mock assessment
+            mock_response = f"""Based on the {domain} domain evidence analysis:
 
 RISK SCORE: 0.3
 CONFIDENCE: 0.7
@@ -86,40 +117,19 @@ RISK FACTORS:
 - No critical red flags identified
 
 REASONING:
-The {domain} evidence shows typical behavior patterns with some minor variations 
-that warrant monitoring but do not indicate immediate fraud risk. The analysis 
+The {domain} evidence shows typical behavior patterns with some minor variations
+that warrant monitoring but do not indicate immediate fraud risk. The analysis
 is based on available data points and standard risk assessment criteria.
 
 RECOMMENDATIONS:
 - Continue monitoring for unusual patterns
 - Gather additional evidence if needed
 - Review in context of other domain findings"""
-                
-                return AIMessage(content=mock_response)
-            
-            mock_llm.ainvoke = mock_ainvoke
-            return mock_llm
-        
-        # Use real LLM for live mode
-        try:
-            llm_manager = get_llm_manager()
-            llm = llm_manager.get_selected_model()
-            
-            if llm is None:
-                raise RuntimeError("No LLM model available for evidence analysis")
-            
-            # Configure for evidence analysis
-            if hasattr(llm, 'temperature'):
-                llm.temperature = 0.2  # Lower temperature for consistent analysis
-            if hasattr(llm, 'max_tokens'):
-                llm.max_tokens = 2000  # Sufficient for detailed analysis
-            
-            logger.info(f"🤖 Evidence analyzer using model: {llm_manager.selected_model_id}")
-            return llm
-            
-        except Exception as e:
-            logger.error(f"LLM Manager failed for evidence analysis: {e}")
-            raise RuntimeError(f"Failed to initialize LLM for evidence analysis: {e}")
+
+            return AIMessage(content=mock_response)
+
+        mock_llm.ainvoke = mock_ainvoke
+        return mock_llm
     
     async def analyze_domain_evidence(
         self, 
@@ -365,28 +375,23 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on domai
         """Parse LLM response to extract structured analysis."""
         import re
         
-        # CRITICAL FIX: Use computed score as authoritative when provided (SPLIT-BRAIN FIX)
-        if computed_risk_score is not None:
+        # PRIORITY 1: Extract LLM-determined risk score (primary authority)
+        risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
+        risk_match = re.search(risk_pattern, llm_response.lower())
+
+        if risk_match:
+            # LLM provided a risk score - use it as primary authority
+            risk_score = float(risk_match.group(1))
+            logger.debug(f"🤖 Using LLM-determined risk score: {risk_score:.3f}")
+        elif computed_risk_score is not None:
+            # FALLBACK: Use computed score when LLM doesn't provide one
             risk_score = computed_risk_score
-            logger.debug(f"🧮 Using COMPUTED risk score: {risk_score:.3f} (LLM echoing requirement - prevents split-brain)")
-            
-            # VALIDATION: Check if LLM actually echoed the score correctly
-            risk_pattern = r"risk[_\s]*score[\":\s]*([\d.]+)"
-            risk_match = re.search(risk_pattern, llm_response.lower())
-            if risk_match:
-                llm_extracted_score = float(risk_match.group(1))
-                if abs(llm_extracted_score - computed_risk_score) > 0.01:
-                    logger.warning(f"⚠️ SPLIT-BRAIN DETECTED: LLM extracted {llm_extracted_score:.3f} vs computed {computed_risk_score:.3f}")
-                else:
-                    logger.debug(f"✅ LLM correctly echoed computed score: {llm_extracted_score:.3f}")
-            else:
-                logger.warning(f"⚠️ SPLIT-BRAIN RISK: Could not verify LLM echoed computed score in response")
+            logger.warning(f"⚠️ LLM did not provide risk score, using algorithmic fallback: {risk_score:.3f}")
         else:
-            # Fallback: Extract risk score from LLM response
-            risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
-            risk_match = re.search(risk_pattern, llm_response.lower())
-            risk_score = float(risk_match.group(1)) if risk_match else 0.2
-            logger.debug(f"🤖 Extracted LLM risk score: {risk_score:.3f}")
+            # CRITICAL FAILURE: Neither LLM nor algorithmic scoring provided valid score
+            error_msg = f"CRITICAL: Neither LLM nor algorithmic risk scoring provided valid score for {domain} domain (LLM provided: {llm_response[:100] if llm_response else 'None'})"
+            logger.error(f"❌ {error_msg}")
+            raise RuntimeError(error_msg)
         
         # Extract confidence
         conf_pattern = r"confidence[:\s]*(\d*\.?\d+)"

@@ -58,7 +58,7 @@ class HybridToolExecutionDebugger:
         self,
         investigation_id: str = "TEST_DEBUG_001",
         entity_id: str = "192.168.1.100",
-        entity_type: str = "ip_address"
+        entity_type: str = "ip"
     ) -> Dict[str, Any]:
         """
         Debug the complete tool execution flow in hybrid mode.
@@ -371,7 +371,7 @@ async def main():
                        help="Investigation ID for testing")
     parser.add_argument("--entity-id", default="192.168.1.100",
                        help="Entity ID to investigate")
-    parser.add_argument("--entity-type", default="ip_address",
+    parser.add_argument("--entity-type", default="ip",
                        help="Entity type")
     parser.add_argument("--verbose", action="store_true",
                        help="Verbose logging")

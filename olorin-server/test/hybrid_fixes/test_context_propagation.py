@@ -28,7 +28,7 @@ def test_query_context_creation():
     context = create_query_context(
         investigation_id="test_context_001",
         entity_id="192.168.1.100",
-        entity_type="ip_address",
+        entity_type="ip",
         date_range_days=7
     )
     
@@ -37,7 +37,7 @@ def test_query_context_creation():
     # Validate basic properties
     assert context.investigation_id == "test_context_001"
     assert context.entity_id == "192.168.1.100"
-    assert context.entity_type == "ip_address"
+    assert context.entity_type == "ip"
     assert context.date_range_days == 7
     
     print("   ✅ Basic properties validated")
@@ -71,7 +71,7 @@ def test_entity_consistency_validation():
     context = create_query_context(
         investigation_id="test_drift_001",
         entity_id="203.0.113.45",
-        entity_type="ip_address"
+        entity_type="ip"
     )
     
     # Test cases for entity validation
@@ -152,7 +152,7 @@ def test_tool_context_validation():
         "investigation_context": {
             "investigation_id": "test_valid_001",
             "entity_id": "192.168.1.100",
-            "entity_type": "ip_address"
+            "entity_type": "ip"
         },
         "query_parameters": {},
         "execution_timestamp": "2025-01-01T12:00:00"
@@ -202,7 +202,7 @@ def test_state_integration():
     state = {
         "investigation_id": "test_state_001",
         "entity_id": "67.76.8.209",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "date_range_days": 14,
         "current_phase": "tool_execution"
     }

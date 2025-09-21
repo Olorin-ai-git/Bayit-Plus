@@ -23,7 +23,7 @@ def simulate_investigation_flow():
     investigation_state = {
         "investigation_id": "test_flow_001",
         "entity_id": "192.168.1.100",
-        "entity_type": "ip_address",
+        "entity_type": "ip",
         "current_phase": "initialization",
         "snowflake_data": None,
         "snowflake_completed": False,
@@ -53,8 +53,8 @@ def simulate_investigation_flow():
         "current_phase": "snowflake_analysis",
         "snowflake_data": {
             "query_results": [
-                {"ip_address": "192.168.1.100", "country": "US", "model_score": 0.8},
-                {"ip_address": "192.168.1.100", "country": "CN", "model_score": 0.9}
+                {"ip": "192.168.1.100", "country": "US", "model_score": 0.8},
+                {"ip": "192.168.1.100", "country": "CN", "model_score": 0.9}
             ]
         },
         "snowflake_completed": True

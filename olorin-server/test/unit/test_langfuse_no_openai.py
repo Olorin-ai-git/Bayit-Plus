@@ -119,7 +119,7 @@ async def test_multi_agent_investigation():
         "amount": 5000.00,
         "merchant": "Online Store XYZ",
         "timestamp": datetime.now().isoformat(),
-        "ip_address": "192.168.1.100",
+        "ip": "192.168.1.100",
         "device_id": "device_abc123"
     }
     

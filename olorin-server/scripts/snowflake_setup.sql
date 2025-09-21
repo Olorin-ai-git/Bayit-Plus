@@ -140,6 +140,7 @@ CREATE TABLE IF NOT EXISTS TRANSACTIONS_ENRICHED (
     -- ==========================================
     -- NETWORK & IP INFORMATION
     -- ==========================================
+    IP VARCHAR(45),
     IP_COUNTRY VARCHAR(100),
     IP_CITY VARCHAR(100),
     IP_REGION VARCHAR(100),
@@ -420,6 +421,7 @@ INSERT INTO TRANSACTIONS_ENRICHED (
     GMV,
     PAYMENT_METHOD,
     CARD_BRAND,
+    IP,
     IP_COUNTRY,
     MERCHANT_NAME,
     NSURE_LAST_DECISION,
@@ -429,16 +431,16 @@ INSERT INTO TRANSACTIONS_ENRICHED (
     LAST_NAME
 ) 
 SELECT * FROM VALUES
-    ('tx_001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'device_001', 0.95, 1, 5000.00, 5000.00, 'CREDIT_CARD', 'VISA', 'USA', 'Suspicious Merchant LLC', 'REJECTED', 0.89, 'user_001', 'John', 'Doe'),
-    ('tx_002', CURRENT_TIMESTAMP() - INTERVAL '1 hour', 'high.risk@example.com', 'device_002', 0.88, 1, 3000.00, 3000.00, 'CREDIT_CARD', 'MASTERCARD', 'Russia', 'Risky Business Inc', 'REJECTED', 0.92, 'user_001', 'John', 'Doe'),
-    ('tx_003', CURRENT_TIMESTAMP() - INTERVAL '2 hours', 'medium.risk@example.com', 'device_003', 0.65, 0, 1500.00, 1500.00, 'DEBIT_CARD', 'VISA', 'Canada', 'Normal Store', 'APPROVED', 0.45, 'user_002', 'Jane', 'Smith'),
-    ('tx_004', CURRENT_TIMESTAMP() - INTERVAL '3 hours', 'low.risk@example.com', 'device_004', 0.15, 0, 100.00, 100.00, 'PAYPAL', NULL, 'USA', 'Trusted Retailer', 'APPROVED', 0.10, 'user_003', 'Bob', 'Johnson'),
-    ('tx_005', CURRENT_TIMESTAMP() - INTERVAL '4 hours', 'medium.risk@example.com', 'device_003', 0.55, 0, 750.00, 750.00, 'CREDIT_CARD', 'AMEX', 'Canada', 'Regular Shop', 'APPROVED', 0.38, 'user_002', 'Jane', 'Smith'),
-    ('tx_006', CURRENT_TIMESTAMP() - INTERVAL '5 hours', 'high.risk@example.com', 'device_005', 0.78, 0, 2000.00, 2000.00, 'CRYPTO', 'BITCOIN', 'Netherlands', 'Crypto Exchange', 'REVIEW', 0.71, 'user_001', 'John', 'Doe'),
-    ('tx_007', CURRENT_TIMESTAMP() - INTERVAL '6 hours', 'new.user@example.com', 'device_006', 0.42, 0, 500.00, 500.00, 'CREDIT_CARD', 'DISCOVER', 'USA', 'Online Marketplace', 'APPROVED', 0.25, 'user_004', 'Alice', 'Williams'),
-    ('tx_008', CURRENT_TIMESTAMP() - INTERVAL '12 hours', 'low.risk@example.com', 'device_004', 0.08, 0, 50.00, 50.00, 'DEBIT_CARD', 'VISA', 'USA', 'Coffee Shop', 'APPROVED', 0.05, 'user_003', 'Bob', 'Johnson'),
-    ('tx_009', CURRENT_TIMESTAMP() - INTERVAL '24 hours', 'suspicious@darkweb.com', 'device_007', 0.99, 1, 10000.00, 10000.00, 'WIRE_TRANSFER', NULL, 'Russia', 'Unknown Vendor', 'REJECTED', 0.98, 'user_005', 'Evil', 'Hacker'),
-    ('tx_010', CURRENT_TIMESTAMP() - INTERVAL '48 hours', 'normal@example.com', 'device_008', 0.22, 0, 300.00, 300.00, 'CREDIT_CARD', 'VISA', 'UK', 'Department Store', 'APPROVED', 0.18, 'user_006', 'Charlie', 'Brown');
+    ('tx_001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'device_001', 0.95, 1, 5000.00, 5000.00, 'CREDIT_CARD', 'VISA', '192.168.1.1', 'USA', 'Suspicious Merchant LLC', 'REJECTED', 0.89, 'user_001', 'John', 'Doe'),
+    ('tx_002', CURRENT_TIMESTAMP() - INTERVAL '1 hour', 'high.risk@example.com', 'device_002', 0.88, 1, 3000.00, 3000.00, 'CREDIT_CARD', 'MASTERCARD', '10.0.0.1', 'Russia', 'Risky Business Inc', 'REJECTED', 0.92, 'user_001', 'John', 'Doe'),
+    ('tx_003', CURRENT_TIMESTAMP() - INTERVAL '2 hours', 'medium.risk@example.com', 'device_003', 0.65, 0, 1500.00, 1500.00, 'DEBIT_CARD', 'VISA', '172.16.0.1', 'Canada', 'Normal Store', 'APPROVED', 0.45, 'user_002', 'Jane', 'Smith'),
+    ('tx_004', CURRENT_TIMESTAMP() - INTERVAL '3 hours', 'low.risk@example.com', 'device_004', 0.15, 0, 100.00, 100.00, 'PAYPAL', NULL, '192.168.0.1', 'USA', 'Trusted Retailer', 'APPROVED', 0.10, 'user_003', 'Bob', 'Johnson'),
+    ('tx_005', CURRENT_TIMESTAMP() - INTERVAL '4 hours', 'medium.risk@example.com', 'device_003', 0.55, 0, 750.00, 750.00, 'CREDIT_CARD', 'AMEX', '172.16.0.1', 'Canada', 'Regular Shop', 'APPROVED', 0.38, 'user_002', 'Jane', 'Smith'),
+    ('tx_006', CURRENT_TIMESTAMP() - INTERVAL '5 hours', 'high.risk@example.com', 'device_005', 0.78, 0, 2000.00, 2000.00, 'CRYPTO', 'BITCOIN', '185.220.101.1', 'Netherlands', 'Crypto Exchange', 'REVIEW', 0.71, 'user_001', 'John', 'Doe'),
+    ('tx_007', CURRENT_TIMESTAMP() - INTERVAL '6 hours', 'new.user@example.com', 'device_006', 0.42, 0, 500.00, 500.00, 'CREDIT_CARD', 'DISCOVER', '8.8.8.8', 'USA', 'Online Marketplace', 'APPROVED', 0.25, 'user_004', 'Alice', 'Williams'),
+    ('tx_008', CURRENT_TIMESTAMP() - INTERVAL '12 hours', 'low.risk@example.com', 'device_004', 0.08, 0, 50.00, 50.00, 'DEBIT_CARD', 'VISA', '192.168.0.1', 'USA', 'Coffee Shop', 'APPROVED', 0.05, 'user_003', 'Bob', 'Johnson'),
+    ('tx_009', CURRENT_TIMESTAMP() - INTERVAL '24 hours', 'suspicious@darkweb.com', 'device_007', 0.99, 1, 10000.00, 10000.00, 'WIRE_TRANSFER', NULL, '185.220.101.50', 'Russia', 'Unknown Vendor', 'REJECTED', 0.98, 'user_005', 'Evil', 'Hacker'),
+    ('tx_010', CURRENT_TIMESTAMP() - INTERVAL '48 hours', 'normal@example.com', 'device_008', 0.22, 0, 300.00, 300.00, 'CREDIT_CARD', 'VISA', '10.10.10.10', 'UK', 'Department Store', 'APPROVED', 0.18, 'user_006', 'Charlie', 'Brown');
 
 -- ============================================
 -- 7. VERIFY SETUP

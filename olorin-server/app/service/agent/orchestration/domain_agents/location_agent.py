@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional, List
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
 from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_of_thought
+from app.service.agent.tools.snowflake_tool.schema_constants import IP_COUNTRY_CODE
 
 logger = get_bridge_logger(__name__)
 
@@ -113,11 +114,12 @@ def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
     locations_by_time = []
     
     for r in results:
-        if r.get("TX_DATETIME") and r.get("IP_CITY"):
+        # IP_CITY is not available in schema, fallback to using country only
+        if r.get("TX_DATETIME") and r.get(IP_COUNTRY_CODE):
             locations_by_time.append({
                 "time": r["TX_DATETIME"],
-                "city": r["IP_CITY"],
-                "country": r.get("IP_COUNTRY")
+                "city": None,  # IP_CITY not available in schema
+                "country": r.get(IP_COUNTRY_CODE)
             })
     
     if len(locations_by_time) < 2:
@@ -144,7 +146,7 @@ def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
 
 def _analyze_high_risk_countries(results: list, findings: Dict[str, Any]) -> None:
     """Analyze activity from high-risk geographic regions."""
-    countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
+    countries = set(r.get(IP_COUNTRY_CODE) for r in results if r.get(IP_COUNTRY_CODE))
     
     # Example high-risk country codes (would be configurable in production)
     high_risk_countries = {"XX", "YY", "ZZ"}  # Placeholder country codes
@@ -162,8 +164,9 @@ def _analyze_high_risk_countries(results: list, findings: Dict[str, Any]) -> Non
 def _analyze_geographic_diversity(results: list, findings: Dict[str, Any]) -> None:
     """Analyze geographic diversity patterns."""
     # Primary attempt: use Snowflake data
-    countries = set(r.get("IP_COUNTRY") for r in results if r.get("IP_COUNTRY"))
-    cities = set(r.get("IP_CITY") for r in results if r.get("IP_CITY"))
+    countries = set(r.get(IP_COUNTRY_CODE) for r in results if r.get(IP_COUNTRY_CODE))
+    # IP_CITY is not available in schema, skip city analysis
+    cities = set()  # IP_CITY not available in schema
     
     # Fallback: extract from tool results if Snowflake data is empty
     if not countries and not cities:

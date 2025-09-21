@@ -58,7 +58,7 @@ async def test_minimal_hybrid_execution():
                 content="I need to analyze this IP address for potential fraud indicators.",
                 tool_calls=[{
                     "name": "SnowflakeQueryTool",
-                    "args": {"query": "SELECT * FROM fraud_indicators WHERE ip_address = '192.168.1.100'"},
+                    "args": {"query": "SELECT * FROM fraud_indicators WHERE ip = '192.168.1.100'"},
                     "id": "test_call_1"
                 }]
             )
@@ -152,7 +152,7 @@ async def test_minimal_hybrid_execution():
         initial_state = create_hybrid_initial_state(
             investigation_id="TEST_MINIMAL_001",
             entity_id="192.168.1.100",
-            entity_type="ip_address"
+            entity_type="ip"
         )
         print("✅ Hybrid initial state created")
         print(f"   Initial tools_used: {len(initial_state.get('tools_used', []))}")

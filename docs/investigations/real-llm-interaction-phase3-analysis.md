@@ -56,18 +56,18 @@ Use the snowflake_query_tool immediately.
 
 **Investigation Context:**
 ```
-🧠 Reasoning context: Snowflake analysis for ip_address - 102.159.115.190
+🧠 Reasoning context: Snowflake analysis for ip - 102.159.115.190
 ```
 
 **Complete Human Message:**
 ```
 You MUST use the snowflake_query_tool to analyze ALL data for the past 7 days.
 
-Entity to investigate: ip_address = 102.159.115.190
+Entity to investigate: ip = 102.159.115.190
 
 Required Snowflake queries:
 1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
-   - IP_ADDRESS = '102.159.115.190' (if entity is IP)
+   - IP = '102.159.115.190' (if entity is IP)
    - Or related fields match the entity
    - Date range: LAST 7 DAYS
 
@@ -104,16 +104,16 @@ Claude Sonnet 3.5 successfully generated a real Snowflake tool call that execute
 ```sql
 WITH risk_calculations AS (
     SELECT 
-        IP_ADDRESS as entity,
+        IP as entity,
         COUNT(*) as transaction_count,
         MAX(MODEL_SCORE) as max_risk_score,
         MIN(MODEL_SCORE) as min_risk_score,
         SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
         -- [Additional risk calculation logic]
     FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
-    WHERE IP_ADDRESS = '102.159.115.190'
+    WHERE IP = '102.159.115.190'
         AND TX_DATETIME >= CURRENT_DATE - INTERVAL '7 DAYS'
-    GROUP BY IP_ADDRESS
+    GROUP BY IP
 )
 SELECT * FROM risk_calculations;
 ```
@@ -241,7 +241,7 @@ Be EXTREMELY selective - only use tools that are absolutely critical.
 - ✅ Targeted correct database table and schema
 
 **3. Context Understanding:**
-- ✅ Parsed entity type (`ip_address`) and value (`102.159.115.190`)
+- ✅ Parsed entity type (`ip`) and value (`102.159.115.190`)
 - ✅ Understood investigation requirements and priorities
 - ✅ Maintained context across multiple message exchanges
 

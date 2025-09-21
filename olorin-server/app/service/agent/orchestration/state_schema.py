@@ -65,7 +65,7 @@ class InvestigationState(TypedDict):
     # Investigation identifiers
     investigation_id: str
     entity_id: str
-    entity_type: str  # "ip_address", "user_id", "device_id", etc.
+    entity_type: str  # "ip", "user_id", "device_id", etc.
     custom_user_prompt: Optional[str]  # Custom user prompt with highest priority
     
     # Phase management
@@ -122,7 +122,7 @@ class InvestigationState(TypedDict):
 def create_initial_state(
     investigation_id: str,
     entity_id: str,
-    entity_type: str = "ip_address",
+    entity_type: str = "ip",
     parallel_execution: bool = True,
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,
@@ -430,7 +430,7 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     domain_findings = state.get("domain_findings", {})
     
     if not domain_findings:
-        return 0.5  # Default medium risk if no findings
+        raise ValueError("CRITICAL: No domain findings available - cannot calculate risk score without REAL data")
     
     # Collect MODEL_SCORES from new evidence-based format
     model_scores = []

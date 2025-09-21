@@ -60,7 +60,7 @@ def test_graph_selection_counters():
     registry = get_observability_registry()
     
     # Simulate graph selection events
-    increment_counter("graph_selection_attempts", metadata={"entity_type": "ip_address"})
+    increment_counter("graph_selection_attempts", metadata={"entity_type": "ip"})
     increment_counter("graph_selection_attempts", metadata={"entity_type": "user_id"})
     increment_counter("graph_selection_failures", metadata={"reason": "missing_investigation_id"})
     increment_counter("graph_selection_fallbacks", metadata={"reason": "hybrid_build_failed"})

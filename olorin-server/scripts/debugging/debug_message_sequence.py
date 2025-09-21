@@ -40,7 +40,7 @@ async def debug_message_sequence():
         # Create test investigation state
         investigation_id = f"debug_message_seq_{int(datetime.now().timestamp())}"
         entity_id = "67.76.8.209"
-        entity_type = "ip_address"
+        entity_type = "ip"
         
         # Create initial state
         initial_state = create_hybrid_initial_state(

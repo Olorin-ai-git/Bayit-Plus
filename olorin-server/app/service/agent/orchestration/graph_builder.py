@@ -40,13 +40,12 @@ class MessagesState(TypedDict):
     entity_id: Optional[str]
     entity_type: Optional[str]
 
-from app.service.agent.autonomous_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
-)
+# Import clean graph domain agents directly
+from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
+from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
+from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
+from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
+from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 # Import wrapped versions for graph nodes
 from app.service.agent.orchestration.agent_wrappers import (
     wrapped_network_agent,
@@ -352,7 +351,7 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     builder.add_node("start_investigation", start_investigation)
     builder.add_node("raw_data_node", raw_data_node)
     builder.add_node("fraud_investigation", assistant)
-    builder.add_node("risk_agent", autonomous_risk_agent)
+    builder.add_node("risk_agent", risk_agent_node)
     
     # Add subgraphs as nodes
     builder.add_node("device_subgraph", device_subgraph.compile().ainvoke)
@@ -419,7 +418,7 @@ async def create_and_get_agent_graph(
     use_enhanced_tools: bool = True, 
     use_subgraphs: bool = False,
     investigation_id: Optional[str] = None,
-    entity_type: str = "ip_address"
+    entity_type: str = "ip"
 ):
     """
     Create and return the appropriate agent graph with hybrid intelligence selection.
@@ -639,11 +638,11 @@ async def create_mcp_enhanced_graph(
     
     # Add agent nodes based on execution mode
     if parallel:
-        builder.add_node("network_agent", autonomous_network_agent)
-        builder.add_node("location_agent", autonomous_location_agent)
-        builder.add_node("logs_agent", autonomous_logs_agent)
-        builder.add_node("device_agent", autonomous_device_agent)
-        builder.add_node("risk_agent", autonomous_risk_agent)
+        builder.add_node("network_agent", network_agent_node)
+        builder.add_node("location_agent", location_agent_node)
+        builder.add_node("logs_agent", logs_agent_node)
+        builder.add_node("device_agent", device_agent_node)
+        builder.add_node("risk_agent", risk_agent_node)
     else:
         builder.add_node("network_agent", network_agent)
         builder.add_node("location_agent", location_agent)

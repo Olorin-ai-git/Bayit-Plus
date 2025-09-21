@@ -64,12 +64,12 @@ class SecureFraudInvestigationTool:
         
         try:
             # Step 1: Authentication and Authorization
-            ip_address = request.client.host
+            ip = request.client.host
             user_agent = request.headers.get("user-agent", "Unknown")
             
             security_context, auth_result = await self.auth.validate_mcp_token(
                 token=token,
-                ip_address=ip_address,
+                ip=ip,
                 user_agent=user_agent,
                 required_permissions=[
                     MCPPermission.FRAUD_QUERY_DATABASE,

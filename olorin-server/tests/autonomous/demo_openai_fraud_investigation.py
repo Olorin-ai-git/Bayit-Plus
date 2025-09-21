@@ -39,7 +39,7 @@ class FraudInvestigationDemo:
             "user_id": "user_7834792",
             "merchant": "High-End Electronics Store",
             "timestamp": "2024-08-30T14:23:17Z",
-            "ip_address": "203.45.67.89",
+            "ip": "203.45.67.89",
             "device_id": "DEVICE_UNKNOWN_001",
             "location": "Suspicious City, Foreign Country",
             "card_last_four": "4567",
@@ -123,7 +123,7 @@ TRANSACTION DETAILS:
 - Amount: ${self.demo_transaction['amount']:,.2f}
 - User ID: {self.demo_transaction['user_id']}
 - Merchant: {self.demo_transaction['merchant']}
-- IP Address: {self.demo_transaction['ip_address']}
+- IP Address: {self.demo_transaction['ip']}
 - Device: {self.demo_transaction['device_id']}
 - Location: {self.demo_transaction['location']}
 - Timestamp: {self.demo_transaction['timestamp']}
@@ -185,7 +185,7 @@ This is a HIGH PRIORITY investigation. Please be thorough and evidence-based.
                     "event_type": "transaction_attempt",
                     "transaction_id": self.demo_transaction["transaction_id"],
                     "user_id": self.demo_transaction["user_id"],
-                    "ip_address": self.demo_transaction["ip_address"],
+                    "ip": self.demo_transaction["ip"],
                     "amount": self.demo_transaction["amount"],
                     "device_fingerprint": "UNKNOWN_DEVICE_SCORE_95",
                     "geolocation": "Foreign_Country_Risk_High",
@@ -197,7 +197,7 @@ This is a HIGH PRIORITY investigation. Please be thorough and evidence-based.
                     "timestamp": "2024-08-30T14:20:12Z", 
                     "event_type": "failed_login_attempts",
                     "user_id": self.demo_transaction["user_id"],
-                    "ip_address": self.demo_transaction["ip_address"],
+                    "ip": self.demo_transaction["ip"],
                     "attempts": 3,
                     "reason": "suspicious_location"
                 }

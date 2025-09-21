@@ -48,7 +48,7 @@ class GraphSelector:
     async def select_investigation_graph(
         self,
         investigation_id: str,
-        entity_type: str = "ip_address",
+        entity_type: str = "ip",
         force_graph_type: Optional[GraphType] = None
     ) -> GraphSelectionResult:
         """
@@ -204,7 +204,7 @@ class GraphSelector:
     async def get_investigation_graph(
         self,
         investigation_id: str,
-        entity_type: str = "ip_address",
+        entity_type: str = "ip",
         force_graph_type: Optional[GraphType] = None
     ) -> StateGraph:
         """

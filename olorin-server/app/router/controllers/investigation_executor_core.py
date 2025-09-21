@@ -119,11 +119,54 @@ async def _execute_agent_investigation_phase(
     result = ""
     
     try:
-        # Use agent service to invoke real LangGraph agents
-        from app.service import agent_service
-        response_str, trace_id = await agent_service.ainvoke_agent(
-            None, agent_context  # Pass None as request since this is background execution
+        # CRITICAL FIX: Use clean graph orchestration system instead of old agent service
+        # This implements Option C: Remove old system and use only clean graph system
+        from app.service.agent.orchestration.hybrid.migration_utilities import (
+            get_investigation_graph,
+            get_feature_flags
         )
+        from app.service.agent.orchestration.state_schema import create_initial_state
+
+        # Create initial state for clean graph execution
+        initial_state = create_initial_state(
+            investigation_id=investigation_id,
+            entity_id=request.entity_id,
+            entity_type=request.entity_type,
+            parallel_execution=True,
+            max_tools=52
+        )
+
+        # Add investigation query to messages
+        initial_state["messages"] = messages
+
+        # Get appropriate graph (hybrid or clean based on feature flags)
+        graph = await get_investigation_graph(
+            investigation_id=investigation_id,
+            entity_type=request.entity_type
+        )
+
+        # Set recursion limit based on production/test mode
+        recursion_limit = 100  # Production mode - use higher limit for real investigations
+        config = {"recursion_limit": recursion_limit}
+
+        # Add thread configuration if using hybrid graph
+        feature_flags = get_feature_flags()
+        if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+            config["configurable"] = {"thread_id": investigation_id}
+            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
+        else:
+            logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
+
+        # Execute the clean graph system
+        logger.info(f"🚀 EXECUTING CLEAN GRAPH ORCHESTRATION (replacing old agent service)")
+        langgraph_result = await graph.ainvoke(
+            initial_state,
+            config=config
+        )
+
+        # Extract result from LangGraph execution
+        response_str = str(langgraph_result.get("messages", [])[-1].content if langgraph_result.get("messages") else "Investigation completed")
+        trace_id = investigation_id  # Use investigation ID as trace ID
         
         end_time = datetime.now()
         result = response_str

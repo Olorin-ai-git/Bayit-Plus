@@ -260,13 +260,13 @@ class UnifiedThreatIntelligenceTool(BaseTool):
             elif "cidr" in tool.name:
                 return await tool._arun(cidr_network=target)
             else:
-                return await tool._arun(ip_address=target)
+                return await tool._arun(ip=target)
         
         # VirusTotal tool handling
         elif "virustotal" in tool.name:
             if "ip" in tool.name and self._is_ip_address(target):
-                # IP analysis requires 'ip_address' parameter
-                return await tool._arun(ip_address=target)
+                # IP analysis requires 'ip' parameter
+                return await tool._arun(ip=target)
             elif "domain" in tool.name:
                 # For domain tool, check if target is IP and convert to domain if needed
                 if self._is_ip_address(target):
@@ -283,7 +283,7 @@ class UnifiedThreatIntelligenceTool(BaseTool):
             else:
                 # Determine appropriate parameter based on target type
                 if self._is_ip_address(target):
-                    return await tool._arun(ip_address=target)
+                    return await tool._arun(ip=target)
                 elif self._is_domain(target):
                     return await tool._arun(domain=target)
                 else:
@@ -293,8 +293,8 @@ class UnifiedThreatIntelligenceTool(BaseTool):
         # Shodan tool handling  
         elif "shodan" in tool.name:
             if self._is_ip_address(target):
-                # IP analysis requires 'ip_address' parameter
-                return await tool._arun(ip_address=target)
+                # IP analysis requires 'ip' parameter
+                return await tool._arun(ip=target)
             else:
                 # For non-IP targets, try to convert or use as query
                 return await tool._arun(query=target)

@@ -28,7 +28,7 @@ async def test_clean_graph():
     
     # Test configuration
     test_entity_id = "192.168.1.100"
-    test_entity_type = "ip_address"
+    test_entity_type = "ip"
     test_investigation_id = "test-clean-graph-001"
     
     print(f"📋 Test Configuration:")
