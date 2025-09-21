@@ -8,6 +8,10 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+from app.service.agent.tools.snowflake_tool.schema_constants import (
+    PAID_AMOUNT_VALUE, IP_ADDRESS, IP_COUNTRY_CODE, MODEL_SCORE,
+    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -203,9 +207,9 @@ class RiskAnalyzer:
             SELECT 
                 {group_by} as entity,
                 COUNT(*) as transaction_count,
-                SUM(PAID_AMOUNT_VALUE) as total_amount,
-                AVG(MODEL_SCORE) as avg_risk_score,
-                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value,
+                SUM({PAID_AMOUNT_VALUE}) as total_amount,
+                AVG({MODEL_SCORE}) as avg_risk_score,
+                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE}) as risk_weighted_value,
                 MAX(MODEL_SCORE) as max_risk_score,
                 MIN(MODEL_SCORE) as min_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
@@ -331,7 +335,7 @@ class RiskAnalyzer:
             query = f"""
             SELECT 
                 COUNT(*) as transaction_count,
-                SUM(PAID_AMOUNT_VALUE) as total_amount,
+                SUM({PAID_AMOUNT_VALUE}) as total_amount,
                 AVG(MODEL_SCORE) as avg_risk_score,
                 MAX(MODEL_SCORE) as max_risk_score,
                 MIN(MODEL_SCORE) as min_risk_score,
@@ -339,7 +343,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                 COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                COUNT(DISTINCT IP_ADDRESS) as unique_ips,
+                COUNT(DISTINCT {IP_ADDRESS}) as unique_ips,
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction

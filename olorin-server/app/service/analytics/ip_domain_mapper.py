@@ -7,6 +7,7 @@ import asyncio
 from typing import Optional, Dict, Any
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+from app.service.agent.tools.snowflake_tool.schema_constants import IP_ADDRESS, EMAIL
 
 logger = get_bridge_logger(__name__)
 
@@ -38,16 +39,16 @@ class IPDomainMapper:
             # Query to find the most common email domain for this IP
             query = f"""
             WITH ip_domains AS (
-                SELECT 
-                    IP_ADDRESS as ip,
-                    EMAIL as email,
-                    SUBSTRING(EMAIL, POSITION('@' IN EMAIL) + 1) as domain,
+                SELECT
+                    {IP_ADDRESS} as ip,
+                    {EMAIL} as email,
+                    SUBSTRING({EMAIL}, POSITION('@' IN {EMAIL}) + 1) as domain,
                     COUNT(*) as occurrence_count
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
-                WHERE IP_ADDRESS = '{ip_address}'
-                    AND EMAIL IS NOT NULL
-                    AND EMAIL LIKE '%@%'
-                GROUP BY IP_ADDRESS, EMAIL, domain
+                WHERE {IP_ADDRESS} = '{ip_address}'
+                    AND {EMAIL} IS NOT NULL
+                    AND {EMAIL} LIKE '%@%'
+                GROUP BY {IP_ADDRESS}, {EMAIL}, domain
             )
             SELECT 
                 domain,

@@ -40,9 +40,9 @@ async def main():
     SELECT 
         EMAIL,
         COUNT(*) as tx_count,
-        SUM(PAID_AMOUNT_VALUE) as total_amount,
+        SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
         AVG(MODEL_SCORE) as avg_risk,
-        SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value
+        SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value
     FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     GROUP BY EMAIL
     ORDER BY risk_value DESC
@@ -76,10 +76,10 @@ async def main():
     # Check sample of actual data
     print("\n4. Sample Records:")
     query4 = """
-    SELECT 
+    SELECT
         TX_ID_KEY,
         EMAIL,
-        PAID_AMOUNT_VALUE,
+        PAID_AMOUNT_VALUE_IN_CURRENCY,
         MODEL_SCORE,
         IS_FRAUD_TX,
         TX_DATETIME
@@ -89,7 +89,7 @@ async def main():
     result4 = await client.execute_query(query4)
     if result4:
         for row in result4:
-            print(f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE']:.2f} (Risk: {row['MODEL_SCORE']:.2f})")
+            print(f"   {row['TX_ID_KEY']}: {row['EMAIL']} - ${row['PAID_AMOUNT_VALUE_IN_CURRENCY']:.2f} (Risk: {row['MODEL_SCORE']:.2f})")
     
     await client.disconnect()
     print("\n" + "="*70)

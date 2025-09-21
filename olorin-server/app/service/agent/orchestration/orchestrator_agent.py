@@ -19,6 +19,13 @@ from app.service.agent.orchestration.state_schema import (
 )
 from app.utils.firebase_secrets import get_firebase_secret
 from app.service.config import get_settings_for_env
+from app.service.agent.tools.snowflake_tool.schema_constants import (
+    PAID_AMOUNT_VALUE, IP_ADDRESS, IP_COUNTRY_CODE, IP_CITY,
+    DEVICE_ID, USER_AGENT, TX_DATETIME, TX_ID_KEY,
+    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, PAYMENT_METHOD,
+    DEVICE_TYPE, FRAUD_RULES_TRIGGERED, PROXY_RISK_SCORE,
+    get_safe_column_reference
+)
 
 logger = get_bridge_logger(__name__)
 
@@ -222,33 +229,33 @@ IMPORTANT: While following the standard investigation process, give special atte
                 
                 # Build appropriate WHERE clause based on entity type
                 if entity_type == 'ip_address':
-                    where_field = 'IP_ADDRESS'
+                    where_field = IP_ADDRESS
                 elif entity_type == 'user_id':
                     where_field = 'USER_ID'
                 else:
-                    where_field = 'IP_ADDRESS'  # Default to IP
+                    where_field = IP_ADDRESS  # Default to IP
                 
                 # Get date range from state context if available, default to 7 days
                 date_range = 7  # Default fallback
                 # CRITICAL FIX: Always select IS_FRAUD_TX - explicit column list prevents missing fraud label
                 # User requirement: "Query template must include: SELECT TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, DISPUTES, FRAUD_ALERTS"
                 query = f"""SELECT
-                           TX_ID_KEY,
+                           {TX_ID_KEY},
                            EMAIL,
-                           MODEL_SCORE,
-                           IS_FRAUD_TX,
-                           NSURE_LAST_DECISION,
+                           {MODEL_SCORE},
+                           {IS_FRAUD_TX},
+                           {NSURE_LAST_DECISION},
                            DISPUTES,
                            FRAUD_ALERTS,
-                           PAID_AMOUNT_VALUE,
-                           IP_ADDRESS,
-                           IP_COUNTRY, IP_CITY,
-                           DEVICE_ID, DEVICE_FINGERPRINT,
-                           USER_AGENT, DEVICE_TYPE,
-                           TX_DATETIME
+                           {PAID_AMOUNT_VALUE},
+                           {IP_ADDRESS},
+                           {IP_COUNTRY_CODE}, {IP_CITY},
+                           {DEVICE_ID}, DEVICE_FINGERPRINT,
+                           {USER_AGENT}, {DEVICE_TYPE},
+                           {TX_DATETIME}
                            FROM TRANSACTIONS_ENRICHED
                            WHERE {where_field} = '{entity_id}'
-                           ORDER BY TX_DATETIME DESC
+                           ORDER BY {TX_DATETIME} DESC
                            LIMIT 10"""
                 
                 response = AIMessage(
@@ -499,17 +506,17 @@ IMPORTANT: While following the standard investigation process, give special atte
         
         Required Snowflake queries:
         1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
-           - IP_ADDRESS = '{state['entity_id']}' (if entity is IP)
+           - {IP_ADDRESS} = '{state['entity_id']}' (if entity is IP)
            - Or related fields match the entity
            - Date range: LAST {date_range_days} DAYS
-        
+
         2. Retrieve these key fields:
-           - TX_ID_KEY, TX_DATETIME
-           - MODEL_SCORE, IS_FRAUD_TX
-           - NSURE_LAST_DECISION
-           - PAID_AMOUNT_VALUE, PAYMENT_METHOD
-           - IP_COUNTRY, IP_CITY
-           - DEVICE_ID, USER_AGENT
+           - {TX_ID_KEY}, {TX_DATETIME}
+           - {MODEL_SCORE}, {IS_FRAUD_TX}
+           - {NSURE_LAST_DECISION}
+           - {PAID_AMOUNT_VALUE}, {PAYMENT_METHOD}
+           - {IP_COUNTRY_CODE}, {IP_CITY}
+           - {DEVICE_ID}, {USER_AGENT}
            - Any fraud indicators
         
         3. Look for:

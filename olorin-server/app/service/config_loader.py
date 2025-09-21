@@ -298,24 +298,6 @@ class ConfigLoader:
             "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY")
         }
     
-    def load_snowflake_config(self) -> dict:
-        """
-        Load Snowflake configuration from secrets.
-        
-        Returns:
-            Dictionary with Snowflake configuration
-        """
-        return {
-            "account": self.load_secret("SNOWFLAKE_ACCOUNT"),
-            "user": self.load_secret("SNOWFLAKE_USER"),
-            "password": self.load_secret("SNOWFLAKE_PASSWORD"),
-            "private_key": self.load_secret("SNOWFLAKE_PRIVATE_KEY"),
-            "database": self.load_secret("SNOWFLAKE_DATABASE"),
-            "schema": self.load_secret("SNOWFLAKE_SCHEMA"),
-            "warehouse": self.load_secret("SNOWFLAKE_WAREHOUSE"),
-            "role": self.load_secret("SNOWFLAKE_ROLE"),
-            "authenticator": self.load_secret("SNOWFLAKE_AUTHENTICATOR") or "snowflake"
-        }
     
     def load_all_secrets(self) -> dict:
         """

@@ -889,6 +889,7 @@ class UnifiedAutonomousTestRunner:
     async def load_snowflake_data(self) -> bool:
         """Load top risk entities from Snowflake"""
         from app.service.analytics.risk_analyzer import get_risk_analyzer
+        from app.service.agent.tools.snowflake_tool.schema_constants import IP_ADDRESS
         
         self.logger.info("❄️ Loading top risk entities from Snowflake...")
         
@@ -899,7 +900,7 @@ class UnifiedAutonomousTestRunner:
             # Fetch top 10% risk entities by IP address
             results = await analyzer.get_top_risk_entities(
                 time_window='24h',
-                group_by='IP_ADDRESS',
+                group_by=IP_ADDRESS,
                 top_percentage=10,
                 force_refresh=False
             )

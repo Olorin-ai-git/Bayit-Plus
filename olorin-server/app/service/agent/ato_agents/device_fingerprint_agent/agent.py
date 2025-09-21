@@ -11,6 +11,10 @@ from ..clients.tmx_client import TMXClient
 from ..interfaces import DeviceFingerprintAgent, RiskAssessment
 from ..utils.logging import get_logger
 from app.service.logging import get_bridge_logger
+from app.service.agent.tools.snowflake_tool.schema_constants import (
+    IP_ADDRESS, IP_COUNTRY_CODE, PAID_AMOUNT_VALUE,
+    PROXY_RISK_SCORE
+)
 
 logger = get_logger(__name__)
 
@@ -151,11 +155,10 @@ class DeviceFingerprintAgentImpl(Agent[DeviceContext]):
                     DEVICE_TYPE,
                     USER_AGENT,
                     DEVICE_FINGERPRINT,
-                    IP_ADDRESS,
-                    IP_COUNTRY,
-                    IP_CITY,
+                    {IP_ADDRESS},
+                    {IP_COUNTRY_CODE},
                     TX_DATETIME as LAST_SEEN,
-                    PROXY_RISK_SCORE,
+                    {PROXY_RISK_SCORE},
                     MODEL_SCORE
                 FROM TRANSACTIONS_ENRICHED 
                 WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
@@ -175,8 +178,8 @@ class DeviceFingerprintAgentImpl(Agent[DeviceContext]):
                         "device_type": latest_device.get('DEVICE_TYPE', device_info["device_type"]),
                         "user_agent": latest_device.get('USER_AGENT', device_info["user_agent"]),
                         "device_fingerprint": latest_device.get('DEVICE_FINGERPRINT', device_info.get("device_fingerprint", "")),
-                        "ip_address": latest_device.get('IP_ADDRESS', ''),
-                        "location": f"{latest_device.get('IP_CITY', '')}, {latest_device.get('IP_COUNTRY', '')}",
+                        "ip_address": latest_device.get('IP', ''),
+                        "location": latest_device.get('IP_COUNTRY_CODE', ''),  # Only country available, no city
                         "last_seen": latest_device.get('LAST_SEEN', device_info["last_seen"]),
                         "proxy_risk_score": latest_device.get('PROXY_RISK_SCORE', 0.0),
                         "snowflake_model_score": latest_device.get('MODEL_SCORE', 0.0),
@@ -251,12 +254,11 @@ class DeviceFingerprintAgentImpl(Agent[DeviceContext]):
                 DEVICE_TYPE,
                 USER_AGENT,
                 DEVICE_FINGERPRINT,
-                IP_ADDRESS,
-                IP_COUNTRY,
-                IP_CITY,
-                PAID_AMOUNT_VALUE,
+                {IP_ADDRESS},
+                {IP_COUNTRY_CODE},
+                {PAID_AMOUNT_VALUE},
                 MODEL_SCORE,
-                PROXY_RISK_SCORE,
+                {PROXY_RISK_SCORE},
                 IS_FRAUD_TX
             FROM TRANSACTIONS_ENRICHED 
             WHERE (EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}')
@@ -287,9 +289,9 @@ class DeviceFingerprintAgentImpl(Agent[DeviceContext]):
                     "device_type": result.get('DEVICE_TYPE', 'Unknown'),
                     "user_agent": result.get('USER_AGENT', ''),
                     "device_fingerprint": result.get('DEVICE_FINGERPRINT', ''),
-                    "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
-                    "ip_address": result.get('IP_ADDRESS', ''),
-                    "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
+                    "location": result.get('IP_COUNTRY_CODE', ''),  # Only country available, no city
+                    "ip_address": result.get('IP', ''),
+                    "transaction_amount": result.get('PAID_AMOUNT_VALUE_IN_CURRENCY', 0.0),
                     "fraud_score": result.get('MODEL_SCORE', 0.0),
                     "proxy_risk_score": result.get('PROXY_RISK_SCORE', 0.0),
                     "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,

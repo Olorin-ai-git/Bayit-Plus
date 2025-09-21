@@ -11,6 +11,11 @@ from agents import Agent
 from ..utils.logging import get_logger
 from .client import LocationDataClient, LocationInfo
 from app.service.logging import get_bridge_logger
+from app.service.agent.tools.snowflake_tool.schema_constants import (
+    IP_ADDRESS, IP_COUNTRY_CODE, PAID_AMOUNT_VALUE,
+    PROXY_RISK_SCORE, TX_DATETIME, TX_ID_KEY, MODEL_SCORE,
+    IS_FRAUD_TX, NSURE_LAST_DECISION, get_safe_column_reference
+)
 
 # ----------------------------
 
@@ -85,20 +90,18 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 snowflake_client = SnowflakeClient()
                 await snowflake_client.connect()
                 
-                # Query for customer location patterns
+                # Query for customer location patterns (IP_CITY not available in schema)
                 location_query = f"""
                 SELECT DISTINCT
-                    IP_ADDRESS,
-                    IP_COUNTRY,
-                    IP_CITY,
+                    {IP_ADDRESS},
+                    {IP_COUNTRY_CODE},
                     IP_REGION,
-                    TX_DATETIME,
-                    PROXY_RISK_SCORE,
-                    IS_FRAUD_TX,
-                    MODEL_SCORE
+                    {TX_DATETIME},
+                    {IS_FRAUD_TX},
+                    {MODEL_SCORE}
                 FROM TRANSACTIONS_ENRICHED
                 WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
-                ORDER BY TX_DATETIME DESC
+                ORDER BY {TX_DATETIME} DESC
                 LIMIT 20
                 """
                 
@@ -108,12 +111,12 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 if location_results:
                     for result in location_results:
                         location = {
-                            "ip_address": result.get('IP_ADDRESS', ''),
-                            "country": result.get('IP_COUNTRY', ''),
-                            "city": result.get('IP_CITY', ''),
+                            "ip_address": result.get('IP', ''),
+                            "country": result.get('IP_COUNTRY_CODE', ''),
+                            "city": None,  # IP_CITY not available in schema
                             "region": result.get('IP_REGION', ''),
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
-                            "proxy_risk": result.get('PROXY_RISK_SCORE', 0.0),
+                            "proxy_risk": 0.0,  # PROXY_RISK_SCORE not available in schema
                             "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,
                             "model_score": result.get('MODEL_SCORE', 0.0)
                         }
@@ -177,21 +180,19 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 snowflake_client = SnowflakeClient()
                 await snowflake_client.connect()
                 
-                # Query for business-related location patterns
+                # Query for business-related location patterns (IP_CITY not available in schema)
                 business_query = f"""
-                SELECT 
-                    IP_ADDRESS,
-                    IP_COUNTRY,
-                    IP_CITY,
-                    PAID_AMOUNT_VALUE,
-                    TX_DATETIME,
+                SELECT
+                    {IP_ADDRESS},
+                    {IP_COUNTRY_CODE},
+                    {PAID_AMOUNT_VALUE},
+                    {TX_DATETIME},
                     MERCHANT_NAME,
-                    DEVICE_TYPE,
-                    PROXY_RISK_SCORE
+                    DEVICE_TYPE
                 FROM TRANSACTIONS_ENRICHED
                 WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
-                    AND PAID_AMOUNT_VALUE > 1000  -- Focus on larger business-like transactions
-                ORDER BY PAID_AMOUNT_VALUE DESC, TX_DATETIME DESC
+                    AND {PAID_AMOUNT_VALUE} > 1000  -- Focus on larger business-like transactions
+                ORDER BY {PAID_AMOUNT_VALUE} DESC, {TX_DATETIME} DESC
                 LIMIT 15
                 """
                 
@@ -201,14 +202,14 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 if business_results:
                     for result in business_results:
                         business_location = {
-                            "ip_address": result.get('IP_ADDRESS', ''),
-                            "country": result.get('IP_COUNTRY', ''),
-                            "city": result.get('IP_CITY', ''),
-                            "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
+                            "ip_address": result.get('IP', ''),
+                            "country": result.get('IP_COUNTRY_CODE', ''),
+                            "city": None,  # IP_CITY not available in schema
+                            "transaction_amount": result.get('PAID_AMOUNT_VALUE_IN_CURRENCY', 0.0),
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
                             "merchant": result.get('MERCHANT_NAME', ''),
                             "device_type": result.get('DEVICE_TYPE', ''),
-                            "proxy_risk": result.get('PROXY_RISK_SCORE', 0.0)
+                            "proxy_risk": 0.0  # PROXY_RISK_SCORE not available in schema
                         }
                         business_data["business_locations"].append(business_location)
                     
@@ -274,20 +275,19 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 snowflake_client = SnowflakeClient()
                 await snowflake_client.connect()
                 
-                # Query for phone number usage in transactions
+                # Query for phone number usage in transactions (IP_CITY not available in schema)
                 phone_query = f"""
                 SELECT DISTINCT
                     EMAIL,
                     DEVICE_ID,
-                    IP_COUNTRY,
-                    IP_CITY,
-                    TX_DATETIME,
-                    PAID_AMOUNT_VALUE,
-                    IS_FRAUD_TX,
-                    MODEL_SCORE
+                    {IP_COUNTRY_CODE},
+                    {TX_DATETIME},
+                    {PAID_AMOUNT_VALUE},
+                    {IS_FRAUD_TX},
+                    {MODEL_SCORE}
                 FROM TRANSACTIONS_ENRICHED
                 WHERE EMAIL LIKE '%{phone_number}%' OR DEVICE_ID LIKE '%{phone_number}%'
-                ORDER BY TX_DATETIME DESC
+                ORDER BY {TX_DATETIME} DESC
                 LIMIT 10
                 """
                 
@@ -299,9 +299,9 @@ class LocationDataAgent(Agent[LocationDataContext]):
                         registration = {
                             "email": result.get('EMAIL', ''),
                             "device_id": result.get('DEVICE_ID', ''),
-                            "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                            "location": result.get('IP_COUNTRY_CODE', ''),  # Only country available, no city
                             "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else '',
-                            "transaction_amount": result.get('PAID_AMOUNT_VALUE', 0.0),
+                            "transaction_amount": result.get('PAID_AMOUNT_VALUE_IN_CURRENCY', 0.0),
                             "is_fraud": result.get('IS_FRAUD_TX', 0) == 1,
                             "risk_score": result.get('MODEL_SCORE', 0.0)
                         }
@@ -460,20 +460,19 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 snowflake_client = SnowflakeClient()
                 await snowflake_client.connect()
                 
-                # Query for temporal login patterns
+                # Query for temporal login patterns (IP_CITY not available in schema)
                 pattern_query = f"""
-                SELECT 
-                    TX_DATETIME,
-                    IP_COUNTRY,
-                    IP_CITY,
+                SELECT
+                    {TX_DATETIME},
+                    {IP_COUNTRY_CODE},
                     DEVICE_TYPE,
                     DEVICE_ID,
-                    EXTRACT(HOUR FROM TX_DATETIME) as LOGIN_HOUR,
-                    EXTRACT(DAY_OF_WEEK FROM TX_DATETIME) as LOGIN_DAY,
-                    IS_FRAUD_TX
+                    EXTRACT(HOUR FROM {TX_DATETIME}) as LOGIN_HOUR,
+                    EXTRACT(DAY_OF_WEEK FROM {TX_DATETIME}) as LOGIN_DAY,
+                    {IS_FRAUD_TX}
                 FROM TRANSACTIONS_ENRICHED
                 WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
-                ORDER BY TX_DATETIME DESC
+                ORDER BY {TX_DATETIME} DESC
                 LIMIT 50
                 """
                 
@@ -491,7 +490,7 @@ class LocationDataAgent(Agent[LocationDataContext]):
                         login_hour = result.get('LOGIN_HOUR')
                         login_day = result.get('LOGIN_DAY')
                         device_type = result.get('DEVICE_TYPE', 'Unknown')
-                        location = f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}"
+                        location = result.get('IP_COUNTRY_CODE', '')  # Only country available, no city
                         
                         # Count patterns
                         hour_counts[login_hour] = hour_counts.get(login_hour, 0) + 1
@@ -689,13 +688,12 @@ class LocationDataAgent(Agent[LocationDataContext]):
                 DEVICE_ID,
                 DEVICE_TYPE,
                 USER_AGENT,
-                IP_ADDRESS,
-                IP_COUNTRY,
-                IP_CITY,
-                TX_DATETIME
+                {IP_ADDRESS},
+                {IP_COUNTRY_CODE},
+                {TX_DATETIME}
             FROM TRANSACTIONS_ENRICHED
             WHERE EMAIL = '{user_id}' OR DEVICE_ID = '{user_id}'
-            ORDER BY TX_DATETIME DESC
+            ORDER BY {TX_DATETIME} DESC
             LIMIT 10
             """
             
@@ -708,8 +706,8 @@ class LocationDataAgent(Agent[LocationDataContext]):
                     "device_id": result.get('DEVICE_ID', ''),
                     "device_type": result.get('DEVICE_TYPE', ''),
                     "user_agent": result.get('USER_AGENT', ''),
-                    "ip_address": result.get('IP_ADDRESS', ''),
-                    "location": f"{result.get('IP_CITY', '')}, {result.get('IP_COUNTRY', '')}",
+                    "ip_address": result.get('IP', ''),
+                    "location": result.get('IP_COUNTRY_CODE', ''),  # Only country available, no city
                     "timestamp": result.get('TX_DATETIME', '').isoformat() if result.get('TX_DATETIME') else ''
                 })
             

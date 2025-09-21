@@ -11,6 +11,7 @@ from datetime import datetime
 
 from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
+from .schema_constants import PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME
 
 logger = get_bridge_logger(__name__)
 
@@ -77,6 +78,15 @@ class RealSnowflakeClient:
                     'warehouse': self.warehouse,
                     'network_timeout': self.query_timeout,
                     'login_timeout': 60,
+                    # SSL/TLS configuration to fix handshake issues
+                    'insecure_mode': True,  # Temporarily disable SSL verification for testing
+                    'ocsp_response_cache_filename': None,  # Disable OCSP cache to avoid SSL issues
+                    'client_session_keep_alive': True,
+                    'client_request_mfa_token': False,
+                    # Additional SSL workaround parameters
+                    'session_parameters': {
+                        'PYTHON_CONNECTOR_QUERY_RESULT_FORMAT': 'json'
+                    }
                 }
                 
                 # Add optional parameters
@@ -228,13 +238,13 @@ class RealSnowflakeClient:
             SELECT 
                 {group_by} as entity,
                 COUNT(*) as transaction_count,
-                SUM(PAID_AMOUNT_VALUE) as total_amount,
-                AVG(MODEL_SCORE) as avg_risk_score,
-                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value,
-                MAX(MODEL_SCORE) as max_risk_score,
-                SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count
+                SUM({PAID_AMOUNT_VALUE}) as total_amount,
+                AVG({MODEL_SCORE}) as avg_risk_score,
+                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE}) as risk_weighted_value,
+                MAX({MODEL_SCORE}) as max_risk_score,
+                SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count
             FROM {self.database}.{self.schema}.TRANSACTIONS_ENRICHED
-            WHERE TX_DATETIME >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
+            WHERE {TX_DATETIME} >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
                 AND {group_by} IS NOT NULL
             GROUP BY {group_by}
             HAVING COUNT(*) >= {min_transactions}

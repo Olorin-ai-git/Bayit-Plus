@@ -609,8 +609,8 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 logger.debug(f"      Snowflake messages: {snowflake_messages}")
                 logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
             
-            # Step 7.1.2: Phase-specific thresholds - Snowflake: 3 loops (TEST) / 6 loops (LIVE)
-            loop_threshold = 3 if is_test_mode else 6  # Much lower thresholds
+            # Step 7.1.2: Phase-specific thresholds - Snowflake: 6 loops (TEST) / 8 loops (LIVE)
+            loop_threshold = 6 if is_test_mode else 8  # Allow more loops for proper execution
             logger.debug(f"[Step 7.1.2] 📊 SNOWFLAKE PHASE THRESHOLDS - Threshold configuration")
             logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
             logger.debug(f"[Step 7.1.2]   Snowflake loop threshold: {loop_threshold} ({'TEST: 3' if is_test_mode else 'LIVE: 6'})")
@@ -645,9 +645,9 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         tool_execution_attempts = state.get("tool_execution_attempts", 0)
         max_attempts = 3
         
-        # Step 7.1.2: Phase-specific thresholds - Tool execution: 5 loops (TEST) / 8 loops (LIVE)
-        loop_threshold = 5 if is_test_mode else 8  # Much lower thresholds
-        tool_threshold = 5 if is_test_mode else 8   # Reduced tool limits
+        # Step 7.1.2: Phase-specific thresholds - Tool execution: 8 loops (TEST) / 10 loops (LIVE)
+        loop_threshold = 8 if is_test_mode else 10  # Allow sufficient loops for tool execution
+        tool_threshold = 8 if is_test_mode else 10   # Allow more tools
         
         logger.debug(f"[Step 7.1.2] 🔧 TOOL EXECUTION PHASE THRESHOLDS - Threshold configuration")
         logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
@@ -720,8 +720,8 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             else:
                 logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ✅ COMPLETED")
         
-        # MORE AGGRESSIVE LIMITS for domain completion
-        domain_threshold = 6 if is_test_mode else 12  # Much lower thresholds
+        # Allow sufficient loops for all 6 domain agents to execute sequentially
+        domain_threshold = 12 if is_test_mode else 15  # Need at least 6 loops for 6 domain agents
         logger.debug(f"      Domain threshold for this mode: {domain_threshold}")
         logger.debug(f"      Predicted loops: {orchestrator_loops}")
         
@@ -749,7 +749,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     
     # Step 7.1.3: Fallback forced progression mechanisms - CRITICAL FIX: Prevent infinite default loops
     logger.debug(f"[Step 7.1.3] ❓ FALLBACK ROUTING - Safety mechanisms for unhandled cases")
-    final_threshold = 6 if is_test_mode else 10  # Much lower thresholds
+    final_threshold = 13 if is_test_mode else 12  # Allow domain agents to complete
     logger.debug(f"[Step 7.1.3]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
     logger.debug(f"[Step 7.1.3]   Final loop threshold: {final_threshold} ({'TEST: 6' if is_test_mode else 'LIVE: 10'})")
     logger.debug(f"[Step 7.1.3]   Current predicted loops: {orchestrator_loops}")
@@ -777,23 +777,31 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     logger.debug(f"         Tools used: {len(tools_used)}")
     logger.debug(f"         Predicted loops: {orchestrator_loops}")
     
-    # CRITICAL: Be much more aggressive about forcing completion
-    if orchestrator_loops >= 4:  # After 4 loops, force summary regardless of state
-        logger.debug(f"[Step 7.1.3]   Tier 1 Safety: {orchestrator_loops} >= 4 loops - AGGRESSIVE TERMINATION")
-        logger.warning(f"      → AGGRESSIVE TERMINATION: {orchestrator_loops} loops, forcing summary")
+    # CRITICAL FIX: Allow sufficient loops for domain agents to execute
+    # Need at least 10 loops in test mode to complete: Snowflake (3) + Tool execution (2) + Domain agents (6) = 11 loops minimum
+    max_orchestrator_loops = 15 if is_test_mode else 8  # Increased from 4 to allow domain agents
+
+    if orchestrator_loops >= max_orchestrator_loops:  # Allow more loops for domain agents
+        logger.debug(f"[Step 7.1.3]   Tier 1 Safety: {orchestrator_loops} >= {max_orchestrator_loops} loops - CONTROLLED TERMINATION")
+        logger.warning(f"      → CONTROLLED TERMINATION: {orchestrator_loops} loops, forcing summary")
         return "summary"
-    elif not snowflake_completed and orchestrator_loops >= 2:
-        logger.debug(f"[Step 7.1.3]   Tier 2 Safety: Snowflake incomplete + {orchestrator_loops} >= 2 loops")
+    elif not snowflake_completed and orchestrator_loops >= (6 if is_test_mode else 3):
+        logger.debug(f"[Step 7.1.3]   Tier 2 Safety: Snowflake incomplete + {orchestrator_loops} >= {'6' if is_test_mode else '3'} loops")
         logger.warning(f"      → FORCED Snowflake completion after {orchestrator_loops} loops")
         return "summary"  # Force completion if Snowflake still not done
-    elif len(tools_used) < 3 and orchestrator_loops >= 3:
-        logger.debug(f"[Step 7.1.3]   Tier 3 Safety: Tools < 3 + {orchestrator_loops} >= 3 loops")
+    elif len(tools_used) < 3 and orchestrator_loops >= (8 if is_test_mode else 5):
+        logger.debug(f"[Step 7.1.3]   Tier 3 Safety: Tools < 3 + {orchestrator_loops} >= {'8' if is_test_mode else '5'} loops")
         logger.warning(f"      → FORCED tool completion after {orchestrator_loops} loops")
         return "summary"  # Force completion if tools still not used
+    elif len(state.get("domains_completed", [])) == 0 and orchestrator_loops >= (12 if is_test_mode else 6):
+        logger.debug(f"[Step 7.1.3]   Tier 4 Safety: No domains completed + {orchestrator_loops} >= {'12' if is_test_mode else '6'} loops")
+        logger.warning(f"      → FORCED domain completion after {orchestrator_loops} loops")
+        return "summary"  # Force completion if no domains completed
     else:
-        logger.debug(f"[Step 7.1.3]   Tier 4 Safety: Default fallback to summary")
-        logger.debug("      → Safe default to summary")
-        return "summary"  # Default to summary to prevent further loops
+        # Only force summary if we've really exceeded reasonable limits
+        logger.debug(f"[Step 7.1.3]   Normal operation: Continue processing (loops: {orchestrator_loops}/{max_orchestrator_loops})")
+        # Allow orchestrator to continue normal phase progression
+        return "orchestrator"
 
 
 def build_clean_investigation_graph() -> StateGraph:
