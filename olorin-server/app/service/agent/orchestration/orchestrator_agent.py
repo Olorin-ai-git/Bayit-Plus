@@ -20,11 +20,10 @@ from app.service.agent.orchestration.state_schema import (
 from app.utils.firebase_secrets import get_firebase_secret
 from app.service.config import get_settings_for_env
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE, IP, IP_COUNTRY_CODE,
+    PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE,
     DEVICE_ID, USER_AGENT, TX_DATETIME, TX_ID_KEY,
     MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, PAYMENT_METHOD,
-    DEVICE_TYPE, FRAUD_RULES_TRIGGERED, PROXY_RISK_SCORE,
-    get_safe_column_reference
+    DEVICE_TYPE, TRIGGERED_RULES, MAXMIND_RISK_SCORE
 )
 
 logger = get_bridge_logger(__name__)
@@ -274,7 +273,7 @@ IMPORTANT: While following the standard investigation process, give special atte
                            {NSURE_LAST_DECISION},
                            DISPUTES,
                            FRAUD_ALERTS,
-                           {PAID_AMOUNT_VALUE},
+                           {PAID_AMOUNT_VALUE_IN_CURRENCY},
                            {IP},
                            {IP_COUNTRY_CODE},
                            {DEVICE_ID}, {DEVICE_TYPE},
@@ -542,7 +541,7 @@ IMPORTANT: While following the standard investigation process, give special atte
            - {TX_ID_KEY}, {TX_DATETIME}
            - {MODEL_SCORE}, {IS_FRAUD_TX}
            - {NSURE_LAST_DECISION}
-           - {PAID_AMOUNT_VALUE}, {PAYMENT_METHOD}
+           - {PAID_AMOUNT_VALUE_IN_CURRENCY}, {PAYMENT_METHOD}
            - {IP_COUNTRY_CODE}
            - {DEVICE_ID}, {USER_AGENT}
            - Any fraud indicators

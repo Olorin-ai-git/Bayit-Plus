@@ -16,7 +16,7 @@ import json
 from .client import SnowflakeClient
 from .schema_constants import (
     TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
-    PAID_AMOUNT_VALUE, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
+    PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
     IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
     CARD_ISSUER, MAXMIND_RISK_SCORE
@@ -35,7 +35,7 @@ class SnowflakeJSONEncoder(json.JSONEncoder):
 # Real column names from Snowflake schema - using schema constants
 REAL_COLUMNS = [
     TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
-    PAID_AMOUNT_VALUE, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
+    PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
     IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
     CARD_ISSUER, MAXMIND_RISK_SCORE
@@ -55,7 +55,7 @@ class _SnowflakeQueryArgs(BaseModel):
             "Main table is TRANSACTIONS_ENRICHED with comprehensive fraud data. "
             "IMPORTANT - Use these EXACT column names: TX_ID_KEY (transaction ID), EMAIL (user email), "
             "MODEL_SCORE (fraud risk score 0-1), IS_FRAUD_TX (confirmed fraud flag), "
-            f"NSURE_LAST_DECISION (approval/reject decision), {PAID_AMOUNT_VALUE} (transaction amount), "
+            f"NSURE_LAST_DECISION (approval/reject decision), {PAID_AMOUNT_VALUE_IN_CURRENCY} (transaction amount), "
             "TX_DATETIME (timestamp), PAYMENT_METHOD, CARD_BRAND, IP (client IP address), "
             f"{IP_COUNTRY_CODE} (country from IP), "
             "DEVICE_ID (NOT SMART_ID), USER_AGENT, "
@@ -89,7 +89,7 @@ class SnowflakeQueryTool(BaseTool):
         "300+ columns. CRITICAL - Use EXACT column names: TX_ID_KEY, EMAIL, MODEL_SCORE (0-1), "
         f"PAYMENT_METHOD, CARD_BRAND, {IP}, {IP_COUNTRY_CODE}, IP_CITY, {DEVICE_ID}, DEVICE_FINGERPRINT, "
         "NSURE_LAST_DECISION, DISPUTES, "
-        f"FRAUD_ALERTS, {PAID_AMOUNT_VALUE} (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
+        f"FRAUD_ALERTS, {PAID_AMOUNT_VALUE_IN_CURRENCY} (NOT GMV). NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. "
         "user investigation, payment method analysis, merchant risk assessment, and trend analysis. "
         "Supports complex queries with JOINs, aggregations, time-based filtering, and statistical analysis."
     )
@@ -113,7 +113,7 @@ class SnowflakeQueryTool(BaseTool):
             # Common mistakes -> Correct column names
             'SMART_ID': 'DEVICE_ID',
             'IS_PROXY': 'NULL AS IS_PROXY',  # Column doesn't exist
-            'GMV': PAID_AMOUNT_VALUE,
+            'GMV': PAID_AMOUNT_VALUE_IN_CURRENCY,
             'GEO_IP_COUNTRY': IP_COUNTRY_CODE,
             'GEO_IP_CITY': 'IP_CITY',
             'GEO_IP_REGION': 'IP_REGION',

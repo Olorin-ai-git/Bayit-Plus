@@ -90,7 +90,7 @@ def generate_transactions(num_records: int = 10000):
             email,  # EMAIL
             device_id,  # DEVICE_ID
             ip,  # IP
-            amount,  # PAID_AMOUNT_VALUE
+            amount,  # PAID_AMOUNT_VALUE_IN_CURRENCY
             risk_score,  # MODEL_SCORE
             is_fraud,  # IS_FRAUD_TX
             'PURCHASE',  # TX_TYPE
@@ -133,7 +133,7 @@ def insert_to_snowflake(transactions):
         insert_sql = """
         INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
         (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
-         PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
+         PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         
@@ -157,9 +157,9 @@ def insert_to_snowflake(transactions):
                 MAX(TX_DATETIME) as latest_tx,
                 AVG(MODEL_SCORE) as avg_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count,
-                AVG(PAID_AMOUNT_VALUE) as avg_amount,
-                MAX(PAID_AMOUNT_VALUE) as max_amount,
-                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as total_risk_value
+                AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount,
+                MAX(PAID_AMOUNT_VALUE_IN_CURRENCY) as max_amount,
+                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as total_risk_value
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
         """)
         
@@ -187,7 +187,7 @@ def insert_to_snowflake(transactions):
                     ELSE 'High (0.7-1.0)'
                 END as risk_level,
                 COUNT(*) as count,
-                AVG(PAID_AMOUNT_VALUE) as avg_amount
+                AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
             GROUP BY risk_level
             ORDER BY risk_level
@@ -204,9 +204,9 @@ def insert_to_snowflake(transactions):
                 SELECT 
                     EMAIL,
                     COUNT(*) as tx_count,
-                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,
+                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
                     AVG(MODEL_SCORE) as avg_risk,
-                    SUM(PAID_AMOUNT_VALUE) as total_amount,
+                    SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
                 WHERE TX_DATETIME >= DATEADD(day, -30, CURRENT_TIMESTAMP())

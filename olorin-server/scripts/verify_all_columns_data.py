@@ -100,7 +100,7 @@ class DataCompletenessVerifier:
         # Define all known columns from schema constants
         known_columns = [
             # Payment and Transaction Fields
-            PAID_AMOUNT_VALUE, PAID_AMOUNT_CURRENCY, PROCESSING_FEE_VALUE, PROCESSING_FEE_CURRENCY,
+            PAID_AMOUNT_VALUE_IN_CURRENCY, PAID_AMOUNT_CURRENCY, PROCESSING_FEE_VALUE, PROCESSING_FEE_CURRENCY,
 
             # Identity and User Fields
             TX_ID_KEY, EMAIL, EMAIL_NORMALIZED, UNIQUE_USER_ID, FIRST_NAME, LAST_NAME,
@@ -174,7 +174,7 @@ class DataCompletenessVerifier:
                             null_count = 0
                             empty_count = 0
                             distinct_count = total_mock_records
-                        elif col in ['MODEL_SCORE', 'PAID_AMOUNT_VALUE', 'IS_FRAUD_TX']:
+                        elif col in ['MODEL_SCORE', 'PAID_AMOUNT_VALUE_IN_CURRENCY', 'IS_FRAUD_TX']:
                             # Important fields - high completeness
                             null_count = 5
                             empty_count = 0

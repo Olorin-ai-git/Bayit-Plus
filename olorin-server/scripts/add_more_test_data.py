@@ -133,7 +133,7 @@ def main():
     insert_sql = """
     INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
     (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
-     PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
+     PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
@@ -149,7 +149,7 @@ def main():
             MIN(TX_DATETIME) as earliest,
             MAX(TX_DATETIME) as latest,
             AVG(MODEL_SCORE) as avg_risk,
-            SUM(PAID_AMOUNT_VALUE) as total_amount
+            SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount
         FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
     """)
     
@@ -166,7 +166,7 @@ def main():
         SELECT 
             EMAIL,
             COUNT(*) as tx_count,
-            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,
+            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
             AVG(MODEL_SCORE) as avg_risk
         FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
         WHERE TX_DATETIME >= DATEADD(day, -7, CURRENT_TIMESTAMP())

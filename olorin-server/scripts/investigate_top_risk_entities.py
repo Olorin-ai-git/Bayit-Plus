@@ -106,7 +106,7 @@ class RiskEntityInvestigator:
                     DATE_TRUNC('day', TX_DATETIME) as tx_date,
                     COUNT(*) as daily_transactions,
                     AVG(MODEL_SCORE) as avg_daily_risk,
-                    SUM(PAID_AMOUNT_VALUE) as daily_amount,
+                    SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as daily_amount,
                     MAX(MODEL_SCORE) as max_daily_risk,
                     COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                     COUNT(DISTINCT CARD_LAST4) as unique_cards,
@@ -135,7 +135,7 @@ class RiskEntityInvestigator:
                 SELECT 
                     COUNT(*) as recent_24h_txns,
                     AVG(MODEL_SCORE) as recent_24h_risk,
-                    SUM(PAID_AMOUNT_VALUE) as recent_24h_amount
+                    SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as recent_24h_amount
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
                 WHERE {entity_type} = '{entity_value}'
                     AND TX_DATETIME >= DATEADD(hour, -24, CURRENT_TIMESTAMP())

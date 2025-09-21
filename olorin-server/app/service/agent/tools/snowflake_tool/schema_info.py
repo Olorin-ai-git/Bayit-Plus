@@ -4,7 +4,7 @@ Contains the comprehensive schema mapping for the TRANSACTIONS_ENRICHED table.
 """
 
 from .schema_constants import (
-    TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE, TX_DATETIME, PAYMENT_METHOD,
+    TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD,
     CARD_BRAND, CARD_TYPE, CARD_ISSUER, IP, IP_COUNTRY_CODE, DEVICE_ID,
     USER_AGENT, DEVICE_TYPE, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
     MAXMIND_RISK_SCORE
@@ -43,10 +43,10 @@ SNOWFLAKE_SCHEMA_INFO = {
         "paypal_email": "PAYPAL_EMAIL",
         
         # Financial Data
-        "paid_amount": PAID_AMOUNT_VALUE,
+        "paid_amount": PAID_AMOUNT_VALUE_IN_CURRENCY,
         "paid_currency": "PAID_AMOUNT_CURRENCY", 
         "processing_fee": "PROCESSING_FEE_VALUE_IN_CURRENCY",
-        "paid_amount_value": PAID_AMOUNT_VALUE,
+        "paid_amount_value": PAID_AMOUNT_VALUE_IN_CURRENCY,
         
         # Location & Session Data
         "ip": "IP",
@@ -93,7 +93,7 @@ SNOWFLAKE_SCHEMA_INFO = {
     "common_queries": {
         "fraud_transactions": f"""
             SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
-                   {TX_DATETIME}, {PAID_AMOUNT_VALUE}
+                   {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
             FROM TRANSACTIONS_ENRICHED
             WHERE {IS_FRAUD_TX} = 1
             ORDER BY {TX_DATETIME} DESC
@@ -101,7 +101,7 @@ SNOWFLAKE_SCHEMA_INFO = {
         
         "high_risk_scores": f"""
             SELECT {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, {MAXMIND_RISK_SCORE},
-                   {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE}
+                   {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
             FROM TRANSACTIONS_ENRICHED
             WHERE {MODEL_SCORE} > 0.8 OR {MAXMIND_RISK_SCORE} > 80
             ORDER BY {MODEL_SCORE} DESC, {MAXMIND_RISK_SCORE} DESC
@@ -109,14 +109,14 @@ SNOWFLAKE_SCHEMA_INFO = {
         
         "disputed_transactions": f"""
             SELECT {TX_ID_KEY}, {EMAIL}, COUNT_DISPUTES, LAST_DISPUTE_STATUS,
-                   LAST_DISPUTE_REASON, {PAID_AMOUNT_VALUE}, {TX_DATETIME}
+                   LAST_DISPUTE_REASON, {PAID_AMOUNT_VALUE_IN_CURRENCY}, {TX_DATETIME}
             FROM TRANSACTIONS_ENRICHED
             WHERE COUNT_DISPUTES > 0
             ORDER BY COUNT_DISPUTES DESC, {TX_DATETIME} DESC
         """,
         
         "user_transaction_history": f"""
-            SELECT {TX_ID_KEY}, {TX_DATETIME}, {PAID_AMOUNT_VALUE}, {NSURE_LAST_DECISION},
+            SELECT {TX_ID_KEY}, {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}, {NSURE_LAST_DECISION},
                    {MODEL_SCORE}, {PAYMENT_METHOD}, {IS_FRAUD_TX}
             FROM TRANSACTIONS_ENRICHED
             WHERE {EMAIL} = '{{email}}' OR UNIQUE_USER_ID = '{{user_id}}'
@@ -128,7 +128,7 @@ SNOWFLAKE_SCHEMA_INFO = {
                    COUNT(*) as transaction_count,
                    AVG({MODEL_SCORE}) as avg_risk_score,
                    SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count,
-                   SUM({PAID_AMOUNT_VALUE}) as total_amount
+                   SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount
             FROM TRANSACTIONS_ENRICHED
             WHERE {TX_DATETIME} >= DATEADD(day, -30, CURRENT_DATE())
             GROUP BY {PAYMENT_METHOD}, {CARD_BRAND}, {CARD_ISSUER}, BIN_COUNTRY_CODE

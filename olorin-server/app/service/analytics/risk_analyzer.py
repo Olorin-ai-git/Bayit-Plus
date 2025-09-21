@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
 from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE, IP, IP_COUNTRY_CODE, MODEL_SCORE,
+    PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, MODEL_SCORE,
     IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME
 )
 
@@ -210,9 +210,9 @@ class RiskAnalyzer:
             SELECT
                 {column_name} as entity,
                 COUNT(*) as transaction_count,
-                SUM({PAID_AMOUNT_VALUE}) as total_amount,
+                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
                 AVG({MODEL_SCORE}) as avg_risk_score,
-                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE}) as risk_weighted_value,
+                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) as risk_weighted_value,
                 MAX(MODEL_SCORE) as max_risk_score,
                 MIN(MODEL_SCORE) as min_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
@@ -338,7 +338,7 @@ class RiskAnalyzer:
             query = f"""
             SELECT 
                 COUNT(*) as transaction_count,
-                SUM({PAID_AMOUNT_VALUE}) as total_amount,
+                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
                 AVG(MODEL_SCORE) as avg_risk_score,
                 MAX(MODEL_SCORE) as max_risk_score,
                 MIN(MODEL_SCORE) as min_risk_score,

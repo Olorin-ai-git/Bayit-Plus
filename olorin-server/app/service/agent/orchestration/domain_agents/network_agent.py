@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestration.state_schema import InvestigationState, add_domain_findings
 from .base import DomainAgentBase, log_agent_handover_complete, complete_chain_of_thought
-from app.service.agent.tools.snowflake_tool.schema_constants import IP, PROXY_RISK_SCORE
+from app.service.agent.tools.snowflake_tool.schema_constants import IP, MAXMIND_RISK_SCORE
 
 logger = get_bridge_logger(__name__)
 

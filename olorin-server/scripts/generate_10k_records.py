@@ -279,7 +279,7 @@ def generate_transactions(num_records: int = 10000) -> List[Tuple]:
                 tx_status,  # TX_STATUS
                 
                 # Amount fields
-                amount,  # PAID_AMOUNT_VALUE
+                amount,  # PAID_AMOUNT_VALUE_IN_CURRENCY
                 'USD',  # PAID_CURRENCY_CODE
                 amount,  # ORIGINAL_AMOUNT_VALUE
                 'USD',  # ORIGINAL_CURRENCY_CODE
@@ -424,7 +424,7 @@ def insert_to_snowflake(transactions: List[Tuple]):
         insert_sql = """
         INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED (
             TX_ID_KEY, TX_DATETIME, TX_TYPE, TX_STATUS,
-            PAID_AMOUNT_VALUE, PAID_CURRENCY_CODE, ORIGINAL_AMOUNT_VALUE, ORIGINAL_CURRENCY_CODE, EXCHANGE_RATE,
+            PAID_AMOUNT_VALUE_IN_CURRENCY, PAID_CURRENCY_CODE, ORIGINAL_AMOUNT_VALUE, ORIGINAL_CURRENCY_CODE, EXCHANGE_RATE,
             USER_ID, EMAIL, EMAIL_DOMAIN, USERNAME, FIRST_NAME, LAST_NAME, FULL_NAME, DATE_OF_BIRTH, AGE_AT_TX, GENDER,
             ACCOUNT_ID, ACCOUNT_TYPE, ACCOUNT_STATUS, ACCOUNT_CREATED_DATE, ACCOUNT_AGE_DAYS, 
             ACCOUNT_VERIFICATION_STATUS, KYC_STATUS, KYC_LEVEL,
@@ -467,8 +467,8 @@ def insert_to_snowflake(transactions: List[Tuple]):
                 MAX(TX_DATETIME) as latest_tx,
                 AVG(MODEL_SCORE) as avg_risk_score,
                 SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count,
-                AVG(PAID_AMOUNT_VALUE) as avg_amount,
-                MAX(PAID_AMOUNT_VALUE) as max_amount
+                AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount,
+                MAX(PAID_AMOUNT_VALUE_IN_CURRENCY) as max_amount
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
         """)
         
@@ -495,9 +495,9 @@ def insert_to_snowflake(transactions: List[Tuple]):
                 SELECT 
                     EMAIL,
                     COUNT(*) as tx_count,
-                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_value,
+                    SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
                     AVG(MODEL_SCORE) as avg_risk,
-                    SUM(PAID_AMOUNT_VALUE) as total_amount,
+                    SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
                 FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
                 GROUP BY EMAIL

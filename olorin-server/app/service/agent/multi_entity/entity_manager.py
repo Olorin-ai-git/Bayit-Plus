@@ -179,7 +179,7 @@ class EntityType(Enum):
     
     # Financial metrics entities
     CART_USD = "cart_usd"  # CART_USD
-    GMV = "paid_amount_value"  # PAID_AMOUNT_VALUE - Gross Merchandise Value
+    GMV = "paid_amount_value"  # PAID_AMOUNT_VALUE_IN_CURRENCY - Gross Merchandise Value
     
     # Email verification entities
     IS_EMAIL_VERIFIED_BY_THIRD_PARTY = "is_email_verified_by_third_party"  # IS_EMAIL_VERIFIED_BY_THIRD_PARTY
@@ -224,8 +224,8 @@ class EntityType(Enum):
     IS_REASSESSED_TX = "is_reassessed_tx"  # IS_REASSESSED_TX
     
     # Rule and policy entities
-    TRIGGERED_RULES = "fraud_rules_triggered"  # FRAUD_RULES_TRIGGERED
-    COUNT_TRIGGERED_RULES = "count_fraud_rules_triggered"  # COUNT_FRAUD_RULES_TRIGGERED
+    TRIGGERED_RULES = "fraud_rules_triggered"  # TRIGGERED_RULES
+    COUNT_TRIGGERED_RULES = "count_fraud_rules_triggered"  # COUNT_TRIGGERED_RULES
     RULE_DECISION = "rule_decision"  # RULE_DECISION
     RULE_DESCRIPTION = "rule_description"  # RULE_DESCRIPTION
     IS_RULE_PARTICIPATING_IN_LFS_PO = "is_rule_participating_in_lfs_po"  # IS_RULE_PARTICIPATING_IN_LFS_PO

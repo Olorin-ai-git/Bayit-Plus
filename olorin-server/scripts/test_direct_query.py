@@ -39,9 +39,9 @@ def main():
         SELECT 
             {group_by} as entity,
             COUNT(*) as transaction_count,
-            SUM(PAID_AMOUNT_VALUE) as total_amount,
+            SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
             AVG(MODEL_SCORE) as avg_risk_score,
-            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value,
+            SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_weighted_value,
             MAX(MODEL_SCORE) as max_risk_score,
             MIN(MODEL_SCORE) as min_risk_score,
             SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count,

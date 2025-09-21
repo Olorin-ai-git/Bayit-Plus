@@ -11,7 +11,7 @@ from datetime import datetime
 
 from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
-from .schema_constants import PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME
+from .schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME
 
 logger = get_bridge_logger(__name__)
 
@@ -238,9 +238,9 @@ class RealSnowflakeClient:
             SELECT 
                 {group_by} as entity,
                 COUNT(*) as transaction_count,
-                SUM({PAID_AMOUNT_VALUE}) as total_amount,
+                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
                 AVG({MODEL_SCORE}) as avg_risk_score,
-                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE}) as risk_weighted_value,
+                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) as risk_weighted_value,
                 MAX({MODEL_SCORE}) as max_risk_score,
                 SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count
             FROM {self.database}.{self.schema}.TRANSACTIONS_ENRICHED

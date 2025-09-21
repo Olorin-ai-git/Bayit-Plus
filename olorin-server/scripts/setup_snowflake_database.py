@@ -95,7 +95,7 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
             TX_STATUS VARCHAR(50),
             
             -- Amount Fields
-            PAID_AMOUNT_VALUE NUMBER(18,2),
+            PAID_AMOUNT_VALUE_IN_CURRENCY NUMBER(18,2),
             PAID_CURRENCY_CODE VARCHAR(3),
             ORIGINAL_AMOUNT_VALUE NUMBER(18,2),
             ORIGINAL_CURRENCY_CODE VARCHAR(3),
@@ -501,7 +501,7 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         sample_data_sql = """
         INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
         (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
-         PAID_AMOUNT_VALUE, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
+         PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         SELECT * FROM VALUES
         ('TX001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 5000.00, 0.95, FALSE, 'PURCHASE', 'COMPLETED'),
         ('TX002', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 3000.00, 0.88, FALSE, 'PURCHASE', 'COMPLETED'),
@@ -543,7 +543,7 @@ def test_user_access():
             SELECT 
                 EMAIL,
                 COUNT(*) as tx_count,
-                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE) as risk_weighted_value
+                SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_weighted_value
             FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
             GROUP BY EMAIL
             ORDER BY risk_weighted_value DESC
