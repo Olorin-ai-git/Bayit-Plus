@@ -54,13 +54,26 @@ File Structure Support:
 - investigation.log - General investigation logs
 """
 
-from .enhanced_html_report_generator import (
+from .enhanced_html_generator import (
     EnhancedHTMLReportGenerator,
-    InvestigationSummary,
-    ComponentData,
-    create_report_generator,
-    generate_report_for_folder
+    ReportConfig,
+    GeneratedReport
 )
+
+# For backward compatibility
+InvestigationSummary = None  # Will be loaded from data_models when needed
+ComponentData = None  # Will be loaded from data_models when needed
+
+def create_report_generator(**kwargs):
+    """Create a report generator with optional configuration."""
+    config = ReportConfig(**kwargs) if kwargs else ReportConfig()
+    return EnhancedHTMLReportGenerator(config)
+
+def generate_report_for_folder(folder_path, output_path=None, title=None, **kwargs):
+    """Generate a report for an investigation folder."""
+    from pathlib import Path
+    generator = create_report_generator(**kwargs)
+    return generator.generate_report(Path(folder_path), Path(output_path) if output_path else None, title)
 
 __all__ = [
     'EnhancedHTMLReportGenerator',
