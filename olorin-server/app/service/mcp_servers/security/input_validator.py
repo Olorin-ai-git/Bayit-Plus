@@ -363,7 +363,7 @@ class MCPInputValidator:
                 return result
             
             try:
-                ip = ipaddress.ip(value.strip())
+                ip = ipaddress.ip_address(value.strip())
                 result.sanitized_value = str(ip)
                 
                 # Security check for private/localhost addresses

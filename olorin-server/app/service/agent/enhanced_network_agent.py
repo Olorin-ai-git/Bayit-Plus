@@ -127,7 +127,7 @@ def _is_valid_ip_address(ip_str: str) -> bool:
     """Check if string is a valid IP address (not an entity ID)."""
     try:
         # Entity IDs like 'K1F6HIIGBVHH20TX' will fail this validation
-        ipaddress.ip(ip_str.strip())
+        ipaddress.ip_address(ip_str.strip())
         return True
     except (ValueError, AttributeError):
         return False

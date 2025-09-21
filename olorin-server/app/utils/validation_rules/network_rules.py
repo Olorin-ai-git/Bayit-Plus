@@ -133,7 +133,7 @@ class NetworkValidationRules:
             return False, "IP address cannot be empty", {}
         
         try:
-            ip_obj = ipaddress.ip(ip)
+            ip_obj = ipaddress.ip_address(ip)
             
             # Basic validation passed, now analyze characteristics
             ip_analysis = self._analyze_ip_address(ip_obj)
@@ -460,7 +460,7 @@ class NetworkValidationRules:
     def _is_suspicious_ip(self, ip: str) -> bool:
         """Check if IP is in suspicious network ranges"""
         try:
-            ip_obj = ipaddress.ip(ip)
+            ip_obj = ipaddress.ip_address(ip)
             
             # Check against known suspicious ranges
             for network_range in self.SUSPICIOUS_NETWORKS.get('hosting_providers', set()):

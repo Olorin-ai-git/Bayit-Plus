@@ -37,7 +37,7 @@ class VirusTotalIPAnalysisInput(BaseModel):
         """Validate IP address format."""
         import ipaddress
         try:
-            ipaddress.ip(v)
+            ipaddress.ip_address(v)
             return v
         except ValueError:
             raise ValueError(f"Invalid IP address format: {v}")

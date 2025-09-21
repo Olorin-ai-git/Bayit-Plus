@@ -55,7 +55,7 @@ class DomainAnalysisInput(BaseModel):
         
         # Check if input is an IP address and try to get email domain from Snowflake
         try:
-            ipaddress.ip(domain)
+            ipaddress.ip_address(domain)
             # It's an IP address, try to get associated email domain from Snowflake
             logger = get_bridge_logger(__name__)
             logger.info(f"IP address {domain} detected, fetching associated email domain from Snowflake")

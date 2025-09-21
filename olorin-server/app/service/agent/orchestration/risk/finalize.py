@@ -730,7 +730,7 @@ def _looks_like_ip(value: str) -> bool:
     """Check if a value looks like an IP address."""
     try:
         import ipaddress
-        ipaddress.ip(value)
+        ipaddress.ip_address(value)
         return True
     except (ipaddress.AddressValueError, ValueError):
         return False

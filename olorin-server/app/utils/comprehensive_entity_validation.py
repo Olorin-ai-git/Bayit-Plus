@@ -283,7 +283,7 @@ class ComprehensiveEntityValidator:
     def _validate_ip_address(self, value: str) -> Tuple[bool, Optional[str]]:
         """Validate IPv4 or IPv6 address"""
         try:
-            ipaddress.ip(value)
+            ipaddress.ip_address(value)
             return True, None
         except ValueError:
             return False, "Invalid IP address format"

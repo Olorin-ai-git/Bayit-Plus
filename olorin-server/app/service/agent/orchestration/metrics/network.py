@@ -41,7 +41,7 @@ def compute_network_metrics(state: Dict[str, Any]) -> None:
             if entity_id:
                 try:
                     # Validate it's a real IP address
-                    ip_obj = ipaddress.ip(entity_id)
+                    ip_obj = ipaddress.ip_address(entity_id)
                     
                     # CANONICAL: Set unique IP counts (fix inconsistency)
                     metrics["unique_ip_count"] = 1  # Always 1 for single IP investigation

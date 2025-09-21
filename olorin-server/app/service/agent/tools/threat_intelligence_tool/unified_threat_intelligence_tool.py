@@ -172,7 +172,7 @@ class UnifiedThreatIntelligenceTool(BaseTool):
         """Check if target is an IP address."""
         import ipaddress
         try:
-            ipaddress.ip(target)
+            ipaddress.ip_address(target)
             return True
         except ValueError:
             return False

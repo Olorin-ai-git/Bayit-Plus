@@ -42,7 +42,7 @@ def score_network_domain(
     """
     # Deterministic is_public computation (not provider reconciliation)
     try:
-        ip = ipaddress.ip(ip_str)
+        ip = ipaddress.ip_address(ip_str)
         is_public = not (ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_multicast)
     except (ipaddress.AddressValueError, ValueError):
         logger.warning(f"Invalid IP address: {ip_str}")

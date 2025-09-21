@@ -394,7 +394,7 @@ class ToolInputValidator:
             )
         
         try:
-            ip_obj = ipaddress.ip(ip)
+            ip_obj = ipaddress.ip_address(ip)
             
             warnings = []
             
@@ -467,7 +467,7 @@ class ToolInputValidator:
     def _is_ip_address(self, value: str) -> bool:
         """Check if value is an IP address"""
         try:
-            ipaddress.ip(value)
+            ipaddress.ip_address(value)
             return True
         except ValueError:
             return False
@@ -475,7 +475,7 @@ class ToolInputValidator:
     def _is_ipv6(self, value: str) -> bool:
         """Check if value is IPv6"""
         try:
-            ip = ipaddress.ip(value)
+            ip = ipaddress.ip_address(value)
             return isinstance(ip, ipaddress.IPv6Address)
         except ValueError:
             return False

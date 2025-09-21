@@ -1628,12 +1628,12 @@ class UnifiedAutonomousTestRunner:
                 self.logger.info("🔄 Using clean graph orchestration system...")
             start_time = time.time()
             
-            # Step 8.1.1: Mode-specific recursion limits - LIVE: 100, MOCK: 50
-            recursion_limit = 100 if self.config.mode == TestMode.LIVE else 50
+            # Step 8.1.1: Mode-specific recursion limits - LIVE: 120, MOCK: 80
+            recursion_limit = 120 if self.config.mode == TestMode.LIVE else 80
             
             self.logger.debug(f"[Step 8.1.1] 🔄 RECURSION LIMITS - Mode-specific configuration")
             self.logger.debug(f"[Step 8.1.1]   Test mode: {self.config.mode}")
-            self.logger.debug(f"[Step 8.1.1]   Recursion limit: {recursion_limit} ({'LIVE: 100' if self.config.mode == TestMode.LIVE else 'MOCK: 50'})")
+            self.logger.debug(f"[Step 8.1.1]   Recursion limit: {recursion_limit} ({'LIVE: 120' if self.config.mode == TestMode.LIVE else 'MOCK: 80'})")
             self.logger.debug(f"[Step 8.1.1]   Rationale: {'Complex investigations need higher limits' if self.config.mode == TestMode.LIVE else 'Test mode uses conservative limits'}")
             self.logger.debug(f"[Step 8.1.1]   Graph config: recursion_limit={recursion_limit}")
             

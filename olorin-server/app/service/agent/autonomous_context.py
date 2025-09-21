@@ -709,7 +709,7 @@ Key principles:
         # Validate IP address format
         import ipaddress
         try:
-            ipaddress.ip(ip_str)
+            ipaddress.ip_address(ip_str)
             return True
         except ValueError:
             return False

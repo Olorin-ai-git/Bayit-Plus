@@ -277,8 +277,8 @@ IMPORTANT: While following the standard investigation process, give special atte
                            {PAID_AMOUNT_VALUE},
                            {IP},
                            {IP_COUNTRY_CODE},
-                           {DEVICE_ID}, DEVICE_FINGERPRINT,
-                           {USER_AGENT}, {DEVICE_TYPE},
+                           {DEVICE_ID}, {DEVICE_TYPE},
+                           {USER_AGENT},
                            {TX_DATETIME}
                            FROM TRANSACTIONS_ENRICHED
                            WHERE {where_field} = '{entity_id}'
@@ -1455,7 +1455,8 @@ async def orchestrator_node(state: InvestigationState) -> Dict[str, Any]:
     logger.debug(f"[Step 3.1.1] Test mode detection: {'TEST_MODE=mock' if is_test_mode else 'LIVE mode'}")
     
     # CRITICAL SAFETY CHECK: Prevent runaway orchestrator execution
-    max_orchestrator_executions = 8 if is_test_mode else 15  # Conservative limits
+    # ALIGNED with routing limits: routing allows 45/55, orchestrator allows 40/50 (safety margin)
+    max_orchestrator_executions = 40 if is_test_mode else 50  # Aligned with routing safety limits
     
     logger.debug(f"[SAFETY-CHECK-1] 🔒 ORCHESTRATOR LOOP SAFETY CHECK")
     logger.debug(f"[SAFETY-CHECK-1]   Current orchestrator loops: {orchestrator_loops}")

@@ -106,7 +106,7 @@ async def check_ip_reputation(
         # Simulate basic IP validation
         import ipaddress
         try:
-            ip = ipaddress.ip(ip)
+            ip = ipaddress.ip_address(ip)
             if ip.is_private:
                 reputation_data["reputation_level"] = ReputationLevel.CLEAN
                 reputation_data["risk_score"] = 0.1

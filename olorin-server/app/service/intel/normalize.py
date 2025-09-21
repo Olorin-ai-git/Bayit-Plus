@@ -41,7 +41,7 @@ def normalize_abuseipdb(payload: Dict[str, Any]) -> Dict[str, Any]:
         
         # Check actual IP classification vs reported
         try:
-            ip_obj = ipaddress.ip(ip_str)
+            ip_obj = ipaddress.ip_address(ip_str)
             actual_is_public = not ip_obj.is_private
             
             # Get reported classification

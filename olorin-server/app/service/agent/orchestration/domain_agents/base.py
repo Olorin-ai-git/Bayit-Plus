@@ -254,10 +254,13 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
     # Get metrics and facts for domain scoring
     metrics = findings.get('metrics', {})
     facts = {}
-    
+
+    # CRITICAL FIX: Define evidence outside conditional blocks to prevent UnboundLocalError
+    evidence = findings.get('evidence', [])
+
     # CRITICAL: DO NOT pass MODEL_SCORE or IS_FRAUD_TX to domain scorers
     # This prevents the cross-domain pollution that causes narrative/score mismatches
-    
+
     # Use validated domain scorers
     risk_score = None
     domain_result = None
@@ -271,56 +274,53 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
             "total_transaction_count": metrics.get('transaction_count', 0)
         }
         domain_result = score_logs_domain(logs_metrics, facts)
-        
+
     elif domain == 'network':
         # Use network scorer with signal requirements
-        evidence = findings.get('evidence', [])
-        
+
         # Extract network-specific signals
         ti_hits = []
         if any('abuse' in str(e).lower() for e in evidence):
             ti_hits.append({"provider": "AbuseIPDB", "confidence": 75})
-            
+
         proxy_vpn = any('vpn' in str(e).lower() or 'proxy' in str(e).lower() for e in evidence)
         tor_detected = any('tor' in str(e).lower() for e in evidence)
         asn_risk = any('high-risk' in str(e).lower() and 'asn' in str(e).lower() for e in evidence)
         geo_anomaly = any('geo' in str(e).lower() and ('anomaly' in str(e).lower() or 'suspicious' in str(e).lower()) for e in evidence)
-        
+
         # Get IP from entity_id or fallback
         ip_str = findings.get('entity_id', '127.0.0.1')
-        
+
         domain_result = score_network_domain(ti_hits, proxy_vpn, tor_detected, asn_risk, geo_anomaly, ip_str)
-        
+
     elif domain == 'device':
         # Fallback to deterministic scoring for device domain (not implemented in new scorers yet)
         from .deterministic_scoring import compute_device_risk
-        
+
         device_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         fingerprint_anomaly = any('fingerprint' in str(e).lower() and 'anomaly' in str(e).lower() for e in evidence)
         browser_spoofing = any('spoofing' in str(e).lower() for e in evidence)
         device_velocity = metrics.get('unique_device_count', 1)
-        
+
         # CRITICAL: Pass None for model_score to prevent pollution
         risk_score = compute_device_risk(device_consistency, fingerprint_anomaly, browser_spoofing, device_velocity, "MINIMAL", None)
-        
+
     elif domain == 'location':
         # Fallback to deterministic scoring for location domain
         from .deterministic_scoring import compute_location_risk
-        
-        evidence = findings.get('evidence', [])
+
         impossible_travel = any('impossible travel' in str(e).lower() for e in evidence)
         travel_confidence = 0.8 if impossible_travel else 0.0
         location_consistency = not any('inconsistent' in str(e).lower() for e in evidence)
         high_risk_country = any('high-risk' in str(e).lower() and 'country' in str(e).lower() for e in evidence)
-        
+
         # CRITICAL: Pass None for model_score to prevent pollution
         risk_score = compute_location_risk(impossible_travel, travel_confidence, location_consistency, high_risk_country, "MINIMAL", None)
-        
+
     elif domain == 'authentication':
         # Fallback to deterministic scoring for authentication domain
         from .deterministic_scoring import compute_authentication_risk
-        
-        evidence = findings.get('evidence', [])
+
         failed_attempts = metrics.get('max_login_attempts', 0)
         mfa_bypass = any('mfa bypass' in str(e).lower() for e in evidence)
         credential_stuffing = any('credential stuffing' in str(e).lower() for e in evidence)

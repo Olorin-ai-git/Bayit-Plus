@@ -429,7 +429,7 @@ class SecurityValidationRules:
     def _assess_ip_reputation(self, ip: str) -> Dict[str, Any]:
         """Assess IP address reputation and risk"""
         try:
-            ip_obj = ipaddress.ip(ip)
+            ip_obj = ipaddress.ip_address(ip)
             reasons = []
             risk_score = 0.0
             

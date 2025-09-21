@@ -237,7 +237,7 @@ class ToolParameterMapper:
                 if re.match(pattern, value):
                     return False
             
-            ipaddress.ip(value.strip())
+            ipaddress.ip_address(value.strip())
             return True
         except (ValueError, AttributeError):
             return False

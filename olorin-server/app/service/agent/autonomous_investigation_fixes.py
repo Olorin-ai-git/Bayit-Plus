@@ -265,7 +265,7 @@ class InvestigationFixesManager:
             return False
             
         try:
-            ipaddress.ip(ip_string.strip())
+            ipaddress.ip_address(ip_string.strip())
             return True
         except ValueError:
             return False

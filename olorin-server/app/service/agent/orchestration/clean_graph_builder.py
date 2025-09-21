@@ -490,7 +490,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
     logger.debug(f"[Step 7.1.1]   Base orchestrator loops: {base_orchestrator_loops}")
     logger.debug(f"[Step 7.1.1]   Predicted orchestrator loops: {orchestrator_loops}")
     logger.debug(f"[Step 7.1.1]   Loop prevention status: {'ACTIVE' if orchestrator_loops < max_loops else 'TRIGGERED'}")
-    logger.debug(f"[Step 7.1.1]   LangGraph recursion limit: {50 if is_test_mode else 60} (safely above routing limits)")
+    logger.debug(f"[Step 7.1.1]   LangGraph recursion limit: {70 if is_test_mode else 90} (safely above routing limits)")
     
     logger.info(f"🔀 Routing from orchestrator (actual loop {orchestrator_loops}/{max_loops})")
     logger.debug(f"🔀 ROUTING DEBUG - Loop count analysis:")
@@ -1055,14 +1055,14 @@ async def run_investigation(
     # Check if we're in TEST_MODE or live environment
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
     
-    # CRITICAL FIX: Align recursion limits with routing logic to prevent premature termination
-    recursion_limit = 50 if is_test_mode else 60  # Allow sufficient loops for domain analysis
+    # CRITICAL FIX: Set recursion limits well above orchestrator limits (45/55) to prevent premature termination
+    recursion_limit = 70 if is_test_mode else 90  # Allow sufficient loops for orchestrator (45/55) + domain agents
     timeout = 60.0 if is_test_mode else 180.0  # Reasonable timeouts: 1-3 minutes max
     
     logger.debug(f"[Step 8.2.1] ⏱️ TIMEOUT MANAGEMENT - Investigation timeout configuration")
     logger.debug(f"[Step 8.2.1]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
     logger.debug(f"[Step 8.2.1]   Investigation timeout: {timeout}s ({'TEST: 60s' if is_test_mode else 'LIVE: 180s'})")
-    logger.debug(f"[Step 8.2.1]   Recursion limit: {recursion_limit} ({'TEST: 50' if is_test_mode else 'LIVE: 60'})")
+    logger.debug(f"[Step 8.2.1]   Recursion limit: {recursion_limit} ({'TEST: 70' if is_test_mode else 'LIVE: 90'})")
     logger.debug(f"[Step 8.2.1]   Timeout rationale: {'Quick tests need short timeouts' if is_test_mode else 'Complex investigations need longer timeouts'}")
     logger.debug(f"[Step 8.2.1]   Deadlock detection: Will warn at {timeout * 0.8}s (80% of timeout)")
     

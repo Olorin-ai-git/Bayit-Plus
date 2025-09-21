@@ -50,7 +50,7 @@ class InfrastructureAnalysisInput(BaseModel):
                 raise ValueError(f"Entity ID detected where IP address expected: {v}. Please extract actual IP addresses from the investigation context data sources.")
         
         try:
-            ipaddress.ip(v)
+            ipaddress.ip_address(v)
             return v
         except ValueError:
             raise ValueError(f"Invalid IP address format: {v}. Expected IPv4 (e.g., 192.168.1.1) or IPv6 (e.g., 2001:db8::1) address.")

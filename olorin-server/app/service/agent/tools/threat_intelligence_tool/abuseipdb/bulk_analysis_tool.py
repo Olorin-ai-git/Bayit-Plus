@@ -53,7 +53,7 @@ class BulkIPAnalysisInput(BaseModel):
         import ipaddress
         for ip in ips:
             try:
-                ipaddress.ip(ip)
+                ipaddress.ip_address(ip)
             except ValueError:
                 raise ValueError(f"Invalid IP address format: {ip}")
         
