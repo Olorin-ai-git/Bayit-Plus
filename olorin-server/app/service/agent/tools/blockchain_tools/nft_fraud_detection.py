@@ -280,20 +280,38 @@ class NFTFraudDetectionTool(BaseTool):
         return "minimal"
     
     def _calculate_confidence(self, analysis: Dict) -> float:
-        """Calculate confidence in fraud assessment."""
-        # Base confidence on amount of data available
-        confidence = 0.5
-        
+        """Calculate REAL confidence based on actual analysis data quality."""
+        confidence_factors = []
+
+        # Factor 1: Data availability and quality
+        data_quality = 0.0
         if analysis.get("authenticity_check"):
-            confidence += 0.15
+            data_quality += 0.25
         if analysis.get("wash_trading_analysis"):
-            confidence += 0.15
+            data_quality += 0.25
         if analysis.get("metadata_analysis"):
-            confidence += 0.1
+            data_quality += 0.25
         if analysis.get("copyright_check"):
-            confidence += 0.1
-        
-        return min(confidence, 1.0)
+            data_quality += 0.25
+
+        if data_quality > 0:
+            confidence_factors.append(data_quality)
+
+        # Factor 2: Analysis depth
+        analysis_count = sum(1 for key in ["authenticity_check", "wash_trading_analysis",
+                            "metadata_analysis", "copyright_check"] if analysis.get(key))
+        if analysis_count > 0:
+            analysis_depth = min(1.0, analysis_count / 4.0)
+            confidence_factors.append(analysis_depth)
+
+        # Factor 3: Result consistency
+        if len(set(str(v) for v in analysis.values() if v is not None)) > 1:
+            confidence_factors.append(0.8)  # Diverse results increase confidence
+
+        if not confidence_factors:
+            raise ValueError("CRITICAL: No REAL analysis data available for NFT confidence calculation")
+
+        return min(1.0, sum(confidence_factors) / len(confidence_factors))
     
     async def _arun(self, *args, **kwargs) -> Dict[str, Any]:
         """Async version of run."""

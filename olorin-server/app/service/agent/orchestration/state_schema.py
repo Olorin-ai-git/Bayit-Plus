@@ -430,7 +430,7 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     domain_findings = state.get("domain_findings", {})
     
     if not domain_findings:
-        return 0.5  # Default medium risk if no findings
+        raise ValueError("CRITICAL: No domain findings available - cannot calculate risk score without REAL data")
     
     # Collect MODEL_SCORES from new evidence-based format
     model_scores = []

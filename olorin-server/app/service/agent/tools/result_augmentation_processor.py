@@ -147,14 +147,8 @@ async def _create_default_recommendations() -> List[NextStepRecommendation]:
 
 
 def _create_default_confidence() -> ConfidenceScore:
-    """Create default confidence when assessment fails"""
-    return ConfidenceScore(
-        overall_confidence=0.5,
-        knowledge_coverage=0.0,
-        pattern_match_confidence=0.5,
-        interpretation_reliability=0.5,
-        recommendation_quality=0.5
-    )
+    """Create MINIMAL confidence when assessment fails - NO HARDCODED VALUES"""
+    raise ValueError("CRITICAL: Cannot create default confidence - assessment must be based on REAL data only")
 
 
 async def _create_default_threat_correlation() -> ThreatCorrelation:

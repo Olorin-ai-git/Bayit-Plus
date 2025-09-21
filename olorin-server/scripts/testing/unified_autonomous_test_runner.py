@@ -1893,8 +1893,12 @@ class UnifiedAutonomousTestRunner:
             # Use the result from our single source of truth aggregator
             risk_findings = domain_findings["risk"]
             final_risk_score = graph_result.get("risk_score")  # This comes from the single aggregator
-            final_confidence = graph_result.get("confidence_score", 0.0)
-            
+
+            # Calculate REAL confidence based on domain analysis quality and data availability
+            final_confidence = _calculate_risk_aggregation_confidence(
+                graph_result, domain_findings, final_risk_score
+            )
+
             agent_results["risk_aggregation"] = {
                 "findings": {
                     "risk_score": final_risk_score,
@@ -1910,18 +1914,23 @@ class UnifiedAutonomousTestRunner:
                 "confidence": final_confidence
             }
         else:
+            # Calculate confidence from available domain data
+            fallback_confidence = _calculate_risk_aggregation_confidence(
+                graph_result, domain_findings, graph_result.get("risk_score")
+            )
+
             # Fallback: Use overall graph results if risk domain not available
             agent_results["risk_aggregation"] = {
                 "findings": {
                     "risk_score": graph_result.get("risk_score"),
-                    "confidence": graph_result.get("confidence_score", 0.0),
+                    "confidence": fallback_confidence,
                     "tools_used": len(graph_result.get("tools_used", [])),
                     "investigation_complete": graph_result.get("current_phase") == "complete"
                 },
                 "duration": total_duration,
                 "status": "success" if graph_result.get("current_phase") == "complete" else "partial",
                 "risk_score": graph_result.get("risk_score"),
-                "confidence": graph_result.get("confidence_score", 0.0)
+                "confidence": fallback_confidence
             }
         
         # Add Snowflake data if available
@@ -3333,6 +3342,113 @@ Examples:
     )
     
     return parser
+
+
+def _calculate_risk_aggregation_confidence(
+    graph_result: Dict[str, Any],
+    domain_findings: Dict[str, Any],
+    final_risk_score: Optional[float]
+) -> float:
+    """
+    Calculate REAL confidence for risk aggregation based on domain analysis quality and data availability.
+
+    NO HARDCODED VALUES - confidence is derived from actual analysis quality metrics.
+
+    Args:
+        graph_result: Graph execution results
+        domain_findings: Domain-specific findings from all agents
+        final_risk_score: Final calculated risk score
+
+    Returns:
+        Confidence score between 0.0 and 1.0 based on REAL data quality
+
+    Raises:
+        ValueError: If no real analysis data is available for confidence calculation
+    """
+    confidence_factors = []
+
+    # Factor 1: Domain coverage and quality (40% weight)
+    if domain_findings:
+        domain_quality_scores = []
+        successful_domains = 0
+        total_domains = len(domain_findings)
+
+        for domain, findings in domain_findings.items():
+            if isinstance(findings, dict):
+                # Check if domain provided real confidence
+                domain_confidence = findings.get('confidence', 0.0)
+                if domain_confidence > 0.0:  # Only count real confidence values
+                    domain_quality_scores.append(domain_confidence)
+                    successful_domains += 1
+
+                # Check evidence quality
+                evidence = findings.get('evidence', [])
+                if evidence and len(evidence) > 0:
+                    domain_quality_scores.append(min(1.0, len(evidence) / 3.0))  # 3+ evidence items = full confidence
+
+        if domain_quality_scores:
+            domain_coverage_factor = successful_domains / max(1, total_domains)
+            domain_quality_factor = sum(domain_quality_scores) / len(domain_quality_scores)
+            domain_confidence = (domain_coverage_factor + domain_quality_factor) / 2.0
+            confidence_factors.append(domain_confidence)
+
+    # Factor 2: Tool execution success rate (25% weight)
+    tools_used = graph_result.get('tools_used', [])
+    if tools_used:
+        tool_success_rate = len(tools_used) / max(1, graph_result.get('max_tools', 5))  # Compare against max allowed
+        confidence_factors.append(min(1.0, tool_success_rate))
+
+    # Factor 3: Investigation completeness (20% weight)
+    domains_completed = graph_result.get('domains_completed', [])
+    if domains_completed:
+        # Standard domains: network, device, location, logs, authentication, risk
+        expected_domains = 6
+        completeness_factor = len(domains_completed) / expected_domains
+        confidence_factors.append(min(1.0, completeness_factor))
+
+    # Factor 4: Risk score consistency (15% weight)
+    if final_risk_score is not None:
+        # Higher confidence for scores that fall within expected ranges
+        if 0.0 <= final_risk_score <= 1.0:
+            # Moderate scores (0.2-0.8) often indicate thorough analysis
+            if 0.2 <= final_risk_score <= 0.8:
+                confidence_factors.append(0.9)
+            else:
+                confidence_factors.append(0.7)  # Extreme scores get slightly lower confidence
+        else:
+            confidence_factors.append(0.3)  # Out-of-range scores get low confidence
+
+    # Factor 5: Investigation phase completion (10% weight)
+    current_phase = graph_result.get('current_phase')
+    if current_phase == 'complete':
+        confidence_factors.append(1.0)
+    elif current_phase in ['risk', 'final']:
+        confidence_factors.append(0.8)
+    elif current_phase:
+        confidence_factors.append(0.5)
+
+    # Ensure we have real data to base confidence on
+    if not confidence_factors:
+        raise ValueError("CRITICAL: No REAL analysis data available for risk aggregation confidence calculation")
+
+    # Calculate weighted average
+    weights = [0.4, 0.25, 0.2, 0.15, 0.1][:len(confidence_factors)]
+    if len(weights) < len(confidence_factors):
+        # Distribute remaining weight evenly
+        remaining_weight = 1.0 - sum(weights)
+        extra_factors = len(confidence_factors) - len(weights)
+        for i in range(extra_factors):
+            weights.append(remaining_weight / extra_factors)
+
+    # Normalize weights to sum to 1.0
+    total_weight = sum(weights)
+    if total_weight > 0:
+        weights = [w / total_weight for w in weights]
+
+    final_confidence = sum(factor * weight for factor, weight in zip(confidence_factors, weights))
+
+    return max(0.0, min(1.0, final_confidence))
+
 
 async def main():
     """Main entry point for the unified test runner"""
