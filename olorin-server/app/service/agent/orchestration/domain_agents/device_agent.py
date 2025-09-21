@@ -123,16 +123,32 @@ async def device_agent_node(state: InvestigationState, config: Optional[Dict] = 
 def _analyze_device_id_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze device ID patterns for spoofing indicators."""
     device_ids = set(r.get("DEVICE_ID") for r in results if r.get("DEVICE_ID"))
-    
-    findings["metrics"]["unique_device_count"] = len(device_ids)
-    findings["metrics"]["total_transactions"] = len(results)
-    findings["evidence"].append(f"Unique devices: {len(device_ids)} across {len(results)} transactions")
-    
-    if len(device_ids) > 5:
-        findings["risk_indicators"].append(f"Multiple device IDs detected: {len(device_ids)}")
-        findings["evidence"].append(f"SUSPICIOUS: {len(device_ids)} different devices used")
-    
-    findings["analysis"]["unique_devices"] = len(device_ids)
+
+    # CRITICAL FIX: Handle NULL device data properly
+    if not device_ids and results:
+        # All device IDs are NULL - this means "unknown", not "zero"
+        findings["metrics"]["unique_device_count"] = None  # Unknown, not zero
+        findings["metrics"]["total_transactions"] = len(results)
+        findings["evidence"].append(f"Device ID data not available (NULL values) across {len(results)} transactions")
+        findings["evidence"].append("LIMITATION: Cannot analyze device patterns without device ID data")
+        findings["analysis"]["unique_devices"] = "unknown"  # Unknown, not zero
+    elif not results:
+        # No results at all
+        findings["metrics"]["unique_device_count"] = None
+        findings["metrics"]["total_transactions"] = 0
+        findings["evidence"].append("No transaction data available for device analysis")
+        findings["analysis"]["unique_devices"] = "unknown"
+    else:
+        # We have actual device data to analyze
+        findings["metrics"]["unique_device_count"] = len(device_ids)
+        findings["metrics"]["total_transactions"] = len(results)
+        findings["evidence"].append(f"Unique devices: {len(device_ids)} across {len(results)} transactions")
+
+        if len(device_ids) > 5:
+            findings["risk_indicators"].append(f"Multiple device IDs detected: {len(device_ids)}")
+            findings["evidence"].append(f"SUSPICIOUS: {len(device_ids)} different devices used")
+
+        findings["analysis"]["unique_devices"] = len(device_ids)
 
 
 def _analyze_user_agent_patterns(results: list, findings: Dict[str, Any]) -> None:
@@ -193,15 +209,16 @@ def _analyze_browser_os_patterns(results: list, findings: Dict[str, Any]) -> Non
     has_user_agent = any(r.get("USER_AGENT") for r in results)
     has_device_fields = any(r.get("DEVICE_MODEL") for r in results) or any(r.get("DEVICE_OS_VERSION") for r in results)
 
-    findings["analysis"]["unique_browsers"] = len(browsers)
-    findings["analysis"]["unique_os"] = len(os_names)
-    findings["analysis"]["unique_device_models"] = len(device_models)
-    findings["analysis"]["unique_os_versions"] = len(device_os_versions)
+    # CRITICAL FIX: Handle NULL browser/OS data properly - use "unknown" instead of zero counts
+    findings["analysis"]["unique_browsers"] = len(browsers) if browsers else "unknown"
+    findings["analysis"]["unique_os"] = len(os_names) if os_names else "unknown"
+    findings["analysis"]["unique_device_models"] = len(device_models) if device_models else "unknown"
+    findings["analysis"]["unique_os_versions"] = len(device_os_versions) if device_os_versions else "unknown"
 
-    findings["metrics"]["unique_browsers"] = len(browsers)
-    findings["metrics"]["unique_os"] = len(os_names)
-    findings["metrics"]["unique_device_models"] = len(device_models)
-    findings["metrics"]["unique_os_versions"] = len(device_os_versions)
+    findings["metrics"]["unique_browsers"] = len(browsers) if browsers else None
+    findings["metrics"]["unique_os"] = len(os_names) if os_names else None
+    findings["metrics"]["unique_device_models"] = len(device_models) if device_models else None
+    findings["metrics"]["unique_os_versions"] = len(device_os_versions) if device_os_versions else None
 
     if not has_user_agent and not has_parsed_ua and not has_device_fields:
         # No device data available at all

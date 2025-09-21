@@ -67,6 +67,11 @@ class SummaryNodes:
             if consolidated_confidence.data_quality_issues:
                 logger.warning(f"   Data quality issues detected: {len(consolidated_confidence.data_quality_issues)}")
             
+            # CRITICAL FIX: Apply evidence gating before risk finalization
+            from app.service.agent.orchestration.risk.evidence_gating import apply_evidence_gating
+            apply_evidence_gating(state)
+            logger.info(f"✅ Evidence gating applied: strength={fmt_num(state.get('evidence_strength', 0.0), 3)}")
+
             # Finalize risk score using uniform computation
             finalize_risk(state)
             logger.info(f"✅ Risk score finalized: {fmt_num(state.get('risk_score', 0.0), 2)}")

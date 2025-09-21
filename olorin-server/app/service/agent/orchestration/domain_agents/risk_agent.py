@@ -74,10 +74,56 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         )
         
         # Calculate REAL risk score from domain findings
-        real_risk_score = _calculate_real_risk_score(domain_findings, facts)
+        try:
+            real_risk_score = _calculate_real_risk_score(domain_findings, facts)
+        except ValueError as e:
+            logger.error(f"❌ Risk score calculation failed: {e}")
+            # Investigation cannot continue with numeric scoring - return error state
+            error_risk_findings = {
+                "domain": "risk",
+                "name": "risk",
+                "score": None,  # No score available
+                "risk_score": None,  # No valid risk score
+                "status": "INSUFFICIENT_DATA",
+                "signals": [],
+                "confidence": None,  # No confidence available
+                "narrative": f"Risk calculation failed due to insufficient REAL data: {str(e)}",
+                "provenance": ["risk_agent:insufficient_data"],
+                "risk_indicators": [f"Insufficient data: {str(e)}"],
+                "evidence": ["Investigation cannot produce valid numeric risk score due to insufficient REAL data"],
+                "metrics": {},
+                "analysis": {
+                    "error_type": "insufficient_real_data",
+                    "error_message": str(e)
+                }
+            }
+            return add_domain_findings(state, "risk", error_risk_findings)
 
         # Calculate REAL confidence from domain analysis quality
-        real_confidence = _calculate_real_confidence(domain_findings, tools_used, state)
+        try:
+            real_confidence = _calculate_real_confidence(domain_findings, tools_used, state)
+        except ValueError as e:
+            logger.error(f"❌ Confidence calculation failed: {e}")
+            # Investigation cannot continue with confidence scoring - return error state
+            error_risk_findings = {
+                "domain": "risk",
+                "name": "risk",
+                "score": real_risk_score,  # Keep risk score if available
+                "risk_score": real_risk_score,
+                "status": "INSUFFICIENT_CONFIDENCE_DATA",
+                "signals": [],
+                "confidence": None,  # No confidence available
+                "narrative": f"Confidence calculation failed due to insufficient REAL data: {str(e)}",
+                "provenance": ["risk_agent:insufficient_confidence_data"],
+                "risk_indicators": [f"Insufficient confidence data: {str(e)}"],
+                "evidence": ["Investigation cannot produce valid confidence score due to insufficient REAL data"],
+                "metrics": {},
+                "analysis": {
+                    "error_type": "insufficient_real_confidence_data",
+                    "error_message": str(e)
+                }
+            }
+            return add_domain_findings(state, "risk", error_risk_findings)
 
         # Initialize risk findings with REAL calculated values
         risk_findings = {
@@ -343,17 +389,22 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
                 weighted_scores.append((score, weight))
 
     if not weighted_scores:
-        # No valid domain scores - use transaction data
+        # No valid domain scores - use transaction data as fallback
         model_scores = []
         if isinstance(facts, dict) and "results" in facts:
             for result in facts["results"]:
                 if isinstance(result, dict) and "MODEL_SCORE" in result:
-                    model_scores.append(result["MODEL_SCORE"])
+                    model_score = result["MODEL_SCORE"]
+                    if model_score is not None:
+                        model_scores.append(model_score)
 
         if model_scores:
-            return sum(model_scores) / len(model_scores)
+            avg_model_score = sum(model_scores) / len(model_scores)
+            logger.warning(f"⚠️ No domain scores available, using model score fallback: {avg_model_score:.3f}")
+            return avg_model_score
         else:
-            raise ValueError("CRITICAL: No REAL data available for risk calculation - all values must be REAL")
+            # No valid data available - investigation should not continue with numeric scoring
+            raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
 
     # Calculate weighted average of domain scores
     total_weight = sum(weight for _, weight in weighted_scores)
@@ -377,10 +428,16 @@ def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List
         if isinstance(findings, dict):
             # Use LLM confidence if available (higher priority)
             llm_analysis = findings.get("llm_analysis", {})
-            if "confidence" in llm_analysis:
-                domain_confidences.append(llm_analysis["confidence"])
-            elif "confidence" in findings:
-                domain_confidences.append(findings["confidence"])
+            confidence_value = None
+
+            if "confidence" in llm_analysis and llm_analysis["confidence"] is not None:
+                confidence_value = llm_analysis["confidence"]
+            elif "confidence" in findings and findings["confidence"] is not None:
+                confidence_value = findings["confidence"]
+
+            # Only add non-None confidence values
+            if confidence_value is not None:
+                domain_confidences.append(confidence_value)
 
             # Count evidence points
             evidence_count = len(findings.get("evidence", []))
@@ -425,7 +482,7 @@ def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List
         confidence_factors.append(evidence_confidence)
 
     if not confidence_factors:
-        raise ValueError("CRITICAL: No REAL data available for confidence calculation - all values must be REAL")
+        raise ValueError("CRITICAL: No REAL confidence factors available - investigation cannot produce valid confidence score")
 
     # Calculate weighted average with emphasis on domain quality
     if len(confidence_factors) >= 2:

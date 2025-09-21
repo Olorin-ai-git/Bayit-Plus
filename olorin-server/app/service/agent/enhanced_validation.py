@@ -580,29 +580,36 @@ class EnhancedInvestigationValidator:
         agent_results: Dict[str, Any]
     ) -> str:
         """Create prompt for LLM verification."""
+        # Safely extract risk scores with fallbacks
+        initial_risk = self._extract_initial_risk(initial_context)
+        final_risk = self._extract_final_risk(investigation_result, agent_results)
+
+        initial_risk_str = f"{initial_risk:.2f}" if initial_risk is not None else "N/A"
+        final_risk_str = f"{final_risk:.2f}" if final_risk is not None else "N/A"
+
         prompt = f"""
         Verify the quality and consistency of this fraud investigation:
-        
+
         Initial Context:
         - Entity: {initial_context.get('entity_id')} ({initial_context.get('entity_type')})
-        - Initial Risk Score: {self._extract_initial_risk(initial_context):.2f}
-        
+        - Initial Risk Score: {initial_risk_str}
+
         Investigation Results:
-        - Final Risk Score: {self._extract_final_risk(investigation_result, agent_results):.2f}
+        - Final Risk Score: {final_risk_str}
         - Domains Analyzed: {investigation_result.get('domains_completed', [])}
         - Tools Used: {len(investigation_result.get('tools_used', []))}
-        
+
         Agent Findings Summary:
         {self._summarize_agent_findings(agent_results)}
-        
+
         Please evaluate:
         1. Are the findings consistent with the risk assessment?
         2. Is there sufficient evidence to support the conclusion?
         3. Are there any red flags or inconsistencies?
-        
+
         Provide a confidence score (0.0-1.0) for the investigation quality.
         """
-        
+
         return prompt
     
     def _summarize_agent_findings(self, agent_results: Dict[str, Any]) -> str:

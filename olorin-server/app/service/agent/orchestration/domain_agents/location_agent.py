@@ -110,38 +110,136 @@ async def location_agent_node(state: InvestigationState, config: Optional[Dict] 
 
 
 def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
-    """Analyze transaction locations for impossible travel patterns."""
+    """Analyze transaction locations for impossible travel patterns with speed calculations."""
+    from datetime import datetime
+    import math
+
     locations_by_time = []
-    
+
     for r in results:
         # IP_CITY is not available in schema, fallback to using country only
         if r.get("TX_DATETIME") and r.get(IP_COUNTRY_CODE):
+            # Parse datetime
+            tx_time = r["TX_DATETIME"]
+            if isinstance(tx_time, str):
+                try:
+                    tx_time = datetime.fromisoformat(tx_time.replace('Z', '+00:00'))
+                except ValueError:
+                    continue
+
             locations_by_time.append({
-                "time": r["TX_DATETIME"],
-                "city": None,  # IP_CITY not available in schema
-                "country": r.get(IP_COUNTRY_CODE)
+                "time": tx_time,
+                "country": r.get(IP_COUNTRY_CODE),
+                "raw_datetime": r["TX_DATETIME"]
             })
-    
+
     if len(locations_by_time) < 2:
+        findings["evidence"].append("Insufficient location data for impossible travel analysis")
         return
-    
+
     # Sort by time and check for impossible travel
     locations_by_time.sort(key=lambda x: x["time"])
-    findings["metrics"]["location_changes"] = len(set(loc["city"] for loc in locations_by_time))
-    
+    unique_countries = len(set(loc["country"] for loc in locations_by_time if loc["country"]))
+    findings["metrics"]["unique_countries"] = unique_countries
+    findings["metrics"]["location_changes"] = unique_countries
+
+    # Country coordinates for distance calculation (approximate capital city coords)
+    country_coords = {
+        'US': (39.8283, -98.5795),  # United States
+        'GB': (55.3781, -3.4360),   # United Kingdom
+        'IN': (20.5937, 78.9629),   # India
+        'RU': (61.5240, 105.3188),  # Russia
+        'JP': (36.2048, 138.2529),  # Japan
+        'CN': (35.8617, 104.1954),  # China
+        'DE': (51.1657, 10.4515),   # Germany
+        'FR': (46.6034, 1.8883),    # France
+        'CA': (56.1304, -106.3468), # Canada
+        'AU': (-25.2744, 133.7751), # Australia
+        'BR': (-14.2350, -51.9253), # Brazil
+        'MX': (23.6345, -102.5528), # Mexico
+    }
+
+    impossible_travels = []
+    max_speed_required = 0
+
     for i in range(1, len(locations_by_time)):
         prev_loc = locations_by_time[i-1]
         curr_loc = locations_by_time[i]
-        
-        # Simple check: different countries within short timeframe
+
+        # Skip if same country or missing country data
+        if not prev_loc["country"] or not curr_loc["country"]:
+            continue
+
         if prev_loc["country"] != curr_loc["country"]:
-            findings["risk_indicators"].append("Possible impossible travel detected")
-            findings["risk_score"] = max(findings["risk_score"], 0.4)
-            findings["evidence"].append(
-                f"SUSPICIOUS: Travel detected from {prev_loc['city']}, {prev_loc['country']} "
-                f"to {curr_loc['city']}, {curr_loc['country']}"
-            )
-            break
+            # Calculate time difference
+            time_diff = curr_loc["time"] - prev_loc["time"]
+            hours = time_diff.total_seconds() / 3600
+            minutes = time_diff.total_seconds() / 60
+
+            # Get coordinates for distance calculation
+            prev_coords = country_coords.get(prev_loc["country"])
+            curr_coords = country_coords.get(curr_loc["country"])
+
+            if prev_coords and curr_coords and hours > 0:
+                # Calculate great circle distance using haversine formula
+                lat1, lon1 = math.radians(prev_coords[0]), math.radians(prev_coords[1])
+                lat2, lon2 = math.radians(curr_coords[0]), math.radians(curr_coords[1])
+
+                dlat = lat2 - lat1
+                dlon = lon2 - lon1
+                a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+                c = 2 * math.asin(math.sqrt(a))
+                distance_km = 6371 * c  # Earth radius in km
+                distance_miles = distance_km * 0.621371
+
+                # Calculate required speed
+                speed_kmh = distance_km / hours
+                speed_mph = distance_miles / hours
+                max_speed_required = max(max_speed_required, speed_mph)
+
+                # Commercial aviation max speed is ~600 mph, impossible if >1000 mph
+                is_impossible = speed_mph > 1000
+                is_highly_suspicious = speed_mph > 600
+
+                travel_info = {
+                    "from_country": prev_loc["country"],
+                    "to_country": curr_loc["country"],
+                    "time_hours": hours,
+                    "time_minutes": minutes,
+                    "distance_km": distance_km,
+                    "distance_miles": distance_miles,
+                    "required_speed_kmh": speed_kmh,
+                    "required_speed_mph": speed_mph,
+                    "is_impossible": is_impossible,
+                    "is_suspicious": is_highly_suspicious
+                }
+
+                if is_impossible:
+                    impossible_travels.append(travel_info)
+                    findings["risk_indicators"].append(f"IMPOSSIBLE TRAVEL: {prev_loc['country']}→{curr_loc['country']} in {minutes:.1f} min (requires {speed_mph:.0f} mph)")
+                    findings["evidence"].append(f"CRITICAL: Impossible travel {prev_loc['country']}→{curr_loc['country']} in {minutes:.1f} minutes requiring {speed_mph:.0f} mph (max possible ~600 mph)")
+
+                elif is_highly_suspicious:
+                    findings["risk_indicators"].append(f"SUSPICIOUS TRAVEL: {prev_loc['country']}→{curr_loc['country']} requires {speed_mph:.0f} mph")
+                    findings["evidence"].append(f"SUSPICIOUS: Very fast travel {prev_loc['country']}→{curr_loc['country']} in {hours:.1f}h requiring {speed_mph:.0f} mph")
+
+                else:
+                    findings["evidence"].append(f"Geographic movement: {prev_loc['country']}→{curr_loc['country']} in {hours:.1f}h ({speed_mph:.0f} mph - feasible)")
+
+    # Store travel analysis metrics
+    findings["metrics"]["impossible_travel_count"] = len(impossible_travels)
+    findings["metrics"]["max_speed_required_mph"] = max_speed_required
+    findings["analysis"]["impossible_travels"] = impossible_travels
+
+    # Apply risk scoring based on impossible travel
+    if impossible_travels:
+        # High risk for impossible travel
+        findings["risk_score"] = max(findings.get("risk_score", 0), 0.8)
+        findings["evidence"].append(f"FRAUD INDICATOR: {len(impossible_travels)} impossible travel pattern(s) detected")
+    elif unique_countries > 3:
+        # Moderate risk for high geographic diversity
+        findings["risk_score"] = max(findings.get("risk_score", 0), 0.4)
+        findings["evidence"].append(f"GEOGRAPHIC SPREAD: Activity from {unique_countries} different countries")
 
 
 def _analyze_high_risk_countries(results: list, findings: Dict[str, Any]) -> None:

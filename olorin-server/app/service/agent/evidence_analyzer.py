@@ -363,34 +363,103 @@ REMINDER: Do not create numeric scores in your prose - use only the provided eng
         return "\n".join(formatted) if formatted else "No meaningful metrics"
     
     def _format_snowflake_for_analysis(self, snowflake_data: Dict[str, Any]) -> str:
-        """Format Snowflake data for evidence analysis."""
+        """Format Snowflake data for evidence analysis with dollar-weighted statistics."""
         if not snowflake_data:
             return "No Snowflake data available"
-        
+
         if isinstance(snowflake_data, dict) and "results" in snowflake_data:
             results = snowflake_data["results"]
             if not results:
                 return "No transaction records found in Snowflake"
-            
+
             # Extract key insights for context
             total_records = len(results)
             model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
             fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
-            
+
             avg_model_score = sum(model_scores)/len(model_scores) if model_scores else 0
             avg_score_str = f"{avg_model_score:.3f}"
             high_risk_count = len([s for s in model_scores if s > 0.7])
+
+            # CRITICAL ENHANCEMENT: Add dollar-weighted statistics
+            from app.service.agent.tools.snowflake_tool.schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY
+            dollar_weighted_stats = self._calculate_dollar_weighted_stats(results, PAID_AMOUNT_VALUE_IN_CURRENCY)
+
             context = f"""Snowflake Transaction Context:
 - Total Records: {total_records}
 - Average Model Score: {avg_score_str}
 - High Risk Transactions (>0.7): {high_risk_count}
 - Confirmed Fraud: {len(fraud_flags)}
 
+DOLLAR-WEIGHTED ANALYSIS:
+{dollar_weighted_stats}
+
 NOTE: MODEL_SCORE is for reference only - your analysis should be based on domain-specific evidence."""
-            
+
             return context
-        
+
         return f"Raw Snowflake data: {str(snowflake_data)[:300]}..."
+
+    def _calculate_dollar_weighted_stats(self, results: list, amount_field: str) -> str:
+        """Calculate dollar-weighted statistics for high-risk transactions."""
+        if not results:
+            return "- No transaction data for dollar-weighted analysis"
+
+        total_volume = 0
+        high_risk_volume = 0
+        blocked_volume = 0
+        total_count = 0
+        high_risk_count = 0
+        blocked_count = 0
+
+        for result in results:
+            amount = result.get(amount_field, 0)
+            model_score = result.get("MODEL_SCORE", 0)
+            is_blocked = result.get("BLOCK_RULE_ID") is not None or result.get("NSURE_LAST_DECISION") == "BLOCK"
+
+            # Convert amount to float if needed
+            try:
+                amount = float(amount) if amount is not None else 0
+            except (ValueError, TypeError):
+                amount = 0
+
+            # Convert model_score to float if needed
+            try:
+                model_score = float(model_score) if model_score is not None else 0
+            except (ValueError, TypeError):
+                model_score = 0
+
+            total_volume += amount
+            total_count += 1
+
+            if model_score >= 0.7:  # High risk threshold
+                high_risk_volume += amount
+                high_risk_count += 1
+
+            if is_blocked:
+                blocked_volume += amount
+                blocked_count += 1
+
+        if total_volume == 0:
+            return "- No transaction amounts available for dollar-weighted analysis"
+
+        # Calculate percentages
+        high_risk_volume_pct = (high_risk_volume / total_volume) * 100 if total_volume > 0 else 0
+        high_risk_count_pct = (high_risk_count / total_count) * 100 if total_count > 0 else 0
+        blocked_volume_pct = (blocked_volume / total_volume) * 100 if total_volume > 0 else 0
+        blocked_count_pct = (blocked_count / total_count) * 100 if total_count > 0 else 0
+
+        stats = f"""- Total Volume: ${total_volume:,.2f} across {total_count} transactions
+- High Risk (≥0.7): {high_risk_volume_pct:.1f}% of volume (${high_risk_volume:,.2f}) from {high_risk_count_pct:.1f}% of transactions
+- Blocked Transactions: {blocked_volume_pct:.1f}% of volume (${blocked_volume:,.2f}) from {blocked_count_pct:.1f}% of transactions"""
+
+        # Add critical insight if volume weighting shows stronger fraud signal
+        if high_risk_volume_pct > high_risk_count_pct + 10:  # Significant difference
+            stats += f"\n- CRITICAL: High-risk patterns disproportionately affect larger transactions"
+        elif blocked_volume_pct > blocked_count_pct + 10:
+            stats += f"\n- CRITICAL: Blocked transactions disproportionately affect larger amounts"
+
+        return stats
     
     def _parse_evidence_analysis(self, llm_response: str, domain: str, computed_risk_score: Optional[float] = None) -> Dict[str, Any]:
         """Parse LLM response to extract structured analysis."""

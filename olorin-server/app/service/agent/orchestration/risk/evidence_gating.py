@@ -180,6 +180,9 @@ def apply_evidence_gating(state: Dict[str, Any]) -> Dict[str, Any]:
             "final_risk": result["final"],
             "status": result["status"]
         }
+
+        # CRITICAL FIX: Also set evidence_strength at root level for policy validation
+        state["evidence_strength"] = result["evidence_strength"]
         
         # Apply final risk score if evidence gating caps it
         if result["status"] == "capped_for_low_evidence":
