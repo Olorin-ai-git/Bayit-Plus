@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { ManualInvestigationApp } from './ManualInvestigationApp';
 import './styles/tailwind.css';
 
@@ -17,7 +18,9 @@ const initializemanualinvestigationService = async () => {
 
     root.render(
       <React.StrictMode>
-        <ManualInvestigationApp />
+        <BrowserRouter>
+          <ManualInvestigationApp />
+        </BrowserRouter>
       </React.StrictMode>
     );
 

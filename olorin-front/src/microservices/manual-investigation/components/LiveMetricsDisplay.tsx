@@ -67,17 +67,18 @@ export const LiveMetricsDisplay: React.FC<LiveMetricsDisplayProps> = ({
   const [isConnected, setIsConnected] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  const calculateMetrics = useCallback((): LiveMetrics => {
+  const calculateMetrics = useCallback((previousMetrics?: LiveMetrics): LiveMetrics => {
     const now = Date.now();
     const activeInvs = investigations.filter(inv => inv.status === 'active');
     const completedInvs = investigations.filter(inv => inv.status === 'completed');
     const pausedInvs = investigations.filter(inv => inv.status === 'paused');
 
-    // Calculate average resolution time for completed investigations
+    // Calculate average resolution time for completed investigations (static calculation)
     const avgResolutionTime = completedInvs.length > 0
-      ? completedInvs.reduce((sum, inv) => {
-          // Mock calculation - assume 2-5 days average
-          return sum + (Math.random() * 3 + 2);
+      ? completedInvs.reduce((sum, inv, index) => {
+          // Deterministic mock calculation based on investigation ID
+          const seed = parseInt(inv.id) || index + 1;
+          return sum + (2 + (seed % 3));
         }, 0) / completedInvs.length
       : 0;
 
@@ -94,8 +95,8 @@ export const LiveMetricsDisplay: React.FC<LiveMetricsDisplayProps> = ({
     // Calculate investigator efficiency (cases resolved per day)
     const efficiency = completedInvs.length > 0 ? completedInvs.length / 7 : 0; // Mock: per week
 
-    // Mock previous values for trend calculation
-    const prevMetrics = metrics || {
+    // Use previous metrics for trend calculation
+    const prevMetrics = previousMetrics || {
       totalInvestigations: { current: 0, previous: 0, trend: 'stable' as const, history: [] },
       activeInvestigations: { current: 0, previous: 0, trend: 'stable' as const, history: [] },
       completionRate: { current: 0, previous: 0, trend: 'stable' as const, history: [] },
@@ -183,15 +184,17 @@ export const LiveMetricsDisplay: React.FC<LiveMetricsDisplayProps> = ({
         caseLoad
       }
     };
-  }, [investigations, metrics]);
+  }, [investigations]);
 
   useEffect(() => {
     const updateMetrics = () => {
       try {
-        const newMetrics = calculateMetrics();
-        setMetrics(newMetrics);
-        setLastUpdate(new Date());
-        setIsConnected(true);
+        setMetrics(prevMetrics => {
+          const newMetrics = calculateMetrics(prevMetrics);
+          setLastUpdate(new Date());
+          setIsConnected(true);
+          return newMetrics;
+        });
       } catch (error) {
         console.error('Failed to calculate metrics:', error);
         setIsConnected(false);
