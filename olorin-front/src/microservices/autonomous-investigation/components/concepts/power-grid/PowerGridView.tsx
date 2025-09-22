@@ -372,3 +372,5 @@ export const PowerGridView: React.FC = () => {
     </div>
   );
 };
+
+export default PowerGridView;

@@ -79,9 +79,10 @@ export type {
 } from './Collaboration';
 
 // Re-export shared types that are commonly used
-export type {
-  User
-} from '@/types/User';
+// TODO: Fix User type import path for Module Federation
+// export type {
+//   User
+// } from '@/types/User';
 
 // Common utility types for the manual investigation service
 export interface ApiResponse<T = any> {

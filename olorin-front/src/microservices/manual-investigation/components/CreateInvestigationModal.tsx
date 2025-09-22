@@ -1,82 +1,51 @@
 import React, { useState } from 'react';
-import { Investigation } from '../types';
+
+interface Investigation {
+  id: string;
+  title: string;
+  status: 'active' | 'completed' | 'paused';
+  priority: 'low' | 'medium' | 'high';
+  created_at: string;
+  description: string;
+}
 
 interface CreateInvestigationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateInvestigation: (investigation: Partial<Investigation>) => void;
-  className?: string;
+  onCreateInvestigation: (investigation: any) => void;
 }
 
 export const CreateInvestigationModal: React.FC<CreateInvestigationModalProps> = ({
   isOpen,
   onClose,
-  onCreateInvestigation,
-  className = ''
+  onCreateInvestigation
 }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    title: '',
     description: '',
-    entity_type: 'user' as const,
-    entity_id: '',
-    priority: 'medium' as const,
-    tags: [] as string[]
+    priority: 'medium' as 'low' | 'medium' | 'high'
   });
-  const [tagInput, setTagInput] = useState('');
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name.trim() || !formData.entity_id.trim()) {
+    if (!formData.title.trim()) {
       return;
     }
 
-    onCreateInvestigation({
-      ...formData,
-      status: 'draft',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      steps: []
-    });
+    onCreateInvestigation(formData);
 
     // Reset form
     setFormData({
-      name: '',
+      title: '',
       description: '',
-      entity_type: 'user',
-      entity_id: '',
-      priority: 'medium',
-      tags: []
+      priority: 'medium'
     });
-    setTagInput('');
     onClose();
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()]
-      }));
-      setTagInput('');
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -109,16 +78,16 @@ export const CreateInvestigationModal: React.FC<CreateInvestigationModalProps> =
 
               {/* Form Fields */}
               <div className="space-y-4">
-                {/* Investigation Name */}
+                {/* Investigation Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Investigation Name *
+                    Investigation Title *
                   </label>
                   <input
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter investigation name..."
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Enter investigation title..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
@@ -138,39 +107,6 @@ export const CreateInvestigationModal: React.FC<CreateInvestigationModalProps> =
                   />
                 </div>
 
-                {/* Entity Type and ID */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Entity Type
-                    </label>
-                    <select
-                      value={formData.entity_type}
-                      onChange={(e) => setFormData(prev => ({ ...prev, entity_type: e.target.value as 'user' | 'transaction' | 'device' | 'account' }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="user">User</option>
-                      <option value="transaction">Transaction</option>
-                      <option value="device">Device</option>
-                      <option value="account">Account</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Entity ID *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.entity_id}
-                      onChange={(e) => setFormData(prev => ({ ...prev, entity_id: e.target.value }))}
-                      placeholder="Enter entity ID..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                </div>
-
                 {/* Priority */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -178,59 +114,15 @@ export const CreateInvestigationModal: React.FC<CreateInvestigationModalProps> =
                   </label>
                   <select
                     value={formData.priority}
-                    onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' | 'critical' }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
-                    <option value="critical">Critical</option>
                   </select>
                 </div>
 
-                {/* Tags */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tags
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Add tag..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <button
-                      type="button"
-                      onClick={addTag}
-                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-                    >
-                      Add
-                    </button>
-                  </div>
-
-                  {formData.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {formData.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-1 text-blue-600 hover:text-blue-800"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
 
@@ -256,3 +148,5 @@ export const CreateInvestigationModal: React.FC<CreateInvestigationModalProps> =
     </div>
   );
 };
+
+export default CreateInvestigationModal;

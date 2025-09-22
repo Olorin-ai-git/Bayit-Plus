@@ -694,3 +694,4 @@ const EvidenceStepDetail: React.FC<EvidenceStepDetailProps> = ({
     </div>
   );
 };
+export default EvidenceTrailView;

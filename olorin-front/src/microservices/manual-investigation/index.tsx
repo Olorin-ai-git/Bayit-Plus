@@ -36,15 +36,15 @@ const initializemanualinvestigationService = async () => {
 // Initialize global Olorin namespace if not already present
 if (!window.olorin) {
   window.olorin = {
-    version: process.env.REACT_APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0',
+    environment: 'development',
     services: {},
     eventBus: null,
     monitoring: null,
     config: {
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-      enableDebug: process.env.NODE_ENV === 'development'
+      apiBaseUrl: 'http://localhost:8090',
+      wsUrl: 'ws://localhost:8090',
+      enableDebug: true
     }
   };
 

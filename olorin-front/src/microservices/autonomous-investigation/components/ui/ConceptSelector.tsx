@@ -82,10 +82,10 @@ export const ConceptSelector: React.FC = () => {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-secondary-900 mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
           Hybrid Graph Investigation Interface
         </h1>
-        <p className="text-lg text-secondary-600 max-w-3xl mx-auto">
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           Choose your investigation visualization concept. Each interface provides
           unique perspectives on the same underlying data through specialized interaction paradigms.
         </p>
@@ -99,7 +99,7 @@ export const ConceptSelector: React.FC = () => {
           return (
             <div
               key={concept.id}
-              className="card hover:shadow-elevated transition-all duration-300 cursor-pointer group"
+              className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
               onClick={() => handleConceptSelect(concept.path)}
             >
               {/* Header */}
@@ -108,29 +108,29 @@ export const ConceptSelector: React.FC = () => {
                   <Icon className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-secondary-900 group-hover:text-primary-600 transition-colors">
+                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                     {concept.title}
                   </h3>
-                  <p className="text-sm text-secondary-500">
+                  <p className="text-sm text-gray-500">
                     Investigation Interface
                   </p>
                 </div>
               </div>
 
               {/* Description */}
-              <p className="text-secondary-600 mb-6">
+              <p className="text-gray-600 mb-6">
                 {concept.description}
               </p>
 
               {/* Features */}
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-secondary-700 mb-3">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">
                   Key Features:
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {concept.features.map((feature, index) => (
-                    <div key={index} className="flex items-center text-sm text-secondary-600">
-                      <div className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2" />
+                    <div key={index} className="flex items-center text-sm text-gray-600">
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2" />
                       {feature}
                     </div>
                   ))}
@@ -138,8 +138,8 @@ export const ConceptSelector: React.FC = () => {
               </div>
 
               {/* Action */}
-              <div className="mt-6 pt-4 border-t border-secondary-100">
-                <button className="w-full btn btn-primary group-hover:bg-primary-700 transition-colors">
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 group-hover:bg-blue-700 transition-colors">
                   Launch {concept.title}
                 </button>
               </div>
@@ -150,11 +150,13 @@ export const ConceptSelector: React.FC = () => {
 
       {/* Footer */}
       <div className="mt-16 text-center">
-        <div className="inline-flex items-center space-x-2 text-sm text-secondary-500">
-          <div className="w-2 h-2 bg-autonomous-500 rounded-full animate-pulse" />
+        <div className="inline-flex items-center space-x-2 text-sm text-gray-500">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
           <span>All interfaces share real-time investigation data</span>
         </div>
       </div>
     </div>
   );
 };
+
+export default ConceptSelector;

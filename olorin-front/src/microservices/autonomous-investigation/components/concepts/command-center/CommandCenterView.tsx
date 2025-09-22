@@ -606,3 +606,4 @@ const InvestigationCard: React.FC<InvestigationCardProps> = ({
     </div>
   );
 };
+export default CommandCenterView;

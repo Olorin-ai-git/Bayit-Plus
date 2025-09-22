@@ -906,3 +906,4 @@ const SelectedNodeDetails: React.FC<SelectedNodeDetailsProps> = ({ node }) => {
     </div>
   );
 };
+export default NetworkExplorerView;

@@ -10,13 +10,13 @@ export { InvestigationService } from './InvestigationService';
 // Service configuration factory
 export function createServiceConfig(overrides: Partial<ServiceConfig> = {}): ServiceConfig {
   const defaultConfig: ServiceConfig = {
-    api_base_url: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-    websocket_url: process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8090/ws',
+    api_base_url: 'http://localhost:8090',
+    websocket_url: 'ws://localhost:8090/ws',
     timeout_ms: 30000,
     retry_attempts: 3,
     retry_delay_ms: 1000,
     enable_real_time: true,
-    debug_mode: process.env.NODE_ENV === 'development',
+    debug_mode: true, // Default to development mode
   };
 
   return { ...defaultConfig, ...overrides };
@@ -89,15 +89,20 @@ export class ServiceFactory {
 // Default service factory instance
 export const defaultServiceFactory = new ServiceFactory();
 
-// Convenience exports for common services
-export const investigationService = defaultServiceFactory.getInvestigationService();
-export const webSocketService = defaultServiceFactory.getWebSocketService();
+// Convenience exports for common services (lazy initialization)
+export function getInvestigationService() {
+  return defaultServiceFactory.getInvestigationService();
+}
+
+export function getWebSocketService() {
+  return defaultServiceFactory.getWebSocketService();
+}
 
 // Service hooks for React components (if needed)
 export function useServices() {
   return {
-    investigation: defaultServiceFactory.getInvestigationService(),
-    websocket: defaultServiceFactory.getWebSocketService(),
+    investigation: getInvestigationService(),
+    websocket: getWebSocketService(),
   };
 }
 

@@ -411,7 +411,7 @@ class NotificationService {
       const subscription = await this.serviceWorkerRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: this.urlBase64ToUint8Array(
-          process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
+          '' // VAPID public key would go here in production
         )
       });
 

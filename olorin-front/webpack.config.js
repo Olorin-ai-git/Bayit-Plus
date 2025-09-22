@@ -146,23 +146,9 @@ const microservices = {
     name: 'manualInvestigation',
     port: 3009,
     exposes: {
-      './App': './src/microservices/manual-investigation/index.tsx',
-      './ManualInvestigationApp': './src/microservices/manual-investigation/ManualInvestigationApp.tsx',
-      './InvestigationDashboard': './src/microservices/manual-investigation/components/InvestigationDashboard.tsx',
-      './InvestigationDetails': './src/microservices/manual-investigation/components/InvestigationDetails.tsx',
-      './StepTracker': './src/microservices/manual-investigation/components/StepTracker.tsx',
-      './RiskScoreDisplay': './src/microservices/manual-investigation/components/RiskScoreDisplay.tsx',
-      './AgentResultsViewer': './src/microservices/manual-investigation/components/AgentResultsViewer.tsx',
-      './CollaborationPanel': './src/microservices/manual-investigation/components/CollaborationPanel.tsx',
-      './EvidenceManager': './src/microservices/manual-investigation/components/EvidenceManager.tsx',
-      './ReportGenerator': './src/microservices/manual-investigation/components/ReportGenerator.tsx'
+      './App': './src/microservices/manual-investigation/MinimalApp.js'
     },
-    remotes: {
-      coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
-      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
-      agentAnalytics: 'agentAnalytics@http://localhost:3002/remoteEntry.js',
-      visualization: 'visualization@http://localhost:3004/remoteEntry.js'
-    }
+    remotes: {}
   }
 };
 
@@ -250,6 +236,11 @@ const serviceOptimizations = {
 const getSharedDependencies = (service) => {
   const serviceOpts = serviceOptimizations[service] || serviceOptimizations.shell;
 
+  // No shared dependencies for manualInvestigation to debug Module Federation issue
+  if (service === 'manualInvestigation') {
+    return {};
+  }
+
   return {
     react: {
       singleton: true,
@@ -264,7 +255,7 @@ const getSharedDependencies = (service) => {
     'react-router-dom': {
       singleton: true,
       requiredVersion: '^6.11.0',
-      eager: service === 'shell' // Only shell needs eager router
+      eager: service === 'shell' || service === 'autonomousInvestigation' || service === 'manualInvestigation' // Shell, autonomous, and manual investigation need eager router
     },
     '@headlessui/react': {
       singleton: true,
@@ -299,7 +290,7 @@ const getSharedDependencies = (service) => {
     'lucide-react': {
       singleton: true,
       requiredVersion: '^0.263.0',
-      eager: false
+      eager: service === 'autonomousInvestigation' || service === 'shell' // Make eager for autonomous investigation
     },
     mitt: {
       singleton: true,

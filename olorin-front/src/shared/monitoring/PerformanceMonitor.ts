@@ -302,52 +302,9 @@ export class PerformanceMonitor {
   }
 
   private monitorModuleFederation(): void {
-    // Monitor remote module loading times
-    const originalImport = window.__webpack_require__.e;
-    const self = this;
-
-    if (originalImport) {
-      window.__webpack_require__.e = function(chunkId: string) {
-        const startTime = performance.now();
-
-        return originalImport.call(this, chunkId).then(
-          (result) => {
-            const loadTime = performance.now() - startTime;
-
-            self.recordMetric({
-              name: 'module_federation_load_time',
-              value: loadTime,
-              unit: 'ms',
-              service: self.serviceName,
-              timestamp: Date.now(),
-              tags: {
-                chunk_id: chunkId,
-                status: 'success'
-              }
-            });
-
-            return result;
-          },
-          (error) => {
-            const loadTime = performance.now() - startTime;
-
-            self.recordMetric({
-              name: 'module_federation_load_time',
-              value: loadTime,
-              unit: 'ms',
-              service: self.serviceName,
-              timestamp: Date.now(),
-              tags: {
-                chunk_id: chunkId,
-                status: 'error'
-              }
-            });
-
-            throw error;
-          }
-        );
-      };
-    }
+    // Module Federation monitoring temporarily disabled to prevent webpack_require access errors
+    // TODO: Re-implement with proper webpack runtime detection
+    return;
   }
 
   private monitorNetworkRequests(): void {

@@ -122,7 +122,7 @@ class CollaborationService {
   }
 
   private getWebSocketUrl(investigationId: string, userId: string): string {
-    const baseUrl = process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8090';
+    const baseUrl = 'ws://localhost:8090';
     const token = localStorage.getItem('authToken') || '';
     return `${baseUrl}/ws/investigations/${investigationId}?userId=${userId}&token=${encodeURIComponent(token)}`;
   }
