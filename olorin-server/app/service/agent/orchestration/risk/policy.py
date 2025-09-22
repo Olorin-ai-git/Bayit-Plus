@@ -702,22 +702,59 @@ def prepublish_validate(state: Dict[str, Any]) -> Dict[str, Any]:
             else:
                 logger.info("✅ COMPREHENSIVE SNOWFLAKE: Allowing Snowflake-only investigation with fraud indicators")
         
-        # Check 2: Evidence strength threshold (increased to 0.5)
+        # Check 2: Evidence strength threshold (dynamic based on data comprehensiveness)
         evidence_strength = state.get("evidence_strength", 0.0)
-        evidence_threshold = 0.5  # Minimum evidence strength (increased)
-        
+
+        # CRITICAL FIX: Dynamic evidence threshold based on data quality
+        # Lower threshold for comprehensive Snowflake data with fraud indicators
+        snowflake_data = state.get("snowflake_data", {})
+        has_comprehensive_data = False
+
+        if snowflake_data and snowflake_data.get("results"):
+            results = snowflake_data["results"]
+            if isinstance(results, list) and len(results) >= 5:  # Substantial data volume
+                first_record = results[0]
+                if isinstance(first_record, dict):
+                    fraud_fields = ["IS_FRAUD_TX", "MODEL_SCORE", "NSURE_LAST_DECISION"]
+                    has_fraud_indicators = any(field in first_record for field in fraud_fields)
+
+                    # Check for meaningful risk patterns
+                    high_risk_count = sum(1 for r in results
+                                        if isinstance(r, dict) and r.get("MODEL_SCORE", 0) > 0.7)
+                    block_count = sum(1 for r in results
+                                    if isinstance(r, dict) and r.get("NSURE_LAST_DECISION") == "BLOCK")
+
+                    # Comprehensive = fraud indicators + patterns + volume
+                    if (has_fraud_indicators and len(results) >= 5 and
+                        (high_risk_count > 0 or block_count > 0)):
+                        has_comprehensive_data = True
+                        logger.info(f"✅ Comprehensive data detected: {len(results)} transactions, "
+                                  f"{high_risk_count} high-risk, {block_count} blocked")
+
+        # Set dynamic evidence threshold
+        if has_comprehensive_data:
+            evidence_threshold = 0.3  # Lower threshold for comprehensive internal data
+            logger.info(f"🔽 Reduced evidence threshold to {evidence_threshold} due to comprehensive data")
+        else:
+            evidence_threshold = 0.5  # Standard threshold for limited data
+
+        # Apply evidence strength check with context
         if evidence_strength < evidence_threshold:
-            validation_result.update({
-                "status": "needs_more_evidence",
-                "can_publish_numeric_risk": False,
-                "evidence_gate_passed": False
-            })
-            validation_result["issues"].append(f"Insufficient evidence strength: {fmt_num(evidence_strength, 3)} < {fmt_num(evidence_threshold, 3)}")
-            validation_result["recommended_actions"].extend([
-                "Collect additional evidence from external sources",
-                "Perform deeper domain analysis",
-                "Expand investigation scope"
-            ])
+            # Additional check: allow if we have strong internal signals even with low evidence_strength
+            if has_comprehensive_data and evidence_strength >= 0.2:
+                logger.info(f"✅ Allowing despite evidence strength {fmt_num(evidence_strength, 3)} < {fmt_num(evidence_threshold, 3)} due to comprehensive internal data")
+            else:
+                validation_result.update({
+                    "status": "needs_more_evidence",
+                    "can_publish_numeric_risk": False,
+                    "evidence_gate_passed": False
+                })
+                validation_result["issues"].append(f"Insufficient evidence strength: {fmt_num(evidence_strength, 3)} < {fmt_num(evidence_threshold, 3)}")
+                validation_result["recommended_actions"].extend([
+                    "Collect additional evidence from external sources",
+                    "Perform deeper domain analysis",
+                    "Expand investigation scope"
+                ])
         
         # Check 3: Discordance detection (external TI vs internal model)
         snowflake_data = state.get("snowflake_data", {})

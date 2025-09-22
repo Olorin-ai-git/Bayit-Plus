@@ -361,7 +361,7 @@ def _calculate_investigation_confidence(state: InvestigationState, risk_findings
 
 
 def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str, Any]) -> float:
-    """Calculate REAL risk score based on actual domain analysis results."""
+    """Calculate REAL risk score based on actual domain analysis results with volume weighting."""
     # Check for confirmed fraud indicators
     if facts.get("IS_FRAUD_TX") is True:
         return 1.0
@@ -369,6 +369,33 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
         return 0.95
     if facts.get("manual_case_outcome") == "fraud":
         return 0.9
+
+    # Extract transaction-level data for volume weighting
+    transaction_data = []
+    total_amount = 0.0
+
+    if isinstance(facts, dict) and "results" in facts:
+        for result in facts["results"]:
+            if isinstance(result, dict):
+                # Get transaction amount and risk score
+                amount = result.get("PAID_AMOUNT_VALUE_IN_CURRENCY", 0.0) or 0.0
+                model_score = result.get("MODEL_SCORE")
+                is_blocked = result.get("NSURE_LAST_DECISION") == "BLOCK"
+
+                # Use model score or infer risk from decision
+                if model_score is not None:
+                    tx_risk = model_score
+                elif is_blocked:
+                    tx_risk = 0.8  # High risk for blocked transactions
+                else:
+                    tx_risk = 0.3  # Default moderate risk for approved
+
+                transaction_data.append({
+                    "amount": amount,
+                    "risk": tx_risk,
+                    "blocked": is_blocked
+                })
+                total_amount += amount
 
     # Collect REAL risk scores from domain analyses
     domain_scores = []
@@ -388,32 +415,64 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
                 weight = confidence * (1.0 + min(evidence_count / 10.0, 1.0))
                 weighted_scores.append((score, weight))
 
+    # Add device presence penalty if device data is missing/NULL
+    device_penalty = 0.0
+    device_findings = domain_findings.get("device", {})
+    if isinstance(device_findings, dict):
+        device_evidence = device_findings.get("evidence", [])
+        # Check if device data is missing or NULL
+        if any("NULL" in str(ev) or "not available" in str(ev).lower() or
+               "missing" in str(ev).lower() for ev in device_evidence):
+            device_penalty = 0.15  # 15% risk increase for missing device data
+            logger.info(f"🚨 Device data missing - adding {device_penalty:.3f} risk penalty")
+
     if not weighted_scores:
         # No valid domain scores - use transaction data as fallback
-        model_scores = []
-        if isinstance(facts, dict) and "results" in facts:
-            for result in facts["results"]:
+        if transaction_data and total_amount > 0:
+            # Volume-weighted transaction risk
+            volume_weighted_risk = sum(tx["risk"] * tx["amount"] for tx in transaction_data) / total_amount
+            volume_weighted_risk = min(1.0, max(0.0, volume_weighted_risk + device_penalty))
+            logger.warning(f"⚠️ No domain scores available, using volume-weighted transaction risk: {volume_weighted_risk:.3f}")
+            return volume_weighted_risk
+        else:
+            # Fallback to simple model scores
+            model_scores = []
+            for result in facts.get("results", []):
                 if isinstance(result, dict) and "MODEL_SCORE" in result:
                     model_score = result["MODEL_SCORE"]
                     if model_score is not None:
                         model_scores.append(model_score)
 
-        if model_scores:
-            avg_model_score = sum(model_scores) / len(model_scores)
-            logger.warning(f"⚠️ No domain scores available, using model score fallback: {avg_model_score:.3f}")
-            return avg_model_score
-        else:
-            # No valid data available - investigation should not continue with numeric scoring
-            raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
+            if model_scores:
+                avg_model_score = sum(model_scores) / len(model_scores)
+                avg_model_score = min(1.0, max(0.0, avg_model_score + device_penalty))
+                logger.warning(f"⚠️ No domain scores available, using model score fallback: {avg_model_score:.3f}")
+                return avg_model_score
+            else:
+                # No valid data available - investigation should not continue with numeric scoring
+                raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
 
-    # Calculate weighted average of domain scores
+    # Calculate confidence-weighted mean of domain scores
     total_weight = sum(weight for _, weight in weighted_scores)
     if total_weight > 0:
         weighted_avg = sum(score * weight for score, weight in weighted_scores) / total_weight
     else:
         weighted_avg = sum(domain_scores) / len(domain_scores)
 
-    return min(1.0, max(0.0, weighted_avg))
+    # Apply volume weighting if transaction data is available
+    if transaction_data and total_amount > 0:
+        # Calculate volume-weighted transaction risk
+        volume_weighted_tx_risk = sum(tx["risk"] * tx["amount"] for tx in transaction_data) / total_amount
+
+        # Blend domain-based risk with volume-weighted transaction risk (70:30 ratio)
+        blended_risk = (0.7 * weighted_avg) + (0.3 * volume_weighted_tx_risk)
+        logger.info(f"📊 Volume weighting: domain_risk={weighted_avg:.3f}, tx_risk={volume_weighted_tx_risk:.3f}, blended={blended_risk:.3f}")
+        weighted_avg = blended_risk
+
+    # Add device penalty and ensure bounds
+    final_risk = min(1.0, max(0.0, weighted_avg + device_penalty))
+
+    return final_risk
 
 
 def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List[str], state: Dict[str, Any]) -> float:

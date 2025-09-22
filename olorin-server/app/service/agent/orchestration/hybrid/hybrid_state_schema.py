@@ -279,7 +279,7 @@ def create_hybrid_initial_state(
         },
         "quality_gates_passed": ["initial_state_validation"],
         "investigation_efficiency": None,  # Will be calculated during investigation
-        "evidence_strength": 0.0,
+        "evidence_strength": None,  # Will be calculated from actual data sources
         
         # Hybrid System Metadata  
         "hybrid_system_version": "1.0.0",

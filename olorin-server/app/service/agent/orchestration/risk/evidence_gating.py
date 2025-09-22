@@ -130,13 +130,13 @@ def apply_evidence_gating(state: Dict[str, Any]) -> Dict[str, Any]:
                 score = findings["risk_score"]
                 if score is not None:
                     domain_scores.append(score)
-        
+
         internal_score = max(domain_scores) if domain_scores else 0.0
-        
-        # Determine external threat intelligence level
+
+        # Determine external threat intelligence level and evidence sources
         ext_level = "MINIMAL"
         evidence_sources = set()
-        
+
         for domain, findings in domain_findings.items():
             if isinstance(findings, dict):
                 evidence = findings.get("evidence", [])
@@ -150,23 +150,43 @@ def apply_evidence_gating(state: Dict[str, Any]) -> Dict[str, Any]:
                         evidence_sources.add("external_ti")
                     elif "VIRUSTOTAL" in e_str:
                         evidence_sources.add("external_ti")
-        
-        # Add Snowflake as evidence source
-        if snowflake_data and snowflake_data.get("results"):
-            evidence_sources.add("snowflake")
-        
-        # Count events/transactions
+
+        # CRITICAL FIX: Comprehensive Snowflake data detection
+        has_comprehensive_snowflake = False
         events = 0
+
         if snowflake_data and snowflake_data.get("results"):
-            events = len(snowflake_data["results"])
-        
-        # Calculate agreement (simplified)
-        agree = 0.5  # Default moderate agreement
-        
-        # Apply evidence gating
+            results = snowflake_data["results"]
+            events = len(results)
+
+            # Check for comprehensive fraud-relevant data
+            if isinstance(results, list) and len(results) > 0:
+                first_record = results[0]
+                if isinstance(first_record, dict):
+                    fraud_fields = ["IS_FRAUD_TX", "MODEL_SCORE", "NSURE_LAST_DECISION"]
+                    has_fraud_indicators = any(field in first_record for field in fraud_fields)
+
+                    # Comprehensive Snowflake = fraud indicators + substantial transaction data
+                    if has_fraud_indicators and events >= 1:
+                        has_comprehensive_snowflake = True
+                        evidence_sources.add("comprehensive_snowflake")
+                        logger.info(f"✅ Detected comprehensive Snowflake data: {events} transactions with fraud indicators")
+
+            # Always add basic Snowflake source
+            evidence_sources.add("snowflake")
+
+        # ENHANCED: Calculate evidence agreement based on actual data consistency
+        agree = _calculate_evidence_agreement(domain_findings, snowflake_data)
+
+        # Apply evidence gating with enhanced logic
         external_score = 0.1 if ext_level in {"MINIMAL", "LOW"} else 0.7
         sources = len(evidence_sources)
-        
+
+        # CRITICAL FIX: Account for comprehensive Snowflake data in external score
+        if has_comprehensive_snowflake and ext_level == "MINIMAL":
+            external_score = 0.4  # Moderate confidence for comprehensive internal data
+            logger.info(f"🔄 Adjusted external score to {external_score} due to comprehensive Snowflake data")
+
         result = finalize(internal_score, external_score, ext_level, events, agree, sources)
         
         # Update state
@@ -194,3 +214,104 @@ def apply_evidence_gating(state: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"❌ Evidence gating failed: {e}")
         return state
+
+
+def _calculate_evidence_agreement(domain_findings: Dict[str, Any], snowflake_data: Dict[str, Any]) -> float:
+    """
+    Calculate evidence agreement based on consistency between different data sources.
+
+    Args:
+        domain_findings: Domain analysis findings
+        snowflake_data: Snowflake transaction data
+
+    Returns:
+        Agreement score from 0.0 to 1.0
+    """
+    try:
+        agreement_factors = []
+
+        # 1. Check model score vs domain risk consistency
+        if snowflake_data and snowflake_data.get("results"):
+            results = snowflake_data["results"]
+            if isinstance(results, list) and len(results) > 0:
+                # Get average model score
+                model_scores = []
+                for record in results:
+                    if isinstance(record, dict) and "MODEL_SCORE" in record:
+                        score = record["MODEL_SCORE"]
+                        if score is not None:
+                            model_scores.append(score)
+
+                if model_scores:
+                    avg_model_score = sum(model_scores) / len(model_scores)
+
+                    # Compare with domain risk scores
+                    domain_scores = []
+                    for domain, findings in domain_findings.items():
+                        if isinstance(findings, dict) and "risk_score" in findings:
+                            score = findings["risk_score"]
+                            if score is not None:
+                                domain_scores.append(score)
+
+                    if domain_scores:
+                        avg_domain_score = sum(domain_scores) / len(domain_scores)
+                        # Calculate agreement (1.0 = perfect match, 0.0 = opposite)
+                        diff = abs(avg_model_score - avg_domain_score)
+                        agreement = max(0.0, 1.0 - (diff * 2))  # Scale difference to 0-1
+                        agreement_factors.append(agreement)
+
+        # 2. Check decision consistency
+        if snowflake_data and snowflake_data.get("results"):
+            results = snowflake_data["results"]
+            if isinstance(results, list) and len(results) > 0:
+                blocked_count = sum(1 for r in results
+                                  if isinstance(r, dict) and r.get("NSURE_LAST_DECISION") == "BLOCK")
+                total_count = len(results)
+
+                if total_count > 0:
+                    block_rate = blocked_count / total_count
+                    # High block rate should correlate with high domain risk scores
+                    domain_scores = []
+                    for domain, findings in domain_findings.items():
+                        if isinstance(findings, dict) and "risk_score" in findings:
+                            score = findings["risk_score"]
+                            if score is not None:
+                                domain_scores.append(score)
+
+                    if domain_scores:
+                        avg_domain_score = sum(domain_scores) / len(domain_scores)
+                        # Expected correlation: high block rate → high domain score
+                        expected_domain_score = block_rate * 0.8 + 0.1  # Scale to 0.1-0.9
+                        diff = abs(avg_domain_score - expected_domain_score)
+                        agreement = max(0.0, 1.0 - diff)
+                        agreement_factors.append(agreement)
+
+        # 3. Geographic consistency check
+        location_findings = domain_findings.get("location", {})
+        if isinstance(location_findings, dict):
+            location_score = location_findings.get("risk_score")
+            if location_score is not None:
+                # Check if location score aligns with geographic data patterns
+                metrics = location_findings.get("metrics", {})
+                unique_countries = metrics.get("unique_countries", 0)
+
+                # High country count should correlate with higher location risk
+                if unique_countries > 0:
+                    expected_location_risk = min(0.9, unique_countries / 10.0)  # Scale to risk
+                    diff = abs(location_score - expected_location_risk)
+                    agreement = max(0.0, 1.0 - diff)
+                    agreement_factors.append(agreement)
+
+        # Calculate weighted average agreement
+        if agreement_factors:
+            final_agreement = sum(agreement_factors) / len(agreement_factors)
+            logger.debug(f"Evidence agreement calculated: {final_agreement:.3f} from {len(agreement_factors)} factors")
+            return final_agreement
+        else:
+            # Default moderate agreement when insufficient data for comparison
+            logger.debug("Insufficient data for evidence agreement calculation, using default 0.6")
+            return 0.6
+
+    except Exception as e:
+        logger.warning(f"Evidence agreement calculation failed: {e}")
+        return 0.5  # Safe fallback
