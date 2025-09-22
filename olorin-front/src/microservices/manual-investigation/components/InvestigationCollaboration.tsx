@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Collaboration, CreateCollaborationRequest } from '../types';
 import { useServices } from '../services';
-import { LoadingSpinner } from '../../../shared/components/LoadingSpinner';
-import { ErrorAlert } from '../../../shared/components/ErrorAlert';
+import LoadingSpinner from '../../../shared/components/LoadingSpinner';
+import ErrorAlert from '../../../shared/components/ErrorAlert';
 
 interface InvestigationCollaborationProps {
   investigationId: string;

@@ -65,3 +65,4 @@ initializemanualinvestigationService().catch(error => {
 
 // Export for Module Federation
 export { initializemanualinvestigationService };
+export { ManualInvestigationApp } from './ManualInvestigationApp';

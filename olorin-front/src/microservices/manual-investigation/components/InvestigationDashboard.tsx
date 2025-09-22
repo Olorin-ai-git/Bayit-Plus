@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Investigation, InvestigationStatsResponse } from '../types';
 import { useServices } from '../services';
-import { LoadingSpinner } from '../../../shared/components/LoadingSpinner';
-import { ErrorAlert } from '../../../shared/components/ErrorAlert';
+import LoadingSpinner from '../../../shared/components/LoadingSpinner';
+import ErrorAlert from '../../../shared/components/ErrorAlert';
 import { InvestigationList } from './InvestigationList';
 import { InvestigationStats } from './InvestigationStats';
 import { CreateInvestigationModal } from './CreateInvestigationModal';

@@ -50,6 +50,32 @@ module.exports = {
           800: '#166534',
           900: '#14532d',
         },
+        // Hybrid Graph Investigation Colors
+        graph: {
+          node: {
+            primary: '#3b82f6',
+            secondary: '#6b7280',
+            evidence: '#10b981',
+            entity: '#8b5cf6',
+            connection: '#f59e0b',
+            highlight: '#ef4444',
+          },
+          edge: {
+            default: '#9ca3af',
+            strong: '#374151',
+            weak: '#d1d5db',
+            temporal: '#06b6d4',
+            causal: '#dc2626',
+          },
+          grid: {
+            primary: '#1f2937',
+            secondary: '#374151',
+            accent: '#4f46e5',
+            warning: '#f59e0b',
+            success: '#10b981',
+            danger: '#ef4444',
+          },
+        },
         manual: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -173,6 +199,10 @@ module.exports = {
         'bounce-slow': 'bounce 2s infinite',
         'float': 'float 3s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'graph-pulse': 'graphPulse 2s ease-in-out infinite',
+        'node-expand': 'nodeExpand 0.3s ease-out',
+        'edge-flow': 'edgeFlow 3s linear infinite',
+        'grid-scan': 'gridScan 4s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -206,6 +236,22 @@ module.exports = {
         glow: {
           '0%': { boxShadow: '0 0 5px rgb(167 85 247 / 0.5)' },
           '100%': { boxShadow: '0 0 20px rgb(167 85 247 / 0.8)' },
+        },
+        graphPulse: {
+          '0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.05)' },
+        },
+        nodeExpand: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        edgeFlow: {
+          '0%': { strokeDashoffset: '20' },
+          '100%': { strokeDashoffset: '0' },
+        },
+        gridScan: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100vw)' },
         },
       },
       transitionTimingFunction: {
@@ -364,6 +410,92 @@ module.exports = {
           maxHeight: '90vh',
           overflow: 'auto',
         },
+        // Hybrid Graph Investigation Components
+        '.graph-container': {
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          backgroundColor: theme('colors.secondary.900'),
+          borderRadius: theme('borderRadius.lg'),
+          overflow: 'hidden',
+        },
+        '.graph-node': {
+          borderRadius: theme('borderRadius.full'),
+          border: '2px solid',
+          backgroundColor: theme('colors.white'),
+          cursor: 'pointer',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'scale(1.1)',
+            boxShadow: theme('boxShadow.lg'),
+          },
+        },
+        '.graph-node-primary': {
+          borderColor: theme('colors.graph.node.primary'),
+          '&:hover': {
+            backgroundColor: theme('colors.blue.50'),
+          },
+        },
+        '.graph-node-evidence': {
+          borderColor: theme('colors.graph.node.evidence'),
+          '&:hover': {
+            backgroundColor: theme('colors.green.50'),
+          },
+        },
+        '.graph-node-entity': {
+          borderColor: theme('colors.graph.node.entity'),
+          '&:hover': {
+            backgroundColor: theme('colors.purple.50'),
+          },
+        },
+        '.power-grid-panel': {
+          backgroundColor: 'rgba(31, 41, 55, 0.95)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(75, 85, 99, 0.3)',
+          borderRadius: theme('borderRadius.lg'),
+          color: theme('colors.white'),
+        },
+        '.command-center-widget': {
+          backgroundColor: theme('colors.secondary.800'),
+          border: '1px solid',
+          borderColor: theme('colors.secondary.600'),
+          borderRadius: theme('borderRadius.md'),
+          padding: theme('spacing.4'),
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            borderColor: theme('colors.primary.500'),
+            backgroundColor: theme('colors.secondary.700'),
+          },
+        },
+        '.evidence-trail-step': {
+          position: 'relative',
+          padding: theme('spacing.4'),
+          backgroundColor: theme('colors.white'),
+          border: '1px solid',
+          borderColor: theme('colors.secondary.200'),
+          borderRadius: theme('borderRadius.md'),
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: '-1px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '3px',
+            height: '20px',
+            backgroundColor: theme('colors.primary.500'),
+            borderRadius: '2px',
+          },
+        },
+        '.network-explorer-connection': {
+          stroke: theme('colors.graph.edge.default'),
+          strokeWidth: '2',
+          fill: 'none',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            stroke: theme('colors.graph.edge.strong'),
+            strokeWidth: '3',
+          },
+        },
       });
     },
   ],
@@ -393,5 +525,19 @@ module.exports = {
     'bg-rag-50',
     'bg-visualization-50',
     'bg-reporting-50',
+    // Hybrid Graph Investigation Classes
+    'graph-container',
+    'graph-node',
+    'graph-node-primary',
+    'graph-node-evidence',
+    'graph-node-entity',
+    'power-grid-panel',
+    'command-center-widget',
+    'evidence-trail-step',
+    'network-explorer-connection',
+    'animate-graph-pulse',
+    'animate-node-expand',
+    'animate-edge-flow',
+    'animate-grid-scan',
   ],
 }

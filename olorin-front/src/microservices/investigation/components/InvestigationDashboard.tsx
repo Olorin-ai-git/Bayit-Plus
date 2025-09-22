@@ -12,17 +12,12 @@ import {
 } from '@heroicons/react/24/outline';
 import { useInvestigationContext } from '../contexts/InvestigationContext';
 import { useInvestigationStatistics } from '../hooks/useInvestigation';
+import { Investigation } from '../services/investigationService';
 
-interface Investigation {
-  id: string;
-  title: string;
-  description: string;
-  status: 'pending' | 'running' | 'paused' | 'completed' | 'failed' | 'stopped' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  assignedAgents: string[];
-  createdAt: string;
-  updatedAt: string;
-  progress?: {
+// Local interface for dashboard-specific properties
+interface DashboardInvestigation extends Investigation {
+  assignedAgents?: string[]; // Dashboard-specific property
+  dashboardProgress?: {
     overall: number;
     steps: { name: string; completed: boolean; }[];
   };
@@ -39,22 +34,25 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
   const { statistics, loading: statsLoading } = useInvestigationStatistics('week');
 
   // Local state for component
-  const [investigations, setInvestigations] = useState<Investigation[]>([]);
+  const [investigations, setInvestigations] = useState<DashboardInvestigation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Mock data for demonstration
   useEffect(() => {
-    const mockInvestigations: Investigation[] = [
+    const mockInvestigations: DashboardInvestigation[] = [
       {
         id: 'inv-001',
         title: 'Payment Fraud Investigation',
         description: 'Investigating suspicious payment patterns from user account 12345',
-        status: 'running',
+        type: 'fraud' as const,
+        status: 'in_progress',
         priority: 'high',
         assignedAgents: ['Location Agent', 'Device Agent', 'Network Agent'],
+        assignee: 'Investigation Team',
         createdAt: new Date(Date.now() - 3600000).toISOString(),
         updatedAt: new Date(Date.now() - 1800000).toISOString(),
-        progress: { overall: 65, steps: [
+        progress: 65,
+        dashboardProgress: { overall: 65, steps: [
           { name: 'Data Collection', completed: true },
           { name: 'Pattern Analysis', completed: true },
           { name: 'Risk Assessment', completed: false }
@@ -64,12 +62,15 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
         id: 'inv-002',
         title: 'Account Takeover Analysis',
         description: 'Multi-factor authentication bypass attempt detected',
+        type: 'account_takeover' as const,
         status: 'completed',
         priority: 'critical',
         assignedAgents: ['Device Agent', 'Log Agent'],
+        assignee: 'Security Team',
         createdAt: new Date(Date.now() - 7200000).toISOString(),
         updatedAt: new Date(Date.now() - 900000).toISOString(),
-        progress: { overall: 100, steps: [
+        progress: 100,
+        dashboardProgress: { overall: 100, steps: [
           { name: 'Evidence Collection', completed: true },
           { name: 'Threat Analysis', completed: true },
           { name: 'Report Generation', completed: true }
@@ -79,11 +80,14 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
         id: 'inv-003',
         title: 'Identity Verification Review',
         description: 'Reviewing identity verification documents for compliance',
+        type: 'compliance' as const,
         status: 'pending',
         priority: 'medium',
         assignedAgents: ['Document Agent'],
+        assignee: 'Compliance Team',
         createdAt: new Date(Date.now() - 1800000).toISOString(),
         updatedAt: new Date(Date.now() - 1800000).toISOString(),
+        progress: 0,
       }
     ];
 
@@ -96,11 +100,9 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
   const getStatusCounts = () => {
     const counts = {
       pending: 0,
-      running: 0,
-      paused: 0,
+      in_progress: 0,
       completed: 0,
       failed: 0,
-      stopped: 0,
       cancelled: 0,
     };
 
@@ -113,12 +115,10 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
 
   const getStatusBadge = (status: Investigation['status']) => {
     const statusConfig = {
-      running: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Running' },
+      in_progress: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'In Progress' },
       completed: { bg: 'bg-green-100', text: 'text-green-800', label: 'Completed' },
       failed: { bg: 'bg-red-100', text: 'text-red-800', label: 'Failed' },
       pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending' },
-      paused: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Paused' },
-      stopped: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Stopped' },
       cancelled: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Cancelled' },
     };
 
@@ -213,8 +213,8 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-700">Running</p>
-                  <p className="text-2xl font-semibold text-gray-900">{statusCounts.running}</p>
+                  <p className="text-sm font-medium text-blue-700">In Progress</p>
+                  <p className="text-2xl font-semibold text-gray-900">{statusCounts.in_progress}</p>
                 </div>
                 <ArrowPathIcon className="h-8 w-8 text-blue-500" />
               </div>
@@ -263,7 +263,7 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
                 <ArrowPathIcon className="h-8 w-8 text-blue-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Investigations</p>
-                  <p className="text-2xl font-semibold text-blue-600">{statusCounts.running + statusCounts.pending}</p>
+                  <p className="text-2xl font-semibold text-blue-600">{statusCounts.in_progress + statusCounts.pending}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -319,10 +319,10 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
                         </span>
                         <span className="flex items-center">
                           <UserGroupIcon className="h-3 w-3 mr-1" />
-                          {investigation.assignedAgents.length} agents
+                          {investigation.assignedAgents?.length || 0} agents
                         </span>
-                        {investigation.progress && (
-                          <span>{investigation.progress.overall}% complete</span>
+                        {investigation.dashboardProgress && (
+                          <span>{investigation.dashboardProgress.overall}% complete</span>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
@@ -331,16 +331,16 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
                       </div>
                     </div>
 
-                    {investigation.status === 'running' && investigation.progress && (
+                    {investigation.status === 'in_progress' && investigation.dashboardProgress && (
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
                           <span>Progress</span>
-                          <span>{investigation.progress.overall}%</span>
+                          <span>{investigation.dashboardProgress.overall}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
                             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${investigation.progress.overall}%` }}
+                            style={{ width: `${investigation.dashboardProgress.overall}%` }}
                           />
                         </div>
                       </div>

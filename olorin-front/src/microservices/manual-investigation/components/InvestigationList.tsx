@@ -3,7 +3,7 @@ import { Investigation } from '../types';
 import { useServices } from '../services';
 import { InvestigationStatusBadge } from './InvestigationStatusBadge';
 import { InvestigationPriorityBadge } from './InvestigationPriorityBadge';
-import { LoadingSpinner } from '../../../shared/components/LoadingSpinner';
+import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 
 interface InvestigationListProps {
   investigations: Investigation[];

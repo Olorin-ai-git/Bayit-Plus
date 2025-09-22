@@ -3,6 +3,7 @@ import { BrowserRouter, Link, useLocation, Routes, Route } from 'react-router-do
 import ErrorBoundary from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 import { EventBusManager, eventBus } from '@shared/events/eventBus';
+import RemoteInvestigationService from './components/RemoteInvestigationService';
 import './globals';
 
 interface ShellState {
@@ -464,14 +465,7 @@ const App: React.FC = () => {
           <main>
             <Routes>
               <Route path="/" element={<ShellHomePage />} />
-              <Route path="/investigations" element={
-                <ServicePlaceholder
-                  title="Investigation Service"
-                  description="AI-powered fraud investigation workflows and case management"
-                  icon="🔍"
-                  gradient="from-blue-600 to-indigo-700"
-                />
-              } />
+              <Route path="/investigations/*" element={<RemoteInvestigationService />} />
               <Route path="/analytics" element={
                 <ServicePlaceholder
                   title="Analytics Service"

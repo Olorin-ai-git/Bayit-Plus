@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Report, ReportTemplate, GenerateReportRequest, ReportConfiguration } from '../types';
 import { useServices } from '../services';
-import { LoadingSpinner } from '../../../shared/components/LoadingSpinner';
-import { ErrorAlert } from '../../../shared/components/ErrorAlert';
+import LoadingSpinner from '../../../shared/components/LoadingSpinner';
+import ErrorAlert from '../../../shared/components/ErrorAlert';
 
 interface ReportGeneratorProps {
   investigationId: string;

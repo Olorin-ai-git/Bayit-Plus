@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
-import { ServiceFactory, createServiceConfig } from './services';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { ServiceFactory, createServiceConfig, useServices } from './services/';
 import { InvestigationDashboard } from './components/InvestigationDashboard';
 import { StepExecutor } from './components/StepExecutor';
 import { ReportGenerator } from './components/ReportGenerator';
 import { InvestigationCollaboration } from './components/InvestigationCollaboration';
-import { LoadingSpinner } from '../../shared/components/LoadingSpinner';
-import { ErrorAlert } from '../../shared/components/ErrorAlert';
+import LoadingSpinner from '../../shared/components/LoadingSpinner';
+import ErrorAlert from '../../shared/components/ErrorAlert';
 
 // Service context for dependency injection
 const ServiceContext = React.createContext<ServiceFactory | null>(null);
@@ -18,6 +18,7 @@ export const useServiceFactory = () => {
   }
   return context;
 };
+
 
 interface ManualInvestigationAppProps {
   className?: string;
@@ -101,52 +102,52 @@ export const ManualInvestigationApp: React.FC<ManualInvestigationAppProps> = ({
   return (
     <ServiceContext.Provider value={serviceFactory}>
       <div className={`manual-investigation-app min-h-screen bg-gray-50 ${className}`}>
-        <Router basename="/manual-investigation">
-          <div className="container mx-auto px-4 py-6">
-            <header className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Manual Investigation
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Expert-guided investigation tools and workflows
-              </p>
-            </header>
+        <div className="container mx-auto px-4 py-6">
+          <header className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Manual Investigation
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Expert-guided investigation tools and workflows
+            </p>
+          </header>
 
-            <main>
-              <Routes>
-                {/* Main dashboard route */}
-                <Route path="/" element={<InvestigationDashboard />} />
+          <main>
+            <Routes>
+              {/* Main dashboard route */}
+              <Route path="/" element={<InvestigationDashboard />} />
+              <Route path="/investigations" element={<InvestigationDashboard />} />
+              <Route path="/investigations/*" element={<InvestigationDashboard />} />
 
-                {/* Investigation detail routes */}
-                <Route
-                  path="/investigation/:id"
-                  element={<InvestigationDetailView />}
-                />
+              {/* Investigation detail routes */}
+              <Route
+                path="/investigation/:id"
+                element={<InvestigationDetailView />}
+              />
 
-                {/* Step execution route */}
-                <Route
-                  path="/investigation/:investigationId/step/:stepId"
-                  element={<StepExecutionView />}
-                />
+              {/* Step execution route */}
+              <Route
+                path="/investigation/:investigationId/step/:stepId"
+                element={<StepExecutionView />}
+              />
 
-                {/* Report generation route */}
-                <Route
-                  path="/investigation/:investigationId/report"
-                  element={<ReportGenerationView />}
-                />
+              {/* Report generation route */}
+              <Route
+                path="/investigation/:investigationId/report"
+                element={<ReportGenerationView />}
+              />
 
-                {/* Collaboration route */}
-                <Route
-                  path="/investigation/:investigationId/collaboration"
-                  element={<CollaborationView />}
-                />
+              {/* Collaboration route */}
+              <Route
+                path="/investigation/:investigationId/collaboration"
+                element={<CollaborationView />}
+              />
 
-                {/* Redirect unknown routes to dashboard */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-          </div>
-        </Router>
+              {/* Catch-all route for investigation paths */}
+              <Route path="*" element={<InvestigationDashboard />} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </ServiceContext.Provider>
   );
@@ -254,15 +255,6 @@ const CollaborationView: React.FC = () => {
       <InvestigationCollaboration investigationId={investigationId} />
     </div>
   );
-};
-
-// Hook for accessing services within the app
-export const useServices = () => {
-  const serviceFactory = useServiceFactory();
-  return {
-    investigation: serviceFactory.getInvestigationService(),
-    websocket: serviceFactory.getWebSocketService(),
-  };
 };
 
 // Default export for Module Federation

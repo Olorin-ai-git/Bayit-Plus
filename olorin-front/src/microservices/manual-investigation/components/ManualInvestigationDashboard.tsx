@@ -19,7 +19,7 @@ import {
   InvestigationFilter,
   InvestigationStats
 } from '../types/manualInvestigation';
-import { LoadingSpinner } from '../../core-ui/components/LoadingSpinner';
+import LoadingSpinner from '../../../shared/components/LoadingSpinner';
 
 interface ManualInvestigationDashboardProps {
   investigations: ManualInvestigation[];
