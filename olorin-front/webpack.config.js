@@ -146,11 +146,22 @@ const microservices = {
     name: 'manualInvestigation',
     port: 3009,
     exposes: {
-      './App': './src/microservices/manual-investigation/App.tsx'
+      './App': './src/microservices/manual-investigation/index.tsx',
+      './ManualInvestigationApp': './src/microservices/manual-investigation/ManualInvestigationApp.tsx',
+      './InvestigationDashboard': './src/microservices/manual-investigation/components/InvestigationDashboard.tsx',
+      './InvestigationDetails': './src/microservices/manual-investigation/components/InvestigationDetails.tsx',
+      './StepTracker': './src/microservices/manual-investigation/components/StepTracker.tsx',
+      './RiskScoreDisplay': './src/microservices/manual-investigation/components/RiskScoreDisplay.tsx',
+      './AgentResultsViewer': './src/microservices/manual-investigation/components/AgentResultsViewer.tsx',
+      './CollaborationPanel': './src/microservices/manual-investigation/components/CollaborationPanel.tsx',
+      './EvidenceManager': './src/microservices/manual-investigation/components/EvidenceManager.tsx',
+      './ReportGenerator': './src/microservices/manual-investigation/components/ReportGenerator.tsx'
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
-      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
+      designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
+      agentAnalytics: 'agentAnalytics@http://localhost:3002/remoteEntry.js',
+      visualization: 'visualization@http://localhost:3004/remoteEntry.js'
     }
   }
 };
@@ -167,7 +178,7 @@ if (!serviceConfig) {
 const getEntryPoint = (service) => {
   switch (service) {
     case 'shell':
-      return './src/shell/index.tsx';
+      return './src/shell/bootstrap.tsx';
     case 'investigation':
       return './src/microservices/investigation/index.tsx';
     case 'agentAnalytics':
@@ -293,7 +304,7 @@ const getSharedDependencies = (service) => {
     mitt: {
       singleton: true,
       requiredVersion: '3.0.1',
-      eager: false, // Prevent eager consumption errors
+      eager: true, // Make mitt eager to prevent consumption errors
       strictVersion: false // Allow version flexibility
     },
     'react-hot-toast': {
@@ -404,6 +415,7 @@ module.exports = (env, argv) => {
         'process.env.NODE_ENV': JSON.stringify(argv.mode || 'development'),
         'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
         'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
+        'process.env.REACT_APP_VERSION': JSON.stringify(process.env.REACT_APP_VERSION || '1.0.0'),
         'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090'),
         'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
         'process.env.REACT_APP_MF_SHELL_URL': JSON.stringify('http://localhost:3000'),

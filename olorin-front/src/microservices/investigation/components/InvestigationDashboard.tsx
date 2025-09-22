@@ -38,6 +38,10 @@ const InvestigationDashboard: React.FC<InvestigationDashboardProps> = ({
   const { state, actions } = useInvestigationContext();
   const { statistics, loading: statsLoading } = useInvestigationStatistics('week');
 
+  // Local state for component
+  const [investigations, setInvestigations] = useState<Investigation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   // Mock data for demonstration
   useEffect(() => {
     const mockInvestigations: Investigation[] = [

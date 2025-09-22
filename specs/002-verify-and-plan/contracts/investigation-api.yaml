@@ -1,0 +1,638 @@
+openapi: 3.0.0
+info:
+  title: Manual Investigation API
+  version: 1.0.0
+  description: Backend API contracts for manual investigation UI
+
+servers:
+  - url: http://localhost:8090/api
+    description: Development server
+
+paths:
+  /investigation:
+    post:
+      summary: Create new investigation
+      operationId: createInvestigation
+      tags: [Investigation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigationCreate'
+      responses:
+        '200':
+          description: Investigation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationOut'
+
+    get:
+      summary: List investigations
+      operationId: listInvestigations
+      tags: [Investigation]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/InvestigationStatus'
+        - name: entity_id
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of investigations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvestigationOut'
+
+  /investigation/{investigation_id}:
+    get:
+      summary: Get investigation details
+      operationId: getInvestigation
+      tags: [Investigation]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationOut'
+        '404':
+          description: Investigation not found
+
+    put:
+      summary: Update investigation
+      operationId: updateInvestigation
+      tags: [Investigation]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvestigationUpdate'
+      responses:
+        '200':
+          description: Investigation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationOut'
+
+    delete:
+      summary: Delete investigation
+      operationId: deleteInvestigation
+      tags: [Investigation]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Investigation deleted
+
+  /investigation/{investigation_id}/steps:
+    get:
+      summary: Get investigation steps
+      operationId: getInvestigationSteps
+      tags: [Investigation Steps]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Investigation steps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvestigationStep'
+
+  /investigation/{investigation_id}/step/{step_type}:
+    post:
+      summary: Execute investigation step
+      operationId: executeInvestigationStep
+      tags: [Investigation Steps]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: step_type
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/StepType'
+      responses:
+        '200':
+          description: Step execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationStep'
+
+  /network:
+    post:
+      summary: Analyze network signals
+      operationId: analyzeNetwork
+      tags: [Agent Analysis]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NetworkAnalysisRequest'
+      responses:
+        '200':
+          description: Network analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentResponse'
+
+  /device:
+    post:
+      summary: Analyze device fingerprint
+      operationId: analyzeDevice
+      tags: [Agent Analysis]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceAnalysisRequest'
+      responses:
+        '200':
+          description: Device analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentResponse'
+
+  /location:
+    post:
+      summary: Analyze location data
+      operationId: analyzeLocation
+      tags: [Agent Analysis]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationAnalysisRequest'
+      responses:
+        '200':
+          description: Location analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentResponse'
+
+  /logs:
+    post:
+      summary: Analyze activity logs
+      operationId: analyzeLogs
+      tags: [Agent Analysis]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogsAnalysisRequest'
+      responses:
+        '200':
+          description: Logs analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentResponse'
+
+  /investigation/{investigation_id}/comments:
+    get:
+      summary: Get investigation comments
+      operationId: getComments
+      tags: [Collaboration]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+
+    post:
+      summary: Add comment to investigation
+      operationId: addComment
+      tags: [Collaboration]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreate'
+      responses:
+        '201':
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+
+  /investigation/{investigation_id}/report:
+    post:
+      summary: Generate investigation report
+      operationId: generateReport
+      tags: [Reporting]
+      parameters:
+        - name: investigation_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequest'
+      responses:
+        '200':
+          description: Report generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationReport'
+
+components:
+  schemas:
+    InvestigationStatus:
+      type: string
+      enum:
+        - PENDING
+        - IN_PROGRESS
+        - REVIEW
+        - COMPLETED
+        - FAILED
+        - PAUSED
+        - ESCALATED
+
+    StepType:
+      type: string
+      enum:
+        - device
+        - location
+        - network
+        - logs
+
+    StepStatus:
+      type: string
+      enum:
+        - PENDING
+        - RUNNING
+        - COMPLETED
+        - FAILED
+        - RETRYING
+
+    RiskLevel:
+      type: string
+      enum:
+        - LOW
+        - MEDIUM
+        - HIGH
+        - CRITICAL
+
+    Priority:
+      type: string
+      enum:
+        - LOW
+        - NORMAL
+        - HIGH
+        - URGENT
+
+    InvestigationCreate:
+      type: object
+      required:
+        - entity_id
+        - entity_type
+      properties:
+        id:
+          type: string
+          format: uuid
+        entity_id:
+          type: string
+        entity_type:
+          type: string
+        priority:
+          $ref: '#/components/schemas/Priority'
+        assigned_to:
+          type: array
+          items:
+            type: string
+        template_id:
+          type: string
+
+    InvestigationUpdate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/InvestigationStatus'
+        priority:
+          $ref: '#/components/schemas/Priority'
+        assigned_to:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+
+    InvestigationOut:
+      type: object
+      properties:
+        id:
+          type: string
+        entity_id:
+          type: string
+        entity_type:
+          type: string
+        status:
+          $ref: '#/components/schemas/InvestigationStatus'
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        assigned_to:
+          type: array
+          items:
+            type: string
+        priority:
+          $ref: '#/components/schemas/Priority'
+        metadata:
+          type: object
+
+    InvestigationStep:
+      type: object
+      properties:
+        id:
+          type: string
+        investigation_id:
+          type: string
+        type:
+          $ref: '#/components/schemas/StepType'
+        status:
+          $ref: '#/components/schemas/StepStatus'
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        retry_count:
+          type: integer
+        error:
+          type: string
+        result:
+          $ref: '#/components/schemas/AgentResponse'
+
+    AgentResponse:
+      type: object
+      properties:
+        agent_type:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        risk_level:
+          $ref: '#/components/schemas/RiskLevel'
+        signals:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              value:
+                type: any
+              confidence:
+                type: number
+              description:
+                type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+        raw_data:
+          type: object
+        llm_assessment:
+          type: string
+        processing_time:
+          type: integer
+
+    NetworkAnalysisRequest:
+      type: object
+      required:
+        - entity_id
+      properties:
+        entity_id:
+          type: string
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+        metadata:
+          type: object
+
+    DeviceAnalysisRequest:
+      type: object
+      required:
+        - entity_id
+      properties:
+        entity_id:
+          type: string
+        device_id:
+          type: string
+        fingerprint:
+          type: object
+        metadata:
+          type: object
+
+    LocationAnalysisRequest:
+      type: object
+      required:
+        - entity_id
+      properties:
+        entity_id:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        ip_address:
+          type: string
+        metadata:
+          type: object
+
+    LogsAnalysisRequest:
+      type: object
+      required:
+        - entity_id
+      properties:
+        entity_id:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        log_type:
+          type: string
+        metadata:
+          type: object
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        investigation_id:
+          type: string
+        author_id:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        edited_at:
+          type: string
+          format: date-time
+        parent_id:
+          type: string
+        mentions:
+          type: array
+          items:
+            type: string
+        attachments:
+          type: array
+          items:
+            type: object
+
+    CommentCreate:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          maxLength: 5000
+        parent_id:
+          type: string
+        mentions:
+          type: array
+          items:
+            type: string
+
+    ReportRequest:
+      type: object
+      properties:
+        format:
+          type: string
+          enum:
+            - PDF
+            - HTML
+            - JSON
+            - CSV
+        sections:
+          type: array
+          items:
+            type: string
+
+    InvestigationReport:
+      type: object
+      properties:
+        id:
+          type: string
+        investigation_id:
+          type: string
+        generated_at:
+          type: string
+          format: date-time
+        generated_by:
+          type: string
+        format:
+          type: string
+        summary:
+          type: string
+        findings:
+          type: array
+          items:
+            type: object
+        recommendations:
+          type: array
+          items:
+            type: string
+        url:
+          type: string

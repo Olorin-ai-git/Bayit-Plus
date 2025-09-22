@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import manualinvestigationApp from './App';
+import { ManualInvestigationApp } from './ManualInvestigationApp';
 import './styles/tailwind.css';
 
 // Initialize the manualinvestigation Service
@@ -17,7 +17,7 @@ const initializemanualinvestigationService = async () => {
 
     root.render(
       <React.StrictMode>
-        <manualinvestigationApp />
+        <ManualInvestigationApp />
       </React.StrictMode>
     );
 

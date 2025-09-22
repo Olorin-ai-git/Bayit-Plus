@@ -3,7 +3,7 @@
  */
 
 import { type Emitter } from 'mitt';
-import { EventBusEvents, EventBusManager } from '@shared/events/EventBus';
+import { EventBusEvents, EventBusManager } from '@shared/events/eventBus';
 
 declare global {
   interface Window {
