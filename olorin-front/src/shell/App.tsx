@@ -4,6 +4,7 @@ import ErrorBoundary from '@shared/components/ErrorBoundary';
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 import { EventBusManager, eventBus } from '@shared/events/eventBus';
 import RemoteInvestigationService from './components/RemoteInvestigationService';
+import RemoteAutonomousInvestigationService from './components/RemoteAutonomousInvestigationService';
 import './globals';
 
 interface ShellState {
@@ -466,6 +467,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<ShellHomePage />} />
               <Route path="/investigations/*" element={<RemoteInvestigationService />} />
+              <Route path="/autonomous-investigation/*" element={<RemoteAutonomousInvestigationService />} />
               <Route path="/analytics" element={
                 <ServicePlaceholder
                   title="Analytics Service"

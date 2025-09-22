@@ -247,23 +247,33 @@ export const useConceptStore = create<ConceptState>()(
 // Computed selectors
 export const useActiveConcept = () => useConceptStore((state) => state.activeConcept);
 export const useActiveConfiguration = () => useConceptStore((state) => state.getActiveConfiguration());
+// Fixed: Use stable selector with shallow comparison to avoid infinite loops
 export const useTransitionState = () =>
-  useConceptStore((state) => ({
-    isTransitioning: state.isTransitioning,
-    transitionProgress: state.transitionProgress,
-  }));
+  useConceptStore(
+    (state) => ({
+      isTransitioning: state.isTransitioning,
+      transitionProgress: state.transitionProgress,
+    }),
+    (a, b) => a.isTransitioning === b.isTransitioning && a.transitionProgress === b.transitionProgress
+  );
 
+// Fixed: Use memoized selector to avoid infinite loops
 export const useConceptHistory = () =>
-  useConceptStore((state) => {
-    const sortedConcepts = Object.entries(state.conceptStates)
-      .sort(([, a], [, b]) => b.lastUsed - a.lastUsed)
-      .map(([concept]) => concept as UIConcept);
+  useConceptStore(
+    (state) => {
+      const sortedConcepts = Object.entries(state.conceptStates)
+        .sort(([, a], [, b]) => b.lastUsed - a.lastUsed)
+        .map(([concept]) => concept as UIConcept);
 
-    return {
-      mostRecentConcepts: sortedConcepts.slice(0, 3),
-      previousConcept: state.previousConcept,
-    };
-  });
+      return {
+        mostRecentConcepts: sortedConcepts.slice(0, 3),
+        previousConcept: state.previousConcept,
+      };
+    },
+    (a, b) =>
+      a.previousConcept === b.previousConcept &&
+      JSON.stringify(a.mostRecentConcepts) === JSON.stringify(b.mostRecentConcepts)
+  );
 
 // Individual concept selectors
 export const usePowerGridConfig = () =>

@@ -4,10 +4,159 @@
  */
 
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Investigation, Domain, Evidence, InvestigationStatus, EntityType } from '../types';
+import { Investigation, Evidence, InvestigationStatus, EntityType } from '../types';
+import { Domain } from '../components/shared/DomainCard';
+import { env, getBooleanEnv } from '../utils/env';
+
+// Mock data for development - this would be replaced by actual API calls
+const mockInvestigation: Investigation = {
+  id: 'INV-123',
+  entity: { type: 'user', value: 'user_12345' },
+  time_window: {
+    start: '2025-01-21T10:00:00Z',
+    end: '2025-01-22T10:00:00Z',
+    duration_hours: 24
+  },
+  current_phase: 'analysis',
+  status: 'running',
+  priority: 'high',
+  confidence: 0.85,
+  quality_score: 0.78,
+  completeness: 0.65,
+  risk_score: 0.72,
+  risk_progression: [
+    {
+      timestamp: '2025-01-21T10:00:00Z',
+      score: 0.3,
+      source: 'initial',
+      reason: 'Investigation started',
+      confidence: 0.5,
+      evidence_count: 0
+    },
+    {
+      timestamp: '2025-01-21T12:00:00Z',
+      score: 0.72,
+      source: 'device_analysis',
+      reason: 'Suspicious device patterns detected',
+      confidence: 0.85,
+      evidence_count: 15
+    }
+  ],
+  created_by: 'analyst_001',
+  assigned_to: ['analyst_001', 'analyst_002'],
+  created_at: '2025-01-21T10:00:00Z',
+  updated_at: '2025-01-21T12:30:00Z'
+};
+
+const mockDomains: Domain[] = [
+  {
+    id: 'domain-device-001',
+    name: 'Device Analysis',
+    type: 'device',
+    riskScore: 0.8,
+    confidence: 0.92,
+    evidenceCount: 12,
+    lastUpdated: '2025-01-22T10:30:00Z',
+    description: 'Analysis of device fingerprints and behavioral patterns',
+    metadata: {
+      source: 'device_analyzer',
+      category: 'security',
+      priority: 'high',
+      tags: ['device', 'fingerprint', 'behavioral'],
+      attributes: { status: 'completed' }
+    },
+    relationships: {
+      connectedDomains: ['domain-network-001', 'domain-location-001'],
+      evidenceIds: ['EVD-001', 'EVD-004', 'EVD-007'],
+      agentIds: ['agent-device-analyzer']
+    },
+    insights: {
+      summary: 'Detected unusual device fingerprint patterns',
+      keyFindings: ['Multiple device IDs from same IP', 'Inconsistent browser signatures'],
+      anomalies: ['Device fingerprint mismatch']
+    }
+  },
+  {
+    id: 'domain-location-001',
+    name: 'Location Analysis',
+    type: 'location',
+    riskScore: 0.6,
+    confidence: 0.85,
+    evidenceCount: 8,
+    lastUpdated: '2025-01-22T11:15:00Z',
+    description: 'Geographic location validation and impossible travel detection',
+    metadata: {
+      source: 'location_analyzer',
+      category: 'geographical',
+      priority: 'medium',
+      tags: ['location', 'travel', 'geographic'],
+      attributes: { status: 'in_progress' }
+    },
+    relationships: {
+      connectedDomains: ['domain-device-001'],
+      evidenceIds: ['EVD-002', 'EVD-005'],
+      agentIds: ['agent-location-analyzer']
+    },
+    insights: {
+      summary: 'Analyzing geographic patterns and travel feasibility',
+      keyFindings: ['Rapid location changes detected'],
+      patterns: ['Cross-continental activity within hours']
+    }
+  },
+  {
+    id: 'domain-network-001',
+    name: 'Network Analysis',
+    type: 'network',
+    riskScore: 0.9,
+    confidence: 0.88,
+    evidenceCount: 15,
+    lastUpdated: '2025-01-22T12:00:00Z',
+    description: 'Network connection patterns and IP address analysis',
+    metadata: {
+      source: 'network_analyzer',
+      category: 'network',
+      priority: 'critical',
+      tags: ['network', 'ip', 'connections'],
+      attributes: { status: 'completed' }
+    },
+    relationships: {
+      connectedDomains: ['domain-device-001'],
+      evidenceIds: ['EVD-003', 'EVD-006', 'EVD-008'],
+      agentIds: ['agent-network-analyzer']
+    },
+    insights: {
+      summary: 'High-risk network patterns identified',
+      keyFindings: ['VPN usage detected', 'Multiple IP addresses', 'Suspicious network hops'],
+      anomalies: ['TOR network activity', 'Proxy chain detected']
+    }
+  }
+];
+
+const mockEvidence: Evidence[] = [
+  {
+    id: 'EVD-001',
+    domain: 'Device Analysis',
+    summary: 'Unusual device fingerprint detected',
+    confidence: 0.9,
+    risk_score: 0.8,
+    timestamp: '2025-01-21T11:00:00Z',
+    source: 'device_analyzer',
+    type: 'anomaly'
+  },
+  {
+    id: 'EVD-002',
+    domain: 'Network Analysis',
+    summary: 'Multiple IP addresses from different countries',
+    confidence: 0.85,
+    risk_score: 0.7,
+    timestamp: '2025-01-21T11:30:00Z',
+    source: 'network_analyzer',
+    type: 'pattern'
+  }
+];
 
 // API base configuration
-const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090/api/v1';
+const API_BASE = env.REACT_APP_API_BASE_URL + '/api/v1';
 
 // Query keys for consistent cache management
 export const investigationKeys = {
@@ -246,4 +395,20 @@ export function useUpdateInvestigationStatus() {
       queryClient.invalidateQueries({ queryKey: investigationKeys.lists() });
     },
   });
+}
+
+/**
+ * Combined hook that provides current investigation data
+ * Uses mock data by default for development
+ */
+export function useInvestigationQueries() {
+  const USE_MOCK_DATA = getBooleanEnv('REACT_APP_USE_MOCK_DATA', true);
+
+  return {
+    investigation: USE_MOCK_DATA ? mockInvestigation : undefined,
+    domains: USE_MOCK_DATA ? mockDomains : [],
+    evidence: USE_MOCK_DATA ? mockEvidence : [],
+    isLoading: false,
+    error: null
+  };
 }

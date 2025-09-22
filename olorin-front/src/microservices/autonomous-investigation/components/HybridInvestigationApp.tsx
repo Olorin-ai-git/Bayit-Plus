@@ -9,7 +9,8 @@
  */
 
 import React, { Suspense, useCallback, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ErrorBoundary from '../../../shared/components/ErrorBoundary';
 import {
   useActiveConcept,
   useTransitionState,
@@ -18,6 +19,20 @@ import {
 import { ConceptSwitcher } from './shared/ConceptSwitcher';
 import { LoadingSpinner } from './shared/LoadingSpinner';
 import { ErrorAlert } from './shared/ErrorAlert';
+
+// Create a new QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 // Lazy load concept components for better performance
 const PowerGridView = React.lazy(() => import('./concepts/power-grid/PowerGridView'));
@@ -178,7 +193,8 @@ export const HybridInvestigationApp: React.FC<HybridInvestigationAppProps> = ({
   };
 
   return (
-    <div className={`hybrid-investigation-app relative w-full h-screen bg-gray-50 ${className}`}>
+    <QueryClientProvider client={queryClient}>
+      <div className={`hybrid-investigation-app relative w-full h-screen bg-gray-50 ${className}`}>
       {/* Concept Switcher */}
       {showConceptSwitcher && (
         <ConceptSwitcher
@@ -226,8 +242,8 @@ export const HybridInvestigationApp: React.FC<HybridInvestigationAppProps> = ({
       {/* Main Content Area */}
       <ConceptTransition isTransitioning={isTransitioning} transitionProgress={transitionProgress}>
         <ErrorBoundary
-          FallbackComponent={ConceptErrorFallback}
-          onReset={() => window.location.reload()}
+          serviceName="hybrid-investigation-app"
+          fallback={<ConceptErrorFallback error={new Error('Component loading failed')} resetError={() => window.location.reload()} />}
         >
           <Suspense
             fallback={
@@ -275,7 +291,7 @@ export const HybridInvestigationApp: React.FC<HybridInvestigationAppProps> = ({
           </div>
         </details>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 };
 

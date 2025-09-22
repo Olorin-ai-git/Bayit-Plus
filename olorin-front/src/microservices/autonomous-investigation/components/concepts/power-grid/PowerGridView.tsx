@@ -341,6 +341,7 @@ export const PowerGridView: React.FC = () => {
                 enablePan={true}
                 showMinimap={true}
                 className="h-full"
+                investigationId={investigation?.id}
                 onNodeClick={(nodeId, event) => {
                   console.log('Node clicked:', nodeId);
                   handleDomainSelect(nodeId);
