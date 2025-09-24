@@ -69,16 +69,16 @@ class SnowflakeClient:
             self.connection = None
             self.is_real = False
         
-    async def connect(self, database: str = "FRAUD_ANALYTICS", schema: str = "PUBLIC"):
+    async def connect(self, database: str = None, schema: str = "PUBLIC"):
         """Establish connection to Snowflake."""
         if self.is_real:
             return await self._real_client.connect(database, schema)
         else:
-            # Mock connection
-            await asyncio.sleep(0.1)  # Simulate connection
-            logger.info(f"Mock connected to Snowflake: {self.account}/{database}.{schema}")
-            self.database = database
+            # Mock connection - use environment variable for database if not provided
+            self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'MOCK_DB')
             self.schema = schema
+            await asyncio.sleep(0.1)  # Simulate connection
+            logger.info(f"Mock connected to Snowflake: {self.account}/{self.database}.{self.schema}")
         
     async def disconnect(self):
         """Close Snowflake connection."""

@@ -13,7 +13,8 @@ from .schema_constants import (
     PAYMENT_METHOD, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
     FIRST_NAME, LAST_NAME, PHONE_NUMBER, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
     DEVICE_MODEL, DEVICE_OS_VERSION, PARSED_USER_AGENT, IP, IP_COUNTRY_CODE,
-    CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, build_safe_select_columns
+    CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, build_safe_select_columns,
+    get_full_table_name
 )
 
 from app.service.logging import get_bridge_logger
@@ -122,7 +123,7 @@ class SnowflakeQueryBuilder:
         # Build final query
         query = f"""
         SELECT {safe_columns}
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {get_full_table_name()}
         WHERE {combined_filters}
         ORDER BY TX_DATETIME DESC
         LIMIT {limit}

@@ -38,7 +38,7 @@ class RealSnowflakeClient:
         self.host = config.get('host', self.account)  # Host can be same as account
         self.user = config.get('user')
         self.password = config.get('password')
-        self.database = config.get('database', 'FRAUD_ANALYTICS')
+        self.database = config.get('database')
         self.schema = config.get('schema', 'PUBLIC')
         self.warehouse = config.get('warehouse', 'COMPUTE_WH')
         self.role = config.get('role')
@@ -49,7 +49,10 @@ class RealSnowflakeClient:
         self.pool_max_overflow = int(config.get('pool_max_overflow', '10'))
         self.pool_timeout = int(config.get('pool_timeout', '30'))
         self.query_timeout = int(config.get('query_timeout', '300'))
-        
+
+        # Load table name from environment
+        self.transactions_table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
         # Validate critical configuration
         if not all([self.account, self.user, self.password, self.database]):
             missing = []
@@ -61,7 +64,16 @@ class RealSnowflakeClient:
             logger.error(f"Missing critical Snowflake configuration: {', '.join(missing)}")
             logger.error("Please configure these in your .env file")
             # Don't raise exception - just warn (as per requirements)
-    
+
+    def get_full_table_name(self) -> str:
+        """Get the full qualified table name: database.schema.table"""
+        if self.database and self.schema:
+            return f"{self.database}.{self.schema}.{self.transactions_table}"
+        elif self.database:
+            return f"{self.database}.{self.transactions_table}"
+        else:
+            return self.transactions_table
+
     def _get_connection(self):
         """Get or create Snowflake connection."""
         if self.connection is None:
@@ -243,7 +255,7 @@ class RealSnowflakeClient:
                 SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) as risk_weighted_value,
                 MAX({MODEL_SCORE}) as max_risk_score,
                 SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count
-            FROM {self.database}.{self.schema}.TRANSACTIONS_ENRICHED
+            FROM {self.get_full_table_name()}
             WHERE {TX_DATETIME} >= DATEADD(hour, -{time_window_hours}, CURRENT_TIMESTAMP())
                 AND {group_by} IS NOT NULL
             GROUP BY {group_by}

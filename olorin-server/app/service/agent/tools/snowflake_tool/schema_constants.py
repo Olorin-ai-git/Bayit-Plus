@@ -6,6 +6,7 @@ Generated from: Tx Table Schema.csv
 Total columns: 333
 """
 
+import os
 from typing import Dict, Set
 
 
@@ -1134,3 +1135,22 @@ if ACTUAL_COLUMN_COUNT != EXPECTED_COLUMN_COUNT:
 
 # Schema validation passed
 print(f"✅ Schema constants loaded: {ACTUAL_COLUMN_COUNT} columns validated")
+
+
+def get_full_table_name(database: str = None, schema: str = None, table_name: str = None) -> str:
+    """
+    Get the full qualified table name using environment variables.
+
+    Args:
+        database: Database name override (defaults to SNOWFLAKE_DATABASE)
+        schema: Schema name override (defaults to SNOWFLAKE_SCHEMA)
+        table_name: Table name override (defaults to SNOWFLAKE_TRANSACTIONS_TABLE)
+
+    Returns:
+        Full qualified table name: database.schema.table
+    """
+    db = database or os.getenv('SNOWFLAKE_DATABASE')
+    sch = schema or os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    tbl = table_name or os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
+    return f"{db}.{sch}.{tbl}"

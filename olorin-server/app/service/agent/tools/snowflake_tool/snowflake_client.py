@@ -42,7 +42,7 @@ class SnowflakeClient:
         self.username = username
         self.password = password
         self.warehouse = warehouse or os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
-        self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+        self.database = database or os.getenv('SNOWFLAKE_DATABASE')
         self.schema = schema or os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
         self.connection = None
         self._executor = ThreadPoolExecutor(max_workers=1)

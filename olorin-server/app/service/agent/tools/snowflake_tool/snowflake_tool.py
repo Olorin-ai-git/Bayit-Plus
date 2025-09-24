@@ -21,7 +21,8 @@ from .schema_constants import (
     IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, DEVICE_TYPE,
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
     CARD_ISSUER, MAXMIND_RISK_SCORE, DEVICE_MODEL, DEVICE_OS_VERSION,
-    PARSED_USER_AGENT, build_safe_select_columns, is_valid_column
+    PARSED_USER_AGENT, build_safe_select_columns, is_valid_column,
+    get_full_table_name
 )
 
 class SnowflakeJSONEncoder(json.JSONEncoder):
@@ -213,7 +214,7 @@ class SnowflakeQueryTool(BaseTool):
 
         query = f"""
         SELECT {safe_columns}
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {get_full_table_name()}
         WHERE {where_clause}
           AND {date_filter}
         ORDER BY TX_DATETIME DESC
