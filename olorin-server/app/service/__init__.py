@@ -114,11 +114,11 @@ async def on_startup(app: FastAPI):
     Args:
         app(FastAPI): FastAPI app object.
     """
-    print("🚀 DEBUG: on_startup function called!")  # Debug print that should always show
     logger.info("🚀 Starting Olorin application...")
+
     # Initialize performance optimization system
     await initialize_performance_system(app)
-    
+
     # Initialize the agent system
     from .agent_init import initialize_agent
     await initialize_agent(app)

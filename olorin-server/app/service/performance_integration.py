@@ -174,26 +174,35 @@ class ConnectionPoolManager:
     async def initialize_redis_pool(self) -> bool:
         """Initialize Redis connection pool."""
         try:
+            logger.info(f"Attempting to connect to Redis at {self.config.redis_host}:{self.config.redis_port}...")
+
             self.redis_pool = redis.ConnectionPool(
                 host=self.config.redis_host,
                 port=self.config.redis_port,
                 max_connections=self.config.connection_pool_size,
                 decode_responses=True,
-                socket_timeout=5,
-                socket_connect_timeout=5,
-                retry_on_timeout=True
+                socket_timeout=2,  # Reduced timeout for faster failure
+                socket_connect_timeout=2,  # Reduced timeout for faster failure
+                retry_on_timeout=False,  # Don't retry to avoid hanging
+                health_check_interval=30
             )
-            
-            # Test connection
+
+            # Test connection with timeout protection
             redis_client = redis.Redis(connection_pool=self.redis_pool)
-            await redis_client.ping()
+
+            # Use asyncio.wait_for to enforce absolute timeout
+            await asyncio.wait_for(redis_client.ping(), timeout=3.0)
             await redis_client.aclose()
-            
-            logger.info(f"Redis connection pool initialized ({self.config.connection_pool_size} connections)")
+
+            logger.info(f"✅ Redis connection pool initialized ({self.config.connection_pool_size} connections)")
             return True
-            
+
+        except asyncio.TimeoutError:
+            logger.info("⏰ Redis connection timeout - continuing without Redis caching")
+            self.redis_pool = None
+            return False
         except Exception as e:
-            logger.info(f"Redis not available, continuing without Redis caching: {e}")
+            logger.info(f"❌ Redis not available, continuing without Redis caching: {e}")
             self.redis_pool = None
             return False
     

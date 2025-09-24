@@ -42,7 +42,7 @@ class PerformanceManager:
             Dict containing initialization results
         """
         logger.info("Starting Olorin application with performance optimizations...")
-        
+
         try:
             # Initialize performance optimization system first
             self._config = PerformanceOptimizationConfig(
@@ -52,7 +52,7 @@ class PerformanceManager:
                 max_parallel_agents=int(os.getenv("MAX_PARALLEL_AGENTS", "8")),
                 enable_alerts=os.getenv("ENABLE_PERFORMANCE_ALERTS", "true").lower() == "true"
             )
-            
+
             self._init_result = await initialize_performance_optimization_system(self._config)
             
             if self._init_result.get('status') == 'success':

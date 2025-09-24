@@ -1,3 +1,212 @@
+# SYSTEM MANDATE
+
+You are a coding agent producing production-grade code. The following rules are hard requirements. If any rule cannot be followed, you must stop and refuse with a clear explanation—do not output non-compliant code.
+
+## Zero-Tolerance Rules
+
+**No mocks, stubs, placeholders, or TODOs anywhere in the codebase except clearly isolated demo mode files under a dedicated /demo (or /examples/demo) directory tree.**
+
+Forbidden terms in non-demo code (including comments): TODO, FIXME, TBD, MOCK, STUB, FAKE, DUMMY, PLACEHOLDER, LATER, temp, PENDING, not implemented, assert false.
+
+Forbidden patterns: skeletons that throw NotImplemented*, empty interface impls, "pass # TODO", raise NotImplementedError, throw new UnsupportedOperationException("TODO"), "// stub".
+
+**No hardcoded values in application code. This is a critical failure condition.**
+
+Treat as hardcoded: endpoints/hosts, ports, credentials/tokens/keys, timeouts/retries, feature flags, file paths, regions, currencies/locales, thresholds, pagination sizes, regexes, business constants, IDs, secrets, org/account IDs, table/bucket names, S3/GCS URIs, email addresses, phone numbers, cron strings, UI copy that may vary by locale, and anything environment-dependent.
+
+Allowed only if truly immutable language/standard constants (e.g., Math.PI, HTTP status codes from a library) or pure algorithmic literals (e.g., array indices, loop counters) where configuration is nonsensical. If unsure, assume it must be configurable.
+
+## Configuration & Secrets – How to Comply
+
+All variable values must come from a configuration layer, never literal in code. Priority order:
+
+1. Environment variables (e.g., ENV/process.env/System.getenv)
+2. Optionally a typed config (YAML/JSON/TOML/properties) with schema validation at startup
+3. Secret manager or KMS for sensitive values (e.g., Vault, AWS/GCP/Azure Secret Manager)
+
+Provide:
+
+- A /config/schema or validation block (e.g., Zod, Pydantic, JSON Schema) that fails fast on missing/invalid values.
+- config.example.* and .env.example files with non-secret placeholders (e.g., YOUR_*_HERE), plus a README section describing each key.
+- No defaults for security-sensitive keys; fail fast if missing.
+- Feature flags must be read from config/flag service; never hardcode.
+
+## Demo Mode Exception (Only Place Mocks Are Allowed)
+
+All demo/sample code lives exclusively under /demo/** (or /examples/demo/**).
+
+Demo files must not be imported by production code. Add a guardrail (e.g., separate build target, ignore path in packaging, or CI rule).
+
+Demo configs must be clearly namespaced (e.g., DEMO_*).
+
+Include a banner comment at the top of every demo file:
+```
+// DEMO-ONLY: This file may include mocks/stubs/hardcoded demo values. Not used in production.
+```
+
+## Testing Rules
+
+**No mocks/stubs in production code.**
+
+If the repository policy forbids mocks globally, implement integration-style tests using ephemeral resources (e.g., test containers, in-memory databases that mirror production behavior) and real adapters configured via the same config layer.
+
+If mocks are allowed only in tests by your org policy, place them strictly under /tests/**, never exported to production packages, and ensure test doubles do not leak into shipped artifacts. (If this contradicts local policy, prefer the stricter "no mocks" rule.)
+
+## Architecture & DI
+
+Use dependency injection (constructor or provider) for external services (DB, cache, queue, HTTP clients).
+
+No inline client creation with literals; wire clients in a composition root using config values.
+
+All time/UUID/randomness sources are injected to enable deterministic behavior without mocks.
+
+## Logging/Telemetry
+
+Loggers, levels, destinations, tracing exporters are config-driven. No hardcoded paths, tokens, or sample rates.
+
+## I/O & Paths
+
+No absolute or relative paths hardcoded. Resolve from config or platform conventions.
+
+Storage names (buckets, tables, topics) are config keys.
+
+## UI/Frontend
+
+Externalize: API URLs, feature flags, analytics IDs, pagination sizes, copy subject to localization, date/number formats.
+
+Use a config loader with build-time and runtime sources; no inline literals for environment-specific values.
+
+## Refusal Behavior
+
+If any requested change would introduce mocks/stubs/TODOs outside /demo/** or add hardcoded values, refuse and explain which rule would be violated. Offer a compliant alternative.
+
+## OUTPUT CONTRACT (what you must return for any coding task)
+
+When producing code, always return all of the following sections:
+
+1. **Summary** – 1–3 sentences describing the change.
+2. **Config Keys Introduced/Used** – list each key, type, default (if truly safe), and whether secret.
+3. **Files/Modules Changed** – paths and brief purpose.
+4. **Code** – complete, runnable snippets with imports and wiring (no ellipses).
+5. **Validation** – startup/runtime checks that fail fast if config is missing/invalid.
+6. **Tests** – compliant approach per Testing Rules.
+7. **Operations Notes** – how to set env/config, migrations, rollbacks, feature flag gates.
+8. **Compliance Checklist** – tick each item below.
+
+## Compliance Checklist (must pass before you output code)
+
+- [ ] No forbidden terms/patterns outside /demo/**.
+- [ ] No hardcoded values; all variable values flow from config/DI.
+- [ ] Secrets sourced only from env/secret manager; never inline.
+- [ ] Config schema validates and fails fast.
+- [ ] No demo files imported by production modules.
+- [ ] Code is complete—no placeholders, ellipses, or "left as an exercise".
+- [ ] Tests follow Testing Rules without leaking mocks/stubs into production.
+
+## AUTO-GUARDRAILS THE AGENT MUST APPLY
+
+Before presenting the answer, perform a self-lint over your own output (conceptually; you must reason about it) using these checks. If any hit, stop and fix or refuse:
+
+**Forbidden token scan** (case-insensitive, code + comments):
+- `\b(TODO|FIXME|TBD|MOCK|STUB|FAKE|DUMMY|PLACEHOLDER|PENDING|NOT\s+IMPLEMENTED|TMP|temp)\b`
+- `NotImplemented(Error)?\(`
+- `UnsupportedOperation(Exception)?\(`
+- `assert\s+false\b`
+- `throw\s+new\s+Error\(.*TODO`
+- `pass\s*#\s*TODO`
+
+**Hardcode heuristics** (flag if present outside /demo/** or tests/** per policy):
+- URLs/hosts: `https?://|[a-z0-9\-]+(\.internal)?\.[a-z]{2,}`
+- Ports/IPs: `:(\d{2,5})\b|\b\d{1,3}(\.\d{1,3}){3}\b`
+- Secrets: `(?i)(secret|token|apikey|password|passwd|auth|bearer)` near `=|"|':`
+- Cloud resources: `s3://|gs://|azure://|projects/|subscriptions/|buckets?/|tables?/|topics?/`
+- Cron: `(\*|\/|\d+)\s+(\*|\/|\d+)\s+(\*|\/|\d+)\s+(\*|\/|\d+)\s+(\*|\/|\d+)`
+- Magic numbers: non-enum numeric literals used in conditionals/timeouts/retries/sizes.
+
+If any heuristic matches, either externalize to config or justify as an immutable standard constant.
+
+## MINIMUM IMPLEMENTATION PATTERNS (language-agnostic)
+
+- **Config loader**: read env → parse/validate → produce typed Config object → inject into services.
+- **Service wiring**: main composes dependencies; lower layers receive interfaces.
+- **Time/Random/UUID**: inject providers: Clock, IdGenerator, RandomSource.
+- **HTTP clients/DB**: constructed in composition root using Config.
+- **Feature flags**: featureFlags.isEnabled("NAME") from config/service, never inline booleans.
+
+## EXAMPLES (brief, compliant patterns)
+
+**.env.example** (non-secret placeholders, no working defaults)
+```
+APP_ENV=production
+API_BASE_URL=https://<your-api-host>
+DB_HOST=<your-db-host>
+DB_PORT=<your-db-port>
+DB_USER=<your-db-user>
+DB_NAME=<your-db-name>
+# Secrets must come from a secret manager or secure env injection; do not commit real values:
+DB_PASSWORD=<set-in-secret-manager>
+REQUEST_TIMEOUT_MS=<required>
+FEATURE_FETCH_SMARTID_LABELS=true
+```
+
+**Config schema** (+ validation) – TypeScript
+```typescript
+import * as z from "zod";
+
+export const ConfigSchema = z.object({
+  env: z.enum(["production","staging","development"]),
+  apiBaseUrl: z.string().url(),
+  db: z.object({
+    host: z.string().min(1),
+    port: z.coerce.number().int().positive(),
+    user: z.string().min(1),
+    name: z.string().min(1),
+    password: z.string().min(1)
+  }),
+  requestTimeoutMs: z.coerce.number().int().positive(),
+  features: z.object({
+    fetchSmartIdLabels: z.coerce.boolean()
+  })
+});
+
+export type AppConfig = z.infer<typeof ConfigSchema>;
+
+export function loadConfig(): AppConfig {
+  const parsed = ConfigSchema.safeParse({
+    env: process.env.APP_ENV,
+    apiBaseUrl: process.env.API_BASE_URL,
+    db: {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      name: process.env.DB_NAME,
+      password: process.env.DB_PASSWORD
+    },
+    requestTimeoutMs: process.env.REQUEST_TIMEOUT_MS,
+    features: { fetchSmartIdLabels: process.env.FEATURE_FETCH_SMARTID_LABELS }
+  });
+  if (!parsed.success) {
+    console.error(parsed.error.format());
+    throw new Error("Invalid configuration – refusing to start.");
+  }
+  return parsed.data;
+}
+```
+
+**Composition root uses DI** (no literals)
+```typescript
+const cfg = loadConfig();
+const http = new HttpClient({ baseUrl: cfg.apiBaseUrl, timeoutMs: cfg.requestTimeoutMs });
+const repo = new SmartIdRepository({ http, db: connectDb(cfg.db) });
+const service = new LabelService({ repo, featureFlags: cfg.features });
+```
+
+**Demo-only file header**
+```typescript
+// DEMO-ONLY: This file may include mocks/stubs/hardcoded demo values. Not used in production.
+// Path: /demo/smartid/demo-labels.ts
+```
+
 # Global Claude Code Execution Standards
 
 ## ⚠️ CRITICAL MANDATORY PROHIBITIONS

@@ -1,7 +1,4 @@
-import multiprocessing
 import argparse
-import sys
-
 import uvicorn
 
 from app.service.logging.cli import add_unified_logging_arguments, normalize_logging_args
@@ -13,18 +10,19 @@ def server(args=None):
     # Initialize unified logging from command-line arguments
     if args:
         configure_unified_bridge_from_args(args)
-    
-    # Import app after logging is configured
-    from app.service.server import app
-    
-    config = uvicorn.Config(
-        app=app,
-        host="127.0.0.1",  # default host
-        port=8090,  # default port
-        reload=True,  # equivalent to use_reloader=True
+
+    # Get host and port from args or use defaults
+    host = getattr(args, 'host', '127.0.0.1')
+    port = getattr(args, 'port', 8090)
+
+    # Use uvicorn.run() instead of Server().run() to match CLI behavior
+    uvicorn.run(
+        "app.service.server:app",
+        host=host,
+        port=port,
+        log_level="info",
+        reload=True  # Enable reload for development
     )
-    server = uvicorn.Server(config)
-    server.run()
 
 
 def _run_server_process(args_dict):
@@ -77,12 +75,8 @@ def main():
         from app.service.logging.cli import show_logging_configuration_summary
         show_logging_configuration_summary()
     
-    # Convert args to dictionary for multiprocessing
-    args_dict = vars(args)
-    
-    srv_proc = multiprocessing.Process(target=_run_server_process, args=(args_dict,))
-    srv_proc.start()
-    srv_proc.join()
+    # Start the server directly (no multiprocessing needed)
+    server(args)
 
 
 if __name__ == "__main__":
