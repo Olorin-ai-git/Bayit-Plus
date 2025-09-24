@@ -7,7 +7,6 @@ from fastapi import APIRouter, Query, Request
 from app.models.agent_request import AgentRequest
 from app.models.agent_response import AgentMetadata, AgentOutput, AgentResponse
 from app.router.agent_router_helper import construct_agent_context
-from app.service import agent_service
 from app.service.error_handling import (
     AgentInvokeException,
     AuthorizationError,
