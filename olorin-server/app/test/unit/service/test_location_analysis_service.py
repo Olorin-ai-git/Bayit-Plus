@@ -4,11 +4,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import Request
 
-from app.service.agent.ato_agents.location_data_agent.client import LocationDataClient
-from app.service.agent.tools.vector_search_tool.vector_search_tool import (
-    VectorSearchTool,
-)
-from app.service.location_analysis_service import LocationAnalysisService
+# OBSOLETE TEST: LocationAnalysisService and ato_agents have been removed
+# This test is for legacy functionality that no longer exists
+# Location functionality is now handled by location_router.py with basic implementation
+pytestmark = pytest.mark.skip(reason="LocationAnalysisService removed - obsolete test file")
 
 
 @pytest.fixture

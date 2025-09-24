@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
-from app.service.logs_analysis_service import LogsAnalysisService
+from app.service.llm_logs_risk_service import LLMLogsRiskService
 
 logger = get_bridge_logger(__name__)
 router = APIRouter(prefix="/logs")
@@ -27,8 +27,8 @@ async def analyze_logs(
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     entity_type: str = Query("user_id", pattern="^(user_id|device_id)$"),
 ) -> Dict[str, Any]:
-    """Analyze logs for a user or device - delegates to LogsAnalysisService."""
-    logs_service = LogsAnalysisService()
+    """Analyze logs for a user or device - uses LLMLogsRiskService directly."""
+    logs_service = LLMLogsRiskService()
     return await logs_service.analyze_logs(
         entity_id=entity_id,
         entity_type=entity_type,

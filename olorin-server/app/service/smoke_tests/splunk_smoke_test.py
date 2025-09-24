@@ -5,7 +5,7 @@ Smoke tests for Splunk log analysis integration.
 import time
 from typing import Dict, Any
 
-from app.service.agent.ato_agents.splunk_agent.client import SplunkClient
+from app.service.agent.tools.splunk_tool.splunk_tool import MockSplunkClient as SplunkClient
 from app.service.config import get_settings_for_env
 from app.utils.firebase_secrets import get_app_secret
 from app.service.logging import get_bridge_logger

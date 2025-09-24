@@ -227,7 +227,8 @@ async def get_investigation_performance(investigation_id: str):
                     "start_time": investigation_metrics.get("start_time"),
                     "end_time": investigation_metrics.get("end_time"),
                     "status": investigation_metrics.get("status", "unknown")
-                },
+                }
+            }
         else:
             # No performance data available - return empty metrics
             if not investigation_exists:
@@ -246,10 +247,9 @@ async def get_investigation_performance(investigation_id: str):
                 "llm_call_count": 0,
                 "total_tokens_used": 0,
                 "cache_hits": 0,
-                "cache_misses": 0
-            },
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }
+                "cache_misses": 0,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
         
         if perf_manager:
             stats = perf_manager.get_performance_stats()

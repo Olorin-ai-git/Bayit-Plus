@@ -3,7 +3,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.service.agent.ato_agents.clients.tmx_client import TMXClient
+# OBSOLETE TEST: TMXClient from ato_agents has been removed
+# TMX functionality is handled through other client mechanisms
+pytestmark = pytest.mark.skip(reason="TMXClient from ato_agents removed - obsolete test file")
 
 
 @pytest.fixture

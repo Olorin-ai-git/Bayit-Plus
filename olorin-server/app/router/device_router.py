@@ -29,7 +29,7 @@ from app.persistence import (
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
-from app.service.device_analysis_service import DeviceAnalysisService
+from app.service.llm_device_risk_service import LLMDeviceRiskService
 from app.utils.auth_utils import get_auth_token
 from app.utils.constants import LIST_FIELDS_PRIORITY, MAX_PROMPT_TOKENS
 from app.utils.firebase_secrets import get_app_secret
@@ -88,7 +88,7 @@ async def analyze_device(
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     entity_type: str = Query(..., pattern="^(user_id|device_id)$"),
     profile_id: str = "9341450868951246",
-    service: DeviceAnalysisService = Depends(DeviceAnalysisService),
+    service: LLMDeviceRiskService = Depends(LLMDeviceRiskService),
 ) -> dict:
     # Only keep HTTP-specific logic here
     ensure_investigation_exists(investigation_id, entity_id, entity_type)
