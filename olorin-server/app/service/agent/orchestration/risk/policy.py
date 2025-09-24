@@ -25,9 +25,9 @@ def derive_confirmed_fraud(row: Dict[str, Any]) -> bool:
     if not isinstance(row, dict):
         return False
         
-    # Primary check: IS_FRAUD_TX column
+    # Primary check: IS_FRAUD_TX column (handle both boolean True and integer 1)
     is_fraud_tx = row.get("IS_FRAUD_TX")
-    if is_fraud_tx is True:
+    if is_fraud_tx is True or is_fraud_tx == 1:
         return True
     
     # Secondary check: NSURE_LAST_DECISION
@@ -648,10 +648,12 @@ def prepublish_validate(state: Dict[str, Any]) -> Dict[str, Any]:
         snowflake_data = state.get("snowflake_data", {})
         if snowflake_data and snowflake_data.get("results"):
             for row in snowflake_data["results"]:
-                if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
-                    confirmed_fraud_detected = True
-                    logger.info("🚨 CONFIRMED FRAUD BYPASS: prepublish_validate allowing ground truth fraud case")
-                    break
+                if isinstance(row, dict):
+                    is_fraud = row.get("IS_FRAUD_TX")
+                    if is_fraud is True or is_fraud == 1:
+                        confirmed_fraud_detected = True
+                        logger.info("🚨 CONFIRMED FRAUD BYPASS: prepublish_validate allowing ground truth fraud case")
+                        break
         
         # BYPASS ALL EVIDENCE CHECKS for confirmed fraud (ground truth overrides)
         if confirmed_fraud_detected:

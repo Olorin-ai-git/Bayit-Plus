@@ -66,10 +66,11 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         # Generate aggregation narrative
         aggregation_narrative = _generate_aggregation_narrative(facts, domain_findings)
         
-        # Determine fraud floor status for narrative
+        # Determine fraud floor status for narrative (handle both boolean and integer)
+        is_fraud_tx = facts.get("IS_FRAUD_TX")
         fraud_floor = bool(
-            facts.get("IS_FRAUD_TX") or 
-            facts.get("chargeback_confirmed") or 
+            (is_fraud_tx is True or is_fraud_tx == 1) or
+            facts.get("chargeback_confirmed") or
             facts.get("manual_case_outcome") == "fraud"
         )
         
@@ -262,9 +263,10 @@ def _generate_aggregation_narrative(facts: Dict[str, Any], domain_findings: Dict
     """Generate narrative explaining aggregation decisions."""
     narrative_parts = []
     
-    # Check for hard evidence that triggers fraud floor
+    # Check for hard evidence that triggers fraud floor (handle both boolean and integer)
     hard_evidence = []
-    if facts.get("IS_FRAUD_TX") is True:
+    is_fraud_tx = facts.get("IS_FRAUD_TX")
+    if is_fraud_tx is True or is_fraud_tx == 1:
         hard_evidence.append("confirmed fraud transaction")
     if facts.get("chargeback_confirmed") is True:
         hard_evidence.append("confirmed chargeback")
@@ -362,8 +364,9 @@ def _calculate_investigation_confidence(state: InvestigationState, risk_findings
 
 def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str, Any]) -> float:
     """Calculate REAL risk score based on actual domain analysis results with volume weighting."""
-    # Check for confirmed fraud indicators
-    if facts.get("IS_FRAUD_TX") is True:
+    # Check for confirmed fraud indicators (handle both boolean True and integer 1)
+    is_fraud_tx = facts.get("IS_FRAUD_TX")
+    if is_fraud_tx is True or is_fraud_tx == 1:
         return 1.0
     if facts.get("chargeback_confirmed") is True:
         return 0.95

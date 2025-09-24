@@ -71,25 +71,25 @@ class EnhancedFraudRouter:
         return {
             InvestigationComplexity.LOW: {
                 "strategy": "fast_track",
-                "domains": ["device", "network"],
+                "domains": ["device", "network", "authentication", "risk"],
                 "parallel": True,
                 "timeout": 30
             },
             InvestigationComplexity.MEDIUM: {
                 "strategy": "standard",
-                "domains": ["device", "network", "location"],
+                "domains": ["device", "network", "location", "authentication", "risk"],
                 "parallel": True,
                 "timeout": 60
             },
             InvestigationComplexity.HIGH: {
                 "strategy": "comprehensive",
-                "domains": ["device", "network", "location", "logs"],
+                "domains": ["device", "network", "location", "logs", "authentication", "risk"],
                 "parallel": False,  # Sequential for thoroughness
                 "timeout": 120
             },
             InvestigationComplexity.CRITICAL: {
                 "strategy": "full_investigation",
-                "domains": ["device", "network", "location", "logs"],
+                "domains": ["device", "network", "location", "logs", "authentication", "risk"],
                 "parallel": False,
                 "timeout": 300,
                 "human_review": True

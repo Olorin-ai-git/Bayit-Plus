@@ -82,9 +82,11 @@ def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
     snowflake_data = state.get("snowflake_data", {})
     if snowflake_data and snowflake_data.get("results"):
         for row in snowflake_data["results"]:
-            if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
-                facts["IS_FRAUD_TX"] = True
-                break
+            if isinstance(row, dict):
+                is_fraud = row.get("IS_FRAUD_TX")
+                if is_fraud is True or is_fraud == 1:
+                    facts["IS_FRAUD_TX"] = True
+                    break
     
     # Use single source of truth aggregator
     final_risk, gating_status, gating_reason = aggregate_domains(domains, facts)
@@ -171,11 +173,13 @@ def finalize_risk(state: Dict[str, Any]) -> None:
     snowflake_data = state.get("snowflake_data", {})
     if snowflake_data and snowflake_data.get("results"):
         for row in snowflake_data["results"]:
-            if isinstance(row, dict) and row.get("IS_FRAUD_TX") is True:
-                confirmed_fraud_detected = True
-                state["confirmed_fraud_present"] = True
-                logger.info("🚨 CONFIRMED FRAUD DETECTED: Will bypass evidence gating due to ground truth")
-                break
+            if isinstance(row, dict):
+                is_fraud = row.get("IS_FRAUD_TX")
+                if is_fraud is True or is_fraud == 1:
+                    confirmed_fraud_detected = True
+                    state["confirmed_fraud_present"] = True
+                    logger.info("🚨 CONFIRMED FRAUD DETECTED: Will bypass evidence gating due to ground truth")
+                    break
     
     # CRITICAL FIX: Hard evidence gating before publishing numeric risk
     validation_result = prepublish_validate(state)
