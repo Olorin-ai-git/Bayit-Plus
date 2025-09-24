@@ -196,10 +196,14 @@ class RiskAnalyzer:
         """
         # Convert percentage to decimal
         top_decimal = top_percentage / 100.0
-        
+
+        # Define IP column aliases to handle various forms of IP references
+        ip_aliases = {'IP', 'IP_ADDRESS', 'IPADDRESS', 'IP_ADDR'}
+        is_ip_grouping = group_by.upper() in ip_aliases
+
         # Add IP filtering condition if grouping by IP
         ip_filter = ""
-        if group_by.upper() == IP.upper():
+        if is_ip_grouping:
             # Filter out private IP addresses (RFC 1918, link-local, loopback) - EXTERNAL IPs ONLY
             # Using LIKE patterns for better Snowflake compatibility
             ip_filter = f"""
@@ -217,9 +221,12 @@ class RiskAnalyzer:
                 -- Only include external/public IP addresses with real activity
                 AND MODEL_SCORE > (SELECT PERCENTILE_CONT(0.1) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {get_full_table_name()} WHERE MODEL_SCORE > 0)
             """
-        
-        # Use the correct column name - if group_by is IP-related, use the IP constant
-        column_name = IP if group_by.upper() == IP.upper() else group_by
+
+        # Use the correct column name - map IP-related group_by values to the correct schema column
+        if is_ip_grouping:
+            column_name = IP  # Always use the correct schema column name
+        else:
+            column_name = group_by
 
         query = f"""
         WITH risk_calculations AS (
