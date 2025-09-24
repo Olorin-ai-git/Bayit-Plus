@@ -4,7 +4,7 @@
 -- Execute in Snowflake directly for live database updates
 -- ========================================================================
 
--- Use the correct database and schema
+-- Use the fraud analytics database and schema
 USE DATABASE FRAUD_ANALYTICS;
 USE SCHEMA PUBLIC;
 

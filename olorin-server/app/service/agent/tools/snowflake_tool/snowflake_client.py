@@ -12,6 +12,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Optional
 from app.service.logging import get_bridge_logger
+from .schema_constants import get_required_env_var
 
 logger = get_bridge_logger(__name__)
 
@@ -41,9 +42,9 @@ class SnowflakeClient:
         self.account = account
         self.username = username
         self.password = password
-        self.warehouse = warehouse or os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
-        self.database = database or os.getenv('SNOWFLAKE_DATABASE')
-        self.schema = schema or os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        self.warehouse = warehouse or get_required_env_var('SNOWFLAKE_WAREHOUSE')
+        self.database = database or get_required_env_var('SNOWFLAKE_DATABASE')
+        self.schema = schema or get_required_env_var('SNOWFLAKE_SCHEMA')
         self.connection = None
         self._executor = ThreadPoolExecutor(max_workers=1)
         

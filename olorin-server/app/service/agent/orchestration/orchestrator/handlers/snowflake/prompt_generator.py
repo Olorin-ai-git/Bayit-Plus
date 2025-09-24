@@ -4,6 +4,7 @@ Prompt Generator
 Generates prompts for Snowflake analysis.
 """
 
+import os
 from typing import Dict, Any
 
 from app.service.agent.tools.snowflake_tool.schema_constants import (
@@ -12,7 +13,8 @@ from app.service.agent.tools.snowflake_tool.schema_constants import (
     MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, PAYMENT_METHOD,
     CARD_BRAND, BIN, LAST_FOUR, CARD_ISSUER, MAXMIND_RISK_SCORE,
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER,
-    DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION, PARSED_USER_AGENT
+    DEVICE_TYPE, DEVICE_MODEL, DEVICE_OS_VERSION, PARSED_USER_AGENT,
+    get_full_table_name
 )
 
 
@@ -28,7 +30,7 @@ class PromptGenerator:
         Entity to investigate: {state['entity_type']} = {state['entity_id']}
 
         Required Snowflake queries:
-        1. Query FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED table for ALL records where:
+        1. Query {get_full_table_name()} table for ALL records where:
            - {IP} = '{state['entity_id']}' (if entity is IP)
            - Or related fields match the entity
            - Date range: LAST {date_range_days} DAYS

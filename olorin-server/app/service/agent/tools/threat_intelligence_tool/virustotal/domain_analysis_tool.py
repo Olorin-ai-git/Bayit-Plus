@@ -62,15 +62,19 @@ class DomainAnalysisInput(BaseModel):
             
             try:
                 # Query Snowflake for email associated with this IP
+                import os
                 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
+                from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name, get_required_env_var
                 from app.service.agent.tools.async_helpers import safe_run_async
-                
+
                 async def get_email_domain():
                     client = SnowflakeClient()
-                    await client.connect()
+                    database = get_required_env_var('SNOWFLAKE_DATABASE')
+                    schema = get_required_env_var('SNOWFLAKE_SCHEMA')
+                    await client.connect(database=database, schema=schema)
                     query = f"""
                     SELECT DISTINCT EMAIL
-                    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                    FROM {get_full_table_name()}
                     WHERE IP = '{domain}'
                     LIMIT 1
                     """

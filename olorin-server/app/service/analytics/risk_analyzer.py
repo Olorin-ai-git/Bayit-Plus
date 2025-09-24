@@ -10,7 +10,7 @@ from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
 from app.service.agent.tools.snowflake_tool.schema_constants import (
     PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, MODEL_SCORE,
-    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME
+    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME, get_full_table_name, get_required_env_var
 )
 
 logger = get_bridge_logger(__name__)
@@ -112,17 +112,29 @@ class RiskAnalyzer:
             return self._cache[cache_key]
         
         try:
+            logger.info(f"🔄 Starting risk analysis with params: time_window={time_window}, group_by={group_by}, top_percentage={top_percentage}")
+
             # Parse time window to hours
+            logger.info(f"⏱️ Parsing time window: {time_window}")
             hours = self._parse_time_window(time_window)
-            
+            logger.info(f"⏱️ Parsed to {hours} hours")
+
             # Connect to Snowflake
-            await self.client.connect()
-            
+            logger.info("🔌 Connecting to Snowflake...")
+            # Get database and schema from environment - no defaults!
+            database = get_required_env_var('SNOWFLAKE_DATABASE')
+            schema = get_required_env_var('SNOWFLAKE_SCHEMA')
+            await self.client.connect(database=database, schema=schema)
+            logger.info("✅ Snowflake connection established")
+
             # Build and execute query
+            logger.info(f"🏗️ Building risk query for {group_by} filtering...")
             query = self._build_risk_query(hours, group_by, top_percentage)
             logger.info(f"🔍 Executing Snowflake query for {group_by} filtering:")
             logger.info(f"Query: {query[:500]}...")
+            logger.info("⚡ Sending query to Snowflake...")
             results = await self.client.execute_query(query)
+            logger.info(f"📊 Query returned {len(results) if results else 0} rows")
             
             # Process results
             analysis = self._process_results(results, time_window, group_by, top_percentage)
@@ -154,11 +166,15 @@ class RiskAnalyzer:
             return analysis
             
         except Exception as e:
-            logger.error(f"Risk analysis failed: {e}")
+            logger.error(f"❌ Risk analysis failed: {e}")
+            logger.error(f"🔍 Exception type: {type(e).__name__}")
+            import traceback
+            logger.error(f"📜 Full traceback: {traceback.format_exc()}")
             return {
                 'error': str(e),
                 'status': 'failed',
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
+                'exception_type': type(e).__name__
             }
         finally:
             try:
@@ -199,7 +215,7 @@ class RiskAnalyzer:
                 -- Exclude empty, null, or invalid IPs
                 AND {IP} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
                 -- Only include external/public IP addresses with real activity
-                AND MODEL_SCORE > (SELECT PERCENTILE_CONT(0.1) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED WHERE MODEL_SCORE > 0)
+                AND MODEL_SCORE > (SELECT PERCENTILE_CONT(0.1) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {get_full_table_name()} WHERE MODEL_SCORE > 0)
             """
         
         # Use the correct column name - if group_by is IP-related, use the IP constant
@@ -219,7 +235,7 @@ class RiskAnalyzer:
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {get_full_table_name()}
             WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
                 AND {column_name} IS NOT NULL{ip_filter}
             GROUP BY {column_name}
@@ -333,7 +349,10 @@ class RiskAnalyzer:
         try:
             hours = self._parse_time_window(time_window)
             
-            await self.client.connect()
+            # Get database and schema from environment - no defaults!
+            database = get_required_env_var('SNOWFLAKE_DATABASE')
+            schema = get_required_env_var('SNOWFLAKE_SCHEMA')
+            await self.client.connect(database=database, schema=schema)
             
             query = f"""
             SELECT 
@@ -350,7 +369,7 @@ class RiskAnalyzer:
                 COUNT(DISTINCT DEVICE_ID) as unique_devices,
                 MAX(TX_DATETIME) as last_transaction,
                 MIN(TX_DATETIME) as first_transaction
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {get_full_table_name()}
             WHERE {entity_type} = '{entity_value}'
                 AND TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
             """

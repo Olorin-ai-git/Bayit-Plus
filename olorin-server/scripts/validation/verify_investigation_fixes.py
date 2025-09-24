@@ -39,7 +39,8 @@ async def run_investigation_test():
         client = SnowflakeClient()
         await client.connect()
         
-        query = "SELECT TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX FROM TRANSACTIONS_ENRICHED WHERE IP = '192.168.1.100' LIMIT 3"
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        query = f"SELECT TX_ID_KEY, MODEL_SCORE, IS_FRAUD_TX FROM {get_full_table_name()} WHERE IP = '192.168.1.100' LIMIT 3"
         results = await client.execute_query(query)
         
         print(f"✅ Snowflake query successful: {len(results)} results")

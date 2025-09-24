@@ -23,13 +23,18 @@ def main():
     print("📝 ADDING MORE TEST DATA TO SNOWFLAKE")
     print("="*70)
     
+    # Get database and schema from environment
+    database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     # Connect to Snowflake
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database='FRAUD_ANALYTICS',
-        schema='PUBLIC',
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
     )
@@ -130,9 +135,9 @@ def main():
     # Insert the data
     print(f"\nInserting {len(test_data)} transactions...")
     
-    insert_sql = """
-    INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
+    insert_sql = f"""
+    INSERT INTO {database}.{schema}.{table}
+    (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP,
      PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
@@ -142,15 +147,15 @@ def main():
     print(f"✅ Successfully inserted {len(test_data)} transactions")
     
     # Verify the data
-    cursor.execute("""
-        SELECT 
+    cursor.execute(f"""
+        SELECT
             COUNT(*) as total,
             COUNT(DISTINCT EMAIL) as unique_emails,
             MIN(TX_DATETIME) as earliest,
             MAX(TX_DATETIME) as latest,
             AVG(MODEL_SCORE) as avg_risk,
             SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {database}.{schema}.{table}
     """)
     
     stats = cursor.fetchone()
@@ -162,13 +167,13 @@ def main():
     print(f"   Total Transaction Amount: ${stats[5]:,.2f}")
     
     # Show top risk entities
-    cursor.execute("""
-        SELECT 
+    cursor.execute(f"""
+        SELECT
             EMAIL,
             COUNT(*) as tx_count,
             SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
             AVG(MODEL_SCORE) as avg_risk
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {database}.{schema}.{table}
         WHERE TX_DATETIME >= DATEADD(day, -7, CURRENT_TIMESTAMP())
         GROUP BY EMAIL
         ORDER BY risk_value DESC

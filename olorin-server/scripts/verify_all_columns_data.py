@@ -50,7 +50,8 @@ class DataCompletenessVerifier:
         print("\n📊 Getting table information...")
 
         # Get total record count
-        count_query = "SELECT COUNT(*) as total_records FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED"
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+        count_query = f"SELECT COUNT(*) as total_records FROM {get_full_table_name()}"
         count_result = await self.client.execute_query(count_query)
         # Handle different possible column names in mock vs real data
         total_records = 0
@@ -61,15 +62,18 @@ class DataCompletenessVerifier:
                            row.get('COUNT') or 0)
 
         # Get column information from INFORMATION_SCHEMA
-        columns_query = """
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_required_env_var
+        schema_name = get_required_env_var('SNOWFLAKE_SCHEMA')
+        table_name = get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
+        columns_query = f"""
         SELECT
             COLUMN_NAME,
             DATA_TYPE,
             IS_NULLABLE,
             COLUMN_DEFAULT
         FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_SCHEMA = 'PUBLIC'
-        AND TABLE_NAME = 'TRANSACTIONS_ENRICHED'
+        WHERE TABLE_SCHEMA = '{schema_name}'
+        AND TABLE_NAME = '{table_name}'
         ORDER BY ORDINAL_POSITION
         """
 
@@ -137,7 +141,7 @@ class DataCompletenessVerifier:
         ]
 
         # Get all columns from the table dynamically
-        describe_query = "DESCRIBE TABLE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED"
+        describe_query = f"DESCRIBE TABLE {get_full_table_name()}"
         try:
             describe_result = await self.client.execute_query(describe_query)
             if describe_result:
@@ -157,7 +161,7 @@ class DataCompletenessVerifier:
         if not self.client.is_real:
             print("   🧪 Running in MOCK mode - performing simplified analysis...")
             # Get sample data to understand available columns
-            sample_query = "SELECT * FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED LIMIT 5"
+            sample_query = f"SELECT * FROM {get_full_table_name()} LIMIT 5"
             try:
                 sample_result = await self.client.execute_query(sample_query)
                 if sample_result and len(sample_result) > 0:
@@ -248,7 +252,7 @@ class DataCompletenessVerifier:
                 SELECT
                     COUNT(*) AS TOTAL_RECORDS,
                     {','.join(null_checks)}
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {get_full_table_name()}
                 """
 
                 try:

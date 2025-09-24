@@ -4,11 +4,18 @@ Test direct Snowflake query to debug the issue.
 """
 
 import os
+import sys
+from pathlib import Path
 import snowflake.connector
 from dotenv import load_dotenv
 
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 # Load environment variables
 load_dotenv()
+
+from app.service.agent.tools.snowflake_tool.schema_constants import get_required_env_var
 
 
 def main():
@@ -16,19 +23,19 @@ def main():
     print("🔍 TESTING DIRECT SNOWFLAKE QUERY")
     print("="*70)
 
-    # Get table configuration from environment
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
-    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    # Get table configuration from environment - no defaults!
+    database = get_required_env_var('SNOWFLAKE_DATABASE')
+    schema = get_required_env_var('SNOWFLAKE_SCHEMA')
 
     # Connect to Snowflake
     conn = snowflake.connector.connect(
-        account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
-        user=os.getenv('SNOWFLAKE_USER'),
-        password=os.getenv('SNOWFLAKE_PASSWORD'),
+        account=get_required_env_var('SNOWFLAKE_ACCOUNT').replace('https://', '').replace('.snowflakecomputing.com', ''),
+        user=get_required_env_var('SNOWFLAKE_USER'),
+        password=get_required_env_var('SNOWFLAKE_PASSWORD'),
         database=database,
         schema=schema,
-        warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
-        role=os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')
+        warehouse=get_required_env_var('SNOWFLAKE_WAREHOUSE'),
+        role=get_required_env_var('SNOWFLAKE_ROLE')
     )
 
     cursor = conn.cursor()
@@ -37,7 +44,7 @@ def main():
     hours = 7 * 24  # 7 days
     group_by = 'EMAIL'
     top_decimal = 0.1  # 10%
-    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+    table = get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
 
     query = f"""
     WITH risk_calculations AS (

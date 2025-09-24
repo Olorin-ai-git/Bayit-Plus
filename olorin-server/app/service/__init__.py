@@ -106,7 +106,7 @@ def _settings_factory() -> SvcSettings:
 async def on_startup(app: FastAPI):
     """
     Application startup handler with performance optimization integration.
-    
+
     This function is a co-routine and takes only one required argument app.
     It executes at the time of startup of the application.
     Tasks such as establishing a database connection or loading a ML model can be performed here.
@@ -114,7 +114,8 @@ async def on_startup(app: FastAPI):
     Args:
         app(FastAPI): FastAPI app object.
     """
-    logger.info("Starting Olorin application...")
+    print("🚀 DEBUG: on_startup function called!")  # Debug print that should always show
+    logger.info("🚀 Starting Olorin application...")
     # Initialize performance optimization system
     await initialize_performance_system(app)
     
@@ -122,30 +123,39 @@ async def on_startup(app: FastAPI):
     from .agent_init import initialize_agent
     await initialize_agent(app)
     
-    # Load top risk entities if Snowflake is enabled
-    if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
-        try:
-            logger.info("Loading top risk entities from Snowflake...")
-            from app.service.analytics.risk_analyzer import get_risk_analyzer
-            
-            analyzer = get_risk_analyzer()
-            results = await analyzer.get_top_risk_entities()
-            
-            if results.get('status') == 'success':
-                entity_count = len(results.get('entities', []))
-                logger.info(f"Successfully loaded {entity_count} top risk entities")
-                
-                # Store in app state for quick access
-                app.state.top_risk_entities = results
-                app.state.risk_entities_loaded_at = results.get('timestamp')
-            else:
-                logger.warning(f"Failed to load risk entities: {results.get('error', 'Unknown error')}")
-                app.state.top_risk_entities = None
-        except Exception as e:
-            logger.error(f"Error loading risk entities on startup: {e}")
+    # Load top risk entities from Snowflake
+    logger.info("🔄 Starting Snowflake connection process...")
+    try:
+        logger.info("📋 Loading top risk entities from Snowflake...")
+        logger.info("📦 Importing risk analyzer...")
+        from app.service.analytics.risk_analyzer import get_risk_analyzer
+
+        logger.info("🏭 Creating risk analyzer instance...")
+        analyzer = get_risk_analyzer()
+
+        logger.info("🔌 Attempting to connect to Snowflake and fetch top risk entities...")
+        results = await analyzer.get_top_risk_entities()
+
+        logger.info(f"📊 Risk analyzer returned results: {type(results)} with keys: {list(results.keys()) if isinstance(results, dict) else 'Not a dict'}")
+
+        if results.get('status') == 'success':
+            entity_count = len(results.get('entities', []))
+            logger.info(f"✅ Successfully loaded {entity_count} top risk entities from Snowflake")
+
+            # Store in app state for quick access
+            app.state.top_risk_entities = results
+            app.state.risk_entities_loaded_at = results.get('timestamp')
+            logger.info("💾 Stored risk entities in app state")
+        else:
+            error_msg = results.get('error', 'Unknown error')
+            logger.warning(f"⚠️ Failed to load risk entities: {error_msg}")
+            logger.warning(f"📄 Full results: {results}")
             app.state.top_risk_entities = None
-    else:
-        logger.info("Snowflake disabled, skipping risk entity loading")
+    except Exception as e:
+        logger.error(f"❌ Error loading risk entities on startup: {e}")
+        logger.error(f"🔍 Exception type: {type(e).__name__}")
+        import traceback
+        logger.error(f"📜 Full traceback: {traceback.format_exc()}")
         app.state.top_risk_entities = None
     
     logger.info("Olorin application startup completed")

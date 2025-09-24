@@ -343,7 +343,9 @@ class DataPopulator:
 
     async def get_existing_data(self) -> List[Dict[str, Any]]:
         """Get existing data to populate missing fields."""
-        query = """
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        query = f"""
         SELECT
             TX_ID_KEY,
             EMAIL,
@@ -354,7 +356,7 @@ class DataPopulator:
             IP_COUNTRY_CODE,
             BIN,
             TX_DATETIME
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        FROM {get_full_table_name()}
         WHERE TX_ID_KEY IS NOT NULL
         ORDER BY TX_ID_KEY
         """
@@ -485,8 +487,10 @@ class DataPopulator:
                             set_clauses.append(f"{field} = {value}")
 
                     # Execute update
+                    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
                     update_query = f"""
-                    UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                    UPDATE {get_full_table_name()}
                     SET {', '.join(set_clauses)}
                     WHERE TX_ID_KEY = '{tx_id}'
                     """

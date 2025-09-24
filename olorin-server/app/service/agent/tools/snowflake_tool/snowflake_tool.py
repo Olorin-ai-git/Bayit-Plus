@@ -15,6 +15,7 @@ from decimal import Decimal
 import json
 from .client import SnowflakeClient
 from .query_builder import SnowflakeQueryBuilder, get_recommended_query_for_entity
+import os
 from .schema_constants import (
     TX_ID_KEY, EMAIL, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
     PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD, CARD_BRAND,
@@ -22,7 +23,7 @@ from .schema_constants import (
     UNIQUE_USER_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, BIN, LAST_FOUR,
     CARD_ISSUER, MAXMIND_RISK_SCORE, DEVICE_MODEL, DEVICE_OS_VERSION,
     PARSED_USER_AGENT, build_safe_select_columns, is_valid_column,
-    get_full_table_name
+    get_full_table_name, get_required_env_var
 )
 
 class SnowflakeJSONEncoder(json.JSONEncoder):
@@ -116,7 +117,7 @@ class _SnowflakeQueryArgs(BaseModel):
         ..., 
         description=(
             "The SQL query to execute against Snowflake data warehouse. "
-            "Main table: TRANSACTIONS_ENRICHED with 333+ evidence columns. "
+            f"Main table: {get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')} with 333+ evidence columns. "
             "COMPREHENSIVE EVIDENCE FIELDS AVAILABLE: "
             "CORE: TX_ID_KEY, TX_DATETIME, EMAIL, UNIQUE_USER_ID, PAID_AMOUNT_VALUE_IN_CURRENCY, PAYMENT_METHOD | "
             "RISK: MODEL_SCORE (0-1), IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE, TRIGGERED_RULES | "
@@ -130,12 +131,12 @@ class _SnowflakeQueryArgs(BaseModel):
         )
     )
     database: str = Field(
-        "FRAUD_ANALYTICS", 
-        description="The Snowflake database to query (default: FRAUD_ANALYTICS)."
+        default_factory=lambda: get_required_env_var('SNOWFLAKE_DATABASE'),
+        description="The Snowflake database to query (uses SNOWFLAKE_DATABASE env var)."
     )
     db_schema: str = Field(
-        "PUBLIC", 
-        description="The database schema to use (default: PUBLIC)."
+        default_factory=lambda: get_required_env_var('SNOWFLAKE_SCHEMA'),
+        description="The database schema to use (uses SNOWFLAKE_SCHEMA env var)."
     )
     limit: Optional[int] = Field(
         1000,
@@ -156,7 +157,7 @@ class SnowflakeQueryTool(BaseTool):
         "PAYMENT ANALYSIS (BIN, LAST_FOUR, CARD_ISSUER, CARD_TYPE, IS_CARD_COMMERCIAL), "
         "NETWORK ANALYSIS (IP, IP_COUNTRY_CODE, ASN, ISP, MAXMIND_IP_RISK_SCORE), "
         "FRAUD HISTORY (DISPUTES, FRAUD_ALERTS, LAST_DISPUTE_REASON). "
-        f"Main table: TRANSACTIONS_ENRICHED. Core fields: {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, "
+        f"Main table: {get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')}. Core fields: {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, "
         f"{PAYMENT_METHOD}, {CARD_BRAND}, {IP}, {IP_COUNTRY_CODE}, {DEVICE_ID}, "
         f"{PAID_AMOUNT_VALUE_IN_CURRENCY}, {NSURE_LAST_DECISION}. "
         "NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. Supports comprehensive fraud investigations "
@@ -415,12 +416,18 @@ class SnowflakeQueryTool(BaseTool):
         
         return corrected_query
     
-    def _run(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    def _run(self, query: str, database: str = None, db_schema: str = None, limit: Optional[int] = 1000) -> Dict[str, Any]:
+        """Synchronous execution wrapper."""
+        database = database or get_required_env_var('SNOWFLAKE_DATABASE')
+        db_schema = db_schema or get_required_env_var('SNOWFLAKE_SCHEMA')
         """Synchronous execution wrapper."""
         import asyncio
         return asyncio.run(self._arun(query, database, db_schema, limit))
     
-    async def _arun(self, query: str, database: str = "FRAUD_ANALYTICS", db_schema: str = "PUBLIC", limit: Optional[int] = 1000) -> Dict[str, Any]:
+    async def _arun(self, query: str, database: str = None, db_schema: str = None, limit: Optional[int] = 1000) -> Dict[str, Any]:
+        """Async execution of the Snowflake query with comprehensive error logging."""
+        database = database or get_required_env_var('SNOWFLAKE_DATABASE')
+        db_schema = db_schema or get_required_env_var('SNOWFLAKE_SCHEMA')
         """Async execution of the Snowflake query with comprehensive error logging."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret
@@ -582,7 +589,7 @@ class SnowflakeQueryTool(BaseTool):
                     "columns": columns,
                     "database": database,
                     "schema": db_schema,
-                    "table": "TRANSACTIONS_ENRICHED",
+                    "table": get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE'),
                     "query_insights": query_insights,
                     "query_validation": query_validation,
                     "evidence_completeness": {
@@ -603,7 +610,7 @@ class SnowflakeQueryTool(BaseTool):
                             "device_analysis": len([f for f in columns if f in [DEVICE_ID, USER_AGENT, DEVICE_TYPE]]),
                             "network_analysis": len([f for f in columns if f in [IP, IP_COUNTRY_CODE]])
                         },
-                        "main_table": "TRANSACTIONS_ENRICHED"
+                        "main_table": get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
                     }
                 }
                 

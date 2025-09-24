@@ -150,9 +150,10 @@ def demonstrate_query_validation():
 
     # Example of incomplete query
     print(f"\n❌ INCOMPLETE QUERY EXAMPLE:")
-    incomplete_query = """
+    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+    incomplete_query = f"""
     SELECT TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY
-    FROM TRANSACTIONS_ENRICHED
+    FROM {get_full_table_name()}
     WHERE IP = '10.0.0.1'
     """
 

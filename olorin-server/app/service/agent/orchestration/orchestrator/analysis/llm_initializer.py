@@ -10,7 +10,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage
 
 from app.service.logging import get_bridge_logger
-from app.service.agent.tools.snowflake_tool.schema_constants import IP
+from app.service.agent.tools.snowflake_tool.schema_constants import IP, get_full_table_name
 
 logger = get_bridge_logger(__name__)
 
@@ -170,7 +170,7 @@ class LLMInitializer:
                 SELECT TX_ID, TX_DATETIME, MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION,
                        PAID_AMOUNT_VALUE_IN_CURRENCY, PAYMENT_METHOD, IP_COUNTRY_CODE,
                        DEVICE_ID, USER_AGENT
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {get_full_table_name()}
                 WHERE {where_field} = '{entity_id}'
                 AND TX_DATETIME >= DATEADD(day, -7, CURRENT_TIMESTAMP)
                 ORDER BY TX_DATETIME DESC

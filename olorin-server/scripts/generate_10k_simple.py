@@ -110,12 +110,17 @@ def insert_to_snowflake(transactions):
     
     print(f"\n📤 Connecting to Snowflake...")
     
+    # Get database and schema from environment
+    database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
     conn = snowflake.connector.connect(
         account=os.getenv('SNOWFLAKE_ACCOUNT', '').replace('https://', '').replace('.snowflakecomputing.com', ''),
         user=os.getenv('SNOWFLAKE_USER'),
         password=os.getenv('SNOWFLAKE_PASSWORD'),
-        database='FRAUD_ANALYTICS',
-        schema='PUBLIC',
+        database=database,
+        schema=schema,
         warehouse=os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH'),
         role='ACCOUNTADMIN'
     )
@@ -125,14 +130,14 @@ def insert_to_snowflake(transactions):
     try:
         # Clear previous test data
         print("\n🗑️  Clearing existing large test datasets...")
-        cursor.execute("DELETE FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED WHERE TX_ID_KEY LIKE 'TX1%'")
+        cursor.execute(f"DELETE FROM {database}.{schema}.{table} WHERE TX_ID_KEY LIKE 'TX1%'")
         
         print(f"\n📝 Inserting {len(transactions):,} transactions...")
         
         # Simple insert with just essential columns
-        insert_sql = """
-        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
+        insert_sql = f"""
+        INSERT INTO {database}.{schema}.{table}
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP,
          PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
@@ -149,8 +154,8 @@ def insert_to_snowflake(transactions):
         # Show statistics
         print("\n📊 Verifying data...")
         
-        cursor.execute("""
-            SELECT 
+        cursor.execute(f"""
+            SELECT
                 COUNT(*) as total_records,
                 COUNT(DISTINCT EMAIL) as unique_emails,
                 MIN(TX_DATETIME) as earliest_tx,
@@ -160,7 +165,7 @@ def insert_to_snowflake(transactions):
                 AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount,
                 MAX(PAID_AMOUNT_VALUE_IN_CURRENCY) as max_amount,
                 SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as total_risk_value
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
         """)
         
         stats = cursor.fetchone()
@@ -179,16 +184,16 @@ def insert_to_snowflake(transactions):
         
         # Show risk distribution
         print("\n📊 Risk Distribution:")
-        cursor.execute("""
-            SELECT 
-                CASE 
+        cursor.execute(f"""
+            SELECT
+                CASE
                     WHEN MODEL_SCORE < 0.3 THEN 'Low (0-0.3)'
                     WHEN MODEL_SCORE < 0.7 THEN 'Medium (0.3-0.7)'
                     ELSE 'High (0.7-1.0)'
                 END as risk_level,
                 COUNT(*) as count,
                 AVG(PAID_AMOUNT_VALUE_IN_CURRENCY) as avg_amount
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
             GROUP BY risk_level
             ORDER BY risk_level
         """)
@@ -199,16 +204,16 @@ def insert_to_snowflake(transactions):
         # Show top 10% calculation
         print("\n🎯 TOP 10% RISK ENTITIES (Top Risk-Weighted Values):")
         
-        cursor.execute("""
+        cursor.execute(f"""
             WITH risk_calc AS (
-                SELECT 
+                SELECT
                     EMAIL,
                     COUNT(*) as tx_count,
                     SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value,
                     AVG(MODEL_SCORE) as avg_risk,
                     SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {database}.{schema}.{table}
                 WHERE TX_DATETIME >= DATEADD(day, -30, CURRENT_TIMESTAMP())
                 GROUP BY EMAIL
             ),

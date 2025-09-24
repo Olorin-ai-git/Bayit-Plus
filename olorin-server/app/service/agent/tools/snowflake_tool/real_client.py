@@ -11,7 +11,7 @@ from datetime import datetime
 
 from app.service.logging import get_bridge_logger
 from app.service.config_loader import get_config_loader
-from .schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME
+from .schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_DATETIME, get_required_env_var
 
 logger = get_bridge_logger(__name__)
 
@@ -50,8 +50,8 @@ class RealSnowflakeClient:
         self.pool_timeout = int(config.get('pool_timeout', '30'))
         self.query_timeout = int(config.get('query_timeout', '300'))
 
-        # Load table name from environment
-        self.transactions_table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+        # Load table name from environment - no defaults!
+        self.transactions_table = get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
 
         # Validate critical configuration
         if not all([self.account, self.user, self.password, self.database]):

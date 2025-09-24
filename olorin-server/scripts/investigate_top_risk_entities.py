@@ -87,18 +87,24 @@ class RiskEntityInvestigator:
     ) -> Dict[str, Any]:
         """
         Fetch historical data for an entity from Snowflake.
-        
+
         Args:
             entity_value: The entity value (email, device_id, or ip)
             entity_type: Type of entity
             lookback_days: Days to look back for historical data
-            
+
         Returns:
             Historical data and patterns
         """
         try:
-            await self.snowflake_client.connect()
+            # Get database and schema from environment - no defaults!
+            database = get_required_env_var('SNOWFLAKE_DATABASE')
+            schema = get_required_env_var('SNOWFLAKE_SCHEMA')
+            await self.snowflake_client.connect(database=database, schema=schema)
             
+            # Import table helper and env var helper
+            from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name, get_required_env_var
+
             # Build historical analysis query
             query = f"""
             WITH historical_stats AS (
@@ -113,7 +119,7 @@ class RiskEntityInvestigator:
                     COUNT(DISTINCT IP) as unique_ips,
                     COUNT(DISTINCT DEVICE_ID) as unique_devices,
                     SUM(CASE WHEN IS_FRAUD_TX = TRUE THEN 1 ELSE 0 END) as fraud_count
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {get_full_table_name()}
                 WHERE {entity_type} = '{entity_value}'
                     AND TX_DATETIME >= DATEADD(day, -{lookback_days}, CURRENT_TIMESTAMP())
                 GROUP BY tx_date
@@ -136,7 +142,7 @@ class RiskEntityInvestigator:
                     COUNT(*) as recent_24h_txns,
                     AVG(MODEL_SCORE) as recent_24h_risk,
                     SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as recent_24h_amount
-                FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+                FROM {get_full_table_name()}
                 WHERE {entity_type} = '{entity_value}'
                     AND TX_DATETIME >= DATEADD(hour, -24, CURRENT_TIMESTAMP())
             )

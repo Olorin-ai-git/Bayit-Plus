@@ -1137,6 +1137,14 @@ if ACTUAL_COLUMN_COUNT != EXPECTED_COLUMN_COUNT:
 print(f"✅ Schema constants loaded: {ACTUAL_COLUMN_COUNT} columns validated")
 
 
+def get_required_env_var(var_name: str) -> str:
+    """Get required environment variable or raise error if missing."""
+    value = os.getenv(var_name)
+    if not value:
+        raise ValueError(f"❌ Required environment variable {var_name} not found in .env file!")
+    return value
+
+
 def get_full_table_name(database: str = None, schema: str = None, table_name: str = None) -> str:
     """
     Get the full qualified table name using environment variables.
@@ -1148,9 +1156,12 @@ def get_full_table_name(database: str = None, schema: str = None, table_name: st
 
     Returns:
         Full qualified table name: database.schema.table
+
+    Raises:
+        ValueError: If required environment variables are missing from .env file
     """
-    db = database or os.getenv('SNOWFLAKE_DATABASE')
-    sch = schema or os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
-    tbl = table_name or os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+    db = database or get_required_env_var('SNOWFLAKE_DATABASE')
+    sch = schema or get_required_env_var('SNOWFLAKE_SCHEMA')
+    tbl = table_name or get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
 
     return f"{db}.{sch}.{tbl}"

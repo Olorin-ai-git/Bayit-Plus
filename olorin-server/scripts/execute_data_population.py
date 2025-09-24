@@ -90,8 +90,10 @@ class LiveDataPopulator:
 
     async def populate_processing_fees(self):
         """Populate processing fee fields."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             PROCESSING_FEE_VALUE_IN_CURRENCY = ROUND(PAID_AMOUNT_VALUE_IN_CURRENCY * 0.029 + 0.30, 2),
             PROCESSING_FEE_CURRENCY = 'USD'
@@ -104,9 +106,11 @@ class LiveDataPopulator:
 
     async def populate_personal_data(self):
         """Populate personal data fields."""
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
         # This would need to be done in batches with realistic name generation
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             EMAIL_NORMALIZED = LOWER(TRIM(EMAIL)),
             FIRST_NAME = CASE
@@ -140,8 +144,10 @@ class LiveDataPopulator:
 
     async def populate_risk_data(self):
         """Populate risk assessment data."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             NSURE_FIRST_DECISION = CASE
                 WHEN MODEL_SCORE > 0.8 THEN 'REJECTED'
@@ -158,8 +164,10 @@ class LiveDataPopulator:
 
     async def populate_card_data(self):
         """Populate card data fields."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             CARD_BRAND = CASE
                 WHEN LEFT(BIN, 1) = '4' THEN 'VISA'
@@ -186,8 +194,10 @@ class LiveDataPopulator:
 
     async def populate_temporal_data(self):
         """Populate temporal data fields."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             TX_RECEIVED_DATETIME = TX_DATETIME + INTERVAL '2.5 seconds',
             TX_TIMESTAMP_MS = EXTRACT(EPOCH FROM TX_DATETIME) * 1000
@@ -199,8 +209,10 @@ class LiveDataPopulator:
 
     async def populate_dispute_data(self):
         """Populate dispute and alert data."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             DISPUTES = CASE WHEN IS_FRAUD_TX = 1 AND RANDOM() < 0.15 THEN 1 ELSE 0 END,
             COUNT_DISPUTES = DISPUTES,
@@ -216,8 +228,10 @@ class LiveDataPopulator:
 
     async def populate_business_data(self):
         """Populate business data fields."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             STORE_ID = 'STORE_' || LPAD(FLOOR(RANDOM() * 9000 + 1000), 4, '0'),
             MERCHANT_NAME = CASE FLOOR(RANDOM() * 8)
@@ -240,8 +254,10 @@ class LiveDataPopulator:
 
     async def populate_cart_data(self):
         """Populate cart and product data."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}
         SET
             CART = '{"items": 1, "total": ' || PAID_AMOUNT_VALUE_IN_CURRENCY || ', "currency": "USD"}',
             CART_USD = PAID_AMOUNT_VALUE_IN_CURRENCY,
@@ -266,8 +282,10 @@ class LiveDataPopulator:
 
     async def populate_network_data(self):
         """Populate network data fields."""
-        update_query = """
-        UPDATE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        update_query = f"""
+        UPDATE {get_full_table_name()}"
         SET
             ISP = CASE IP_COUNTRY_CODE
                 WHEN 'US' THEN CASE FLOOR(RANDOM() * 5)

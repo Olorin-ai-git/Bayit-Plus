@@ -24,26 +24,31 @@ async def main():
     print("\n" + "="*70)
     print("📊 CHECKING SNOWFLAKE DATA")
     print("="*70)
-    
+
+    import os
+    from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
     client = SnowflakeClient()
-    await client.connect()
+    database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+    schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+    await client.connect(database=database, schema=schema)
     
     # Check total records
     print("\n1. Total Records:")
-    query1 = "SELECT COUNT(*) as total FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED"
+    query1 = f"SELECT COUNT(*) as total FROM {get_full_table_name()}"
     result1 = await client.execute_query(query1)
     print(f"   Total records: {result1[0]['TOTAL'] if result1 else 0}")
     
     # Check data by email
     print("\n2. Records by Email:")
-    query2 = """
-    SELECT 
+    query2 = f"""
+    SELECT
         EMAIL,
         COUNT(*) as tx_count,
         SUM(PAID_AMOUNT_VALUE_IN_CURRENCY) as total_amount,
         AVG(MODEL_SCORE) as avg_risk,
         SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_value
-    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+    FROM {get_full_table_name()}
     GROUP BY EMAIL
     ORDER BY risk_value DESC
     """
@@ -60,12 +65,12 @@ async def main():
     
     # Check time range of data
     print("\n3. Time Range of Data:")
-    query3 = """
-    SELECT 
+    query3 = f"""
+    SELECT
         MIN(TX_DATETIME) as earliest,
         MAX(TX_DATETIME) as latest,
         DATEDIFF(hour, MIN(TX_DATETIME), MAX(TX_DATETIME)) as hours_span
-    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+    FROM {get_full_table_name()}
     """
     result3 = await client.execute_query(query3)
     if result3 and result3[0]:
@@ -75,7 +80,7 @@ async def main():
     
     # Check sample of actual data
     print("\n4. Sample Records:")
-    query4 = """
+    query4 = f"""
     SELECT
         TX_ID_KEY,
         EMAIL,
@@ -83,7 +88,7 @@ async def main():
         MODEL_SCORE,
         IS_FRAUD_TX,
         TX_DATETIME
-    FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+    FROM {get_full_table_name()}
     LIMIT 5
     """
     result4 = await client.execute_query(query4)

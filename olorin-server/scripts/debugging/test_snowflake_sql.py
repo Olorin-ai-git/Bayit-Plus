@@ -20,13 +20,17 @@ async def test_sql_queries():
     client = RealSnowflakeClient()
     
     try:
-        await client.connect("FRAUD_ANALYTICS", "PUBLIC")
+        database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        await client.connect(database, schema)
         print("✅ Connected to Snowflake successfully")
         
         # Test 1: Simple query first
-        simple_query = """
-        SELECT COUNT(*) as record_count 
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+        from app.service.agent.tools.snowflake_tool.schema_constants import get_full_table_name
+
+        simple_query = f"""
+        SELECT COUNT(*) as record_count
+        FROM {get_full_table_name()}
         LIMIT 1
         """
         
@@ -44,11 +48,11 @@ async def test_sql_queries():
         )
         print(f"✅ Risk entities query works: found {len(results)} entities")
         
-        # Test 3: Transaction details query  
+        # Test 3: Transaction details query
         print("🔍 Testing transaction details query...")
-        entity_query = """
+        entity_query = f"""
         SELECT TX_ID_KEY, EMAIL, IP, MODEL_SCORE, IS_FRAUD_TX
-        FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
+        FROM {get_full_table_name()}
         WHERE IP = '102.159.115.190'
         LIMIT 5
         """

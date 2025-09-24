@@ -2,7 +2,7 @@
 """
 Setup Snowflake Database and Table for Olorin POC
 
-This script creates the FRAUD_ANALYTICS database and TRANSACTIONS_ENRICHED table
+This script creates the configured database and transactions table
 if they don't already exist. It uses ACCOUNTADMIN role for setup operations.
 
 Usage:
@@ -70,24 +70,31 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
     cursor = conn.cursor()
     
     try:
+        # Get database configuration from environment
+        database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+
         # Create database
-        print("\n📦 Creating database FRAUD_ANALYTICS...")
-        cursor.execute("CREATE DATABASE IF NOT EXISTS FRAUD_ANALYTICS")
+        print(f"\n📦 Creating database {database}...")
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database}")
         print("✅ Database created/verified")
-        
+
         # Use the database
-        cursor.execute("USE DATABASE FRAUD_ANALYTICS")
+        cursor.execute(f"USE DATABASE {database}")
         
         # Create schema
         print("\n📋 Creating schema PUBLIC...")
         cursor.execute("CREATE SCHEMA IF NOT EXISTS PUBLIC")
         print("✅ Schema created/verified")
         
-        # Create the massive TRANSACTIONS_ENRICHED table with 300+ columns
-        print("\n📊 Creating TRANSACTIONS_ENRICHED table (300+ columns)...")
-        
-        create_table_sql = """
-        CREATE TABLE IF NOT EXISTS FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED (
+        # Get table configuration from environment
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
+        # Create the massive transactions table with 300+ columns
+        print(f"\n📊 Creating {table} table (300+ columns)...")
+
+        create_table_sql = f"""
+        CREATE TABLE IF NOT EXISTS {database}.{schema}.{table} (
             -- Core Transaction Fields
             TX_ID_KEY VARCHAR(100) PRIMARY KEY,
             TX_DATETIME TIMESTAMP_NTZ,
@@ -484,11 +491,11 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         cursor.execute(f"GRANT USAGE ON WAREHOUSE {os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')} TO ROLE FRAUD_ANALYST_ROLE")
         
         # Grant usage on database and schema
-        cursor.execute("GRANT USAGE ON DATABASE FRAUD_ANALYTICS TO ROLE FRAUD_ANALYST_ROLE")
-        cursor.execute("GRANT USAGE ON SCHEMA FRAUD_ANALYTICS.PUBLIC TO ROLE FRAUD_ANALYST_ROLE")
-        
+        cursor.execute(f"GRANT USAGE ON DATABASE {database} TO ROLE FRAUD_ANALYST_ROLE")
+        cursor.execute(f"GRANT USAGE ON SCHEMA {database}.{schema} TO ROLE FRAUD_ANALYST_ROLE")
+
         # Grant SELECT on table
-        cursor.execute("GRANT SELECT ON TABLE FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED TO ROLE FRAUD_ANALYST_ROLE")
+        cursor.execute(f"GRANT SELECT ON TABLE {database}.{schema}.{table} TO ROLE FRAUD_ANALYST_ROLE")
         
         # Grant role to user
         cursor.execute(f"GRANT ROLE FRAUD_ANALYST_ROLE TO USER {os.getenv('SNOWFLAKE_USER', 'Olorin')}")
@@ -498,9 +505,9 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         # Insert some sample data for testing
         print("\n📝 Inserting sample data for testing...")
         
-        sample_data_sql = """
-        INSERT INTO FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED 
-        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP, 
+        sample_data_sql = f"""
+        INSERT INTO {database}.{schema}.{table}
+        (TX_ID_KEY, TX_DATETIME, EMAIL, DEVICE_ID, IP,
          PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX, TX_TYPE, TX_STATUS)
         SELECT * FROM VALUES
         ('TX001', CURRENT_TIMESTAMP(), 'high.risk@example.com', 'DEV001', '192.168.1.1', 5000.00, 0.95, FALSE, 'PURCHASE', 'COMPLETED'),
@@ -514,7 +521,7 @@ def setup_database_and_table(conn: SnowflakeConnection) -> bool:
         print("✅ Sample data inserted")
         
         # Verify the setup
-        cursor.execute("SELECT COUNT(*) as count FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED")
+        cursor.execute(f"SELECT COUNT(*) as count FROM {database}.{schema}.{table}")
         count = cursor.fetchone()[0]
         print(f"\n✅ Setup complete! Table contains {count} sample records")
         
@@ -538,13 +545,18 @@ def test_user_access():
     try:
         cursor = conn.cursor()
         
+        # Get database and table configuration
+        database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
+        schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
+        table = os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TRANSACTIONS_ENRICHED')
+
         # Test SELECT access
-        cursor.execute("""
-            SELECT 
+        cursor.execute(f"""
+            SELECT
                 EMAIL,
                 COUNT(*) as tx_count,
                 SUM(MODEL_SCORE * PAID_AMOUNT_VALUE_IN_CURRENCY) as risk_weighted_value
-            FROM FRAUD_ANALYTICS.PUBLIC.TRANSACTIONS_ENRICHED
+            FROM {database}.{schema}.{table}
             GROUP BY EMAIL
             ORDER BY risk_weighted_value DESC
         """)

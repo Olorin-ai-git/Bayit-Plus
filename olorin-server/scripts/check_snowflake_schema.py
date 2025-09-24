@@ -25,7 +25,7 @@ def main():
     account = os.getenv('SNOWFLAKE_ACCOUNT')
     user = os.getenv('SNOWFLAKE_USER')
     password = os.getenv('SNOWFLAKE_PASSWORD')
-    database = os.getenv('SNOWFLAKE_DATABASE', 'FRAUD_ANALYTICS')
+    database = os.getenv('SNOWFLAKE_DATABASE', 'GIL')
     schema = os.getenv('SNOWFLAKE_SCHEMA', 'PUBLIC')
     warehouse = os.getenv('SNOWFLAKE_WAREHOUSE', 'COMPUTE_WH')
     role = os.getenv('SNOWFLAKE_ROLE', 'FRAUD_ANALYST_ROLE')

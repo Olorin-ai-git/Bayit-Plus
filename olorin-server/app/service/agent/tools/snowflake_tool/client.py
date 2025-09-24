@@ -9,25 +9,28 @@ import asyncio
 
 from .schema_constants import (
     TX_ID_KEY, EMAIL, PAID_AMOUNT_VALUE_IN_CURRENCY, TX_DATETIME, PAYMENT_METHOD,
-    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE
+    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
+    get_required_env_var, get_full_table_name
 )
 # Common query templates using schema constants
-COMMON_QUERIES = {
-    "fraud_transactions": f"""
-        SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
-               {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
-        FROM TRANSACTIONS_ENRICHED
-        WHERE {IS_FRAUD_TX} = 1
-        ORDER BY {TX_DATETIME} DESC
-    """,
-    "high_risk_scores": f"""
-        SELECT {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, {MAXMIND_RISK_SCORE},
-               {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
-        FROM TRANSACTIONS_ENRICHED
-        WHERE {MODEL_SCORE} > 0.8 OR {MAXMIND_RISK_SCORE} > 80
-        ORDER BY {MODEL_SCORE} DESC, {MAXMIND_RISK_SCORE} DESC
-    """
-}
+def _get_common_queries():
+    """Get common query templates with dynamically resolved table names."""
+    return {
+        "fraud_transactions": f"""
+            SELECT {TX_ID_KEY}, {EMAIL}, {NSURE_LAST_DECISION}, {MODEL_SCORE}, {IS_FRAUD_TX},
+                   {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
+            FROM {get_full_table_name()}
+            WHERE {IS_FRAUD_TX} = 1
+            ORDER BY {TX_DATETIME} DESC
+        """,
+        "high_risk_scores": f"""
+            SELECT {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, {MAXMIND_RISK_SCORE},
+                   {NSURE_LAST_DECISION}, {TX_DATETIME}, {PAID_AMOUNT_VALUE_IN_CURRENCY}
+            FROM {get_full_table_name()}
+            WHERE {MODEL_SCORE} > 0.8 OR {MAXMIND_RISK_SCORE} > 80
+            ORDER BY {MODEL_SCORE} DESC, {MAXMIND_RISK_SCORE} DESC
+        """
+    }
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -75,7 +78,7 @@ class SnowflakeClient:
             return await self._real_client.connect(database, schema)
         else:
             # Mock connection - use environment variable for database if not provided
-            self.database = database or os.getenv('SNOWFLAKE_DATABASE', 'MOCK_DB')
+            self.database = database or get_required_env_var('SNOWFLAKE_DATABASE')
             self.schema = schema
             await asyncio.sleep(0.1)  # Simulate connection
             logger.info(f"Mock connected to Snowflake: {self.account}/{self.database}.{self.schema}")
@@ -112,21 +115,22 @@ class SnowflakeClient:
             if limit and 'LIMIT' not in query_upper:
                 query = f"{query.rstrip(';')} LIMIT {min(limit, 10000)}"
             
-            # Ensure main table reference includes full schema
-            full_table_name = f'{self.database}.{self.schema}.TRANSACTIONS_ENRICHED'
-            if 'TRANSACTIONS_ENRICHED' in query_upper and full_table_name not in query_upper:
+            # Ensure main table reference uses environment configuration
+            table_name = get_full_table_name()
+            if 'TRANSACTIONS_ENRICHED' in query_upper and table_name not in query_upper:
                 # Only replace if it's just TRANSACTIONS_ENRICHED without schema prefix
-                query = query.replace('TRANSACTIONS_ENRICHED', full_table_name)
+                query = query.replace('TRANSACTIONS_ENRICHED', table_name)
             
             return query
         
     def get_common_query(self, query_type: str, **params) -> str:
         """Get a pre-defined common query with parameters."""
-        if query_type not in COMMON_QUERIES:
-            available = ', '.join(COMMON_QUERIES.keys())
+        common_queries = _get_common_queries()
+        if query_type not in common_queries:
+            available = ', '.join(common_queries.keys())
             raise ValueError(f"Unknown query type. Available: {available}")
-        
-        query = COMMON_QUERIES[query_type]
+
+        query = common_queries[query_type]
         
         # Replace parameters in query
         for key, value in params.items():
