@@ -10,7 +10,8 @@ from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
 from app.service.agent.tools.snowflake_tool.schema_constants import (
     PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, MODEL_SCORE,
-    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME, get_full_table_name, get_required_env_var
+    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME, get_full_table_name, get_required_env_var,
+    is_valid_column
 )
 
 logger = get_bridge_logger(__name__)
@@ -51,6 +52,28 @@ class RiskAnalyzer:
         logger.info(f"Risk Analyzer configured: time_window={self.default_time_window}, "
                    f"group_by={self.default_group_by}, top={self.default_top_percentage}%")
     
+    def _validate_column_name(self, column_name: str) -> str:
+        """
+        Validate column name against the database schema.
+
+        Args:
+            column_name: Column name to validate
+
+        Returns:
+            Validated column name in uppercase
+
+        Raises:
+            ValueError: If column name is not found in schema
+        """
+        if not column_name:
+            raise ValueError("Column name cannot be empty")
+
+        column_upper = column_name.upper()
+        if not is_valid_column(column_upper):
+            raise ValueError(f"Invalid column '{column_name}' - not found in database schema. Valid columns must match the 333-column schema definition.")
+
+        return column_upper
+
     def _parse_time_window(self, time_window: str) -> int:
         """
         Parse time window string to hours.
@@ -197,36 +220,31 @@ class RiskAnalyzer:
         # Convert percentage to decimal
         top_decimal = top_percentage / 100.0
 
-        # Define IP column aliases to handle various forms of IP references
-        ip_aliases = {'IP', 'IP_ADDRESS', 'IPADDRESS', 'IP_ADDR'}
-        is_ip_grouping = group_by.upper() in ip_aliases
+        # Validate column name against schema - SCHEMA-LOCKED MODE COMPLIANCE
+        validated_column = self._validate_column_name(group_by)
 
-        # Add IP filtering condition if grouping by IP
+        # Add IP filtering condition if grouping by the IP column
         ip_filter = ""
-        if is_ip_grouping:
-            # Filter out private IP addresses (RFC 1918, link-local, loopback) - EXTERNAL IPs ONLY
-            # Using LIKE patterns for better Snowflake compatibility
+        if validated_column == IP:
+            # Get IP filtering patterns from environment configuration
+            excluded_patterns = os.getenv('EXCLUDED_IP_PATTERNS', '10.%,192.168.%,172.16.%,172.17.%,172.18.%,172.19.%,172.2_.%,172.30.%,172.31.%,127.%,169.254.%').split(',')
+            excluded_values = os.getenv('EXCLUDED_IP_VALUES', ',,0.0.0.0,::,localhost,unknown').split(',')
+            risk_percentile = float(os.getenv('IP_RISK_PERCENTILE', '0.1'))
+
+            # Build IP exclusion filters from configuration
+            like_filters = ' '.join([f"AND {IP} NOT LIKE '{pattern.strip()}'" for pattern in excluded_patterns if pattern.strip()])
+            quoted_values = [f"'{val.strip()}'" for val in excluded_values if val.strip()]
+            value_filters = f"AND {IP} NOT IN ({', '.join(quoted_values)})"
+
             ip_filter = f"""
-                -- CRITICAL: Exclude ALL private/internal IP ranges (RFC 1918 and special ranges)
-                AND {IP} NOT LIKE '10.%'                    -- RFC 1918: 10.0.0.0/8
-                AND {IP} NOT LIKE '192.168.%'               -- RFC 1918: 192.168.0.0/16
-                AND {IP} NOT LIKE '172.16.%'                -- RFC 1918: 172.16.0.0/12
-                AND {IP} NOT LIKE '172.17.%' AND {IP} NOT LIKE '172.18.%' AND {IP} NOT LIKE '172.19.%'
-                AND {IP} NOT LIKE '172.2_.%' AND {IP} NOT LIKE '172.30.%' AND {IP} NOT LIKE '172.31.%'
-                AND {IP} NOT LIKE '127.%'                   -- Loopback: 127.0.0.0/8
-                AND {IP} NOT LIKE '169.254.%'               -- Link-local: 169.254.0.0/16
-                AND {IP} NOT LIKE 'fe80:%' AND {IP} NOT LIKE 'fc00:%' AND {IP} NOT LIKE 'fd00:%'  -- IPv6 private
-                -- Exclude empty, null, or invalid IPs
-                AND {IP} NOT IN ('', '0.0.0.0', '::', 'localhost', 'unknown')
+                -- Filter out private/internal IP ranges based on configuration
+                {like_filters}
+                {value_filters}
                 -- Only include external/public IP addresses with real activity
-                AND MODEL_SCORE > (SELECT PERCENTILE_CONT(0.1) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {get_full_table_name()} WHERE MODEL_SCORE > 0)
+                AND MODEL_SCORE > (SELECT PERCENTILE_CONT({risk_percentile}) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {get_full_table_name()} WHERE MODEL_SCORE > 0)
             """
 
-        # Use the correct column name - map IP-related group_by values to the correct schema column
-        if is_ip_grouping:
-            column_name = IP  # Always use the correct schema column name
-        else:
-            column_name = group_by
+        column_name = validated_column
 
         query = f"""
         WITH risk_calculations AS (
