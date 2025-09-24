@@ -372,33 +372,40 @@ class RiskAnalyzer:
             Detailed entity analysis
         """
         try:
+            # Validate entity_type against schema - CRITICAL SECURITY FIX
+            validated_entity_type = self._validate_column_name(entity_type)
+
             hours = self._parse_time_window(time_window)
-            
+
             # Get database and schema from environment - no defaults!
             database = get_required_env_var('SNOWFLAKE_DATABASE')
             schema = get_required_env_var('SNOWFLAKE_SCHEMA')
             await self.client.connect(database=database, schema=schema)
-            
+
+            # Safely escape entity_value to prevent SQL injection
+            escaped_entity_value = entity_value.replace("'", "''")  # SQL standard escape for single quotes
+
+            # Build query with schema-validated column name and properly escaped values
             query = f"""
-            SELECT 
+            SELECT
                 COUNT(*) as transaction_count,
                 SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
-                AVG(MODEL_SCORE) as avg_risk_score,
-                MAX(MODEL_SCORE) as max_risk_score,
-                MIN(MODEL_SCORE) as min_risk_score,
-                SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
+                AVG({MODEL_SCORE}) as avg_risk_score,
+                MAX({MODEL_SCORE}) as max_risk_score,
+                MIN({MODEL_SCORE}) as min_risk_score,
+                SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count,
                 SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
                 COUNT(DISTINCT CARD_LAST4) as unique_cards,
                 COUNT(DISTINCT {IP}) as unique_ips,
-                COUNT(DISTINCT DEVICE_ID) as unique_devices,
-                MAX(TX_DATETIME) as last_transaction,
-                MIN(TX_DATETIME) as first_transaction
+                COUNT(DISTINCT {DEVICE_ID}) as unique_devices,
+                MAX({TX_DATETIME}) as last_transaction,
+                MIN({TX_DATETIME}) as first_transaction
             FROM {get_full_table_name()}
-            WHERE {entity_type} = '{entity_value}'
-                AND TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
+            WHERE {validated_entity_type} = '{escaped_entity_value}'
+                AND {TX_DATETIME} >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
             """
-            
+
             results = await self.client.execute_query(query)
             
             if not results or results[0].get('transaction_count', 0) == 0:
