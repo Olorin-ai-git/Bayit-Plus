@@ -572,7 +572,6 @@ async def get_location_risk_analysis(
 
                 device_summary_for_prompt.append(
                     {
-                        "city": device_event.get("values(TRUE_IP_CITY)"),
                         "country": country_str,  # Use processed country string
                         "isp": device_event.get("values(TRUE_ISP)"),
                     }

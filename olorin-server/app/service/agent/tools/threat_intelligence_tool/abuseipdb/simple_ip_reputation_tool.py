@@ -23,9 +23,9 @@ class IPReputationInput(BaseModel):
     """Input schema for IP reputation check."""
     
     ip: str = Field(
-        ..., 
+        ...,
         description="IP address to check (IPv4 or IPv6)",
-        examples=["[IP_ADDRESS]", "[IPv6_ADDRESS]"]
+        examples=["[IP]", "[IPv6_ADDRESS]"]
     )
     max_age_days: int = Field(
         default=90,

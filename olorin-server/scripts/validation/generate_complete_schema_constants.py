@@ -172,17 +172,8 @@ from typing import Dict, Set
 # UTILITY MAPPINGS AND FUNCTIONS
 # ============================================================================
 
-# Field mappings for backward compatibility
-FIELD_MAPPINGS: Dict[str, str] = {
-    # Legacy aliases
-    "PAID_AMOUNT": PAID_AMOUNT_VALUE_IN_CURRENCY,
-    "IP_ADDRESS": IP,
-    "FRAUD_SCORE": MODEL_SCORE,
-    "RISK_SCORE": MODEL_SCORE,
-    "USER_DEVICE": DEVICE_ID,
-    "TRANSACTION_DATE": TX_DATETIME,
-    "TX_DATE": TX_DATETIME,
-}
+# NO FIELD MAPPINGS - SCHEMA-LOCKED MODE
+# Only valid schema columns allowed - no aliases or mappings permitted
 
 # All column names as a set for validation
 ALL_COLUMN_NAMES: Set[str] = {
@@ -230,15 +221,18 @@ def is_valid_column(column_name: str) -> bool:
 
 def get_correct_column_name(old_name: str) -> str:
     """
-    Get the correct column name for a given old/legacy name.
+    SCHEMA-LOCKED MODE: No field mappings allowed.
+    Only valid schema column names are permitted.
 
     Args:
-        old_name: The old or potentially incorrect column name
+        old_name: Column name to validate
 
     Returns:
-        The correct column name according to the schema
+        The input name if valid, raises error if invalid
     """
-    return FIELD_MAPPINGS.get(old_name, old_name)
+    if old_name in ALL_COLUMN_NAMES:
+        return old_name
+    raise ValueError(f"Invalid column name '{old_name}' - not found in schema. Only valid schema columns allowed.")
 
 def build_safe_select_columns(columns: list) -> str:
     """
@@ -273,6 +267,37 @@ if ACTUAL_COLUMN_COUNT != EXPECTED_COLUMN_COUNT:
 
 # Schema validation passed
 print(f"✅ Schema constants loaded: {ACTUAL_COLUMN_COUNT} columns validated")
+
+
+def get_required_env_var(var_name: str) -> str:
+    """Get required environment variable or raise error if missing."""
+    import os
+    value = os.getenv(var_name)
+    if not value:
+        raise ValueError(f"❌ Required environment variable {var_name} not found in .env file!")
+    return value
+
+
+def get_full_table_name(database: str = None, schema: str = None, table_name: str = None) -> str:
+    """
+    Get the full qualified table name using environment variables.
+
+    Args:
+        database: Database name override (defaults to SNOWFLAKE_DATABASE)
+        schema: Schema name override (defaults to SNOWFLAKE_SCHEMA)
+        table_name: Table name override (defaults to SNOWFLAKE_TRANSACTIONS_TABLE)
+
+    Returns:
+        Full qualified table name: database.schema.table
+
+    Raises:
+        ValueError: If required environment variables are missing from .env file
+    """
+    db = database or get_required_env_var('SNOWFLAKE_DATABASE')
+    sch = schema or get_required_env_var('SNOWFLAKE_SCHEMA')
+    tbl = table_name or get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')
+
+    return f"{db}.{sch}.{tbl}"
 '''
 
     return content

@@ -127,7 +127,7 @@ class _SnowflakeQueryArgs(BaseModel):
             "USER: FIRST_NAME, LAST_NAME, PHONE_NUMBER, DATE_OF_BIRTH, EMAIL_FIRST_SEEN | "
             "FRAUD_HISTORY: DISPUTES, FRAUD_ALERTS, COUNT_DISPUTES, LAST_DISPUTE_REASON. "
             "For comprehensive investigations, SELECT all relevant evidence fields. "
-            "Use LIMIT clause for large result sets. NEVER use: GMV, SMART_ID, IS_PROXY."
+            "Use LIMIT clause for large result sets."
         )
     )
     database: str = Field(
@@ -160,7 +160,7 @@ class SnowflakeQueryTool(BaseTool):
         f"Main table: {get_required_env_var('SNOWFLAKE_TRANSACTIONS_TABLE')}. Core fields: {TX_ID_KEY}, {EMAIL}, {MODEL_SCORE}, "
         f"{PAYMENT_METHOD}, {CARD_BRAND}, {IP}, {IP_COUNTRY_CODE}, {DEVICE_ID}, "
         f"{PAID_AMOUNT_VALUE_IN_CURRENCY}, {NSURE_LAST_DECISION}. "
-        "NEVER use: GMV, SMART_ID, IS_PROXY, GEO_IP_*. Supports comprehensive fraud investigations "
+        "Supports comprehensive fraud investigations "
         "with complete evidence collection, device fingerprinting, user profiling, and risk assessment."
     )
     
@@ -359,14 +359,8 @@ class SnowflakeQueryTool(BaseTool):
         """Auto-correct common column name mistakes in queries."""
         corrections = {
             # Common mistakes -> Correct column names
-            'SMART_ID': 'DEVICE_ID',
-            'IS_PROXY': 'NULL AS IS_PROXY',  # Column doesn't exist
             'GMV': PAID_AMOUNT_VALUE_IN_CURRENCY,
             'GEO_IP_COUNTRY': IP_COUNTRY_CODE,
-            'GEO_IP_CITY': 'NULL AS IP_CITY',  # Column doesn't exist
-            'GEO_IP_REGION': 'IP_REGION',
-            'TRIGGERED_RULES': 'NULL AS TRIGGERED_RULES',  # Column doesn't exist
-            'PROXY_RISK_SCORE': 'NULL AS PROXY_RISK_SCORE',  # Column doesn't exist
             'DISPUTE_FLAG': 'DISPUTES',  # Map DISPUTE_FLAG to DISPUTES for consistency
             # Map all TX_ID variants to the correct TX_ID_KEY column
             'ORIGINAL_TX_ID': 'TX_ID_KEY',

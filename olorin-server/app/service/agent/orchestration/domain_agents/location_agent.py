@@ -117,7 +117,7 @@ def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
     locations_by_time = []
 
     for r in results:
-        # IP_CITY is not available in schema, fallback to using country only
+        # Using country-level analysis
         if r.get("TX_DATETIME") and r.get(IP_COUNTRY_CODE):
             # Parse datetime
             tx_time = r["TX_DATETIME"]
@@ -263,8 +263,8 @@ def _analyze_geographic_diversity(results: list, findings: Dict[str, Any]) -> No
     """Analyze geographic diversity patterns."""
     # Primary attempt: use Snowflake data
     countries = set(r.get(IP_COUNTRY_CODE) for r in results if r.get(IP_COUNTRY_CODE))
-    # IP_CITY is not available in schema, skip city analysis
-    cities = set()  # IP_CITY not available in schema
+    # City-level analysis not available from schema
+    cities = set()
     
     # Fallback: extract from tool results if Snowflake data is empty
     if not countries and not cities:

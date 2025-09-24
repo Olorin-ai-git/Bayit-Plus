@@ -131,8 +131,8 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
 
 def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> None:
     """Analyze results for VPN/proxy indicators."""
-    # Note: PROXY_RISK_SCORE not available in schema
-    vpn_columns = ["VPN_INDICATOR", "IS_VPN", "IS_PROXY"]
+    # Note: Some network indicators may not be available in schema
+    vpn_columns = ["VPN_INDICATOR", "IS_VPN"]
     
     for r in results:
         for col in vpn_columns:

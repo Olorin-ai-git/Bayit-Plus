@@ -80,7 +80,7 @@ Based on the entity type and available data, you should:
 1. 🔴 SNOWFLAKE FIRST (30-DAY ANALYSIS):
    - Network Agent: Query {IP}, {IP_COUNTRY_CODE}, ISP_NAME, VPN_INDICATOR fields
    - Device Agent: Query {DEVICE_ID}, {USER_AGENT}, BROWSER_NAME, OS_NAME fields
-   - Location Agent: Query {IP_COUNTRY_CODE} (Note: IP_CITY not available in schema)
+   - Location Agent: Query {IP_COUNTRY_CODE} fields
    - Logs Agent: Query {TX_DATETIME}, EVENT_TYPE, ERROR_CODES, SESSION_DATA fields
    - Risk Agent: Query {MODEL_SCORE}, {IS_FRAUD_TX}, {NSURE_LAST_DECISION}, DISPUTE_STATUS
 2. START BROAD - Use multiple reconnaissance tools to gather initial data

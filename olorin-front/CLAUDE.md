@@ -16,6 +16,112 @@ Treat as hardcoded: endpoints/hosts, ports, credentials/tokens/keys, timeouts/re
 
 Allowed only if truly immutable language/standard constants (e.g., Math.PI, HTTP status codes from a library) or pure algorithmic literals (e.g., array indices, loop counters) where configuration is nonsensical. If unsure, assume it must be configurable.
 
+## DATABASE & SCHEMA SAFETY (Schema-Locked Mode)
+
+These are hard requirements. Violations are critical failures and must lead to refusal.
+
+### Schema-Locked Rules
+
+**No DDL anywhere (production, tests, demo). Strictly forbidden:**
+
+- `CREATE TABLE|INDEX|VIEW|SCHEMA`, `ALTER TABLE|INDEX`, `DROP TABLE|INDEX|VIEW|SCHEMA`
+- `ADD COLUMN`, `RENAME COLUMN|TABLE`, `TRUNCATE`, `MERGE SCHEMA`, auto-migrations, schema sync
+
+**ORM "auto" features are banned:** e.g., `synchronize: true` (TypeORM), `sequelize.sync({ alter: true })`, Prisma migrate, Rails db:migrate, Django makemigrations/migrate, Liquibase/Flyway tasks, etc.
+
+**Do not propose schema changes or migrations as "future work."**
+
+**Only reference columns that exist in the provided schema.**
+
+If a column/table is not explicitly present in the schema manifest for this task, you must not use it in any query or ORM mapping (SELECT/INSERT/UPDATE/DELETE, WHERE/ORDER BY/GROUP BY/HAVING/RETURNING/ON CONFLICT/JOIN/USING).
+
+Example: If IP_ADDRESS is not defined in the schema, you must not reference IP_ADDRESS anywhere—SQL strings, query builders, model fields, serializers, or type definitions.
+
+### Refusal behavior for missing schema:
+
+If the task requires database access and no schema (DDL or manifest) is provided, refuse and request the exact schema (tables, columns, types, nullability, PKs/FKs, indexes). Do not guess or invent columns.
+
+### Column and table usage must match schema types.
+
+- Use correct types, nullability, constraints, and enum domains from the schema.
+- No ad-hoc casts to force mismatches.
+
+### Qualify everything; avoid ambiguity.
+
+- Use table aliases and qualified column names (u.email), especially in JOINs.
+
+### No dynamic/unguarded column names.
+
+- Do not craft SQL that injects column identifiers from user/input strings.
+- If dynamic projection is a requirement, map inputs to a whitelist of schema-backed identifiers.
+
+### Runtime/Startup Verification (Fail Fast)
+
+Implement a schema verification step during startup (or test bootstrap) that introspects the live DB's information schema and asserts that every column referenced by the code exists in the target environment. If any are missing/mismatched, abort startup with a clear error.
+
+Example (conceptual): query information_schema.columns (or DB-native catalogs) and compare against a generated "referenced columns" list produced by the build (from your query builder/metadata).
+
+Ensure ORM auto-migration is disabled and DDL privileges are not required by the app role.
+
+### Output Contract – Additions (for any task touching the DB)
+
+- **Schema Manifest Used** – enumerate the exact tables/columns/types relied upon.
+- **Referenced Columns Map** – for each module/query, list the precise columns used.
+- **ORM/Driver Settings** – show the config proving auto-migrate/sync is disabled.
+- **Verification Step** – include code that checks live schema and fails fast if mismatched.
+- **DDL-Free Confirmation** – explicit statement: "No DDL present or required."
+
+### Compliance Checklist – Additions (must pass)
+
+- [ ] No DDL statements or migration tooling invoked anywhere.
+- [ ] Every referenced table/column exists in the provided schema manifest.
+- [ ] No dynamic/unguarded identifiers; projections/filters are whitelisted.
+- [ ] ORM auto-sync/auto-migrate disabled.
+- [ ] Startup/test bootstrap verifies schema and fails fast on mismatch.
+
+### Auto-Guardrails – Additional Scans
+
+**Forbidden DDL tokens** (case-insensitive, ban outside comments too):
+- `\b(CREATE|ALTER|DROP|TRUNCATE)\s+(TABLE|INDEX|VIEW|SCHEMA)\b`
+- `\bADD\s+COLUMN\b`
+- `\bRENAME\s+(TO|COLUMN|TABLE)\b`
+- `\bPRISMA\s+MIGRATE\b|\bsequelize\.sync\b|\bsynchronize:\s*true\b`
+- `\bLiquibase\b|\bFlyway\b|\brails\s+db:migrate\b|\bdjango\s+(makemigrations|migrate)\b`
+
+**Suspicious identifier usage** (flag for review):
+- `[a-zA-Z_][a-zA-Z0-9_]*\.[A-Z0-9_]+`   # qualified UPPER_SNAKE columns often invented
+- `\bUSING\s*\(\s*[A-Z0-9_]+\s*\)\b`
+
+If a flagged identifier is not in the manifest, refuse or fix.
+
+### Examples
+
+❌ **Non-compliant** (column not in schema)
+```sql
+SELECT id, email, IP_ADDRESS
+FROM users
+WHERE created_at >= $1;
+```
+
+✅ **Compliant** (columns exist in schema)
+```sql
+SELECT u.id, u.email
+FROM users AS u
+WHERE u.created_at >= $1;
+```
+
+❌ **Non-compliant** (DDL)
+```sql
+ALTER TABLE users ADD COLUMN ip_address TEXT;
+```
+
+✅ **Compliant** (schema-locked; no DDL, only reads/writes existing columns)
+```sql
+INSERT INTO users (id, email, created_at)
+VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email;
+```
+
 ## Configuration & Secrets – How to Comply
 
 All variable values must come from a configuration layer, never literal in code. Priority order:

@@ -26,7 +26,7 @@ class AbuseReportInput(BaseModel):
     ip: str = Field(
         ...,
         description="IP address to report for abuse",
-        examples=["[IP_ADDRESS_1]", "[IP_ADDRESS_2]"]
+        examples=["[IP_1]", "[IP_2]"]
     )
     categories: str = Field(
         ...,
