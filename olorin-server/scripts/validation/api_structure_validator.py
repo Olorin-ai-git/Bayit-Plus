@@ -5,7 +5,7 @@ logger = get_bridge_logger(__name__)
 """
 API Structure Validator
 
-Validates the API structure and endpoint availability for the autonomous
+Validates the API structure and endpoint availability for the structured
 investigation system without requiring full service configuration.
 
 This demonstrates the real API endpoints and structure validation.

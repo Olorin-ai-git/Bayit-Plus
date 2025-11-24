@@ -2,7 +2,7 @@
 set -e
 
 # Single Scenario Test Runner
-# Quickly test a single autonomous investigation scenario
+# Quickly test a single structured investigation scenario
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <scenario_number> [--verbose]"
@@ -39,4 +39,4 @@ echo "📝 Using demo data for Splunk connections (OLORIN_USE_DEMO_DATA=true)"
 echo "🚀 Running scenario $SCENARIO_NUM..."
 
 # Run the specific scenario
-poetry run python tests/autonomous/run_all_scenarios.py --scenarios $SCENARIO_NUM $VERBOSE_FLAG
+poetry run python tests/structured/run_all_scenarios.py --scenarios $SCENARIO_NUM $VERBOSE_FLAG

@@ -3,9 +3,9 @@ logger = get_bridge_logger(__name__)
 
 #!/usr/bin/env python3
 """
-Autonomous Investigation Workflow Validator
+Structured Investigation Workflow Validator
 
-Comprehensive end-to-end validation of the autonomous investigation workflow
+Comprehensive end-to-end validation of the structured investigation workflow
 to ensure it uses real APIs and LLM calls throughout.
 
 This script:
@@ -41,8 +41,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class AutonomousWorkflowValidator:
-    """Validates the autonomous investigation workflow end-to-end"""
+class StructuredWorkflowValidator:
+    """Validates the structured investigation workflow end-to-end"""
     
     def __init__(self):
         self.base_url = "http://localhost:8090"
@@ -72,7 +72,7 @@ class AutonomousWorkflowValidator:
         
     async def validate_complete_workflow(self) -> Dict[str, Any]:
         """Run complete end-to-end workflow validation"""
-        logger.info("🔍 Starting Autonomous Investigation Workflow Validation")
+        logger.info("🔍 Starting Structured Investigation Workflow Validation")
         
         try:
             # Step 1: Test server availability
@@ -119,7 +119,7 @@ class AutonomousWorkflowValidator:
                 raise
     
     async def _start_investigation(self):
-        """Start the autonomous investigation via REST API"""
+        """Start the structured investigation via REST API"""
         logger.info(f"🚀 Starting investigation for {self.entity_type}: {self.entity_id}")
         
         async with aiohttp.ClientSession() as session:
@@ -365,7 +365,7 @@ class AutonomousWorkflowValidator:
         
         # Save report to file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_filename = f"autonomous_workflow_validation_report_{timestamp}.json"
+        report_filename = f"structured_workflow_validation_report_{timestamp}.json"
         
         with open(report_filename, 'w') as f:
             json.dump(report, f, indent=2)
@@ -376,9 +376,9 @@ class AutonomousWorkflowValidator:
 
 async def main():
     """Main execution function"""
-    logger.info("🚀 Starting Autonomous Investigation Workflow Validation")
+    logger.info("🚀 Starting Structured Investigation Workflow Validation")
     
-    validator = AutonomousWorkflowValidator()
+    validator = StructuredWorkflowValidator()
     
     try:
         report = await validator.validate_complete_workflow()

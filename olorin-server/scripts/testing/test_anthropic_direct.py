@@ -78,9 +78,9 @@ def show_olorin_configuration():
     print("\n📄 OLORIN CONFIGURATION")
     print("="*60)
     
-    print("In autonomous_base.py:")
+    print("In structured_base.py:")
     print("```python")
-    print("autonomous_llm = ChatAnthropic(")
+    print("structured_llm = ChatAnthropic(")
     print("    api_key=settings_for_env.anthropic_api_key,")
     print('    model="claude-opus-4-1-20250805",')
     print("    temperature=0.1,")

@@ -265,7 +265,11 @@ class InvestigationFixApplicator:
     def _update_test_runner(self) -> Dict[str, Any]:
         """Update the unified test runner with all fixes"""
         
+<<<<<<< HEAD
         test_runner_path = Path(__file__).parent / 'unified_autonomous_test_runner.py'
+=======
+        test_runner_path = Path(__file__).parent / 'unified_structured_test_runner.py'
+>>>>>>> 001-modify-analyzer-method
         
         if not test_runner_path.exists():
             return {

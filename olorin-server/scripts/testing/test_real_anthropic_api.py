@@ -92,7 +92,7 @@ async def test_real_api():
 
 if __name__ == "__main__":
     print("OLORIN REAL ANTHROPIC API TEST")
-    print("Testing autonomous investigation with real Claude API")
+    print("Testing structured investigation with real Claude API")
     print("-"*60)
     
     success = asyncio.run(test_real_api())

@@ -2,7 +2,7 @@
 """
 Multi-Entity Investigation API Demo
 
-Demonstrates the new multi-entity autonomous investigation capabilities
+Demonstrates the new multi-entity structured investigation capabilities
 implemented in Phase 2.1 of the multi-entity investigation system.
 
 Usage: python scripts/demo/multi_entity_investigation_demo.py
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 async def demo_multi_entity_investigation():
     """Demonstrate multi-entity investigation capabilities"""
     
-    print("🔍 Multi-Entity Autonomous Investigation Demo")
+    print("🔍 Multi-Entity Structured Investigation Demo")
     print("=" * 60)
     
     # Get orchestrator
@@ -273,16 +273,16 @@ def demo_api_request_format():
     
     print("📝 Sample curl command:")
     print(f"""
-curl -X POST "http://localhost:8090/v1/autonomous/multi-entity/start" \\
+curl -X POST "http://localhost:8090/v1/structured/multi-entity/start" \\
   -H "Content-Type: application/json" \\
   -d '{json.dumps(sample_api_request, indent=2)}'
 """)
     
     print("📝 Other available endpoints:")
-    print("GET /v1/autonomous/multi-entity/{investigation_id}/status")
-    print("GET /v1/autonomous/entities/types/enhanced")
-    print("GET /v1/autonomous/multi-entity/metrics")
-    print("GET /v1/autonomous/health")
+    print("GET /v1/structured/multi-entity/{investigation_id}/status")
+    print("GET /v1/structured/entities/types/enhanced")
+    print("GET /v1/structured/multi-entity/metrics")
+    print("GET /v1/structured/health")
 
 
 async def main():

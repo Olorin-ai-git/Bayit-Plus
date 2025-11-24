@@ -2,7 +2,11 @@
 """
 Mock Mode Investigation Debugging Script
 
+<<<<<<< HEAD
 This script debugs the mock mode autonomous investigation flow to understand
+=======
+This script debugs the mock mode structured investigation flow to understand
+>>>>>>> 001-modify-analyzer-method
 why "No results available" is being generated.
 
 SAFETY: This script ONLY runs in TEST_MODE=mock - no real LLM API calls.

@@ -1,9 +1,15 @@
 #!/bin/bash
 
 #
+<<<<<<< HEAD
 # Unified Autonomous Investigation Runner
 # 
 # This script provides a single entry point for running autonomous fraud investigations
+=======
+# Unified Structured Investigation Runner
+# 
+# This script provides a single entry point for running structured fraud investigations
+>>>>>>> 001-modify-analyzer-method
 # with comprehensive configuration options, error handling, and intelligent defaults.
 #
 # Features:
@@ -43,7 +49,11 @@ readonly DEFAULT_PROJECT_ID="olorin-ai"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly BACKEND_ROOT="$(dirname "$SCRIPT_DIR")"
 readonly OLORIN_ROOT="$(dirname "$BACKEND_ROOT")"
+<<<<<<< HEAD
 readonly TEST_RUNNER_SCRIPT="$BACKEND_ROOT/scripts/testing/unified_autonomous_test_runner.py"
+=======
+readonly TEST_RUNNER_SCRIPT="$BACKEND_ROOT/scripts/testing/unified_structured_test_runner.py"
+>>>>>>> 001-modify-analyzer-method
 
 # Global variables for configuration
 SCENARIO=""
@@ -948,12 +958,20 @@ parse_arguments() {
     
 }
 
+<<<<<<< HEAD
 # Run the autonomous investigation
+=======
+# Run the structured investigation
+>>>>>>> 001-modify-analyzer-method
 run_investigation() {
     local cmd_args
     cmd_args=$(build_command_args)
     
+<<<<<<< HEAD
     show_progress "Starting autonomous fraud investigation"
+=======
+    show_progress "Starting structured fraud investigation"
+>>>>>>> 001-modify-analyzer-method
     echo ""
     
     cd "$BACKEND_ROOT"
@@ -1011,7 +1029,11 @@ run_investigation() {
     # Execute the investigation
     if poetry run python "$TEST_RUNNER_SCRIPT" $cmd_args; then
         echo ""
+<<<<<<< HEAD
         show_success "Autonomous investigation completed successfully"
+=======
+        show_success "Structured investigation completed successfully"
+>>>>>>> 001-modify-analyzer-method
         
         if [[ "$HTML_REPORT" == "true" ]]; then
             echo ""
@@ -1115,7 +1137,11 @@ main() {
     
     echo ""
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
+<<<<<<< HEAD
     echo -e "${GREEN}🎉 Olorin Autonomous Investigation Complete${NC}"
+=======
+    echo -e "${GREEN}🎉 Olorin Structured Investigation Complete${NC}"
+>>>>>>> 001-modify-analyzer-method
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
 }
 

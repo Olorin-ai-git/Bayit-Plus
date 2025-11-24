@@ -44,8 +44,13 @@ def main():
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/threat_intelligence_tool/abuseipdb/ip_reputation_tool.py",
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/threat_intelligence_tool/abuseipdb/abuse_reporting_tool.py",
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/tool_parameter_mapper.py",
+<<<<<<< HEAD
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_context.py",
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_investigation_fixes.py",
+=======
+        "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_context.py",
+        "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_investigation_fixes.py",
+>>>>>>> 001-modify-analyzer-method
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/enhanced_network_agent.py",
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/orchestration/metrics/network.py",
         "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/orchestration/domain/network_scorer.py",

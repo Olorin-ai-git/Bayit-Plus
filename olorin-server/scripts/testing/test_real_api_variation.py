@@ -99,5 +99,5 @@ if __name__ == "__main__":
     print("  4. Risk scores are context-driven")
     print("  5. Test infrastructure ready for real API testing")
     
-    print("\n🎆 The Olorin autonomous investigation system is")
+    print("\n🎆 The Olorin structured investigation system is")
     print("   100% configured for REAL API usage with ZERO mock data!")

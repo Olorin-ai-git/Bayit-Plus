@@ -2,7 +2,11 @@
 """
 Final Verification Script
 
+<<<<<<< HEAD
 Run a lightweight autonomous investigation to verify the fixes work in practice.
+=======
+Run a lightweight structured investigation to verify the fixes work in practice.
+>>>>>>> 001-modify-analyzer-method
 """
 
 import asyncio
@@ -114,7 +118,11 @@ def main():
             print("   • Risk score calculation: Working") 
             print("   • JSON parsing fix: Working")
             print("   • High-risk detection: Working")
+<<<<<<< HEAD
             print("\n✅ The autonomous investigation system is ready for production use.")
+=======
+            print("\n✅ The structured investigation system is ready for production use.")
+>>>>>>> 001-modify-analyzer-method
             return 0
         else:
             print("❌ VERIFICATION FAILED!")

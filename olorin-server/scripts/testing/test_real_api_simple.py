@@ -9,8 +9,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-# Import the actual autonomous base with real API
-from app.service.agent.autonomous_base import autonomous_llm
+# Import the actual structured base with real API
+from app.service.agent.structured_base import structured_llm
 
 async def test_real_api():
     """Test that we're using real Anthropic API."""
@@ -19,14 +19,14 @@ async def test_real_api():
     
     # Check configuration
     print("✅ Configuration:")
-    print(f"  Model: {autonomous_llm.model_name}")
-    print(f"  Temperature: {autonomous_llm.temperature}")
-    print(f"  Max Tokens: {autonomous_llm.max_tokens}")
+    print(f"  Model: {structured_llm.model_name}")
+    print(f"  Temperature: {structured_llm.temperature}")
+    print(f"  Max Tokens: {structured_llm.max_tokens}")
     
     # Make a simple real API call
     print("\n📡 Making real API call to Anthropic Claude...")
     try:
-        response = await autonomous_llm.ainvoke(
+        response = await structured_llm.ainvoke(
             "Analyze this for fraud risk: User logged in from new location. Respond in exactly 10 words."
         )
         
@@ -60,6 +60,6 @@ async def test_real_api():
 
 if __name__ == "__main__":
     print("OLORIN REAL API TEST")
-    print("Testing autonomous investigation with real Anthropic Claude API")
+    print("Testing structured investigation with real Anthropic Claude API")
     print("-"*60)
     asyncio.run(test_real_api())

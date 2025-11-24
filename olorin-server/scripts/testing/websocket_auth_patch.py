@@ -2,9 +2,15 @@
 WebSocket Authentication Patch for Unified Test Runner
 
 This patch fixes the 403 Forbidden WebSocket error by adding proper JWT authentication
+<<<<<<< HEAD
 to WebSocket connections in the autonomous investigation test runner.
 
 Apply this patch to unified_autonomous_test_runner.py
+=======
+to WebSocket connections in the structured investigation test runner.
+
+Apply this patch to unified_structured_test_runner.py
+>>>>>>> 001-modify-analyzer-method
 """
 
 import sys
@@ -123,7 +129,11 @@ def apply_websocket_auth_patch():
     """Apply the WebSocket authentication patch to the test runner"""
     
     # Get the test runner file path
+<<<<<<< HEAD
     test_runner_path = Path(__file__).parent / 'unified_autonomous_test_runner.py'
+=======
+    test_runner_path = Path(__file__).parent / 'unified_structured_test_runner.py'
+>>>>>>> 001-modify-analyzer-method
     
     if not test_runner_path.exists():
         print(f"❌ Test runner not found at {test_runner_path}")

@@ -16,7 +16,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from app.service.agent.journey_tracker import get_journey_tracker
 from app.service.agent.orchestration.investigation_coordinator import start_investigation
 from app.models.agent_context import AgentContext
+<<<<<<< HEAD
 from app.service.agent.autonomous_context import EntityType
+=======
+from app.service.agent.structured_context import EntityType
+>>>>>>> 001-modify-analyzer-method
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

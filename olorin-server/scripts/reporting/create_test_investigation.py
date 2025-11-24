@@ -44,8 +44,13 @@ def create_test_investigation():
         
         print(f"✅ Created investigation folder: {folder_path}")
         
+<<<<<<< HEAD
         # Create sample autonomous_activities.jsonl
         autonomous_file = folder_path / "autonomous_activities.jsonl"
+=======
+        # Create sample structured_activities.jsonl
+        structured_file = folder_path / "structured_activities.jsonl"
+>>>>>>> 001-modify-analyzer-method
         sample_activities = [
             {
                 "interaction_type": "investigation_progress",
@@ -118,11 +123,19 @@ def create_test_investigation():
             }
         ]
         
+<<<<<<< HEAD
         with open(autonomous_file, 'w') as f:
             for activity in sample_activities:
                 f.write(json.dumps(activity) + '\n')
         
         print(f"✅ Created autonomous activities file with {len(sample_activities)} entries")
+=======
+        with open(structured_file, 'w') as f:
+            for activity in sample_activities:
+                f.write(json.dumps(activity) + '\n')
+        
+        print(f"✅ Created structured activities file with {len(sample_activities)} entries")
+>>>>>>> 001-modify-analyzer-method
         
         # Create sample journey_tracking.json
         journey_file = folder_path / "journey_tracking.json"
@@ -213,7 +226,11 @@ def create_test_investigation():
         print(f"   🆔 ID: {investigation_id}")
         print(f"   🎭 Mode: {mode.value}")
         print(f"   🎬 Scenario: {scenario}")
+<<<<<<< HEAD
         print(f"   📊 Files: metadata.json, autonomous_activities.jsonl, journey_tracking.json, investigation.log")
+=======
+        print(f"   📊 Files: metadata.json, structured_activities.jsonl, journey_tracking.json, investigation.log")
+>>>>>>> 001-modify-analyzer-method
         
         return str(folder_path)
         

@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Unified Autonomous Investigation Test Runner - Shell Wrapper
+# Unified Structured Investigation Test Runner - Shell Wrapper
 #
 # This script provides a convenient shell interface for running the comprehensive
-# unified autonomous investigation test runner with proper environment setup,
+# unified structured investigation test runner with proper environment setup,
 # error handling, and enhanced user experience.
 #
 # Features:
@@ -41,7 +41,7 @@ readonly DEFAULT_MOCK_IPS="true"  # Mock IPS cache enabled by default
 
 # Script directory and paths
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly TEST_RUNNER_SCRIPT="$SCRIPT_DIR/unified_autonomous_test_runner.py"
+readonly TEST_RUNNER_SCRIPT="$SCRIPT_DIR/unified_ai_investigation_test_runner.py"
 readonly SERVER_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Banner function
@@ -61,6 +61,9 @@ show_usage() {
     echo -e "${WHITE}TEST SELECTION (choose one):${NC}"
     echo "  -s, --scenario SCENARIO     Test single scenario"
     echo "  -a, --all                   Test all available scenarios"
+    echo "  --risk-analyzer             Use risk analyzer to select entity (respects ANALYTICS_DEFAULT_GROUP_BY)"
+    echo "  --anomaly-id ID             Trigger investigation from anomaly (requires --mode live)"
+    echo "  --list-anomalies            List available anomalies and exit"
     echo ""
     echo -e "${WHITE}CSV DATA OPTIONS:${NC}"
     echo "  --csv-file PATH             Path to CSV transaction data file (default: transaction_dataset_10k.csv)"
@@ -107,6 +110,12 @@ show_usage() {
     echo ""
     echo -e "${CYAN}  # Generate multiple report formats:${NC}"
     echo "  $0 --all --format html --output-dir ./reports --verbose"
+    echo ""
+    echo -e "${CYAN}  # List available anomalies:${NC}"
+    echo "  $0 --list-anomalies"
+    echo ""
+    echo -e "${CYAN}  # Trigger investigation from anomaly (LIVE mode only):${NC}"
+    echo "  $0 --anomaly-id <uuid> --mode live --verbose"
     echo ""
 }
 
@@ -239,6 +248,9 @@ parse_arguments() {
     # Set default values
     SCENARIO=""
     ALL_SCENARIOS=""
+    RISK_ANALYZER=""
+    ANOMALY_ID=""
+    LIST_ANOMALIES=""
     CSV_FILE="$DEFAULT_CSV_FILE"  # Use default CSV file
     CSV_LIMIT="$DEFAULT_CSV_LIMIT"
     CONCURRENT="$DEFAULT_CONCURRENT"
@@ -265,6 +277,18 @@ parse_arguments() {
                 ;;
             -a|--all)
                 ALL_SCENARIOS="true"
+                shift
+                ;;
+            --risk-analyzer)
+                RISK_ANALYZER="true"
+                shift
+                ;;
+            --anomaly-id)
+                ANOMALY_ID="$2"
+                shift 2
+                ;;
+            --list-anomalies)
+                LIST_ANOMALIES="true"
                 shift
                 ;;
             --csv-file)
@@ -362,8 +386,8 @@ parse_arguments() {
     fi
     
     # Validate required arguments
-    if [[ -z "$SCENARIO" && "$ALL_SCENARIOS" != "true" ]]; then
-        show_error "Must specify either --scenario or --all"
+    if [[ -z "$SCENARIO" && "$ALL_SCENARIOS" != "true" && -z "$ANOMALY_ID" && "$LIST_ANOMALIES" != "true" && "$RISK_ANALYZER" != "true" ]]; then
+        show_error "Must specify either --scenario, --all, --risk-analyzer, --anomaly-id, or --list-anomalies"
         echo ""
         show_usage
         exit 1
@@ -371,6 +395,20 @@ parse_arguments() {
     
     if [[ -n "$SCENARIO" && "$ALL_SCENARIOS" == "true" ]]; then
         show_error "Cannot specify both --scenario and --all"
+        echo ""
+        show_usage
+        exit 1
+    fi
+    
+    if [[ "$RISK_ANALYZER" == "true" && (-n "$SCENARIO" || "$ALL_SCENARIOS" == "true" || -n "$ANOMALY_ID") ]]; then
+        show_error "Cannot combine --risk-analyzer with --scenario, --all, or --anomaly-id"
+        echo ""
+        show_usage
+        exit 1
+    fi
+    
+    if [[ -n "$ANOMALY_ID" && "$MODE" != "live" ]]; then
+        show_error "Anomaly-based investigations require --mode live"
         echo ""
         show_usage
         exit 1
@@ -388,6 +426,15 @@ build_command() {
     
     if [[ "$ALL_SCENARIOS" == "true" ]]; then
         cmd_args+=(--all)
+    fi
+    
+    # Anomaly options
+    if [[ -n "$ANOMALY_ID" ]]; then
+        cmd_args+=(--anomaly-id "$ANOMALY_ID")
+    fi
+    
+    if [[ "$LIST_ANOMALIES" == "true" ]]; then
+        cmd_args+=(--list-anomalies)
     fi
     
     # CSV options
@@ -434,7 +481,19 @@ build_command() {
 # Display configuration
 show_configuration() {
     echo -e "${WHITE}🔧 CONFIGURATION${NC}"
-    echo -e "   Test Mode: ${CYAN}$(if [[ -n "$SCENARIO" ]]; then echo "Single Scenario ($SCENARIO)"; else echo "All Scenarios"; fi)${NC}"
+    if [[ -n "$ANOMALY_ID" ]]; then
+        echo -e "   Test Mode: ${CYAN}Anomaly-Based Investigation${NC}"
+        echo -e "   Anomaly ID: ${CYAN}$ANOMALY_ID${NC}"
+    elif [[ "$LIST_ANOMALIES" == "true" ]]; then
+        echo -e "   Test Mode: ${CYAN}List Anomalies${NC}"
+    elif [[ -n "$SCENARIO" ]]; then
+        echo -e "   Test Mode: ${CYAN}Single Scenario ($SCENARIO)${NC}"
+    elif [[ "$RISK_ANALYZER" == "true" ]]; then
+        echo -e "   Test Mode: ${CYAN}Risk Analyzer Entity Selection${NC}"
+        echo -e "   Entity Grouping: ${CYAN}$(grep ANALYTICS_DEFAULT_GROUP_BY "$SERVER_ROOT/.env" 2>/dev/null | cut -d'=' -f2 || echo 'email (default)')${NC}"
+    else
+        echo -e "   Test Mode: ${CYAN}All Scenarios${NC}"
+    fi
     
     if [[ -n "$CSV_FILE" ]]; then
         echo -e "   CSV File: ${CYAN}$CSV_FILE${NC} (limit: $CSV_LIMIT)"
@@ -465,7 +524,7 @@ run_tests() {
     local cmd_args
     cmd_args=$(build_command)
     
-    show_progress "Starting unified autonomous investigation test suite"
+    show_progress "Starting unified structured investigation test suite"
     echo ""
     
     cd "$SERVER_ROOT"
@@ -530,7 +589,7 @@ main() {
     
     echo ""
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}🎉 Unified Autonomous Investigation Test Runner Complete${NC}"
+    echo -e "${GREEN}🎉 Unified Structured Investigation Test Runner Complete${NC}"
     echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
 }
 

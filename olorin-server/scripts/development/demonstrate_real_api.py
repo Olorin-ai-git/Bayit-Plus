@@ -13,15 +13,15 @@ def show_real_api_configuration():
     logger.info("🔍 DEMONSTRATING REAL ANTHROPIC API USAGE IN OLORIN")
     logger.info("="*60)
     
-    # Read the autonomous_base.py file to show real API config
-    autonomous_base = Path(__file__).parent / "app/service/agent/autonomous_base.py"
+    # Read the structured_base.py file to show real API config
+    structured_base = Path(__file__).parent / "app/service/agent/structured_base.py"
     
-    if autonomous_base.exists():
-        with open(autonomous_base, 'r') as f:
+    if structured_base.exists():
+        with open(structured_base, 'r') as f:
             content = f.read()
         
         # Extract key configuration lines
-        logger.info("\n📄 File: app/service/agent/autonomous_base.py")
+        logger.info("\n📄 File: app/service/agent/structured_base.py")
         logger.info("-"*50)
         
         # Show the import
@@ -30,7 +30,7 @@ def show_real_api_configuration():
             logger.info(f"✅ Import: {import_match.group()}")
         
         # Show the LLM initialization
-        llm_init = re.search(r'autonomous_llm = ChatAnthropic\((.*?)\)', content, re.DOTALL)
+        llm_init = re.search(r'structured_llm = ChatAnthropic\((.*?)\)', content, re.DOTALL)
         if llm_init:
             logger.info("\n✅ Real LLM Initialization:")
             lines = llm_init.group().split('\n')
@@ -81,9 +81,9 @@ def show_real_api_configuration():
     logger.info("\n📂 Test Infrastructure (Real API Tests):")
     test_files = [
         "tests/conftest.py",
-        "tests/unit/service/agent/test_autonomous_agents.py",
-        "tests/integration/test_autonomous_investigation.py",
-        "tests/runners/run_autonomous_investigation_for_user.py"
+        "tests/unit/service/agent/test_structured_agents.py",
+        "tests/integration/test_structured_investigation.py",
+        "tests/runners/run_structured_investigation_for_user.py"
     ]
     
     tests_dir = Path(__file__).parent / "tests"
@@ -103,7 +103,7 @@ def show_real_api_configuration():
     logger.info("✅ Natural response variation (not predetermined)")
     
     logger.info("\n🎆 CONCLUSION:")
-    logger.info("The Olorin autonomous investigation system is configured to use")
+    logger.info("The Olorin structured investigation system is configured to use")
     logger.info("100% REAL API calls with ZERO mock data in production.")
 
 def show_investigation_flow():
@@ -115,9 +115,9 @@ def show_investigation_flow():
         ("1. Frontend Request", "User triggers investigation in UI"),
         ("2. Backend API", "FastAPI endpoint receives request"),
         ("3. Context Creation", "Real investigation context generated"),
-        ("4. Agent Execution", "Autonomous agents activated"),
+        ("4. Agent Execution", "Structured agents activated"),
         ("5. LLM Decision", "ChatAnthropic makes REAL API call"),
-        ("6. Tool Selection", "LLM autonomously selects tools"),
+        ("6. Tool Selection", "LLM structuredly selects tools"),
         ("7. Analysis", "Real-time fraud risk analysis"),
         ("8. Response", "Variable, context-driven findings"),
         ("9. WebSocket", "Real results streamed to frontend")
@@ -137,5 +137,5 @@ if __name__ == "__main__":
     logger.info("💡 To run a real test with API calls:")
     logger.info("   1. Set ANTHROPIC_API_KEY environment variable")
     logger.info("   2. Install dependencies: poetry install")
-    logger.info("   3. Run: python tests/runners/run_autonomous_investigation_for_user.py")
+    logger.info("   3. Run: python tests/runners/run_structured_investigation_for_user.py")
     logger.info("="*60)

@@ -116,6 +116,12 @@ retrieve_secrets() {
     export SNOWFLAKE_WAREHOUSE=$(get_secret "SNOWFLAKE_WAREHOUSE")
     export SNOWFLAKE_ROLE=$(get_secret "SNOWFLAKE_ROLE")
     export SNOWFLAKE_AUTHENTICATOR=$(get_secret "SNOWFLAKE_AUTHENTICATOR")
+<<<<<<< HEAD
+=======
+    export SNOWFLAKE_PRIVATE_KEY_PATH=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PATH")
+    export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE=$(get_secret "SNOWFLAKE_PRIVATE_KEY_PASSPHRASE")
+    export SNOWFLAKE_TRANSACTIONS_TABLE=$(get_secret "SNOWFLAKE_TRANSACTIONS_TABLE")
+>>>>>>> 001-modify-analyzer-method
 
     # Additional secrets (optional)
     export LANGFUSE_PUBLIC_KEY=$(get_secret "LANGFUSE_PUBLIC_KEY")
@@ -145,17 +151,51 @@ retrieve_secrets() {
     fi
 
     # Validate Snowflake configuration
+<<<<<<< HEAD
     if [ -z "$SNOWFLAKE_ACCOUNT" ] || [ -z "$SNOWFLAKE_USER" ] || [ -z "$SNOWFLAKE_PASSWORD" ]; then
         print_warning "Snowflake configuration incomplete - add to .env file:"
         [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
         [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
         [ -z "$SNOWFLAKE_PASSWORD" ] && print_warning "  SNOWFLAKE_PASSWORD=your-password"
         [ -z "$SNOWFLAKE_DATABASE" ] && print_warning "  SNOWFLAKE_DATABASE=your-database-name"
+=======
+    # Check for either password or private key authentication
+    local has_password_auth=false
+    local has_private_key_auth=false
+    
+    if [ -n "$SNOWFLAKE_PASSWORD" ]; then
+        has_password_auth=true
+    fi
+    
+    if [ -n "$SNOWFLAKE_PRIVATE_KEY_PATH" ] || [ "$SNOWFLAKE_AUTHENTICATOR" == "private_key" ]; then
+        has_private_key_auth=true
+    fi
+    
+    if [ -z "$SNOWFLAKE_ACCOUNT" ] || [ -z "$SNOWFLAKE_USER" ]; then
+        print_warning "Snowflake configuration incomplete - add to .env file:"
+        [ -z "$SNOWFLAKE_ACCOUNT" ] && print_warning "  SNOWFLAKE_ACCOUNT=your-account"
+        [ -z "$SNOWFLAKE_USER" ] && print_warning "  SNOWFLAKE_USER=your-username"
+    elif [ "$has_password_auth" == "false" ] && [ "$has_private_key_auth" == "false" ]; then
+        print_warning "Snowflake authentication not configured - add to .env file:"
+        print_warning "  Either: SNOWFLAKE_PASSWORD=your-password"
+        print_warning "  Or: SNOWFLAKE_PRIVATE_KEY_PATH=/path/to/key.p8"
+>>>>>>> 001-modify-analyzer-method
     else
         print_success "Snowflake configuration loaded"
         echo -e "${BLUE}   📊 Snowflake Connection Details:${NC}"
         echo -e "${BLUE}   └─ Account: ${YELLOW}${SNOWFLAKE_ACCOUNT}${NC}"
         echo -e "${BLUE}   └─ User: ${YELLOW}${SNOWFLAKE_USER}${NC}"
+<<<<<<< HEAD
+=======
+        
+        # Show authentication method
+        if [ "$has_private_key_auth" == "true" ]; then
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Private Key${NC} (${SNOWFLAKE_PRIVATE_KEY_PATH})"
+        else
+            echo -e "${BLUE}   └─ Auth: ${GREEN}Password${NC}"
+        fi
+        
+>>>>>>> 001-modify-analyzer-method
         echo -e "${BLUE}   └─ Database: ${YELLOW}${SNOWFLAKE_DATABASE:-not-set}${NC}"
         echo -e "${BLUE}   └─ Schema: ${YELLOW}${SNOWFLAKE_SCHEMA:-PUBLIC}${NC}"
         echo -e "${BLUE}   └─ Warehouse: ${YELLOW}${SNOWFLAKE_WAREHOUSE:-COMPUTE_WH}${NC}"

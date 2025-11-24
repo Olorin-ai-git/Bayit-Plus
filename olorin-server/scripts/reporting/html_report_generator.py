@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 HTML Report Generator for Autonomous Investigation Tests
 
 Generates comprehensive, interactive HTML reports with visualizations
 for autonomous investigation test results.
+=======
+HTML Report Generator for Structured Investigation Tests
+
+Generates comprehensive, interactive HTML reports with visualizations
+for structured investigation test results.
+>>>>>>> 001-modify-analyzer-method
 """
 
 import json
@@ -12,10 +19,17 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 import base64
 
+<<<<<<< HEAD
 class AutonomousInvestigationHTMLReporter:
     """Generates comprehensive HTML reports for autonomous investigation tests."""
     
     def __init__(self, report_title: str = "Autonomous Investigation Test Report"):
+=======
+class StructuredInvestigationHTMLReporter:
+    """Generates comprehensive HTML reports for structured investigation tests."""
+    
+    def __init__(self, report_title: str = "Structured Investigation Test Report"):
+>>>>>>> 001-modify-analyzer-method
         self.report_title = report_title
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
@@ -23,7 +37,11 @@ class AutonomousInvestigationHTMLReporter:
         self,
         test_results: Dict[str, Any],
         csv_metadata: Optional[Dict[str, Any]] = None,
+<<<<<<< HEAD
         output_path: str = "autonomous_investigation_report.html",
+=======
+        output_path: str = "structured_investigation_report.html",
+>>>>>>> 001-modify-analyzer-method
         investigation_folder: Optional[str] = None
     ) -> str:
         """Generate a comprehensive HTML report from test results."""
@@ -820,7 +838,11 @@ class AutonomousInvestigationHTMLReporter:
         return """
         <footer class="footer">
             <p>🚀 Olorin Fraud Investigation Platform</p>
+<<<<<<< HEAD
             <p>Autonomous Investigation Test Report</p>
+=======
+            <p>Structured Investigation Test Report</p>
+>>>>>>> 001-modify-analyzer-method
             <p>Generated with Python {python_version}</p>
         </footer>
         """.format(python_version="3.11")

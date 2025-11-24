@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Mock LLM Response System for Autonomous Investigation Testing
+=======
+Mock LLM Response System for Structured Investigation Testing
+>>>>>>> 001-modify-analyzer-method
 
 This module provides realistic mock responses for all agent types during testing.
 Mock responses ONLY activate when TestMode.MOCK is specified in the test configuration.
@@ -46,7 +50,11 @@ class MockRiskProfile:
 
 class MockLLMResponseGenerator:
     """
+<<<<<<< HEAD
     Generates realistic mock LLM responses for autonomous investigation testing.
+=======
+    Generates realistic mock LLM responses for structured investigation testing.
+>>>>>>> 001-modify-analyzer-method
     
     ONLY ACTIVATED when TestMode.MOCK is specified.
     """
@@ -497,21 +505,54 @@ def generate_mock_response(agent_type: str, scenario: str, investigation_id: str
         # Risk assessment requires other agent responses
         if context_data:
             device_analysis = context_data.get("device_analysis", "[No device analysis available]")
+<<<<<<< HEAD
             location_analysis = context_data.get("location_analysis", "[No location analysis available]") 
             network_analysis = context_data.get("network_analysis", "[No network analysis available]")
             logs_analysis = context_data.get("logs_analysis", "[No logs analysis available]")
             
             return mock_response_generator.generate_risk_assessment_response(
                 scenario_type, investigation_id, device_analysis, location_analysis, 
+=======
+            location_analysis = context_data.get("location_analysis", "[No location analysis available]")
+            network_analysis = context_data.get("network_analysis", "[No network analysis available]")
+            logs_analysis = context_data.get("logs_analysis", "[No logs analysis available]")
+
+            return mock_response_generator.generate_risk_assessment_response(
+                scenario_type, investigation_id, device_analysis, location_analysis,
+>>>>>>> 001-modify-analyzer-method
                 network_analysis, logs_analysis
             )
         else:
             logger.warning("Risk assessment requested without context data, using minimal response")
             return mock_response_generator.generate_risk_assessment_response(
+<<<<<<< HEAD
                 scenario_type, investigation_id, 
                 "[Device analysis not available]", "[Location analysis not available]",
                 "[Network analysis not available]", "[Logs analysis not available]"
             )
+=======
+                scenario_type, investigation_id,
+                "[Device analysis not available]", "[Location analysis not available]",
+                "[Network analysis not available]", "[Logs analysis not available]"
+            )
+    elif agent_type == "verification":
+        # Return a verification score that reflects the investigation quality
+        # For device spoofing scenario with good data, return high confidence
+        verification_score = 0.75 if entity_risk_score and entity_risk_score > 0.5 else 0.65
+        return f"""
+Based on the investigation results, I assess the quality and consistency as follows:
+
+**Overall Verification Score: {verification_score:.2f}**
+
+The investigation demonstrates:
+- ✅ Comprehensive data collection from Snowflake
+- ✅ Multiple fraud indicators identified (device patterns)
+- ✅ Consistent risk assessment across agents
+- ✅ Proper evidence gathering and correlation
+
+The investigation meets quality standards with a verification confidence of {verification_score:.2f}.
+"""
+>>>>>>> 001-modify-analyzer-method
     else:
         logger.error(f"Unknown agent type for mock response: {agent_type}")
         return f"Mock response error: Unknown agent type '{agent_type}'"

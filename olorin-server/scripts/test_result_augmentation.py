@@ -28,7 +28,7 @@ from app.service.agent.tools.result_augmentation_service import (
 from app.service.agent.tools.result_enhancement_engine import ResultEnhancementEngine
 from app.service.agent.tools.enhanced_tool_base import ToolResult
 from app.service.agent.tools.rag_tool_context import ToolExecutionContext
-from app.service.agent.autonomous_context import AutonomousInvestigationContext
+from app.service.agent.structured_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -116,7 +116,7 @@ async def test_result_enhancement_engine():
     # Create test data
     result = MockToolResult(success=True, data="Device fingerprint analysis: unique device detected")
     context = MockToolExecutionContext(has_rag=True, chunks=8)
-    investigation_context = AutonomousInvestigationContext("test_investigation", "test_entity")
+    investigation_context = StructuredInvestigationContext("test_investigation", "test_entity")
     
     # Create enhancement engine
     enhancement_engine = ResultEnhancementEngine()
@@ -266,7 +266,7 @@ async def test_knowledge_categories():
         data="Rich analysis result with multiple indicators and findings"
     )
     context = MockToolExecutionContext(has_rag=True, chunks=10)
-    investigation_context = AutonomousInvestigationContext("category_test", "test_entity")
+    investigation_context = StructuredInvestigationContext("category_test", "test_entity")
     
     # Create augmentation service
     augmentation_service = ToolResultAugmentationService()

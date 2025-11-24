@@ -5,8 +5,13 @@ Test script to verify network agent properly handles missing IP addresses
 
 import asyncio
 import json
+<<<<<<< HEAD
 from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
 from app.service.agent.autonomous_agents import autonomous_network_agent
+=======
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
+from app.service.agent.structured_agents import structured_network_agent
+>>>>>>> 001-modify-analyzer-method
 from langchain_core.runnables import RunnableConfig
 from app.service.logging import get_bridge_logger
 
@@ -16,7 +21,11 @@ async def test_network_agent_without_ip():
     """Test network agent when no IP address is available"""
     
     # Create context WITHOUT IP address
+<<<<<<< HEAD
     context = AutonomousInvestigationContext(
+=======
+    context = StructuredInvestigationContext(
+>>>>>>> 001-modify-analyzer-method
         investigation_id="test_no_ip_001",
         entity_id="TESTUSER123456",
         entity_type=EntityType.USER_ID,
@@ -55,7 +64,11 @@ async def test_network_agent_without_ip():
     logger.info("-" * 80)
     
     try:
+<<<<<<< HEAD
         result = await autonomous_network_agent(context, config)
+=======
+        result = await structured_network_agent(context, config)
+>>>>>>> 001-modify-analyzer-method
         logger.info(f"Network Agent Result: {json.dumps(result, indent=2, default=str)}")
         
         if "error" in str(result).lower() and "ip" in str(result).lower():
@@ -70,7 +83,11 @@ async def test_network_agent_with_ip():
     """Test network agent when IP address IS available"""
     
     # Create context WITH IP address
+<<<<<<< HEAD
     context = AutonomousInvestigationContext(
+=======
+    context = StructuredInvestigationContext(
+>>>>>>> 001-modify-analyzer-method
         investigation_id="test_with_ip_001",
         entity_id="TESTUSER789012",
         entity_type=EntityType.USER_ID,
@@ -109,7 +126,11 @@ async def test_network_agent_with_ip():
     logger.info("-" * 80)
     
     try:
+<<<<<<< HEAD
         result = await autonomous_network_agent(context, config)
+=======
+        result = await structured_network_agent(context, config)
+>>>>>>> 001-modify-analyzer-method
         logger.info(f"Network Agent Result: {json.dumps(result, indent=2, default=str)}")
         
         if "198.51.100.42" in str(result):

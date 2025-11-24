@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Simplified Test Server for Autonomous Investigation Testing
+Simplified Test Server for Structured Investigation Testing
 
-This server includes only the essential components needed to test the autonomous
+This server includes only the essential components needed to test the structured
 investigation system without the complex dependencies that might be missing.
 """
 
@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
-    title="Olorin Autonomous Investigation Test Server",
-    description="Simplified server for testing autonomous investigation capabilities",
+    title="Olorin Structured Investigation Test Server",
+    description="Simplified server for testing structured investigation capabilities",
     version="1.0.0"
 )
 
@@ -41,27 +41,27 @@ async def health_check():
 async def root():
     """Root endpoint"""
     return {
-        "message": "Olorin Autonomous Investigation Test Server",
+        "message": "Olorin Structured Investigation Test Server",
         "version": "1.0.0",
         "endpoints": {
             "health": "/health",
-            "autonomous_investigations": "/autonomous",
+            "structured_investigations": "/structured",
             "docs": "/docs"
         }
     }
 
-# Include our autonomous investigation router
+# Include our structured investigation router
 try:
-    from app.router.autonomous_investigation_router import router as autonomous_router
-    app.include_router(autonomous_router)
-    logger.info("✅ Autonomous investigation router loaded successfully")
+    from app.router.structured_investigation_router import router as structured_router
+    app.include_router(structured_router)
+    logger.info("✅ Structured investigation router loaded successfully")
 except Exception as e:
-    logger.warning(f"⚠️ Could not load autonomous investigation router: {e}")
+    logger.warning(f"⚠️ Could not load structured investigation router: {e}")
     
     # Create a fallback minimal router for testing
     from fastapi import APIRouter
     
-    fallback_router = APIRouter(prefix="/autonomous", tags=["autonomous-investigation"])
+    fallback_router = APIRouter(prefix="/structured", tags=["structured-investigation"])
     
     @fallback_router.get("/scenarios")
     async def list_scenarios_fallback():
@@ -75,18 +75,18 @@ except Exception as e:
         return {
             "investigation_id": "TEST_FALLBACK_001",
             "status": "started",
-            "message": "Fallback test mode - autonomous investigation router not fully loaded",
+            "message": "Fallback test mode - structured investigation router not fully loaded",
             "note": "This is a minimal fallback for basic testing"
         }
     
     app.include_router(fallback_router)
-    logger.info("✅ Fallback autonomous investigation endpoints loaded")
+    logger.info("✅ Fallback structured investigation endpoints loaded")
 
 if __name__ == "__main__":
-    print("🚀 Starting Olorin Autonomous Investigation Test Server")
+    print("🚀 Starting Olorin Structured Investigation Test Server")
     print("📡 Server will be available at: http://localhost:8090")
     print("📋 API documentation at: http://localhost:8090/docs")
-    print("🧪 Test endpoints at: http://localhost:8090/autonomous/scenarios")
+    print("🧪 Test endpoints at: http://localhost:8090/structured/scenarios")
     
     uvicorn.run(
         app,

@@ -1,10 +1,10 @@
-# Autonomous Investigation Test Scripts
+# Structured Investigation Test Scripts
 
-This directory contains scripts for running comprehensive autonomous investigation tests with enhanced reporting, multiple output formats, and extensive validation capabilities.
+This directory contains scripts for running comprehensive structured investigation tests with enhanced reporting, multiple output formats, and extensive validation capabilities.
 
 ## 🚀 NEW: Unified Test Runner (Recommended)
 
-### `unified_autonomous_test_runner.py` & `run_unified_tests.sh`
+### `unified_structured_test_runner.py` & `run_unified_tests.sh`
 **The comprehensive, production-ready solution that consolidates all testing functionality.**
 
 #### Quick Start Examples:
@@ -59,11 +59,11 @@ Run all 10 fraud detection scenarios:
 ./scripts/testing/run_all_scenarios.sh --save          # Save results to JSON file
 ```
 
-### `run_autonomous_tests.sh`
+### `run_structured_tests.sh`
 Flexible test runner with custom options:
 ```bash
-./scripts/testing/run_autonomous_tests.sh --scenarios 3 --verbose
-./scripts/testing/run_autonomous_tests.sh --scenarios 1 --save
+./scripts/testing/run_structured_tests.sh --scenarios 3 --verbose
+./scripts/testing/run_structured_tests.sh --scenarios 1 --save
 ```
 
 ## Features
@@ -86,6 +86,6 @@ All scripts automatically:
 1. Retrieve the Anthropic API key from Firebase secrets using `firebase functions:secrets:access`
 2. Set up the required environment variables
 3. Configure the Python path
-4. Run the autonomous investigation tests
+4. Run the structured investigation tests
 
 No manual environment variable setup is required.

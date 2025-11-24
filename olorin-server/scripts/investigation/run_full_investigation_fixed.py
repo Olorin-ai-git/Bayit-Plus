@@ -2,7 +2,7 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 #!/usr/bin/env python
-"""Run a full autonomous investigation with real Anthropic API calls - FIXED VERSION."""
+"""Run a full structured investigation with real Anthropic API calls - FIXED VERSION."""
 
 import os
 import json
@@ -20,8 +20,8 @@ if not API_KEY:
     exit(1)
 API_URL = "https://api.anthropic.com/v1/messages"
 
-class AutonomousInvestigator:
-    """Simulates the Olorin autonomous investigation system."""
+class StructuredInvestigator:
+    """Simulates the Olorin structured investigation system."""
     
     def __init__(self):
         self.api_key = API_KEY
@@ -81,7 +81,7 @@ class AutonomousInvestigator:
             }
     
     def run_investigation(self, entity_id: str) -> Dict:
-        """Run a full autonomous investigation."""
+        """Run a full structured investigation."""
         logger.info(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
         logger.info(f"Investigation ID: {self.investigation_id}")
         logger.info(f"Entity: {entity_id}")
@@ -107,7 +107,7 @@ class AutonomousInvestigator:
             "overall_risk": 0
         }
         
-        # Run autonomous agents
+        # Run structured agents
         agents = [
             {
                 "name": "Network Security Analyst",
@@ -277,14 +277,14 @@ def main():
     logger.info("   • Behavioral anomalies detected")
     
     # Run investigation
-    investigator = AutonomousInvestigator()
+    investigator = StructuredInvestigator()
     results = investigator.run_investigation("user_high_risk_001")
     
     # Display results
     print_investigation_results(results)
     
     # Save detailed results
-    output_file = f"autonomous_investigation_{results['investigation_id']}.json"
+    output_file = f"structured_investigation_{results['investigation_id']}.json"
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     
@@ -292,10 +292,10 @@ def main():
     
     logger.info(f"\n🔍 VALIDATION SUMMARY:")
     logger.info(f"   ✅ Real Anthropic Claude Opus API used throughout")
-    logger.info(f"   ✅ Multiple autonomous agents executed successfully") 
+    logger.info(f"   ✅ Multiple structured agents executed successfully") 
     logger.info(f"   ✅ Contextual fraud analysis with variable responses")
     logger.info(f"   ✅ No mock data - authentic investigation workflow")
-    logger.info(f"   ✅ Production-ready autonomous investigation system")
+    logger.info(f"   ✅ Production-ready structured investigation system")
     
     return results
 

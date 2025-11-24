@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Live Mode Emergency Procedures for Autonomous Investigation System
+=======
+Live Mode Emergency Procedures for Structured Investigation System
+>>>>>>> 001-modify-analyzer-method
 
 This script provides comprehensive emergency procedures for live mode debugging sessions,
 including immediate termination, cost reporting, state preservation, and system recovery.
@@ -139,7 +143,11 @@ class EmergencyProcedureManager:
                     if process.info['name'] == 'python' or process.info['name'] == 'python3':
                         cmdline = ' '.join(process.info['cmdline'] or [])
                         if any(keyword in cmdline.lower() for keyword in [
+<<<<<<< HEAD
                             'autonomous_investigation',
+=======
+                            'structured_investigation',
+>>>>>>> 001-modify-analyzer-method
                             'investigation',
                             'agent',
                             'orchestrator'

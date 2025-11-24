@@ -2,7 +2,7 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 #!/usr/bin/env python
-"""Run a full autonomous investigation with real Anthropic API calls."""
+"""Run a full structured investigation with real Anthropic API calls."""
 
 import os
 import json
@@ -20,8 +20,8 @@ if not API_KEY:
     exit(1)
 API_URL = "https://api.anthropic.com/v1/messages"
 
-class AutonomousInvestigator:
-    """Simulates the Olorin autonomous investigation system."""
+class StructuredInvestigator:
+    """Simulates the Olorin structured investigation system."""
     
     def __init__(self):
         self.api_key = API_KEY
@@ -43,7 +43,7 @@ class AutonomousInvestigator:
             "messages": [
                 {
                     "role": "system",
-                    "content": f"You are an autonomous {agent_name} analyzing fraud risk. Provide detailed analysis with risk scores."
+                    "content": f"You are an structured {agent_name} analyzing fraud risk. Provide detailed analysis with risk scores."
                 },
                 {
                     "role": "user",
@@ -78,7 +78,7 @@ class AutonomousInvestigator:
             }
     
     def run_investigation(self, entity_id: str, scenario: Dict) -> Dict:
-        """Run a full autonomous investigation."""
+        """Run a full structured investigation."""
         logger.info(f"\n🔍 STARTING FULL AUTONOMOUS INVESTIGATION")
         logger.info(f"Investigation ID: {self.investigation_id}")
         logger.info(f"Entity: {entity_id}")
@@ -89,7 +89,7 @@ class AutonomousInvestigator:
             "entity_id": entity_id,
             "timestamp": datetime.now().isoformat(),
             "scenario": scenario,
-            "investigation_type": "autonomous_fraud_detection"
+            "investigation_type": "structured_fraud_detection"
         }
         
         results = {
@@ -101,7 +101,7 @@ class AutonomousInvestigator:
             "overall_risk": 0
         }
         
-        # Run each autonomous agent with real API calls
+        # Run each structured agent with real API calls
         agents = [
             ("Network Analysis Agent", self.analyze_network),
             ("Device Analysis Agent", self.analyze_device),
@@ -287,7 +287,7 @@ def print_investigation_summary(results: Dict):
     logger.info(f"Start Time: {results['start_time']}")
     logger.info(f"End Time: {results['end_time']}")
     
-    logger.info(f"\n🤖 Autonomous Agents Executed: {len(results['agent_findings'])}")
+    logger.info(f"\n🤖 Structured Agents Executed: {len(results['agent_findings'])}")
     for agent, findings in results['agent_findings'].items():
         logger.info(f"  ✅ {agent}")
         logger.info(f"     Execution Time: {findings['execution_time']:.2f}s")
@@ -320,7 +320,7 @@ def main():
     logger.info("="*60)
     
     # Create investigator
-    investigator = AutonomousInvestigator()
+    investigator = StructuredInvestigator()
     
     # Create test scenario
     scenario = create_test_scenario()
