@@ -1561,6 +1561,32 @@ def _calculate_per_transaction_scores(
                 f"({elapsed:.1f}s elapsed)"
             )
     
+    # Apply pattern-based risk adjustments after all base scoring is complete
+    if transaction_scores:
+        try:
+            from app.service.agent.orchestration.domain_agents.pattern_based_adjustments import calculate_pattern_based_adjustments
+            
+            logger.info(f"📊 Applying pattern-based risk adjustments to {len(transaction_scores)} transactions")
+            adjusted_scores, adjustment_reasons = calculate_pattern_based_adjustments(
+                transactions=results,
+                base_scores=transaction_scores,
+                domain_findings=domain_findings
+            )
+            
+            # Replace scores with adjusted scores
+            transaction_scores = adjusted_scores
+            
+            # Log adjustment summary
+            adjusted_count = len(adjustment_reasons)
+            if adjusted_count > 0:
+                logger.info(f"✅ Pattern adjustments applied to {adjusted_count} transactions")
+                # Log first few examples
+                for tx_id, reasons in list(adjustment_reasons.items())[:3]:
+                    logger.info(f"   Example: {tx_id} - {', '.join(reasons)}")
+        except Exception as e:
+            logger.warning(f"⚠️ Pattern-based adjustments failed: {e}", exc_info=True)
+            # Continue with base scores if pattern adjustments fail
+    
     # Final summary
     elapsed_time = time.time() - start_time
     if excluded_count > 0:
