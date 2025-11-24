@@ -5,11 +5,8 @@ This module provides enhanced wrappers for domain agents that add hybrid intelli
 tracking, performance metrics, and audit trail functionality.
 """
 
-<<<<<<< HEAD
-=======
 import asyncio
 import os
->>>>>>> 001-modify-analyzer-method
 from typing import Dict, Any, Optional, Callable
 from datetime import datetime
 
@@ -20,13 +17,10 @@ from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
-<<<<<<< HEAD
-=======
 # D1 FIX: Configurable domain agent timeout from environment (default: 60 seconds)
 # Increased to 60s to accommodate LLM-based evidence analysis which can take 20-30s
 DOMAIN_AGENT_TIMEOUT_SECONDS = int(os.getenv("DOMAIN_AGENT_TIMEOUT_SECONDS", "60"))
 
->>>>>>> 001-modify-analyzer-method
 
 class DomainAgentEnhancer:
     """
@@ -51,17 +45,6 @@ class DomainAgentEnhancer:
             logger.info(f"🎯 Hybrid Intelligence {domain_name} agent starting")
             logger.debug(f"   Domain analysis: Enhanced with confidence tracking & audit trail")
             logger.debug(f"   Performance metrics: Real-time completion time monitoring")
-<<<<<<< HEAD
-            
-            try:
-                # Call original domain agent with duration tracking
-                from app.service.agent.orchestration.timing import domain_timer
-                with domain_timer(state, domain_name):
-                    result = await original_agent(state, config)
-                
-                # Update domain completion tracking
-                domains_completed = set(result.get("domains_completed", []))
-=======
             logger.debug(f"   D1 FIX: Timeout enforcement: {DOMAIN_AGENT_TIMEOUT_SECONDS}s deadline")
 
             try:
@@ -122,7 +105,6 @@ class DomainAgentEnhancer:
                         domains_completed.add(domain_key)
                     else:
                         domains_completed.add(str(domain_key))
->>>>>>> 001-modify-analyzer-method
                 domains_completed.add(domain_name)
                 result["domains_completed"] = list(domains_completed)
                 

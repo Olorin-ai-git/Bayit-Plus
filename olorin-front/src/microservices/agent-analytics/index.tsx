@@ -1,13 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-<<<<<<< HEAD
-import agentanalyticsApp from './App';
-=======
 import mitt from 'mitt';
 import { env } from '@shared/config/env.config';
 import { EventBusManager } from '@shared/events/UnifiedEventBus';
 import AgentAnalyticsApp from './AgentAnalyticsApp';
->>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Initialize the agentanalytics Service
@@ -24,22 +20,14 @@ const initializeagentanalyticsService = async () => {
 
     root.render(
       <React.StrictMode>
-<<<<<<< HEAD
-        <agentanalyticsApp />
-=======
         <AgentAnalyticsApp />
->>>>>>> 001-modify-analyzer-method
       </React.StrictMode>
     );
 
     console.log('[agentanalytics] agentanalytics microservice initialized successfully');
 
     if (window.olorin?.eventBus) {
-<<<<<<< HEAD
-      window.olorin.eventBus.emit('service:ready', { service: 'agent-analytics' });
-=======
       window.olorin.eventBus.emit('service:ready', { service: 'agent-analytics', timestamp: new Date() });
->>>>>>> 001-modify-analyzer-method
     }
 
   } catch (error) {
@@ -48,31 +36,6 @@ const initializeagentanalyticsService = async () => {
   }
 };
 
-<<<<<<< HEAD
-// Initialize global Olorin namespace if not already present
-if (!window.olorin) {
-  window.olorin = {
-    version: process.env.REACT_APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
-    services: {},
-    eventBus: null,
-    monitoring: null,
-    config: {
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-      enableDebug: process.env.NODE_ENV === 'development'
-    }
-  };
-
-  window.olorin.registerService = (name: string, service: any) => {
-    window.olorin.services[name] = service;
-    console.log(`[agentanalytics] Registered service: ${name}`);
-  };
-
-  window.olorin.getService = (name: string) => {
-    return window.olorin.services[name];
-  };
-=======
 // Initialize global Olorin namespace if not already present (for standalone mode)
 // In production, this will be provided by the shell app
 if (!window.olorin) {
@@ -92,7 +55,6 @@ if (!window.olorin) {
       return window.olorin.services.get(name);
     }
   };
->>>>>>> 001-modify-analyzer-method
 }
 
 // Start the agentanalytics microservice

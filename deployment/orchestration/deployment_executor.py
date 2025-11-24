@@ -34,11 +34,7 @@ class DeploymentExecutor:
     def __init__(self):
         # Deployment script paths
         self.deployment_scripts = {
-<<<<<<< HEAD
-            ServiceType.BACKEND: "/Users/gklainert/Documents/olorin/scripts/deploy-cloudrun-direct.sh",
-=======
             ServiceType.BACKEND: "/Users/gklainert/Documents/olorin/scripts/deployment/deploy-cloudrun-direct.sh",
->>>>>>> 001-modify-analyzer-method
             ServiceType.FRONTEND: "/Users/gklainert/Documents/olorin/scripts/deploy-frontend.sh",
         }
     
@@ -102,11 +98,7 @@ class DeploymentExecutor:
         """Deploy backend service to Google Cloud Run."""
         logger.info(f"Deploying backend to Cloud Run for deployment {deployment_id}")
         
-<<<<<<< HEAD
-        script_path = "/Users/gklainert/Documents/olorin/scripts/deploy-cloudrun-direct.sh"
-=======
         script_path = "/Users/gklainert/Documents/olorin/scripts/deployment/deploy-cloudrun-direct.sh"
->>>>>>> 001-modify-analyzer-method
         
         env_vars = os.environ.copy()
         env_vars.update({

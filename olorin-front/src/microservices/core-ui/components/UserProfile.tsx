@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-<<<<<<< HEAD
-import { useEventEmitter } from '../../shared/services/EventBus';
-import {
-  UserCircleIcon,
-  CogIcon,
-=======
 import { useEventEmitter } from '@shared/events/UnifiedEventBus';
 import { userApiService } from '../../../shared/services/UserApiService';
 import {
   UserCircleIcon,
->>>>>>> 001-modify-analyzer-method
   KeyIcon,
   BellIcon,
   ShieldCheckIcon,
@@ -85,11 +78,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => 
       await updateProfile({
         name: profileData.name,
         email: profileData.email,
-<<<<<<< HEAD
-        avatar: profileData.avatar,
-=======
         ...(profileData.avatar !== undefined && { avatar: profileData.avatar }),
->>>>>>> 001-modify-analyzer-method
       });
 
       emitNotification('success', 'Profile updated successfully');
@@ -116,15 +105,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => 
     setIsLoading(true);
 
     try {
-<<<<<<< HEAD
-      // TODO: Implement password change API call
-      console.log('Change password:', passwordData);
-=======
       await userApiService.changePassword({
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword
       });
->>>>>>> 001-modify-analyzer-method
 
       setPasswordData({
         currentPassword: '',
@@ -144,12 +128,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => 
     setIsLoading(true);
 
     try {
-<<<<<<< HEAD
-      // TODO: Implement notification settings API call
-      console.log('Update notification settings:', notificationSettings);
-=======
       await userApiService.updateNotificationSettings(notificationSettings);
->>>>>>> 001-modify-analyzer-method
 
       emitNotification('success', 'Notification settings updated');
     } catch (error) {

@@ -83,11 +83,7 @@ Tests visual consistency across all 8 microservices:
 
 **Services tested:**
 - Core UI (Shell application)
-<<<<<<< HEAD
-- Autonomous Investigation
-=======
 - Structured Investigation
->>>>>>> 001-modify-analyzer-method
 - Manual Investigation
 - Agent Analytics
 - RAG Intelligence
@@ -240,11 +236,7 @@ npm run olorin
 
 # Verify services are running
 curl http://localhost:3000  # Core UI
-<<<<<<< HEAD
-curl http://localhost:3001  # Autonomous Investigation
-=======
 curl http://localhost:3001  # Structured Investigation
->>>>>>> 001-modify-analyzer-method
 curl http://localhost:3002  # Manual Investigation
 curl http://localhost:3003  # Agent Analytics
 ```

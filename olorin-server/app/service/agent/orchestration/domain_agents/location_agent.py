@@ -43,12 +43,8 @@ async def location_agent_node(state: InvestigationState, config: Optional[Dict] 
         task_description="Geographic patterns and location-based fraud indicators are critical for "
                         "comprehensive risk assessment. Will analyze: (1) Impossible travel detection between "
                         "transaction locations, (2) High-risk geographic regions, (3) Location consistency "
-<<<<<<< HEAD
-                        "patterns, (4) IP geolocation anomalies"
-=======
                         "patterns, (4) IP geolocation anomalies, (5) Address validation and deliverability "
                         "from AddressZen MCP tools"
->>>>>>> 001-modify-analyzer-method
     )
     
     # Initialize location findings
@@ -88,20 +84,13 @@ async def location_agent_node(state: InvestigationState, config: Optional[Dict] 
         "metrics_collected": len(location_findings["metrics"])
     }
     
-<<<<<<< HEAD
-    # CRITICAL: Analyze evidence with LLM to generate risk scores
-=======
     # CRITICAL: Analyze evidence with LLM to generate risk scores (with ALL tool results)
->>>>>>> 001-modify-analyzer-method
     from .base import analyze_evidence_with_llm
     location_findings = await analyze_evidence_with_llm(
         domain="location",
         findings=location_findings,
         snowflake_data=snowflake_data,
-<<<<<<< HEAD
-=======
         tool_results=tool_results,
->>>>>>> 001-modify-analyzer-method
         entity_type=entity_type,
         entity_id=entity_id
     )
@@ -116,16 +105,12 @@ async def location_agent_node(state: InvestigationState, config: Optional[Dict] 
     log_agent_handover_complete("location", location_findings)
     complete_chain_of_thought(process_id, location_findings, "location")
     
-<<<<<<< HEAD
-    logger.info(f"[Step 5.2.3] ✅ Location analysis complete - Risk: {location_findings['risk_score']:.2f}")
-=======
     # CRITICAL FIX: Handle None risk_score
     risk_score = location_findings.get('risk_score')
     if risk_score is not None:
         logger.info(f"[Step 5.2.3] ✅ Location analysis complete - Risk: {risk_score:.2f}")
     else:
         logger.info(f"[Step 5.2.3] ✅ Location analysis complete - Risk: INSUFFICIENT_DATA")
->>>>>>> 001-modify-analyzer-method
     
     # Update state with findings
     return add_domain_findings(state, "location", location_findings)
@@ -256,13 +241,6 @@ def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
     # Apply risk scoring based on impossible travel
     if impossible_travels:
         # High risk for impossible travel
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings.get("risk_score", 0), 0.8)
-        findings["evidence"].append(f"FRAUD INDICATOR: {len(impossible_travels)} impossible travel pattern(s) detected")
-    elif unique_countries > 3:
-        # Moderate risk for high geographic diversity
-        findings["risk_score"] = max(findings.get("risk_score", 0), 0.4)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
@@ -276,7 +254,6 @@ def _analyze_impossible_travel(results: list, findings: Dict[str, Any]) -> None:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.4)
->>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"GEOGRAPHIC SPREAD: Activity from {unique_countries} different countries")
 
 
@@ -290,15 +267,11 @@ def _analyze_high_risk_countries(results: list, findings: Dict[str, Any]) -> Non
     risk_countries_found = countries & high_risk_countries
     if risk_countries_found:
         findings["risk_indicators"].append("Activity from high-risk countries")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.3)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.3)
->>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"Activity from high-risk regions: {list(risk_countries_found)}")
     
     findings["metrics"]["high_risk_countries_count"] = len(risk_countries_found)
@@ -331,28 +304,20 @@ def _analyze_geographic_diversity(results: list, findings: Dict[str, Any]) -> No
     if len(countries) > 5:
         findings["risk_indicators"].append(f"High country diversity: {len(countries)} countries")
         findings["evidence"].append(f"SUSPICIOUS: Activity spans {len(countries)} different countries")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.25)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.25)
->>>>>>> 001-modify-analyzer-method
     
     if len(cities) > 10:
         findings["risk_indicators"].append(f"High city diversity: {len(cities)} cities")
         findings["evidence"].append(f"SUSPICIOUS: Activity across {len(cities)} different cities")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.2)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.2)
->>>>>>> 001-modify-analyzer-method
 
 
 def _analyze_geolocation_intelligence(tool_results: Dict[str, Any], findings: Dict[str, Any]) -> None:
@@ -392,29 +357,21 @@ def _extract_location_signals(tool_name: str, result: Dict[str, Any]) -> Dict[st
         # AbuseIPDB fields
         "countryCode", "countryName", "isp", "domain", "usage_type",
         # Shodan fields
-<<<<<<< HEAD
-        "country_name", "city_name", "region_code", "org", "isp"
-=======
         "country_name", "city_name", "region_code", "org", "isp",
         # AddressZen MCP fields
         "address", "address_line1", "address_line2", "postal_code", "zip_code",
         "state", "state_code", "province", "county", "street", "street_number",
         "formatted_address", "address_components", "place_id", "location_type",
         "address_validation", "address_verified", "address_risk", "deliverability"
->>>>>>> 001-modify-analyzer-method
     ]
     
     # Risk score fields for locations
     location_risk_indicators = [
         "location_risk", "travel_risk_score", "geographic_risk", "country_risk",
-<<<<<<< HEAD
-        "region_risk_score", "distance_anomaly", "travel_velocity"
-=======
         "region_risk_score", "distance_anomaly", "travel_velocity",
         # AddressZen MCP risk indicators
         "address_risk_score", "deliverability_score", "validation_score",
         "address_confidence", "address_match_score", "fraud_risk"
->>>>>>> 001-modify-analyzer-method
     ]
     
     # Extract location identifiers and risk indicators
@@ -493,19 +450,6 @@ def _process_location_signals(tool_name: str, signals: Dict[str, Any], findings:
                 location_risk_level -= (0.3 - normalized_score) * 0.15
                 findings["evidence"].append(f"{tool_name}: Safe location {key} = {value}")
     
-<<<<<<< HEAD
-    # Apply risk adjustment based on location assessment
-    if location_risk_level > 0.4:
-        # High location risk detected - increase risk
-        risk_multiplier = 1.0 + min(0.12, location_risk_level * 0.08)
-        findings["risk_score"] = min(1.0, findings["risk_score"] * risk_multiplier)
-        findings["risk_indicators"].append(f"{tool_name}: High-risk location detected (level: {location_risk_level:.2f})")
-    elif location_risk_level < -0.15:
-        # Safe location - reduce risk
-        risk_multiplier = 1.0 + max(-0.08, location_risk_level * 0.1)  # location_risk_level is negative
-        findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
-        findings["evidence"].append(f"{tool_name}: Location appears safe (level: {location_risk_level:.2f})")
-=======
     # CRITICAL FIX: Do NOT modify LLM risk score after LLM analysis
     # Only apply adjustments BEFORE LLM analysis (during evidence collection)
     if "llm_risk_score" in findings:
@@ -531,7 +475,6 @@ def _process_location_signals(tool_name: str, signals: Dict[str, Any], findings:
                 risk_multiplier = 1.0 + max(-0.08, location_risk_level * 0.1)  # location_risk_level is negative
                 findings["risk_score"] = max(0.1, current_score * risk_multiplier)
                 findings["evidence"].append(f"{tool_name}: Location appears safe (level: {location_risk_level:.2f})")
->>>>>>> 001-modify-analyzer-method
     
     # Store aggregated metrics
     if evidence_count > 0:

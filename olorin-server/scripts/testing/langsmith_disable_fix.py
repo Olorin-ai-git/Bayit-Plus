@@ -186,11 +186,7 @@ def patch_test_runner_langsmith():
     """Patch the test runner to apply LangSmith fixes at startup"""
     
     patch_code = '''
-<<<<<<< HEAD
-# Add this to the beginning of main() function in unified_autonomous_test_runner.py:
-=======
 # Add this to the beginning of main() function in unified_structured_test_runner.py:
->>>>>>> 001-modify-analyzer-method
 
 def main():
     """Main execution function with LangSmith fixes"""

@@ -43,11 +43,7 @@
 ### **5.1 Domain Routing Verification**
 ```bash
 # Test sequential domain execution
-<<<<<<< HEAD
-TEST_MODE=live poetry run python scripts/testing/unified_autonomous_test_runner.py \
-=======
 TEST_MODE=live poetry run python scripts/testing/unified_structured_test_runner.py \
->>>>>>> 001-modify-analyzer-method
   --scenario domain_routing \
   --verbose --log-level DEBUG \
   --mode live --csv-limit 1 --timeout 60
@@ -147,11 +143,7 @@ USE_SNOWFLAKE=true poetry run python scripts/testing/test_risk_agent_live.py \
 ### **5.3 End-to-End Integration Test**
 ```bash
 # Complete 5-phase investigation in LIVE mode
-<<<<<<< HEAD
-USE_SNOWFLAKE=true poetry run python scripts/testing/unified_autonomous_test_runner.py \
-=======
 USE_SNOWFLAKE=true poetry run python scripts/testing/unified_structured_test_runner.py \
->>>>>>> 001-modify-analyzer-method
   --scenario complete_investigation \
   --verbose --log-level DEBUG \
   --mode live --csv-limit 1 --timeout 120

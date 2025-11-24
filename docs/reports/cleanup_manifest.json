@@ -1,0 +1,475 @@
+{
+  "reportMetadata": {
+    "date": "2025-11-07",
+    "repository": "/Users/gklainert/Documents/olorin",
+    "analysisScope": "Frontend (React/TypeScript) + Backend (Python)",
+    "totalFilesScanned": 945,
+    "averageConfidence": 0.91,
+    "reportVersion": "1.0"
+  },
+  "summary": {
+    "totalItemsForCleanup": 2150,
+    "totalLinesRemovable": 44670,
+    "totalSizeReduction": "7.1 MB",
+    "categories": {
+      "deadFrontendCode": {
+        "items": 1754,
+        "lines": 25420,
+        "size": "1 MB",
+        "confidence": 0.85
+      },
+      "deadBackendCode": {
+        "items": 114,
+        "lines": 4250,
+        "size": "170 KB",
+        "confidence": 0.88
+      },
+      "legacyBackupArtifacts": {
+        "items": 232,
+        "lines": 15000,
+        "size": "1.6 MB",
+        "confidence": 0.95
+      },
+      "logsGarbageFiles": {
+        "items": 50,
+        "lines": 0,
+        "size": "4.4 MB",
+        "confidence": 1.0
+      }
+    }
+  },
+  "criticalIssues": [
+    {
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "issue": "Git merge conflicts in production",
+      "files": [
+        "app/test/unit/service/test_agent_service.py",
+        "app/test/unit/router/test_agent_router_helper.py"
+      ],
+      "description": "Invalid syntax from unresolved <<<<<<< HEAD markers",
+      "confidence": 1.0,
+      "action": "delete",
+      "actionDetails": "Resolve merge conflicts immediately"
+    },
+    {
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "issue": "Mock data in production code",
+      "files": [
+        "olorin-server/app/router/api_router.py"
+      ],
+      "description": "MockLocationDataClient and MockFraudResponse classes violate NO MOCKS IN PRODUCTION mandate",
+      "confidence": 0.95,
+      "action": "delete",
+      "actionDetails": "Remove mock classes and ensure production implementations are wired"
+    },
+    {
+      "priority": "P0",
+      "severity": "HIGH",
+      "issue": "Massive dead API infrastructure",
+      "files": [
+        "olorin-front/src/api/index.ts"
+      ],
+      "description": "1,686+ unreferenced exports, complete parallel API implementation",
+      "confidence": 0.9,
+      "action": "delete",
+      "actionDetails": "Delete entire file after verifying no dynamic imports",
+      "lines": 15000,
+      "sizeReduction": "24 KB"
+    }
+  ],
+  "frontend": {
+    "deadCode": {
+      "unreferencedExports": 1686,
+      "unreferencedComponents": 63,
+      "materialUIImports": 0,
+      "totalLines": 25420,
+      "estimatedBundleSavings": "1 MB"
+    },
+    "highConfidenceFindings": [
+      {
+        "file": "src/api/index.ts",
+        "type": "unreferencedModule",
+        "exports": 1686,
+        "lines": 15000,
+        "confidence": 0.9,
+        "reason": "Complete parallel API implementation, zero imports found",
+        "action": "delete",
+        "sizeReduction": "24 KB"
+      },
+      {
+        "file": "src/services/optimized-api-service.ts",
+        "type": "unreferencedModule",
+        "lines": 501,
+        "confidence": 0.88,
+        "reason": "Service implementation never referenced",
+        "action": "delete",
+        "sizeReduction": "16 KB"
+      },
+      {
+        "file": "src/services/fraudInvestigationService.ts",
+        "type": "unreferencedModule",
+        "lines": 81,
+        "confidence": 0.88,
+        "reason": "Service implementation never referenced",
+        "action": "delete",
+        "sizeReduction": "3 KB"
+      },
+      {
+        "file": "src/utils/security.ts",
+        "type": "unreferencedModule",
+        "lines": 595,
+        "confidence": 0.85,
+        "reason": "Security utilities module with zero imports",
+        "action": "delete",
+        "sizeReduction": "24 KB"
+      }
+    ],
+    "mediumConfidenceFindings": [
+      {
+        "files": "57+ shared/visualization/core-ui components",
+        "type": "unreferencedComponents",
+        "lines": 8750,
+        "confidence": 0.70,
+        "reason": "May be Webpack Module Federation entry points",
+        "action": "quarantine",
+        "actionDetails": "Check webpack.config.js before deletion",
+        "examples": [
+          "ChartBuilder (832 lines)",
+          "NetworkGraph (706 lines)",
+          "TimelineVisualization (687 lines)"
+        ]
+      }
+    ]
+  },
+  "backend": {
+    "deadCode": {
+      "unreferencedFunctions": 6,
+      "unreferencedClasses": 5,
+      "unusedImports": 45,
+      "unreferencedModules": 9,
+      "unusedVariables": 31,
+      "totalLines": 4250,
+      "estimatedSavings": "170 KB"
+    },
+    "highConfidenceFindings": [
+      {
+        "file": "app/router/autonomous_investigation_router_backup.py",
+        "type": "unreferencedModule",
+        "lines": 1244,
+        "confidence": 0.95,
+        "reason": "Backup suffix, zero imports found",
+        "action": "delete",
+        "sizeReduction": "50 KB"
+      },
+      {
+        "files": [
+          "app/service/agent/tools/examples/tool_usage_examples.py",
+          "app/service/mcp_servers/security/example_usage.py",
+          "app/service/mcp_servers/monitoring/example_usage.py"
+        ],
+        "type": "unreferencedModules",
+        "lines": 420,
+        "confidence": 0.95,
+        "reason": "Example files, zero production imports",
+        "action": "delete",
+        "sizeReduction": "17 KB"
+      },
+      {
+        "type": "unusedImports",
+        "count": 45,
+        "files": 37,
+        "confidence": 0.9,
+        "reason": "Imported but never used",
+        "action": "delete",
+        "examples": [
+          "AnalyzeNetworkResponse (api_router.py)",
+          "MultiEntityInvestigationStatus (autonomous_investigation_router.py)",
+          "OpusVerifier (base_llm_risk_service.py)"
+        ]
+      },
+      {
+        "type": "unusedVariables",
+        "count": 31,
+        "confidence": 1.0,
+        "reason": "Variable assigned but never read",
+        "action": "delete",
+        "pattern": "Systematic score_type in 5 domain agents"
+      }
+    ],
+    "mediumConfidenceFindings": [
+      {
+        "files": [
+          "app/service/mcp_servers/compliance/audit_trail.py",
+          "app/service/mcp_servers/monitoring/dashboard.py",
+          "app/service/mcp_servers/external_api_server.py",
+          "app/service/mcp_servers/graph_analysis_server.py",
+          "app/service/mcp_servers/fraud_database_server.py"
+        ],
+        "type": "unreferencedModules",
+        "lines": 1350,
+        "confidence": 0.80,
+        "reason": "May be dynamically loaded by MCP server",
+        "action": "quarantine",
+        "actionDetails": "Verify MCP server configuration before deletion"
+      }
+    ]
+  },
+  "legacyCleanup": {
+    "backupFiles": {
+      "pattern": "*.bak, *.backup",
+      "count": 50,
+      "totalSize": "600 KB",
+      "confidence": 1.0,
+      "reason": "Backup files from refactoring, Git provides version control",
+      "action": "delete",
+      "topFiles": [
+        {
+          "file": "src/shared/events/event-routing.ts.bak",
+          "size": "24 KB"
+        },
+        {
+          "file": "src/shared/types/AgentRiskGauges.ts.bak",
+          "size": "20 KB"
+        },
+        {
+          "file": "src/microservices/reporting/services/reportingService.ts.bak",
+          "size": "20 KB"
+        }
+      ]
+    },
+    "backupsDirectory": {
+      "path": "./olorin-front/backups",
+      "size": "1.6 MB",
+      "files": 182,
+      "confidence": 1.0,
+      "reason": "Manual backup directory, redundant with Git history",
+      "action": "delete"
+    },
+    "archiveDirectories": {
+      "paths": [
+        "./docs/archive",
+        "./docs/frontend/archive"
+      ],
+      "confidence": 0.95,
+      "reason": "Archived documentation, likely outdated",
+      "action": "quarantine",
+      "actionDetails": "Review contents, then delete or move to separate archive repo"
+    },
+    "gitignoreAdditions": [
+      "*.bak",
+      "*.backup",
+      "*.old",
+      "*.orig",
+      "*.copy",
+      "*.tmp",
+      "*.temp",
+      "*~",
+      "backup/",
+      "backups/"
+    ]
+  },
+  "garbageCleanup": {
+    "macOSFiles": {
+      "pattern": ".DS_Store",
+      "count": 24,
+      "totalSize": "256 KB",
+      "confidence": 1.0,
+      "reason": "macOS folder metadata, not needed in Git",
+      "action": "delete"
+    },
+    "logFiles": {
+      "testBuildLogs": {
+        "count": 12,
+        "totalSize": "500 KB",
+        "confidence": 1.0,
+        "reason": "Temporary test/build logs, not needed in Git",
+        "action": "delete",
+        "files": [
+          "olorin-front/test_output.log",
+          "olorin-front/test-output.log",
+          "olorin-front/test-execution.log",
+          "olorin-front/build-errors.log",
+          "olorin-front/typecheck_full.log",
+          "TEST_008_VERIFICATION_RESULTS.log",
+          "olorin-server/test_output.log",
+          "olorin-server/tests/test_run.log",
+          "olorin-server/startup.log",
+          "olorin-server/startup2.log"
+        ]
+      },
+      "investigationLogs": {
+        "path": "./olorin-server/logs/investigations/",
+        "count": 14,
+        "totalSize": "3.9 MB",
+        "confidence": 0.85,
+        "reason": "May be production logs with retention requirements",
+        "action": "quarantine",
+        "actionDetails": "Verify log retention policy and compliance requirements"
+      }
+    },
+    "gitignoreAdditions": [
+      ".DS_Store",
+      "Thumbs.db",
+      "Desktop.ini",
+      "*.log",
+      "!logs/**/*.log"
+    ]
+  },
+  "ciGates": {
+    "eslintRules": {
+      "no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": "error"
+    },
+    "ruffRules": {
+      "select": ["F401", "F841"]
+    },
+    "preCommitHooks": [
+      {
+        "id": "no-backup-files",
+        "name": "No backup files",
+        "entry": "backup|\\.bak$|\\.backup$|\\.old$",
+        "language": "pygrep",
+        "types": ["file"]
+      },
+      {
+        "id": "no-ds-store",
+        "name": "No .DS_Store files",
+        "entry": ".DS_Store",
+        "language": "pygrep",
+        "types": ["file"]
+      }
+    ],
+    "ciChecks": [
+      {
+        "name": "Frontend Dead Code Check",
+        "command": "npx ts-prune --threshold 80"
+      },
+      {
+        "name": "Backend Dead Code Check",
+        "command": "poetry run vulture app/ --min-confidence 80"
+      }
+    ]
+  },
+  "implementationPhases": [
+    {
+      "phase": 1,
+      "name": "Critical Fixes",
+      "duration": "Day 1",
+      "priority": "IMMEDIATE",
+      "tasks": [
+        "Resolve git merge conflicts (2 files)",
+        "Remove mock implementations from api_router.py",
+        "Verify all test files pass"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "High-Impact Deletions",
+      "duration": "Day 1-2",
+      "priority": "HIGH",
+      "tasks": [
+        "Delete frontend dead code (4 major files)",
+        "Delete backend dead code (backup router, examples)",
+        "Clean unused imports and variables"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Legacy/Backup Cleanup",
+      "duration": "Day 2-3",
+      "priority": "HIGH",
+      "tasks": [
+        "Delete all .bak and .backup files (50 files)",
+        "Delete backups directory (1.6 MB)",
+        "Review and delete archive directories",
+        "Delete all .DS_Store files (24 files)",
+        "Delete test/build log files"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Medium-Priority Cleanup",
+      "duration": "Day 3-4",
+      "priority": "MEDIUM",
+      "tasks": [
+        "Review microservices components (verify Webpack config)",
+        "Review MCP servers modules (verify dynamic loading)",
+        "Delete verified unused components"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "CI/CD Gates & Prevention",
+      "duration": "Day 4-5",
+      "priority": "MEDIUM",
+      "tasks": [
+        "Add .gitignore entries for backup patterns",
+        "Add ESLint rules for unused exports",
+        "Add Ruff/Pylint rules for unused code",
+        "Add pre-commit hooks",
+        "Add CI checks for dead code"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Verification & Testing",
+      "duration": "Day 5",
+      "priority": "CRITICAL",
+      "tasks": [
+        "Run frontend build and tests",
+        "Run backend tests and linting",
+        "Verify no broken imports",
+        "Verify bundle size reduction",
+        "Verify all services start correctly"
+      ]
+    }
+  ],
+  "safetyChecklist": {
+    "preImplementation": [
+      "Create feature branch",
+      "Create backup git tag",
+      "Get user approval for all deletions"
+    ],
+    "verification": [
+      "Verify Webpack Module Federation configuration",
+      "Verify MCP server dynamic loading",
+      "Verify investigation log retention policy"
+    ],
+    "rollback": [
+      "Git tag available for full rollback",
+      "Selective file rollback possible",
+      "Incremental phases allow partial rollback"
+    ]
+  },
+  "expectedImpact": {
+    "codeQuality": {
+      "frontendLineReduction": "28%",
+      "backendLineReduction": "2%",
+      "bundleSizeReduction": "30%",
+      "backupGarbageElimination": "100%",
+      "deadCodeElimination": "100%"
+    },
+    "developmentVelocity": {
+      "buildTimeReduction": "15-20%",
+      "typeCheckingImprovement": "Faster",
+      "codeNavigationImprovement": "Easier",
+      "maintenanceImprovement": "Lower cognitive load"
+    },
+    "riskMitigation": {
+      "mockDataViolations": "Removed",
+      "mergeConflicts": "Resolved",
+      "confusionReduction": "Significant",
+      "securityImprovement": "Fewer attack surfaces"
+    }
+  },
+  "relatedDocumentation": [
+    "/Users/gklainert/Documents/olorin/olorin-front/DEAD_CODE_ANALYSIS_REPORT.json",
+    "/Users/gklainert/Documents/olorin/olorin-front/DEAD_CODE_ANALYSIS_SUMMARY.md",
+    "/Users/gklainert/Documents/olorin/olorin-front/DUPLICATION_SCAN_REPORT.md",
+    "/Users/gklainert/Documents/olorin/olorin-front/LEGACY_CLEANUP_STATUS.md",
+    "/Users/gklainert/Documents/olorin/project-management/documentation-cleanup-plan.md",
+    "/Users/gklainert/Documents/olorin/COMPREHENSIVE_CLEANUP_REPORT.md"
+  ]
+}

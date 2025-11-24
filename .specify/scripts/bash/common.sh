@@ -19,27 +19,12 @@ get_current_branch() {
         echo "$SPECIFY_FEATURE"
         return
     fi
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     # Then check git if available
     if git rev-parse --abbrev-ref HEAD >/dev/null 2>&1; then
         git rev-parse --abbrev-ref HEAD
         return
     fi
-<<<<<<< HEAD
-    
-    # For non-git repos, try to find the latest feature directory
-    local repo_root=$(get_repo_root)
-    local specs_dir="$repo_root/specs"
-    
-    if [[ -d "$specs_dir" ]]; then
-        local latest_feature=""
-        local highest=0
-        
-=======
 
     # For non-git repos, try to find the latest feature directory
     local repo_root=$(get_repo_root)
@@ -49,7 +34,6 @@ get_current_branch() {
         local latest_feature=""
         local highest=0
 
->>>>>>> 001-modify-analyzer-method
         for dir in "$specs_dir"/*; do
             if [[ -d "$dir" ]]; then
                 local dirname=$(basename "$dir")
@@ -63,21 +47,13 @@ get_current_branch() {
                 fi
             fi
         done
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         if [[ -n "$latest_feature" ]]; then
             echo "$latest_feature"
             return
         fi
     fi
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     echo "main"  # Final fallback
 }
 
@@ -89,38 +65,24 @@ has_git() {
 check_feature_branch() {
     local branch="$1"
     local has_git_repo="$2"
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     # For non-git repos, we can't enforce branch naming but still provide output
     if [[ "$has_git_repo" != "true" ]]; then
         echo "[specify] Warning: Git repository not detected; skipped branch validation" >&2
         return 0
     fi
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     if [[ ! "$branch" =~ ^[0-9]{3}- ]]; then
         echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
         echo "Feature branches should be named like: 001-feature-name" >&2
         return 1
     fi
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     return 0
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }
 
-<<<<<<< HEAD
-=======
 # Find feature directory by numeric prefix instead of exact branch match
 # This allows multiple branches to work on the same spec (e.g., 004-fix-bug, 004-add-feature)
 find_feature_dir_by_prefix() {
@@ -162,20 +124,10 @@ find_feature_dir_by_prefix() {
     fi
 }
 
->>>>>>> 001-modify-analyzer-method
 get_feature_paths() {
     local repo_root=$(get_repo_root)
     local current_branch=$(get_current_branch)
     local has_git_repo="false"
-<<<<<<< HEAD
-    
-    if has_git; then
-        has_git_repo="true"
-    fi
-    
-    local feature_dir=$(get_feature_dir "$repo_root" "$current_branch")
-    
-=======
 
     if has_git; then
         has_git_repo="true"
@@ -184,7 +136,6 @@ get_feature_paths() {
     # Use prefix-based lookup to support multiple branches per spec
     local feature_dir=$(find_feature_dir_by_prefix "$repo_root" "$current_branch")
 
->>>>>>> 001-modify-analyzer-method
     cat <<EOF
 REPO_ROOT='$repo_root'
 CURRENT_BRANCH='$current_branch'
@@ -202,7 +153,4 @@ EOF
 
 check_file() { [[ -f "$1" ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
 check_dir() { [[ -d "$1" && -n $(ls -A "$1" 2>/dev/null) ]] && echo "  ✓ $2" || echo "  ✗ $2"; }
-<<<<<<< HEAD
-=======
 
->>>>>>> 001-modify-analyzer-method

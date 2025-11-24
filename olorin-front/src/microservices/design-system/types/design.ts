@@ -512,13 +512,9 @@ export interface ReleaseSchedule {
   plannedDate: string;
   features: string[];
   status: 'planned' | 'in-progress' | 'testing' | 'released';
-<<<<<<< HEAD
-}
-=======
 }
 export interface FigmaSync {
   lastSync?: Date;
   status: 'idle' | 'syncing' | 'error';
   error?: string;
 }
->>>>>>> 001-modify-analyzer-method

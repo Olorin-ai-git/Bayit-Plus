@@ -32,9 +32,6 @@ async def analyze_logs(user_id: str, request: Request, ...):
         input=llm_input_prompt,
         agent_name="Olorin.cas.hri.olorin:fpl-splunk",
         metadata=Metadata(...),
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
-        olorin_header=OlorinHeader(...)
-=======
         olorin_header=OlorinHeader(...)
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
     )
@@ -146,12 +143,6 @@ agent_context = AgentContext(
         interaction_group_id="fraud_flow",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
-    olorin_header=OlorinHeader(
-        olorin_tid="test",
-        olorin_originating_assetalias="Olorin.cas.hri.olorin",
-        olorin_experience_id=settings.olorin_experience_id,
-=======
     olorin_header=OlorinHeader(
         olorin_tid="test",
         olorin_originating_assetalias="Olorin.cas.hri.olorin",
@@ -175,9 +166,6 @@ def get_agent_name(self) -> str:
 # Base service handles agent context creation with same parameters:
 # - agent_name: "Olorin.cas.hri.olorin:fpl-splunk"
 # - interaction_group_id: "fraud_flow"
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
-# - olorin_originating_assetalias: "Olorin.cas.hri.olorin"
-=======
 # - olorin_originating_assetalias: "Olorin.cas.hri.olorin"
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
 # - Authentication context with tokens
@@ -446,9 +434,6 @@ def create_fallback_assessment(self, user_id: str, error: Exception,
     {
       "olorin_userid": "4621097846089147992",
       "values(email_address)": null,
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
-      "values(olorin_username)": [
-=======
       "values(olorin_username)": [
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_LLM_REFACTOR_VS_MASTER_COMPARISON.md
         "olorin_test_20250515",

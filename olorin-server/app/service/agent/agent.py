@@ -55,8 +55,6 @@ try:
     database_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
     database_connection_string = None
     
-<<<<<<< HEAD
-=======
     if database_provider == 'postgresql':
         # Build PostgreSQL connection string from environment variables
         postgres_user = os.getenv('POSTGRES_USER', 'gklainert')
@@ -76,7 +74,6 @@ try:
     # Initialize tools with database connection (None for Snowflake)
     initialize_tools(database_connection_string=database_connection_string)
 
->>>>>>> 001-modify-analyzer-method
     # Get ALL available tools for comprehensive fraud investigation
     # Load all categories to ensure agents have access to the full suite of 45+ tools
     tools = get_tools_for_agent(
@@ -234,13 +231,7 @@ async def investigate_with_enhanced_patterns(
         return investigation_result
 
     except Exception as e:
-<<<<<<< HEAD
-        logger.error(f"❌ Enhanced investigation failed")
-        logger.error(f"   Error: {e}")
-        await ws_streaming.send_error(str(e), {"entity_id": entity_id})
-=======
         logger.error(f"❌ Enhanced investigation failed: {e}")
->>>>>>> 001-modify-analyzer-method
         return {
             "investigation_id": investigation_id,
             "entity_id": entity_id,

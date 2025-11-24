@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Test autonomous investigation flow via API endpoints
-This demonstrates real-world usage of the autonomous orchestrator through HTTP calls
-=======
 Test structured investigation flow via API endpoints
 This demonstrates real-world usage of the structured orchestrator through HTTP calls
->>>>>>> 001-modify-analyzer-method
 """
 
 import asyncio
@@ -20,17 +15,10 @@ logger = get_bridge_logger(__name__)
 
 # API Configuration
 BASE_URL = "http://localhost:8090"
-<<<<<<< HEAD
-API_KEY = "test_api_key_for_autonomous_flow"
-
-class AutonomousAPITester:
-    """Test autonomous investigation through API endpoints"""
-=======
 API_KEY = "test_api_key_for_structured_flow"
 
 class StructuredAPITester:
     """Test structured investigation through API endpoints"""
->>>>>>> 001-modify-analyzer-method
     
     def __init__(self):
         self.session = requests.Session()
@@ -42,11 +30,7 @@ class StructuredAPITester:
     async def test_fraud_investigation_scenario(self):
         """Test comprehensive fraud investigation scenario"""
         
-<<<<<<< HEAD
-        logger.info("🚀 Starting Autonomous Fraud Investigation API Test...")
-=======
         logger.info("🚀 Starting Structured Fraud Investigation API Test...")
->>>>>>> 001-modify-analyzer-method
         
         # Realistic fraud scenario - Suspicious credit card transaction
         investigation_data = {
@@ -135,13 +119,8 @@ class StructuredAPITester:
         }
         
         try:
-<<<<<<< HEAD
-            # Step 1: Initiate autonomous investigation
-            logger.info("📊 Initiating autonomous fraud investigation...")
-=======
             # Step 1: Initiate structured investigation
             logger.info("📊 Initiating structured fraud investigation...")
->>>>>>> 001-modify-analyzer-method
             logger.info(f"   Entity: {investigation_data['entity_type']} - {investigation_data['entity_id']}")
             logger.info(f"   Amount: ${investigation_data['context']['transaction']['amount']}")
             logger.info(f"   Location: {investigation_data['context']['network']['city']}, {investigation_data['context']['network']['country']}")
@@ -149,22 +128,14 @@ class StructuredAPITester:
             
             # Call investigation API endpoint
             response = self.session.post(
-<<<<<<< HEAD
-                f"{BASE_URL}/api/v1/investigations/autonomous",
-=======
                 f"{BASE_URL}/api/v1/investigations/structured",
->>>>>>> 001-modify-analyzer-method
                 json=investigation_data,
                 timeout=60
             )
             
             if response.status_code == 200:
                 result = response.json()
-<<<<<<< HEAD
-                logger.info("✅ Autonomous Investigation Completed Successfully!")
-=======
                 logger.info("✅ Structured Investigation Completed Successfully!")
->>>>>>> 001-modify-analyzer-method
                 await self._analyze_investigation_results(result)
                 return True, result
                 
@@ -289,11 +260,7 @@ class StructuredAPITester:
 async def test_multiple_scenarios():
     """Test multiple investigation scenarios"""
     
-<<<<<<< HEAD
-    tester = AutonomousAPITester()
-=======
     tester = StructuredAPITester()
->>>>>>> 001-modify-analyzer-method
     
     logger.info("🎯 AUTONOMOUS INVESTIGATION API TEST SUITE")
     logger.info("=" * 60)
@@ -304,11 +271,7 @@ async def test_multiple_scenarios():
     if success:
         logger.info("\n🎉 AUTONOMOUS INVESTIGATION TEST COMPLETED SUCCESSFULLY!")
         logger.info("\n📈 SYSTEM CAPABILITIES DEMONSTRATED:")
-<<<<<<< HEAD
-        logger.info("   ✅ Autonomous orchestration decision making")
-=======
         logger.info("   ✅ Structured orchestration decision making")
->>>>>>> 001-modify-analyzer-method
         logger.info("   ✅ Multi-agent coordination and execution")
         logger.info("   ✅ Real-time risk assessment and scoring")
         logger.info("   ✅ Bulletproof failure handling and recovery")
@@ -323,11 +286,7 @@ async def test_multiple_scenarios():
 async def main():
     """Main test execution"""
     
-<<<<<<< HEAD
-    logger.info("🚀 Starting Autonomous Investigation API Test...")
-=======
     logger.info("🚀 Starting Structured Investigation API Test...")
->>>>>>> 001-modify-analyzer-method
     
     # Check if backend is running
     try:
@@ -348,11 +307,7 @@ async def main():
     
     if success:
         logger.info(f"\n🎯 AUTONOMOUS API TEST RESULT: SUCCESS")
-<<<<<<< HEAD
-        logger.info("   The autonomous investigation orchestrator is working correctly!")
-=======
         logger.info("   The structured investigation orchestrator is working correctly!")
->>>>>>> 001-modify-analyzer-method
     else:
         logger.info(f"\n🎯 AUTONOMOUS API TEST RESULT: FAILED")
     

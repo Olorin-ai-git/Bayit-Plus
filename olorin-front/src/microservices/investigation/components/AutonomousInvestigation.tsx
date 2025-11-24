@@ -4,10 +4,6 @@ import {
   PauseIcon,
   StopIcon,
   CogIcon,
-<<<<<<< HEAD
-  ChartBarIcon,
-=======
->>>>>>> 001-modify-analyzer-method
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon,
@@ -26,20 +22,12 @@ interface InvestigationStep {
   output?: string;
 }
 
-<<<<<<< HEAD
-interface AutonomousInvestigationProps {
-=======
 interface StructuredInvestigationProps {
->>>>>>> 001-modify-analyzer-method
   investigationId?: string;
   className?: string;
 }
 
-<<<<<<< HEAD
-const AutonomousInvestigation: React.FC<AutonomousInvestigationProps> = ({
-=======
 const StructuredInvestigation: React.FC<StructuredInvestigationProps> = ({
->>>>>>> 001-modify-analyzer-method
   investigationId = 'auto-001',
   className = ""
 }) => {
@@ -86,11 +74,7 @@ const StructuredInvestigation: React.FC<StructuredInvestigationProps> = ({
   ]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    let interval: NodeJS.Timeout;
-=======
     let interval: ReturnType<typeof setInterval>;
->>>>>>> 001-modify-analyzer-method
 
     if (isRunning && !isPaused) {
       interval = setInterval(() => {
@@ -206,19 +190,11 @@ const StructuredInvestigation: React.FC<StructuredInvestigationProps> = ({
   const completedSteps = steps.filter(step => step.status === 'completed').length;
 
   return (
-<<<<<<< HEAD
-    <div className={`autonomous-investigation p-6 space-y-6 ${className}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Autonomous Investigation</h1>
-=======
     <div className={`structured-investigation p-6 space-y-6 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Structured Investigation</h1>
->>>>>>> 001-modify-analyzer-method
           <p className="text-gray-600">AI-powered fraud detection investigation #{investigationId}</p>
         </div>
         <div className="flex items-center space-x-3">
@@ -397,8 +373,4 @@ const StructuredInvestigation: React.FC<StructuredInvestigationProps> = ({
   );
 };
 
-<<<<<<< HEAD
-export default AutonomousInvestigation;
-=======
 export default StructuredInvestigation;
->>>>>>> 001-modify-analyzer-method

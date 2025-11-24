@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-# Autonomous Investigation System Analysis - Agent Communication, LangGraph Flow & LLM Reasoning
-
-**Author**: Gil Klainert  
-**Date**: 2025-09-06  
-**Source**: Live Autonomous Investigation Run - September 6, 2025, 08:33-08:40 GMT  
-=======
 # Structured Investigation System Analysis - Agent Communication, LangGraph Flow & LLM Reasoning
 
 **Author**: Gil Klainert  
 **Date**: 2025-09-06  
 **Source**: Live Structured Investigation Run - September 6, 2025, 08:33-08:40 GMT  
->>>>>>> 001-modify-analyzer-method
 **Investigation Count**: 8 concurrent fraud detection scenarios  
 **Total Duration**: 395.79 seconds  
 **Analysis Status**: ✅ COMPREHENSIVE ANALYSIS COMPLETE
@@ -19,19 +11,11 @@
 
 ## Executive Summary
 
-<<<<<<< HEAD
-This report provides a comprehensive analysis of the Olorin Autonomous Investigation System based on live execution logs from September 6, 2025. The analysis covers agent communication patterns, LangGraph state transitions, LLM interaction flows, and the complete investigation journey across 8 fraud detection scenarios executed concurrently.
-
-**Key Findings:**
-- **System Architecture**: Multi-agent orchestration with LangGraph state management
-- **LLM Integration**: Claude Opus 4.1 autonomous decision-making with real API calls
-=======
 This report provides a comprehensive analysis of the Olorin Structured Investigation System based on live execution logs from September 6, 2025. The analysis covers agent communication patterns, LangGraph state transitions, LLM interaction flows, and the complete investigation journey across 8 fraud detection scenarios executed concurrently.
 
 **Key Findings:**
 - **System Architecture**: Multi-agent orchestration with LangGraph state management
 - **LLM Integration**: Claude Opus 4.1 structured decision-making with real API calls
->>>>>>> 001-modify-analyzer-method
 - **Agent Communication**: Sophisticated agent handoffs with real-time progress monitoring  
 - **Investigation Flow**: Bulletproof execution with graceful degradation patterns
 - **Real-time Monitoring**: WebSocket communications and comprehensive logging
@@ -54,11 +38,7 @@ Frontend Trigger → Backend API → Agent Service → LangGraph Orchestration
 - **Investigation Runner**: Unified test runner managing 8 concurrent scenarios
 - **Domain Agents**: Network, Device, Location, Logs analysis specialists  
 - **LangGraph Orchestrator**: State management and agent coordination
-<<<<<<< HEAD
-- **LLM Engine**: Claude Opus 4.1 for autonomous decision making
-=======
 - **LLM Engine**: Claude Opus 4.1 for structured decision making
->>>>>>> 001-modify-analyzer-method
 - **Real-time Communication**: WebSocket progress streaming
 - **Monitoring Systems**: Multi-layer observability (WebSocket, LLM, LangGraph, Agent conversations)
 
@@ -206,11 +186,7 @@ Network Agent → Device Agent → Location Agent → Logs Agent → Risk Aggreg
 - **Model**: Claude Opus 4.1 (`claude-opus-4-1-20250805`)
 - **API Integration**: Real Anthropic API calls (no mock data)
 - **Tool Binding**: Tools bound to LLM with strict mode
-<<<<<<< HEAD
-- **Decision Autonomy**: LLM makes autonomous tool selection decisions
-=======
 - **Decision Autonomy**: LLM makes structured tool selection decisions
->>>>>>> 001-modify-analyzer-method
 
 #### LLM Call Pattern Analysis
 ```
@@ -225,18 +201,6 @@ Network Agent → Device Agent → Location Agent → Logs Agent → Risk Aggreg
 - **Structured Responses**: JSON-formatted risk assessments returned
 - **Variable Responses**: Natural variation in LLM outputs (confirming real API usage)
 
-<<<<<<< HEAD
-### 4.2 Autonomous Decision Making Patterns
-
-#### Tool Selection Logic
-```python
-# LLM autonomously selects tools based on investigation context
-autonomous_llm.bind_tools(tools, strict=True)
-```
-
-**Decision Making Evidence:**
-- **Tool Selection**: LLM autonomously chooses appropriate analysis tools
-=======
 ### 4.2 Structured Decision Making Patterns
 
 #### Tool Selection Logic
@@ -247,7 +211,6 @@ structured_llm.bind_tools(tools, strict=True)
 
 **Decision Making Evidence:**
 - **Tool Selection**: LLM structuredly chooses appropriate analysis tools
->>>>>>> 001-modify-analyzer-method
 - **Risk Assessment**: Variable risk scores indicating real analysis (not hardcoded)
 - **Confidence Scoring**: Dynamic confidence levels based on data quality
 - **Reasoning Transparency**: Structured output with assessment rationale
@@ -262,11 +225,7 @@ structured_llm.bind_tools(tools, strict=True)
 
 **Pattern Consistency:**
 - Each domain agent follows similar LLM reasoning pattern
-<<<<<<< HEAD
-- Autonomous tool selection varies based on investigation context
-=======
 - Structured tool selection varies based on investigation context
->>>>>>> 001-modify-analyzer-method
 - Risk assessment shows appropriate variation (0.75-0.85 range observed)
 - Confidence levels correlate with data quality and completeness
 
@@ -336,11 +295,7 @@ structured_llm.bind_tools(tools, strict=True)
 - Cross-agent correlation enhances overall assessment quality
 
 **3. Decision Making:**
-<<<<<<< HEAD
-- LLM provides autonomous analysis within each domain
-=======
 - LLM provides structured analysis within each domain
->>>>>>> 001-modify-analyzer-method
 - Tool selection adapts to available data and service status
 - Confidence scoring reflects data quality and completeness
 
@@ -561,11 +516,7 @@ Timeline: 1-2 days
 ### 10.2 Architecture Enhancements
 
 **1. Advanced Orchestration:**
-<<<<<<< HEAD
-- Implement the planned Autonomous Investigation Orchestrator Node
-=======
 - Implement the planned Structured Investigation Orchestrator Node
->>>>>>> 001-modify-analyzer-method
 - Add intelligent agent coordination and failure recovery
 - Enhance investigation strategy selection based on scenario
 
@@ -599,11 +550,7 @@ Timeline: 1-2 days
 
 **✅ Robust Architecture:**
 - Sophisticated multi-agent investigation system
-<<<<<<< HEAD
-- Real LLM integration with autonomous decision making
-=======
 - Real LLM integration with structured decision making
->>>>>>> 001-modify-analyzer-method
 - Comprehensive state management through LangGraph
 - Excellent concurrent processing capabilities
 
@@ -633,15 +580,6 @@ Timeline: 1-2 days
 
 ### 11.3 Future Potential
 
-<<<<<<< HEAD
-The Olorin Autonomous Investigation System demonstrates sophisticated autonomous investigation capabilities with real LLM integration and robust architectural patterns. With the resolution of risk score calibration issues and enhanced external service resilience, the system is positioned to provide production-ready autonomous fraud detection capabilities.
-
-**Recommended Next Phase**: Implement the planned Autonomous Investigation Orchestrator Node to enhance investigation intelligence and provide true autonomous investigation management with AI-driven decision making.
-
----
-
-**Analysis Complete**: This comprehensive analysis provides a complete view of the autonomous investigation system's agent communication, LangGraph state management, LLM reasoning patterns, and investigation flow execution based on live system logs from September 6, 2025.
-=======
 The Olorin Structured Investigation System demonstrates sophisticated structured investigation capabilities with real LLM integration and robust architectural patterns. With the resolution of risk score calibration issues and enhanced external service resilience, the system is positioned to provide production-ready structured fraud detection capabilities.
 
 **Recommended Next Phase**: Implement the planned Structured Investigation Orchestrator Node to enhance investigation intelligence and provide true structured investigation management with AI-driven decision making.
@@ -649,4 +587,3 @@ The Olorin Structured Investigation System demonstrates sophisticated structured
 ---
 
 **Analysis Complete**: This comprehensive analysis provides a complete view of the structured investigation system's agent communication, LangGraph state management, LLM reasoning patterns, and investigation flow execution based on live system logs from September 6, 2025.
->>>>>>> 001-modify-analyzer-method

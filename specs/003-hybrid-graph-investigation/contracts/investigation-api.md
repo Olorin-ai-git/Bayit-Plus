@@ -2,19 +2,11 @@
 
 **Created**: 2025-01-21
 **Version**: 1.0.0
-<<<<<<< HEAD
-**Service**: autonomous-investigation microservice
-
-## Overview
-
-This document defines the API contracts for the Hybrid Graph Investigation UI microservice. These contracts ensure consistent communication between the autonomous-investigation microservice and other services in the Olorin ecosystem.
-=======
 **Service**: structured-investigation microservice
 
 ## Overview
 
 This document defines the API contracts for the Hybrid Graph Investigation UI microservice. These contracts ensure consistent communication between the structured-investigation microservice and other services in the Olorin ecosystem.
->>>>>>> 001-modify-analyzer-method
 
 ## Base Configuration
 
@@ -41,11 +33,7 @@ X-Correlation-ID: <investigation_id>
 
 ### 1. Create Investigation
 
-<<<<<<< HEAD
-Creates a new autonomous investigation.
-=======
 Creates a new structured investigation.
->>>>>>> 001-modify-analyzer-method
 
 ```http
 POST /investigations

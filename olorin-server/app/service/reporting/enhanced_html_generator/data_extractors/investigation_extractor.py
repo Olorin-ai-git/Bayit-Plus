@@ -32,11 +32,7 @@ class InvestigationDataExtractor:
         """
         data = ExtractedData(
             metadata={},
-<<<<<<< HEAD
-            autonomous_activities=[],
-=======
             structured_activities=[],
->>>>>>> 001-modify-analyzer-method
             journey_tracking={},
             investigation_log=[],
             files_info={}
@@ -45,11 +41,7 @@ class InvestigationDataExtractor:
         # Extract metadata
         self._extract_metadata(folder_path, data)
 
-<<<<<<< HEAD
-        # Extract autonomous activities (JSONL format)
-=======
         # Extract structured activities (JSONL format)
->>>>>>> 001-modify-analyzer-method
         self._extract_activities(folder_path, data)
 
         # Extract journey tracking
@@ -62,11 +54,7 @@ class InvestigationDataExtractor:
         self._extract_file_info(folder_path, data)
 
         logger.info(f"Extracted data from {folder_path.name}: "
-<<<<<<< HEAD
-                   f"{len(data.autonomous_activities)} activities, "
-=======
                    f"{len(data.structured_activities)} activities, "
->>>>>>> 001-modify-analyzer-method
                    f"{len(data.investigation_log)} log entries")
 
         return data
@@ -82,13 +70,8 @@ class InvestigationDataExtractor:
                 logger.error(f"Failed to load metadata: {e}")
 
     def _extract_activities(self, folder_path: Path, data: ExtractedData) -> None:
-<<<<<<< HEAD
-        """Extract autonomous activities from JSONL file."""
-        activities_file = folder_path / "autonomous_activities.jsonl"
-=======
         """Extract structured activities from JSONL file."""
         activities_file = folder_path / "structured_activities.jsonl"
->>>>>>> 001-modify-analyzer-method
         if activities_file.exists():
             try:
                 with open(activities_file, 'r', encoding='utf-8') as f:
@@ -97,19 +80,11 @@ class InvestigationDataExtractor:
                         if line:
                             try:
                                 activity = json.loads(line)
-<<<<<<< HEAD
-                                data.autonomous_activities.append(activity)
-                            except json.JSONDecodeError as e:
-                                logger.warning(f"Invalid JSON on line {line_no} in {activities_file}: {e}")
-            except Exception as e:
-                logger.error(f"Failed to load autonomous activities: {e}")
-=======
                                 data.structured_activities.append(activity)
                             except json.JSONDecodeError as e:
                                 logger.warning(f"Invalid JSON on line {line_no} in {activities_file}: {e}")
             except Exception as e:
                 logger.error(f"Failed to load structured activities: {e}")
->>>>>>> 001-modify-analyzer-method
 
     def _extract_journey_tracking(self, folder_path: Path, data: ExtractedData) -> None:
         """Extract journey tracking from JSON file."""
@@ -138,11 +113,7 @@ class InvestigationDataExtractor:
 
     def _extract_file_info(self, folder_path: Path, data: ExtractedData) -> None:
         """Extract file information for all investigation files."""
-<<<<<<< HEAD
-        file_names = ['metadata.json', 'autonomous_activities.jsonl',
-=======
         file_names = ['metadata.json', 'structured_activities.jsonl',
->>>>>>> 001-modify-analyzer-method
                      'journey_tracking.json', 'investigation.log']
 
         for file_name in file_names:

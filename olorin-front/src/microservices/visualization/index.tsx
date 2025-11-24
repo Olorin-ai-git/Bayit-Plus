@@ -1,15 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-<<<<<<< HEAD
-import visualizationApp from './App';
-import './styles/tailwind.css';
-
-// Initialize the visualization Service
-const initializevisualizationService = async () => {
-  console.log('[visualization] Initializing visualization microservice...');
-
-  try {
-=======
 import { BrowserRouter } from 'react-router-dom';
 import VisualizationApp from './VisualizationApp';
 import './styles/tailwind.css';
@@ -34,30 +24,11 @@ const initializeVisualizationService = async () => {
     }
 
     // Standalone mode: use root element
->>>>>>> 001-modify-analyzer-method
     const rootElement = document.getElementById('root');
     if (!rootElement) {
       throw new Error('Root element not found');
     }
 
-<<<<<<< HEAD
-    const root = ReactDOM.createRoot(rootElement);
-
-    root.render(
-      <React.StrictMode>
-        <visualizationApp />
-      </React.StrictMode>
-    );
-
-    console.log('[visualization] visualization microservice initialized successfully');
-
-    if (window.olorin?.eventBus) {
-      window.olorin.eventBus.emit('service:ready', { service: 'visualization' });
-    }
-
-  } catch (error) {
-    console.error('[visualization] Failed to initialize visualization microservice:', error);
-=======
     // Prevent multiple root creation
     if (!window.__visualization_root__) {
       window.__visualization_root__ = ReactDOM.createRoot(rootElement);
@@ -90,7 +61,6 @@ const initializeVisualizationService = async () => {
 
   } catch (error) {
     console.error('[Visualization] Failed to initialize visualization microservice:', error);
->>>>>>> 001-modify-analyzer-method
     throw error;
   }
 };
@@ -112,11 +82,7 @@ if (!window.olorin) {
 
   window.olorin.registerService = (name: string, service: any) => {
     window.olorin.services[name] = service;
-<<<<<<< HEAD
-    console.log(`[visualization] Registered service: ${name}`);
-=======
     console.log(`[Visualization] Registered service: ${name}`);
->>>>>>> 001-modify-analyzer-method
   };
 
   window.olorin.getService = (name: string) => {
@@ -124,15 +90,6 @@ if (!window.olorin) {
   };
 }
 
-<<<<<<< HEAD
-// Start the visualization microservice
-initializevisualizationService().catch(error => {
-  console.error('[visualization] Critical initialization error:', error);
-});
-
-// Export for Module Federation
-export { initializevisualizationService };
-=======
 // Only auto-initialize in standalone mode (when visualization-root doesn't exist)
 // In shell mode, bootstrap.tsx will handle initialization
 if (!document.getElementById('visualization-root')) {
@@ -152,4 +109,3 @@ export { initializeVisualizationService };
 export * from './components/risk';
 export * from './hooks';
 export * from './utils';
->>>>>>> 001-modify-analyzer-method

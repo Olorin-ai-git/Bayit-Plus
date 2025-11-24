@@ -1,31 +1,18 @@
 """
-<<<<<<< HEAD
-Risk Analyzer for Snowflake-based fraud detection analytics.
-Analyzes transaction data to identify high-risk entities.
-=======
 Risk Analyzer for database-based fraud detection analytics.
 Analyzes transaction data to identify high-risk entities.
 Supports both Snowflake and PostgreSQL via database provider abstraction.
->>>>>>> 001-modify-analyzer-method
 """
 
 import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from app.service.logging import get_bridge_logger
-<<<<<<< HEAD
-from app.service.agent.tools.snowflake_tool.client import SnowflakeClient
-from app.service.agent.tools.snowflake_tool.schema_constants import (
-    PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, MODEL_SCORE,
-    IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME, get_full_table_name, get_required_env_var,
-    is_valid_column
-=======
 from app.service.agent.tools.database_tool import get_database_provider
 from app.service.agent.tools.snowflake_tool.schema_constants import (
     PAID_AMOUNT_VALUE_IN_CURRENCY, IP, IP_COUNTRY_CODE, MODEL_SCORE,
     IS_FRAUD_TX, EMAIL, DEVICE_ID, TX_DATETIME, is_valid_column,
     get_required_env_var
->>>>>>> 001-modify-analyzer-method
 )
 
 logger = get_bridge_logger(__name__)
@@ -48,16 +35,11 @@ class RiskAnalyzer:
     """
     
     def __init__(self):
-<<<<<<< HEAD
-        """Initialize the risk analyzer."""
-        self.client = SnowflakeClient()
-=======
         """Initialize the risk analyzer with database provider abstraction."""
         # Use database provider abstraction - respects DATABASE_PROVIDER from .env
         db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
         self.client = get_database_provider(db_provider)
         logger.info(f"RiskAnalyzer initialized with {db_provider.upper()} provider")
->>>>>>> 001-modify-analyzer-method
         self._load_configuration()
         self._cache = {}
         self._cache_timestamp = None
@@ -65,16 +47,6 @@ class RiskAnalyzer:
     
     def _load_configuration(self):
         """Load analytics configuration from environment."""
-<<<<<<< HEAD
-        # Default configuration from .env
-        self.default_time_window = os.getenv('ANALYTICS_DEFAULT_TIME_WINDOW', '24h')
-        self.default_group_by = os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'email')
-        self.default_top_percentage = float(os.getenv('ANALYTICS_DEFAULT_TOP_PERCENTAGE', '10'))
-        self.cache_ttl = int(os.getenv('ANALYTICS_CACHE_TTL', '300'))
-        
-        logger.info(f"Risk Analyzer configured: time_window={self.default_time_window}, "
-                   f"group_by={self.default_group_by}, top={self.default_top_percentage}%")
-=======
         # Default configuration from .env (single source of truth)
         # Read analyzer time window in hours (ANALYZER_TIME_WINDOW_HOURS)
         self.default_time_window_hours = int(os.getenv('ANALYZER_TIME_WINDOW_HOURS', '24'))
@@ -89,7 +61,6 @@ class RiskAnalyzer:
         logger.info(f"Risk Analyzer configured: time_window={self.default_time_window}, "
                    f"group_by={self.default_group_by}, top={self.default_top_percentage}%, "
                    f"max_lookback_months={self.max_lookback_months}")
->>>>>>> 001-modify-analyzer-method
     
     def _validate_column_name(self, column_name: str) -> str:
         """
@@ -118,11 +89,7 @@ class RiskAnalyzer:
         Parse time window string to hours.
         
         Args:
-<<<<<<< HEAD
-            time_window: Time window string (e.g., '24h', '7d', '30d')
-=======
             time_window: Time window string (e.g., '24h', '14d', '30d')
->>>>>>> 001-modify-analyzer-method
             
         Returns:
             Number of hours
@@ -139,8 +106,6 @@ class RiskAnalyzer:
             # Default to hours if no suffix
             return int(time_window)
     
-<<<<<<< HEAD
-=======
     def _build_approved_filter(self, decision_col: str, db_provider: str) -> str:
         """
         Build case-insensitive APPROVED filter.
@@ -159,7 +124,6 @@ class RiskAnalyzer:
             # PostgreSQL also supports UPPER()
             return f"UPPER({decision_col}) = 'APPROVED'"
     
->>>>>>> 001-modify-analyzer-method
     def _is_cache_valid(self) -> bool:
         """Check if cache is still valid."""
         if not self._cache_timestamp:
@@ -179,11 +143,7 @@ class RiskAnalyzer:
         Get top risk entities based on risk-weighted transaction value.
         
         Args:
-<<<<<<< HEAD
-            time_window: Time window to analyze (e.g., '24h', '7d')
-=======
             time_window: Time window to analyze (e.g., '24h', '14d')
->>>>>>> 001-modify-analyzer-method
             group_by: Field to group by (e.g., 'email', 'device_id')
             top_percentage: Top percentage to return (e.g., 10 for top 10%)
             force_refresh: Force refresh bypassing cache
@@ -192,9 +152,6 @@ class RiskAnalyzer:
             Dictionary with analysis results
         """
         # Use defaults if not provided
-<<<<<<< HEAD
-        time_window = time_window or self.default_time_window
-=======
         # If time_window is None, use pre-parsed hours from configuration
         if time_window is None:
             time_window = self.default_time_window
@@ -203,7 +160,6 @@ class RiskAnalyzer:
             # Parse provided time window string
             hours = self._parse_time_window(time_window)
         
->>>>>>> 001-modify-analyzer-method
         group_by = group_by or self.default_group_by
         top_percentage = top_percentage or self.default_top_percentage
         
@@ -214,22 +170,6 @@ class RiskAnalyzer:
             return self._cache[cache_key]
         
         try:
-<<<<<<< HEAD
-            logger.info(f"🔄 Starting risk analysis with params: time_window={time_window}, group_by={group_by}, top_percentage={top_percentage}")
-
-            # Parse time window to hours
-            logger.info(f"⏱️ Parsing time window: {time_window}")
-            hours = self._parse_time_window(time_window)
-            logger.info(f"⏱️ Parsed to {hours} hours")
-
-            # Connect to Snowflake
-            logger.info("🔌 Connecting to Snowflake...")
-            # Get database and schema from environment - no defaults!
-            database = get_required_env_var('SNOWFLAKE_DATABASE')
-            schema = get_required_env_var('SNOWFLAKE_SCHEMA')
-            await self.client.connect(database=database, schema=schema)
-            logger.info("✅ Snowflake connection established")
-=======
             logger.info(f"🔄 Starting FRAUD ENTITY ANALYSIS: time_window={time_window}, group_by={group_by}")
             logger.info(f"⏱️ Time window: {time_window} ({hours} hours)")
             logger.info(f"🎯 New pattern: Retrieve ALL entities with APPROVED=TRUE AND IS_FRAUD_TX=1")
@@ -263,18 +203,10 @@ class RiskAnalyzer:
             self.client.connect()
 
             logger.info(f"✅ {db_provider.upper()} connection initialized (lazy connection)")
->>>>>>> 001-modify-analyzer-method
 
             # Build and execute query
             logger.info(f"🏗️ Building risk query for {group_by} filtering...")
             query = self._build_risk_query(hours, group_by, top_percentage)
-<<<<<<< HEAD
-            logger.info(f"🔍 Executing Snowflake query for {group_by} filtering:")
-            logger.info(f"Query: {query[:500]}...")
-            logger.info("⚡ Sending query to Snowflake...")
-            results = await self.client.execute_query(query)
-            logger.info(f"📊 Query returned {len(results) if results else 0} rows")
-=======
             logger.info(f"🔍 Executing {db_provider.upper()} query for {group_by} filtering:")
             logger.info(f"📝 Full SQL Query:")
             logger.info(f"{query}")
@@ -541,30 +473,10 @@ class RiskAnalyzer:
                     }
                 # Re-raise other RuntimeErrors
                 raise
->>>>>>> 001-modify-analyzer-method
             
             # Process results
             analysis = self._process_results(results, time_window, group_by, top_percentage)
             
-<<<<<<< HEAD
-            # Handle case where IP filtering removed all results - try longer time window for external IPs
-            if group_by.upper() == IP.upper() and len(analysis.get('entities', [])) == 0:
-                logger.info(f"🔄 No external IPs found in {time_window}, trying longer time window...")
-                
-                # Try 7 days window for external IPs
-                extended_hours = self._parse_time_window('7d') 
-                extended_query = self._build_risk_query(extended_hours, group_by, top_percentage)
-                extended_results = await self.client.execute_query(extended_query)
-                
-                if extended_results:
-                    logger.info(f"✅ Found {len(extended_results)} external IPs in 7-day window")
-                    analysis = self._process_results(extended_results, '7d', group_by, top_percentage)
-                    analysis['fallback_used'] = True
-                    analysis['original_time_window'] = time_window
-                else:
-                    logger.warning("⚠️ No external IPs found even in 7-day window")
-                    analysis['fallback_used'] = False
-=======
             # Cascading fallback: Try progressively longer time windows if no entities found
             # Fallback sequence: 7d -> 14d -> 30d -> 60d -> 90d
             entities_count = len(analysis.get('entities', []))
@@ -630,15 +542,11 @@ class RiskAnalyzer:
                 analysis['original_time_window'] = original_time_window
                 analysis['message'] = f'CRITICAL: No entities found in any time window (7d, 14d, 30d, 60d, 90d) for {group_by}. Nothing to investigate.'
                 return analysis
->>>>>>> 001-modify-analyzer-method
             
             # Update cache
             self._cache[cache_key] = analysis
             self._cache_timestamp = datetime.now()
             
-<<<<<<< HEAD
-            logger.info(f"Risk analysis completed: {len(results)} entities identified")
-=======
             # Log actual entities found (not raw query results which may be filtered)
             entities_count = len(analysis.get('entities', []))
             logger.info(f"✅ Risk analysis completed: {entities_count} entities identified (from {final_query_rows} query rows)")
@@ -658,7 +566,6 @@ class RiskAnalyzer:
                 logger.warning(f"⚠️ Query returned {len(results)} rows but 0 entities after processing. "
                              f"This may indicate filtering/ranking issues. Group by: {group_by}, "
                              f"Top percentage: {top_percentage}%")
->>>>>>> 001-modify-analyzer-method
             
             return analysis
             
@@ -675,10 +582,6 @@ class RiskAnalyzer:
             }
         finally:
             try:
-<<<<<<< HEAD
-                await self.client.disconnect()
-            except:
-=======
                 # Use async disconnect if available (SnowflakeProvider), otherwise use sync disconnect
                 if hasattr(self.client, 'disconnect_async'):
                     await self.client.disconnect_async()
@@ -693,7 +596,6 @@ class RiskAnalyzer:
                             disconnect_method()
             except Exception as e:
                 logger.debug(f"Error during disconnect (non-critical): {e}")
->>>>>>> 001-modify-analyzer-method
                 pass
     
     def _build_risk_query(self, hours: int, group_by: str, top_percentage: float) -> str:
@@ -732,43 +634,6 @@ class RiskAnalyzer:
                 {like_filters}
                 {value_filters}
                 -- Only include external/public IP addresses with real activity
-<<<<<<< HEAD
-                AND MODEL_SCORE > (SELECT PERCENTILE_CONT({risk_percentile}) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {get_full_table_name()} WHERE MODEL_SCORE > 0)
-            """
-
-        column_name = validated_column
-
-        query = f"""
-        WITH risk_calculations AS (
-            SELECT
-                {column_name} as entity,
-                COUNT(*) as transaction_count,
-                SUM({PAID_AMOUNT_VALUE_IN_CURRENCY}) as total_amount,
-                AVG({MODEL_SCORE}) as avg_risk_score,
-                SUM({MODEL_SCORE} * {PAID_AMOUNT_VALUE_IN_CURRENCY}) as risk_weighted_value,
-                MAX(MODEL_SCORE) as max_risk_score,
-                MIN(MODEL_SCORE) as min_risk_score,
-                SUM(CASE WHEN IS_FRAUD_TX = 1 THEN 1 ELSE 0 END) as fraud_count,
-                SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
-                MAX(TX_DATETIME) as last_transaction,
-                MIN(TX_DATETIME) as first_transaction
-            FROM {get_full_table_name()}
-            WHERE TX_DATETIME >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
-                AND {column_name} IS NOT NULL{ip_filter}
-            GROUP BY {column_name}
-            HAVING COUNT(*) >= 1
-        ),
-        ranked AS (
-            SELECT *,
-                ROW_NUMBER() OVER (ORDER BY risk_weighted_value DESC) as risk_rank,
-                COUNT(*) OVER() as total_entities,
-                PERCENT_RANK() OVER (ORDER BY risk_weighted_value DESC) as percentile
-            FROM risk_calculations
-        )
-        SELECT * FROM ranked
-        WHERE risk_rank <= CEIL(total_entities * {top_decimal})
-        ORDER BY risk_weighted_value DESC
-=======
                 AND MODEL_SCORE > (SELECT PERCENTILE_CONT({risk_percentile}) WITHIN GROUP (ORDER BY MODEL_SCORE) FROM {self.client.get_full_table_name()} WHERE MODEL_SCORE > 0)
             """
 
@@ -824,7 +689,6 @@ class RiskAnalyzer:
             AND {fraud_col} = 1{ip_filter}
         GROUP BY {column_name}
         ORDER BY fraud_count DESC, transaction_count DESC
->>>>>>> 001-modify-analyzer-method
         """
         
         return query
@@ -926,12 +790,6 @@ class RiskAnalyzer:
 
             hours = self._parse_time_window(time_window)
 
-<<<<<<< HEAD
-            # Get database and schema from environment - no defaults!
-            database = get_required_env_var('SNOWFLAKE_DATABASE')
-            schema = get_required_env_var('SNOWFLAKE_SCHEMA')
-            await self.client.connect(database=database, schema=schema)
-=======
             # Connect to database (PostgreSQL or Snowflake)
             db_provider = os.getenv('DATABASE_PROVIDER', 'snowflake')
 
@@ -939,14 +797,10 @@ class RiskAnalyzer:
             # SnowflakeProvider.connect() doesn't take arguments - it uses environment variables
             # PostgreSQL reads from config, no args needed
             self.client.connect()
->>>>>>> 001-modify-analyzer-method
 
             # Safely escape entity_value to prevent SQL injection
             escaped_entity_value = entity_value.replace("'", "''")  # SQL standard escape for single quotes
 
-<<<<<<< HEAD
-            # Build query with schema-validated column name and properly escaped values
-=======
             # Get column names and date syntax based on database provider
             datetime_col = 'TX_DATETIME' if db_provider == 'snowflake' else 'tx_datetime'
             fraud_col = 'IS_FRAUD_TX' if db_provider == 'snowflake' else 'is_fraud_tx'
@@ -975,7 +829,6 @@ class RiskAnalyzer:
             # Build query with schema-validated column name and properly escaped values
             # Filter out NULL MODEL_SCORE to ensure accurate risk calculations
             # Only include APPROVED transactions
->>>>>>> 001-modify-analyzer-method
             query = f"""
             SELECT
                 COUNT(*) as transaction_count,
@@ -983,22 +836,6 @@ class RiskAnalyzer:
                 AVG({MODEL_SCORE}) as avg_risk_score,
                 MAX({MODEL_SCORE}) as max_risk_score,
                 MIN({MODEL_SCORE}) as min_risk_score,
-<<<<<<< HEAD
-                SUM(CASE WHEN {IS_FRAUD_TX} = 1 THEN 1 ELSE 0 END) as fraud_count,
-                SUM(CASE WHEN NSURE_LAST_DECISION = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
-                COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
-                COUNT(DISTINCT CARD_LAST4) as unique_cards,
-                COUNT(DISTINCT {IP}) as unique_ips,
-                COUNT(DISTINCT {DEVICE_ID}) as unique_devices,
-                MAX({TX_DATETIME}) as last_transaction,
-                MIN({TX_DATETIME}) as first_transaction
-            FROM {get_full_table_name()}
-            WHERE {validated_entity_type} = '{escaped_entity_value}'
-                AND {TX_DATETIME} >= DATEADD(hour, -{hours}, CURRENT_TIMESTAMP())
-            """
-
-            results = await self.client.execute_query(query)
-=======
                 SUM(CASE WHEN {fraud_col} = 1 THEN 1 ELSE 0 END) as fraud_count,
                 SUM(CASE WHEN UPPER({decision_col}) = 'REJECTED' THEN 1 ELSE 0 END) as rejected_count,
                 COUNT(DISTINCT MERCHANT_NAME) as unique_merchants,
@@ -1016,7 +853,6 @@ class RiskAnalyzer:
 
             # Use async query execution to avoid blocking event loop
             results = await self.client.execute_query_async(query)
->>>>>>> 001-modify-analyzer-method
             
             if not results or results[0].get('transaction_count', 0) == 0:
                 return {
@@ -1062,10 +898,6 @@ class RiskAnalyzer:
             }
         finally:
             try:
-<<<<<<< HEAD
-                await self.client.disconnect()
-            except:
-=======
                 # Use async disconnect if available (SnowflakeProvider), otherwise use sync disconnect
                 if hasattr(self.client, 'disconnect_async'):
                     await self.client.disconnect_async()
@@ -1080,7 +912,6 @@ class RiskAnalyzer:
                             disconnect_method()
             except Exception as e:
                 logger.debug(f"Error during disconnect (non-critical): {e}")
->>>>>>> 001-modify-analyzer-method
                 pass
 
     def _get_dynamic_threshold(self, level: str, current_score: float) -> float:

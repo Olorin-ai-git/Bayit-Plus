@@ -1,22 +1,13 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Simplified test for autonomous orchestrator - Direct component testing without external dependencies
-=======
 Simplified test for structured orchestrator - Direct component testing without external dependencies
->>>>>>> 001-modify-analyzer-method
 """
 
 import asyncio
 import json
 from datetime import datetime
-<<<<<<< HEAD
-from app.service.agent.autonomous_orchestrator import (
-    AutonomousOrchestrator,
-=======
 from app.service.agent.structured_orchestrator import (
     StructuredOrchestrator,
->>>>>>> 001-modify-analyzer-method
     OrchestrationStrategy,
     OrchestrationDecision
 )
@@ -47,11 +38,7 @@ async def test_orchestrator_decision_making():
     )
     
     # Initialize orchestrator
-<<<<<<< HEAD
-    orchestrator = AutonomousOrchestrator()
-=======
     orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
     
     try:
         # Test orchestration decision making
@@ -95,11 +82,7 @@ async def test_execution_plan_creation():
     
     logger.info("📋 Testing Execution Plan Creation...")
     
-<<<<<<< HEAD
-    orchestrator = AutonomousOrchestrator()
-=======
     orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
     
     # Test comprehensive strategy
     comprehensive_decision = OrchestrationDecision(
@@ -146,11 +129,7 @@ async def test_bulletproof_coordination():
     
     logger.info("🛡️ Testing Bulletproof Coordination...")
     
-<<<<<<< HEAD
-    orchestrator = AutonomousOrchestrator()
-=======
     orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
     
     decision = OrchestrationDecision(
         strategy=OrchestrationStrategy.COMPREHENSIVE,
@@ -187,11 +166,7 @@ async def test_context_analysis():
     
     logger.info("🔍 Testing Context Analysis...")
     
-<<<<<<< HEAD
-    orchestrator = AutonomousOrchestrator()
-=======
     orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
     
     # High-risk context
     high_risk_context = MockContext(
@@ -241,11 +216,7 @@ async def test_result_consolidation():
     
     logger.info("📊 Testing Result Consolidation...")
     
-<<<<<<< HEAD
-    orchestrator = AutonomousOrchestrator()
-=======
     orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
     
     # Mock orchestration results
     mock_results = {
@@ -308,15 +279,9 @@ async def test_result_consolidation():
     return consolidated
 
 async def main():
-<<<<<<< HEAD
-    """Run comprehensive autonomous orchestrator test"""
-    
-    logger.info("🚀 Starting Autonomous Orchestrator Component Tests...")
-=======
     """Run comprehensive structured orchestrator test"""
     
     logger.info("🚀 Starting Structured Orchestrator Component Tests...")
->>>>>>> 001-modify-analyzer-method
     
     results = {}
     

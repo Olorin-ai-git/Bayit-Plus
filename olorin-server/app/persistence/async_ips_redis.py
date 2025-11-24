@@ -291,11 +291,7 @@ class AsyncRedisSaver(BaseCheckpointSaver):
         self.namespace = namespace
         
         # Use mock client if in TEST_MODE=mock
-<<<<<<< HEAD
-        use_mock = os.environ.get("TEST_MODE", "").lower() == "mock"
-=======
         use_mock = os.environ.get("TEST_MODE", "").lower() == "demo"
->>>>>>> 001-modify-analyzer-method
         if use_mock:
             from app.adapters.mock_ips_cache_client import MockIPSCacheClient
             self.ips_cache = MockIPSCacheClient()

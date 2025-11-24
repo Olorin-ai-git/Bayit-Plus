@@ -164,9 +164,6 @@ class EnhancedToolNode(ToolNode):
             Updated state with tool responses
         """
         logger.info(f"🔧 EnhancedToolNode.ainvoke called with input type: {type(input)}")
-<<<<<<< HEAD
-        
-=======
 
         # DEBUG: Log input keys if it's a dict
         if isinstance(input, dict):
@@ -190,7 +187,6 @@ class EnhancedToolNode(ToolNode):
                     self.investigation_id = configurable["thread_id"]
                     logger.info(f"🔧 CRITICAL: Extracted investigation_id from thread_id: {self.investigation_id}")
 
->>>>>>> 001-modify-analyzer-method
         # Extract messages from input
         if isinstance(input, dict) and "messages" in input:
             messages = input["messages"]
@@ -199,8 +195,6 @@ class EnhancedToolNode(ToolNode):
             # Handle direct message input
             messages = input if isinstance(input, list) else [input]
             logger.info(f"🔧 Processing {len(messages)} direct messages")
-<<<<<<< HEAD
-=======
         
         # Check if composio tools should be forced
         input_state = input if isinstance(input, dict) else {}
@@ -370,7 +364,6 @@ class EnhancedToolNode(ToolNode):
         if tool_calls_to_add:
             composio_aimessage = AIMessage(content="", tool_calls=tool_calls_to_add)
             messages.append(composio_aimessage)
->>>>>>> 001-modify-analyzer-method
         
         # Process each message that requires tool invocation
         result_messages = []
@@ -389,13 +382,6 @@ class EnhancedToolNode(ToolNode):
                     logger.info(f"🔧 Executing tool {tool_idx + 1}/{len(message.tool_calls)}: {tool_name} (id: {tool_id})")
                     
                     try:
-<<<<<<< HEAD
-                        # Execute with resilience
-                        result = await self._execute_tool_with_resilience(tool_call, config)
-                        logger.info(f"🔧 ✅ Tool {tool_name} executed successfully, result type: {type(result)}")
-                        
-                        # Create tool message with result
-=======
                         # Execute with resilience - pass input state to infer agent name
                         result = await self._execute_tool_with_resilience(tool_call, config, input_state=input)
                         logger.info(f"🔧 ✅ Tool {tool_name} executed successfully, result type: {type(result)}")
@@ -413,7 +399,6 @@ class EnhancedToolNode(ToolNode):
                             logger.debug(f"🔧 Converted {type(result).__name__} to string")
 
                         # Create tool message with properly serialized result
->>>>>>> 001-modify-analyzer-method
                         tool_message = ToolMessage(
                             content=content,
                             tool_call_id=tool_call.get("id", ""),
@@ -421,8 +406,6 @@ class EnhancedToolNode(ToolNode):
                         )
                         result_messages.append(tool_message)
                         logger.debug(f"🔧 Created ToolMessage for {tool_name}")
-<<<<<<< HEAD
-=======
                         
                         # After snowflake_query_tool completes, extract IPs, phones, and emails, then force threat intelligence tools
                         if tool_name == "snowflake_query_tool" and isinstance(result, dict):
@@ -654,7 +637,6 @@ class EnhancedToolNode(ToolNode):
                                         name="composio_webcrawl"
                                     )
                                     result_messages.append(webcrawl_error_message)
->>>>>>> 001-modify-analyzer-method
                         
                     except Exception as e:
                         # Sanitize error message for security
@@ -1070,19 +1052,6 @@ class EnhancedToolNode(ToolNode):
         
         # Log all available tool names for debugging
         available_tools = []
-<<<<<<< HEAD
-        for tool in self.tools:
-            if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
-                available_tools.append(tool.name)
-        logger.debug(f"🔧 Available tools: {available_tools}")
-        
-        for tool in self.tools:
-            if isinstance(tool, BaseTool) and hasattr(tool, 'name') and tool.name == name:
-                logger.debug(f"🔧 ✅ Found matching tool: {tool.name}")
-                return tool
-        
-        logger.error(f"🔧 ❌ Tool '{name}' not found in available tools: {available_tools}")
-=======
         for tool in self.tools:
             if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
                 available_tools.append(tool.name)
@@ -1107,7 +1076,6 @@ class EnhancedToolNode(ToolNode):
                     return tool
         
         logger.error(f"🔧 ❌ Tool '{name}' (mapped: '{mapped_name}') not found in available tools: {available_tools}")
->>>>>>> 001-modify-analyzer-method
         return None
     
     async def _execute_with_timeout(self, tool: BaseTool, args: Dict[str, Any], config: Optional[RunnableConfig], timeout: float = 30.0) -> Any:
@@ -1189,20 +1157,6 @@ class EnhancedToolNode(ToolNode):
                 except Exception as e:
                     logger.warning(f"Tool event handler failed: {e}")
             
-<<<<<<< HEAD
-            # Emit via WebSocket if investigation_id is available
-            if self.investigation_id:
-                try:
-                    from app.router.handlers.websocket_handler import notify_websocket_connections
-                    await notify_websocket_connections(self.investigation_id, {
-                        "type": "tool_execution_event",
-                        "event": event
-                    })
-                except ImportError:
-                    logger.debug("WebSocket handler not available for tool events")
-                except Exception as e:
-                    logger.warning(f"Failed to emit tool event via WebSocket: {e}")
-=======
             # WebSocket emission removed per spec 005 - using polling-based updates instead
             # if self.investigation_id:
             #     try:
@@ -1215,7 +1169,6 @@ class EnhancedToolNode(ToolNode):
             #         logger.debug("WebSocket handler not available for tool events")
             #     except Exception as e:
             #         logger.warning(f"Failed to emit tool event via WebSocket: {e}")
->>>>>>> 001-modify-analyzer-method
         except Exception as e:
             logger.error(f"Critical error in _emit_tool_event: {e}")
 

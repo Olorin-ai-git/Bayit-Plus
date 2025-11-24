@@ -10,11 +10,7 @@ efficient parsing algorithms, and memory-optimized streaming for large files.
 
 Features:
 - Type-safe data classes for all extracted data
-<<<<<<< HEAD
-- Efficient parsing for metadata.json, autonomous_activities.jsonl, journey_tracking.json, investigation.log
-=======
 - Efficient parsing for metadata.json, structured_activities.jsonl, journey_tracking.json, investigation.log
->>>>>>> 001-modify-analyzer-method
 - Memory-optimized streaming for large JSONL files
 - Comprehensive error handling and edge cases
 - Performance monitoring capabilities
@@ -22,11 +18,7 @@ Features:
 
 File Processing:
 1. metadata.json: Investigation configuration and metadata
-<<<<<<< HEAD
-2. autonomous_activities.jsonl: LLM interactions, agent decisions, tool executions
-=======
 2. structured_activities.jsonl: LLM interactions, agent decisions, tool executions
->>>>>>> 001-modify-analyzer-method
 3. journey_tracking.json: Node executions, state transitions, agent coordination
 4. investigation.log: General logs and debug information
 
@@ -110,11 +102,7 @@ class LLMInteraction:
     
     @classmethod
     def from_activity_data(cls, activity: Dict[str, Any]) -> Optional['LLMInteraction']:
-<<<<<<< HEAD
-        """Create LLMInteraction from autonomous activity data"""
-=======
         """Create LLMInteraction from structured activity data"""
->>>>>>> 001-modify-analyzer-method
         if activity.get('interaction_type') != InteractionType.LLM_CALL.value:
             return None
             
@@ -148,11 +136,7 @@ class ToolExecution:
     
     @classmethod
     def from_activity_data(cls, activity: Dict[str, Any]) -> Optional['ToolExecution']:
-<<<<<<< HEAD
-        """Create ToolExecution from autonomous activity data"""
-=======
         """Create ToolExecution from structured activity data"""
->>>>>>> 001-modify-analyzer-method
         if activity.get('interaction_type') != InteractionType.TOOL_EXECUTION.value:
             return None
             
@@ -184,11 +168,7 @@ class AgentDecision:
     
     @classmethod
     def from_activity_data(cls, activity: Dict[str, Any]) -> Optional['AgentDecision']:
-<<<<<<< HEAD
-        """Create AgentDecision from autonomous activity data"""
-=======
         """Create AgentDecision from structured activity data"""
->>>>>>> 001-modify-analyzer-method
         if activity.get('interaction_type') != InteractionType.AGENT_DECISION.value:
             return None
             
@@ -243,11 +223,7 @@ class LangGraphNode:
     
     @classmethod
     def from_activity_data(cls, activity: Dict[str, Any]) -> Optional['LangGraphNode']:
-<<<<<<< HEAD
-        """Create LangGraphNode from autonomous activity data"""
-=======
         """Create LangGraphNode from structured activity data"""
->>>>>>> 001-modify-analyzer-method
         if activity.get('interaction_type') != InteractionType.LANGGRAPH_NODE.value:
             return None
             
@@ -277,11 +253,7 @@ class InvestigationPhase:
     
     @classmethod
     def from_activity_data(cls, activity: Dict[str, Any]) -> Optional['InvestigationPhase']:
-<<<<<<< HEAD
-        """Create InvestigationPhase from autonomous activity data"""
-=======
         """Create InvestigationPhase from structured activity data"""
->>>>>>> 001-modify-analyzer-method
         if activity.get('interaction_type') != InteractionType.INVESTIGATION_PROGRESS.value:
             return None
             
@@ -520,11 +492,7 @@ class InvestigationDataProcessor:
     
     Processes all investigation folder file types:
     - metadata.json: Investigation configuration and metadata
-<<<<<<< HEAD
-    - autonomous_activities.jsonl: LLM interactions, agent decisions, tool executions
-=======
     - structured_activities.jsonl: LLM interactions, agent decisions, tool executions
->>>>>>> 001-modify-analyzer-method
     - journey_tracking.json: Node executions, state transitions, agent coordination
     - investigation.log: General logs and debug information
     
@@ -607,13 +575,8 @@ class InvestigationDataProcessor:
                     processing_errors.append(error_msg)
                     logger.error(error_msg)
             
-<<<<<<< HEAD
-            # Process autonomous_activities.jsonl with streaming
-            activities_file = folder_path / "autonomous_activities.jsonl"
-=======
             # Process structured_activities.jsonl with streaming
             activities_file = folder_path / "structured_activities.jsonl"
->>>>>>> 001-modify-analyzer-method
             if activities_file.exists():
                 try:
                     interactions_data = self._process_activities_file_streaming(activities_file)
@@ -625,11 +588,7 @@ class InvestigationDataProcessor:
                     result.risk_score_entries = interactions_data['risk_score_entries']
                     files_processed += 1
                 except Exception as e:
-<<<<<<< HEAD
-                    error_msg = f"Error processing autonomous_activities.jsonl: {str(e)}"
-=======
                     error_msg = f"Error processing structured_activities.jsonl: {str(e)}"
->>>>>>> 001-modify-analyzer-method
                     processing_errors.append(error_msg)
                     logger.error(error_msg)
             
@@ -709,11 +668,7 @@ class InvestigationDataProcessor:
             raise ValueError(f"Error reading metadata file: {e}")
     
     def _process_activities_file_streaming(self, activities_file: Path) -> Dict[str, List[Any]]:
-<<<<<<< HEAD
-        """Process autonomous_activities.jsonl file with memory-optimized streaming"""
-=======
         """Process structured_activities.jsonl file with memory-optimized streaming"""
->>>>>>> 001-modify-analyzer-method
         interactions_data = {
             'llm_interactions': [],
             'tool_executions': [],

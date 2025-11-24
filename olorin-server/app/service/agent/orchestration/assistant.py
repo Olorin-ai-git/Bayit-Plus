@@ -183,23 +183,6 @@ SYSTEM_MESSAGE = SystemMessage(
 async def assistant(state: MessagesState, config: RunnableConfig):
     """
     Main assistant function for fraud investigation coordination.
-<<<<<<< HEAD
-    
-    Handles LLM invocation with tools and progress reporting.
-    """
-    # Safely extract agent context and header
-    agent_context = get_config_value(config, ["configurable", "agent_context"])
-    if agent_context and hasattr(agent_context, 'get_header'):
-        olorin_header = agent_context.get_header()
-    else:
-        # For hybrid graphs or when agent_context is not available, use empty header
-        logger.debug("No agent_context available or missing get_header method, using empty header")
-        olorin_header = {}
-    
-    logger.debug(f"LangGraph State={state}")
-
-    # Extract investigation_id for progress reporting (reuse agent_context from above)
-=======
 
     Handles LLM invocation with tools and progress reporting.
     Uses resilient LLM wrapper with timeout and retry logic.
@@ -218,35 +201,12 @@ async def assistant(state: MessagesState, config: RunnableConfig):
 
     # Extract investigation_id for progress reporting (reuse agent_context from above)
     investigation_id = None
->>>>>>> 001-modify-analyzer-method
     if agent_context:
         agent_context = rehydrate_agent_context(agent_context)
         md = getattr(agent_context.metadata, "additional_metadata", {}) or {}
         investigation_id = md.get("investigationId") or md.get("investigation_id")
 
-<<<<<<< HEAD
-        # Emit progress update for fraud investigation coordination
-        if investigation_id:
-            try:
-                # Check if there's an event loop running before creating task
-                try:
-                    loop = asyncio.get_running_loop()
-                    asyncio.create_task(
-                        websocket_manager.broadcast_progress(
-                            investigation_id,
-                            AgentPhase.ANOMALY_DETECTION,
-                            0.5,
-                            "Coordinating fraud investigation analysis...",
-                        )
-                    )
-                except RuntimeError:
-                    # No event loop running, skip progress update
-                    logger.debug(f"No event loop running, skipping progress update for investigation {investigation_id}")
-            except Exception as e:
-                logger.error(f"Failed to emit progress update: {e}")
-=======
         # WebSocket progress updates removed per spec 005 - using polling instead
->>>>>>> 001-modify-analyzer-method
 
     # Prepare messages
     messages = []
@@ -276,30 +236,6 @@ async def assistant(state: MessagesState, config: RunnableConfig):
     force_tool_usage = state.get("force_tool_usage", False)
     retry_count = state.get("fraud_investigation_retry_count", 0)
     
-<<<<<<< HEAD
-    # Check if there's already a system message to avoid duplicates
-    # This is important for hybrid graphs that may have already processed system messages
-    has_system_message = any(isinstance(msg, SystemMessage) for msg in messages)
-    
-    if has_system_message:
-        # Use messages as-is to preserve tool_use/tool_result sequences
-        final_messages = messages
-        logger.debug("Using existing system message, preserving message sequence")
-    else:
-        # Add default system message only if none exists
-        final_messages = [SYSTEM_MESSAGE] + messages
-        logger.debug("Added default system message")
-    
-    return {
-        "messages": [
-            llm_with_tools.invoke(
-                final_messages,
-                config=config,
-                extra_headers=olorin_header,
-            )
-        ]
-    }
-=======
     # Check if composio tools should be forced
     entity_id = state.get('entity_id', '')
     entity_type = state.get('entity_type', '')
@@ -484,23 +420,11 @@ def _validate_llm_payload(messages: list, investigation_id: str = None) -> str:
         f"{len(non_empty_messages)}/{len(messages)} messages with content"
     )
     return None
->>>>>>> 001-modify-analyzer-method
 
 
 def _get_llm_with_tools():
     """Get configured LLM with tools for graph-based tool execution."""
     from app.service.llm_manager import get_llm_manager
-<<<<<<< HEAD
-    
-    # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
-    llm_manager = get_llm_manager()
-    llm = llm_manager.get_selected_model()
-    
-    # Get tools from the graph configuration - these are already configured
-    from app.service.agent.orchestration.graph_builder import _get_configured_tools
-    tools = _get_configured_tools()
-    
-=======
 
     # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
     llm_manager = get_llm_manager()
@@ -510,7 +434,6 @@ def _get_llm_with_tools():
     from app.service.agent.orchestration.graph_builder import _get_configured_tools
     tools = _get_configured_tools()
 
->>>>>>> 001-modify-analyzer-method
     # Bind tools to LLM for graph-based execution
     # The graph's tools node will handle actual tool execution
     try:

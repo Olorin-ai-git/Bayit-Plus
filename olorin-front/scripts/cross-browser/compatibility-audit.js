@@ -30,13 +30,8 @@ const config = {
       expectedFeatures: ['navigation', 'authentication', 'routing']
     },
     {
-<<<<<<< HEAD
-      name: 'autonomous-investigation',
-      url: 'http://localhost:3001/autonomous-investigation',
-=======
       name: 'structured-investigation',
       url: 'http://localhost:3001/structured-investigation',
->>>>>>> 001-modify-analyzer-method
       critical: true,
       description: 'AI-powered fraud investigation interface',
       expectedFeatures: ['forms', 'file-upload', 'data-visualization', 'real-time-updates']

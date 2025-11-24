@@ -3,11 +3,7 @@
 Olorin Investigation Reporting Module
 
 This module provides comprehensive HTML report generation capabilities for
-<<<<<<< HEAD
-investigation folders created by the autonomous investigation system.
-=======
 investigation folders created by the structured investigation system.
->>>>>>> 001-modify-analyzer-method
 
 Main Components:
 - EnhancedHTMLReportGenerator: Main class for generating interactive HTML reports
@@ -53,11 +49,7 @@ Generated Report Components:
 
 File Structure Support:
 - metadata.json - Investigation configuration and metadata
-<<<<<<< HEAD
-- autonomous_activities.jsonl - Structured activity logs
-=======
 - structured_activities.jsonl - Structured activity logs
->>>>>>> 001-modify-analyzer-method
 - journey_tracking.json - Investigation progress data
 - investigation.log - General investigation logs
 """

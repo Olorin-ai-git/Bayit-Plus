@@ -1,0 +1,431 @@
+openapi: 3.0.0
+info:
+  title: Database Provider API Contract
+  version: 1.0.0
+  description: |
+    API contract for DatabaseProvider interface supporting both Snowflake and PostgreSQL.
+    Defines the common interface that all database providers must implement.
+
+components:
+  schemas:
+    DatabaseProvider:
+      type: object
+      description: Abstract base class for database providers
+      required:
+        - connect
+        - disconnect
+        - execute_query
+        - get_connection
+        - get_full_table_name
+      properties:
+        provider_name:
+          type: string
+          enum: [snowflake, postgresql]
+          description: Name of the database provider
+
+    QueryParameters:
+      type: object
+      description: Optional query parameters for parameterized queries
+      additionalProperties:
+        type: string
+      example:
+        email: "user@example.com"
+        min_score: "0.8"
+
+    QueryResult:
+      type: array
+      description: Query execution results
+      items:
+        type: object
+        description: Single row result (dictionary)
+        additionalProperties: true
+      example:
+        - TX_ID_KEY: "TX_001"
+          EMAIL: "user@example.com"
+          MODEL_SCORE: 0.85
+        - TX_ID_KEY: "TX_002"
+          EMAIL: "user@example.com"
+          MODEL_SCORE: 0.92
+
+    ConnectionError:
+      type: object
+      description: Connection failure error
+      properties:
+        error:
+          type: string
+          description: Error message
+        provider:
+          type: string
+          description: Provider name that failed
+
+    QueryExecutionError:
+      type: object
+      description: Query execution failure error
+      properties:
+        error:
+          type: string
+          description: Error message
+        query:
+          type: string
+          description: Query that failed
+        provider:
+          type: string
+          description: Provider name
+
+paths:
+  /provider/connect:
+    post:
+      summary: Establish database connection
+      description: |
+        Establishes connection to the database. For Snowflake, creates connection pool.
+        For PostgreSQL, initializes async connection pool with configured size.
+      responses:
+        '200':
+          description: Connection established successfully
+        '500':
+          description: Connection failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionError'
+
+  /provider/disconnect:
+    post:
+      summary: Close database connection
+      description: |
+        Closes the database connection pool safely.
+        Idempotent - safe to call multiple times.
+      responses:
+        '200':
+          description: Connection closed successfully
+        '500':
+          description: Disconnect failed
+
+  /provider/execute_query:
+    post:
+      summary: Execute SQL query
+      description: |
+        Executes a SQL query against the database.
+
+        **Snowflake**: Executes query directly with SQLAlchemy.
+        **PostgreSQL**: Translates Snowflake SQL to PostgreSQL SQL, uses query cache,
+                       executes with asyncpg for optimal performance.
+
+        **Query Translation**: Automatic for PostgreSQL provider
+        - DATEADD → INTERVAL syntax
+        - CURRENT_TIMESTAMP() → CURRENT_TIMESTAMP
+        - LISTAGG → STRING_AGG
+
+        **Query Caching**: LRU cache with 1000-query capacity
+        - Target hit rate: >80%
+        - Thread-safe with RLock
+
+        **Security**: Read-only queries only (SELECT and CTE)
+        - No DDL operations allowed
+        - No DELETE/UPDATE/INSERT allowed
+        - Single statement only (no semicolon chaining)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: SQL query to execute (Snowflake or PostgreSQL syntax)
+                  example: "SELECT * FROM transactions_enriched WHERE EMAIL = 'user@example.com' LIMIT 10"
+                params:
+                  $ref: '#/components/schemas/QueryParameters'
+      responses:
+        '200':
+          description: Query executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResult'
+        '400':
+          description: Invalid query (DDL, multiple statements, dangerous keywords)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Query contains restricted keyword: DELETE"
+        '500':
+          description: Query execution failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryExecutionError'
+
+  /provider/get_connection:
+    get:
+      summary: Get underlying database connection
+      description: |
+        Returns the underlying database connection/pool object.
+
+        **Snowflake**: Returns SQLAlchemy engine
+        **PostgreSQL**: Returns asyncpg connection pool
+      responses:
+        '200':
+          description: Connection object returned
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Connection object (type varies by provider)
+        '500':
+          description: No active connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionError'
+
+  /provider/get_full_table_name:
+    get:
+      summary: Get fully qualified table name
+      description: |
+        Returns the full table name including schema.
+
+        **Snowflake**: Returns DATABASE.SCHEMA.TABLE
+        **PostgreSQL**: Returns schema.table
+
+        All values loaded from configuration (no hardcoded values).
+      responses:
+        '200':
+          description: Table name returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  table_name:
+                    type: string
+                    example: "public.transactions_enriched"
+
+  /factory/get_database_provider:
+    get:
+      summary: Get database provider instance
+      description: |
+        Factory method to get the active database provider based on DATABASE_PROVIDER env var.
+
+        **Configuration**: Reads from DATABASE_PROVIDER environment variable
+        - 'snowflake' → Returns SnowflakeProvider
+        - 'postgresql' → Returns PostgreSQLProvider
+        - Default: 'postgresql'
+
+        **Singleton Pattern**: Returns same instance for same provider within session
+      parameters:
+        - name: provider_name
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [snowflake, postgresql]
+          description: Optional provider name override (defaults to DATABASE_PROVIDER env var)
+      responses:
+        '200':
+          description: Provider instance returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseProvider'
+        '400':
+          description: Invalid provider name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid DATABASE_PROVIDER: 'mysql'. Must be 'snowflake' or 'postgresql'"
+
+configuration:
+  environment_variables:
+    DATABASE_PROVIDER:
+      description: Active database provider selection
+      required: true
+      type: string
+      enum: [snowflake, postgresql]
+      default: postgresql
+
+    # PostgreSQL Configuration
+    POSTGRES_HOST:
+      description: PostgreSQL server host
+      required: true
+      type: string
+      example: localhost
+
+    POSTGRES_PORT:
+      description: PostgreSQL server port
+      required: true
+      type: integer
+      example: 5432
+
+    POSTGRES_DATABASE:
+      description: PostgreSQL database name
+      required: true
+      type: string
+      example: olorin_transactions
+
+    POSTGRES_SCHEMA:
+      description: PostgreSQL schema name
+      required: false
+      type: string
+      default: public
+
+    POSTGRES_USER:
+      description: PostgreSQL user
+      required: true
+      type: string
+      secret: false
+
+    POSTGRES_PASSWORD:
+      description: PostgreSQL password
+      required: true
+      type: string
+      secret: true
+      source: environment
+
+    POSTGRES_POOL_SIZE:
+      description: Base connection pool size
+      required: true
+      type: integer
+      recommendation: "2 × CPU cores"
+      example: 10
+
+    POSTGRES_POOL_MAX_OVERFLOW:
+      description: Additional connections for burst traffic
+      required: true
+      type: integer
+      recommendation: "0.5 × pool_size"
+      example: 5
+
+    POSTGRES_QUERY_TIMEOUT:
+      description: Query timeout in seconds
+      required: true
+      type: integer
+      default: 30
+      example: 30
+
+    POSTGRES_TRANSACTIONS_TABLE:
+      description: Transactions table name
+      required: false
+      type: string
+      default: transactions_enriched
+
+    # Snowflake Configuration
+    SNOWFLAKE_ACCOUNT:
+      description: Snowflake account identifier
+      required: true
+      type: string
+      example: xy12345.us-east-1
+
+    SNOWFLAKE_USER:
+      description: Snowflake user
+      required: true
+      type: string
+      secret: false
+
+    SNOWFLAKE_PASSWORD:
+      description: Snowflake password
+      required: true
+      type: string
+      secret: true
+      source: environment
+
+    SNOWFLAKE_DATABASE:
+      description: Snowflake database name
+      required: true
+      type: string
+      example: FRAUD_DETECTION
+
+    SNOWFLAKE_SCHEMA:
+      description: Snowflake schema name
+      required: true
+      type: string
+      example: PUBLIC
+
+    SNOWFLAKE_WAREHOUSE:
+      description: Snowflake warehouse name
+      required: true
+      type: string
+      example: COMPUTE_WH
+
+    SNOWFLAKE_ROLE:
+      description: Snowflake role
+      required: false
+      type: string
+      example: ANALYST
+
+performance:
+  postgresql_optimizations:
+    - name: Automatic Indexing
+      description: Creates indexes on first connection
+      indexes:
+        - idx_transactions_enriched_email
+        - idx_transactions_enriched_tx_datetime
+        - idx_transactions_enriched_tx_datetime_email
+        - idx_transactions_enriched_model_score
+
+    - name: Query Translation Caching
+      description: LRU cache for translated queries
+      capacity: 1000
+      target_hit_rate: 0.80
+      eviction_policy: LRU
+
+    - name: Connection Pooling
+      description: Async connection pool with asyncpg
+      pool_type: asyncpg
+      lazy_initialization: true
+      health_checks: true
+
+    - name: Query Performance Monitoring
+      description: Automatic slow query detection
+      slow_query_threshold_ms: 1000
+      metrics:
+        - avg_duration_ms
+        - min_duration_ms
+        - max_duration_ms
+        - row_count
+        - success_rate
+        - cache_hit_rate
+
+  performance_targets:
+    query_execution:
+      target: "PostgreSQL within 20% of Snowflake"
+      threshold: 1.2
+
+    cache_hit_rate:
+      target: ">80%"
+      threshold: 0.80
+
+    query_latency:
+      email_lookup: "<50ms"
+      date_range: "<100ms"
+      aggregation: "<200ms"
+
+security:
+  query_validation:
+    - No DDL operations (CREATE, ALTER, DROP, TRUNCATE)
+    - No DML operations (INSERT, UPDATE, DELETE, MERGE)
+    - No dangerous keywords (EXEC, EXECUTE, GRANT, REVOKE)
+    - Single statement only (no semicolon chaining)
+    - SELECT and CTE (WITH) queries only
+
+  credential_management:
+    - All credentials from environment variables or secret manager
+    - No hardcoded credentials anywhere in codebase
+    - Passwords sanitized in error messages
+    - No credentials logged
+
+  connection_security:
+    - Use TLS/SSL for database connections
+    - Validate server certificates
+    - No plaintext credential transmission

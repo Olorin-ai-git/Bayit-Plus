@@ -34,177 +34,7 @@ import ipaddress
 journey_tracker = get_journey_tracker()
 
 
-<<<<<<< HEAD
-def _extract_valid_ips_from_context(autonomous_context) -> List[str]:
-    """
-    Extract valid IP addresses from investigation context, ignoring entity IDs.
-    
-    This prevents entity IDs like 'K1F6HIIGBVHH20TX' from being passed to threat intelligence APIs.
-    """
-    valid_ips = []
-    
-    try:
-        # Get all data sources from the context
-        data_sources = autonomous_context.get_available_data_sources()
-        
-        for source_name, source_data in data_sources.items():
-            if isinstance(source_data, dict):
-                # Look for common IP address fields
-                ip_fields = ['ip', 'source_ip', 'dest_ip', 'client_ip', 'remote_ip', 'origin_ip']
-                
-                for field in ip_fields:
-                    if field in source_data:
-                        ip_value = source_data[field]
-                        if isinstance(ip_value, str) and _is_valid_ip_address(ip_value):
-                            valid_ips.append(ip_value)
-                        elif isinstance(ip_value, list):
-                            for ip in ip_value:
-                                if isinstance(ip, str) and _is_valid_ip_address(ip):
-                                    valid_ips.append(ip)
-                
-                # Look for IP patterns in text fields
-                text_fields = ['log_data', 'request_headers', 'raw_data', 'details']
-                for field in text_fields:
-                    if field in source_data and isinstance(source_data[field], str):
-                        extracted_ips = _extract_ips_from_text(source_data[field])
-                        valid_ips.extend(extracted_ips)
-        
-        # Remove duplicates and return
-        return list(set(valid_ips))
-        
-    except Exception as e:
-        logger.warning(f"Error extracting IPs from context: {e}")
-        return []
-
-
-def _extract_valid_domains_from_context(autonomous_context) -> List[str]:
-    """
-    Extract valid domain names from investigation context, ignoring entity IDs.
-    
-    This prevents entity IDs like 'K1F6HIIGBVHH20TX' from being passed to domain analysis APIs.
-    """
-    valid_domains = []
-    
-    try:
-        # Get all data sources from the context
-        data_sources = autonomous_context.get_available_data_sources()
-        
-        for source_name, source_data in data_sources.items():
-            if isinstance(source_data, dict):
-                # Look for common domain fields
-                domain_fields = ['domain', 'hostname', 'server_name', 'referrer_domain', 'url']
-                
-                for field in domain_fields:
-                    if field in source_data:
-                        domain_value = source_data[field]
-                        if isinstance(domain_value, str):
-                            extracted_domain = _extract_domain_from_url_or_text(domain_value)
-                            if extracted_domain and _is_valid_domain(extracted_domain):
-                                valid_domains.append(extracted_domain)
-                        elif isinstance(domain_value, list):
-                            for domain in domain_value:
-                                if isinstance(domain, str):
-                                    extracted_domain = _extract_domain_from_url_or_text(domain)
-                                    if extracted_domain and _is_valid_domain(extracted_domain):
-                                        valid_domains.append(extracted_domain)
-                
-                # Look for domain patterns in text fields
-                text_fields = ['log_data', 'request_headers', 'raw_data', 'details', 'user_agent']
-                for field in text_fields:
-                    if field in source_data and isinstance(source_data[field], str):
-                        extracted_domains = _extract_domains_from_text(source_data[field])
-                        valid_domains.extend(extracted_domains)
-        
-        # Remove duplicates and return
-        return list(set(valid_domains))
-        
-    except Exception as e:
-        logger.warning(f"Error extracting domains from context: {e}")
-        return []
-
-
-def _is_valid_ip_address(ip_str: str) -> bool:
-    """Check if string is a valid IP address (not an entity ID)."""
-    try:
-        # Entity IDs like 'K1F6HIIGBVHH20TX' will fail this validation
-        ipaddress.ip_address(ip_str.strip())
-        return True
-    except (ValueError, AttributeError):
-        return False
-
-
-def _is_valid_domain(domain_str: str) -> bool:
-    """Check if string is a valid domain (not an entity ID)."""
-    if not domain_str or not isinstance(domain_str, str):
-        return False
-    
-    domain = domain_str.strip().lower()
-    
-    # Entity IDs like 'K1F6HIIGBVHH20TX' will fail these checks
-    if len(domain) < 3 or '.' not in domain:
-        return False
-    
-    # Basic domain pattern validation
-    domain_pattern = re.compile(
-        r'^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$'
-    )
-    
-    return bool(domain_pattern.match(domain))
-
-
-def _extract_ips_from_text(text: str) -> List[str]:
-    """Extract valid IP addresses from text content."""
-    ip_pattern = re.compile(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b')
-    potential_ips = ip_pattern.findall(text)
-    
-    valid_ips = []
-    for ip in potential_ips:
-        if _is_valid_ip_address(ip):
-            valid_ips.append(ip)
-    
-    return valid_ips
-
-
-def _extract_domain_from_url_or_text(text: str) -> Optional[str]:
-    """Extract domain from URL or text."""
-    if not text:
-        return None
-    
-    text = text.strip()
-    
-    # Remove protocol if present
-    if text.startswith(('http://', 'https://')):
-        text = text.split('://', 1)[1]
-    
-    # Remove path if present
-    if '/' in text:
-        text = text.split('/', 1)[0]
-    
-    # Remove port if present
-    if ':' in text:
-        text = text.split(':', 1)[0]
-    
-    return text if _is_valid_domain(text) else None
-
-
-def _extract_domains_from_text(text: str) -> List[str]:
-    """Extract valid domains from text content."""
-    # Basic domain pattern in text
-    domain_pattern = re.compile(r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b')
-    potential_domains = domain_pattern.findall(text)
-    
-    valid_domains = []
-    for domain in potential_domains:
-        if _is_valid_domain(domain):
-            valid_domains.append(domain)
-    
-    return valid_domains
-
-
-async def enhanced_autonomous_network_agent(state, config) -> dict:
-=======
 def _extract_valid_ips_from_context(structured_context) -> List[str]:
->>>>>>> 001-modify-analyzer-method
     """
     Extract valid IP addresses from investigation context, ignoring entity IDs.
     
@@ -423,13 +253,8 @@ async def enhanced_structured_network_agent(state, config) -> dict:
         
         # Extract valid IPs and domains from investigation context
         # This prevents entity IDs from being passed to threat intelligence APIs
-<<<<<<< HEAD
-        valid_ips = _extract_valid_ips_from_context(autonomous_context)
-        valid_domains = _extract_valid_domains_from_context(autonomous_context)
-=======
         valid_ips = _extract_valid_ips_from_context(structured_context)
         valid_domains = _extract_valid_domains_from_context(structured_context)
->>>>>>> 001-modify-analyzer-method
         
         logger.info(f"🌐 Extracted {len(valid_ips)} valid IP addresses for analysis")
         logger.info(f"🌐 Extracted {len(valid_domains)} valid domains for analysis")
@@ -439,11 +264,7 @@ async def enhanced_structured_network_agent(state, config) -> dict:
         if valid_domains:
             logger.info(f"🌍 Valid domains to analyze: {valid_domains[:3]}..." if len(valid_domains) > 3 else f"🌍 Valid domains to analyze: {valid_domains}")
         
-<<<<<<< HEAD
-        # Add extracted IPs and domains to the autonomous context for agent use
-=======
         # Add extracted IPs and domains to the structured context for agent use
->>>>>>> 001-modify-analyzer-method
         if valid_ips or valid_domains:
             from datetime import datetime
             extracted_network_data = {
@@ -452,17 +273,10 @@ async def enhanced_structured_network_agent(state, config) -> dict:
                 "extraction_timestamp": datetime.utcnow().isoformat(),
                 "extraction_note": "Pre-validated network indicators - safe for threat intelligence analysis"
             }
-<<<<<<< HEAD
-            autonomous_context.add_data_source("extracted_network_indicators", extracted_network_data)
-        
-        # Create autonomous agent with all tools
-        network_agent = create_autonomous_agent("network", tools)
-=======
             structured_context.add_data_source("extracted_network_indicators", extracted_network_data)
         
         # Create structured agent with all tools
         network_agent = create_structured_agent("network", tools)
->>>>>>> 001-modify-analyzer-method
         
         # Enhanced objectives that guide the agent to use threat intelligence
         enhanced_objectives = [

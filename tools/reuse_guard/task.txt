@@ -1,0 +1,21 @@
+[STRICT REUSE][DIFF-ONLY]
+Modify only the Product link component to use the existing slugify from olorin-front/packages/utils/strings.
+- Keep routes unchanged (e.g., /product/:id stays).
+- Build href as /product/${productId}-${slugify(productName)} (ID first, then slug).
+- Do not create new helpers.
+Return ONLY the diff between <PATCH> and </PATCH> markers.
+Start each file with 'diff --git a/<path> b/<path>'.
+[STRICT REUSE][DIFF-ONLY]
+Modify ONLY: olorin-front/src/shared/components/ProductLink.tsx
+
+Change:
+- Replace the import of slugify from '../../packages/utils/strings'
+  with a named import from '../../api/utils/string' (export is `export function slugify`).
+
+Keep:
+- Do NOT create new files.
+- Do NOT change any routes.
+
+Output:
+Return ONLY a valid git unified diff between <PATCH> and </PATCH>, starting with "diff --git".
+No prose, no code fences.

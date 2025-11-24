@@ -2,11 +2,7 @@
 
 **Input**: Design documents from `/specs/001-refactoring-the-frontend/`
 **Prerequisites**: plan.md ✅, research.md ✅, data-model.md ✅
-<<<<<<< HEAD
-**Enhancement**: Autonomous/Manual Investigation separation + Figma MCP + Playwright MCP
-=======
 **Enhancement**: Structured/Manual Investigation separation + Figma MCP + Playwright MCP
->>>>>>> 001-modify-analyzer-method
 
 ## Execution Flow (main)
 ```
@@ -42,11 +38,7 @@
 olorin-front/
 ├── src/
 │   ├── microservices/
-<<<<<<< HEAD
-│   │   ├── autonomous-investigation/    # Port 3001
-=======
 │   │   ├── structured-investigation/    # Port 3001
->>>>>>> 001-modify-analyzer-method
 │   │   ├── manual-investigation/        # Port 3002
 │   │   ├── agent-analytics/            # Port 3003
 │   │   ├── rag-intelligence/           # Port 3004
@@ -87,11 +79,7 @@ olorin-front/
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
 ### Service Isolation Tests [P]
-<<<<<<< HEAD
-- [ ] T014 [P] Autonomous Investigation service test in `tests/playwright/autonomous-investigation/service-isolation.spec.ts`
-=======
 - [ ] T014 [P] Structured Investigation service test in `tests/playwright/structured-investigation/service-isolation.spec.ts`
->>>>>>> 001-modify-analyzer-method
 - [ ] T015 [P] Manual Investigation service test in `tests/playwright/manual-investigation/service-isolation.spec.ts`
 - [ ] T016 [P] Agent Analytics service test in `tests/playwright/agent-analytics/service-isolation.spec.ts`
 - [ ] T017 [P] RAG Intelligence service test in `tests/playwright/rag-intelligence/service-isolation.spec.ts`
@@ -101,11 +89,7 @@ olorin-front/
 - [ ] T021 [P] Design System service test in `tests/playwright/design-system/service-isolation.spec.ts`
 
 ### Cross-Service Integration Tests [P]
-<<<<<<< HEAD
-- [ ] T022 [P] Investigation handoff test (autonomous → manual) in `tests/playwright/cross-service/investigation-handoff.spec.ts`
-=======
 - [ ] T022 [P] Investigation handoff test (structured → manual) in `tests/playwright/cross-service/investigation-handoff.spec.ts`
->>>>>>> 001-modify-analyzer-method
 - [ ] T023 [P] Event bus communication test in `tests/playwright/cross-service/event-bus.spec.ts`
 - [ ] T024 [P] WebSocket real-time updates test in `tests/playwright/cross-service/websocket-updates.spec.ts`
 - [ ] T025 [P] Design system propagation test in `tests/playwright/cross-service/design-system-sync.spec.ts`
@@ -141,21 +125,12 @@ olorin-front/
 
 ## Phase 3.7: Investigation Services (Core Features)
 
-<<<<<<< HEAD
-### Autonomous Investigation Service (Port 3001)
-- [ ] T047 Create Autonomous Investigation service entry point in `src/microservices/autonomous-investigation/App.tsx`
-- [ ] T048 Create AI orchestration manager in `src/microservices/autonomous-investigation/services/orchestrationManager.ts`
-- [ ] T049 Create autonomous investigation panel in `src/microservices/autonomous-investigation/components/AutonomousInvestigationPanel.tsx`
-- [ ] T050 Create risk calculation engine in `src/microservices/autonomous-investigation/services/riskCalculation.ts`
-- [ ] T051 Configure Autonomous Investigation webpack config in `src/microservices/autonomous-investigation/webpack.config.js`
-=======
 ### Structured Investigation Service (Port 3001)
 - [ ] T047 Create Structured Investigation service entry point in `src/microservices/structured-investigation/App.tsx`
 - [ ] T048 Create AI orchestration manager in `src/microservices/structured-investigation/services/orchestrationManager.ts`
 - [ ] T049 Create structured investigation panel in `src/microservices/structured-investigation/components/StructuredInvestigationPanel.tsx`
 - [ ] T050 Create risk calculation engine in `src/microservices/structured-investigation/services/riskCalculation.ts`
 - [ ] T051 Configure Structured Investigation webpack config in `src/microservices/structured-investigation/webpack.config.js`
->>>>>>> 001-modify-analyzer-method
 
 ### Manual Investigation Service (Port 3002)
 - [ ] T052 Create Manual Investigation service entry point in `src/microservices/manual-investigation/App.tsx`
@@ -187,11 +162,7 @@ olorin-front/
 - [ ] T068 [P] Create export controls in `src/microservices/reporting/components/ExportControls.tsx`
 
 ## Phase 3.9: Integration and Communication
-<<<<<<< HEAD
-- [ ] T069 Implement cross-service investigation handoff between autonomous and manual services
-=======
 - [ ] T069 Implement cross-service investigation handoff between structured and manual services
->>>>>>> 001-modify-analyzer-method
 - [ ] T070 Set up event bus integration across all 8 microservices
 - [ ] T071 Configure WebSocket integration for real-time updates
 - [ ] T072 Implement service health monitoring and recovery
@@ -244,11 +215,7 @@ Task: "Initialize Playwright MCP configuration"
 ### Service Isolation Tests (T014-T021)
 ```bash
 # All service tests can run in parallel
-<<<<<<< HEAD
-Task: "Autonomous Investigation service test"
-=======
 Task: "Structured Investigation service test"
->>>>>>> 001-modify-analyzer-method
 Task: "Manual Investigation service test"
 Task: "Agent Analytics service test"
 Task: "RAG Intelligence service test"

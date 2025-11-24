@@ -358,9 +358,5 @@ Olorin has a solid foundation for routing with rule-based classification and ada
 
 **Related Documents**:
 - [Chapter 1: Prompt Chaining Analysis](./chapter-01-prompt-chaining-analysis-2025-09-06.md)
-<<<<<<< HEAD
-- [Autonomous Investigation Orchestrator Plan](/docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md)
-=======
 - [Structured Investigation Orchestrator Plan](/docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md)
->>>>>>> 001-modify-analyzer-method
 - [Comprehensive Entity Validation Plan](/docs/plans/2025-09-06-entity-validation-deployment-plan.md)

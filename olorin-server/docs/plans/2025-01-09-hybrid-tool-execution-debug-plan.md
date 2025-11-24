@@ -294,11 +294,7 @@ The Hybrid Intelligence Graph system is experiencing critical tool execution fai
 
 ### Test Files
 - `/debug_hybrid_tool_execution.py` (newly created)
-<<<<<<< HEAD
-- `/scripts/testing/unified_autonomous_test_runner.py`
-=======
 - `/scripts/testing/unified_structured_test_runner.py`
->>>>>>> 001-modify-analyzer-method
 
 ## Notes
 

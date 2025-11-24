@@ -1,9 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-<<<<<<< HEAD
-=======
 import { errorReportingService } from '../../../shared/services/ErrorReportingService';
->>>>>>> 001-modify-analyzer-method
 
 interface Props {
   children: ReactNode;
@@ -51,12 +48,7 @@ export class ErrorBoundary extends Component<Props, State> {
       this.props.onError(error, errorInfo);
     }
 
-<<<<<<< HEAD
-    // TODO: Send error to logging service
-    // ErrorReportingService.reportError(error, errorInfo);
-=======
     errorReportingService.reportError(error, errorInfo).catch(console.error);
->>>>>>> 001-modify-analyzer-method
   }
 
   handleRetry = () => {

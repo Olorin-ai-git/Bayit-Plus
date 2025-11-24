@@ -46,11 +46,7 @@ CONFIDENCE_LEVEL_MAPPINGS = {
 # Default dynamic limits configuration
 def get_default_dynamic_limits() -> dict:
     """Get default dynamic limits based on environment."""
-<<<<<<< HEAD
-    is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'mock'
-=======
     is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'demo'
->>>>>>> 001-modify-analyzer-method
     
     return {
         "max_orchestrator_loops": 25 if not is_test_mode else 12,

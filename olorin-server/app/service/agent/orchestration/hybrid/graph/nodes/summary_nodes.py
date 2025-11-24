@@ -72,11 +72,6 @@ class SummaryNodes:
             apply_evidence_gating(state)
             logger.info(f"✅ Evidence gating applied: strength={fmt_num(state.get('evidence_strength', 0.0), 3)}")
 
-<<<<<<< HEAD
-            # Finalize risk score using uniform computation
-            finalize_risk(state)
-            logger.info(f"✅ Risk score finalized: {fmt_num(state.get('risk_score', 0.0), 2)}")
-=======
             # CRITICAL FIX: Transform agent_results to domain_findings structure if missing or empty
             # finalize.py expects domain_findings with risk scores but state may have empty domain_findings
             existing_domain_findings = state.get("domain_findings", {})
@@ -141,7 +136,6 @@ class SummaryNodes:
                 logger.info(f"✅ Risk score finalized: N/A (blocked by evidence gating){domain_info}")
             else:
                 logger.info(f"✅ Risk score finalized: {fmt_num(final_risk, 2)}")
->>>>>>> 001-modify-analyzer-method
             
             # Finalize all performance metrics
             finalize_all_metrics(state)
@@ -252,8 +246,6 @@ class SummaryNodes:
         state["performance_metrics"]["final_efficiency"] = self.performance_calculator.calculate_investigation_efficiency(state)
         state["investigation_efficiency"] = state["performance_metrics"]["final_efficiency"]
         
-<<<<<<< HEAD
-=======
         # CRITICAL: Persist risk_score as overall_risk_score to database
         # This ensures investigations have overall_risk_score for comparison metrics
         investigation_id = state.get("investigation_id")
@@ -338,7 +330,6 @@ class SummaryNodes:
             if transaction_scores:
                 logger.warning(f"⚠️ transaction_scores exist in state but investigation_id is missing - cannot persist")
         
->>>>>>> 001-modify-analyzer-method
         # Log final statistics
         self._log_final_statistics(state)
         

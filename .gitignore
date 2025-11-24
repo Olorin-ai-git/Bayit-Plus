@@ -402,20 +402,6 @@ mock_ips_cache_client.py
 # Test directories
 # olorin-server/app/test/ - Commented out to allow essential test files to be tracked
 
-<<<<<<< HEAD
-# ===== Fraud Detection Artifacts and Packages =====
-# Generated investigation packages
-olorin-server/packages/
-packages/
-
-# Generated confusion tables and reports
-**/confusion*.html
-**/confusion_table*.html
-**/*package*.zip
-**/*report*.zip
-**/*comparison*.zip
-**/*fraud*.zip
-=======
 # ===== Contract Testing - Generated Files =====
 # OpenAPI schema generation output (backend)
 olorin-server/openapi.json
@@ -451,7 +437,6 @@ olorin-server/artifacts/
 artifacts/
 olorin-server/workspace/registry/registry.sqlite
 olorin-server/env
->>>>>>> 001-modify-analyzer-method
 
 # Claude Agent Files (AI Assistant State)
 .claude/

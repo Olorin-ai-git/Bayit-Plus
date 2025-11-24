@@ -81,11 +81,7 @@ def fmt_risk(risk_score: Optional[Union[int, float]], na: str = "N/A (blocked by
 
 ### 4. HTML Generation Fixes ✅ VERIFIED
 **Locations**: 
-<<<<<<< HEAD
-- `app/service/logging/autonomous_investigation_logger.py:784-786`
-=======
 - `app/service/logging/structured_investigation_logger.py:784-786`
->>>>>>> 001-modify-analyzer-method
 - `test/e2e/test_simple_html_generation.py:254-256`
 
 **Fix**: Replaced `float(risk_score)` with `coerce_float(risk_score, 0.0)`

@@ -39,10 +39,7 @@ class ToolAssessor:
         Returns:
             Confidence score between 0.0 and 1.0
         """
-<<<<<<< HEAD
-=======
         # tools_used can be a list of strings or dicts with 'tool_name' or 'name' keys
->>>>>>> 001-modify-analyzer-method
         tools_used = state.get("tools_used", [])
         tool_results = state.get("tool_results", {})
         
@@ -67,18 +64,11 @@ class ToolAssessor:
         
         return tool_confidence
     
-<<<<<<< HEAD
-    def _calculate_tool_diversity(self, tools_used: List[str]) -> float:
-=======
     def _calculate_tool_diversity(self, tools_used: List[Any]) -> float:
->>>>>>> 001-modify-analyzer-method
         """Calculate diversity factor based on tool categories."""
         tool_categories_used = set()
         
         for tool in tools_used:
-<<<<<<< HEAD
-            category = self._categorize_tool(tool)
-=======
             # Handle both string tool names and dict tool objects
             if isinstance(tool, dict):
                 tool_name = tool.get('tool_name') or tool.get('name')
@@ -98,7 +88,6 @@ class ToolAssessor:
             # Ensure category is a string before adding to set
             if not isinstance(category, str):
                 category = str(category)
->>>>>>> 001-modify-analyzer-method
             tool_categories_used.add(category)
         
         diversity_factor = len(tool_categories_used) / 4.0  # Up to 4 categories
@@ -108,12 +97,9 @@ class ToolAssessor:
     
     def _categorize_tool(self, tool_name: str) -> str:
         """Categorize a tool based on its name."""
-<<<<<<< HEAD
-=======
         # Ensure tool_name is a string
         if not isinstance(tool_name, str):
             tool_name = str(tool_name)
->>>>>>> 001-modify-analyzer-method
         tool_lower = tool_name.lower()
         
         for category, keywords in self.tool_categories.items():
@@ -125,20 +111,13 @@ class ToolAssessor:
         
         return "other"
     
-<<<<<<< HEAD
-    def _calculate_success_rate(self, tools_used: List[str], tool_results: Dict[str, Any]) -> float:
-=======
     def _calculate_success_rate(self, tools_used: List[Any], tool_results: Dict[str, Any]) -> float:
->>>>>>> 001-modify-analyzer-method
         """Calculate the success rate of tool executions."""
         if not tools_used:
             return 0.0
             
         successful_tools = 0
         for tool in tools_used:
-<<<<<<< HEAD
-            tool_result = tool_results.get(tool, {})
-=======
             # Extract tool name/key from dict or use string directly
             if isinstance(tool, dict):
                 tool_key = tool.get('tool_name', tool.get('name', str(tool)))
@@ -146,26 +125,18 @@ class ToolAssessor:
                 tool_key = str(tool)
             
             tool_result = tool_results.get(tool_key, {})
->>>>>>> 001-modify-analyzer-method
             if tool_result and isinstance(tool_result, dict):
                 successful_tools += 1
         
         return successful_tools / len(tools_used)
     
-<<<<<<< HEAD
-    def _calculate_average_quality(self, tools_used: List[str], tool_results: Dict[str, Any]) -> float:
-=======
     def _calculate_average_quality(self, tools_used: List[Any], tool_results: Dict[str, Any]) -> float:
->>>>>>> 001-modify-analyzer-method
         """Calculate average quality of tool results."""
         if not tools_used:
             return 0.0
             
         total_quality = 0.0
         for tool in tools_used:
-<<<<<<< HEAD
-            tool_result = tool_results.get(tool, {})
-=======
             # Extract tool name/key from dict or use string directly
             if isinstance(tool, dict):
                 tool_key = tool.get('tool_name', tool.get('name', str(tool)))
@@ -173,7 +144,6 @@ class ToolAssessor:
                 tool_key = str(tool)
             
             tool_result = tool_results.get(tool_key, {})
->>>>>>> 001-modify-analyzer-method
             if tool_result and isinstance(tool_result, dict):
                 # Simple heuristic for result quality based on content richness
                 result_quality = min(1.0, len(str(tool_result)) / 500.0)

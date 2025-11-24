@@ -49,13 +49,8 @@ def _import_agent_factory():
         return None, None
 
 
-<<<<<<< HEAD
-async def autonomous_device_agent(state, config) -> dict:
-    """Autonomous device analysis using LLM-driven tool selection with optional RAG enhancement"""
-=======
 async def structured_device_agent(state, config) -> dict:
     """Structured device analysis using LLM-driven tool selection with optional RAG enhancement"""
->>>>>>> 001-modify-analyzer-method
     
     # Get investigation context
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
@@ -86,21 +81,11 @@ async def structured_device_agent(state, config) -> dict:
         metadata=start_metadata
     )
     
-<<<<<<< HEAD
-    # Create or get autonomous context with retry logic
-    autonomous_context = await get_context_with_retry(investigation_id, entity_id)
-    if not autonomous_context:
-        logger.error(f"Failed to get investigation context after retries: {investigation_id}")
-        return _create_error_response("Unable to access investigation context - race condition")
-    
-    autonomous_context.start_domain_analysis("device")
-=======
     # Create or get structured context with retry logic
     structured_context = await get_context_with_retry(investigation_id, entity_id)
     if not structured_context:
         logger.error(f"Failed to get investigation context after retries: {investigation_id}")
         return _create_error_response("Unable to access investigation context - race condition")
->>>>>>> 001-modify-analyzer-method
     
     structured_context.start_domain_analysis("device")
     
@@ -177,28 +162,7 @@ async def structured_device_agent(state, config) -> dict:
                 pass  # Gracefully handle missing RAG stats
         
         # Record findings in context
-<<<<<<< HEAD
-        autonomous_context.record_domain_findings("device", findings)
-        
-        # Emit completion update with RAG enhancement info
-        from .device_agent_config import format_completion_message
-        completion_message = format_completion_message(
-            rag_enabled=(RAG_AVAILABLE and rag_config is not None),
-            findings_count=len(findings.key_findings),
-            risk_score=findings.risk_score,
-            rag_stats=rag_stats,
-            mcp_enhanced=MCP_ENHANCED
-        )
-        
-        await websocket_manager.broadcast_agent_result(
-            investigation_id,
-            AgentPhase.DEVICE_ANALYSIS,
-            findings.raw_data or {},
-            completion_message
-        )
-=======
         structured_context.record_domain_findings("device", findings)
->>>>>>> 001-modify-analyzer-method
         
         # Track device agent completion with RAG metrics
         completion_metadata = create_device_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats, MCP_ENHANCED)

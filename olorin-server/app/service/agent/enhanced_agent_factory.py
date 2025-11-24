@@ -165,13 +165,8 @@ class EnhancedAgentFactory:
                 self._server_health = server_health
                 self._investigation_count = 0
             
-<<<<<<< HEAD
-            async def autonomous_investigate(self, context, config, specific_objectives=None):
-                """Enhanced autonomous investigation with MCP integration."""
-=======
             async def structured_investigate(self, context, config, specific_objectives=None):
                 """Enhanced structured investigation with MCP integration."""
->>>>>>> 001-modify-analyzer-method
                 self._investigation_count += 1
                 
                 logger.info(f"🔍 Starting enhanced {self.domain} investigation with MCP integration")

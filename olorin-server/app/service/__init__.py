@@ -132,53 +132,6 @@ async def on_startup(app: FastAPI):
     Args:
         app(FastAPI): FastAPI app object.
     """
-<<<<<<< HEAD
-    logger.info("🚀 Starting Olorin application...")
-
-    # Initialize performance optimization system
-    await initialize_performance_system(app)
-
-    # Initialize the agent system
-    from .agent_init import initialize_agent
-    await initialize_agent(app)
-    
-    # Load top risk entities from Snowflake
-    logger.info("🔄 Starting Snowflake connection process...")
-    try:
-        logger.info("📋 Loading top risk entities from Snowflake...")
-        logger.info("📦 Importing risk analyzer...")
-        from app.service.analytics.risk_analyzer import get_risk_analyzer
-
-        logger.info("🏭 Creating risk analyzer instance...")
-        analyzer = get_risk_analyzer()
-
-        logger.info("🔌 Attempting to connect to Snowflake and fetch top risk entities...")
-        results = await analyzer.get_top_risk_entities()
-
-        logger.info(f"📊 Risk analyzer returned results: {type(results)} with keys: {list(results.keys()) if isinstance(results, dict) else 'Not a dict'}")
-
-        if results.get('status') == 'success':
-            entity_count = len(results.get('entities', []))
-            logger.info(f"✅ Successfully loaded {entity_count} top risk entities from Snowflake")
-
-            # Store in app state for quick access
-            app.state.top_risk_entities = results
-            app.state.risk_entities_loaded_at = results.get('timestamp')
-            logger.info("💾 Stored risk entities in app state")
-        else:
-            error_msg = results.get('error', 'Unknown error')
-            logger.warning(f"⚠️ Failed to load risk entities: {error_msg}")
-            logger.warning(f"📄 Full results: {results}")
-            app.state.top_risk_entities = None
-    except Exception as e:
-        logger.error(f"❌ Error loading risk entities on startup: {e}")
-        logger.error(f"🔍 Exception type: {type(e).__name__}")
-        import traceback
-        logger.error(f"📜 Full traceback: {traceback.format_exc()}")
-        app.state.top_risk_entities = None
-    
-    logger.info("Olorin application startup completed")
-=======
     # Load .env file to ensure environment variables are available
     env_path = Path(__file__).parent.parent.parent / '.env'
     if env_path.exists():
@@ -1253,7 +1206,6 @@ async def _create_startup_zip_package(
     except Exception as e:
         logger.error(f"❌ Failed to create startup package: {e}", exc_info=True)
         app.state.auto_comparison_zip_path = None
->>>>>>> 001-modify-analyzer-method
 
 
 async def on_shutdown(app: FastAPI):
@@ -1270,17 +1222,6 @@ async def on_shutdown(app: FastAPI):
     import asyncio
     
     logger.info("Shutting down Olorin application...")
-<<<<<<< HEAD
-    
-    # Cleanup async HTTP clients to prevent unclosed session warnings
-    try:
-        from app.service.agent.tools.async_client_manager import cleanup_async_clients
-        await cleanup_async_clients()
-        logger.info("✅ Async client cleanup completed")
-    except Exception as e:
-        logger.warning(f"⚠️ Async client cleanup failed: {e}")
-    
-=======
 
     # Disconnect database provider
     try:
@@ -1354,7 +1295,6 @@ async def on_shutdown(app: FastAPI):
     except Exception as e:
         logger.warning(f"⚠️ Detection scheduler shutdown failed: {e}")
 
->>>>>>> 001-modify-analyzer-method
     # Shutdown performance optimization system
     try:
         await asyncio.wait_for(shutdown_performance_system(app), timeout=3.0)

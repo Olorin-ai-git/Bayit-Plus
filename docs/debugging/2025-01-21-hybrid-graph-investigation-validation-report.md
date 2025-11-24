@@ -3,11 +3,7 @@
 **Date**: 2025-01-21
 **Author**: Gil Klainert
 **Branch**: 003-hybrid-graph-investigation
-<<<<<<< HEAD
-**Target Location**: `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation`
-=======
 **Target Location**: `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation`
->>>>>>> 001-modify-analyzer-method
 
 ## Executive Summary
 
@@ -26,11 +22,7 @@ This report provides a comprehensive validation of the Hybrid Graph Investigatio
 
 ### Directory Structure Validation ✅
 ```
-<<<<<<< HEAD
-src/microservices/autonomous-investigation/
-=======
 src/microservices/structured-investigation/
->>>>>>> 001-modify-analyzer-method
 ├── components/
 │   ├── concepts/          # 4 UI concepts implemented
 │   ├── shared/           # Shared components
@@ -56,11 +48,7 @@ src/microservices/structured-investigation/
 
 | File | Lines | Issue |
 |------|-------|-------|
-<<<<<<< HEAD
-| `AutonomousInvestigationApp.tsx` | 255 | Main app component too large |
-=======
 | `StructuredInvestigationApp.tsx` | 255 | Main app component too large |
->>>>>>> 001-modify-analyzer-method
 | `types/investigation.ts` | 292 | Type definitions need splitting |
 | `types/tool.types.ts` | 297 | Tool types need modularization |
 | `types/evidence.types.ts` | 262 | Evidence types need splitting |

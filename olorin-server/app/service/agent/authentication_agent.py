@@ -1,13 +1,7 @@
 """
-<<<<<<< HEAD
-Autonomous Authentication Analysis Agent
-
-Authentication domain autonomous investigation agent using LLM-driven tool selection.
-=======
 Structured Authentication Analysis Agent
 
 Authentication domain structured investigation agent using LLM-driven tool selection.
->>>>>>> 001-modify-analyzer-method
 """
 
 import json
@@ -17,11 +11,7 @@ from langchain_core.messages import AIMessage
 
 from app.service.agent.agent_communication import (
     _extract_investigation_info,
-<<<<<<< HEAD
-    _get_or_create_autonomous_context,
-=======
     _get_or_create_structured_context,
->>>>>>> 001-modify-analyzer-method
     _create_error_response,
     get_context_with_retry,
 )
@@ -36,10 +26,6 @@ except ImportError as e:
     logger = get_bridge_logger(__name__)
     logger.warning(f"RAG modules not available: {e}")
     RAG_AVAILABLE = False
-<<<<<<< HEAD
-from app.service.websocket_manager import AgentPhase, websocket_manager
-=======
->>>>>>> 001-modify-analyzer-method
 from app.service.agent.journey_tracker import (
     get_journey_tracker,
     NodeType,
@@ -52,13 +38,8 @@ logger = get_bridge_logger(__name__)
 journey_tracker = get_journey_tracker()
 
 
-<<<<<<< HEAD
-async def autonomous_authentication_agent(state, config) -> dict:
-    """Autonomous authentication analysis using LLM-driven tool selection with optional RAG enhancement"""
-=======
 async def structured_authentication_agent(state, config) -> dict:
     """Structured authentication analysis using LLM-driven tool selection with optional RAG enhancement"""
->>>>>>> 001-modify-analyzer-method
     
     # Track execution start time
     start_time = time.perf_counter()
@@ -91,27 +72,6 @@ async def structured_authentication_agent(state, config) -> dict:
         output_state={"authentication_analysis": "in_progress", "agent_status": "active", "rag_enhancement": "initializing"},
         duration_ms=0,
         status=NodeStatus.IN_PROGRESS,
-<<<<<<< HEAD
-        agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "AutonomousAuthenticationAgent",
-        metadata=start_metadata
-    )
-    
-    # Create or get autonomous context with retry logic
-    autonomous_context = await get_context_with_retry(investigation_id, entity_id)
-    if not autonomous_context:
-        logger.error(f"Failed to get investigation context after retries: {investigation_id}")
-        return _create_error_response("Unable to access investigation context - race condition")
-    
-    autonomous_context.start_domain_analysis("authentication")
-    
-    # Emit progress update
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.AUTHENTICATION_ANALYSIS,
-        0.1,
-        "Starting autonomous authentication analysis..."
-    )
-=======
         agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "StructuredAuthenticationAgent",
         metadata=start_metadata
     )
@@ -123,7 +83,6 @@ async def structured_authentication_agent(state, config) -> dict:
         return _create_error_response("Unable to access investigation context - race condition")
     
     structured_context.start_domain_analysis("authentication")
->>>>>>> 001-modify-analyzer-method
     
     try:
         # Get available tools from global scope
@@ -138,11 +97,7 @@ async def structured_authentication_agent(state, config) -> dict:
         if RAG_AVAILABLE and rag_config:
             authentication_agent = await create_agent_with_intelligent_tools(
                 domain="authentication",
-<<<<<<< HEAD
-                investigation_context=autonomous_context,
-=======
                 investigation_context=structured_context,
->>>>>>> 001-modify-analyzer-method
                 fallback_tools=tools,
                 enable_rag=True,
                 categories=["threat_intelligence", "ml_ai", "intelligence", "web", "database"]
@@ -150,13 +105,8 @@ async def structured_authentication_agent(state, config) -> dict:
             logger.info("🔐 Created authentication agent with intelligent RAG-enhanced tool selection")
         else:
             # Fallback to standard agent creation
-<<<<<<< HEAD
-            from app.service.agent.agent_factory import create_autonomous_agent
-            authentication_agent = create_autonomous_agent("authentication", tools)
-=======
             from app.service.agent.agent_factory import create_structured_agent
             authentication_agent = create_structured_agent("authentication", tools)
->>>>>>> 001-modify-analyzer-method
             logger.info("🔐 Created standard authentication agent (RAG not available)")
         
         # Get enhanced objectives with RAG-augmented authentication focus
@@ -165,13 +115,8 @@ async def structured_authentication_agent(state, config) -> dict:
         # Execute authentication analysis with timeout protection
         try:
             findings = await asyncio.wait_for(
-<<<<<<< HEAD
-                authentication_agent.autonomous_investigate(
-                    context=autonomous_context,
-=======
                 authentication_agent.structured_investigate(
                     context=structured_context,
->>>>>>> 001-modify-analyzer-method
                     config=config,
                     specific_objectives=authentication_objectives
                 ),
@@ -180,11 +125,7 @@ async def structured_authentication_agent(state, config) -> dict:
         except asyncio.TimeoutError:
             error_message = f"Authentication analysis timed out after {AUTHENTICATION_TIMEOUT_SECONDS}s"
             logger.error(f"🚨 PERFORMANCE ALERT: {error_message}")
-<<<<<<< HEAD
-            autonomous_context.fail_domain_analysis("authentication", error_message)
-=======
             structured_context.fail_domain_analysis("authentication", error_message)
->>>>>>> 001-modify-analyzer-method
             return _create_error_response(f"Authentication analysis timeout: {error_message}")
         
         # Check for performance warning threshold
@@ -204,27 +145,7 @@ async def structured_authentication_agent(state, config) -> dict:
                 pass  # Gracefully handle missing RAG stats
         
         # Record findings in context
-<<<<<<< HEAD
-        autonomous_context.record_domain_findings("authentication", findings)
-        
-        # Emit completion update with RAG enhancement info
-        from .authentication_agent_config import format_completion_message
-        completion_message = format_completion_message(
-            rag_enabled=(RAG_AVAILABLE and rag_config is not None),
-            findings_count=len(findings.key_findings),
-            risk_score=findings.risk_score,
-            rag_stats=rag_stats
-        )
-        
-        await websocket_manager.broadcast_agent_result(
-            investigation_id,
-            AgentPhase.AUTHENTICATION_ANALYSIS,
-            findings.raw_data or {},
-            completion_message
-        )
-=======
         structured_context.record_domain_findings("authentication", findings)
->>>>>>> 001-modify-analyzer-method
         
         # Track authentication agent completion with RAG metrics
         completion_metadata = create_authentication_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats)
@@ -252,11 +173,7 @@ async def structured_authentication_agent(state, config) -> dict:
             },
             duration_ms=duration_ms,
             status=NodeStatus.COMPLETED,
-<<<<<<< HEAD
-            agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "AutonomousAuthenticationAgent",
-=======
             agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "StructuredAuthenticationAgent",
->>>>>>> 001-modify-analyzer-method
             metadata=completion_metadata
         )
         
@@ -277,11 +194,7 @@ async def structured_authentication_agent(state, config) -> dict:
             error_context += f" (RAG context: {rag_stats['knowledge_retrieval_count']} retrievals)"
         
         logger.error(error_context)
-<<<<<<< HEAD
-        autonomous_context.fail_domain_analysis("authentication", str(e))
-=======
         structured_context.fail_domain_analysis("authentication", str(e))
->>>>>>> 001-modify-analyzer-method
         
         # Track failure with RAG metadata
         error_metadata = create_authentication_agent_metadata(RAG_AVAILABLE, rag_stats)
@@ -295,11 +208,7 @@ async def structured_authentication_agent(state, config) -> dict:
             output_state={"authentication_analysis": "failed", "error": str(e), "rag_enabled": RAG_AVAILABLE},
             duration_ms=0,
             status=NodeStatus.FAILED,
-<<<<<<< HEAD
-            agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "AutonomousAuthenticationAgent",
-=======
             agent_name="RAG-Enhanced-AuthenticationAgent" if RAG_AVAILABLE else "StructuredAuthenticationAgent",
->>>>>>> 001-modify-analyzer-method
             metadata=error_metadata
         )
         

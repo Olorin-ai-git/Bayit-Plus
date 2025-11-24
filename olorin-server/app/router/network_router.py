@@ -6,10 +6,7 @@ from fastapi import APIRouter, Depends, Query
 from starlette.requests import Request
 
 from app.persistence import ensure_investigation_exists
-<<<<<<< HEAD
-=======
 from app.security.auth import User, require_read
->>>>>>> 001-modify-analyzer-method
 from app.service.llm_network_risk_service import LLMNetworkRiskService
 
 logger = get_bridge_logger(__name__)
@@ -32,10 +29,7 @@ async def analyze_network(
     splunk_host: Optional[str] = None,
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     service: LLMNetworkRiskService = Depends(LLMNetworkRiskService),
-<<<<<<< HEAD
-=======
     current_user: User = Depends(require_read),
->>>>>>> 001-modify-analyzer-method
 ) -> dict:
     """Analyze network risk for a user or device - uses LLMNetworkRiskService directly."""
     # Only keep HTTP-specific logic here

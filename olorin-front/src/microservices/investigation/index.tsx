@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import InvestigationApp from './InvestigationApp';
 import './styles/tailwind.css';
-<<<<<<< HEAD
-=======
 import { initializeRuntimeConfig } from '../../shared/config/runtimeConfig';
 
 // Initialize runtime configuration FIRST (before any React components load)
 initializeRuntimeConfig();
->>>>>>> 001-modify-analyzer-method
 
 // Initialize the Investigation Service
 const initializeInvestigationService = async () => {
@@ -101,23 +98,12 @@ const initializeInvestigationService = async () => {
             >
               Reload Service
             </button>
-<<<<<<< HEAD
-            ${process.env.NODE_ENV === 'development' ? `
-              <details style="margin-top: 1rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.375rem; text-align: left;">
-                <summary style="cursor: pointer; font-weight: 500; font-size: 0.875rem;">Error Details</summary>
-                <pre style="margin-top: 0.5rem; white-space: pre-wrap; color: #dc2626; font-size: 0.75rem;">
-                  ${error instanceof Error ? error.message + '\n' + error.stack : String(error)}
-                </pre>
-              </details>
-            ` : ''}
-=======
             <details style="margin-top: 1rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.375rem; text-align: left;">
               <summary style="cursor: pointer; font-weight: 500; font-size: 0.875rem;">Error Details</summary>
               <pre style="margin-top: 0.5rem; white-space: pre-wrap; color: #dc2626; font-size: 0.75rem;">
                 ${error instanceof Error ? error.message + '\n' + error.stack : String(error)}
               </pre>
             </details>
->>>>>>> 001-modify-analyzer-method
           </div>
         </div>
       `;
@@ -130,26 +116,15 @@ const initializeInvestigationService = async () => {
 // Initialize global Olorin namespace if not already present
 if (!window.olorin) {
   window.olorin = {
-<<<<<<< HEAD
-    version: process.env.REACT_APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
-=======
     version: '1.0.0',
     environment: 'development',
->>>>>>> 001-modify-analyzer-method
     services: {},
     eventBus: null,
     monitoring: null,
     config: {
-<<<<<<< HEAD
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-      enableDebug: process.env.NODE_ENV === 'development'
-=======
       apiBaseUrl: 'http://localhost:8090',
       wsUrl: 'ws://localhost:8090',
       enableDebug: true
->>>>>>> 001-modify-analyzer-method
     }
   };
 

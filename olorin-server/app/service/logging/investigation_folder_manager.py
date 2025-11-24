@@ -50,11 +50,6 @@ class InvestigationFolderManager:
         
         Args:
             base_logs_dir: Base directory for investigation logs. 
-<<<<<<< HEAD
-                         Defaults to olorin-server/logs/investigations/
-        """
-        self.base_logs_dir = base_logs_dir or Path("logs/investigations")
-=======
                          Defaults to using FileOrganizationConfig
         """
         # Lazy import to avoid circular dependency during module import
@@ -71,7 +66,6 @@ class InvestigationFolderManager:
             self.base_logs_dir = self._file_org_config.logs_base_dir / "investigations"
         
         # Create directory structure (simple mkdir to avoid circular import)
->>>>>>> 001-modify-analyzer-method
         self.base_logs_dir.mkdir(parents=True, exist_ok=True)
         
         # Track active investigations
@@ -88,11 +82,8 @@ class InvestigationFolderManager:
         """
         Create unified investigation folder with standardized structure.
         
-<<<<<<< HEAD
-=======
         Uses FileOrganizationService to resolve log paths for consistent organization.
         
->>>>>>> 001-modify-analyzer-method
         Args:
             investigation_id: Unique investigation identifier
             mode: Investigation mode (LIVE, MOCK, DEMO)
@@ -105,19 +96,6 @@ class InvestigationFolderManager:
         """
         # Generate timestamp
         if custom_timestamp:
-<<<<<<< HEAD
-            timestamp = custom_timestamp
-        else:
-            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        
-        # Create folder name: {MODE}_{INVESTIGATION_ID}_{TIMESTAMP}
-        folder_name = f"{mode.value}_{investigation_id}_{timestamp}"
-        folder_path = self.base_logs_dir / folder_name
-        
-        # Create directory structure
-        folder_path.mkdir(parents=True, exist_ok=True)
-        (folder_path / "results").mkdir(exist_ok=True)
-=======
             # Parse custom timestamp string to datetime
             try:
                 timestamp_dt = datetime.strptime(custom_timestamp, "%Y%m%d_%H%M%S")
@@ -165,7 +143,6 @@ class InvestigationFolderManager:
             nested_config = config_dict.get("config", {})
             if isinstance(nested_config, dict) and "entity_type" in nested_config:
                 config_dict["entity_type"] = nested_config.get("entity_type")
->>>>>>> 001-modify-analyzer-method
         
         # Create metadata
         metadata = InvestigationMetadata(
@@ -174,11 +151,7 @@ class InvestigationFolderManager:
             created_at=datetime.now(timezone.utc).isoformat(),
             scenario=scenario,
             folder_path=str(folder_path),
-<<<<<<< HEAD
-            config=config or {}
-=======
             config=config_dict
->>>>>>> 001-modify-analyzer-method
         )
         
         # Write metadata file
@@ -206,12 +179,6 @@ class InvestigationFolderManager:
             return Path(metadata.folder_path)
         
         # Search existing folders if not in active tracking
-<<<<<<< HEAD
-        for folder_path in self.base_logs_dir.iterdir():
-            if folder_path.is_dir() and investigation_id in folder_path.name:
-                metadata_file = folder_path / "metadata.json"
-                if metadata_file.exists():
-=======
         if not self.base_logs_dir.exists():
             return None
         
@@ -229,13 +196,10 @@ class InvestigationFolderManager:
             metadata_file = folder_path / "metadata.json"
             if metadata_file.exists():
                 try:
->>>>>>> 001-modify-analyzer-method
                     with open(metadata_file) as f:
                         metadata_dict = json.load(f)
                         if metadata_dict.get('investigation_id') == investigation_id:
                             return folder_path
-<<<<<<< HEAD
-=======
                 except (json.JSONDecodeError, IOError):
                     # If metadata.json is invalid, continue searching
                     pass
@@ -263,7 +227,6 @@ class InvestigationFolderManager:
                         # Even without expected files, if the ID matches and it's a directory, return it
                         # (might be a newly created folder)
                         return folder_path
->>>>>>> 001-modify-analyzer-method
         
         return None
     
@@ -283,11 +246,7 @@ class InvestigationFolderManager:
         
         return {
             "main_log": folder_path / "investigation.log",
-<<<<<<< HEAD
-            "autonomous_log": folder_path / "autonomous_activities.jsonl",
-=======
             "structured_log": folder_path / "structured_activities.jsonl",
->>>>>>> 001-modify-analyzer-method
             "journey_log": folder_path / "journey_tracking.json",
             "metadata": folder_path / "metadata.json",
             "server_logs": folder_path / "server_logs",
@@ -437,14 +396,6 @@ class InvestigationFolderManager:
         
         return summary
 
-<<<<<<< HEAD
-# Global instance
-investigation_folder_manager = InvestigationFolderManager()
-
-def get_folder_manager() -> InvestigationFolderManager:
-    """Get the global investigation folder manager instance"""
-    return investigation_folder_manager
-=======
 # Global instance (lazy initialization to avoid circular import)
 _investigation_folder_manager_instance: Optional[InvestigationFolderManager] = None
 
@@ -454,4 +405,3 @@ def get_folder_manager() -> InvestigationFolderManager:
     if _investigation_folder_manager_instance is None:
         _investigation_folder_manager_instance = InvestigationFolderManager()
     return _investigation_folder_manager_instance
->>>>>>> 001-modify-analyzer-method

@@ -1,19 +1,11 @@
 #!/usr/bin/env python3
 """
 Investigate Top Risk Entities from Snowflake
-<<<<<<< HEAD
-Bridges Snowflake risk analysis with autonomous investigations.
-
-This script:
-1. Fetches top 10% risk entities from Snowflake
-2. Seeds autonomous investigations with these entities
-=======
 Bridges Snowflake risk analysis with structured investigations.
 
 This script:
 1. Fetches top 10% risk entities from Snowflake
 2. Seeds structured investigations with these entities
->>>>>>> 001-modify-analyzer-method
 3. Compares findings against historical data
 4. Generates comprehensive investigation reports
 
@@ -43,11 +35,7 @@ logger = get_bridge_logger(__name__)
 
 
 class RiskEntityInvestigator:
-<<<<<<< HEAD
-    """Investigates top risk entities using autonomous investigation system."""
-=======
     """Investigates top risk entities using structured investigation system."""
->>>>>>> 001-modify-analyzer-method
     
     def __init__(self):
         """Initialize the investigator."""
@@ -211,11 +199,7 @@ class RiskEntityInvestigator:
         finally:
             await self.snowflake_client.disconnect()
     
-<<<<<<< HEAD
-    def trigger_autonomous_investigation(
-=======
     def trigger_structured_investigation(
->>>>>>> 001-modify-analyzer-method
         self,
         entity_value: str,
         entity_type: str,
@@ -223,11 +207,7 @@ class RiskEntityInvestigator:
         mode: str = "demo"
     ) -> Dict[str, Any]:
         """
-<<<<<<< HEAD
-        Trigger autonomous investigation for an entity.
-=======
         Trigger structured investigation for an entity.
->>>>>>> 001-modify-analyzer-method
         
         Args:
             entity_value: The entity to investigate
@@ -238,11 +218,7 @@ class RiskEntityInvestigator:
         Returns:
             Investigation results
         """
-<<<<<<< HEAD
-        print(f"\n🔍 Triggering autonomous investigation for {entity_type}: {entity_value}")
-=======
         print(f"\n🔍 Triggering structured investigation for {entity_type}: {entity_value}")
->>>>>>> 001-modify-analyzer-method
         
         # Prepare investigation context
         context = {
@@ -256,13 +232,8 @@ class RiskEntityInvestigator:
         # Determine appropriate fraud scenario based on anomalies
         scenario = self._determine_scenario(historical_data)
         
-<<<<<<< HEAD
-        # Build command for autonomous investigation
-        script_path = Path(__file__).parent / "testing" / "unified_autonomous_test_runner.py"
-=======
         # Build command for structured investigation
         script_path = Path(__file__).parent / "testing" / "unified_structured_test_runner.py"
->>>>>>> 001-modify-analyzer-method
         
         cmd = [
             "poetry", "run", "python", str(script_path),
@@ -438,11 +409,7 @@ class RiskEntityInvestigator:
                 print(f"   Total Amount: ${recent['amount_24h']:,.2f}")
                 
                 # Trigger investigation
-<<<<<<< HEAD
-                result = self.trigger_autonomous_investigation(
-=======
                 result = self.trigger_structured_investigation(
->>>>>>> 001-modify-analyzer-method
                     entity_value=entity['entity'],
                     entity_type=group_by,
                     historical_data=historical_data,

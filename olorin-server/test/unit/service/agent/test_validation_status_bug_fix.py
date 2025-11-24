@@ -17,15 +17,9 @@ from typing import Optional, List, Dict, Any
 # Add the project root to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../../../'))
 
-<<<<<<< HEAD
-from scripts.testing.unified_autonomous_test_runner import (
-    UnifiedAutonomousTestRunner,
-    AutonomousInvestigationContext,
-=======
 from scripts.testing.unified_structured_test_runner import (
     UnifiedStructuredTestRunner,
     StructuredInvestigationContext,
->>>>>>> 001-modify-analyzer-method
     InvestigationResult,
     EntityType,
     TestMode
@@ -47,11 +41,7 @@ class TestValidationStatusBugFix:
     @pytest.fixture
     def test_runner(self):
         """Create a test runner for testing"""
-<<<<<<< HEAD
-        from scripts.testing.unified_autonomous_test_runner import TestConfiguration
-=======
         from scripts.testing.unified_structured_test_runner import TestConfiguration
->>>>>>> 001-modify-analyzer-method
         
         config = TestConfiguration(
             mode=TestMode.MOCK,
@@ -62,21 +52,13 @@ class TestValidationStatusBugFix:
             verbose=True
         )
         
-<<<<<<< HEAD
-        runner = UnifiedAutonomousTestRunner(config)
-=======
         runner = UnifiedStructuredTestRunner(config)
->>>>>>> 001-modify-analyzer-method
         return runner
     
     @pytest.fixture
     def mock_context(self):
         """Create a mock investigation context"""
-<<<<<<< HEAD
-        return AutonomousInvestigationContext(
-=======
         return StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
             entity_id="67.76.8.209",
             entity_type=EntityType.IP,
             investigation_id="test_validation_fix_001"

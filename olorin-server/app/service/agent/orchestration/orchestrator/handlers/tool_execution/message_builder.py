@@ -25,8 +25,6 @@ class MessageBuilder:
                                      tools_used: List[str], tool_count: int,
                                      tool_execution_attempts: int, orchestrator_loops: int) -> List:
         """Create messages for tool selection."""
-<<<<<<< HEAD
-=======
         # Format snowflake data for LLM
         formatted_summary = self._summarize_snowflake_data(snowflake_data)
         
@@ -60,27 +58,19 @@ class MessageBuilder:
         internal transaction analysis. You MUST call composio_search before proceeding.
         """
         
->>>>>>> 001-modify-analyzer-method
         tool_selection_prompt = f"""
         Based on the Snowflake analysis results, select appropriate additional tools for comprehensive investigation.
 
         Snowflake findings summary:
-<<<<<<< HEAD
-        {self._summarize_snowflake_data(snowflake_data)}
-=======
         {formatted_summary}
->>>>>>> 001-modify-analyzer-method
 
         Tools already used: {tools_used}
         Attempt: {tool_execution_attempts}/4
         Orchestrator loops: {orchestrator_loops}
 
-<<<<<<< HEAD
-=======
         CRITICAL: You MUST select and call at least {tool_count} tools. This is MANDATORY for a complete investigation.
         Do NOT provide a text response without calling tools. You MUST use the available tools to gather data.
 
->>>>>>> 001-modify-analyzer-method
         OBJECTIVE: Select {tool_count} tools that will provide domain-specific data for network, device, location, and behavioral analysis.
 
         Recommended tools for comprehensive fraud investigation:
@@ -88,12 +78,6 @@ class MessageBuilder:
         2. Network Analysis: Splunk OR SumoLogic (for network behavior patterns)
         3. Device Fingerprinting: ML Anomaly Detection (for device behavior analysis)
         4. Geographic Analysis: GeoIP tools (for location-based risk assessment)
-<<<<<<< HEAD
-
-        Select tools that will provide the domain agents with rich data for analysis.
-        Each tool should target a different domain (network, device, location, logs) to maximize investigation coverage.
-        The goal is to gather comprehensive evidence across multiple fraud dimensions.
-=======
         5. Web Intelligence: composio_search AND composio_webcrawl (for OSINT, online reputation, and web-based threat intelligence)
            - Use composio_search to find information about the entity (IP, email, user ID, etc.) online
            - Use composio_webcrawl to crawl suspicious URLs or websites related to the entity
@@ -108,16 +92,10 @@ class MessageBuilder:
         complements internal transaction data analysis.
 
         REMINDER: You MUST call tools. Do not respond with text only - you MUST use the available tools.
->>>>>>> 001-modify-analyzer-method
         """
 
         human_msg = HumanMessage(content=tool_selection_prompt)
 
-<<<<<<< HEAD
-        # Filter existing messages
-        existing_messages = [m for m in state.get("messages", [])
-                           if not isinstance(m, SystemMessage)]
-=======
         # Filter existing messages - CRITICAL FIX: For tool execution phase, only include safe messages
         # Skip AIMessages with tool_calls to avoid API errors about incomplete tool responses
         # This is safe because we're starting a fresh tool selection round
@@ -154,17 +132,12 @@ CRITICAL: When invoking ANY data query tools (Splunk, SumoLogic, Database querie
 you MUST use these exact time bounds to constrain your queries. Use 'earliest_time' and 'latest_time'
 parameters for Splunk, 'time_range' parameter for SumoLogic, and WHERE clause timestamp filters for databases.
 Do NOT use tool default time ranges - ALWAYS override with the investigation time range above."""
->>>>>>> 001-modify-analyzer-method
 
         # Create system message
         base_prompt = f"""You are investigating potential fraud. You have {len(self.tools)} tools available.
 Select {tool_count} tools based on the Snowflake findings for comprehensive domain analysis.
 So far you have used {len(tools_used)} tools. This is attempt {tool_execution_attempts}/4.
-<<<<<<< HEAD
-Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich data to domain agents for network, device, location, and behavioral analysis."""
-=======
 Orchestrator loops: {orchestrator_loops}. Select tools that will provide rich data to domain agents for network, device, location, and behavioral analysis.{time_range_instruction}"""
->>>>>>> 001-modify-analyzer-method
 
         enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
         system_msg = SystemMessage(content=enhanced_prompt)

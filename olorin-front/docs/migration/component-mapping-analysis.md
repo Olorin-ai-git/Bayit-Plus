@@ -31,15 +31,9 @@ src/js/
 - `pages/Investigations.tsx` (734 lines) → **DECOMPOSE**
 
 #### Components to Migrate:
-<<<<<<< HEAD
-- `AutonomousInvestigationPanel.tsx` (210 lines) → `components/autonomous/`
-- `ManualInvestigationPanel.tsx` → `components/manual/`
-- `EnhancedAutonomousInvestigationPanel.tsx` → `components/enhanced/`
-=======
 - `StructuredInvestigationPanel.tsx` (210 lines) → `components/structured/`
 - `ManualInvestigationPanel.tsx` → `components/manual/`
 - `EnhancedStructuredInvestigationPanel.tsx` → `components/enhanced/`
->>>>>>> 001-modify-analyzer-method
 - `InvestigationForm.tsx` → `components/forms/`
 - `InvestigationHeader.tsx` (508 lines) → **DECOMPOSE** → `components/headers/`
 - `InvestigationStep.tsx` (239 lines) → `components/steps/`
@@ -52,19 +46,11 @@ src/js/
 - `EnhancedInvestigationPanel.tsx` (220 lines) → `components/enhanced/`
 
 #### Services to Migrate:
-<<<<<<< HEAD
-- `services/AutonomousInvestigationClient.ts` (690 lines) → **DECOMPOSE** → `services/`
-- `services/MultiEntityInvestigationClient.ts` (480 lines) → **DECOMPOSE** → `services/`
-
-#### Hooks to Migrate:
-- `hooks/useAutonomousInvestigation.ts` (1,014 lines) → **DECOMPOSE** → `hooks/`
-=======
 - `services/StructuredInvestigationClient.ts` (690 lines) → **DECOMPOSE** → `services/`
 - `services/MultiEntityInvestigationClient.ts` (480 lines) → **DECOMPOSE** → `services/`
 
 #### Hooks to Migrate:
 - `hooks/useStructuredInvestigation.ts` (1,014 lines) → **DECOMPOSE** → `hooks/`
->>>>>>> 001-modify-analyzer-method
 - `hooks/useMultiEntityInvestigation.ts` (248 lines) → `hooks/`
 
 ### 2. RAG Intelligence Service (Port 3003)
@@ -115,11 +101,7 @@ src/js/
    - `components/rag/views/TablePagination.tsx`
 
 #### Core Components:
-<<<<<<< HEAD
-- `RAGEnhancedAutonomousInvestigationPanel.tsx` (249 lines) → `components/core/`
-=======
 - `RAGEnhancedStructuredInvestigationPanel.tsx` (249 lines) → `components/core/`
->>>>>>> 001-modify-analyzer-method
 - `RAGEnhancedAgentLogSidebar.tsx` → `components/core/`
 - `components/rag/RAGKnowledgePanel.tsx` (227 lines) → `components/core/`
 - `components/rag/RAGEnhancementSection.tsx` → `components/core/`
@@ -215,11 +197,7 @@ src/js/
 
 ### Services to Decompose:
 - `services/OlorinService.ts` (1,001 lines) → **MAJOR DECOMPOSITION** → Shared services
-<<<<<<< HEAD
-- `services/GAIAService.ts` (904 lines) → **MAJOR DECOMPOSITION** → Investigation Service
-=======
 - `services/OlorinService.ts` (904 lines) → **MAJOR DECOMPOSITION** → Investigation Service
->>>>>>> 001-modify-analyzer-method
 - `services/ResponseAnalyzer.ts` (351 lines) → Investigation Service
 - `services/SettingsService.ts` (290 lines) → Core UI Service
 

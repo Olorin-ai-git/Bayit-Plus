@@ -9,17 +9,10 @@ import os
 from datetime import datetime, timezone
 from typing import Dict, Any
 
-<<<<<<< HEAD
-from fastapi import APIRouter
-
-from .health_models import (
-    HealthStatus, DetailedHealthStatus, LivenessProbe, ReadinessProbe,
-=======
 from fastapi import APIRouter, Request
 
 from .health_models import (
     HealthStatus, DetailedHealthStatus, LivenessProbe, ReadinessProbe, StartupProbe,
->>>>>>> 001-modify-analyzer-method
     get_current_timestamp, get_service_uptime, create_basic_health_response
 )
 from .health_checks import (
@@ -64,11 +57,7 @@ async def liveness_probe():
 async def readiness_probe():
     """
     Kubernetes readiness probe endpoint.
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     Checks if the application is ready to serve traffic.
     Includes basic dependency checks.
     """
@@ -76,17 +65,10 @@ async def readiness_probe():
         "database": await check_database_connectivity(),
         "redis": await check_redis_connectivity(),
     }
-<<<<<<< HEAD
-    
-    # Service is ready if all critical dependencies are available
-    all_ready = all(dependencies_ready.values())
-    
-=======
 
     # Service is ready if all critical dependencies are available
     all_ready = all(dependencies_ready.values())
 
->>>>>>> 001-modify-analyzer-method
     return ReadinessProbe(
         ready=all_ready,
         timestamp=get_current_timestamp(),
@@ -94,10 +76,6 @@ async def readiness_probe():
     )
 
 
-<<<<<<< HEAD
-@router.get("/detailed", response_model=DetailedHealthStatus)
-async def detailed_health():
-=======
 @router.get("/startup", response_model=StartupProbe)
 async def startup_probe():
     """
@@ -124,7 +102,6 @@ async def startup_probe():
 
 @router.get("/detailed", response_model=DetailedHealthStatus)
 async def detailed_health(request: Request):
->>>>>>> 001-modify-analyzer-method
     """
     Detailed health check with comprehensive dependency validation.
     
@@ -140,8 +117,6 @@ async def detailed_health(request: Request):
         "external_services": await check_external_services(),
     }
     
-<<<<<<< HEAD
-=======
     # Add microservice availability status (if available)
     if request and hasattr(request, 'app') and hasattr(request.app, 'state'):
         services = {}
@@ -161,7 +136,6 @@ async def detailed_health(request: Request):
         if services:
             dependencies["microservices"] = services
     
->>>>>>> 001-modify-analyzer-method
     # Run system checks
     checks = {
         "disk_space_available": check_disk_space(),

@@ -1,10 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-<<<<<<< HEAD
-
-// API configuration
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090/api/v1';
-const RAG_BASE_URL = process.env.REACT_APP_RAG_API_URL || `${BASE_URL}/rag`;
-=======
 import { getConfig } from '@shared/config/env.config';
 import { createAxiosErrorInterceptor } from '@shared/utils/axiosErrorHandler';
 
@@ -12,7 +6,6 @@ import { createAxiosErrorInterceptor } from '@shared/utils/axiosErrorHandler';
 const config = getConfig();
 const BASE_URL = `${config.api.baseUrl}/api/v1`;
 const RAG_BASE_URL = `${BASE_URL}/rag`;
->>>>>>> 001-modify-analyzer-method
 
 // Create axios instance with default configuration
 const createApiInstance = (baseURL: string = BASE_URL): AxiosInstance => {
@@ -46,19 +39,11 @@ const createApiInstance = (baseURL: string = BASE_URL): AxiosInstance => {
     }
   );
 
-<<<<<<< HEAD
-  // Response interceptor for error handling
-  instance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      // Log successful responses in development
-      if (process.env.NODE_ENV === 'development') {
-=======
   // Response interceptor for error handling and toast notifications
   instance.interceptors.response.use(
     (response: AxiosResponse) => {
       // Log successful responses in development
       if (config.nodeEnv === 'development') {
->>>>>>> 001-modify-analyzer-method
         console.log(`API Response [${response.config.method?.toUpperCase()}] ${response.config.url}:`, {
           status: response.status,
           data: response.data,
@@ -67,34 +52,7 @@ const createApiInstance = (baseURL: string = BASE_URL): AxiosInstance => {
       }
       return response;
     },
-<<<<<<< HEAD
-    (error: AxiosError) => {
-      // Enhanced error handling
-      const enhancedError = enhanceError(error);
-
-      // Log errors in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('API Error:', enhancedError);
-      }
-
-      // Handle specific error cases
-      if (enhancedError.status === 401) {
-        // Unauthorized - clear auth token and redirect to login
-        localStorage.removeItem('authToken');
-        window.location.href = '/login';
-      } else if (enhancedError.status === 403) {
-        // Forbidden - show permission error
-        console.warn('Permission denied for API request');
-      } else if (enhancedError.status >= 500) {
-        // Server errors - could implement retry logic
-        console.error('Server error occurred');
-      }
-
-      return Promise.reject(enhancedError);
-    }
-=======
     createAxiosErrorInterceptor(true)
->>>>>>> 001-modify-analyzer-method
   );
 
   return instance;
@@ -423,17 +381,3 @@ export class ApiHelpers {
 }
 
 // Export types and utilities
-<<<<<<< HEAD
-export type { ApiError };
-export {
-  createApiInstance,
-  enhanceError,
-  generateRequestId,
-  withRetry,
-  uploadFile,
-  downloadFile,
-  streamResponse,
-  healthCheck
-};
-=======
->>>>>>> 001-modify-analyzer-method

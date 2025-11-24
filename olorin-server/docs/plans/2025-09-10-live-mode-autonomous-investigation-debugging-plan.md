@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Live Mode Autonomous Investigation Debugging Plan
-=======
 # Live Mode Structured Investigation Debugging Plan
->>>>>>> 001-modify-analyzer-method
 
 **Author**: Gil Klainert  
 **Date**: September 10, 2025  
@@ -11,11 +7,7 @@
 
 ## Executive Summary
 
-<<<<<<< HEAD
-This plan provides a comprehensive 6-phase approach to debug the live mode autonomous investigation system while maintaining strict safety protocols and cost controls. The plan builds upon successful mock mode fixes (9.0/100 → 76.7/100) and addresses live-specific challenges including real Snowflake queries, external API integrations, LLM costs, and performance issues.
-=======
 This plan provides a comprehensive 6-phase approach to debug the live mode structured investigation system while maintaining strict safety protocols and cost controls. The plan builds upon successful mock mode fixes (9.0/100 → 76.7/100) and addresses live-specific challenges including real Snowflake queries, external API integrations, LLM costs, and performance issues.
->>>>>>> 001-modify-analyzer-method
 
 ## User Approval Status
 
@@ -428,15 +420,9 @@ alerts:
 
 ## Conclusion
 
-<<<<<<< HEAD
-This comprehensive plan provides a structured, safety-first approach to debugging the live mode autonomous investigation system. The 6-phase methodology ensures thorough testing while maintaining strict cost controls and emergency procedures. The plan builds upon successful mock mode fixes and addresses the unique challenges of live mode operation.
-
-**The plan prioritizes safety while enabling effective debugging of live mode issues that don't appear in mock mode, ensuring successful transition from mock to production-ready autonomous investigation capabilities.**
-=======
 This comprehensive plan provides a structured, safety-first approach to debugging the live mode structured investigation system. The 6-phase methodology ensures thorough testing while maintaining strict cost controls and emergency procedures. The plan builds upon successful mock mode fixes and addresses the unique challenges of live mode operation.
 
 **The plan prioritizes safety while enabling effective debugging of live mode issues that don't appear in mock mode, ensuring successful transition from mock to production-ready structured investigation capabilities.**
->>>>>>> 001-modify-analyzer-method
 
 ---
 

@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Autonomous Test Comprehensive Fix
-
-Fixes multiple issues in the autonomous investigation test system:
-=======
 Structured Test Comprehensive Fix
 
 Fixes multiple issues in the structured investigation test system:
->>>>>>> 001-modify-analyzer-method
 1. Risk aggregation parsing errors (zero risk scores)
 2. Logger.info() calls without messages
 3. LangSmith authentication errors (disable)
@@ -29,13 +23,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 
 logger = logging.getLogger(__name__)
 
-<<<<<<< HEAD
-class AutonomousTestFixer:
-    """Comprehensive fix for autonomous test issues"""
-=======
 class StructuredTestFixer:
     """Comprehensive fix for structured test issues"""
->>>>>>> 001-modify-analyzer-method
     
     def __init__(self):
         self.server_root = Path(__file__).parent.parent.parent
@@ -44,11 +33,7 @@ class StructuredTestFixer:
     
     def apply_all_fixes(self):
         """Apply all fixes in sequence"""
-<<<<<<< HEAD
-        print("🔧 Applying Autonomous Investigation Test Fixes...")
-=======
         print("🔧 Applying Structured Investigation Test Fixes...")
->>>>>>> 001-modify-analyzer-method
         
         # Fix 1: Logger.info() calls without messages
         self.fix_logger_calls()
@@ -256,13 +241,8 @@ os.environ.pop('LANGSMITH_API_KEY', None)
             
             # Find files that might use LangSmith
             files_to_update = [
-<<<<<<< HEAD
-                self.server_root / "app" / "service" / "agent" / "autonomous_agents.py",
-                self.server_root / "scripts" / "testing" / "unified_autonomous_test_runner.py"
-=======
                 self.server_root / "app" / "service" / "agent" / "structured_agents.py",
                 self.server_root / "scripts" / "testing" / "unified_structured_test_runner.py"
->>>>>>> 001-modify-analyzer-method
             ]
             
             for file_path in files_to_update:
@@ -363,11 +343,7 @@ os.environ.pop('LANGSMITH_API_KEY', None)
         if len(self.errors) == 0:
             print("🎉 All fixes applied successfully!")
             print("\nNext steps:")
-<<<<<<< HEAD
-            print("1. Run the autonomous investigation test again")
-=======
             print("1. Run the structured investigation test again")
->>>>>>> 001-modify-analyzer-method
             print("2. Risk scores should now be properly extracted")
             print("3. Logger errors should be resolved")
             print("4. LangSmith errors should be suppressed")
@@ -376,13 +352,8 @@ os.environ.pop('LANGSMITH_API_KEY', None)
 
 
 def main():
-<<<<<<< HEAD
-    """Apply all autonomous test fixes"""
-    fixer = AutonomousTestFixer()
-=======
     """Apply all structured test fixes"""
     fixer = StructuredTestFixer()
->>>>>>> 001-modify-analyzer-method
     success = fixer.apply_all_fixes()
     
     if success:

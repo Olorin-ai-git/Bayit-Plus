@@ -3,10 +3,6 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   XMarkIcon,
-<<<<<<< HEAD
-  CalendarIcon,
-=======
->>>>>>> 001-modify-analyzer-method
   ChevronDownIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
@@ -351,13 +347,9 @@ export const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
                     {activeFilterGroup === group.id && (
                       <FilterDropdown
                         filterGroup={group}
-<<<<<<< HEAD
-                        currentFilter={filters.find(f => f.field === group.id)}
-=======
                         {...(filters.find(f => f.field === group.id) !== undefined && {
                           currentFilter: filters.find(f => f.field === group.id)
                         })}
->>>>>>> 001-modify-analyzer-method
                         onFilterChange={handleFilterChange}
                         onClose={() => {
                           setIsFilterDropdownOpen(false);

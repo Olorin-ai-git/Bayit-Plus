@@ -329,11 +329,7 @@ poetry run pytest test/unit/hybrid --cov=app.service.agent.orchestration.hybrid 
 ### Performance Verification
 ```bash
 # Run performance benchmarks
-<<<<<<< HEAD
-poetry run python scripts/testing/unified_autonomous_test_runner.py --scenario hybrid_performance --mode mock
-=======
 poetry run python scripts/testing/unified_structured_test_runner.py --scenario hybrid_performance --mode mock
->>>>>>> 001-modify-analyzer-method
 ```
 
 ## Critical Gaps & Sharp Recommendations

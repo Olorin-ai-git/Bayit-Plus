@@ -618,17 +618,6 @@ class EnhancedToolExecutionLogger:
             except Exception as e:
                 logger.warning(f"WebSocket handler failed: {e}")
         
-<<<<<<< HEAD
-        # Try to send via global WebSocket system
-        try:
-            from app.router.handlers.websocket_handler import notify_websocket_connections
-            await notify_websocket_connections(self.investigation_id, {
-                "type": "enhanced_tool_event",
-                "event": event
-            })
-        except (ImportError, Exception) as e:
-            logger.debug(f"Global WebSocket emission skipped: {e}")
-=======
         # WebSocket emission removed per spec 005 - using polling-based updates instead
         # try:
         #     from app.router.handlers.websocket_handler import notify_websocket_connections
@@ -638,7 +627,6 @@ class EnhancedToolExecutionLogger:
         #     })
         # except (ImportError, Exception) as e:
         #     logger.debug(f"Global WebSocket emission skipped: {e}")
->>>>>>> 001-modify-analyzer-method
 
 
 # Global logger instance

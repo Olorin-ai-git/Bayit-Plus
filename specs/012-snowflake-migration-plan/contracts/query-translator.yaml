@@ -1,0 +1,265 @@
+openapi: 3.0.0
+info:
+  title: Query Translator API Contract
+  version: 1.0.0
+  description: |
+    API contract for QueryTranslator component that translates Snowflake SQL
+    to PostgreSQL SQL syntax.
+
+components:
+  schemas:
+    TranslationRule:
+      type: object
+      description: SQL translation rule
+      properties:
+        pattern:
+          type: string
+          description: Regex pattern to match Snowflake syntax
+        replacement:
+          type: string
+          description: PostgreSQL replacement syntax or custom function name
+        description:
+          type: string
+          description: Human-readable description of the translation
+
+    TranslationResult:
+      type: object
+      properties:
+        original_query:
+          type: string
+          description: Original Snowflake query
+        translated_query:
+          type: string
+          description: Translated PostgreSQL query
+        translations_applied:
+          type: array
+          items:
+            type: string
+          description: List of translation rule descriptions that were applied
+        translation_count:
+          type: integer
+          description: Number of translations performed
+
+    TranslationStatistics:
+      type: object
+      properties:
+        total_translations:
+          type: integer
+          description: Total number of translations performed
+        rules_applied:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Count of each rule applied
+
+paths:
+  /translator/translate:
+    post:
+      summary: Translate Snowflake SQL to PostgreSQL SQL
+      description: |
+        Translates a Snowflake SQL query to PostgreSQL SQL syntax.
+
+        **Translation Rules**:
+        1. DATEADD → INTERVAL syntax
+        2. CURRENT_TIMESTAMP() → CURRENT_TIMESTAMP
+        3. LISTAGG → STRING_AGG
+        4. DATEDIFF → Date arithmetic
+        5. TRY_CAST → CAST with exception handling
+        6. TO_DATE format → PostgreSQL TO_DATE format
+
+        **Process**:
+        1. Apply each translation rule in order
+        2. Track which rules were applied
+        3. Return translated query
+
+        **Idempotency**: Safe to call multiple times on same query
+        **Performance**: O(n) where n = number of translation rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Snowflake SQL query
+                  example: "SELECT DATEADD(day, -7, CURRENT_TIMESTAMP()) as week_ago"
+      responses:
+        '200':
+          description: Query translated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResult'
+              example:
+                original_query: "SELECT DATEADD(day, -7, CURRENT_TIMESTAMP())"
+                translated_query: "SELECT CURRENT_TIMESTAMP - INTERVAL '7 days'"
+                translations_applied:
+                  - "DATEADD_to_INTERVAL"
+                  - "CURRENT_TIMESTAMP_no_parens"
+                translation_count: 2
+
+  /translator/get_translation_rules:
+    get:
+      summary: Get all translation rules
+      description: |
+        Returns list of all translation rules supported by the translator.
+      responses:
+        '200':
+          description: Translation rules returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TranslationRule'
+
+  /translator/get_statistics:
+    get:
+      summary: Get translation statistics
+      description: |
+        Returns statistics about translations performed.
+      responses:
+        '200':
+          description: Statistics returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationStatistics'
+
+translation_rules:
+  - pattern: 'DATEADD\s*\(\s*(\w+)\s*,\s*(-?\d+)\s*,\s*([^)]+)\)'
+    replacement: custom_function
+    function: _translate_dateadd
+    description: DATEADD_to_INTERVAL
+    examples:
+      - snowflake: "DATEADD(day, -7, CURRENT_TIMESTAMP)"
+        postgresql: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+      - snowflake: "DATEADD(month, 3, TX_DATETIME)"
+        postgresql: "TX_DATETIME + INTERVAL '3 months'"
+      - snowflake: "DATEADD(year, -1, NOW())"
+        postgresql: "NOW() - INTERVAL '1 years'"
+
+  - pattern: 'CURRENT_TIMESTAMP\s*\(\s*\)'
+    replacement: 'CURRENT_TIMESTAMP'
+    description: CURRENT_TIMESTAMP_no_parens
+    examples:
+      - snowflake: "SELECT CURRENT_TIMESTAMP()"
+        postgresql: "SELECT CURRENT_TIMESTAMP"
+
+  - pattern: 'LISTAGG\s*\('
+    replacement: 'STRING_AGG('
+    description: LISTAGG_to_STRING_AGG
+    examples:
+      - snowflake: "SELECT LISTAGG(email, ',') FROM users"
+        postgresql: "SELECT STRING_AGG(email, ',') FROM users"
+
+  - pattern: 'DATEDIFF\s*\(\s*(\w+)\s*,\s*([^,]+)\s*,\s*([^)]+)\)'
+    replacement: custom_function
+    function: _translate_datediff
+    description: DATEDIFF_to_date_arithmetic
+    examples:
+      - snowflake: "DATEDIFF(day, start_date, end_date)"
+        postgresql: "(end_date - start_date)"
+
+  - pattern: 'TRY_CAST\s*\(\s*([^)]+)\s+AS\s+(\w+)\s*\)'
+    replacement: custom_function
+    function: _translate_try_cast
+    description: TRY_CAST_to_CAST_with_exception
+    examples:
+      - snowflake: "TRY_CAST(value AS INTEGER)"
+        postgresql: "CAST(value AS INTEGER)"
+
+  - pattern: 'TO_DATE\s*\(\s*([^,]+)\s*,\s*''([^'']+)''\s*\)'
+    replacement: custom_function
+    function: _translate_to_date
+    description: TO_DATE_format_conversion
+    examples:
+      - snowflake: "TO_DATE('2025-01-01', 'YYYY-MM-DD')"
+        postgresql: "TO_DATE('2025-01-01', 'YYYY-MM-DD')"
+
+performance:
+  caching:
+    description: Query translations are cached by QueryCache component
+    cache_type: LRU
+    capacity: 1000
+    target_hit_rate: 0.80
+
+  complexity:
+    translate: O(n)
+    where_n: "Number of translation rules"
+    typical_value: "6 rules"
+
+  thread_safety:
+    status: thread-safe
+    mechanism: Stateless translation (no shared mutable state)
+
+testing:
+  test_coverage:
+    target: 100%
+    test_file: tests/unit/test_query_translator.py
+
+  test_cases:
+    - name: DATEADD forward
+      input: "DATEADD(day, 7, CURRENT_TIMESTAMP)"
+      expected: "CURRENT_TIMESTAMP + INTERVAL '7 days'"
+
+    - name: DATEADD backward
+      input: "DATEADD(day, -7, CURRENT_TIMESTAMP)"
+      expected: "CURRENT_TIMESTAMP - INTERVAL '7 days'"
+
+    - name: CURRENT_TIMESTAMP parentheses
+      input: "SELECT CURRENT_TIMESTAMP()"
+      expected: "SELECT CURRENT_TIMESTAMP"
+
+    - name: LISTAGG aggregation
+      input: "SELECT LISTAGG(email, ',') FROM users"
+      expected: "SELECT STRING_AGG(email, ',') FROM users"
+
+    - name: Multiple translations
+      input: "SELECT LISTAGG(email, ',') FROM users WHERE created_at > CURRENT_TIMESTAMP()"
+      expected: "SELECT STRING_AGG(email, ',') FROM users WHERE created_at > CURRENT_TIMESTAMP"
+
+    - name: No translation needed
+      input: "SELECT * FROM transactions_enriched WHERE email = 'test@example.com'"
+      expected: "SELECT * FROM transactions_enriched WHERE email = 'test@example.com'"
+
+    - name: Complex DATEADD
+      input: "WHERE TX_DATETIME >= DATEADD(month, -6, CURRENT_TIMESTAMP())"
+      expected: "WHERE TX_DATETIME >= CURRENT_TIMESTAMP - INTERVAL '6 months'"
+
+error_handling:
+  invalid_query:
+    description: Returns original query unchanged if translation fails
+    behavior: fail_safe
+
+  regex_errors:
+    description: Logs error and continues to next rule
+    behavior: continue_on_error
+
+  custom_function_errors:
+    description: Logs error and returns original match
+    behavior: no_replacement
+
+limitations:
+  - description: Case-sensitive pattern matching
+    impact: Functions must be uppercase (DATEADD not dateadd)
+    workaround: Normalize query to uppercase before translation
+
+  - description: Simple regex patterns only
+    impact: Cannot handle complex nested expressions
+    workaround: Add multiple patterns for different nesting levels
+
+  - description: No semantic validation
+    impact: Translates syntax only, doesn't verify SQL correctness
+    workaround: Rely on database to validate translated SQL
+
+future_enhancements:
+  - Add semantic SQL parsing (use sqlparse library)
+  - Support for window functions translation
+  - Support for Snowflake-specific functions (FLATTEN, LATERAL)
+  - Translation verification mode (execute on both DBs and compare)
+  - Translation performance profiling

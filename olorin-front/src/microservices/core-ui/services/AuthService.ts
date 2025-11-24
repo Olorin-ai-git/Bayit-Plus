@@ -1,22 +1,14 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-<<<<<<< HEAD
-import { User, LoginRequest, LoginResponse, RefreshTokenResponse } from '../types/auth';
-=======
 import { env } from '@shared/config/env.config';
 import { User, LoginResponse, RefreshTokenResponse } from '../types/auth';
 import { createAxiosErrorInterceptor } from '@shared/utils/axiosErrorHandler';
->>>>>>> 001-modify-analyzer-method
 
 class AuthServiceClass {
   private api: AxiosInstance;
   private baseURL: string;
 
   constructor() {
-<<<<<<< HEAD
-    this.baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8090';
-=======
     this.baseURL = env.api.baseUrl;
->>>>>>> 001-modify-analyzer-method
     this.api = axios.create({
       baseURL: `${this.baseURL}/api/auth`,
       timeout: 10000,
@@ -37,23 +29,10 @@ class AuthServiceClass {
       (error) => Promise.reject(error)
     );
 
-<<<<<<< HEAD
-    // Response interceptor to handle auth errors
-    this.api.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          localStorage.removeItem('auth_token');
-          window.location.href = '/login';
-        }
-        return Promise.reject(error);
-      }
-=======
     // Response interceptor with error notification handling
     this.api.interceptors.response.use(
       (response) => response,
       createAxiosErrorInterceptor(true)
->>>>>>> 001-modify-analyzer-method
     );
   }
 
@@ -167,11 +146,7 @@ class AuthServiceClass {
 
   // Auto-switch to mock mode if backend is not available in development
   async smartLogin(email: string, password: string): Promise<LoginResponse> {
-<<<<<<< HEAD
-    if (process.env.NODE_ENV === 'development') {
-=======
     if (env.nodeEnv === 'development') {
->>>>>>> 001-modify-analyzer-method
       const isBackendAvailable = await this.checkBackendAvailability();
       if (!isBackendAvailable) {
         console.warn('Backend not available, using mock authentication');

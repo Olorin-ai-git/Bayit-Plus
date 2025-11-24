@@ -12,10 +12,7 @@ from langgraph.graph import StateGraph
 from langgraph.prebuilt import ToolNode
 
 from ...hybrid_state_schema import HybridInvestigationState
-<<<<<<< HEAD
-=======
 from app.service.agent.orchestration.enhanced_tool_executor import EnhancedToolNode
->>>>>>> 001-modify-analyzer-method
 
 from app.service.logging import get_bridge_logger
 
@@ -83,17 +80,6 @@ class ToolNodes:
         """Initialize with graph foundation components."""
         self.components = components
         
-<<<<<<< HEAD
-    def add_tool_nodes(self, builder: StateGraph, use_enhanced_tools: bool = True) -> None:
-        """Add tool nodes to the graph"""
-        
-        # Get available tools using the same approach as clean graph builder
-        tools = self._load_investigation_tools()
-        
-        if use_enhanced_tools:
-            # Use standard ToolNode with separate metadata tracking
-            builder.add_node("tools", ToolNode(tools))
-=======
     def add_tool_nodes(self, builder: StateGraph, use_enhanced_tools: bool = True, investigation_id: Optional[str] = None) -> None:
         """Add tool nodes to the graph with optional persistence support"""
 
@@ -112,7 +98,6 @@ class ToolNodes:
                 builder.add_node("tools", ToolNode(tools))
 
             # Also add metadata tracking for additional telemetry
->>>>>>> 001-modify-analyzer-method
             builder.add_node("track_tools", self._create_metadata_tracker())
         else:
             # Use standard tool node only
@@ -123,19 +108,12 @@ class ToolNodes:
         try:
             from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
             from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool
-<<<<<<< HEAD
-            
-            # Initialize the tool registry
-            initialize_tools()
-            
-=======
             from app.service.agent.tools.database_tool.database_factory import get_database_provider
             from app.service.config_loader import get_config_loader
 
             # Initialize the tool registry
             initialize_tools()
 
->>>>>>> 001-modify-analyzer-method
             # Get all tools from all categories (same as clean graph)
             tools = get_tools_for_agent(
                 categories=[
@@ -154,18 +132,6 @@ class ToolNodes:
                     "utility"               # Utility tools
                 ]
             )
-<<<<<<< HEAD
-            
-            # Add primary Snowflake tool (same as clean graph)
-            snowflake_tool = SnowflakeQueryTool()
-            if snowflake_tool not in tools:
-                tools.insert(0, snowflake_tool)
-                logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool")
-            
-            logger.info(f"📦 Loaded {len(tools)} tools for hybrid investigation")
-            return tools
-            
-=======
 
             # CRITICAL FIX: Respect DATABASE_PROVIDER configuration
             # Use Snowflake OR PostgreSQL based on .env DATABASE_PROVIDER setting
@@ -215,7 +181,6 @@ class ToolNodes:
             logger.info(f"📦 Loaded {len(tools)} tools for hybrid investigation")
             return tools
 
->>>>>>> 001-modify-analyzer-method
         except Exception as e:
             logger.error(f"❌ Failed to load tools: {str(e)}")
             # Fallback to minimal tool set
@@ -248,8 +213,6 @@ class ToolNodes:
                         tool_name = msg.name
                         tool_content = msg.content
                         
-<<<<<<< HEAD
-=======
                         # CRITICAL FIX: Always store composio_webcrawl results if tool executed successfully
                         # The tool executor already verified success, so trust that for composio tools
                         if tool_name == "composio_webcrawl":
@@ -263,7 +226,6 @@ class ToolNodes:
                             logger.debug(f"📊 Stored composio_webcrawl result (length: {len(str(tool_content))} chars)")
                             continue
                         
->>>>>>> 001-modify-analyzer-method
                         # Check if this is a successful tool execution (not skipped/failed)
                         is_successful_execution = _is_successful_tool_execution(tool_name, tool_content)
                         
@@ -291,36 +253,15 @@ class ToolNodes:
                     if hasattr(msg, 'name') and hasattr(msg, 'content') and hasattr(msg, 'tool_call_id'):
                         tool_name = msg.name.lower()
                         tool_content = msg.content
-<<<<<<< HEAD
-                        
-                        # Special handling for domain-specific data extraction with type normalization
-                        if "snowflake" in tool_name:
-=======
 
                         # Special handling for domain-specific data extraction with type normalization
                         # CRITICAL FIX A0: Recognize both "database" and "snowflake" tool names
                         # CRITICAL FIX B0: Normalize ALL domain data to ensure LLM agents receive structured objects
                         if "snowflake" in tool_name or "database" in tool_name:
->>>>>>> 001-modify-analyzer-method
                             # CRITICAL FIX: Parse JSON string to object for consistent data type
                             snowflake_data = self._normalize_data_type(tool_content, "snowflake")
                             metadata_update["snowflake_data"] = snowflake_data
                             metadata_update["snowflake_completed"] = True
-<<<<<<< HEAD
-                            logger.info(f"📊 SNOWFLAKE DATA: Extracted from {msg.name} (type: {type(snowflake_data).__name__})")
-                        elif "network" in tool_name:
-                            metadata_update["network_data"] = tool_content
-                            logger.info(f"📊 NETWORK DATA: Extracted from {msg.name}")
-                        elif "device" in tool_name:
-                            metadata_update["device_data"] = tool_content
-                            logger.info(f"📊 DEVICE DATA: Extracted from {msg.name}")
-                        elif "location" in tool_name:
-                            metadata_update["location_data"] = tool_content
-                            logger.info(f"📊 LOCATION DATA: Extracted from {msg.name}")
-                        elif "logs" in tool_name or "splunk" in tool_name or "sumologic" in tool_name:
-                            metadata_update["logs_data"] = tool_content
-                            logger.info(f"📊 LOGS DATA: Extracted from {msg.name}")
-=======
                             logger.info(f"📊 DATABASE DATA: Extracted from {msg.name} (type: {type(snowflake_data).__name__})")
                         elif "network" in tool_name:
                             # CRITICAL FIX B0: Normalize network data for LLM processing
@@ -342,7 +283,6 @@ class ToolNodes:
                             logs_data = self._normalize_data_type(tool_content, "logs")
                             metadata_update["logs_data"] = logs_data
                             logger.info(f"📊 LOGS DATA: Extracted from {msg.name} (type: {type(logs_data).__name__})")
->>>>>>> 001-modify-analyzer-method
                 
                 # Update phase after first successful tool execution
                 if len(tools_used) > 0 and state.get("current_phase") == "initialization":

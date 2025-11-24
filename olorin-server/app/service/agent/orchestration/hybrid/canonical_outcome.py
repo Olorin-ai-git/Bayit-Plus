@@ -404,14 +404,6 @@ class CanonicalOutcomeBuilder:
             sources.append("Snowflake")
         
         tools_used = state.get("tools_used", [])
-<<<<<<< HEAD
-        sources.extend(tools_used)
-        
-        domains_completed = state.get("domains_completed", [])
-        sources.extend([f"{domain}_analysis" for domain in domains_completed])
-        
-        return list(set(sources))  # Remove duplicates
-=======
         # Handle both list of strings and list of dicts
         for tool in tools_used:
             if isinstance(tool, dict):
@@ -426,7 +418,6 @@ class CanonicalOutcomeBuilder:
 
         # Remove duplicates - now all items are strings so set() will work
         return list(set(sources))
->>>>>>> 001-modify-analyzer-method
     
     def _assess_resource_utilization(self, state: HybridInvestigationState) -> str:
         """Assess resource utilization efficiency."""

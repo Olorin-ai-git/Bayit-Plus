@@ -84,11 +84,7 @@ class TestStructuredLLM:
         ]
         
         # Bind tools to LLM (removed strict=True for compatibility)
-<<<<<<< HEAD
-        llm_with_tools = autonomous_llm.bind_tools(tools)
-=======
         llm_with_tools = structured_llm.bind_tools(tools)
->>>>>>> 001-modify-analyzer-method
         
         # Test tool calling with real API
         messages = [

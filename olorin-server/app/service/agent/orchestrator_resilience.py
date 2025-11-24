@@ -2,11 +2,7 @@
 Bulletproof Exception Handling & Orchestrator Resilience
 
 Universal exception transformation, cascading failure prevention, service degradation
-<<<<<<< HEAD
-handling, and comprehensive error context preservation for the autonomous investigation
-=======
 handling, and comprehensive error context preservation for the structured investigation
->>>>>>> 001-modify-analyzer-method
 orchestrator system.
 
 Phase 3.1: Exception Prevention & Resilience Implementation
@@ -27,10 +23,6 @@ import hashlib
 from app.service.logging import get_bridge_logger
 from app.service.agent.agent_coordination import AgentType, HandoffTrigger
 from app.service.agent.flow_continuity import ContinuityStrategy, CheckpointType
-<<<<<<< HEAD
-from app.service.websocket_manager import AgentPhase, websocket_manager
-=======
->>>>>>> 001-modify-analyzer-method
 
 logger = get_bridge_logger(__name__)
 
@@ -107,11 +99,7 @@ class CircuitBreaker:
 
 class BulletproofExceptionHandler:
     """
-<<<<<<< HEAD
-    Universal Exception Handler for Autonomous Investigation Orchestrator.
-=======
     Universal Exception Handler for Structured Investigation Orchestrator.
->>>>>>> 001-modify-analyzer-method
     
     Provides bulletproof exception handling with intelligent error recovery,
     cascading failure prevention, and transparent resilience patterns.

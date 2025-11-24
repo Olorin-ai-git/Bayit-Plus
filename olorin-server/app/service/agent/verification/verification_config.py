@@ -25,11 +25,7 @@ logger = logging.getLogger(__name__)
 class VerificationModel(Enum):
     """Supported verification models with their characteristics."""
     GEMINI_FLASH = "gemini-1.5-flash"
-<<<<<<< HEAD
-    CLAUDE_HAIKU = "claude-3-haiku-20240307"
-=======
     CLAUDE_HAIKU = "claude-haiku-4-5"
->>>>>>> 001-modify-analyzer-method
     GPT_3_5_TURBO = "gpt-3.5-turbo"
     GPT_4_MINI = "gpt-4o-mini"
 
@@ -177,11 +173,7 @@ class VerificationConfig:
                 use_case="primary_verification"
             ),
             VerificationModel.CLAUDE_HAIKU: ModelConfig(
-<<<<<<< HEAD
-                name="claude-3-haiku-20240307",
-=======
                 name="claude-haiku-4-5",
->>>>>>> 001-modify-analyzer-method
                 cost_per_1k_tokens=0.00025,
                 speed_rating=8,
                 accuracy_rating=9,

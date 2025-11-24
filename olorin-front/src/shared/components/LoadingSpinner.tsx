@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-
-interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-  color?: 'blue' | 'gray' | 'white' | 'green' | 'red' | 'yellow';
-  className?: string;
-  message?: string;
-}
-
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  size = 'md',
-  color = 'blue',
-  className = '',
-  message
-=======
 /**
  * LoadingSpinner Component
  * Feature: 004-new-olorin-frontend
@@ -42,7 +26,6 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   message,
   centered = false
->>>>>>> 001-modify-analyzer-method
 }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -51,28 +34,10 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     xl: 'w-16 h-16'
   };
 
-<<<<<<< HEAD
-  const colorClasses = {
-    blue: 'text-blue-600',
-    gray: 'text-gray-600',
-    white: 'text-white',
-    green: 'text-green-600',
-    red: 'text-red-600',
-    yellow: 'text-yellow-600'
-  };
-
-  return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
-      <svg
-        className={`animate-spin ${sizeClasses[size]} ${colorClasses[color]}`}
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-=======
   const spinnerElement = (
     <div className="flex flex-col items-center gap-3">
       <svg
         className={`animate-spin ${sizeClasses[size]} text-corporate-accentPrimary`}
->>>>>>> 001-modify-analyzer-method
         viewBox="0 0 24 24"
       >
         <circle
@@ -82,10 +47,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           r="10"
           stroke="currentColor"
           strokeWidth="4"
-<<<<<<< HEAD
-=======
           fill="none"
->>>>>>> 001-modify-analyzer-method
         />
         <path
           className="opacity-75"
@@ -95,16 +57,6 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       </svg>
 
       {message && (
-<<<<<<< HEAD
-        <p className={`mt-2 text-sm ${colorClasses[color]} text-center`}>
-          {message}
-        </p>
-      )}
-    </div>
-  );
-};
-
-=======
         <span className="text-sm text-corporate-textSecondary animate-pulse">
           {message}
         </span>
@@ -126,5 +78,4 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 // Named export for convenience
 export { LoadingSpinner };
 
->>>>>>> 001-modify-analyzer-method
 export default LoadingSpinner;

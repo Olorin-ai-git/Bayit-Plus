@@ -1,0 +1,670 @@
+openapi: 3.0.3
+info:
+  title: Fraud Anomaly Detection API
+  description: |
+    API contract for the Fraud Anomaly Detection service.
+    Extends the existing analytics API with anomaly detection endpoints.
+  version: 1.0.0
+  contact:
+    name: Olorin Platform Team
+
+servers:
+  - url: http://localhost:8090/v1/analytics
+    description: Local development server
+  - url: https://api.olorin.example.com/v1/analytics
+    description: Production server
+
+tags:
+  - name: anomalies
+    description: Anomaly detection and management operations
+  - name: detectors
+    description: Detector configuration and management
+  - name: series
+    description: Time series data retrieval
+  - name: replay
+    description: Historical replay and backtesting
+
+paths:
+  /anomalies/detect:
+    post:
+      summary: Run anomaly detection
+      description: Execute a detection run for a specified detector and time window
+      tags:
+        - anomalies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectRequest'
+      responses:
+        '202':
+          description: Detection run queued successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectionRunResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Detector not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /anomalies:
+    get:
+      summary: List anomalies
+      description: Retrieve anomalies with optional filtering
+      tags:
+        - anomalies
+      parameters:
+        - name: metric
+          in: query
+          schema:
+            type: string
+          description: Filter by metric name
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [info, warn, critical]
+          description: Filter by severity
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [new, triaged, closed]
+          description: Filter by status
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of time range (ISO 8601)
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of time range (ISO 8601)
+        - name: cohort
+          in: query
+          schema:
+            type: string
+          description: JSON-encoded cohort filter, e.g., {"merchant_id":"m_01","channel":"web"}
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 200
+          description: Maximum number of results
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Pagination offset
+      responses:
+        '200':
+          description: List of anomalies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyListResponse'
+
+  /anomalies/{id}:
+    get:
+      summary: Get anomaly details
+      description: Retrieve detailed information about a specific anomaly
+      tags:
+        - anomalies
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Anomaly details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyEventResponse'
+        '404':
+          description: Anomaly not found
+
+  /anomalies/{id}/investigate:
+    post:
+      summary: Create investigation from anomaly
+      description: Create a new investigation with anomaly context
+      tags:
+        - anomalies
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Investigation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestigationResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Anomaly not found
+
+  /series:
+    get:
+      summary: Fetch time series data
+      description: Retrieve time series for a metric, cohort, and time window
+      tags:
+        - series
+      parameters:
+        - name: metric
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Metric name (e.g., tx_count, decline_rate)
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: Start timestamp (ISO 8601)
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: End timestamp (ISO 8601)
+        - name: cohort
+          in: query
+          required: true
+          schema:
+            type: string
+          description: JSON-encoded cohort, e.g., {"merchant_id":"m_01","channel":"web","geo":"US-CA"}
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [15m, 30m, 1h, 1d]
+            default: 15m
+          description: Time granularity
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 2000
+          description: Maximum number of data points
+      responses:
+        '200':
+          description: Time series data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+
+  /detectors:
+    get:
+      summary: List detectors
+      description: Retrieve all detector configurations
+      tags:
+        - detectors
+      parameters:
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+          description: Filter by enabled status
+      responses:
+        '200':
+          description: List of detectors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorListResponse'
+
+    post:
+      summary: Create detector
+      description: Create a new detector configuration
+      tags:
+        - detectors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorConfigRequest'
+      responses:
+        '201':
+          description: Detector created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorResponse'
+
+  /detectors/{id}:
+    get:
+      summary: Get detector details
+      description: Retrieve detector configuration
+      tags:
+        - detectors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detector details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorResponse'
+        '404':
+          description: Detector not found
+
+    put:
+      summary: Update detector
+      description: Update detector configuration
+      tags:
+        - detectors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetectorConfigRequest'
+      responses:
+        '200':
+          description: Detector updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectorResponse'
+
+    delete:
+      summary: Delete detector
+      description: Delete a detector configuration
+      tags:
+        - detectors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Detector deleted successfully
+        '404':
+          description: Detector not found
+
+  /detectors/{id}/preview:
+    post:
+      summary: Preview detector scores
+      description: Calculate scores for historical data without creating anomalies
+      tags:
+        - detectors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+      responses:
+        '200':
+          description: Preview scores
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreviewResponse'
+
+  /replay:
+    post:
+      summary: Run replay/backtest
+      description: Execute detection on historical window and compare with production
+      tags:
+        - replay
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplayRequest'
+      responses:
+        '202':
+          description: Replay run queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayResponse'
+
+components:
+  schemas:
+    DetectRequest:
+      type: object
+      required:
+        - detector_id
+        - window_from
+        - window_to
+      properties:
+        detector_id:
+          type: string
+          format: uuid
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+        cohorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cohort'
+          description: Optional list of specific cohorts to analyze
+
+    Cohort:
+      type: object
+      properties:
+        merchant_id:
+          type: string
+        channel:
+          type: string
+        geo:
+          type: string
+
+    DetectionRunResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        detector_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, success, failed]
+        started_at:
+          type: string
+          format: date-time
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+
+    AnomalyListResponse:
+      type: object
+      properties:
+        anomalies:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnomalyEventResponse'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    AnomalyEventResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        run_id:
+          type: string
+          format: uuid
+        detector_id:
+          type: string
+          format: uuid
+        cohort:
+          type: object
+        window_start:
+          type: string
+          format: date-time
+        window_end:
+          type: string
+          format: date-time
+        metric:
+          type: string
+        observed:
+          type: number
+        expected:
+          type: number
+        score:
+          type: number
+        severity:
+          type: string
+          enum: [info, warn, critical]
+        persisted_n:
+          type: integer
+        evidence:
+          type: object
+        status:
+          type: string
+          enum: [new, triaged, closed]
+        created_at:
+          type: string
+          format: date-time
+
+    InvestigationResponse:
+      type: object
+      properties:
+        investigation_id:
+          type: string
+        entity_type:
+          type: string
+        entity_id:
+          type: string
+        status:
+          type: string
+
+    SeriesResponse:
+      type: object
+      properties:
+        metric:
+          type: string
+        cohort:
+          type: object
+        granularity:
+          type: string
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/SeriesPoint'
+
+    SeriesPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        value:
+          type: number
+
+    DetectorListResponse:
+      type: object
+      properties:
+        detectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetectorResponse'
+
+    DetectorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [stl_mad, cusum, isoforest, rcf, matrix_profile]
+        cohort_by:
+          type: array
+          items:
+            type: string
+        metrics:
+          type: array
+          items:
+            type: string
+        params:
+          type: object
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    DetectorConfigRequest:
+      type: object
+      required:
+        - name
+        - type
+        - cohort_by
+        - metrics
+        - params
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [stl_mad, cusum, isoforest, rcf, matrix_profile]
+        cohort_by:
+          type: array
+          items:
+            type: string
+        metrics:
+          type: array
+          items:
+            type: string
+        params:
+          type: object
+        enabled:
+          type: boolean
+          default: true
+
+    PreviewRequest:
+      type: object
+      required:
+        - window_from
+        - window_to
+      properties:
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+        cohorts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cohort'
+
+    PreviewResponse:
+      type: object
+      properties:
+        scores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScorePoint'
+
+    ScorePoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        cohort:
+          type: object
+        metric:
+          type: string
+        score:
+          type: number
+
+    ReplayRequest:
+      type: object
+      required:
+        - detector_config
+        - window_from
+        - window_to
+      properties:
+        detector_config:
+          $ref: '#/components/schemas/DetectorConfigRequest'
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+        compare_with_production:
+          type: boolean
+          default: true
+
+    ReplayResponse:
+      type: object
+      properties:
+        replay_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, success, failed]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+

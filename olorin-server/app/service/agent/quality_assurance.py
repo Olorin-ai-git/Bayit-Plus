@@ -2,11 +2,7 @@
 Investigation Quality Assurance System
 
 Result validation, confidence level assessment, cross-agent result correlation,
-<<<<<<< HEAD
-consistency checking, and automated quality reporting for autonomous investigations.
-=======
 consistency checking, and automated quality reporting for structured investigations.
->>>>>>> 001-modify-analyzer-method
 
 Phase 3.3: Investigation Quality Assurance Implementation
 """
@@ -25,10 +21,6 @@ import numpy as np
 from app.service.logging import get_bridge_logger
 from app.service.agent.agent_coordination import AgentType
 from app.service.agent.flow_continuity import CompletionStatus
-<<<<<<< HEAD
-from app.service.websocket_manager import AgentPhase, websocket_manager
-=======
->>>>>>> 001-modify-analyzer-method
 
 logger = get_bridge_logger(__name__)
 
@@ -108,11 +100,7 @@ class CrossAgentCorrelation:
 
 class InvestigationQualityAssurance:
     """
-<<<<<<< HEAD
-    Investigation Quality Assurance System for autonomous investigations.
-=======
     Investigation Quality Assurance System for structured investigations.
->>>>>>> 001-modify-analyzer-method
     
     Provides comprehensive result validation, confidence assessment, cross-agent
     correlation analysis, and automated quality reporting.

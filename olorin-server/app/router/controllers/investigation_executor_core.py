@@ -119,24 +119,17 @@ async def _execute_agent_investigation_phase(
         )
         from app.service.agent.orchestration.state_schema import create_initial_state
 
-<<<<<<< HEAD
-=======
         # Extract time_range from investigation_context if provided
         time_range = investigation_context.get("time_range") if investigation_context else None
 
->>>>>>> 001-modify-analyzer-method
         # Create initial state for clean graph execution
         initial_state = create_initial_state(
             investigation_id=investigation_id,
             entity_id=request.entity_id,
             entity_type=request.entity_type,
             parallel_execution=True,
-<<<<<<< HEAD
-            max_tools=52
-=======
             max_tools=52,
             time_range=time_range
->>>>>>> 001-modify-analyzer-method
         )
 
         # Add investigation query to messages
@@ -155,16 +148,10 @@ async def _execute_agent_investigation_phase(
         # Add thread configuration if using hybrid graph
         feature_flags = get_feature_flags()
         if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
-<<<<<<< HEAD
-            config["configurable"] = {"thread_id": investigation_id}
-            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
-        else:
-=======
             config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
             logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
         else:
             config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
->>>>>>> 001-modify-analyzer-method
             logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
 
         # Execute the clean graph system

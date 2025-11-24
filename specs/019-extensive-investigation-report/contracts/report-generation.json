@@ -1,0 +1,98 @@
+{
+  "endpoint": "POST /api/v1/reports/investigations/{investigation_id}/generate",
+  "description": "Trigger comprehensive report generation for a completed investigation",
+  "authentication": "Required - JWT token in Authorization header",
+  "request": {
+    "path_parameters": {
+      "investigation_id": {
+        "type": "string",
+        "required": true,
+        "description": "Unique identifier of the investigation",
+        "example": "inv-2025-01-11-fraud-001"
+      }
+    },
+    "body": {
+      "trigger_type": {
+        "type": "string",
+        "enum": ["manual", "automatic", "scheduled"],
+        "default": "manual",
+        "description": "How the generation was triggered"
+      },
+      "options": {
+        "type": "object",
+        "required": false,
+        "properties": {
+          "include_sections": {
+            "type": "array",
+            "items": "string",
+            "default": ["all"],
+            "description": "Sections to include in report"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["html"],
+            "default": "html",
+            "description": "Report format"
+          }
+        }
+      }
+    }
+  },
+  "response": {
+    "success": {
+      "status": 201,
+      "body": {
+        "job_id": {
+          "type": "string",
+          "description": "UUID of the background generation job",
+          "example": "job-550e8400-e29b-41d4-a716-446655440001"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["queued"],
+          "description": "Initial job status"
+        },
+        "investigation_id": {
+          "type": "string",
+          "description": "Investigation ID from request"
+        },
+        "estimated_completion_seconds": {
+          "type": "integer",
+          "description": "Estimated time to completion",
+          "example": 30
+        },
+        "created_at": {
+          "type": "string",
+          "format": "iso8601",
+          "example": "2025-01-11T14:35:00Z"
+        }
+      }
+    },
+    "errors": {
+      "404": {
+        "description": "Investigation not found",
+        "body": {
+          "detail": "Investigation inv-xyz not found"
+        }
+      },
+      "409": {
+        "description": "Report already exists or generation in progress",
+        "body": {
+          "detail": "Report already exists for investigation inv-xyz",
+          "existing_report_id": "report-uuid"
+        }
+      },
+      "422": {
+        "description": "Investigation not completed",
+        "body": {
+          "detail": "Cannot generate report for incomplete investigation"
+        }
+      }
+    }
+  },
+  "example_request": {
+    "curl": "curl -X POST https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001/generate \\\n  -H 'Authorization: Bearer eyJ...' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"trigger_type\": \"manual\", \"options\": {\"include_sections\": [\"all\"], \"format\": \"html\"}}'",
+    "python": "import requests\n\nresponse = requests.post(\n    'https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001/generate',\n    headers={'Authorization': 'Bearer eyJ...'},\n    json={'trigger_type': 'manual', 'options': {'include_sections': ['all'], 'format': 'html'}}\n)\nprint(response.json())",
+    "javascript": "const response = await fetch(\n  'https://api.olorin.com/api/v1/reports/investigations/inv-2025-01-11-fraud-001/generate',\n  {\n    method: 'POST',\n    headers: {\n      'Authorization': 'Bearer eyJ...',\n      'Content-Type': 'application/json'\n    },\n    body: JSON.stringify({\n      trigger_type: 'manual',\n      options: { include_sections: ['all'], format: 'html' }\n    })\n  }\n);\nconst data = await response.json();"
+  }
+}

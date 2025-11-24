@@ -13,30 +13,18 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 # Hard evidence keys that trigger fraud floor
-<<<<<<< HEAD
-HARD_EVIDENCE_KEYS = {"IS_FRAUD_TX", "chargeback_confirmed", "manual_case_outcome_fraud"}
-=======
 # CRITICAL: IS_FRAUD_TX removed - must not use ground truth labels during investigation
 HARD_EVIDENCE_KEYS = {"chargeback_confirmed", "manual_case_outcome_fraud"}
->>>>>>> 001-modify-analyzer-method
 
 
 def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[Optional[float], Optional[float], str]:
     """
     THE ONLY aggregator - single source of truth to prevent dual finals.
-<<<<<<< HEAD
-    
-    Args:
-        domains: Domain results
-        facts: Investigation facts
-        
-=======
 
     Args:
         domains: Domain results
         facts: Investigation facts
 
->>>>>>> 001-modify-analyzer-method
     Returns:
         Tuple of (pre_gate_average, final_risk, gating_status)
     """
@@ -48,34 +36,14 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
     else:
         # Already dictionaries
         domain_dicts = [d if isinstance(d, dict) else d.__dict__ for d in domain_list]
-<<<<<<< HEAD
-    
-    # Normalize domains to prevent KeyError crashes
-    normalized_domains = normalize_domains(domain_dicts)
-    
-=======
 
     # Normalize domains to prevent KeyError crashes
     normalized_domains = normalize_domains(domain_dicts)
 
->>>>>>> 001-modify-analyzer-method
     # Get only numeric domains (excludes narrative-only domains like 'risk')
     numeric_domains = get_numeric_domains(normalized_domains)
     numeric = [d["score"] for d in numeric_domains]
     signals = sum(len(d.get("signals", [])) for d in normalized_domains)
-<<<<<<< HEAD
-    
-    # Check for hard evidence
-    hard = any([
-        facts.get("IS_FRAUD_TX") is True,
-        facts.get("chargeback_confirmed") is True, 
-        facts.get("manual_case_outcome") == "fraud",
-    ])
-    
-    # Calculate pre-gate average
-    pre_gate = (sum(numeric) / len(numeric)) if numeric else None
-    
-=======
 
     # C1 FIX: Track missing/insufficient domains for clear failure reporting
     insufficient_domains = []
@@ -112,7 +80,6 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
     # Calculate pre-gate average
     pre_gate = (sum(numeric) / len(numeric)) if numeric else None
 
->>>>>>> 001-modify-analyzer-method
     # Evidence gating and fraud floor logic
     if hard:
         gate = "PASS"
@@ -123,14 +90,6 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
         enough = (len(numeric) >= 2) or (len(numeric) >= 1 and signals >= 2)
         gate = "PASS" if enough else "BLOCK"
         final = pre_gate if gate == "PASS" else None
-<<<<<<< HEAD
-        
-        if gate == "BLOCK":
-            logger.info(f"🚫 EVIDENCE GATING: Insufficient evidence (scores={len(numeric)}, signals={signals})")
-        else:
-            logger.info(f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})")
-    
-=======
 
         if gate == "BLOCK":
             # C1 FIX: Provide detailed failure information
@@ -153,15 +112,12 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
         else:
             logger.info(f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})")
 
->>>>>>> 001-modify-analyzer-method
     logger.info(f"🎯 SINGLE AGGREGATOR: numeric_domains={[d.get('name', 'unknown') for d in numeric_domains]}")
     logger.info(f"🎯 SINGLE AGGREGATOR: scores={numeric}")
     logger.info(f"🎯 SINGLE AGGREGATOR: pre_gate={fmt(pre_gate)}, final={fmt(final)}, gate={gate}")
     return pre_gate, final, gate
 
 
-<<<<<<< HEAD
-=======
 def _get_domain_failure_reason(domain_dict: Dict[str, Any]) -> str:
     """
     C1 FIX: Generate clear failure reason for a domain with insufficient evidence.
@@ -190,7 +146,6 @@ def _get_domain_failure_reason(domain_dict: Dict[str, Any]) -> str:
         return f"Unknown failure condition - status: {status}"
 
 
->>>>>>> 001-modify-analyzer-method
 def fmt(v: Optional[float]) -> str:
     """Safe formatting - prevents float(None) crashes."""
     return "N/A" if v is None else f"{v:.3f}"
@@ -223,18 +178,6 @@ def render_summary(domains: List[DomainResult], pre_gate: Optional[float], final
 
 # Legacy compatibility functions - redirect to single aggregator
 def aggregate_domains(
-<<<<<<< HEAD
-    domains: List[DomainResult], 
-    facts: Dict[str, Any]
-) -> Tuple[Optional[float], str, Optional[str]]:
-    """Legacy wrapper - redirects to single aggregator."""
-    pre_gate, final, gate = aggregate(domains, facts)
-    gating_reason = (
-        "Hard evidence detected (confirmed fraud)" if facts.get("IS_FRAUD_TX") else
-        f"Evidence check: {len([d for d in domains if d.score is not None])} domains" if gate == "PASS" else
-        "Insufficient corroborating evidence"
-    )
-=======
     domains: List[DomainResult],
     facts: Dict[str, Any]
 ) -> Tuple[Optional[float], str, Optional[str]]:
@@ -275,7 +218,6 @@ def aggregate_domains(
 
         gating_reason = " | ".join(parts)
 
->>>>>>> 001-modify-analyzer-method
     return final, gate, gating_reason
 
 

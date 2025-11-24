@@ -81,22 +81,13 @@ class MockLLM(BaseChatModel):
         run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> ChatResult:
-<<<<<<< HEAD
-        """Generate mock response using REAL LLM responses when available."""
-        
-=======
         """Generate mock response using REAL LLM responses when available, with enhanced mock options."""
 
->>>>>>> 001-modify-analyzer-method
         # Extract domain and context from messages
         domain = self._extract_domain(messages)
         entity_risk_score = self._extract_entity_risk_score(messages, kwargs)
         investigation_id = self._extract_investigation_id(messages, kwargs)
         scenario = self._extract_scenario(messages, kwargs)
-<<<<<<< HEAD
-        entity_id = self._extract_entity_id(messages, kwargs) or "117.22.69.113"
-        
-=======
         entity_id = self._extract_entity_id(messages, kwargs) or "192.168.1.100"
 
         # Detect if this is orchestrator requesting database query
@@ -111,35 +102,22 @@ class MockLLM(BaseChatModel):
         # Check if enhanced mock responses are enabled
         use_enhanced = os.getenv("ENHANCED_MOCK_LLM", "true").lower() == "true"
 
->>>>>>> 001-modify-analyzer-method
         # First try to use REAL LLM responses
         try:
             from app.service.agent.real_llm_responses import get_real_response
             from app.service.agent.tool_name_mapper import update_tool_calls
-<<<<<<< HEAD
-            
-            if domain:
-                logger.warning(f"🎯 MockLLM: Attempting to use REAL LLM response for domain: {domain}")
-                real_response = get_real_response(domain, entity_id, entity_risk_score or 0.5)
-                
-=======
 
             if domain:
                 logger.warning(f"🎯 MockLLM: Attempting to use REAL LLM response for domain: {domain}")
                 real_response = get_real_response(domain, entity_id, entity_risk_score or 0.5)
 
->>>>>>> 001-modify-analyzer-method
                 if real_response and "content" in real_response:
                     # Map tool names to match registry
                     tool_calls = real_response.get("tool_calls", [])
                     if tool_calls:
                         # Update tool names to match what's available in registry
                         tool_calls = update_tool_calls(tool_calls, reverse=False)
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> 001-modify-analyzer-method
                     # Create message with real content and mapped tool calls
                     message = AIMessage(
                         content=real_response["content"],
@@ -153,29 +131,6 @@ class MockLLM(BaseChatModel):
                     return ChatResult(generations=[generation])
         except Exception as e:
             logger.debug(f"Could not get real LLM response: {e}")
-<<<<<<< HEAD
-        
-        # Fallback to generated mock responses
-        logger.warning(f"🎭 MockLLM generating response for domain: {domain}")
-        if entity_risk_score:
-            logger.warning(f"📊 Using entity risk score: {entity_risk_score:.4f}")
-        
-        # Import here to avoid circular dependency
-        from scripts.testing.mock_llm_responses import generate_mock_response
-        
-        # Generate appropriate mock response
-        mock_response = generate_mock_response(
-            agent_type=domain,
-            scenario=scenario or "default",
-            investigation_id=investigation_id or "mock-investigation",
-            entity_risk_score=entity_risk_score
-        )
-        
-        # Create AIMessage with the mock response
-        message = AIMessage(content=mock_response)
-        generation = ChatGeneration(message=message)
-        
-=======
 
         # Use enhanced mock responses if enabled
         logger.warning(f"🎭 MockLLM generating response for domain: {domain}")
@@ -217,23 +172,17 @@ class MockLLM(BaseChatModel):
         message = AIMessage(content=mock_response)
         generation = ChatGeneration(message=message)
 
->>>>>>> 001-modify-analyzer-method
         return ChatResult(generations=[generation])
     
     def _extract_domain(self, messages: List[BaseMessage]) -> str:
         """Extract the domain from the messages."""
         for message in messages:
             content = message.content.lower() if hasattr(message, 'content') else str(message).lower()
-<<<<<<< HEAD
-            
-            if 'network' in content:
-=======
 
             # Check for verification prompts first (highest priority)
             if 'verify the quality' in content or 'verification' in content or 'verify quality' in content:
                 return 'verification'
             elif 'network' in content:
->>>>>>> 001-modify-analyzer-method
                 return 'network'
             elif 'device' in content:
                 return 'device'
@@ -243,11 +192,7 @@ class MockLLM(BaseChatModel):
                 return 'logs'
             elif 'risk' in content:
                 return 'risk'
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         return 'unknown'
     
     def _extract_entity_risk_score(self, messages: List[BaseMessage], kwargs: Dict) -> Optional[float]:
@@ -343,9 +288,6 @@ class MockLLM(BaseChatModel):
                         return entity_part
         
         return None
-<<<<<<< HEAD
-    
-=======
 
     def _is_orchestrator_initialization(self, messages: List[BaseMessage]) -> bool:
         """Detect if this is snowflake analysis phase requesting database query."""
@@ -403,7 +345,6 @@ class MockLLM(BaseChatModel):
         generation = ChatGeneration(message=message)
         return ChatResult(generations=[generation])
 
->>>>>>> 001-modify-analyzer-method
     def bind_tools(self, tools: List[Any], **kwargs) -> 'MockLLM':
         """Bind tools to the mock LLM (no-op for mock)."""
         logger.info(f"MockLLM: Binding {len(tools)} tools (mock - tools not actually used)")

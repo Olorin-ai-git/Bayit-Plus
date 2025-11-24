@@ -1,21 +1,12 @@
 # Investigation Scenario Scripts
 
-<<<<<<< HEAD
-This directory contains comprehensive investigation scenario scripts that **integrate with the existing Olorin autonomous investigation infrastructure**. These tools provide scenario templates and simplified interfaces while leveraging the proven `run-autonomous-investigation.sh` orchestration system.
-=======
 This directory contains comprehensive investigation scenario scripts that **integrate with the existing Olorin structured investigation infrastructure**. These tools provide scenario templates and simplified interfaces while leveraging the proven `run-structured-investigation.sh` orchestration system.
->>>>>>> 001-modify-analyzer-method
 
 ## 🔗 Integration with Existing Infrastructure
 
 **IMPORTANT**: These scripts are designed to work **with** the existing Olorin infrastructure, not replace it:
-<<<<<<< HEAD
-- **`run-autonomous-investigation.sh`** - Main orchestration script (handles server startup, monitoring, secrets)
-- **`unified_autonomous_test_runner.py`** - Core investigation execution engine  
-=======
 - **`run-structured-investigation.sh`** - Main orchestration script (handles server startup, monitoring, secrets)
 - **`unified_structured_test_runner.py`** - Core investigation execution engine  
->>>>>>> 001-modify-analyzer-method
 - **New scenario templates** - Add structured scenario support to existing system
 
 ## 📋 Scripts Overview
@@ -29,11 +20,7 @@ This directory contains comprehensive investigation scenario scripts that **inte
 - HTML report generation with interactive visualizations
 - Real-time progress tracking
 - Custom scenario creation
-<<<<<<< HEAD
-- Integration with unified autonomous test runner
-=======
 - Integration with unified structured test runner
->>>>>>> 001-modify-analyzer-method
 
 **Usage Examples:**
 ```bash
@@ -139,11 +126,7 @@ python quick_investigation_launcher.py --shortcuts
 
 **Features:**
 - Simple interface for running scenarios via existing infrastructure
-<<<<<<< HEAD
-- Uses proven `run-autonomous-investigation.sh` orchestration
-=======
 - Uses proven `run-structured-investigation.sh` orchestration
->>>>>>> 001-modify-analyzer-method
 - Maintains all existing monitoring and reporting capabilities
 - Provides scenario-based configuration
 
@@ -245,15 +228,9 @@ All scripts support HTML report generation with:
 
 ### Dependencies
 These scripts integrate with:
-<<<<<<< HEAD
-- `unified_autonomous_test_runner.py` - Core test execution engine
-- `real_investigation_scenarios.py` - Scenario data generation
-- Olorin's autonomous agent system
-=======
 - `unified_structured_test_runner.py` - Core test execution engine
 - `real_investigation_scenarios.py` - Scenario data generation
 - Olorin's structured agent system
->>>>>>> 001-modify-analyzer-method
 - WebSocket monitoring and progress tracking
 
 ### File Structure

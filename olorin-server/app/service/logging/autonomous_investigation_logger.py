@@ -237,21 +237,12 @@ class StructuredInvestigationLogger:
         # Get standardized file paths
         file_paths = self.folder_manager.get_log_file_paths(investigation_id)
         
-<<<<<<< HEAD
-        # Create investigation-specific file handler for autonomous activities
-        autonomous_log_file = file_paths["autonomous_log"]
-        file_handler = logging.FileHandler(autonomous_log_file)
-        file_handler.setLevel(logging.DEBUG)
-        
-        # Custom JSON formatter for autonomous activities
-=======
         # Create investigation-specific file handler for structured activities
         structured_log_file = file_paths["structured_log"]
         file_handler = logging.FileHandler(structured_log_file)
         file_handler.setLevel(logging.DEBUG)
         
         # Custom JSON formatter for structured activities
->>>>>>> 001-modify-analyzer-method
         json_formatter = logging.Formatter(
             '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "interaction_type": "%(name)s", "data": %(message)s}'
         )
@@ -261,11 +252,7 @@ class StructuredInvestigationLogger:
         self._investigation_file_handlers[investigation_id] = file_handler
         
         # Add handler to investigation logger
-<<<<<<< HEAD
-        investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
-=======
         investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
->>>>>>> 001-modify-analyzer-method
         investigation_logger.addHandler(file_handler)
         investigation_logger.setLevel(logging.DEBUG)
         
@@ -672,11 +659,7 @@ class StructuredInvestigationLogger:
             handler.close()
             
             # Remove handler from logger
-<<<<<<< HEAD
-            investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
-=======
             investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
->>>>>>> 001-modify-analyzer-method
             investigation_logger.removeHandler(handler)
             
             # Clean up handler reference
@@ -750,12 +733,6 @@ class StructuredInvestigationLogger:
         
         # Read investigation data
         metadata_file = folder_path / "metadata.json"
-<<<<<<< HEAD
-        autonomous_file = folder_path / "autonomous_activities.jsonl" 
-        journey_file = folder_path / "journey_tracking.json"
-        log_file = folder_path / "investigation.log"
-        
-=======
         structured_file = folder_path / "structured_activities.jsonl" 
         journey_file = folder_path / "journey_tracking.json"
         log_file = folder_path / "investigation.log"
@@ -775,24 +752,16 @@ class StructuredInvestigationLogger:
             except:
                 pass
         
->>>>>>> 001-modify-analyzer-method
         # Load metadata
         metadata = {}
         if metadata_file.exists():
             with open(metadata_file) as f:
                 metadata = json.load(f)
         
-<<<<<<< HEAD
-        # Load autonomous activities
-        activities = []
-        if autonomous_file.exists():
-            with open(autonomous_file) as f:
-=======
         # Load structured activities
         activities = []
         if structured_file.exists():
             with open(structured_file) as f:
->>>>>>> 001-modify-analyzer-method
                 for line in f:
                     try:
                         activities.append(json.loads(line.strip()))
@@ -987,8 +956,6 @@ class StructuredInvestigationLogger:
         
         html_content += f"""
         </div>
-<<<<<<< HEAD
-=======
         """
         
         # Add confusion table section if available
@@ -1016,7 +983,6 @@ class StructuredInvestigationLogger:
         """
         
         html_content += f"""
->>>>>>> 001-modify-analyzer-method
     </div>
     
     <script>
@@ -1078,11 +1044,7 @@ class StructuredInvestigationLogger:
             self._investigation_logs[investigation_id].append(log_entry)
         
         # Write to investigation-specific structured log file
-<<<<<<< HEAD
-        investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
-=======
         investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
->>>>>>> 001-modify-analyzer-method
         if investigation_logger.handlers:  # Only log if investigation-specific logger exists
             investigation_logger.debug(json.dumps(log_entry))
         else:

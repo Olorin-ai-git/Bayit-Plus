@@ -15,11 +15,7 @@ const path = require('path');
 const config = {
   services: [
     { name: 'core-ui', url: 'http://localhost:3000/', critical: true },
-<<<<<<< HEAD
-    { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation', critical: true },
-=======
     { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation', critical: true },
->>>>>>> 001-modify-analyzer-method
     { name: 'manual-investigation', url: 'http://localhost:3002/manual-investigation', critical: true },
     { name: 'agent-analytics', url: 'http://localhost:3003/agent-analytics', critical: false },
     { name: 'rag-intelligence', url: 'http://localhost:3004/rag-intelligence', critical: false },

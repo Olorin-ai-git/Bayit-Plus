@@ -34,13 +34,8 @@ class QueryValidationMetrics(BaseModel):
     complexity_level: QueryComplexityLevelSchema = Field(description="Complexity classification")
     estimated_execution_time_ms: float = Field(description="Estimated execution time in milliseconds")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "entity_count": 5,
                 "operator_count": 4,
@@ -60,13 +55,8 @@ class QueryValidationErrorResponse(BaseModel):
     validation_errors: List[str] = Field(description="List of specific validation errors")
     complexity_metrics: QueryValidationMetrics = Field(description="Query complexity analysis")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "detail": "Query validation failed: Too many entities: 60 (max: 50)",
                 "validation_errors": ["Too many entities: 60 (max: 50)"],
@@ -94,13 +84,8 @@ class InvestigationStatusSummary(BaseModel):
     boolean_logic: str = Field(description="Boolean logic expression")
     total_duration_ms: Optional[int] = Field(description="Total execution duration in milliseconds")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "status": "completed",
@@ -124,13 +109,8 @@ class MultiEntityMetricsResponse(BaseModel):
     cache_hit_rate: float = Field(description="Query cache hit rate (0.0-1.0)")
     complexity_distribution: Dict[str, int] = Field(description="Distribution of query complexity levels")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "total_investigations": 1247,
                 "active_investigations": 3,
@@ -155,13 +135,8 @@ class EntityTypeInfo(BaseModel):
     description: str = Field(description="Entity type description")
     example_ids: List[str] = Field(description="Example entity IDs of this type")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "name": "user_id",
                 "description": "User identifier for account-based entities",
@@ -180,13 +155,8 @@ class EnhancedEntityTypesResponse(BaseModel):
     total_types: int = Field(description="Total number of entity types available")
     type_descriptions: Dict[str, EntityTypeInfo] = Field(description="Detailed descriptions for each type")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "core_entity_types": ["device", "location", "network", "user"],
                 "transaction_entity_types": [
@@ -219,13 +189,8 @@ class HealthCheckResponse(BaseModel):
     modules: List[str] = Field(description="List of loaded modules")
     features: List[str] = Field(description="List of available features")
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "status": "healthy",
                 "active_investigations_count": 5,
@@ -252,13 +217,8 @@ class HealthCheckResponse(BaseModel):
 class MultiEntityInvestigationRequestSchema(MultiEntityInvestigationRequest):
     """Multi-entity investigation request with enhanced documentation"""
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "entities": [
@@ -288,13 +248,8 @@ class MultiEntityInvestigationRequestSchema(MultiEntityInvestigationRequest):
 class MultiEntityInvestigationResultSchema(MultiEntityInvestigationResult):
     """Multi-entity investigation result with enhanced documentation"""
     
-<<<<<<< HEAD
-    class Config:
-        json_schema_extra = {
-=======
     model_config = ConfigDict(
         json_schema_extra={
->>>>>>> 001-modify-analyzer-method
             "example": {
                 "investigation_id": "multi_a1b2c3d4",
                 "status": "completed",

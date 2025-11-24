@@ -1,39 +1,26 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-<<<<<<< HEAD
-import { toast } from 'react-hot-toast';
-import { EnhancedChatMessage, ViewMode } from '../../types/ragIntelligence';
-=======
 import { useToast } from '@shared/components/ui/ToastProvider';
 import { FileText, Sparkles, History } from 'lucide-react';
 import { EnhancedChatMessage, ViewMode, PreparedPrompt } from '../../types/ragIntelligence';
->>>>>>> 001-modify-analyzer-method
 import RAGApiService from '@shared/services/RAGApiService';
 import ResponseAnalyzer from '@shared/services/ResponseAnalyzer';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
-<<<<<<< HEAD
-=======
 import ChatHistorySidebar from './ChatHistorySidebar';
 import { WizardPanel } from '@shared/components/WizardPanel';
->>>>>>> 001-modify-analyzer-method
 
 interface ChatInterfaceProps {
   className?: string;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
-<<<<<<< HEAD
-=======
   const { showToast } = useToast();
 
->>>>>>> 001-modify-analyzer-method
   // State management
   const [chatMessages, setChatMessages] = useState<EnhancedChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-<<<<<<< HEAD
-=======
   const [preparedPrompts, setPreparedPrompts] = useState<PreparedPrompt[]>([]);
   const [promptsExpanded, setPromptsExpanded] = useState(false);
   const [promptsLoading, setPromptsLoading] = useState(false);
@@ -44,16 +31,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
   
   // Track if user has started a conversation (prevents welcome message from reappearing)
   const hasStartedConversationRef = React.useRef<boolean>(false);
->>>>>>> 001-modify-analyzer-method
 
   // View control states
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set());
   const [messageViewModes, setMessageViewModes] = useState<Record<string, ViewMode>>({});
 
   // Initialize RAG service
-<<<<<<< HEAD
-  const ragService = useMemo(() => new RAGApiService(null), []);
-=======
   const ragService = useMemo(() => RAGApiService, []);
 
   // Create or get current session
@@ -133,7 +116,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
       setIsLoading(false);
     }
   }, [ragService]);
->>>>>>> 001-modify-analyzer-method
 
   // Send message to RAG API
   const sendMessage = useCallback(async () => {
@@ -141,122 +123,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
 
     setIsLoading(true);
 
-<<<<<<< HEAD
-    // Add user message immediately
-    const userMessage: EnhancedChatMessage = {
-      id: Date.now().toString(),
-      sender: 'user',
-      content: currentMessage,
-      timestamp: new Date(),
-      natural_query: currentMessage,
-    };
-
-    setChatMessages(prev => [...prev, userMessage]);
-    const queryToSend = currentMessage;
-    setCurrentMessage('');
-
-    try {
-      // Send natural query to RAG API
-      const naturalQueryResponse = await ragService.sendNaturalQuery({
-        natural_query: queryToSend,
-        user_id: 'demo-user',
-        auto_index: true, // Automatically index and query in one step
-      });
-
-      // Handle case where API doesn't exist or returns undefined
-      if (!naturalQueryResponse) {
-        const errorMessage: EnhancedChatMessage = {
-          id: (Date.now() + 1).toString(),
-          sender: 'system',
-          content: 'RAG API is not available. Please configure the RAG endpoints on your server.',
-          timestamp: new Date(),
-        };
-        setChatMessages(prev => [...prev, errorMessage]);
-        return;
-      }
-
-      // Extract response content from the API response structure
-      let responseContent = 'No response received';
-
-      // Try multiple possible locations for the response content
-      if (naturalQueryResponse.additional_data?.response) {
-        responseContent = naturalQueryResponse.additional_data.response;
-      } else if (naturalQueryResponse.response) {
-        responseContent = naturalQueryResponse.response;
-      } else if (naturalQueryResponse.message) {
-        responseContent = naturalQueryResponse.message;
-      } else if (naturalQueryResponse.llm_thoughts) {
-        responseContent = naturalQueryResponse.llm_thoughts;
-      }
-
-      // Create basic assistant message with enhanced data
-      const assistantMessage: EnhancedChatMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: 'assistant',
-        content: responseContent,
-        timestamp: new Date(),
-        natural_query: queryToSend,
-        translated_query: naturalQueryResponse.translated_query || naturalQueryResponse.translation,
-        query_metadata: {
-          execution_time: naturalQueryResponse.execution_time,
-          result_count: naturalQueryResponse.result_count ||
-                       naturalQueryResponse.additional_data?.sources?.length || 0,
-          sources: naturalQueryResponse.additional_data?.sources ||
-                  naturalQueryResponse.sources || [],
-          confidence: naturalQueryResponse.confidence,
-        },
-      };
-
-      // Check if structured data is available from API response first
-      const apiStructuredData = naturalQueryResponse.additional_data?.structured_data ||
-                                naturalQueryResponse.structured_data;
-
-      if (apiStructuredData &&
-          apiStructuredData.data &&
-          Array.isArray(apiStructuredData.data) &&
-          apiStructuredData.data.length > 0) {
-
-        // Use structured data from API response
-        assistantMessage.structured_data = {
-          data: apiStructuredData.data,
-          columns: apiStructuredData.columns || [],
-          metadata: {
-            confidence: naturalQueryResponse.confidence || 0.8,
-            total_count: apiStructuredData.data.length,
-            field_mapping: apiStructuredData.field_mapping || {},
-            source_info: apiStructuredData.source_info || {},
-          },
-        };
-
-        // Set default view mode to table for structured data
-        setMessageViewModes(prev => ({
-          ...prev,
-          [assistantMessage.id]: 'table',
-        }));
-
-        setChatMessages(prev => [...prev, assistantMessage]);
-      } else {
-        // Fallback: Analyze the response for structured data
-        const analysisResult = ResponseAnalyzer.analyzeResponse(assistantMessage.content);
-
-        // If structured data is detected, enhance the message
-        if (analysisResult.hasStructuredData) {
-          const enhancedMessage = ResponseAnalyzer.enhanceMessage(
-            assistantMessage,
-            analysisResult
-          );
-
-          // Set default view mode to table for structured data
-          setMessageViewModes(prev => ({
-            ...prev,
-            [enhancedMessage.id]: 'table',
-          }));
-
-          setChatMessages(prev => [...prev, enhancedMessage]);
-        } else {
-          // No structured data, add as regular message
-          setChatMessages(prev => [...prev, assistantMessage]);
-=======
     const queryToSend = currentMessage;
     setCurrentMessage('');
 
@@ -351,16 +217,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
           });
         } catch (error) {
           // Ignore title update errors
->>>>>>> 001-modify-analyzer-method
         }
       }
 
       // Show success toast
-<<<<<<< HEAD
-      toast.success('Query processed successfully');
-=======
       showToast('success', 'Success', 'Query processed successfully');
->>>>>>> 001-modify-analyzer-method
 
     } catch (error) {
       const errorMessage: EnhancedChatMessage = {
@@ -371,14 +232,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
         }. Please configure RAG endpoints on your server.`,
         timestamp: new Date(),
       };
-<<<<<<< HEAD
-      setChatMessages(prev => [...prev, errorMessage]);
-      toast.error('Failed to process query');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentMessage, isLoading, ragService]);
-=======
       setChatMessages(prev => {
         // Ensure welcome message is removed when adding error message
         const filtered = prev.filter(msg => msg.id !== 'welcome');
@@ -390,7 +243,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
       setIsLoading(false);
     }
   }, [currentMessage, isLoading, ragService, ensureSession, saveMessage, chatMessages.length]);
->>>>>>> 001-modify-analyzer-method
 
   // Toggle message expansion
   const toggleExpanded = useCallback((messageId: string) => {
@@ -429,29 +281,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
       sendMessage();
     }, 100);
 
-<<<<<<< HEAD
-    toast.info('Resending query with updated text');
-=======
     showToast('info', 'Info', 'Resending query with updated text');
->>>>>>> 001-modify-analyzer-method
   }, [chatMessages, sendMessage]);
 
   // Copy to clipboard
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-<<<<<<< HEAD
-      toast.success('Copied to clipboard');
-    }).catch(() => {
-      toast.error('Failed to copy to clipboard');
-    });
-  }, []);
-=======
       showToast('success', 'Success', 'Copied to clipboard');
     }).catch(() => {
       showToast('error', 'Error', 'Failed to copy to clipboard');
     });
   }, [showToast]);
->>>>>>> 001-modify-analyzer-method
 
   // Clear all messages
   const clearMessages = useCallback(() => {
@@ -459,13 +299,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
     setExpandedMessages(new Set());
     setMessageViewModes({});
     setSearchTerm('');
-<<<<<<< HEAD
-    toast.success('Chat history cleared');
-  }, []);
-=======
     showToast('success', 'Success', 'Chat history cleared');
   }, [showToast]);
->>>>>>> 001-modify-analyzer-method
 
   // Export messages
   const exportMessages = useCallback(() => {
@@ -494,10 +329,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-<<<<<<< HEAD
-    toast.success('Chat history exported');
-  }, [chatMessages]);
-=======
     showToast('success', 'Success', 'Chat history exported');
   }, [chatMessages, showToast]);
 
@@ -868,18 +699,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ className = "" }) => {
     showToast('success', 'Success', `Applied prompt: ${prompt.title}`);
     }
   }, [autoSendPrompts, ensureSession, saveMessage, ragService, chatMessages]);
->>>>>>> 001-modify-analyzer-method
 
   // Load sample data on mount (for demo purposes)
   useEffect(() => {
     const loadSampleData = () => {
       const welcomeMessage: EnhancedChatMessage = {
         id: 'welcome',
-<<<<<<< HEAD
-        sender: 'assistant',
-=======
         sender: 'system',
->>>>>>> 001-modify-analyzer-method
         content: `Welcome to the RAG Intelligence Chat Interface!
 
 I can help you query and analyze your data using natural language. Here's what I can do:
@@ -902,23 +728,6 @@ How can I help you today?`,
       setChatMessages([welcomeMessage]);
     };
 
-<<<<<<< HEAD
-    if (chatMessages.length === 0) {
-      loadSampleData();
-    }
-  }, [chatMessages.length]);
-
-  return (
-    <div className={`flex flex-col h-full bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>
-      {/* Header */}
-      <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              RAG Chat Interface
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-=======
     // Only show welcome message if:
     // 1. There are no messages
     // 2. No current session
@@ -951,19 +760,11 @@ How can I help you today?`,
               RAG Chat Interface
             </h2>
             <p className="text-sm text-corporate-textSecondary mt-1">
->>>>>>> 001-modify-analyzer-method
               Ask questions about your data in natural language
             </p>
           </div>
 
           <div className="flex items-center space-x-2">
-<<<<<<< HEAD
-            <div className={`
-              flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium
-              ${isLoading
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-green-100 text-green-800'
-=======
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2 rounded-lg hover:bg-black/40 text-corporate-textSecondary hover:text-corporate-accentPrimary transition-colors border-2 border-corporate-borderPrimary/40 hover:border-corporate-accentPrimary/60"
@@ -976,16 +777,11 @@ How can I help you today?`,
               ${isLoading
                 ? 'bg-corporate-warning/20 text-corporate-warning border-corporate-warning/50'
                 : 'bg-corporate-success/20 text-corporate-success border-corporate-success/50'
->>>>>>> 001-modify-analyzer-method
               }
             `}>
               <div className={`
                 w-2 h-2 rounded-full
-<<<<<<< HEAD
-                ${isLoading ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}
-=======
                 ${isLoading ? 'bg-corporate-warning animate-pulse' : 'bg-corporate-success'}
->>>>>>> 001-modify-analyzer-method
               `} />
               <span>{isLoading ? 'Processing...' : 'Ready'}</span>
             </div>
@@ -1010,10 +806,6 @@ How can I help you today?`,
         />
       </div>
 
-<<<<<<< HEAD
-      {/* Input */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-gray-50">
-=======
       {/* Pre-made Prompts Section */}
       <div className="flex-shrink-0 px-4 pt-4 border-t-2 border-corporate-accentPrimary/40 bg-black/40 backdrop-blur-md">
         <WizardPanel
@@ -1088,7 +880,6 @@ How can I help you today?`,
 
       {/* Input */}
       <div className="flex-shrink-0 p-4 bg-black/40 backdrop-blur-md">
->>>>>>> 001-modify-analyzer-method
         <MessageInput
           currentMessage={currentMessage}
           setCurrentMessage={setCurrentMessage}

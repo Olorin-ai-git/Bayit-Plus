@@ -36,8 +36,6 @@ async def orchestrator_node(state: Dict[str, Any], config: Optional[Dict] = None
             "utility"          # Utility tools
         ]
     )
-<<<<<<< HEAD
-=======
     
     # CRITICAL: Check DATABASE_PROVIDER FIRST before creating any database tool
     from pathlib import Path
@@ -115,7 +113,6 @@ async def orchestrator_node(state: Dict[str, Any], config: Optional[Dict] = None
         logger.error("❌ CRITICAL: database_query tool is NOT available for orchestrator! LLM cannot query database!")
     else:
         logger.info(f"✅ database_query tool is available for orchestrator (total {len(tools)} tools)")
->>>>>>> 001-modify-analyzer-method
 
     # Create orchestrator instance
     orchestrator = InvestigationOrchestrator(tools)

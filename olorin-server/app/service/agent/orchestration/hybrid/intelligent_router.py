@@ -608,37 +608,6 @@ class IntelligentRouter:
             }
         
         # Phase 2: Tool execution (only after Snowflake data is available)
-<<<<<<< HEAD
-        if snowflake_data and len(tool_results) == 0:
-            logger.debug(f"🔧 Routing to tools execution - Snowflake data available")
-            return {
-                "next_node": "fraud_investigation",  # Let fraud_investigation handle tool calls
-                "reasoning": [reason, "Execute analysis tools with Snowflake data"]
-            }
-        
-        # Phase 3: Domain analysis (CRITICAL FIX - ensure domain agents are triggered)
-        if len(tool_results) > 0 and len(domain_findings) == 0:
-            logger.debug(f"🎯 CRITICAL ROUTING: Tool results available, triggering domain analysis")
-            # Get first domain agent to start sequential domain analysis
-            domain_decision = await self._get_next_sequential_domain(state)
-            logger.info(f"🎯 ROUTING TO DOMAIN AGENT: {domain_decision['next_node']}")
-            domain_decision["reasoning"] = [reason, "CRITICAL: Start domain analysis with tool results"] + domain_decision["reasoning"]
-            return domain_decision
-        
-        # Phase 4: Continue domain analysis
-        if len(tool_results) > 0 and len(domain_findings) < 5:  # Need more domain analysis
-            domain_decision = await self._get_next_sequential_domain(state)
-            if domain_decision["next_node"] != "summary":
-                logger.debug(f"🔄 Continue domain analysis: {domain_decision['next_node']}")
-                domain_decision["reasoning"] = [reason] + domain_decision["reasoning"]
-                return domain_decision
-        
-        # Phase 5: All domains complete - proceed to summary
-        logger.debug(f"✅ All analysis complete - routing to summary")
-        return {
-            "next_node": "summary",
-            "reasoning": [reason, "Sequential analysis complete", f"Analyzed {len(domain_findings)} domains"]
-=======
         # CRITICAL FIX D3: Skip tool execution phase - database data is sufficient for domain agents
         # External tools (AbuseIPDB, Shodan, etc.) are optional enrichment, not requirements
 
@@ -703,7 +672,6 @@ class IntelligentRouter:
         return {
             "next_node": "summary",
             "reasoning": [reason, "Sequential analysis complete", f"Analyzed {len(domain_findings)} domains + risk aggregation"]
->>>>>>> 001-modify-analyzer-method
         }
     
     async def _get_next_sequential_domain(
@@ -713,9 +681,6 @@ class IntelligentRouter:
         """Get next domain in sequential order"""
         
         # Get completed domains from both possible sources
-<<<<<<< HEAD
-        domains_completed = set(state.get("domains_completed", []))
-=======
         # Extract domain names from domains_completed (can be strings or dicts)
         domains_completed_raw = state.get("domains_completed", [])
         domains_completed = set()
@@ -728,29 +693,18 @@ class IntelligentRouter:
                 domains_completed.add(domain_key)
             else:
                 domains_completed.add(str(domain_key))
->>>>>>> 001-modify-analyzer-method
         domain_findings = state.get("domain_findings", {})
         
         # Also check domain_findings keys for completion tracking
         for domain_key in domain_findings.keys():
-<<<<<<< HEAD
-            if any(domain in domain_key for domain in ["network", "device", "location", "logs", "authentication", "risk"]):
-                # Extract domain name from key (e.g., "network_analysis" -> "network")
-                for domain_name in ["network", "device", "location", "logs", "authentication", "risk"]:
-=======
             if any(domain in domain_key for domain in ["network", "device", "location", "logs", "authentication", "merchant", "risk"]):
                 # Extract domain name from key (e.g., "network_analysis" -> "network")
                 for domain_name in ["network", "device", "location", "logs", "authentication", "merchant", "risk"]:
->>>>>>> 001-modify-analyzer-method
                     if domain_name in domain_key:
                         domains_completed.add(domain_name)
                         break
         
-<<<<<<< HEAD
-        domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
-=======
         domain_order = ["network", "device", "location", "logs", "authentication", "merchant", "risk"]
->>>>>>> 001-modify-analyzer-method
         
         logger.debug(f"🎯 Domain completion analysis:")
         logger.debug(f"   domains_completed list: {list(state.get('domains_completed', []))}")
@@ -827,11 +781,6 @@ class IntelligentRouter:
                                       if v and isinstance(v, dict) and v.get("status") != "no_results")
             actual_domains_completed = max(actual_domains_completed, valid_domain_findings)
         
-<<<<<<< HEAD
-        # STRICT REQUIREMENT: At least 1 domain agent must execute with valid results
-        has_sufficient_evidence = (
-            actual_domains_completed >= 1 and len(tools_used) >= 2  # MUST have domain analysis
-=======
         # CRITICAL FIX: Require ALL 6 domain agents (excluding risk) before routing to summary
         # Count only domain agents (exclude risk) - need 6: network, device, location, logs, authentication, merchant
         domain_agents_completed = [d for d in domains_completed if d != "risk"]
@@ -841,26 +790,10 @@ class IntelligentRouter:
         has_sufficient_evidence = (
             actual_domain_agents_completed >= 6  # CRITICAL FIX: Require all 6 domain agents
             and len(tools_used) >= 2  # MUST have tools executed
->>>>>>> 001-modify-analyzer-method
             and evidence_strength >= 0.3  # AND reasonable confidence
         )
         
         if has_sufficient_evidence:
-<<<<<<< HEAD
-            logger.debug(f"🛡️ Safety routing with sufficient evidence: {len(tools_used)} tools, {actual_domains_completed} valid domains - moving to summary")
-            return {
-                "next_node": "summary",
-                "reasoning": [
-                    "Safety-first mode: Sufficient evidence gathered",
-                    f"Tools executed: {len(tools_used)}, Valid domains: {actual_domains_completed}",
-                    f"Evidence strength: {evidence_strength:.2f}",
-                    "Moving toward completion with adequate analysis"
-                ]
-            }
-        
-        # CRITICAL FIX: If no domain agents executed yet, force at least one
-        if actual_domains_completed == 0:
-=======
             logger.debug(f"🛡️ Safety routing with sufficient evidence: {len(tools_used)} tools, {actual_domain_agents_completed}/6 domain agents - moving to summary")
             return {
                 "next_node": "summary",
@@ -879,7 +812,6 @@ class IntelligentRouter:
         
         # CRITICAL FIX: If no domain agents executed yet, force at least one
         if actual_domain_agents_completed == 0:
->>>>>>> 001-modify-analyzer-method
             logger.debug(f"🛡️ CRITICAL: No domain agents executed - forcing domain analysis")
             # Go directly to first domain agent instead of sequential routing that might skip
             return {
@@ -893,13 +825,8 @@ class IntelligentRouter:
         
         # If some tools but insufficient evidence, try more domain analysis
         elif len(tools_used) >= 1:  # Lowered from >= 2 to >= 1
-<<<<<<< HEAD
-            logger.debug(f"🛡️ Insufficient evidence: {len(tools_used)} tools, {actual_domains_completed} domains - require more domain analysis")
-            return await self._sequential_routing(state, "Safety-first: Need more domain analysis for evidence")
-=======
             logger.debug(f"🛡️ Insufficient evidence: {len(tools_used)} tools, {actual_domain_agents_completed}/6 domain agents - require more domain analysis")
             return await self._sequential_routing(state, f"Safety-first: Need more domain analysis ({actual_domain_agents_completed}/6 complete)")
->>>>>>> 001-modify-analyzer-method
         
         # Default to conservative sequential routing for initial state
         return await self._sequential_routing(state, "Safety-first mode: Conservative approach")

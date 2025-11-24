@@ -46,32 +46,6 @@ from app.persistence import (
 )
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.security.auth import User, require_read, require_write
-<<<<<<< HEAD
-# Mock implementations for missing ato_agents components
-from app.models.api_models import LocationInfo
-
-class MockLocationDataClient:
-    """Mock location data client"""
-    async def get_location_info(self, ip_address: str) -> LocationInfo:
-        return LocationInfo()
-
-class MockFraudResponse:
-    """Mock fraud response"""
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-def mock_get_direct_auth_query(*args, **kwargs):
-    """Mock direct auth query function"""
-    return "search *"
-
-# Use mock implementations
-LocationDataClient = MockLocationDataClient
-FraudResponse = MockFraudResponse
-get_direct_auth_query = mock_get_direct_auth_query
-# from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
-=======
->>>>>>> 001-modify-analyzer-method
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token
@@ -144,9 +118,6 @@ from .mcp_http_router import router as mcp_http_router
 from .network_router import router as network_router
 from .risk_assessment_router import risk_assessment_router
 from .settings_router import router as settings_router
-<<<<<<< HEAD
-from app.api.v1.llm_models import router as llm_models_router
-=======
 from .rag_router import router as rag_router
 from app.api.v1.llm_models import router as llm_models_router
 from .composio_router import router as composio_router
@@ -154,7 +125,6 @@ from .tenant_config_router import router as tenant_config_router
 from .device_signals_router import router as device_signals_router
 from .ip_risk_router import router as ip_risk_router
 from .soar_playbooks_router import router as soar_playbooks_router
->>>>>>> 001-modify-analyzer-method
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -168,14 +138,6 @@ router.include_router(settings_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
 router.include_router(llm_models_router)
-<<<<<<< HEAD
-
-# Include analytics router if Snowflake is enabled
-if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
-    from app.api.routes.analytics import router as analytics_router
-    router.include_router(analytics_router)
-    logger.info("Analytics router included (USE_SNOWFLAKE=true)")
-=======
 router.include_router(rag_router)
 router.include_router(composio_router)
 router.include_router(tenant_config_router)
@@ -203,7 +165,6 @@ except Exception as e:
     import traceback
     traceback.print_exc(file=sys.stderr)
     logger.error(f"❌ Analytics router not available: {e}", exc_info=True)
->>>>>>> 001-modify-analyzer-method
 
 
 @router.get("/oii/{user_id}")
@@ -284,13 +245,6 @@ async def analyze_logs(
                         status_code=503,
                         detail="Agent service is not available. The server is still initializing or encountered an error.",
                     )
-<<<<<<< HEAD
-                # Mock implementation for build_base_search
-                def build_base_search(id_value, id_type, **kwargs):
-                    """Mock base search builder"""
-                    return f"search * | where {id_type}=\"{id_value}\""
-=======
->>>>>>> 001-modify-analyzer-method
                 from app.service.agent.tools.splunk_tool.splunk_tool import (
                     SplunkQueryTool,
                 )

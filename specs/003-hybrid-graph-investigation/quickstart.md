@@ -6,11 +6,7 @@
 
 ## Overview
 
-<<<<<<< HEAD
-This guide helps developers quickly set up and start developing the Hybrid Graph Investigation UI within the autonomous-investigation microservice. Follow these steps to get a working development environment with all 4 UI concepts.
-=======
 This guide helps developers quickly set up and start developing the Hybrid Graph Investigation UI within the structured-investigation microservice. Follow these steps to get a working development environment with all 4 UI concepts.
->>>>>>> 001-modify-analyzer-method
 
 ## Prerequisites
 
@@ -48,22 +44,6 @@ npm install
 
 ### 2. Microservice Structure Setup
 
-<<<<<<< HEAD
-Create the autonomous-investigation microservice structure:
-
-```bash
-# Create microservice directory structure
-mkdir -p src/microservices/autonomous-investigation/{components,hooks,stores,types,utils,assets}
-mkdir -p src/microservices/autonomous-investigation/components/{power-grid,command-center,evidence-trail,network-explorer}
-mkdir -p src/microservices/autonomous-investigation/components/shared/{graph,timeline,evidence,export}
-
-# Create main microservice files
-touch src/microservices/autonomous-investigation/App.tsx
-touch src/microservices/autonomous-investigation/index.ts
-touch src/microservices/autonomous-investigation/types/index.ts
-touch src/microservices/autonomous-investigation/hooks/useInvestigation.ts
-touch src/microservices/autonomous-investigation/stores/investigationStore.ts
-=======
 Create the structured-investigation microservice structure:
 
 ```bash
@@ -78,7 +58,6 @@ touch src/microservices/structured-investigation/index.ts
 touch src/microservices/structured-investigation/types/index.ts
 touch src/microservices/structured-investigation/hooks/useInvestigation.ts
 touch src/microservices/structured-investigation/stores/investigationStore.ts
->>>>>>> 001-modify-analyzer-method
 ```
 
 ### 3. Install Required Dependencies
@@ -106,11 +85,7 @@ Add to `tsconfig.json` (if not already present):
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-<<<<<<< HEAD
-      "@/autonomous-investigation/*": ["src/microservices/autonomous-investigation/*"],
-=======
       "@/structured-investigation/*": ["src/microservices/structured-investigation/*"],
->>>>>>> 001-modify-analyzer-method
       "@/shared/*": ["src/shared/*"],
       "@/components/ui": ["src/shared/components/ui"]
     }
@@ -122,11 +97,7 @@ Add to `tsconfig.json` (if not already present):
 
 ### 1. Main Microservice Entry Point
 
-<<<<<<< HEAD
-Create `src/microservices/autonomous-investigation/App.tsx`:
-=======
 Create `src/microservices/structured-investigation/App.tsx`:
->>>>>>> 001-modify-analyzer-method
 
 ```typescript
 import React, { useState } from 'react';
@@ -146,11 +117,7 @@ const queryClient = new QueryClient({
   },
 });
 
-<<<<<<< HEAD
-export default function AutonomousInvestigationApp() {
-=======
 export default function StructuredInvestigationApp() {
->>>>>>> 001-modify-analyzer-method
   const [selectedConcept, setSelectedConcept] = useState<ConceptType>('power_grid');
 
   const renderConcept = () => {
@@ -200,11 +167,7 @@ export default function StructuredInvestigationApp() {
 
 ### 2. TypeScript Definitions
 
-<<<<<<< HEAD
-Create `src/microservices/autonomous-investigation/types/index.ts`:
-=======
 Create `src/microservices/structured-investigation/types/index.ts`:
->>>>>>> 001-modify-analyzer-method
 
 ```typescript
 // Re-export data model types
@@ -273,11 +236,7 @@ export interface ExportConfig {
 
 ### 3. Data Fetching Hooks
 
-<<<<<<< HEAD
-Create `src/microservices/autonomous-investigation/hooks/useInvestigation.ts`:
-=======
 Create `src/microservices/structured-investigation/hooks/useInvestigation.ts`:
->>>>>>> 001-modify-analyzer-method
 
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -430,11 +389,7 @@ export const useUpdateInvestigation = () => {
 
 ### 4. WebSocket Integration
 
-<<<<<<< HEAD
-Create `src/microservices/autonomous-investigation/hooks/useWebSocket.ts`:
-=======
 Create `src/microservices/structured-investigation/hooks/useWebSocket.ts`:
->>>>>>> 001-modify-analyzer-method
 
 ```typescript
 import { useEffect, useRef, useCallback } from 'react';
@@ -565,34 +520,21 @@ export const useInvestigationWebSocket = (investigationId?: string) => {
 # Start the main development server (includes all microservices)
 npm run dev:all-services
 
-<<<<<<< HEAD
-# Or start just the autonomous-investigation microservice
-npm run dev:autonomous-investigation
-=======
 # Or start just the structured-investigation microservice
 npm run dev:structured-investigation
->>>>>>> 001-modify-analyzer-method
 ```
 
 ### 2. Access Development Environment
 
 - **Main Shell**: http://localhost:3000
-<<<<<<< HEAD
-- **Autonomous Investigation**: http://localhost:3001
-=======
 - **Structured Investigation**: http://localhost:3001
->>>>>>> 001-modify-analyzer-method
 - **API Documentation**: http://localhost:8090/docs
 
 ### 3. Development Best Practices
 
 #### Code Organization
 ```
-<<<<<<< HEAD
-src/microservices/autonomous-investigation/
-=======
 src/microservices/structured-investigation/
->>>>>>> 001-modify-analyzer-method
 ├── components/
 │   ├── power-grid/           # Power Grid concept components
 │   ├── command-center/       # Command Center concept components
@@ -703,11 +645,7 @@ test('renders investigation data correctly', async () => {
 
 ### 1. Create Mock Data Files
 
-<<<<<<< HEAD
-Create `src/microservices/autonomous-investigation/utils/mockData.ts`:
-=======
 Create `src/microservices/structured-investigation/utils/mockData.ts`:
->>>>>>> 001-modify-analyzer-method
 
 ```typescript
 import type { Investigation, Evidence, TimelineEvent } from '../types';

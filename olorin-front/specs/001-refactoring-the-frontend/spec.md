@@ -89,11 +89,7 @@ As a fraud investigator using the Olorin platform, I need a responsive, fast, an
 - **FR-015**: System MUST display appropriate loading states during API calls
 
 #### Investigation Features
-<<<<<<< HEAD
-- **FR-016**: Users MUST be able to initiate manual and autonomous investigations
-=======
 - **FR-016**: Users MUST be able to initiate manual and structured investigations
->>>>>>> 001-modify-analyzer-method
 - **FR-017**: System MUST display real-time agent analysis results
 - **FR-018**: Users MUST be able to view and interact with investigation graphs
 - **FR-019**: System MUST support RAG (Retrieval-Augmented Generation) analytics

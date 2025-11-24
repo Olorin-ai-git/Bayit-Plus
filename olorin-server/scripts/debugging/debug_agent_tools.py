@@ -2,11 +2,7 @@
 """
 General Agent Tools Debug Script
 
-<<<<<<< HEAD
-Debug script to test autonomous agent execution and tool registry functionality.
-=======
 Debug script to test structured agent execution and tool registry functionality.
->>>>>>> 001-modify-analyzer-method
 Helps identify issues with tool registration, initialization, and basic agent operations.
 """
 import asyncio
@@ -48,17 +44,6 @@ async def test_tool_registry():
 
 
 async def test_basic_agent_functionality():
-<<<<<<< HEAD
-    """Test basic autonomous agent functionality."""
-    print("🧪 Testing basic agent functionality...")
-    
-    try:
-        from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
-        from app.service.agent.autonomous_base import AutonomousInvestigationAgent
-        
-        # Create test context
-        context = AutonomousInvestigationContext(
-=======
     """Test basic structured agent functionality."""
     print("🧪 Testing basic agent functionality...")
     
@@ -68,7 +53,6 @@ async def test_basic_agent_functionality():
         
         # Create test context
         context = StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
             investigation_id="debug-test-001",
             entity_type=EntityType.IP,
             entity_value="192.168.1.1",
@@ -78,11 +62,7 @@ async def test_basic_agent_functionality():
         print(f"   ✅ Created investigation context: {context.investigation_id}")
         
         # Test agent creation
-<<<<<<< HEAD
-        agent = AutonomousInvestigationAgent(domain="test", tools=[])
-=======
         agent = StructuredInvestigationAgent(domain="test", tools=[])
->>>>>>> 001-modify-analyzer-method
         print(f"   ✅ Created agent: {agent.domain}")
         
         return True

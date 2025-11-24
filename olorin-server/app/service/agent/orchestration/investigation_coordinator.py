@@ -81,8 +81,6 @@ async def start_investigation(state: MessagesState, config) -> dict:
         )
     )
     
-<<<<<<< HEAD
-=======
     # Set investigation context for logging (ensures context is available for all async operations)
     try:
         set_investigation_context(investigation_id, metadata)
@@ -91,7 +89,6 @@ async def start_investigation(state: MessagesState, config) -> dict:
         logger.warning(f"Failed to set investigation context: {e}", exc_info=True)
         # Don't fail investigation if context setting fails
     
->>>>>>> 001-modify-analyzer-method
     # Update metadata with investigation ID (only for legacy path)
     if agent_context is not None:
         agent_context.metadata.additional_metadata["investigation_id"] = investigation_id

@@ -35,11 +35,7 @@ interface Investigation {
   userId: string;
   entityType: 'user_id' | 'email' | 'phone' | 'device_id';
   status: 'pending' | 'running' | 'completed' | 'failed';
-<<<<<<< HEAD
-  type: 'manual' | 'autonomous';
-=======
   type: 'manual' | 'structured';
->>>>>>> 001-modify-analyzer-method
   created: Date;
   updated: Date;
   riskScore?: number;
@@ -188,11 +184,7 @@ interface ReportSection {
 **Responsibility**: Core investigation lifecycle management
 **Components**:
 - InvestigationForm, InvestigationHeader, InvestigationSteps
-<<<<<<< HEAD
-- ManualInvestigationPanel, AutonomousInvestigationPanel
-=======
 - ManualInvestigationPanel, StructuredInvestigationPanel
->>>>>>> 001-modify-analyzer-method
 
 **State**:
 ```typescript

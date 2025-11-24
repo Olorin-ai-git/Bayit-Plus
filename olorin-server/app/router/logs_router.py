@@ -6,10 +6,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
-<<<<<<< HEAD
-=======
 from app.security.auth import User, require_read
->>>>>>> 001-modify-analyzer-method
 from app.service.llm_logs_risk_service import LLMLogsRiskService
 
 logger = get_bridge_logger(__name__)

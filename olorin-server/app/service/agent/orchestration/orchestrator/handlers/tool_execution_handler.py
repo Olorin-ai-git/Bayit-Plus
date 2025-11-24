@@ -61,11 +61,6 @@ class ToolExecutionHandler:
         # Log LLM interaction
         self.logger_utilities.log_tool_execution_interaction(state, messages, snowflake_data, len(self.tools))
 
-<<<<<<< HEAD
-        # Invoke LLM
-        response = await self.llm_invoker.invoke_llm_with_error_handling(messages, tool_execution_attempts)
-
-=======
         # Log full LLM prompt when snowflake data is included
         if snowflake_data:
             logger.info("📝 LLM Prompt (with formatted Snowflake data):")
@@ -92,7 +87,6 @@ class ToolExecutionHandler:
                 for tc in response.tool_calls:
                     logger.info(f"      - {tc.get('name', 'unknown')}")
 
->>>>>>> 001-modify-analyzer-method
         # Log response analysis
         self.logger_utilities.log_response_analysis(response, tools_used)
 

@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Live Mode Cost Tracker for Autonomous Investigation System
-=======
 Live Mode Cost Tracker for Structured Investigation System
->>>>>>> 001-modify-analyzer-method
 
 This module provides real-time cost tracking, monitoring, and alerting for live mode
 operations. It integrates with various APIs and services to track actual costs and

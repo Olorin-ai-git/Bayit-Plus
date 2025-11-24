@@ -38,11 +38,7 @@ The Hybrid Intelligence Graph system has been successfully integrated into the O
 
 #### HybridGraphBuilder (`hybrid_graph_builder.py`)
 - Unites traditional and AI-driven graph systems
-<<<<<<< HEAD
-- Enhanced domain agents with autonomous capabilities
-=======
 - Enhanced domain agents with structured capabilities
->>>>>>> 001-modify-analyzer-method
 - Streaming summary generation
 - Intelligence mode configuration (adaptive, conservative, aggressive)
 

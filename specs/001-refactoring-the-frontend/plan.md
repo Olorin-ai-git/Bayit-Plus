@@ -2,11 +2,7 @@
 
 **Branch**: `001-refactoring-the-frontend` | **Date**: 2025-01-17 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `/specs/001-refactoring-the-frontend/spec.md`
-<<<<<<< HEAD
-**Enhancement**: Separate autonomous/manual investigation services + Figma MCP + Playwright MCP testing
-=======
 **Enhancement**: Separate structured/manual investigation services + Figma MCP + Playwright MCP testing
->>>>>>> 001-modify-analyzer-method
 
 ## Execution Flow (/plan command scope)
 ```
@@ -71,11 +67,7 @@ specs/001-refactoring-the-frontend/
 ├── data-model.md        # Phase 1 output (8 microservices)
 ├── quickstart.md        # Phase 1 output (Enhanced setup)
 ├── contracts/           # Phase 1 output (8 service contracts)
-<<<<<<< HEAD
-│   ├── autonomous-investigation-service.yaml
-=======
 │   ├── structured-investigation-service.yaml
->>>>>>> 001-modify-analyzer-method
 │   ├── manual-investigation-service.yaml
 │   ├── agent-analytics-service.yaml
 │   ├── rag-intelligence-service.yaml
@@ -94,11 +86,7 @@ specs/001-refactoring-the-frontend/
 frontend/ (olorin-front)
 ├── src/
 │   ├── microservices/
-<<<<<<< HEAD
-│   │   ├── autonomous-investigation/  # NEW: Autonomous Investigation Service
-=======
 │   │   ├── structured-investigation/  # NEW: Structured Investigation Service
->>>>>>> 001-modify-analyzer-method
 │   │   ├── manual-investigation/      # NEW: Manual Investigation Service
 │   │   ├── agent-analytics/          # Agent Analytics Service
 │   │   ├── rag-intelligence/         # RAG Intelligence Service
@@ -117,11 +105,7 @@ frontend/ (olorin-front)
 │   └── config/                       # Module federation config (8 services)
 └── tests/
     ├── playwright/                   # NEW: Playwright E2E tests
-<<<<<<< HEAD
-    │   ├── autonomous-investigation/
-=======
     │   ├── structured-investigation/
->>>>>>> 001-modify-analyzer-method
     │   ├── manual-investigation/
     │   ├── cross-service/
     │   └── visual-regression/
@@ -149,11 +133,7 @@ frontend/ (olorin-front)
    ✅ Performance optimization for microservices
    ✅ Figma MCP API integration patterns
    ✅ Playwright MCP testing strategies for microservices
-<<<<<<< HEAD
-   ✅ Autonomous vs Manual investigation separation patterns
-=======
    ✅ Structured vs Manual investigation separation patterns
->>>>>>> 001-modify-analyzer-method
    ```
 
 3. **Consolidate findings** in `research.md` using format:
@@ -193,11 +173,7 @@ frontend/ (olorin-front)
    - ✅ Cross-service user flow validation
    - ✅ Performance benchmark tests
    - ✅ Visual regression testing scenarios
-<<<<<<< HEAD
-   - ✅ Autonomous vs Manual investigation workflows
-=======
    - ✅ Structured vs Manual investigation workflows
->>>>>>> 001-modify-analyzer-method
 
 5. **Update CLAUDE.md incrementally** (O(1) operation):
    - ✅ Add enhanced microservices architecture context (8 services)
@@ -225,11 +201,7 @@ frontend/ (olorin-front)
 - Infrastructure first: Module federation setup (8 services)
 - Design System service (Figma integration foundation)
 - Core UI service (foundation components)
-<<<<<<< HEAD
-- Autonomous Investigation service (complex workflows)
-=======
 - Structured Investigation service (complex workflows)
->>>>>>> 001-modify-analyzer-method
 - Manual Investigation service (simpler workflows)
 - Supporting services (agent analytics, RAG, visualization, reporting)
 - Integration and performance optimization
@@ -242,15 +214,9 @@ frontend/ (olorin-front)
 
 ## Enhanced Microservices Architecture
 
-<<<<<<< HEAD
-### 1. Autonomous Investigation Service (Port 3001)
-**Responsibility**: AI-driven automated fraud investigations
-**Components**: EnhancedAutonomousInvestigationPanel, AutoInvestigationFlow, AIAgentOrchestrator
-=======
 ### 1. Structured Investigation Service (Port 3001)
 **Responsibility**: AI-driven automated fraud investigations
 **Components**: EnhancedStructuredInvestigationPanel, AutoInvestigationFlow, AIAgentOrchestrator
->>>>>>> 001-modify-analyzer-method
 **Key Features**:
 - Complex multi-agent orchestration
 - Real-time AI decision making
@@ -326,11 +292,7 @@ frontend/ (olorin-front)
 ```typescript
 // Playwright test organization
 tests/playwright/
-<<<<<<< HEAD
-├── autonomous-investigation/
-=======
 ├── structured-investigation/
->>>>>>> 001-modify-analyzer-method
 │   ├── ai-agent-orchestration.spec.ts
 │   ├── automated-evidence-collection.spec.ts
 │   └── risk-calculation.spec.ts
@@ -390,11 +352,7 @@ No constitutional violations identified. The enhanced microservices approach ali
 - [x] Enhanced requirements integrated (Figma + Playwright + Investigation separation)
 
 **Enhancement Status**:
-<<<<<<< HEAD
-- [x] Autonomous Investigation Service designed
-=======
 - [x] Structured Investigation Service designed
->>>>>>> 001-modify-analyzer-method
 - [x] Manual Investigation Service designed
 - [x] Design System Service designed
 - [x] Figma MCP integration planned

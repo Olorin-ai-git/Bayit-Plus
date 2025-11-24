@@ -95,20 +95,13 @@ async def logs_agent_node(state: InvestigationState, config: Optional[Dict] = No
         "metrics_collected": len(logs_findings["metrics"])
     }
     
-<<<<<<< HEAD
-    # CRITICAL: Use validated domain scorer with whitelist and 0.25 cap
-=======
     # CRITICAL: Use validated domain scorer with whitelist and 0.25 cap (with ALL tool results)
->>>>>>> 001-modify-analyzer-method
     from .base import analyze_evidence_with_llm
     logs_findings = await analyze_evidence_with_llm(
         domain="logs",
         findings=logs_findings,
         snowflake_data=snowflake_data,
-<<<<<<< HEAD
-=======
         tool_results=tool_results,
->>>>>>> 001-modify-analyzer-method
         entity_type=entity_type,
         entity_id=entity_id
     )
@@ -149,15 +142,11 @@ def _analyze_failed_transactions(results: list, findings: Dict[str, Any]) -> Non
     
     if len(failed_txs) > 5:
         findings["risk_indicators"].append(f"High number of rejected transactions: {len(failed_txs)}")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.3)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.3)
->>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"SUSPICIOUS: {len(failed_txs)} rejected transactions indicates potential fraud attempts")
     
     # Analyze rejection reasons
@@ -179,15 +168,11 @@ def _analyze_transaction_timing(results: list, findings: Dict[str, Any]) -> None
     if len(tx_times) > 10:
         # In production, would calculate actual time deltas between transactions
         findings["risk_indicators"].append("Potential rapid-fire transaction pattern")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.2)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.2)
->>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"SUSPICIOUS: {len(tx_times)} transactions may indicate automated behavior")
     
     findings["analysis"]["transaction_timeline"] = tx_times[:10]  # Store first 10 for analysis
@@ -207,15 +192,11 @@ def _analyze_error_patterns(results: list, findings: Dict[str, Any]) -> None:
     
     if len(error_codes) > 3:
         findings["risk_indicators"].append(f"Multiple error codes detected: {len(unique_errors)}")
-<<<<<<< HEAD
-        findings["risk_score"] = max(findings["risk_score"], 0.1)
-=======
         # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
         if "llm_risk_score" not in findings:
             current_score = findings.get("risk_score")
             if current_score is not None:
                 findings["risk_score"] = max(current_score, 0.1)
->>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"SUSPICIOUS: {len(unique_errors)} different error types may indicate probing behavior")
 
 
@@ -329,19 +310,6 @@ def _process_log_signals(tool_name: str, signals: Dict[str, Any], findings: Dict
                 log_risk_level -= (0.2 - normalized_score) * 0.15
                 findings["evidence"].append(f"{tool_name}: Normal log activity {key} = {value}")
     
-<<<<<<< HEAD
-    # Apply risk adjustment based on log assessment
-    if log_risk_level > 0.4:
-        # High log risk detected - increase risk
-        risk_multiplier = 1.0 + min(0.1, log_risk_level * 0.06)
-        findings["risk_score"] = min(1.0, findings["risk_score"] * risk_multiplier)
-        findings["risk_indicators"].append(f"{tool_name}: Suspicious log activity detected (level: {log_risk_level:.2f})")
-    elif log_risk_level < -0.1:
-        # Normal log activity - reduce risk
-        risk_multiplier = 1.0 + max(-0.05, log_risk_level * 0.1)  # log_risk_level is negative
-        findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
-        findings["evidence"].append(f"{tool_name}: Log activity appears normal (level: {log_risk_level:.2f})")
-=======
     # CRITICAL FIX: Do NOT modify LLM risk score after LLM analysis
     # Only apply adjustments BEFORE LLM analysis (during evidence collection)
     if "llm_risk_score" in findings:
@@ -367,7 +335,6 @@ def _process_log_signals(tool_name: str, signals: Dict[str, Any], findings: Dict
                 risk_multiplier = 1.0 + max(-0.05, log_risk_level * 0.1)  # log_risk_level is negative
                 findings["risk_score"] = max(0.1, current_score * risk_multiplier)
                 findings["evidence"].append(f"{tool_name}: Log activity appears normal (level: {log_risk_level:.2f})")
->>>>>>> 001-modify-analyzer-method
     
     # Store aggregated metrics
     if evidence_count > 0:

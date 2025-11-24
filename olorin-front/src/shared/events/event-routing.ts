@@ -4,11 +4,7 @@
  */
 
 import { EventBusManager } from './eventBus';
-<<<<<<< HEAD
-import { WebSocketManager } from './websocket-manager';
-=======
 // WebSocketManager removed per spec 005 - using polling instead
->>>>>>> 001-modify-analyzer-method
 
 export interface RoutingRule {
   id: string;
@@ -89,22 +85,14 @@ export interface RoutingContext {
 export class EventRouter {
   private static instance: EventRouter;
   private eventBus: EventBusManager;
-<<<<<<< HEAD
-  private webSocketManager: WebSocketManager;
-=======
   // webSocketManager removed per spec 005 - using polling instead
->>>>>>> 001-modify-analyzer-method
   private rules: Map<string, RoutingRule> = new Map();
   private metrics: Map<string, RoutingMetrics> = new Map();
   private subscriptions: Map<string, () => void> = new Map();
 
   private constructor() {
     this.eventBus = EventBusManager.getInstance();
-<<<<<<< HEAD
-    this.webSocketManager = WebSocketManager.getInstance();
-=======
     // webSocketManager initialization removed per spec 005
->>>>>>> 001-modify-analyzer-method
     this.initializeDefaultRules();
     this.setupEventListeners();
   }
@@ -231,52 +219,13 @@ export class EventRouter {
    */
   private initializeDefaultRules(): void {
     const defaultRules: RoutingRule[] = [
-<<<<<<< HEAD
-      // Autonomous Investigation → Manual Investigation Escalation
-      {
-        id: 'auto-to-manual-escalation',
-        name: 'Escalate Autonomous to Manual Investigation',
-        description: 'Route autonomous investigation escalations to manual investigation service',
-        sourceEvent: 'auto:investigation:escalated',
-        sourceService: 'autonomous-investigation',
-        targetEvents: [
-          {
-            event: 'manual:investigation:started',
-            service: 'manual-investigation',
-            required: true
-          },
-          {
-            event: 'ui:notification:show',
-            service: 'core-ui',
-            required: false
-          }
-        ],
-        priority: 'high',
-        enabled: true,
-        transform: {
-          type: 'map',
-          mapping: {
-            'id': 'investigationId',
-            'reason': 'escalationReason'
-          }
-        }
-      },
-
-      // Investigation → Visualization Updates
-=======
       // Investigation → Visualization Updates (unified investigation service)
->>>>>>> 001-modify-analyzer-method
       {
         id: 'investigation-to-visualization',
         name: 'Investigation Data to Visualization',
         description: 'Route investigation updates to visualization service',
-<<<<<<< HEAD
-        sourceEvent: 'auto:risk:calculated',
-        sourceService: 'autonomous-investigation',
-=======
         sourceEvent: 'investigation:risk:calculated',
         sourceService: 'investigation',
->>>>>>> 001-modify-analyzer-method
         targetEvents: [
           {
             event: 'viz:graph:updated',
@@ -322,41 +271,13 @@ export class EventRouter {
         enabled: true
       },
 
-<<<<<<< HEAD
-      // Investigation Completion → Reporting
-=======
       // Investigation Completion → Reporting (unified investigation service)
->>>>>>> 001-modify-analyzer-method
       {
         id: 'investigation-to-report',
         name: 'Investigation Completion to Reporting',
         description: 'Generate reports when investigations are completed',
-<<<<<<< HEAD
-        sourceEvent: 'auto:investigation:completed',
-        sourceService: 'autonomous-investigation',
-        targetEvents: [
-          {
-            event: 'report:generated',
-            service: 'reporting',
-            required: true,
-            delay: 1000
-          }
-        ],
-        priority: 'medium',
-        enabled: true
-      },
-
-      // Manual Investigation → Reporting
-      {
-        id: 'manual-investigation-to-report',
-        name: 'Manual Investigation Completion to Reporting',
-        description: 'Generate reports when manual investigations are completed',
-        sourceEvent: 'manual:investigation:completed',
-        sourceService: 'manual-investigation',
-=======
         sourceEvent: 'investigation:completed',
         sourceService: 'investigation',
->>>>>>> 001-modify-analyzer-method
         targetEvents: [
           {
             event: 'report:generated',
@@ -472,24 +393,11 @@ export class EventRouter {
   private setupEventListeners(): void {
     // Listen to all events and check for applicable routing rules
     const allEventTypes = [
-<<<<<<< HEAD
-      'auto:investigation:started',
-      'auto:investigation:completed',
-      'auto:investigation:escalated',
-      'auto:ai:decision',
-      'auto:risk:calculated',
-      'manual:investigation:started',
-      'manual:investigation:completed',
-      'manual:workflow:updated',
-      'manual:evidence:added',
-      'manual:collaboration:invited',
-=======
       'investigation:started',
       'investigation:completed',
       'investigation:risk:calculated',
       'investigation:progress:updated',
       'investigation:tool:executed',
->>>>>>> 001-modify-analyzer-method
       'agent:execution:started',
       'agent:execution:completed',
       'agent:performance:updated',
@@ -633,16 +541,8 @@ export class EventRouter {
     // Emit to event bus
     this.eventBus.emit(target.event as any, enrichedData);
 
-<<<<<<< HEAD
-    // Also send via WebSocket if target service is different
-    if (target.service !== 'core-ui') {
-      this.webSocketManager.sendToService(target.service, target.event, enrichedData);
-    }
-
-=======
     // Polling-based message delivery per spec 005 (WebSocket removed)
     // Messages are now delivered via HTTP polling endpoints instead of WebSocket
->>>>>>> 001-modify-analyzer-method
     console.log(`🎯 Routed: ${context.sourceEvent} → ${target.event} (${target.service})`);
   }
 
@@ -833,12 +733,7 @@ export class EventRouter {
    * Private: Extract service name from event
    */
   private extractServiceFromEvent(event: string): string {
-<<<<<<< HEAD
-    if (event.startsWith('auto:')) return 'autonomous-investigation';
-    if (event.startsWith('manual:')) return 'manual-investigation';
-=======
     if (event.startsWith('investigation:')) return 'investigation';
->>>>>>> 001-modify-analyzer-method
     if (event.startsWith('agent:')) return 'agent-analytics';
     if (event.startsWith('rag:')) return 'rag-intelligence';
     if (event.startsWith('viz:')) return 'visualization';

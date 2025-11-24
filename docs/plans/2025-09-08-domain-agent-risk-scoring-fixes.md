@@ -2,22 +2,14 @@
 
 **Author**: Gil Klainert  
 **Date**: 2025-09-08  
-<<<<<<< HEAD
-**Project**: Olorin Autonomous Investigation System  
-=======
 **Project**: Olorin Structured Investigation System  
->>>>>>> 001-modify-analyzer-method
 **Status**: ✅ APPROVED - Ready for Implementation  
 **Branch**: `feature/domain-agent-risk-scoring-fixes`  
 **Diagram**: [Risk Scoring Architecture](/docs/diagrams/domain-agent-risk-scoring-architecture.html)
 
 ## Overview
 
-<<<<<<< HEAD
-This plan addresses critical issues in the autonomous investigation system where multiple domain agents are returning "No results available" and verifies that all risk scores are calculated from real tool data in live mode, not mock/placeholder data.
-=======
 This plan addresses critical issues in the structured investigation system where multiple domain agents are returning "No results available" and verifies that all risk scores are calculated from real tool data in live mode, not mock/placeholder data.
->>>>>>> 001-modify-analyzer-method
 
 ## Critical Requirements
 

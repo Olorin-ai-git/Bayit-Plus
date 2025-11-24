@@ -4,11 +4,7 @@
 **Date**: 2025-09-06  
 **Version**: 1.0  
 **Status**: ✅ PHASE 1 COMPLETED  
-<<<<<<< HEAD
-**Branch**: feature/plan-2025-09-06-autonomous-investigation-orchestrator
-=======
 **Branch**: feature/plan-2025-09-06-structured-investigation-orchestrator
->>>>>>> 001-modify-analyzer-method
 
 ---
 

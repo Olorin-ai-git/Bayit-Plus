@@ -153,15 +153,6 @@ export const CostAnalytics: React.FC<CostAnalyticsProps> = ({
   const optimizations = useMemo((): CostOptimization[] => {
     const recommendations: CostOptimization[] = [];
 
-<<<<<<< HEAD
-    // Analyze model costs for optimization
-    const modelCosts = models.reduce((acc, model) => {
-      acc[model.modelName] = model.totalCost;
-      return acc;
-    }, {} as Record<string, number>);
-
-=======
->>>>>>> 001-modify-analyzer-method
     // Find expensive models with low usage
     const expensiveModels = models.filter(model =>
       model.totalCost > 100 && model.totalCalls < 1000

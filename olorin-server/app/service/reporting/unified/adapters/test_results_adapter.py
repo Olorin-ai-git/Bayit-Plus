@@ -1,11 +1,7 @@
 """
 Test results adapter for System 1 compatibility.
 
-<<<<<<< HEAD
-This adapter converts test runner results (from unified_autonomous_test_runner.py)
-=======
 This adapter converts test runner results (from unified_structured_test_runner.py)
->>>>>>> 001-modify-analyzer-method
 into the unified report data format, maintaining compatibility with the existing
 test runner reporting workflow.
 """
@@ -28,11 +24,7 @@ class TestResultsAdapter(BaseAdapter):
     """
     Adapter for converting test runner results to unified format.
     
-<<<<<<< HEAD
-    This adapter handles the data format produced by the unified autonomous
-=======
     This adapter handles the data format produced by the unified structured
->>>>>>> 001-modify-analyzer-method
     test runner and converts it into the standardized UnifiedReportData
     structure for consistent report generation.
     

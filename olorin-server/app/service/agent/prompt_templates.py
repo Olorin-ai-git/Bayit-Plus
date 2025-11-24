@@ -34,11 +34,7 @@ class PromptTemplateManager:
     def _get_standard_template(self) -> str:
         """Standard orchestration prompt template"""
         
-<<<<<<< HEAD
-        return """You are the Master Orchestrator for autonomous fraud investigations with bulletproof resilience. Analyze the investigation context and make intelligent decisions about agent coordination strategy.
-=======
         return """You are the Master Orchestrator for structured fraud investigations with bulletproof resilience. Analyze the investigation context and make intelligent decisions about agent coordination strategy.
->>>>>>> 001-modify-analyzer-method
 
 INVESTIGATION CONTEXT:
 - Investigation ID: {investigation_id}

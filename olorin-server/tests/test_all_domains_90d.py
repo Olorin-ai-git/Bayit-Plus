@@ -11,13 +11,6 @@ time_range = "90d"
 investigation_id = "INV-TEST-ALL-DOMAINS-90D"
 
 headers = {
-<<<<<<< HEAD:back/tests/test_all_domains_90d.py
-    "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
-    "Content-Type": "application/json",
-    "X-Forwarded-Port": "8090",
-    "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
-    "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
-=======
     "Authorization": "Olorin_APIKey olorin_apikey=preprdakyres3AVWXWEiZESQdOnynrcYt9h9wwfR,olorin_apikey_version=1.0",
     "Content-Type": "application/json",
     "X-Forwarded-Port": "8090",

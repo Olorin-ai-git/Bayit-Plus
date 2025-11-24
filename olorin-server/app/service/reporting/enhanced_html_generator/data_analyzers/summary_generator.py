@@ -29,11 +29,7 @@ class SummaryGenerator:
         Returns:
             Complete investigation summary with metrics
         """
-<<<<<<< HEAD
-        activities = extracted_data.autonomous_activities
-=======
         activities = extracted_data.structured_activities
->>>>>>> 001-modify-analyzer-method
         metadata = extracted_data.metadata
 
         # Basic investigation info

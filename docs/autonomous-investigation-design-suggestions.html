@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structured Investigation Display Suggestions</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0b0d;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #4a90ff;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(74, 144, 255, 0.3);
+        }
+
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .design-card {
+            background: linear-gradient(135deg, #1a1d23 0%, #2a2f38 100%);
+            border: 1px solid #3a4050;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(74, 144, 255, 0.2);
+        }
+
+        .design-header {
+            padding: 20px;
+            background: linear-gradient(90deg, #4a90ff 0%, #6c5ce7 100%);
+            border-bottom: 2px solid #3a4050;
+        }
+
+        .design-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .design-subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .design-content {
+            padding: 25px;
+        }
+
+        /* Design 1: Neural Network Graph */
+        .neural-network {
+            position: relative;
+            height: 300px;
+            background: radial-gradient(circle at center, #1a1d23 0%, #0a0b0d 100%);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border: 2px solid;
+            animation: pulse 2s infinite;
+        }
+
+        .neural-node.active {
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #4a90ff 50%, transparent 100%);
+            transform-origin: left center;
+            animation: flow 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes flow {
+            0% { opacity: 0; transform: scaleX(0); }
+            50% { opacity: 1; transform: scaleX(1); }
+            100% { opacity: 0; transform: scaleX(0); }
+        }
+
+        /* Design 2: Command Terminal */
+        .terminal {
+            background: #0a0a0a;
+            border-radius: 8px;
+            border: 1px solid #333;
+            font-family: 'Courier New', monospace;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .terminal-header {
+            background: #2a2a2a;
+            padding: 8px 16px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-content {
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+            animation: typewriter 0.5s ease-in;
+        }
+
+        .terminal-prompt {
+            color: #4a90ff;
+        }
+
+        .terminal-success {
+            color: #00ff88;
+        }
+
+        .terminal-warning {
+            color: #ffaa00;
+        }
+
+        .terminal-error {
+            color: #ff4444;
+        }
+
+        @keyframes typewriter {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Design 3: Investigation Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #4a90ff, #6c5ce7, #00ff88);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 80px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: #1a1d23;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-content {
+            background: rgba(74, 144, 255, 0.1);
+            border-left: 3px solid #4a90ff;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Design 4: Agent Dashboard */
+        .agent-dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, rgba(74, 144, 255, 0.1) 0%, rgba(108, 92, 231, 0.1) 100%);
+            border: 1px solid rgba(74, 144, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .agent-card.active {
+            border-color: #4a90ff;
+            box-shadow: 0 0 20px rgba(74, 144, 255, 0.3);
+        }
+
+        .agent-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .agent-status {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .status-running {
+            background: #4a90ff;
+            color: white;
+        }
+
+        .status-completed {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .status-pending {
+            background: #666;
+            color: white;
+        }
+
+        /* Design 5: Interactive Graph Visualization */
+        .graph-container {
+            position: relative;
+            height: 300px;
+            background: radial-gradient(circle at center, #1a1d23 0%, #0a0b0d 100%);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .graph-node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 2px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .graph-node:hover {
+            transform: scale(1.1);
+        }
+
+        .graph-edge {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, #4a90ff 20%, #6c5ce7 80%, transparent 100%);
+            transform-origin: left center;
+            opacity: 0.7;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90ff, #00ff88);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
+        }
+
+        .risk-meter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .risk-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .risk-background {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #00ff88 0deg, #ffaa00 120deg, #ff4444 240deg, #ff4444 360deg);
+            padding: 5px;
+        }
+
+        .risk-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #1a1d23;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .risk-score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4a90ff;
+        }
+
+        .risk-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .features-list {
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .feature-icon {
+            color: #4a90ff;
+            width: 16px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background: rgba(26, 29, 35, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #3a4050;
+        }
+
+        .comparison-table th {
+            background: #2a2f38;
+            font-weight: 600;
+            color: #4a90ff;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(74, 144, 255, 0.05);
+        }
+
+        .checkmark {
+            color: #00ff88;
+        }
+
+        .cross {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-brain"></i> Structured Investigation Display Suggestions</h1>
+        
+        <div class="design-grid">
+            <!-- Design 1: Neural Network Visualization -->
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title"><i class="fas fa-project-diagram"></i> Neural Network Flow</div>
+                    <div class="design-subtitle">Real-time agent coordination with animated connections</div>
+                </div>
+                <div class="design-content">
+                    <div class="neural-network">
+                        <!-- Central orchestrator -->
+                        <div class="neural-node active" style="top: 40%; left: 45%; background: #4a90ff; border-color: #4a90ff; color: white;">
+                            CTRL
+                        </div>
+                        
+                        <!-- Agent nodes -->
+                        <div class="neural-node" style="top: 10%; left: 15%; background: #00ff88; border-color: #00ff88; color: black;">
+                            NET
+                        </div>
+                        <div class="neural-node" style="top: 10%; left: 75%; background: #ff6b6b; border-color: #ff6b6b; color: white;">
+                            DEV
+                        </div>
+                        <div class="neural-node" style="top: 70%; left: 15%; background: #ffa500; border-color: #ffa500; color: white;">
+                            LOC
+                        </div>
+                        <div class="neural-node" style="top: 70%; left: 75%; background: #9c88ff; border-color: #9c88ff; color: white;">
+                            LOG
+                        </div>
+                        
+                        <!-- Risk assessment -->
+                        <div class="neural-node" style="top: 85%; left: 45%; background: #ff4444; border-color: #ff4444; color: white;">
+                            RISK
+                        </div>
+                        
+                        <!-- Animated connections -->
+                        <div class="neural-connection" style="top: 25%; left: 25%; width: 150px; transform: rotate(25deg);"></div>
+                        <div class="neural-connection" style="top: 25%; left: 65%; width: 150px; transform: rotate(-25deg);"></div>
+                        <div class="neural-connection" style="top: 60%; left: 25%; width: 150px; transform: rotate(-25deg);"></div>
+                        <div class="neural-connection" style="top: 60%; left: 65%; width: 150px; transform: rotate(25deg);"></div>
+                        <div class="neural-connection" style="top: 75%; left: 48%; width: 80px; transform: rotate(90deg);"></div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Real-time agent status visualization</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Animated data flow between agents</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Interactive node hover details</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Dynamic connection strength indicators</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design 2: Command Terminal Interface -->
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title"><i class="fas fa-terminal"></i> Command Terminal</div>
+                    <div class="design-subtitle">Live investigation logs with syntax highlighting</div>
+                </div>
+                <div class="design-content">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-dot" style="background: #ff4444;"></div>
+                            <div class="terminal-dot" style="background: #ffaa00;"></div>
+                            <div class="terminal-dot" style="background: #00ff88;"></div>
+                            <span style="margin-left: 10px; color: #ccc;">olorin-investigation</span>
+                        </div>
+                        <div class="terminal-content">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">investigation@olorin:~$</span> <span class="terminal-success">Starting structured investigation...</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">network-agent</span> <span>→ Analyzing IP geolocation data...</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">network-agent</span> <span class="terminal-warning">→ VPN detected: confidence 78%</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">device-agent</span> <span>→ Extracting device fingerprints...</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">device-agent</span> <span class="terminal-error">→ Device spoofing detected!</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">location-agent</span> <span>→ GPS analysis in progress...</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">location-agent</span> <span class="terminal-warning">→ Impossible travel velocity: 2400km/h</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">risk-agent</span> <span class="terminal-error">→ CRITICAL: Fraud score 94/100</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">investigation@olorin:~$</span> <span class="terminal-success">Investigation completed ✓</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Real-time streaming logs</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Syntax highlighting by agent type</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Severity-based color coding</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Searchable and filterable output</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design 3: Investigation Timeline -->
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title"><i class="fas fa-timeline"></i> Investigation Timeline</div>
+                    <div class="design-subtitle">Chronological progress with detailed milestones</div>
+                </div>
+                <div class="design-content">
+                    <div class="timeline">
+                        <div class="timeline-line"></div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="border-color: #4a90ff; background: #4a90ff;">
+                                <i class="fas fa-play" style="font-size: 8px; color: white;"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Investigation Started</div>
+                                <div class="timeline-description">Multi-agent system initialized for user_12345</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="border-color: #00ff88; background: #00ff88;">
+                                <i class="fas fa-check" style="font-size: 8px; color: black;"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Network Analysis Complete</div>
+                                <div class="timeline-description">VPN usage detected, threat intelligence flagged</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="border-color: #ffa500; background: #ffa500;">
+                                <i class="fas fa-exclamation" style="font-size: 8px; color: white;"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Device Anomalies Found</div>
+                                <div class="timeline-description">Browser fingerprint inconsistencies suggest emulation</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="border-color: #ff4444; background: #ff4444;">
+                                <i class="fas fa-times" style="font-size: 8px; color: white;"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">High Risk Assessment</div>
+                                <div class="timeline-description">Final fraud score: 94/100 - Immediate action required</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Chronological investigation flow</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Detailed milestone descriptions</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Status-based visual indicators</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Expandable detail views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design 4: Agent Dashboard Grid -->
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title"><i class="fas fa-th-large"></i> Agent Dashboard</div>
+                    <div class="design-subtitle">Live agent status with performance metrics</div>
+                </div>
+                <div class="design-content">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                    
+                    <div class="agent-dashboard">
+                        <div class="agent-card active">
+                            <i class="fas fa-network-wired agent-icon" style="color: #00ff88;"></i>
+                            <div class="agent-name">Network Agent</div>
+                            <div class="agent-status status-completed">COMPLETED</div>
+                        </div>
+                        
+                        <div class="agent-card active">
+                            <i class="fas fa-mobile-alt agent-icon" style="color: #ff6b6b;"></i>
+                            <div class="agent-name">Device Agent</div>
+                            <div class="agent-status status-running">ANALYZING</div>
+                        </div>
+                        
+                        <div class="agent-card">
+                            <i class="fas fa-map-marker-alt agent-icon" style="color: #ffa500;"></i>
+                            <div class="agent-name">Location Agent</div>
+                            <div class="agent-status status-pending">PENDING</div>
+                        </div>
+                        
+                        <div class="agent-card">
+                            <i class="fas fa-file-alt agent-icon" style="color: #9c88ff;"></i>
+                            <div class="agent-name">Log Agent</div>
+                            <div class="agent-status status-pending">PENDING</div>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-meter">
+                        <div class="risk-circle">
+                            <div class="risk-background">
+                                <div class="risk-inner">
+                                    <div class="risk-score">78</div>
+                                    <div class="risk-label">Risk Score</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Real-time agent status updates</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Interactive risk score visualization</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Performance metrics per agent</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Overall progress tracking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design 5: Interactive Graph Visualization -->
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title"><i class="fas fa-sitemap"></i> Interactive Graph</div>
+                    <div class="design-subtitle">3D investigation flow with WebSocket updates</div>
+                </div>
+                <div class="design-content">
+                    <div class="graph-container">
+                        <!-- Start node -->
+                        <div class="graph-node" style="top: 20px; left: 20px; background: #4a90ff; border-color: #4a90ff; color: white;">
+                            <i class="fas fa-play"></i>
+                            <span>START</span>
+                        </div>
+                        
+                        <!-- Agent nodes -->
+                        <div class="graph-node active" style="top: 80px; left: 120px; background: #00ff88; border-color: #00ff88; color: black;">
+                            <i class="fas fa-network-wired"></i>
+                            <span>NETWORK</span>
+                        </div>
+                        
+                        <div class="graph-node active" style="top: 80px; left: 240px; background: #ffa500; border-color: #ffa500; color: white;">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>DEVICE</span>
+                        </div>
+                        
+                        <div class="graph-node" style="top: 180px; left: 120px; background: #9c88ff; border-color: #9c88ff; color: white;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>LOCATION</span>
+                        </div>
+                        
+                        <div class="graph-node" style="top: 180px; left: 240px; background: #ff6b6b; border-color: #ff6b6b; color: white;">
+                            <i class="fas fa-file-alt"></i>
+                            <span>LOGS</span>
+                        </div>
+                        
+                        <!-- Risk assessment -->
+                        <div class="graph-node" style="top: 200px; left: 360px; background: #ff4444; border-color: #ff4444; color: white;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>RISK</span>
+                        </div>
+                        
+                        <!-- Connections -->
+                        <div class="graph-edge" style="top: 50px; left: 80px; width: 100px; transform: rotate(20deg);"></div>
+                        <div class="graph-edge" style="top: 50px; left: 200px; width: 100px; transform: rotate(-20deg);"></div>
+                        <div class="graph-edge" style="top: 140px; left: 180px; width: 100px; transform: rotate(45deg);"></div>
+                        <div class="graph-edge" style="top: 140px; left: 280px; width: 100px; transform: rotate(-45deg);"></div>
+                        <div class="graph-edge" style="top: 220px; left: 320px; width: 80px;"></div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Interactive node exploration</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Real-time WebSocket updates</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Dynamic edge animations</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check feature-icon"></i>
+                            <span>Zoom and pan capabilities</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="design-card">
+            <div class="design-header">
+                <div class="design-title"><i class="fas fa-balance-scale"></i> Design Comparison</div>
+                <div class="design-subtitle">Feature comparison across all design suggestions</div>
+            </div>
+            <div class="design-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Neural Network</th>
+                            <th>Terminal</th>
+                            <th>Timeline</th>
+                            <th>Dashboard</th>
+                            <th>Interactive Graph</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Real-time Updates</td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Agent Status Visualization</td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Progress Tracking</td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Detailed Logging</td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Interactive Elements</td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Risk Score Display</td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>WebSocket Integration</td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Mobile Responsive</td>
+                            <td><i class="fas fa-times cross"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-check checkmark"></i></td>
+                            <td><i class="fas fa-times cross"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Implementation Complexity</td>
+                            <td>High</td>
+                            <td>Low</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                            <td>High</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 30px; padding: 20px; background: rgba(74, 144, 255, 0.1); border-radius: 12px; border-left: 4px solid #4a90ff;">
+                    <h3 style="color: #4a90ff; margin-bottom: 15px;"><i class="fas fa-lightbulb"></i> Recommendation</h3>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Primary Choice:</strong> <strong>Agent Dashboard</strong> - Perfect balance of functionality, user experience, and implementation complexity.
+                    </p>
+                    <p style="margin-bottom: 10px;">
+                        <strong>Secondary Choice:</strong> <strong>Investigation Timeline</strong> - Excellent for detailed progress tracking and milestone visualization.
+                    </p>
+                    <p>
+                        <strong>Advanced Option:</strong> <strong>Interactive Graph</strong> - Best for power users who need deep investigation flow analysis.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive JavaScript for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate real-time updates
+            setInterval(function() {
+                const progressFill = document.querySelector('.progress-fill');
+                const currentWidth = parseInt(progressFill.style.width) || 75;
+                if (currentWidth < 100) {
+                    progressFill.style.width = (currentWidth + 1) + '%';
+                }
+            }, 2000);
+
+            // Add click handlers for graph nodes
+            document.querySelectorAll('.graph-node').forEach(node => {
+                node.addEventListener('click', function() {
+                    alert('Node clicked: ' + this.textContent.trim());
+                });
+            });
+
+            // Add hover effects for agent cards
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

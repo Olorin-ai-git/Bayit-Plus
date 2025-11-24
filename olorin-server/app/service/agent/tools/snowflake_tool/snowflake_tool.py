@@ -46,15 +46,10 @@ CORE_TRANSACTION_FIELDS = [
 ]
 
 # Risk and Fraud Analysis Fields
-<<<<<<< HEAD
-RISK_ANALYSIS_FIELDS = [
-    MODEL_SCORE, IS_FRAUD_TX, NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
-=======
 # CRITICAL: MODEL_SCORE and IS_FRAUD_TX are excluded from investigation queries
 # They are only used AFTER investigation for comparison purposes
 RISK_ANALYSIS_FIELDS = [
     NSURE_LAST_DECISION, MAXMIND_RISK_SCORE,
->>>>>>> 001-modify-analyzer-method
     "TRIGGERED_RULES", "COUNT_TRIGGERED_RULES", "RULE_DECISION"
 ]
 

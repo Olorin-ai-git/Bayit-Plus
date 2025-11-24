@@ -52,11 +52,7 @@ class ConfigLoader:
                 logger.info(f"Loaded .env configuration from {env_path}")
             else:
                 logger.warning(f"No .env file found at {env_path}")
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 001-modify-analyzer-method
             # Initialize secret manager only if Firebase secrets are enabled
             use_firebase_secrets = os.getenv('USE_FIREBASE_SECRETS', 'true').lower() == 'true'
             if use_firebase_secrets:
@@ -65,11 +61,7 @@ class ConfigLoader:
             else:
                 self.secret_manager = None
                 logger.info("Firebase Secret Manager disabled - using .env only")
-<<<<<<< HEAD
-                
-=======
 
->>>>>>> 001-modify-analyzer-method
             self.env = os.getenv("APP_ENV", "local")
             logger.info(f"ConfigLoader initialized for environment: {self.env}")
             ConfigLoader._initialized = True
@@ -77,11 +69,7 @@ class ConfigLoader:
     def load_secret(self, secret_path: str) -> Optional[str]:
         """
         Load a secret with priority: .env > Firebase > None.
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         Args:
             secret_path: Base secret name (e.g., "DATABASE_PASSWORD")
 
@@ -93,24 +81,14 @@ class ConfigLoader:
         if value:
             logger.debug(f"✅ Using .env value for {secret_path}")
             return value
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Priority 2: Try Firebase Secret Manager (if enabled)
         if not self.secret_manager:
             logger.debug(f"❌ Firebase secrets disabled, {secret_path} not found in .env")
             return None
-<<<<<<< HEAD
-            
-        logger.info(f"⚠️  Secret '{secret_path}' not found in .env, attempting Firebase fallback...")
-        
-=======
 
         logger.info(f"⚠️  Secret '{secret_path}' not found in .env, attempting Firebase fallback...")
 
->>>>>>> 001-modify-analyzer-method
         # Try environment-specific secret first
         env_secret_path = f"{self.env}/{secret_path}"
         value = self.secret_manager.get_secret(env_secret_path)
@@ -121,17 +99,10 @@ class ConfigLoader:
 
         # Try base secret path (for shared secrets)
         value = self.secret_manager.get_secret(secret_path)
-<<<<<<< HEAD
-        
-        if not value:
-            logger.warning(f"Configuration '{secret_path}' not found in .env or Firebase Secrets")
-        
-=======
 
         if not value:
             logger.warning(f"Configuration '{secret_path}' not found in .env or Firebase Secrets")
 
->>>>>>> 001-modify-analyzer-method
         return value
 
     def load_api_key(self, key_name: str) -> Optional[str]:
@@ -151,11 +122,7 @@ class ConfigLoader:
         """
         Load database configuration from secrets.
         UNUSED: Application uses SQLite, not PostgreSQL.
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dictionary with database configuration (hardcoded defaults)
         """
@@ -168,41 +135,15 @@ class ConfigLoader:
             "password": None,  # Not needed for SQLite
             "pool_size": 10
         }
-<<<<<<< HEAD
-    
-    def load_snowflake_config(self) -> Dict[str, Optional[str]]:
-        """
-        Load Snowflake configuration with priority: .env > Firebase > None.
-        
-=======
 
     def load_snowflake_config(self) -> Dict[str, Optional[str]]:
         """
         Load Snowflake configuration with priority: .env > Firebase > None.
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dict containing Snowflake configuration with .env taking priority
         """
         config = {}
-<<<<<<< HEAD
-        
-        # Define configuration keys (no defaults - must be configured)
-        config_keys = [
-            'account', 'host', 'user', 'password', 'private_key',
-            'database', 'schema', 'warehouse', 'role', 'authenticator',
-            'pool_size', 'pool_max_overflow', 'pool_timeout', 'query_timeout'
-        ]
-        
-        missing_from_env = []
-        
-        for key in config_keys:
-            env_var = f'SNOWFLAKE_{key.upper()}'
-            
-            # Priority 1: Check .env file (expected source)
-            value = os.getenv(env_var)
-            
-=======
 
         # Define configuration keys (no defaults - must be configured)
         config_keys = [
@@ -236,18 +177,12 @@ class ConfigLoader:
             # Priority 1: Check .env file (expected source)
             value = os.getenv(env_var)
 
->>>>>>> 001-modify-analyzer-method
             if value:
                 config[key] = value
                 # Log source for debugging (avoid logging passwords)
                 if 'password' not in key.lower() and 'key' not in key.lower():
                     logger.debug(f"Loaded {key} from .env: {value}")
             else:
-<<<<<<< HEAD
-                # Track what's missing from .env
-                missing_from_env.append(env_var)
-                
-=======
                 # Skip logging warnings for auth configs that aren't needed for current auth method
                 is_auth_config = env_var in ['SNOWFLAKE_PASSWORD', 'SNOWFLAKE_PRIVATE_KEY', 'SNOWFLAKE_OAUTH_TOKEN']
                 if is_auth_config and env_var not in auth_configs_needed:
@@ -258,19 +193,12 @@ class ConfigLoader:
                 # Track what's missing from .env (only for configs that are actually needed)
                 missing_from_env.append(env_var)
 
->>>>>>> 001-modify-analyzer-method
                 # Priority 2: Try Firebase as fallback
                 value = self.load_secret(env_var)
                 if value:
                     config[key] = value
                     logger.info(f"Using Firebase fallback for {env_var} (not in .env)")
                 else:
-<<<<<<< HEAD
-                    # Missing from both - just warn
-                    logger.warning(f"MISSING: {env_var} not found in .env or Firebase Secrets")
-                    config[key] = None
-        
-=======
                     # Missing from both - only warn if it's actually needed
                     if not is_auth_config or env_var in auth_configs_needed:
                         logger.warning(f"MISSING: {env_var} not found in .env or Firebase Secrets")
@@ -395,29 +323,10 @@ class ConfigLoader:
                     logger.warning(f"MISSING: {env_var} not found in .env or Firebase Secrets")
                     config[key] = None
 
->>>>>>> 001-modify-analyzer-method
         # Log summary of missing configs
         if missing_from_env:
             logger.warning(f"Expected in .env but missing: {', '.join(missing_from_env)}")
             logger.warning("Please add these to your .env file for complete configuration")
-<<<<<<< HEAD
-        
-        # Check critical fields but don't fail - just warn
-        critical_fields = ['account', 'user', 'password', 'database']
-        missing_critical = [f for f in critical_fields if not config.get(f)]
-        
-        if missing_critical:
-            logger.error(f"CRITICAL: Missing required Snowflake configuration: {missing_critical}")
-            logger.error("Snowflake connection will not be possible without these values")
-            # Don't raise exception - just warn
-        
-        return config
-    
-    def load_all_secrets(self) -> dict:
-        """
-        Load all secrets from both .env and Firebase.
-        
-=======
 
         # Check critical fields but don't fail - just warn
         critical_fields = ['host', 'port', 'database', 'user', 'password']
@@ -473,22 +382,14 @@ class ConfigLoader:
         """
         Load all secrets from both .env and Firebase.
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dictionary with all available secrets
         """
         secrets = {}
-<<<<<<< HEAD
-        
-        # Load Snowflake configuration
-        secrets['snowflake'] = self.load_snowflake_config()
-        
-=======
 
         # Load Snowflake configuration
         secrets['snowflake'] = self.load_snowflake_config()
 
->>>>>>> 001-modify-analyzer-method
         # Load other API keys and secrets
         api_keys = [
             'ANTHROPIC_API_KEY',
@@ -497,20 +398,12 @@ class ConfigLoader:
             'JWT_SECRET_KEY',
             'REDIS_API_KEY'
         ]
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         for key in api_keys:
             value = self.load_secret(key)
             if value:
                 secrets[key.lower()] = value
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Load Splunk configuration if enabled
         if os.getenv('USE_SPLUNK', 'false').lower() == 'true':
             secrets['splunk'] = {
@@ -520,24 +413,14 @@ class ConfigLoader:
                 'port': os.getenv('SPLUNK_PORT', '8089'),
                 'index': os.getenv('SPLUNK_INDEX', 'main')
             }
-<<<<<<< HEAD
-        
-        return secrets
-    
-=======
 
         return secrets
 
->>>>>>> 001-modify-analyzer-method
     def load_redis_config(self) -> dict:
         """
         Load Redis configuration from secrets.
         Only fetch the API key from secrets, use hardcoded defaults for connection params.
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dictionary with Redis configuration
         """
@@ -552,11 +435,7 @@ class ConfigLoader:
         """
         Load JWT configuration from secrets.
         Only fetch the secret key from secrets, use hardcoded defaults for other params.
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dictionary with JWT configuration
 
@@ -601,13 +480,8 @@ class ConfigLoader:
             "access_id": self.load_secret("SUMO_LOGIC_ACCESS_ID"),
             "access_key": self.load_secret("SUMO_LOGIC_ACCESS_KEY")
         }
-<<<<<<< HEAD
-    
-    
-=======
 
 
->>>>>>> 001-modify-analyzer-method
     def load_all_secrets(self) -> dict:
         """
         Load all secrets and return as a dictionary.
@@ -621,11 +495,7 @@ class ConfigLoader:
             # "openai_api_key": self.load_api_key("openai_api_key"),  # UNUSED: Replaced by Anthropic
             "olorin_api_key": self.load_api_key("olorin_api_key"),  # USED: Internal API calls
             # "databricks_token": self.load_api_key("databricks_token"),  # UNUSED: Mock implementation only
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 001-modify-analyzer-method
             # Service Configurations - Only load configs that actually fetch secrets
             # "database": self.load_database_config(),  # UNUSED: Using SQLite, not PostgreSQL
             "redis": self.load_redis_config(),  # USED: Caching system (only api_key from secrets)
@@ -633,11 +503,7 @@ class ConfigLoader:
             "splunk": self.load_splunk_config(),  # USED: Log analysis
             # "sumo_logic": self.load_sumo_logic_config(),  # UNUSED: Mock implementation only
             # "snowflake": self.load_snowflake_config(),  # UNUSED: Mock implementation only
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> 001-modify-analyzer-method
             # App Secret
             # "app_secret": self.load_secret("APP_SECRET")  # UNUSED: Not referenced in codebase
         }

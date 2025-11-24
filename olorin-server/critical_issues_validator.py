@@ -223,11 +223,7 @@ class CriticalIssuesValidator:
         # Search for float() calls that might be unsafe
         files_to_check = [
             "app/service/agent/enhanced_validation.py",
-<<<<<<< HEAD
-            "app/service/agent/autonomous_orchestrator.py",
-=======
             "app/service/agent/structured_orchestrator.py",
->>>>>>> 001-modify-analyzer-method
             "app/service/agent/integration_system.py"
         ]
         

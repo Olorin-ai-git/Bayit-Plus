@@ -158,14 +158,6 @@ Both implementations extract **identical authentication fields**:
 #### **Master Branch Results** (from documentation)
 ```json
 {
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_REFACTOR_VS_MASTER_SPLUNK_COMPARISON.md
-  "olorin_userid": "4621097846089147992",
-  "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
-  "values(olorin_offeringId)": [
-    "Olorin.cto.iam.ius",
-    "Olorin.dev.test.testeasy", 
-    "Olorin.fraudprevention.arrtestclient"
-=======
   "olorin_userid": "4621097846089147992",
   "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
   "values(olorin_offeringId)": [
@@ -187,10 +179,6 @@ Both implementations extract **identical authentication fields**:
 #### **Refactor Branch Results** (current execution)
 ```json
 {
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_REFACTOR_VS_MASTER_SPLUNK_COMPARISON.md
-  "olorin_userid": "4621097846089147992",
-  "values(olorin_username)": [
-=======
   "olorin_userid": "4621097846089147992",
   "values(olorin_username)": [
 >>>>>>> restructure-projects:olorin-server/docs/LOGS_DOMAIN_REFACTOR_VS_MASTER_SPLUNK_COMPARISON.md

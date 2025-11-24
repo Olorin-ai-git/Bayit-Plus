@@ -89,10 +89,7 @@ async def analyze_device(
     entity_type: str = Query(..., pattern="^(user_id|device_id)$"),
     profile_id: str = "9341450868951246",
     service: LLMDeviceRiskService = Depends(LLMDeviceRiskService),
-<<<<<<< HEAD
-=======
     current_user: User = Depends(require_read),
->>>>>>> 001-modify-analyzer-method
 ) -> dict:
     # Only keep HTTP-specific logic here
     ensure_investigation_exists(investigation_id, entity_id, entity_type)

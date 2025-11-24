@@ -79,14 +79,9 @@ class SnowflakePOCTester:
         )
         
         # Check analytics configuration
-<<<<<<< HEAD
-        analytics_config = {
-            'time_window': os.getenv('ANALYTICS_DEFAULT_TIME_WINDOW', '24h'),
-=======
         analyzer_hours = int(os.getenv('ANALYZER_TIME_WINDOW_HOURS', '24'))
         analytics_config = {
             'time_window': f"{analyzer_hours}h",
->>>>>>> 001-modify-analyzer-method
             'group_by': os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'email'),
             'top_percentage': os.getenv('ANALYTICS_DEFAULT_TOP_PERCENTAGE', '10'),
             'cache_ttl': os.getenv('ANALYTICS_CACHE_TTL', '300')

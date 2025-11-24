@@ -8,11 +8,7 @@ Includes external intelligence fusion and sanity checking.
 
 import json
 from typing import Dict, Any, Optional
-<<<<<<< HEAD
-from app.service.agent.orchestration.metrics.safe import safe_div, fmt_num
-=======
 from app.service.agent.orchestration.metrics.safe import safe_div, fmt_num, safe_mean
->>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestration.metrics.network import compute_network_metrics
 from app.service.intel.normalize import normalize_abuseipdb, abuseipdb_risk_component, normalize_virustotal, resolve_provider_conflicts
 from app.service.risk.fusion import fuse_network_risk
@@ -25,96 +21,15 @@ logger = get_bridge_logger(__name__)
 
 def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
     """
-<<<<<<< HEAD
-    SINGLE SOURCE OF TRUTH aggregator to prevent double aggregation.
-    
-    CRITICAL FIX: Replaces the old aggregator that was causing double calculation
-    (0.521 calculated but N/A gated) with the validated aggregator from domain fixes.
-=======
     Calculate final risk score using risk agent calculation method.
     
     CRITICAL: All graph types (hybrid, parallel, etc.) now use the same risk agent calculation.
     If LLM risk score exists, it's blended 50/50 with the risk agent calculation.
->>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Investigation state containing domain findings
         
     Returns:
-<<<<<<< HEAD
-        Final risk score or None if evidence gating blocks publication
-    """
-    from app.service.agent.orchestration.domain.aggregator import aggregate_domains, fmt_score
-    from app.service.agent.orchestration.domain.domain_result import DomainResult
-    
-    # Extract domain findings and convert to DomainResult objects
-    domain_findings = state.get("domain_findings", {})
-    domains = []
-    
-    for domain_name in ["logs", "network", "device", "location", "authentication"]:
-        domain_data = domain_findings.get(domain_name, {})
-        
-        if not isinstance(domain_data, dict):
-            continue
-            
-        # Extract risk score (may be None for insufficient evidence)
-        risk_score = domain_data.get("risk_score")
-        
-        # Determine status
-        if risk_score is None:
-            status = "INSUFFICIENT_EVIDENCE"
-        else:
-            status = "OK"
-        
-        # Extract signals/evidence
-        evidence = domain_data.get("evidence", [])
-        signals = []
-        
-        # Convert evidence to signals (simplified)
-        for item in evidence[:5]:  # Limit to first 5 evidence items
-            if isinstance(item, str) and len(item.strip()) > 0:
-                signals.append(item.strip()[:50])  # Truncate long signals
-        
-        # Create DomainResult
-        domain_result = DomainResult(
-            name=domain_name,
-            score=risk_score,
-            status=status,
-            signals=signals,
-            confidence=domain_data.get("confidence", 0.35),
-            narrative=domain_data.get("summary", f"Domain {domain_name} analysis")
-        )
-        
-        domains.append(domain_result)
-    
-    # Extract facts for aggregation
-    facts = {}
-    
-    # Check for confirmed fraud (IS_FRAUD_TX=True)
-    snowflake_data = state.get("snowflake_data", {})
-    if snowflake_data and snowflake_data.get("results"):
-        for row in snowflake_data["results"]:
-            if isinstance(row, dict):
-                is_fraud = row.get("IS_FRAUD_TX")
-                if is_fraud is True or is_fraud == 1:
-                    facts["IS_FRAUD_TX"] = True
-                    break
-    
-    # Use single source of truth aggregator
-    final_risk, gating_status, gating_reason = aggregate_domains(domains, facts)
-    
-    # Store gating information in state for transparency
-    state["gating_status"] = gating_status
-    state["gating_reason"] = gating_reason
-    
-    logger.debug(f"🎯 SINGLE AGGREGATOR: final_risk={fmt_score(final_risk)}, gating={gating_status}, domains={len(domains)}")
-    
-    if gating_status == "BLOCK":
-        logger.info(f"🚫 EVIDENCE GATING: {gating_reason}")
-        return None  # Evidence gating blocks numeric risk
-    else:
-        return final_risk
-=======
         Final risk score (0.0-1.0) or None if calculation fails
     """
     from app.service.agent.orchestration.domain_agents.risk_agent import _calculate_real_risk_score
@@ -161,7 +76,6 @@ def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
     
     # No LLM risk score or invalid - use risk agent score directly
     return risk_agent_score
->>>>>>> 001-modify-analyzer-method
 
 
 def finalize_risk(state: Dict[str, Any]) -> None:
@@ -228,25 +142,10 @@ def finalize_risk(state: Dict[str, Any]) -> None:
     # Use flap-adjusted risk score
     final_risk = flap_result["adjusted_risk"]
     
-<<<<<<< HEAD
-    # CRITICAL: Check for confirmed fraud BEFORE evidence gating (ground truth bypass)
-    confirmed_fraud_detected = False
-    snowflake_data = state.get("snowflake_data", {})
-    if snowflake_data and snowflake_data.get("results"):
-        for row in snowflake_data["results"]:
-            if isinstance(row, dict):
-                is_fraud = row.get("IS_FRAUD_TX")
-                if is_fraud is True or is_fraud == 1:
-                    confirmed_fraud_detected = True
-                    state["confirmed_fraud_present"] = True
-                    logger.info("🚨 CONFIRMED FRAUD DETECTED: Will bypass evidence gating due to ground truth")
-                    break
-=======
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
     # Confirmed fraud detection must be based on behavioral patterns only, not fraud outcomes
     confirmed_fraud_detected = False
->>>>>>> 001-modify-analyzer-method
     
     # CRITICAL FIX: Hard evidence gating before publishing numeric risk
     validation_result = prepublish_validate(state)
@@ -311,8 +210,6 @@ def finalize_risk(state: Dict[str, Any]) -> None:
             )
             domains_for_linting.append(domain_result)
     
-<<<<<<< HEAD
-=======
     # CRITICAL FIX: Set state.risk_score BEFORE linting to prevent mismatch errors
     # The linter checks state.risk_score == final_risk, so we need to set it first
     # Only set if it's not already set or if it's different (to avoid overwriting intentionally)
@@ -323,7 +220,6 @@ def finalize_risk(state: Dict[str, Any]) -> None:
         if current_state_risk is not None:
             logger.debug(f"🔄 Updated state.risk_score from {fmt_num(current_state_risk, 3)} to {fmt_num(final_risk, 3)} before linting")
     
->>>>>>> 001-modify-analyzer-method
     # Run comprehensive linting checks
     lint_errors = lint_investigation(domains_for_linting, final_risk, state)
     
@@ -351,15 +247,11 @@ def finalize_risk(state: Dict[str, Any]) -> None:
         state["investigation_warnings"].append(f"Safety violation: {e}")
 
     # Publish final risk (potentially adjusted by floor and cap)
-<<<<<<< HEAD
-    state["risk_score"] = final_risk
-=======
     # Note: Already set before linting, but ensure it's set here for clarity and consistency
     state["risk_score"] = final_risk
     # CRITICAL: Also set overall_risk_score so it's available in progress_json
     # This ensures investigations have overall_risk_score for comparison metrics
     state["overall_risk_score"] = final_risk
->>>>>>> 001-modify-analyzer-method
     logger.debug(f"✅ Risk finalization complete - numeric risk published: {fmt_num(final_risk, 3)}")
     
     # Generate severity-appropriate action plan based on final risk
@@ -479,15 +371,12 @@ def _apply_intel_fusion(state: Dict[str, Any]) -> None:
                 # Preserve LLM analysis score - no fusion for confirmed fraud
                 llm_risk = llm_analysis.get("risk_score")
                 if llm_risk is not None:
-<<<<<<< HEAD
-=======
                     # C2 FIX: Defensive normalization for LLM scores
                     if isinstance(llm_risk, (int, float)) and llm_risk > 1.0:
                         original_llm_risk = llm_risk
                         llm_risk = min(llm_risk / 100.0, 1.0)
                         logger.info(f"C2 FIX: Normalized confirmed fraud LLM score from {original_llm_risk} to {fmt_num(llm_risk, 3)}")
 
->>>>>>> 001-modify-analyzer-method
                     network_findings["risk_score"] = llm_risk
                     evidence = network_findings.setdefault("evidence", [])
                     evidence.append(f"Preserved LLM confirmed fraud assessment: {fmt_num(llm_risk, 3)} (no external fusion applied)")
@@ -780,14 +669,6 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
         assert 0.0 <= evidence_strength <= 1.0, f"evidence_strength must be 0.0-1.0, got {evidence_strength}"
         
         # Tool results business logic assertions
-<<<<<<< HEAD
-        tools_used = state.get("tools_used", [])
-        tool_results = state.get("tool_results", {})
-        
-        # If we have tools_used, we should have some tool_results
-        if tools_used:
-            assert len(tool_results) > 0, f"tools_used={len(tools_used)} but tool_results is empty"
-=======
         tools_used_raw = state.get("tools_used", [])
         tool_results = state.get("tool_results", {})
         
@@ -818,7 +699,6 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
                 # Some tools don't have results - log warning but don't fail
                 missing_tools = [tool for tool in tools_used if tool not in tool_results]
                 logger.debug(f"📊 Some tools in tools_used don't have results: {missing_tools[:3]}")
->>>>>>> 001-modify-analyzer-method
         
         # Snowflake query business logic assertions
         snowflake_data = state.get("snowflake_data", {})
@@ -826,16 +706,6 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
             results = snowflake_data["results"]
             assert isinstance(results, list), f"snowflake results must be list, got {type(results)}"
             
-<<<<<<< HEAD
-            # Check for IS_FRAUD_TX column in results (Fix 1 assertion)
-            if results:
-                first_record = results[0]
-                if isinstance(first_record, dict):
-                    # This is a soft assertion since IS_FRAUD_TX might be null for some records
-                    has_fraud_column = "IS_FRAUD_TX" in first_record
-                    if not has_fraud_column:
-                        logger.warning("⚠️ REGRESSION RISK: IS_FRAUD_TX column not found in Snowflake results")
-=======
             # CRITICAL: Verify IS_FRAUD_TX is NOT present in results (data leakage prevention)
             if results:
                 first_record = results[0]
@@ -847,7 +717,6 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
                         logger.error("   Investigation queries must exclude IS_FRAUD_TX to prevent data leakage")
                     else:
                         logger.debug("✅ Data leakage check passed: IS_FRAUD_TX not found in results")
->>>>>>> 001-modify-analyzer-method
         
         # Domain analysis business logic assertions
         domain_findings = state.get("domain_findings", {})
@@ -906,9 +775,6 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
         data_quality_score = 0.0
         
         # 1. SOURCE DIVERSITY (0.0-0.4)
-<<<<<<< HEAD
-        tools_used = set(state.get("tools_used", []))
-=======
         # CRITICAL FIX: Extract tool names from tools_used (can be strings or dicts) to prevent "unhashable type: 'dict'" error
         tools_used_raw = state.get("tools_used", [])
         tools_used = set()
@@ -923,7 +789,6 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
                 tools_used.add(tool_name)
             else:
                 tools_used.add(str(tool_name))
->>>>>>> 001-modify-analyzer-method
         internal_sources = {"snowflake_query_tool"}
         external_sources = {"abuseipdb_ip_reputation", "virustotal_ip_analysis", "hybrid_analysis", "urlvoid"}
         
@@ -984,10 +849,6 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
         elif total_evidence_points >= 2:
             data_quality_score = 0.05
         
-<<<<<<< HEAD
-        # COMPUTE TOTAL EVIDENCE STRENGTH
-        evidence_strength = min(1.0, source_diversity_score + corroboration_score + volume_recency_score + data_quality_score)
-=======
         # COMPUTE BASE EVIDENCE STRENGTH
         base_evidence_strength = min(1.0, source_diversity_score + corroboration_score + volume_recency_score + data_quality_score)
         
@@ -1027,7 +888,6 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
         
         # Store fraud pattern score in state for reference
         state["fraud_pattern_score"] = fraud_pattern_score
->>>>>>> 001-modify-analyzer-method
         
         # Update state
         state["evidence_strength"] = evidence_strength
@@ -1183,20 +1043,9 @@ def _apply_decisive_evidence_policy(state: Dict[str, Any]) -> None:
                     has_confirmed_fraud = True
                     break
             
-<<<<<<< HEAD
-            # Check Snowflake fraud flags
-            analysis = domain_data.get("analysis", {})
-            if isinstance(analysis, dict):
-                records = analysis.get("records", [])
-                if isinstance(records, list):
-                    if any(r.get("IS_FRAUD_TX") is True for r in records if isinstance(r, dict)):
-                        has_confirmed_fraud = True
-                        break
-=======
             # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
             # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
             # Confirmed fraud detection must be based on LLM analysis text only, not structured fraud flags
->>>>>>> 001-modify-analyzer-method
         
         if not has_confirmed_fraud:
             logger.debug("Decisive evidence policy: no confirmed fraud detected, no confidence floor applied")

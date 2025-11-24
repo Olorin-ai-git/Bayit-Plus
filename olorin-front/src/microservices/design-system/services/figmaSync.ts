@@ -4,15 +4,9 @@
  * Part of the Design System microservice (T030)
  */
 
-<<<<<<< HEAD
-import { EventBusManager } from '@shared/events/eventBus';
-import { FigmaMCPClient } from '@shared/figma/figma-mcp';
-import type { DesignTokens, FigmaComponent, FigmaSync } from '../types/design';
-=======
 import { EventBusManager } from '@shared/events/UnifiedEventBus';
 import { FigmaMCPClient } from '@shared/figma/figma-mcp';
 import type { DesignTokens, FigmaComponent } from '../types/design';
->>>>>>> 001-modify-analyzer-method
 
 interface FigmaSyncConfig {
   fileId: string;

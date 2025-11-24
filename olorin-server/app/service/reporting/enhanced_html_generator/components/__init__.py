@@ -8,44 +8,13 @@ Provides HTML generation for headers, summaries, timelines, and other report sec
 from ..data_models import InvestigationSummary, ComponentData
 from ..utils import DateTimeFormatter, DataFormatter, StatusFormatter, ListFormatter
 from typing import Dict, List, Any
-<<<<<<< HEAD
-=======
 from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
->>>>>>> 001-modify-analyzer-method
 
 
 class HeaderGenerator:
     """Generates HTML headers for reports."""
 
     def generate_header(self, summary: InvestigationSummary, title: str, timestamp: str) -> str:
-<<<<<<< HEAD
-        """Generate the enhanced report header."""
-        status_class = StatusFormatter.get_status_class(summary.status)
-
-        return f"""
-        <header class="fade-in">
-            <h1>🔍 {title}</h1>
-            <div class="subtitle">Generated: {timestamp}</div>
-
-            <div class="header-grid">
-                <div class="investigation-badge">
-                    <strong>Mode:</strong> {summary.mode or "Unknown"}
-                </div>
-                <div class="investigation-badge">
-                    <strong>Investigation ID:</strong> {summary.investigation_id or "Unknown"}
-                </div>
-                <div class="investigation-badge status-{status_class}">
-                    <strong>Status:</strong> {summary.status or "Unknown"}
-                </div>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <div class="investigation-badge">
-                    <strong>Scenario:</strong> {summary.scenario or "Unknown"}
-                </div>
-            </div>
-        </header>
-=======
         """Generate the enhanced report header with Olorin logo."""
         status_class = StatusFormatter.get_status_class(summary.status)
         
@@ -71,7 +40,6 @@ class HeaderGenerator:
                 <strong>Scenario:</strong> {summary.scenario or "Unknown"}
             </div>
         </div>
->>>>>>> 001-modify-analyzer-method
         """
 
 
@@ -153,22 +121,8 @@ class FooterGenerator:
     """Generates HTML footers for reports."""
 
     def generate_footer(self) -> str:
-<<<<<<< HEAD
-        """Generate report footer."""
-        return """
-        <footer class="footer">
-            <div class="footer-logo">🚀 Olorin Fraud Investigation Platform</div>
-            <p>Enhanced Investigation Report Generator</p>
-            <p>Comprehensive analysis with interactive visualizations</p>
-            <p style="margin-top: 15px; font-size: 0.9em;">
-                Generated with Python • Powered by Chart.js & Mermaid.js
-            </p>
-        </footer>
-        """
-=======
         """Generate report footer with Olorin branding."""
         return OLORIN_FOOTER
->>>>>>> 001-modify-analyzer-method
 
 
 # Placeholder component generators - minimal implementations

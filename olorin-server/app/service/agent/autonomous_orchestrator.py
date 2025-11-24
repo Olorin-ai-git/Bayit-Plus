@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Autonomous Investigation Orchestrator
-=======
 Structured Investigation Orchestrator
->>>>>>> 001-modify-analyzer-method
 
 Master orchestrator node for AI-driven investigation coordination using LangGraph.
 Implements bulletproof resilience patterns and intelligent agent orchestration.
@@ -22,11 +18,7 @@ from langchain_openai import ChatOpenAI
 
 from app.service.agent.agent_communication import (
     _extract_investigation_info,
-<<<<<<< HEAD
-    _get_or_create_autonomous_context,
-=======
     _get_or_create_structured_context,
->>>>>>> 001-modify-analyzer-method
     _create_error_response,
 )
 from app.service.agent.orchestrator_prompts import (
@@ -35,10 +27,6 @@ from app.service.agent.orchestrator_prompts import (
     PromptStrategy
 )
 from app.service.logging import get_bridge_logger
-<<<<<<< HEAD
-from app.service.websocket_manager import AgentPhase, websocket_manager
-=======
->>>>>>> 001-modify-analyzer-method
 from app.service.agent.journey_tracker import (
     get_journey_tracker,
     NodeType,
@@ -84,11 +72,7 @@ class AgentHandoff:
     success: bool
 
 
-<<<<<<< HEAD
-class AutonomousOrchestrator:
-=======
 class StructuredOrchestrator:
->>>>>>> 001-modify-analyzer-method
     """Master Orchestrator for AI-driven investigation coordination."""
     
     def __init__(self):
@@ -112,11 +96,7 @@ class StructuredOrchestrator:
         context
     ) -> Dict[str, Any]:
         """
-<<<<<<< HEAD
-        Master orchestration method for autonomous investigations
-=======
         Master orchestration method for structured investigations
->>>>>>> 001-modify-analyzer-method
         
         Args:
             state: LangGraph state object
@@ -136,11 +116,7 @@ class StructuredOrchestrator:
             # Track orchestrator node execution start
             journey_tracker.track_node_execution(
                 investigation_id=investigation_id,
-<<<<<<< HEAD
-                node_name="autonomous_orchestrator",
-=======
                 node_name="structured_orchestrator",
->>>>>>> 001-modify-analyzer-method
                 node_type=NodeType.ORCHESTRATOR,
                 input_state={
                     "entity_id": entity_id,
@@ -154,25 +130,10 @@ class StructuredOrchestrator:
                 },
                 duration_ms=0,
                 status=NodeStatus.IN_PROGRESS,
-<<<<<<< HEAD
-                agent_name="AutonomousOrchestrator",
-                metadata={"orchestrator_type": "master", "ai_decision_engine": True}
-            )
-            
-            # Emit progress update
-            await websocket_manager.broadcast_progress(
-                investigation_id,
-                AgentPhase.ORCHESTRATION,
-                0.1,
-                "🎯 Master Orchestrator analyzing investigation strategy..."
-            )
-            
-=======
                 agent_name="StructuredOrchestrator",
                 metadata={"orchestrator_type": "master", "ai_decision_engine": True}
             )
             
->>>>>>> 001-modify-analyzer-method
             # Step 1: AI-driven strategy selection
             orchestration_decision = await self._make_orchestration_decision(
                 investigation_id, entity_type, entity_id, context
@@ -203,11 +164,7 @@ class StructuredOrchestrator:
             # Track successful orchestrator completion
             journey_tracker.track_node_execution(
                 investigation_id=investigation_id,
-<<<<<<< HEAD
-                node_name="autonomous_orchestrator",
-=======
                 node_name="structured_orchestrator",
->>>>>>> 001-modify-analyzer-method
                 node_type=NodeType.ORCHESTRATOR,
                 input_state={
                     "entity_id": entity_id,
@@ -223,11 +180,7 @@ class StructuredOrchestrator:
                 },
                 duration_ms=duration_ms,
                 status=NodeStatus.COMPLETED,
-<<<<<<< HEAD
-                agent_name="AutonomousOrchestrator",
-=======
                 agent_name="StructuredOrchestrator",
->>>>>>> 001-modify-analyzer-method
                 metadata={
                     "orchestrator_type": "master",
                     "strategy": orchestration_decision.strategy.value,
@@ -244,11 +197,7 @@ class StructuredOrchestrator:
             # Track orchestrator failure
             journey_tracker.track_node_execution(
                 investigation_id=investigation_id,
-<<<<<<< HEAD
-                node_name="autonomous_orchestrator",
-=======
                 node_name="structured_orchestrator",
->>>>>>> 001-modify-analyzer-method
                 node_type=NodeType.ORCHESTRATOR,
                 input_state={
                     "entity_id": entity_id,
@@ -261,11 +210,7 @@ class StructuredOrchestrator:
                 },
                 duration_ms=0,
                 status=NodeStatus.FAILED,
-<<<<<<< HEAD
-                agent_name="AutonomousOrchestrator",
-=======
                 agent_name="StructuredOrchestrator",
->>>>>>> 001-modify-analyzer-method
                 metadata={"error_type": "orchestration_failure", "bulletproof": True}
             )
             
@@ -612,30 +557,6 @@ class StructuredOrchestrator:
     
     async def _import_network_agent(self, state, config):
         """Import and execute network agent"""
-<<<<<<< HEAD
-        from .network_agent import autonomous_network_agent
-        return await autonomous_network_agent(state, config)
-    
-    async def _import_device_agent(self, state, config):
-        """Import and execute device agent"""
-        from .device_agent import autonomous_device_agent
-        return await autonomous_device_agent(state, config)
-    
-    async def _import_location_agent(self, state, config):
-        """Import and execute location agent"""
-        from .location_agent import autonomous_location_agent
-        return await autonomous_location_agent(state, config)
-    
-    async def _import_logs_agent(self, state, config):
-        """Import and execute logs agent"""
-        from .logs_agent import autonomous_logs_agent
-        return await autonomous_logs_agent(state, config)
-    
-    async def _import_risk_agent(self, state, config):
-        """Import and execute risk agent"""
-        from .risk_agent import autonomous_risk_agent
-        return await autonomous_risk_agent(state, config)
-=======
         from .network_agent import structured_network_agent
         return await structured_network_agent(state, config)
     
@@ -658,7 +579,6 @@ class StructuredOrchestrator:
         """Import and execute risk agent"""
         from .risk_agent import structured_risk_agent
         return await structured_risk_agent(state, config)
->>>>>>> 001-modify-analyzer-method
     
     async def _default_agent_fallback(self, state, config):
         """Default fallback for unknown agents"""
@@ -922,11 +842,7 @@ class StructuredOrchestrator:
     ) -> str:
         """Create bulletproof fallback orchestration prompt"""
         
-<<<<<<< HEAD
-        return f"""You are the Master Orchestrator for autonomous fraud investigations. 
-=======
         return f"""You are the Master Orchestrator for structured fraud investigations. 
->>>>>>> 001-modify-analyzer-method
 
 INVESTIGATION CONTEXT:
 - Investigation ID: {investigation_id}
@@ -950,13 +866,8 @@ REQUIRED JSON OUTPUT:
 
 
 # LangGraph Integration Functions
-<<<<<<< HEAD
-async def autonomous_orchestrator_node(state, config) -> dict:
-    """LangGraph node function for autonomous orchestrator"""
-=======
 async def structured_orchestrator_node(state, config) -> dict:
     """LangGraph node function for structured orchestrator"""
->>>>>>> 001-modify-analyzer-method
     
     # Extract investigation context
     agent_context, investigation_id, entity_id = _extract_investigation_info(config)
@@ -964,21 +875,13 @@ async def structured_orchestrator_node(state, config) -> dict:
         return _create_error_response("Missing investigation context for orchestrator")
     
     # Get investigation context
-<<<<<<< HEAD
-    autonomous_context = _get_or_create_autonomous_context(
-=======
     structured_context = _get_or_create_structured_context(
->>>>>>> 001-modify-analyzer-method
         investigation_id, entity_id, investigation_type="fraud_investigation"
     )
     
     try:
         # Initialize orchestrator
-<<<<<<< HEAD
-        orchestrator = AutonomousOrchestrator()
-=======
         orchestrator = StructuredOrchestrator()
->>>>>>> 001-modify-analyzer-method
         
         # Execute orchestration
         results = await orchestrator.orchestrate_investigation(
@@ -987,27 +890,15 @@ async def structured_orchestrator_node(state, config) -> dict:
             investigation_id=investigation_id,
             entity_type=agent_context.get("entity_type", "unknown"),
             entity_id=entity_id,
-<<<<<<< HEAD
-            context=autonomous_context
-        )
-        
-        # Record orchestration results in context
-        autonomous_context.record_orchestration_results(results)
-=======
             context=structured_context
         )
         
         # Record orchestration results in context
         structured_context.record_orchestration_results(results)
->>>>>>> 001-modify-analyzer-method
         
         # Return LangGraph-compatible message
         return {"messages": [AIMessage(content=json.dumps(results))]}
         
     except Exception as e:
         logger.error(f"🚨 Orchestrator node failed: {str(e)}")
-<<<<<<< HEAD
-        return _create_error_response(f"Autonomous orchestrator failed: {str(e)}")
-=======
         return _create_error_response(f"Structured orchestrator failed: {str(e)}")
->>>>>>> 001-modify-analyzer-method

@@ -26,11 +26,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({
   const variantStyles = {
     error: {
       container: 'bg-red-50 border-red-200 text-red-800',
-<<<<<<< HEAD
-      icon: 'text-red-400',
-=======
       icon: 'text-corporate-error',
->>>>>>> 001-modify-analyzer-method
       button: 'text-red-500 hover:text-red-700'
     },
     warning: {

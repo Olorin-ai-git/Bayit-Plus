@@ -1,0 +1,611 @@
+openapi: 3.0.0
+info:
+  title: Migration Manager API Contract
+  version: 1.0.0
+  description: |
+    API contract for MigrationManager component that handles one-time data migration
+    from Snowflake to PostgreSQL with batch processing, checkpointing, and validation.
+
+components:
+  schemas:
+    MigrationConfiguration:
+      type: object
+      description: Migration configuration
+      required:
+        - batch_size
+        - checkpoint_file
+      properties:
+        batch_size:
+          type: integer
+          minimum: 1
+          description: Number of records per batch
+          example: 500
+        checkpoint_file:
+          type: string
+          description: Path to checkpoint file for resume capability
+          example: "migration_checkpoint.json"
+        source_provider_name:
+          type: string
+          enum: [snowflake]
+          default: snowflake
+        target_provider_name:
+          type: string
+          enum: [postgresql]
+          default: postgresql
+
+    CheckpointState:
+      type: object
+      description: Migration checkpoint state
+      properties:
+        last_batch_id:
+          type: integer
+          description: Last successfully processed batch ID
+        records_migrated:
+          type: integer
+          description: Total records migrated so far
+        migration_start_time:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of migration start
+        last_successful_batch_timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of last successful batch
+
+    MigrationResult:
+      type: object
+      description: Migration execution result
+      properties:
+        records_migrated:
+          type: integer
+          description: Total records migrated
+        total_batches:
+          type: integer
+          description: Number of batches processed
+        elapsed_time_seconds:
+          type: number
+          description: Total migration time in seconds
+        batch_size:
+          type: integer
+          description: Configured batch size
+        resumed_from_batch:
+          type: integer
+          nullable: true
+          description: Batch ID resumed from (null if fresh start)
+
+    ValidationResult:
+      type: object
+      description: Migration validation result
+      properties:
+        is_valid:
+          type: boolean
+          description: Overall validation status
+        record_count_source:
+          type: integer
+          description: Record count in source (Snowflake)
+        record_count_target:
+          type: integer
+          description: Record count in target (PostgreSQL)
+        record_count_match:
+          type: boolean
+          description: Whether record counts match
+        sample_data_match:
+          type: boolean
+          nullable: true
+          description: Whether sample data matches (null if not checked)
+
+paths:
+  /migration/migrate_all_data:
+    post:
+      summary: Migrate all data from source to target
+      description: |
+        Executes complete data migration from Snowflake to PostgreSQL.
+
+        **Process**:
+        1. Load existing checkpoint (if any)
+        2. Extract batch from Snowflake (ORDER BY TX_ID_KEY)
+        3. Transform records (UTC timestamps, JSON conversion)
+        4. Insert batch into PostgreSQL (with ON CONFLICT DO NOTHING)
+        5. Save checkpoint
+        6. Repeat until no more records
+
+        **Features**:
+        - Batch processing (configurable size)
+        - Checkpoint/resume capability
+        - Idempotent (safe to run multiple times)
+        - Progress tracking
+        - UTC timezone standardization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationConfiguration'
+      responses:
+        '200':
+          description: Migration completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResult'
+              example:
+                records_migrated: 150000
+                total_batches: 300
+                elapsed_time_seconds: 1234.5
+                batch_size: 500
+                resumed_from_batch: null
+        '500':
+          description: Migration failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  last_checkpoint:
+                    $ref: '#/components/schemas/CheckpointState'
+
+  /migration/extract_batch:
+    post:
+      summary: Extract batch of records from source
+      description: |
+        Extracts a batch of records from Snowflake using pagination.
+
+        **Query Pattern**:
+        ```sql
+        SELECT *
+        FROM {source_table}
+        ORDER BY TX_ID_KEY
+        LIMIT {batch_size}
+        OFFSET {offset}
+        ```
+
+        **Ordering**: TX_ID_KEY ensures consistent batch extraction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - batch_id
+                - offset
+              properties:
+                batch_id:
+                  type: integer
+                  description: Current batch number (for logging)
+                offset:
+                  type: integer
+                  description: Record offset for pagination
+      responses:
+        '200':
+          description: Batch extracted successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: Record from source database
+
+  /migration/transform_record:
+    post:
+      summary: Transform record for target database
+      description: |
+        Transforms a single record for PostgreSQL compatibility.
+
+        **Transformations**:
+        1. UTC timestamp standardization
+           - Add UTC timezone if missing
+           - Convert to ISO 8601 string
+        2. JSON/VARIANT to JSONB conversion
+        3. Column name normalization (uppercase → lowercase)
+
+        **Idempotency**: Same input always produces same output
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Source record
+      responses:
+        '200':
+          description: Record transformed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Transformed record
+
+  /migration/insert_batch:
+    post:
+      summary: Insert batch into target database
+      description: |
+        Inserts batch of records into PostgreSQL with transaction support.
+
+        **Process**:
+        1. Transform all records
+        2. Build bulk INSERT statement
+        3. Use ON CONFLICT (TX_ID_KEY) DO NOTHING for idempotency
+        4. Execute in transaction
+        5. Rollback on error
+
+        **Idempotency**: Duplicate TX_ID_KEY values are ignored
+        **Transaction**: Full batch inserted or rolled back
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - batch_data
+              properties:
+                batch_data:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Batch inserted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  records_inserted:
+                    type: integer
+        '500':
+          description: Insertion failed (transaction rolled back)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /migration/save_checkpoint:
+    post:
+      summary: Save migration checkpoint
+      description: |
+        Saves current migration state to checkpoint file for resume capability.
+
+        **Checkpoint Format**: JSON file with migration state
+        **Location**: Configurable file path
+        **Atomicity**: Overwrites previous checkpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckpointState'
+      responses:
+        '200':
+          description: Checkpoint saved successfully
+
+  /migration/load_checkpoint:
+    get:
+      summary: Load checkpoint from file
+      description: |
+        Loads existing checkpoint state for resume capability.
+
+        **Behavior**:
+        - Returns checkpoint if file exists and valid
+        - Returns null if file doesn't exist
+        - Logs warning if file corrupted
+      responses:
+        '200':
+          description: Checkpoint loaded successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CheckpointState'
+                  - type: 'null'
+
+  /migration/cleanup_checkpoint:
+    delete:
+      summary: Delete checkpoint file
+      description: |
+        Deletes checkpoint file after successful migration.
+
+        **When**: Called after validation passes
+        **Idempotent**: Safe to call even if file doesn't exist
+      responses:
+        '200':
+          description: Checkpoint cleaned up successfully
+
+  /migration/validate_migration:
+    post:
+      summary: Validate migration data parity
+      description: |
+        Validates that migration was successful by comparing source and target.
+
+        **Validation Steps**:
+        1. Compare record counts (must match exactly)
+        2. Sample data comparison (first 100 records)
+        3. Column-by-column comparison (case-insensitive)
+
+        **Exit Criteria**:
+        - is_valid = true: All checks pass
+        - is_valid = false: Any check fails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                check_record_count:
+                  type: boolean
+                  default: true
+                check_sample_data:
+                  type: boolean
+                  default: true
+                sample_size:
+                  type: integer
+                  default: 100
+      responses:
+        '200':
+          description: Validation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+
+  /migration/calculate_progress:
+    get:
+      summary: Calculate migration progress percentage
+      description: |
+        Calculates progress based on records migrated vs total records.
+
+        **Formula**: (records_migrated / total_records) * 100
+      parameters:
+        - name: records_migrated
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Progress calculated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  progress_percentage:
+                    type: number
+                    example: 42.5
+
+  /migration/estimate_time_remaining:
+    get:
+      summary: Estimate remaining migration time
+      description: |
+        Estimates remaining time based on current migration rate.
+
+        **Formula**: remaining_records / (records_migrated / elapsed_seconds)
+      parameters:
+        - name: records_migrated
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: elapsed_seconds
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Time estimated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estimated_seconds_remaining:
+                    type: number
+                    example: 678.9
+
+migration_workflow:
+  phases:
+    - name: Initialization
+      steps:
+        - Initialize MigrationManager with batch_size and checkpoint_file
+        - Load existing checkpoint (if any)
+        - Connect to source (Snowflake) and target (PostgreSQL)
+
+    - name: Batch Processing
+      steps:
+        - Extract batch from Snowflake (ORDER BY TX_ID_KEY)
+        - Transform each record (UTC, JSON, normalization)
+        - Insert batch into PostgreSQL (ON CONFLICT DO NOTHING)
+        - Save checkpoint after each batch
+        - Repeat until no more records
+
+    - name: Validation
+      steps:
+        - Compare record counts
+        - Compare sample data (first 100 records)
+        - Verify TX_ID_KEY matching
+
+    - name: Cleanup
+      steps:
+        - Delete checkpoint file if validation passes
+        - Log final statistics
+
+performance:
+  batch_size_recommendation:
+    small_datasets: 100-500 records
+    medium_datasets: 500-1000 records
+    large_datasets: 1000-5000 records
+    consideration: Balance memory usage vs network overhead
+
+  migration_rate:
+    typical: "200-500 records/second"
+    factors:
+      - Network latency
+      - Record size
+      - PostgreSQL write performance
+      - Snowflake read performance
+
+  checkpoint_frequency:
+    interval: "After every batch"
+    overhead: "< 10ms per checkpoint"
+    benefit: "Resume from last successful batch on failure"
+
+data_transformations:
+  utc_timestamp_standardization:
+    description: Ensure all timestamps have UTC timezone
+    implementation: |
+      if value.tzinfo is None:
+          value = value.replace(tzinfo=timezone.utc)
+      transformed[key] = value.isoformat()
+
+  json_variant_conversion:
+    snowflake: VARIANT
+    postgresql: JSONB
+    description: JSON data type compatibility
+
+  column_name_normalization:
+    snowflake: UPPERCASE
+    postgresql: lowercase
+    description: PostgreSQL lowercases unquoted identifiers
+
+idempotency:
+  mechanism: "ON CONFLICT (TX_ID_KEY) DO NOTHING"
+  benefit: "Safe to run migration multiple times"
+  behavior: "Duplicate records are silently skipped"
+
+error_handling:
+  batch_extraction_failure:
+    behavior: Log error and raise exception
+    recovery: Resume from last checkpoint
+
+  batch_insertion_failure:
+    behavior: Rollback transaction and raise exception
+    recovery: Resume from last checkpoint
+
+  checkpoint_save_failure:
+    behavior: Log warning but continue (best effort)
+    impact: May need to re-process last batch on resume
+
+  validation_failure:
+    behavior: Return is_valid=false with details
+    action: Investigation required before cleanup
+
+testing:
+  test_coverage:
+    target: 100%
+    test_files:
+      - tests/unit/test_migration_manager.py
+      - tests/unit/test_migration_checkpoint.py
+      - tests/integration/test_migration_validation.py
+
+  test_scenarios:
+    - name: Fresh migration
+      setup: No checkpoint exists
+      expected: Migrates all records starting from batch 1
+
+    - name: Resume from checkpoint
+      setup: Checkpoint exists at batch 150
+      expected: Resumes from batch 151
+
+    - name: Idempotent re-run
+      setup: All records already migrated
+      expected: All inserts skipped via ON CONFLICT
+
+    - name: Interrupted migration
+      setup: Simulate crash mid-batch
+      expected: Resume from last successful checkpoint
+
+    - name: Validation success
+      setup: All records migrated correctly
+      expected: is_valid=true, checkpoint cleaned up
+
+    - name: Validation failure
+      setup: Record count mismatch
+      expected: is_valid=false, checkpoint preserved
+
+constitutional_compliance:
+  no_hardcoded_values:
+    status: compliant
+    description: Batch size, checkpoint file from configuration
+
+  no_mocks:
+    status: compliant
+    description: Uses real database providers
+
+  fail_fast:
+    status: compliant
+    description: ValueError if batch_size <= 0
+
+  file_size_limit:
+    status: compliant
+    description: migration_manager.py is 199 lines
+
+  complete_implementation:
+    status: compliant
+    description: No TODOs, placeholders, or stubs
+
+cli_usage:
+  script: scripts/migrate_snowflake_to_postgres.py
+  options:
+    - name: --batch-size
+      type: integer
+      default: 500
+      description: Number of records per batch
+
+    - name: --checkpoint-file
+      type: string
+      default: migration_checkpoint.json
+      description: Path to checkpoint file
+
+    - name: --validate-only
+      type: boolean
+      description: Only validate, don't migrate
+
+    - name: --resume
+      type: boolean
+      description: Resume from last checkpoint
+
+    - name: --skip-validation
+      type: boolean
+      description: Skip post-migration validation
+
+  examples:
+    - description: Run full migration
+      command: |
+        python scripts/migrate_snowflake_to_postgres.py --batch-size 500
+
+    - description: Resume interrupted migration
+      command: |
+        python scripts/migrate_snowflake_to_postgres.py --resume
+
+    - description: Validate existing migration
+      command: |
+        python scripts/migrate_snowflake_to_postgres.py --validate-only
+
+limitations:
+  - description: Single-threaded batch processing
+    impact: No parallel batch processing
+    workaround: Increase batch size for faster migration
+
+  - description: No incremental migration
+    impact: One-time full migration only
+    scope: By design - not needed for one-time migration
+
+  - description: No schema migration
+    impact: Assumes schema already exists in PostgreSQL
+    requirement: Run schema setup before data migration
+
+future_enhancements:
+  - Add parallel batch processing
+  - Add incremental/delta migration support
+  - Add data transformation hooks
+  - Add progress bar UI
+  - Add migration statistics dashboard

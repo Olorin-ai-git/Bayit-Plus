@@ -162,11 +162,7 @@ async def structured_risk_agent(state, config) -> dict:
             "investigation_id": investigation_id,
             "rag_enabled": RAG_AVAILABLE and rag_config is not None,
             "findings_count": len(findings.key_findings) if findings else 0,
-<<<<<<< HEAD
-            "context_summary": str(autonomous_context)[:500] if autonomous_context else ""
-=======
             "context_summary": str(structured_context)[:500] if structured_context else ""
->>>>>>> 001-modify-analyzer-method
         }
         
         # Convert findings to unified response format

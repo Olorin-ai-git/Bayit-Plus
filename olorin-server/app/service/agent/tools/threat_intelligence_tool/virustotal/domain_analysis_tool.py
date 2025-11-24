@@ -68,8 +68,6 @@ class DomainAnalysisInput(BaseModel):
                 from app.service.agent.tools.async_helpers import safe_run_async
 
                 async def get_email_domain():
-<<<<<<< HEAD
-=======
                     # Dynamically determine column names based on database provider
                     database_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
                     
@@ -80,33 +78,19 @@ class DomainAnalysisInput(BaseModel):
                         ip_column = 'ip'
                         email_column = 'email'
                     
->>>>>>> 001-modify-analyzer-method
                     client = SnowflakeClient()
                     database = get_required_env_var('SNOWFLAKE_DATABASE')
                     schema = get_required_env_var('SNOWFLAKE_SCHEMA')
                     await client.connect(database=database, schema=schema)
                     query = f"""
-<<<<<<< HEAD
-                    SELECT DISTINCT EMAIL
-                    FROM {get_full_table_name()}
-                    WHERE IP = '{domain}'
-=======
                     SELECT DISTINCT {email_column}
                     FROM {get_full_table_name()}
                     WHERE {ip_column} = '{domain}'
->>>>>>> 001-modify-analyzer-method
                     LIMIT 1
                     """
                     results = await client.execute_query(query)
                     await client.disconnect()
                     
-<<<<<<< HEAD
-                    if results and results[0].get('EMAIL'):
-                        email = results[0]['EMAIL']
-                        # Extract domain from email
-                        if '@' in email:
-                            email_domain = email.split('@')[1].lower()
-=======
                     # Handle both uppercase and lowercase column names in results
                     email_value = None
                     if results and results[0]:
@@ -116,7 +100,6 @@ class DomainAnalysisInput(BaseModel):
                         # Extract domain from email
                         if '@' in email_value:
                             email_domain = email_value.split('@')[1].lower()
->>>>>>> 001-modify-analyzer-method
                             logger.info(f"Found email domain {email_domain} for IP {domain}")
                             return email_domain
                     return None

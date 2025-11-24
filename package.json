@@ -9,10 +9,6 @@
     "install:portal": "cd olorin-web-portal && npm install --legacy-peer-deps",
     "start": "npm run olorin",
     "olorin": "./scripts/development/start_olorin.sh"
-<<<<<<< HEAD
-  }
-}
-=======
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -21,4 +17,3 @@
     "typescript": "^5.9.3"
   }
 }
->>>>>>> 001-modify-analyzer-method

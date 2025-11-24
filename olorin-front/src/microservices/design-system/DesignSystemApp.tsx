@@ -1,11 +1,6 @@
 import React, { Suspense } from 'react';
-<<<<<<< HEAD
-import { Routes, Route, Navigate } from 'react-router-dom';
-import ErrorBoundary from '@shared/components/ErrorBoundary';
-=======
 import { Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from '@shared/components/ErrorBoundary';
->>>>>>> 001-modify-analyzer-method
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
 // Lazy load components for better performance
@@ -14,20 +9,12 @@ const DesignSystemFoundation = React.lazy(() => import('./components/DesignSyste
 const DesignSystemApp: React.FC = () => {
   return (
     <ErrorBoundary serviceName="designSystem">
-<<<<<<< HEAD
-      <div className="design-system-service min-h-screen bg-gray-50">
-=======
       <div className="design-system-service min-h-screen bg-black">
->>>>>>> 001-modify-analyzer-method
         <Suspense fallback={
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <LoadingSpinner size="md" />
-<<<<<<< HEAD
-              <p className="mt-2 text-sm text-gray-600">
-=======
               <p className="mt-2 text-sm text-corporate-textSecondary">
->>>>>>> 001-modify-analyzer-method
                 Loading Design System Service...
               </p>
             </div>

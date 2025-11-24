@@ -103,11 +103,7 @@ class VerificationModels:
                 
             elif model == VerificationModel.CLAUDE_HAIKU:
                 return ChatAnthropic(
-<<<<<<< HEAD
-                    model="claude-3-haiku-20240307",
-=======
                     model="claude-haiku-4-5",
->>>>>>> 001-modify-analyzer-method
                     anthropic_api_key=self.config.anthropic_api_key,
                     temperature=0.1,
                     max_tokens=model_config.max_tokens,

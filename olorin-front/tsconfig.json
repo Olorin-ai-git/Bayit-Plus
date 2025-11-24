@@ -20,12 +20,8 @@
       "@/*": ["*"],
       "@shared/*": ["shared/*"],
       "@microservices/*": ["microservices/*"],
-<<<<<<< HEAD
-      "@autonomous-investigation/*": ["microservices/autonomous-investigation/*"],
-=======
       "@contracts/*": ["../specs/004-new-olorin-frontend/contracts/*"],
       "@structured-investigation/*": ["microservices/structured-investigation/*"],
->>>>>>> 001-modify-analyzer-method
       "@manual-investigation/*": ["microservices/manual-investigation/*"],
       "@agent-analytics/*": ["microservices/agent-analytics/*"],
       "@rag-intelligence/*": ["microservices/rag-intelligence/*"],
@@ -39,14 +35,10 @@
       "@utils/*": ["shared/utils/*"],
       "@services/*": ["shared/services/*"],
       "@figma/*": ["shared/figma/*"],
-<<<<<<< HEAD
-      "@testing/*": ["shared/testing/*"]
-=======
       "@testing/*": ["shared/testing/*"],
       "@config/*": ["shared/config/*"],
       "@styles/*": ["shared/styles/*"],
       "@api/*": ["api/*"]
->>>>>>> 001-modify-analyzer-method
     },
     "types": ["@figma/plugin-typings", "@playwright/test", "jest"],
     "strictNullChecks": true,
@@ -56,10 +48,6 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-<<<<<<< HEAD
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
-=======
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
     "noUnusedLocals": false,
@@ -69,26 +57,18 @@
     "allowUnreachableCode": false,
     "noImplicitOverride": true,
     "useUnknownInCatchVariables": true
->>>>>>> 001-modify-analyzer-method
   },
   "include": [
     "src",
     "tests/playwright/**/*",
-<<<<<<< HEAD
-=======
     "tests/contract/**/*",
     "tests/integration/**/*",
->>>>>>> 001-modify-analyzer-method
     "playwright.config.ts"
   ],
   "exclude": [
     "node_modules",
     "build",
-<<<<<<< HEAD
-    "dist"
-=======
     "dist",
     "tests/integration/**/*"
->>>>>>> 001-modify-analyzer-method
   ]
 }

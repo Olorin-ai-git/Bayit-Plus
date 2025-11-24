@@ -27,13 +27,9 @@ class DomainAgentBase:
             "location": "5.2.3",
             "logs": "5.2.4",
             "authentication": "5.2.5",
-<<<<<<< HEAD
-            "risk": "5.2.6"
-=======
             "web": "5.2.6",
             "merchant": "5.2.7",
             "risk": "5.2.8"
->>>>>>> 001-modify-analyzer-method
         }
         return domain_steps.get(domain.lower(), "5.2.X")
     
@@ -52,9 +48,6 @@ class DomainAgentBase:
         """Log available data sources for debugging."""
         step = DomainAgentBase._get_domain_step(domain)
         logger.debug(f"[Step {step}.1] 📊 Available data sources:")
-<<<<<<< HEAD
-        logger.debug(f"[Step {step}.1]   Snowflake data: {'Yes' if snowflake_data else 'No'} ({len(str(snowflake_data))} chars)")
-=======
         # Summarize snowflake_data instead of converting to string for character count
         if snowflake_data:
             if isinstance(snowflake_data, dict) and 'results' in snowflake_data:
@@ -66,7 +59,6 @@ class DomainAgentBase:
                 logger.debug(f"[Step {step}.1]   Snowflake data: Yes (data available)")
         else:
             logger.debug(f"[Step {step}.1]   Snowflake data: No")
->>>>>>> 001-modify-analyzer-method
         logger.debug(f"[Step {step}.1]   Tool results: {len(tool_results)} tools for category-based analysis")
         if tool_results:
             logger.debug(f"[Step {step}.1]   Tool results keys: {list(tool_results.keys())}")
@@ -117,12 +109,6 @@ class DomainAgentBase:
     @staticmethod
     def process_snowflake_results(snowflake_data: Dict[str, Any], domain: str) -> list:
         """Extract and validate Snowflake results."""
-<<<<<<< HEAD
-        results = []
-        
-        if snowflake_data:
-            if isinstance(snowflake_data, dict) and "results" in snowflake_data:
-=======
         import json
         results = []
 
@@ -132,7 +118,6 @@ class DomainAgentBase:
         # Handle dict type (most common case)
         if isinstance(snowflake_data, dict):
             if "results" in snowflake_data:
->>>>>>> 001-modify-analyzer-method
                 results = snowflake_data["results"]
                 # Get step prefix for domain
                 domain_steps = {
@@ -141,17 +126,6 @@ class DomainAgentBase:
                 }
                 step = domain_steps.get(domain.lower(), "5.2.X")
                 logger.debug(f"[Step {step}]   📊 Processing {len(results)} Snowflake records for {domain} analysis")
-<<<<<<< HEAD
-            elif isinstance(snowflake_data, str):
-                step = DomainAgentBase._get_domain_step(domain)
-                logger.warning(f"[Step {step}] ⚠️ {domain.title()} Agent: Snowflake data is string format, cannot extract structured results")
-                logger.debug(f"[Step {step}]   String content preview: {snowflake_data[:200]}...")
-            else:
-                step = DomainAgentBase._get_domain_step(domain)
-                logger.warning(f"[Step {step}] ⚠️ {domain.title()} Agent: Unexpected Snowflake data type: {type(snowflake_data)}")
-                logger.debug(f"[Step {step}]   Data content preview: {str(snowflake_data)[:200]}...")
-        
-=======
             else:
                 # Dict but no "results" key - might be a different format, try to extract data
                 step = DomainAgentBase._get_domain_step(domain)
@@ -206,7 +180,6 @@ class DomainAgentBase:
                 logger.warning(f"[Step {step}] ⚠️ {domain.title()} Agent: Cannot extract results from Snowflake data type: {data_type}")
                 results = []
 
->>>>>>> 001-modify-analyzer-method
         return results
     
     @staticmethod
@@ -226,12 +199,8 @@ class DomainAgentBase:
         
         # Log data availability for debugging but DO NOT use MODEL_SCORE in calculations
         for idx, r in enumerate(results[:3]):  # Log first 3 records
-<<<<<<< HEAD
-            model_score = r.get("MODEL_SCORE")
-=======
             # Support both uppercase (Snowflake) and lowercase (PostgreSQL) column names
             model_score = r.get("MODEL_SCORE") or r.get("model_score")
->>>>>>> 001-modify-analyzer-method
             logger.debug(f"[Step {step}]      Record {idx+1}: Raw data available (MODEL_SCORE present but ignored: {model_score is not None})")
             logger.debug(f"[Step {step}]      Available fields for analysis: {list(r.keys())}")
         
@@ -256,20 +225,6 @@ class DomainAgentBase:
     def finalize_findings(findings: Dict[str, Any], snowflake_data: Dict[str, Any], 
                          tool_results: Dict[str, Any], analysis_duration: float, domain: str) -> None:
         """Finalize domain findings with confidence and completion logging."""
-<<<<<<< HEAD
-        # Cap risk score at 1.0
-        findings["risk_score"] = min(1.0, findings["risk_score"])
-        
-        # Add confidence based on data availability (simplified for base class)
-        data_sources = sum([
-            1 if snowflake_data else 0,
-            len(tool_results) * 0.25  # Each tool contributes 0.25 to confidence
-        ])
-        findings["confidence"] = min(1.0, data_sources / 4.0)
-        
-        step = DomainAgentBase._get_domain_step(domain)
-        logger.info(f"[Step {step}] ✅ {domain.title()} analysis complete - Risk: {findings['risk_score']:.2f}")
-=======
         # CRITICAL FIX: Handle None risk_score (insufficient data case)
         risk_score = findings.get("risk_score")
         
@@ -296,20 +251,15 @@ class DomainAgentBase:
             logger.info(f"[Step {step}] ✅ {domain.title()} analysis complete - Risk: {risk_score:.2f}")
         else:
             logger.info(f"[Step {step}] ✅ {domain.title()} analysis complete - Risk: INSUFFICIENT_DATA")
->>>>>>> 001-modify-analyzer-method
         
         # DEBUG: Analysis completion
         # step already defined above
         logger.debug(f"[Step {step}] {domain.upper()} AGENT COMPLETION DEBUG:")
         logger.debug(f"[Step {step}]   ⏱️  Analysis duration: {analysis_duration:.3f}s")
-<<<<<<< HEAD
-        logger.debug(f"[Step {step}]   🎯 Risk score calculated: {findings['risk_score']:.2f}")
-=======
         if risk_score is not None:
             logger.debug(f"[Step {step}]   🎯 Risk score calculated: {risk_score:.2f}")
         else:
             logger.debug(f"[Step {step}]   🎯 Risk score: INSUFFICIENT_DATA (LLM did not provide score)")
->>>>>>> 001-modify-analyzer-method
         logger.debug(f"[Step {step}]   🔍 Risk indicators found: {len(findings['risk_indicators'])}")
         for i, indicator in enumerate(findings['risk_indicators'][:3]):  # Show first 3
             logger.debug(f"[Step {step}]      Risk {i+1}: {indicator}")
@@ -350,25 +300,6 @@ def _detect_confirmed_fraud(snowflake_data: Dict[str, Any]) -> bool:
     """
     Detect if there's confirmed fraud in the Snowflake data.
     
-<<<<<<< HEAD
-    Returns:
-        True if confirmed fraud detected, False otherwise
-    """
-    if not snowflake_data or not isinstance(snowflake_data.get('results'), list):
-        return False
-    
-    # Check each record for confirmed fraud
-    for record in snowflake_data['results']:
-        if not isinstance(record, dict):
-            continue
-            
-        # Check IS_FRAUD_TX field
-        fraud_flag = record.get('IS_FRAUD_TX')
-        if fraud_flag == 1 or fraud_flag == '1' or str(fraud_flag).lower() == 'true':
-            logger.debug(f"🚨 CONFIRMED FRAUD detected in Snowflake data: IS_FRAUD_TX = {fraud_flag}")
-            return True
-    
-=======
     CRITICAL: IS_FRAUD_TX removed - must not use ground truth labels during investigation.
     This function now only checks for other fraud indicators (chargebacks, disputes, etc.)
 
@@ -391,23 +322,12 @@ def _detect_confirmed_fraud(snowflake_data: Dict[str, Any]) -> bool:
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
     # This function now returns False - fraud detection must be based on behavioral patterns only
     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
->>>>>>> 001-modify-analyzer-method
     return False
 
 
 def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowflake_data: Dict[str, Any]) -> float:
     """
     Compute risk score using validated domain scorers without model score pollution.
-<<<<<<< HEAD
-    
-    CRITICAL FIX: Uses the new domain scorers that exclude MODEL_SCORE and IS_FRAUD_TX 
-    to prevent narrative/score contradictions identified in user's investigation runs.
-    """
-    from app.service.agent.orchestration.domain.logs_scorer import score_logs_domain
-    from app.service.agent.orchestration.domain.network_scorer import score_network_domain
-    from app.service.agent.orchestration.domain.domain_result import validate_domain
-    
-=======
 
     CRITICAL FIX: Uses the new domain scorers that exclude MODEL_SCORE and IS_FRAUD_TX
     to prevent narrative/score contradictions identified in user's investigation runs.
@@ -426,7 +346,6 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
     from app.service.agent.orchestration.domain.network_scorer import score_network_domain
     from app.service.agent.orchestration.domain.domain_result import validate_domain
 
->>>>>>> 001-modify-analyzer-method
     # Get metrics and facts for domain scoring
     metrics = findings.get('metrics', {})
     facts = {}
@@ -511,17 +430,11 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
         risk_score = domain_result.score
         logger.debug(f"🎯 VALIDATED DOMAIN SCORER for {domain}: score={risk_score}, status={domain_result.status}, signals={len(domain_result.signals)}")
     
-<<<<<<< HEAD
-    # Fallback if all scoring fails
-    if risk_score is None:
-        risk_score = 0.2  # Conservative default
-=======
     # CRITICAL: No fallback scores - return None if all scoring fails
     # This allows the system to properly handle insufficient data cases
     if risk_score is None:
         logger.debug(f"🧮 DETERMINISTIC RISK SCORE for {domain}: None (insufficient data - NO fallback score)")
         return None
->>>>>>> 001-modify-analyzer-method
     
     logger.debug(f"🧮 DETERMINISTIC RISK SCORE for {domain}: {risk_score:.3f} (NO MODEL_SCORE used)")
     return risk_score
@@ -529,32 +442,13 @@ def _compute_algorithmic_risk_score(domain: str, findings: Dict[str, Any], snowf
 
 async def analyze_evidence_with_llm(
     domain: str,
-<<<<<<< HEAD
-    findings: Dict[str, Any], 
-    snowflake_data: Dict[str, Any],
-=======
     findings: Dict[str, Any],
     snowflake_data: Dict[str, Any],
     tool_results: Dict[str, Any],
->>>>>>> 001-modify-analyzer-method
     entity_type: str,
     entity_id: str
 ) -> Dict[str, Any]:
     """
-<<<<<<< HEAD
-    Analyze collected evidence using LLM, with computed risk score as authority.
-    LLM must echo the computed score, preventing prompt hacking and overfitting.
-    """
-    from app.service.agent.evidence_analyzer import get_evidence_analyzer
-    
-    step = DomainAgentBase._get_domain_step(domain)
-    logger.debug(f"[Step {step}.4] 🧠 LLM Evidence Analysis - Analyzing {len(findings.get('evidence', []))} evidence points")
-    
-    try:
-        evidence_analyzer = get_evidence_analyzer()
-
-        # PRIORITY 1: Try LLM-determined risk score first
-=======
     Analyze collected evidence using LLM, with ALL tool execution results included.
 
     CRITICAL: This function now receives tool_results to ensure LLM has access to
@@ -593,44 +487,18 @@ async def analyze_evidence_with_llm(
         evidence_analyzer = get_evidence_analyzer()
 
         # PRIORITY 1: Try LLM-determined risk score first with ALL tool results
->>>>>>> 001-modify-analyzer-method
         llm_analysis = await evidence_analyzer.analyze_domain_evidence(
             domain=domain,
             evidence=findings.get('evidence', []),
             metrics=findings.get('metrics', {}),
             snowflake_data=snowflake_data,
-<<<<<<< HEAD
-=======
             tool_results=tool_results,
->>>>>>> 001-modify-analyzer-method
             entity_type=entity_type,
             entity_id=entity_id
         )
 
         # Check if LLM provided a valid risk score
         llm_risk_score = llm_analysis.get("risk_score")
-<<<<<<< HEAD
-        if llm_risk_score is not None and isinstance(llm_risk_score, (int, float)) and 0.0 <= llm_risk_score <= 1.0:
-            # Use LLM risk score as primary authority
-            findings["risk_score"] = llm_risk_score
-            findings["confidence"] = llm_analysis.get("confidence", 0.7)
-            logger.debug(f"[Step {step}.4] ✅ Using LLM-determined risk score: {llm_risk_score:.3f}")
-        else:
-            # FALLBACK: Compute algorithmic risk score when LLM fails
-            logger.warning(f"[Step {step}.4] ⚠️ LLM risk score invalid ({llm_risk_score}), attempting algorithmic fallback")
-            computed_risk_score = _compute_algorithmic_risk_score(domain, findings, snowflake_data)
-
-            # Validate algorithmic score
-            if computed_risk_score is not None and isinstance(computed_risk_score, (int, float)) and 0.0 <= computed_risk_score <= 1.0:
-                findings["risk_score"] = computed_risk_score
-                findings["confidence"] = llm_analysis.get("confidence", 0.5)
-                logger.warning(f"[Step {step}.4] 🔄 Using algorithmic fallback: {computed_risk_score:.3f}")
-            else:
-                # CRITICAL FAILURE: Both LLM and algorithmic scoring failed
-                error_msg = f"CRITICAL: Both LLM (score: {llm_risk_score}) and algorithmic (score: {computed_risk_score}) risk scoring failed for {domain} domain"
-                logger.error(f"[Step {step}.4] ❌ {error_msg}")
-                raise RuntimeError(error_msg)
-=======
 
         # C2 FIX: Normalize LLM scores from 0-100 to 0-1 range
         if llm_risk_score is not None and isinstance(llm_risk_score, (int, float)):
@@ -683,7 +551,6 @@ async def analyze_evidence_with_llm(
             findings["confidence"] = 0.0
             findings["llm_risk_score"] = None
             logger.warning(f"[Step {step}.4] ⚠️ INSUFFICIENT_DATA: LLM risk score invalid ({llm_risk_score}) for {domain} domain. Marking as insufficient data instead of using algorithmic fallback.")
->>>>>>> 001-modify-analyzer-method
         
         # Clean and deduplicate all text content before storing
         from app.service.text.clean import write_llm_sections, deduplicate_recommendations
@@ -709,16 +576,6 @@ async def analyze_evidence_with_llm(
         # Apply write-time deduplication to prevent duplicate text propagation
         write_llm_sections(findings)
         
-<<<<<<< HEAD
-        # Add LLM reasoning to evidence
-        findings["evidence"].append(f"LLM Analysis: {llm_analysis['reasoning'][:100]}...")
-        
-        # Add LLM risk factors to risk indicators
-        if llm_analysis["risk_factors"]:
-            findings["risk_indicators"].append(f"LLM Identified: {llm_analysis['risk_factors'][:100]}...")
-        
-        logger.debug(f"[Step {step}.4] ✅ LLM analysis complete - Risk: {findings['risk_score']:.2f}, Confidence: {findings['confidence']:.2f}")
-=======
         # Add LLM reasoning to evidence (if available)
         if llm_analysis.get("reasoning"):
             findings["evidence"].append(f"LLM Analysis: {llm_analysis['reasoning'][:100]}...")
@@ -734,7 +591,6 @@ async def analyze_evidence_with_llm(
             logger.debug(f"[Step {step}.4] ✅ LLM analysis complete - Risk: {risk_score:.2f}, Confidence: {confidence:.2f}")
         else:
             logger.debug(f"[Step {step}.4] ⚠️ LLM analysis complete - Insufficient data (no risk score)")
->>>>>>> 001-modify-analyzer-method
         
         return findings
         
@@ -769,34 +625,23 @@ def complete_chain_of_thought(process_id: str, findings: Dict[str, Any], domain:
     """Complete chain of thought logging for the agent."""
     cot_logger = get_chain_of_thought_logger()
     
-<<<<<<< HEAD
-=======
     # CRITICAL FIX: Handle None risk_score
     risk_score = findings.get('risk_score')
     risk_score_str = f"{risk_score:.2f}" if risk_score is not None else "INSUFFICIENT_DATA"
     
->>>>>>> 001-modify-analyzer-method
     cot_logger.log_reasoning_step(
         process_id=process_id,
         reasoning_type=ReasoningType.CONCLUSION,
         premise=f"Completed {domain} domain analysis",
         reasoning=f"Analyzed available data sources and identified {len(findings.get('risk_indicators', []))} risk indicators",
-<<<<<<< HEAD
-        conclusion=f"Risk assessment: {findings.get('risk_score', 0):.2f}, Confidence: {findings.get('confidence', 0):.2f}",
-=======
         conclusion=f"Risk assessment: {risk_score_str}, Confidence: {findings.get('confidence', 0):.2f}",
->>>>>>> 001-modify-analyzer-method
         confidence=findings.get('confidence', 0.5),
         supporting_evidence=[
             {"type": "risk_indicators", "data": findings.get('risk_indicators', [])},
             {"type": "analysis_metrics", "data": findings.get('metrics', {})},
             {"type": "domain_completion", "data": f"{domain} analysis complete"}
         ],
-<<<<<<< HEAD
-        metadata={"agent": f"{domain}_agent", "risk_score": findings.get('risk_score', 0)}
-=======
         metadata={"agent": f"{domain}_agent", "risk_score": risk_score if risk_score is not None else 0}
->>>>>>> 001-modify-analyzer-method
     )
     
     cot_logger.complete_agent_thinking(

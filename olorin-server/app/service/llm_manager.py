@@ -16,12 +16,8 @@ from dataclasses import dataclass
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-<<<<<<< HEAD
-from langchain.schema import BaseMessage, HumanMessage, SystemMessage
-=======
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage, AIMessage
 from langchain_core.language_models.base import BaseLanguageModel
->>>>>>> 001-modify-analyzer-method
 from app.service.logging import get_bridge_logger
 from app.service.config_loader import ConfigLoader
 from app.service.agent.verification import LLMVerificationService, get_verification_config
@@ -29,8 +25,6 @@ from app.service.agent.verification import LLMVerificationService, get_verificat
 logger = get_bridge_logger(__name__)
 
 
-<<<<<<< HEAD
-=======
 class GPT5ResponsesWrapper:
     """
     Custom wrapper for GPT-5 using OpenAI Responses API.
@@ -147,7 +141,6 @@ class GPT5ResponsesWrapper:
         yield response
 
 
->>>>>>> 001-modify-analyzer-method
 class ModelProvider(Enum):
     """Supported LLM providers."""
     ANTHROPIC = "anthropic"
@@ -162,11 +155,7 @@ class ModelConfig:
     model_name: str
     display_name: str
     max_tokens: int = 4096
-<<<<<<< HEAD
-    temperature: float = 0.7
-=======
     temperature: float = 0.1  # Low temperature for consistent, deterministic results
->>>>>>> 001-modify-analyzer-method
     supports_verification: bool = True
 
 
@@ -203,8 +192,6 @@ AVAILABLE_MODELS = {
         display_name="Claude 3.5 Sonnet (June)",
         max_tokens=8192
     ),
-<<<<<<< HEAD
-=======
     "claude-haiku-4-5": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
         model_name="claude-haiku-4-5",
@@ -217,7 +204,6 @@ AVAILABLE_MODELS = {
         display_name="Claude 3.5 Haiku",
         max_tokens=8192
     ),
->>>>>>> 001-modify-analyzer-method
     "claude-3-haiku-20240307": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
         model_name="claude-3-haiku-20240307",
@@ -250,8 +236,6 @@ AVAILABLE_MODELS = {
         display_name="GPT-5 Nano",
         max_tokens=4096
     ),
-<<<<<<< HEAD
-=======
     "gpt-4o": ModelConfig(
         provider=ModelProvider.OPENAI,
         model_name="gpt-4o",
@@ -264,7 +248,6 @@ AVAILABLE_MODELS = {
         display_name="GPT-4o Mini",
         max_tokens=16384
     ),
->>>>>>> 001-modify-analyzer-method
     "gpt-4-turbo-preview": ModelConfig(
         provider=ModelProvider.OPENAI,
         model_name="gpt-4-turbo-preview",
@@ -290,22 +273,14 @@ AVAILABLE_MODELS = {
         model_name="gemini-1.5-flash",
         display_name="Gemini 1.5 Flash",
         max_tokens=8192,
-<<<<<<< HEAD
-        temperature=0.7
-=======
         temperature=0.1  # Low temperature for consistent results
->>>>>>> 001-modify-analyzer-method
     ),
     "gemini-1.5-flash-002": ModelConfig(
         provider=ModelProvider.GOOGLE,
         model_name="gemini-1.5-flash-002",
         display_name="Gemini 1.5 Flash 002",
         max_tokens=8192,
-<<<<<<< HEAD
-        temperature=0.7
-=======
         temperature=0.1  # Low temperature for consistent results
->>>>>>> 001-modify-analyzer-method
     ),
     "gemini-pro": ModelConfig(
         provider=ModelProvider.GOOGLE,
@@ -348,16 +323,6 @@ class LLMManager:
         self.openai_api_key = os.getenv('OPENAI_API_KEY') or self.config_loader.load_secret('OPENAI_API_KEY')
         self.gemini_api_key = os.getenv('GEMINI_API_KEY') or self.config_loader.load_secret('GEMINI_API_KEY')
         
-<<<<<<< HEAD
-        # Load model selection - use cost-effective models by default
-        self.selected_model_id = os.getenv('SELECTED_MODEL', 'claude-3-5-sonnet-20240620')  # Sonnet is more cost-effective than Opus
-        self.verification_model_id = os.getenv('LLM_VERIFICATION_MODEL', 'gpt-3.5-turbo')  # Use cost-effective GPT-3.5 Turbo for verification
-        
-        # Validate configuration
-        if self.selected_model_id not in AVAILABLE_MODELS:
-            logger.warning(f"Invalid selected model: {self.selected_model_id}, defaulting to claude-3.5-sonnet")
-            self.selected_model_id = 'claude-3-5-sonnet-20240620'
-=======
         # Load model selection - use cheaper gpt-4o-mini as default (cost-effective OpenAI model)
         self.selected_model_id = os.getenv('SELECTED_MODEL', 'gpt-4o-mini')  # gpt-4o-mini is cheaper than gpt-4o
         self.verification_model_id = os.getenv('LLM_VERIFICATION_MODEL', 'gpt-3.5-turbo')  # Use cost-effective GPT-3.5 Turbo for verification
@@ -366,7 +331,6 @@ class LLMManager:
         if self.selected_model_id not in AVAILABLE_MODELS:
             logger.warning(f"Invalid selected model: {self.selected_model_id}, defaulting to gpt-4o-mini")
             self.selected_model_id = 'gpt-4o-mini'
->>>>>>> 001-modify-analyzer-method
             
         if self.verification_model_id not in AVAILABLE_MODELS:
             logger.warning(f"Invalid verification model: {self.verification_model_id}, defaulting to gpt-3.5-turbo")
@@ -378,13 +342,6 @@ class LLMManager:
         """Initialize the selected and verification models."""
         self.selected_model = None
         self.verification_model = None
-<<<<<<< HEAD
-        
-        # Initialize selected model
-        selected_config = AVAILABLE_MODELS[self.selected_model_id]
-        self.selected_model = self._create_model(selected_config)
-        
-=======
 
         # Check for TEST_MODE=demo first
         test_mode = os.getenv("TEST_MODE", "").lower()
@@ -406,7 +363,6 @@ class LLMManager:
         selected_config = AVAILABLE_MODELS[self.selected_model_id]
         self.selected_model = self._create_model(selected_config)
 
->>>>>>> 001-modify-analyzer-method
         # Initialize verification model
         verification_config = AVAILABLE_MODELS[self.verification_model_id]
         self.verification_model = self._create_model(verification_config)
@@ -422,26 +378,14 @@ class LLMManager:
                     model=config.model_name,
                     anthropic_api_key=self.anthropic_api_key,
                     max_tokens=config.max_tokens,
-<<<<<<< HEAD
-                    temperature=config.temperature
-=======
                     temperature=config.temperature,
                     timeout=120.0  # 120 seconds for comprehensive fraud analysis responses
->>>>>>> 001-modify-analyzer-method
                 )
                 
             elif config.provider == ModelProvider.OPENAI:
                 if not self.openai_api_key:
                     logger.warning(f"OpenAI API key not found for {config.display_name}")
                     return None
-<<<<<<< HEAD
-                return ChatOpenAI(
-                    model=config.model_name,
-                    openai_api_key=self.openai_api_key,
-                    max_tokens=config.max_tokens,
-                    temperature=config.temperature
-                )
-=======
                 
                 # Use Responses API for GPT-5 models
                 if config.model_name in ["gpt-5", "gpt-5-chat-latest", "gpt-5-mini", "gpt-5-nano"]:
@@ -460,7 +404,6 @@ class LLMManager:
                         max_tokens=config.max_tokens,
                         temperature=config.temperature
                     )
->>>>>>> 001-modify-analyzer-method
                 
             elif config.provider == ModelProvider.GOOGLE:
                 if not self.gemini_api_key:
@@ -476,9 +419,6 @@ class LLMManager:
         except Exception as e:
             logger.error(f"Failed to initialize {config.display_name}: {e}")
             return None
-<<<<<<< HEAD
-            
-=======
 
     def _create_mock_llm(self):
         """Create a mock LLM that generates appropriate tool calls for testing."""
@@ -550,19 +490,14 @@ class LLMManager:
         logger.info("🧪 MockLLM created successfully")
         return mock_llm
 
->>>>>>> 001-modify-analyzer-method
     def get_selected_model(self):
         """Get the currently selected model."""
         if not self.selected_model:
             logger.error("Selected model not initialized")
             # Try to fallback to any available model
-<<<<<<< HEAD
-            self._try_fallback_model()
-=======
             fallback_found = self._try_fallback_model()
             if not fallback_found:
                 logger.error("❌ No fallback models available")
->>>>>>> 001-modify-analyzer-method
         return self.selected_model
         
     def get_verification_model(self):
@@ -571,35 +506,6 @@ class LLMManager:
             logger.warning("Verification model not initialized")
         return self.verification_model
         
-<<<<<<< HEAD
-    def _try_fallback_model(self):
-        """Try to initialize a fallback model if primary fails."""
-        # Fallback order prioritizes cost-effective models first, OpenAI preferred for verification
-        fallback_order = [
-            'claude-3-5-sonnet-20240620',  # Start with cost-effective models
-            'gpt-3.5-turbo',             # OpenAI preferred for verification
-            'claude-3-haiku-20240307',
-            'gemini-1.5-flash',          # Very cost-effective
-            'gemini-1.5-flash-002',
-            'gemini-pro',
-            'gpt-4-turbo-preview',
-            'claude-3-opus-20240229',  # More expensive models later in fallback
-            'gpt-4',
-            'gpt-5',
-            'gpt-5-chat-latest',
-            'claude-opus-4-1-20250805'  # Most expensive models last
-        ]
-        
-        for model_id in fallback_order:
-            if model_id != self.selected_model_id:
-                config = AVAILABLE_MODELS[model_id]
-                model = self._create_model(config)
-                if model:
-                    logger.info(f"Using fallback model: {config.display_name}")
-                    self.selected_model = model
-                    self.selected_model_id = model_id
-                    break
-=======
     def _try_fallback_model(self) -> bool:
         """
         Try to initialize a fallback model if primary fails.
@@ -644,7 +550,6 @@ class LLMManager:
         # No fallback found
         logger.warning("⚠️ No fallback models available")
         return False
->>>>>>> 001-modify-analyzer-method
                     
     async def invoke_with_verification(
         self,
@@ -919,61 +824,6 @@ class LLMManager:
     async def _invoke_direct(self, messages: List[BaseMessage]) -> Dict[str, Any]:
         """
         Direct model invocation without verification (internal use only).
-<<<<<<< HEAD
-        
-        Args:
-            messages: Messages to send to the model
-            
-        Returns:
-            Dictionary with response and model information
-        """
-        result = {
-            'response': None,
-            'model_used': self.selected_model_id,
-            'verification_enabled': False
-        }
-        
-        if not self.selected_model:
-            logger.error("No model available for invocation")
-            result['error'] = "No model available"
-            return result
-            
-        try:
-            response = await self.selected_model.ainvoke(messages)
-            result['response'] = response.content
-            
-        except Exception as e:
-            # Handle LLM API errors gracefully
-            if "context_length_exceeded" in str(e) or "maximum context length" in str(e) or "token limit" in str(e).lower():
-                logger.error(f"❌ LLM context length exceeded in model invocation")
-                logger.error(f"   Model: {self.selected_model_id}")
-                logger.error(f"   Error: {str(e)}")
-                logger.error(f"   Context info: {len(messages)} messages, estimated {sum(len(str(m.content)) for m in messages if hasattr(m, 'content'))} characters")
-                result['error'] = f"Context length exceeded for model {self.selected_model_id}"
-                
-            elif "not_found_error" in str(e).lower() or "notfounderror" in str(type(e)).lower() or "model:" in str(e).lower():
-                logger.error(f"❌ LLM model not found in model invocation")
-                logger.error(f"   Model: {self.selected_model_id}")
-                logger.error(f"   Error type: {type(e).__name__}")
-                logger.error(f"   Error details: {str(e)}")
-                result['error'] = f"Model not found: {self.selected_model_id} (check model name/availability)"
-                
-            elif any(error_type in str(type(e)).lower() for error_type in ["badrequest", "apierror", "ratelimit"]) or any(provider in str(e).lower() for provider in ["openai", "anthropic", "google"]):
-                logger.error(f"❌ LLM API error in model invocation")
-                logger.error(f"   Model: {self.selected_model_id}")
-                logger.error(f"   Error type: {type(e).__name__}")
-                logger.error(f"   Error details: {str(e)}")
-                result['error'] = f"API error for model {self.selected_model_id}: {type(e).__name__}"
-                
-            else:
-                logger.error(f"❌ Unexpected error in model invocation")
-                logger.error(f"   Model: {self.selected_model_id}")
-                logger.error(f"   Error type: {type(e).__name__}")
-                logger.error(f"   Error details: {str(e)}")
-                result['error'] = str(e)
-            
-        return result
-=======
 
         Automatically tries fallback models on 404 "model not found" errors.
 
@@ -1060,7 +910,6 @@ class LLMManager:
                     logger.error(f"   Error details: {str(e)}")
                     result['error'] = str(e)
                     return result
->>>>>>> 001-modify-analyzer-method
     
     def is_verification_enabled(self) -> bool:
         """

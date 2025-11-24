@@ -1,10 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-<<<<<<< HEAD
-import App from './App';
-import './index.css';
-
-=======
 import { initializeRuntimeConfig } from '@shared/config/runtimeConfig';
 import App from './App';
 import './index.css';
@@ -40,7 +35,6 @@ declare const module: {
   };
 };
 
->>>>>>> 001-modify-analyzer-method
 // Error boundary for the shell application
 class ShellErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -58,18 +52,8 @@ class ShellErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Shell application error:', error, errorInfo);
 
-<<<<<<< HEAD
-    // Send error to monitoring service
-    if (window.olorin?.monitoring) {
-      window.olorin.monitoring.captureException(error, {
-        context: 'shell',
-        errorInfo
-      });
-    }
-=======
     // Log error (monitoring service would be implemented separately)
     console.error('Error context:', { context: 'shell', errorInfo });
->>>>>>> 001-modify-analyzer-method
   }
 
   render() {
@@ -121,58 +105,6 @@ class ShellErrorBoundary extends React.Component<
   }
 }
 
-<<<<<<< HEAD
-// Initialize global Olorin namespace
-declare global {
-  interface Window {
-    olorin: {
-      version: string;
-      environment: string;
-      services: Record<string, any>;
-      eventBus: any;
-      monitoring: any;
-      config: Record<string, any>;
-    };
-  }
-}
-
-window.olorin = {
-  version: process.env.REACT_APP_VERSION || '1.0.0',
-  environment: process.env.NODE_ENV || 'development',
-  services: {},
-  eventBus: null,
-  monitoring: null,
-  config: {
-    apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-    wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-    enableDebug: process.env.NODE_ENV === 'development'
-  }
-};
-
-// Service registration helper
-window.olorin.registerService = (name: string, service: any) => {
-  window.olorin.services[name] = service;
-  console.log(`[Olorin Shell] Registered service: ${name}`);
-};
-
-// Get service helper
-window.olorin.getService = (name: string) => {
-  return window.olorin.services[name];
-};
-
-// Initialize the application
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-
-root.render(
-  <React.StrictMode>
-    <ShellErrorBoundary>
-      <App />
-    </ShellErrorBoundary>
-  </React.StrictMode>
-);
-=======
 // Note: Global Olorin namespace is initialized in globals.ts
 // This file just uses the existing window.olorin object
 
@@ -387,7 +319,6 @@ const initializeShellApp = () => {
 // Export for bootstrap.tsx to call explicitly
 // DO NOT call initializeShellApp() here - bootstrap.tsx will handle it
 export { initializeShellApp };
->>>>>>> 001-modify-analyzer-method
 
 // Service worker registration for PWA capabilities
 if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -402,17 +333,6 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   });
 }
 
-<<<<<<< HEAD
-// Performance monitoring
-if (window.olorin.config.enableDebug) {
-  // Web Vitals reporting
-  import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-    getCLS(console.log);
-    getFID(console.log);
-    getFCP(console.log);
-    getLCP(console.log);
-    getTTFB(console.log);
-=======
 // Performance monitoring - disabled console logging to reduce noise
 // Web Vitals are still collected but not logged to console
 if (process.env.NODE_ENV === 'development') {
@@ -425,17 +345,11 @@ if (process.env.NODE_ENV === 'development') {
     getFCP(noop);
     getLCP(noop);
     getTTFB(noop);
->>>>>>> 001-modify-analyzer-method
   });
 }
 
 // Hot module replacement for development
 if (module.hot && process.env.NODE_ENV === 'development') {
-<<<<<<< HEAD
-  module.hot.accept('./App', () => {
-    const NextApp = require('./App').default;
-    root.render(
-=======
   // Persist root reference across HMR updates
   module.hot.dispose((data) => {
     data.root = window.__olorin_root__;
@@ -455,7 +369,6 @@ if (module.hot && process.env.NODE_ENV === 'development') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const NextApp = require('./App').default;
     currentRoot.render(
->>>>>>> 001-modify-analyzer-method
       <React.StrictMode>
         <ShellErrorBoundary>
           <NextApp />

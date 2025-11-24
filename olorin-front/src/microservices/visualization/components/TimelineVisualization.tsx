@@ -152,11 +152,7 @@ const TimelineItemComponent: React.FC<{
 
     switch (item.type) {
       case 'point':
-<<<<<<< HEAD
-        return theme?.colors.info[0] || '#06B6D4';
-=======
         return theme?.colors.info[0] || '#818CF8';
->>>>>>> 001-modify-analyzer-method
       case 'range':
         return theme?.colors.success[0] || '#10B981';
       case 'background':

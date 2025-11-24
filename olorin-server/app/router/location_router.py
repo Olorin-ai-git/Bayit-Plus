@@ -7,18 +7,11 @@ in fraud detection investigations.
 import logging
 from typing import Any, Dict, List, Optional
 
-<<<<<<< HEAD
-from fastapi import APIRouter, Query
-from starlette.requests import Request
-
-from app.persistence import ensure_investigation_exists
-=======
 from fastapi import APIRouter, Depends, Query
 from starlette.requests import Request
 
 from app.persistence import ensure_investigation_exists
 from app.security.auth import User, require_read
->>>>>>> 001-modify-analyzer-method
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -40,10 +33,7 @@ async def analyze_location(
     entity_type: str = Query("user_id", pattern="^(user_id|device_id)$"),
     splunk_host: Optional[str] = None,
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
-<<<<<<< HEAD
-=======
     current_user: User = Depends(require_read),
->>>>>>> 001-modify-analyzer-method
 ) -> dict:
     """Analyze location risk for a user or device.
 

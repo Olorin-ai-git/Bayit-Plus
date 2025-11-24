@@ -33,11 +33,8 @@ from collections import defaultdict, Counter
 from dataclasses import dataclass, asdict
 import statistics
 
-<<<<<<< HEAD
-=======
 from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
 
->>>>>>> 001-modify-analyzer-method
 logger = logging.getLogger(__name__)
 
 
@@ -81,12 +78,8 @@ class ComprehensiveInvestigationReportGenerator:
         self,
         investigation_folder: Path,
         output_path: Optional[Path] = None,
-<<<<<<< HEAD
-        title: Optional[str] = None
-=======
         title: Optional[str] = None,
         risk_analyzer_info: Optional[Dict[str, Any]] = None
->>>>>>> 001-modify-analyzer-method
     ) -> Path:
         """
         Generate comprehensive HTML report from investigation folder.
@@ -113,13 +106,10 @@ class ComprehensiveInvestigationReportGenerator:
             # Process all investigation files
             investigation_data = self._process_investigation_folder(investigation_folder)
             
-<<<<<<< HEAD
-=======
             # Add risk analyzer info to investigation data
             if risk_analyzer_info:
                 investigation_data["risk_analyzer_info"] = risk_analyzer_info
             
->>>>>>> 001-modify-analyzer-method
             # Generate HTML content
             html_content = self._generate_html_report(investigation_data, title)
             
@@ -192,8 +182,6 @@ class ComprehensiveInvestigationReportGenerator:
         elif filename == "validation_results.json":
             data["validation"] = self._load_json_file(file_path)
             
-<<<<<<< HEAD
-=======
         elif filename == "merchant_validation_results.json":
             # Load merchant validation results
             merchant_validation = self._load_json_file(file_path)
@@ -201,7 +189,6 @@ class ComprehensiveInvestigationReportGenerator:
                 data["validation"] = {}
             data["validation"]["merchant"] = merchant_validation
             
->>>>>>> 001-modify-analyzer-method
         elif filename == "journey_tracking.json":
             data["journey"] = self._load_json_file(file_path)
             
@@ -210,11 +197,7 @@ class ComprehensiveInvestigationReportGenerator:
             if thought_data:
                 data["thought_processes"].append(thought_data)
                 
-<<<<<<< HEAD
-        elif filename == "autonomous_activities.jsonl":
-=======
         elif filename == "structured_activities.jsonl":
->>>>>>> 001-modify-analyzer-method
             data["activities"] = self._load_jsonl_file(file_path)
             
         elif filename.startswith("unified_test_report") and filename.endswith(".json"):
@@ -262,11 +245,6 @@ class ComprehensiveInvestigationReportGenerator:
         performance = data.get("performance", {})
         validation = data.get("validation", {})
         test_results = data.get("test_results", {})
-<<<<<<< HEAD
-        
-        # Extract key metrics
-        investigation_id = metadata.get("investigation_id", "unknown")
-=======
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
         
@@ -275,13 +253,10 @@ class ComprehensiveInvestigationReportGenerator:
         if investigation_id == "unknown" and journey:
             investigation_id = journey.get("investigation_id", "unknown")
         
->>>>>>> 001-modify-analyzer-method
         scenario = metadata.get("scenario", "unknown")
         entity_id = metadata.get("config", {}).get("entity_id", "unknown")
         entity_type = metadata.get("config", {}).get("entity_type", "unknown")
         
-<<<<<<< HEAD
-=======
         # CRITICAL FIX: Check nested config structure (metadata.config.config.entity_type)
         if entity_type == "unknown" and "config" in metadata.get("config", {}):
             nested_config = metadata.get("config", {}).get("config", {})
@@ -332,13 +307,10 @@ class ComprehensiveInvestigationReportGenerator:
                 if entity_type == "unknown":
                     entity_type = input_state.get("entity_type", entity_type)
         
->>>>>>> 001-modify-analyzer-method
         # Risk and confidence scores - get from agents_data (investigation_result.json)
         final_risk_score = agents_data.get("final_risk_score", 0.0)
         confidence_score = agents_data.get("confidence", 0.0)
         
-<<<<<<< HEAD
-=======
         # If no agent data, try to extract from thought processes
         if final_risk_score == 0.0 and thought_processes:
             # Extract risk scores from thought processes
@@ -374,7 +346,6 @@ class ComprehensiveInvestigationReportGenerator:
             if confidence_scores:
                 confidence_score = sum(confidence_scores) / len(confidence_scores)
         
->>>>>>> 001-modify-analyzer-method
         # Duration - check multiple sources
         duration = 0.0
         if performance:
@@ -387,17 +358,6 @@ class ComprehensiveInvestigationReportGenerator:
                     if isinstance(timing_data, dict) and "duration" in timing_data:
                         duration += timing_data.get("duration", 0.0)
         
-<<<<<<< HEAD
-        # Status - determine from multiple sources
-        status = metadata.get("status", "unknown")
-        if status == "unknown" and test_results:
-            # Try to get status from test results
-            investigation_results = test_results.get("investigation_results", {})
-            status = investigation_results.get("status", "unknown")
-        if status == "unknown" and agents_executed:
-            # If we have successful agents, mark as completed
-            status = "completed"
-=======
         # Calculate duration from journey if not available
         if duration == 0.0 and journey:
             start_ts = journey.get("start_timestamp")
@@ -447,7 +407,6 @@ class ComprehensiveInvestigationReportGenerator:
         if status in ["unknown", "initialized", "INITIALIZED"]:
             # This will be checked after agents_executed is populated below
             pass
->>>>>>> 001-modify-analyzer-method
         
         # Agent execution info - check multiple data sources
         agents_executed = []
@@ -474,10 +433,6 @@ class ComprehensiveInvestigationReportGenerator:
                         if "tools_used" in findings:
                             tools_used += findings["tools_used"]
         
-<<<<<<< HEAD
-        # If no agents found, try from test_results
-        elif test_results and "investigation_results" in test_results:
-=======
         # If no agents found, extract from thought processes
         if not agents_executed and thought_processes:
             for tp in thought_processes:
@@ -513,7 +468,6 @@ class ComprehensiveInvestigationReportGenerator:
         
         # If no agents found, try from test_results
         if not agents_executed and test_results and "investigation_results" in test_results:
->>>>>>> 001-modify-analyzer-method
             investigation_results = test_results.get("investigation_results", {})
             # Check for agent execution data in test results
             if "agent_executions" in investigation_results:
@@ -532,8 +486,6 @@ class ComprehensiveInvestigationReportGenerator:
                     agents_executed.append(key)
                     agent_results[key] = value
         
-<<<<<<< HEAD
-=======
         # Count tools from journey node executions if not already counted
         if tools_used == 0 and journey:
             node_executions = journey.get("node_executions", [])
@@ -599,7 +551,6 @@ class ComprehensiveInvestigationReportGenerator:
             if tool_names:
                 tools_used = len(tool_names)
         
->>>>>>> 001-modify-analyzer-method
         # Tools and evidence
         evidence_points = len(agents_executed)  # Use number of successful agents as evidence points
         
@@ -618,16 +569,6 @@ class ComprehensiveInvestigationReportGenerator:
         critical_findings = []
         recommendations = []
         
-<<<<<<< HEAD
-        for agent_name, result in agent_results.items():
-            findings = result.get("findings", {})
-            if "risk_indicators" in findings:
-                critical_findings.extend(findings["risk_indicators"])
-            
-            llm_analysis = findings.get("llm_analysis", {})
-            if "recommendations" in llm_analysis:
-                recommendations.append(f"{agent_name.title()}: {llm_analysis['recommendations']}")
-=======
         # Extract from agent results
         for agent_name, result in agent_results.items():
             findings = result.get("findings", {})
@@ -685,7 +626,6 @@ class ComprehensiveInvestigationReportGenerator:
             elif len(agents_executed) > 0:
                 # If agents executed successfully, likely completed
                 status = "completed"
->>>>>>> 001-modify-analyzer-method
         
         return InvestigationSummary(
             investigation_id=investigation_id,
@@ -708,13 +648,6 @@ class ComprehensiveInvestigationReportGenerator:
     def _generate_html_report(self, data: Dict[str, Any], title: str) -> str:
         """Generate comprehensive HTML report."""
         summary = data["summary"]
-<<<<<<< HEAD
-        
-        # Determine risk level and color
-        risk_level = "HIGH" if summary.final_risk_score > 0.7 else "MEDIUM" if summary.final_risk_score > 0.4 else "LOW"
-        risk_color = "#dc3545" if risk_level == "HIGH" else "#fd7e14" if risk_level == "MEDIUM" else "#28a745"
-        
-=======
         risk_analyzer_info = data.get("risk_analyzer_info", {})
         
         # Determine risk level and color
@@ -726,7 +659,6 @@ class ComprehensiveInvestigationReportGenerator:
         # Generate header with logo
         header_html = get_olorin_header(title)
         
->>>>>>> 001-modify-analyzer-method
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -890,10 +822,6 @@ class ComprehensiveInvestigationReportGenerator:
         .collapsible {{ 
             cursor: pointer; 
             user-select: none; 
-<<<<<<< HEAD
-        }}
-        .collapsible:hover {{ background: #f0f0f0; }}
-=======
             position: relative;
             padding-right: 40px;
         }}
@@ -910,7 +838,6 @@ class ComprehensiveInvestigationReportGenerator:
         .collapsible.active .chevron-icon {{
             transform: translateY(-50%) rotate(90deg);
         }}
->>>>>>> 001-modify-analyzer-method
         .collapsible-content {{ 
             max-height: 0; 
             overflow: hidden; 
@@ -923,8 +850,6 @@ class ComprehensiveInvestigationReportGenerator:
             font-size: 0.85rem; 
             margin-top: 20px; 
         }}
-<<<<<<< HEAD
-=======
         
         /* Preface Section */
         .preface {{ 
@@ -957,17 +882,10 @@ class ComprehensiveInvestigationReportGenerator:
         .preface strong {{
             color: #1e3c72;
         }}
->>>>>>> 001-modify-analyzer-method
     </style>
 </head>
 <body>
     <div class="container">
-<<<<<<< HEAD
-        <!-- Header -->
-        <div class="header">
-            <h1>🔍 Comprehensive Investigation Report</h1>
-            <p>Investigation ID: {summary.investigation_id}</p>
-=======
         <!-- Header with Logo -->
         {header_html}
         <div style="margin-top: 20px; margin-bottom: 20px;">
@@ -1039,23 +957,11 @@ class ComprehensiveInvestigationReportGenerator:
                     </p>
                 </div>
             </div>
->>>>>>> 001-modify-analyzer-method
         </div>
         
         <!-- Executive Summary -->
         <div class="executive-summary">
             <h2>🎯 Executive Summary</h2>
-<<<<<<< HEAD
-            <div class="risk-badge">{risk_level} RISK - {summary.final_risk_score:.2f}</div>
-            
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <span class="metric-value">{summary.final_risk_score:.2f}</span>
-                    <div class="metric-label">Risk Score</div>
-                </div>
-                <div class="metric-card">
-                    <span class="metric-value">{summary.confidence_score:.2f}</span>
-=======
             <div class="risk-badge">{risk_level} RISK - {final_risk_score:.2f}</div>
             
             <div class="metrics-grid">
@@ -1065,7 +971,6 @@ class ComprehensiveInvestigationReportGenerator:
                 </div>
                 <div class="metric-card">
                     <span class="metric-value">{(summary.confidence_score if summary.confidence_score is not None else 0.0):.2f}</span>
->>>>>>> 001-modify-analyzer-method
                     <div class="metric-label">Confidence</div>
                 </div>
                 <div class="metric-card">
@@ -1109,39 +1014,28 @@ class ComprehensiveInvestigationReportGenerator:
             <div class="section-header collapsible" onclick="toggleSection('agents')">
                 <h2>🤖 Agent Analysis Results</h2>
                 <p>Detailed analysis from domain-specific agents</p>
-<<<<<<< HEAD
-=======
                 <span class="chevron-icon">▶</span>
->>>>>>> 001-modify-analyzer-method
             </div>
             <div class="section-content collapsible-content" id="agents">
                 {self._generate_agent_results_html(data)}
             </div>
         </div>
         
-<<<<<<< HEAD
-=======
         <!-- Merchant Validation -->
         {self._generate_merchant_validation_html(data)}
         
->>>>>>> 001-modify-analyzer-method
         <!-- Performance Metrics -->
         <div class="section">
             <div class="section-header collapsible" onclick="toggleSection('performance')">
                 <h2>⚡ Performance Metrics</h2>
                 <p>Investigation execution performance and timing</p>
-<<<<<<< HEAD
-=======
                 <span class="chevron-icon">▶</span>
->>>>>>> 001-modify-analyzer-method
             </div>
             <div class="section-content collapsible-content" id="performance">
                 {self._generate_performance_html(data)}
             </div>
         </div>
         
-<<<<<<< HEAD
-=======
         <!-- Risk Score Over Time Chart -->
         <div class="section">
             <div class="section-header collapsible" onclick="toggleSection('riskChart')">
@@ -1170,16 +1064,12 @@ class ComprehensiveInvestigationReportGenerator:
             </div>
         </div>
         
->>>>>>> 001-modify-analyzer-method
         <!-- Tool Execution Details -->
         <div class="section">
             <div class="section-header collapsible" onclick="toggleSection('tools')">
                 <h2>🔧 Tool Execution Details</h2>
                 <p>External API calls and threat intelligence sources</p>
-<<<<<<< HEAD
-=======
                 <span class="chevron-icon">▶</span>
->>>>>>> 001-modify-analyzer-method
             </div>
             <div class="section-content collapsible-content" id="tools">
                 {self._generate_tools_html(data)}
@@ -1191,30 +1081,13 @@ class ComprehensiveInvestigationReportGenerator:
             <div class="section-header collapsible" onclick="toggleSection('thoughts')">
                 <h2>🧠 Agent Thought Processes</h2>
                 <p>Detailed reasoning chain and decision-making process for each domain agent</p>
-<<<<<<< HEAD
-=======
                 <span class="chevron-icon">▶</span>
->>>>>>> 001-modify-analyzer-method
             </div>
             <div class="section-content collapsible-content" id="thoughts">
                 {self._generate_thought_process_html(data)}
             </div>
         </div>
         
-<<<<<<< HEAD
-        <!-- Server Logs -->
-        <div class="section">
-            <div class="section-header collapsible" onclick="toggleSection('serverlogs')">
-                <h2>📋 Server Logs</h2>
-                <p>Complete server-side logging during investigation execution</p>
-            </div>
-            <div class="section-content collapsible-content" id="serverlogs">
-                {self._generate_server_logs_html(data)}
-            </div>
-        </div>
-        
-=======
->>>>>>> 001-modify-analyzer-method
         <!-- Recommendations -->
         <div class="section">
             <div class="section-header">
@@ -1231,14 +1104,9 @@ class ComprehensiveInvestigationReportGenerator:
         <!-- Technical Details -->
         <div class="section">
             <div class="section-header collapsible" onclick="toggleSection('technical')">
-<<<<<<< HEAD
-                <h2>🔬 Technical Details</h2>
-                <p>Chain of thought, validation results, and technical metadata</p>
-=======
                 <h2>📊 Journey Tracking Summary</h2>
                 <p>Chain of thought, validation results, and technical metadata</p>
                 <span class="chevron-icon">▶</span>
->>>>>>> 001-modify-analyzer-method
             </div>
             <div class="section-content collapsible-content" id="technical">
                 {self._generate_technical_details_html(data)}
@@ -1253,26 +1121,6 @@ class ComprehensiveInvestigationReportGenerator:
     <script>
         function toggleSection(sectionId) {{
             const content = document.getElementById(sectionId);
-<<<<<<< HEAD
-            const isActive = content.classList.contains('active');
-            
-            // Close all sections
-            document.querySelectorAll('.collapsible-content').forEach(el => {{
-                el.classList.remove('active');
-            }});
-            
-            // Toggle current section
-            if (!isActive) {{
-                content.classList.add('active');
-            }}
-        }}
-        
-        // Auto-expand first section
-        document.addEventListener('DOMContentLoaded', function() {{
-            document.getElementById('agents').classList.add('active');
-        }});
-    </script>
-=======
             const header = content.previousElementSibling;
             const isActive = content.classList.contains('active');
             
@@ -1298,7 +1146,6 @@ class ComprehensiveInvestigationReportGenerator:
     
     {self._generate_charts_script(data)}
     {OLORIN_FOOTER}
->>>>>>> 001-modify-analyzer-method
 </body>
 </html>
         """
@@ -1307,12 +1154,6 @@ class ComprehensiveInvestigationReportGenerator:
     
     def _generate_agent_results_html(self, data: Dict[str, Any]) -> str:
         """Generate agent results section HTML."""
-<<<<<<< HEAD
-        agents_data = data.get("agents", {}).get("agent_results", {})
-        
-        if not agents_data:
-            return "<p>No agent results available.</p>"
-=======
         agents_data = data.get("agents", {})
         if isinstance(agents_data, dict):
             agents_data = agents_data.get("agent_results", {})
@@ -1373,7 +1214,6 @@ class ComprehensiveInvestigationReportGenerator:
         
         if not agents_data:
             return "<p>No agent results available. Check investigation folder for thought_process_*.json files or journey_tracking.json.</p>"
->>>>>>> 001-modify-analyzer-method
         
         html = "<table class='data-table'><thead><tr><th>Agent</th><th>Status</th><th>Risk Score</th><th>Duration</th><th>Key Findings</th></tr></thead><tbody>"
         
@@ -1384,10 +1224,6 @@ class ComprehensiveInvestigationReportGenerator:
             
             # Get key findings
             findings = result.get("findings", {})
-<<<<<<< HEAD
-            evidence = findings.get("evidence", [])
-            key_finding = evidence[0] if evidence else "No findings available"
-=======
             if isinstance(findings, dict):
                 # Try multiple ways to extract key finding
                 evidence = findings.get("evidence", [])
@@ -1404,7 +1240,6 @@ class ComprehensiveInvestigationReportGenerator:
                     key_finding = "Analysis completed"
             else:
                 key_finding = "Analysis completed"
->>>>>>> 001-modify-analyzer-method
             
             status_class = f"agent-status status-{status}"
             
@@ -1424,10 +1259,6 @@ class ComprehensiveInvestigationReportGenerator:
     def _generate_performance_html(self, data: Dict[str, Any]) -> str:
         """Generate performance metrics section HTML."""
         performance = data.get("performance", {})
-<<<<<<< HEAD
-        
-        if not performance:
-=======
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
         agents_data = data.get("agents", {})
@@ -1551,7 +1382,6 @@ class ComprehensiveInvestigationReportGenerator:
         }
         
         if not agent_timings and not total_duration:
->>>>>>> 001-modify-analyzer-method
             return "<p>No performance data available.</p>"
         
         html = f"""
@@ -1571,28 +1401,11 @@ class ComprehensiveInvestigationReportGenerator:
         </div>
         """
         
-<<<<<<< HEAD
-        # Agent timings table
-=======
         # Agent timings table - show all agents
->>>>>>> 001-modify-analyzer-method
         agent_timings = performance.get("agent_timings", {})
         if agent_timings:
             html += "<h4>Agent Performance Breakdown</h4><table class='data-table'><thead><tr><th>Agent</th><th>Duration</th><th>Status</th><th>Performance</th></tr></thead><tbody>"
             
-<<<<<<< HEAD
-            for agent, metrics in agent_timings.items():
-                duration = metrics.get("duration", 0)
-                status = metrics.get("status", "unknown")
-                perf_category = metrics.get("performance_category", "unknown")
-                
-                html += f"""
-                <tr>
-                    <td>{agent.replace('_', ' ').title()}</td>
-                    <td>{duration:.1f}s</td>
-                    <td>{status}</td>
-                    <td>{perf_category}</td>
-=======
             # Sort agents by duration (descending) for better readability
             sorted_agents = sorted(
                 agent_timings.items(),
@@ -1621,35 +1434,25 @@ class ComprehensiveInvestigationReportGenerator:
                     <td>{duration_str}</td>
                     <td><span class="{status_class}">{status_display}</span></td>
                     <td>{perf_category.title()}</td>
->>>>>>> 001-modify-analyzer-method
                 </tr>
                 """
             
             html += "</tbody></table>"
-<<<<<<< HEAD
-=======
         else:
             html += "<p>No agent performance data available.</p>"
->>>>>>> 001-modify-analyzer-method
         
         return html
     
     def _generate_tools_html(self, data: Dict[str, Any]) -> str:
         """Generate tools execution section HTML."""
         agents_data = data.get("agents", {})
-<<<<<<< HEAD
-        agent_results = agents_data.get("agent_results", {})
-=======
         agent_results = agents_data.get("agent_results", {}) if isinstance(agents_data, dict) else {}
         thought_processes = data.get("thought_processes", [])
         journey = data.get("journey", {})
->>>>>>> 001-modify-analyzer-method
         
         # Extract tool execution data from agent evidence
         tools_found = {}
         
-<<<<<<< HEAD
-=======
         # Extract tools from journey node executions
         if journey:
             node_executions = journey.get("node_executions", [])
@@ -1697,7 +1500,6 @@ class ComprehensiveInvestigationReportGenerator:
                                         "key_result": "Retrieved transaction records"
                                     }
         
->>>>>>> 001-modify-analyzer-method
         for agent_name, agent_data in agent_results.items():
             if isinstance(agent_data, dict) and "findings" in agent_data:
                 findings = agent_data["findings"]
@@ -1743,10 +1545,6 @@ class ComprehensiveInvestigationReportGenerator:
                         "result": f"Retrieved {row_count} transaction records"
                     }
         
-<<<<<<< HEAD
-        if not tools_found:
-            return "<p>No tool execution data available.</p>"
-=======
         # If still no tools found, check for implicit tool usage in evidence
         if not tools_found and thought_processes:
             for tp in thought_processes:
@@ -1773,7 +1571,6 @@ class ComprehensiveInvestigationReportGenerator:
                 return "<p>No tool execution data found in journey tracking. Tools may have been used during agent execution phases.</p>"
             else:
                 return "<p>No tool execution data available.</p>"
->>>>>>> 001-modify-analyzer-method
         
         html = "<table class='data-table'><thead><tr><th>Tool</th><th>Agent</th><th>Purpose</th><th>Status</th><th>Key Result</th></tr></thead><tbody>"
         
@@ -1796,8 +1593,6 @@ class ComprehensiveInvestigationReportGenerator:
         html += "</tbody></table>"
         return html
     
-<<<<<<< HEAD
-=======
     def _generate_charts_script(self, data: Dict[str, Any]) -> str:
         """Generate Chart.js scripts for time series charts."""
         journey = data.get("journey", {})
@@ -2041,15 +1836,10 @@ class ComprehensiveInvestigationReportGenerator:
         
         return svg
     
->>>>>>> 001-modify-analyzer-method
     def _generate_technical_details_html(self, data: Dict[str, Any]) -> str:
         """Generate technical details section HTML."""
         validation = data.get("validation", {})
         metadata = data.get("metadata", {})
-<<<<<<< HEAD
-        
-        html = "<h4>Validation Results</h4>"
-=======
         journey = data.get("journey", {})
         thought_processes = data.get("thought_processes", [])
         
@@ -2075,7 +1865,6 @@ class ComprehensiveInvestigationReportGenerator:
             """
         
         html += "<h4>Validation Results</h4>"
->>>>>>> 001-modify-analyzer-method
         
         if validation:
             html += f"""
@@ -2111,8 +1900,6 @@ class ComprehensiveInvestigationReportGenerator:
                     html += f'<li class="finding-item">{rec}</li>'
                 html += "</ul>"
         
-<<<<<<< HEAD
-=======
         # Journey tracking summary
         if journey:
             node_executions = journey.get("node_executions", [])
@@ -2165,7 +1952,6 @@ class ComprehensiveInvestigationReportGenerator:
                 html += f'<li class="finding-item">{agent_name} ({domain}): Risk Score {risk_score:.2f}</li>'
                 html += "</ul>"
         
->>>>>>> 001-modify-analyzer-method
         # Processing summary
         html += f"""
         <h4>Processing Summary</h4>
@@ -2183,8 +1969,6 @@ class ComprehensiveInvestigationReportGenerator:
         
         return html
 
-<<<<<<< HEAD
-=======
     def _generate_merchant_validation_html(self, data: Dict[str, Any]) -> str:
         """Generate merchant validation section HTML."""
         validation = data.get("validation", {})
@@ -2325,19 +2109,15 @@ class ComprehensiveInvestigationReportGenerator:
         </div>
         """
     
->>>>>>> 001-modify-analyzer-method
     def _generate_thought_process_html(self, data: Dict[str, Any]) -> str:
         """Generate HTML for agent thought processes."""
         thought_processes = data.get("thought_processes", [])
         
         if not thought_processes:
-<<<<<<< HEAD
-=======
             # Check if we have journey data that we can use
             journey = data.get("journey", {})
             if journey:
                 return f"<p>Journey tracking data available with {len(journey.get('node_executions', []))} node executions. Thought process files not found in folder.</p>"
->>>>>>> 001-modify-analyzer-method
             return "<p>No thought process data available.</p>"
         
         html = ""

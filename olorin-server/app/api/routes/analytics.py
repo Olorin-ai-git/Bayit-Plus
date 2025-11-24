@@ -1,20 +1,5 @@
 """
 API endpoints for risk analytics powered by Snowflake.
-<<<<<<< HEAD
-"""
-
-import os
-from typing import Optional
-from fastapi import APIRouter, HTTPException, Query, Request
-from pydantic import BaseModel, Field
-
-from app.service.logging import get_bridge_logger
-from app.service.analytics.risk_analyzer import get_risk_analyzer
-
-logger = get_bridge_logger(__name__)
-
-router = APIRouter(prefix="/v1/analytics", tags=["analytics"])
-=======
 Extended with fraud detection analytics endpoints.
 NO HARDCODED VALUES - All configuration from environment variables.
 """
@@ -53,7 +38,6 @@ drift_detector = DriftDetector()
 replay_engine = ReplayEngine()
 explainer = Explainer()
 pipeline_monitor = PipelineMonitor()
->>>>>>> 001-modify-analyzer-method
 
 
 class RiskAnalyticsRequest(BaseModel):
@@ -95,15 +79,6 @@ class EntityAnalysisRequest(BaseModel):
 
 
 @router.get("/health")
-<<<<<<< HEAD
-async def analytics_health():
-    """Check if analytics service is available."""
-    snowflake_enabled = os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true'
-    
-    return {
-        "status": "healthy",
-        "snowflake_enabled": snowflake_enabled,
-=======
 async def analytics_health(request: Request):
     """Check if analytics service is available."""
     snowflake_enabled = os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true'
@@ -121,7 +96,6 @@ async def analytics_health(request: Request):
         "status": "healthy",
         "snowflake_enabled": snowflake_enabled,
         "scheduler": scheduler_status,
->>>>>>> 001-modify-analyzer-method
         "message": "Analytics service is operational" if snowflake_enabled else "Analytics disabled (USE_SNOWFLAKE=false)"
     }
 
@@ -261,12 +235,6 @@ async def get_analytics_config():
     """
     Get current analytics configuration.
     """
-<<<<<<< HEAD
-    return {
-        "snowflake_enabled": os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true',
-        "default_time_window": os.getenv('ANALYTICS_DEFAULT_TIME_WINDOW', '24h'),
-        "default_group_by": os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'EMAIL'),
-=======
     # Read analyzer time window configuration
     analyzer_hours = int(os.getenv('ANALYZER_TIME_WINDOW_HOURS', '24'))
     default_time_window = f"{analyzer_hours}h"
@@ -275,14 +243,10 @@ async def get_analytics_config():
         "snowflake_enabled": os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true',
         "default_time_window": default_time_window,
         "default_group_by": os.getenv('ANALYTICS_DEFAULT_GROUP_BY', 'email').upper(),
->>>>>>> 001-modify-analyzer-method
         "default_top_percentage": float(os.getenv('ANALYTICS_DEFAULT_TOP_PERCENTAGE', '10')),
         "cache_ttl": int(os.getenv('ANALYTICS_CACHE_TTL', '300')),
         "available_groupings": ["EMAIL", "DEVICE_ID", "IP", "BIN", "MERCHANT_NAME"],
         "available_time_windows": ["1h", "6h", "12h", "24h", "7d", "30d"]
-<<<<<<< HEAD
-    }
-=======
     }
 
 
@@ -2331,4 +2295,3 @@ async def trigger_startup_analysis(
             status_code=500,
             detail=f"Failed to trigger startup analysis: {str(e)}"
         )
->>>>>>> 001-modify-analyzer-method

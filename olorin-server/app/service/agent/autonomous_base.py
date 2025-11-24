@@ -28,32 +28,18 @@ logger = logging.getLogger(__name__)
 # Global variable for lazy initialization
 _structured_llm = None
 
-<<<<<<< HEAD
-def get_autonomous_llm():
-    """Get or create the autonomous LLM using the configured SELECTED_MODEL."""
-    global _autonomous_llm
-    
-    if _autonomous_llm is None:
-=======
 def get_structured_llm():
     """Get or create the structured LLM using the configured SELECTED_MODEL."""
     global _structured_llm
     
     if _structured_llm is None:
->>>>>>> 001-modify-analyzer-method
         from app.service.llm_manager import get_llm_manager
         
         # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
         llm_manager = get_llm_manager()
-<<<<<<< HEAD
-        _autonomous_llm = llm_manager.get_selected_model()
-        
-        logger.info("Initialized autonomous LLM using configured SELECTED_MODEL")
-=======
         _structured_llm = llm_manager.get_selected_model()
         
         logger.info("Initialized structured LLM using configured SELECTED_MODEL")
->>>>>>> 001-modify-analyzer-method
     
     return _structured_llm
 
@@ -266,11 +252,7 @@ class StructuredInvestigationAgent:
         # Generate rich investigation context for LLM
         llm_context = context.generate_llm_context(self.domain)
         
-<<<<<<< HEAD
-        # Create autonomous investigation prompt with available tools
-=======
         # Create structured investigation prompt with available tools
->>>>>>> 001-modify-analyzer-method
         investigation_prompt = create_investigation_prompt(
             self.domain, context, llm_context, specific_objectives, available_tools=self.tools
         )
@@ -279,11 +261,7 @@ class StructuredInvestigationAgent:
         logger.info(f"🔥 UNIFIED PROMPTS: Using comprehensive investigation prompt for {self.domain} domain")
         logger.info(f"        📊 {len(self.tools)} tools available for comprehensive {self.domain.title()} analysis")
         
-<<<<<<< HEAD
-        # Create system message for autonomous agent
-=======
         # Create system message for structured agent
->>>>>>> 001-modify-analyzer-method
         system_msg = SystemMessage(content=f"""
 You are an ADVANCED fraud investigation agent specializing in {self.domain.upper()} ANALYSIS.
 

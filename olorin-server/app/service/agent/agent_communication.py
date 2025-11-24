@@ -22,11 +22,7 @@ from app.service.agent.autonomous_context import (
 logger = get_bridge_logger(__name__)
 
 # Thread-safe context storage with locking
-<<<<<<< HEAD
-_investigation_contexts: Dict[str, AutonomousInvestigationContext] = {}
-=======
 _investigation_contexts: Dict[str, StructuredInvestigationContext] = {}
->>>>>>> 001-modify-analyzer-method
 _context_locks: Dict[str, threading.RLock] = {}
 _global_context_lock = threading.RLock()
 
@@ -60,13 +56,8 @@ def _get_or_create_structured_context(
     entity_id: str,
     entity_type: Optional[EntityType] = None,
     investigation_type: str = "fraud_investigation"
-<<<<<<< HEAD
-) -> AutonomousInvestigationContext:
-    """Get existing or create new autonomous investigation context with thread-safety."""
-=======
 ) -> StructuredInvestigationContext:
     """Get existing or create new structured investigation context with thread-safety."""
->>>>>>> 001-modify-analyzer-method
     try:
         context_key = f"{investigation_id}_{entity_id}"
         
@@ -98,11 +89,7 @@ def _get_or_create_structured_context(
                 else:
                     entity_type = EntityType.USER_ID  # Default fallback
             
-<<<<<<< HEAD
-            context = AutonomousInvestigationContext(
-=======
             context = StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
                 investigation_id=investigation_id,
                 entity_id=entity_id,
                 entity_type=entity_type,
@@ -128,22 +115,14 @@ def _get_or_create_structured_context(
                 logger.warning(f"Failed to initialize journey tracking: {str(je)}")
                 # Don't fail context creation due to journey tracking issues
             
-<<<<<<< HEAD
-            logger.info(f"Created autonomous context for investigation {investigation_id}, entity {entity_id}")
-=======
             logger.info(f"Created structured context for investigation {investigation_id}, entity {entity_id}")
->>>>>>> 001-modify-analyzer-method
             return context
         
     except Exception as e:
         logger.error(f"Failed to create structured context: {str(e)}")
         
         # Return fallback context
-<<<<<<< HEAD
-        return AutonomousInvestigationContext(
-=======
         return StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
             investigation_id=investigation_id or "unknown",
             entity_id=entity_id or "unknown",
             entity_type=EntityType.USER_ID,
@@ -208,11 +187,7 @@ def cleanup_investigation_context(investigation_id: str, entity_id: str) -> None
         logger.error(f"Failed to cleanup context: {str(e)}")
 
 
-<<<<<<< HEAD
-def get_investigation_contexts() -> Dict[str, AutonomousInvestigationContext]:
-=======
 def get_investigation_contexts() -> Dict[str, StructuredInvestigationContext]:
->>>>>>> 001-modify-analyzer-method
     """Get all active investigation contexts (for debugging/monitoring) with thread-safety."""
     with _global_context_lock:
         return _investigation_contexts.copy()
@@ -223,19 +198,11 @@ async def get_context_with_retry(
     entity_id: str,
     max_retries: int = 3,
     retry_delay: float = 0.1
-<<<<<<< HEAD
-) -> Optional[AutonomousInvestigationContext]:
-    """Get autonomous context with retry logic for race condition resilience."""
-    for attempt in range(max_retries):
-        try:
-            context = _get_or_create_autonomous_context(investigation_id, entity_id)
-=======
 ) -> Optional[StructuredInvestigationContext]:
     """Get structured context with retry logic for race condition resilience."""
     for attempt in range(max_retries):
         try:
             context = _get_or_create_structured_context(investigation_id, entity_id)
->>>>>>> 001-modify-analyzer-method
             if context:
                 return context
         except Exception as e:

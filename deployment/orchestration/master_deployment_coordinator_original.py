@@ -234,11 +234,7 @@ class MasterDeploymentCoordinator:
         self._log_deployment(deployment_id, "Deploying backend to Cloud Run")
         
         # Use existing proven deployment script
-<<<<<<< HEAD
-        script_path = "/Users/gklainert/Documents/olorin/deploy-cloudrun-direct.sh"
-=======
         script_path = "/Users/gklainert/Documents/olorin/scripts/deployment/deploy-cloudrun-direct.sh"
->>>>>>> 001-modify-analyzer-method
         
         env_vars = os.environ.copy()
         env_vars.update({

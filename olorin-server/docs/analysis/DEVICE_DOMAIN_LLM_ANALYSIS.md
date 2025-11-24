@@ -278,11 +278,6 @@ agent_context_for_device_risk = AgentContext(
         interaction_group_id=f"device-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/DEVICE_DOMAIN_LLM_ANALYSIS.md
-    olorin_header=OlorinHeader(
-        olorin_tid=request.headers.get(
-            "olorin-tid", f"olorin-device-risk-{user_id}"
-=======
     olorin_header=OlorinHeader(
         olorin_tid=request.headers.get(
             "olorin-tid", f"olorin-device-risk-{user_id}"

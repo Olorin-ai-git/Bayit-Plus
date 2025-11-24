@@ -15,11 +15,7 @@ module.exports = {
   ],
 
   // Module name mapping for path aliases
-<<<<<<< HEAD
-  moduleNameMapping: {
-=======
   moduleNameMapper: {
->>>>>>> 001-modify-analyzer-method
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
     '^@components/(.*)$': '<rootDir>/src/shared/components/$1',
@@ -32,11 +28,7 @@ module.exports = {
     '^@testing/(.*)$': '<rootDir>/src/shared/testing/$1',
 
     // Microservice aliases
-<<<<<<< HEAD
-    '^@autonomous-investigation/(.*)$': '<rootDir>/src/microservices/autonomous-investigation/$1',
-=======
     '^@structured-investigation/(.*)$': '<rootDir>/src/microservices/structured-investigation/$1',
->>>>>>> 001-modify-analyzer-method
     '^@manual-investigation/(.*)$': '<rootDir>/src/microservices/manual-investigation/$1',
     '^@agent-analytics/(.*)$': '<rootDir>/src/microservices/agent-analytics/$1',
     '^@rag-intelligence/(.*)$': '<rootDir>/src/microservices/rag-intelligence/$1',
@@ -84,12 +76,8 @@ module.exports = {
     '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js|jsx)',
     '<rootDir>/src/**/*.(test|spec).(ts|tsx|js|jsx)',
     '<rootDir>/src/**/*.test.(ts|tsx|js|jsx)',
-<<<<<<< HEAD
-    '<rootDir>/src/**/*.spec.(ts|tsx|js|jsx)'
-=======
     '<rootDir>/src/**/*.spec.(ts|tsx|js|jsx)',
     '<rootDir>/tests/**/*.(test|spec).(ts|tsx|js|jsx)'
->>>>>>> 001-modify-analyzer-method
   ],
 
   // Files to ignore for testing
@@ -130,11 +118,7 @@ module.exports = {
       lines: 80,
       statements: 80
     },
-<<<<<<< HEAD
-    './src/microservices/autonomous-investigation/': {
-=======
     './src/microservices/structured-investigation/': {
->>>>>>> 001-modify-analyzer-method
       branches: 75,
       functions: 75,
       lines: 75,
@@ -307,15 +291,9 @@ module.exports = {
 
     // Service tests (per microservice)
     {
-<<<<<<< HEAD
-      displayName: 'Autonomous Investigation Tests',
-      testMatch: [
-        '<rootDir>/src/microservices/autonomous-investigation/**/*.(test|spec).(ts|tsx|js|jsx)'
-=======
       displayName: 'Structured Investigation Tests',
       testMatch: [
         '<rootDir>/src/microservices/structured-investigation/**/*.(test|spec).(ts|tsx|js|jsx)'
->>>>>>> 001-modify-analyzer-method
       ],
       setupFilesAfterEnv: [
         '<rootDir>/src/shared/testing/jest-setup.ts',

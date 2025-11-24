@@ -67,13 +67,8 @@ await engine.initialize(browser);
 
 // Test single service across all browsers
 const result = await engine.testServiceCrossBrowser(
-<<<<<<< HEAD
-  'autonomous-investigation',
-  'http://localhost:3001/autonomous-investigation',
-=======
   'structured-investigation',
   'http://localhost:3001/structured-investigation',
->>>>>>> 001-modify-analyzer-method
   {
     browsers: ['chromium', 'firefox', 'webkit'],
     viewports: [
@@ -88,11 +83,7 @@ const result = await engine.testServiceCrossBrowser(
 // Test multiple services
 const results = await engine.testMultipleServices([
   { name: 'core-ui', url: 'http://localhost:3000/' },
-<<<<<<< HEAD
-  { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
-=======
   { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
->>>>>>> 001-modify-analyzer-method
 ]);
 
 // Generate comprehensive report
@@ -264,11 +255,7 @@ responsiveTest.browsers.forEach(browserResult => {
 test('should maintain consistent functionality across all browsers for critical services', async () => {
   const criticalServices = [
     { name: 'core-ui', url: 'http://localhost:3000/' },
-<<<<<<< HEAD
-    { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
-=======
     { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
->>>>>>> 001-modify-analyzer-method
   ];
 
   for (const service of criticalServices) {
@@ -339,11 +326,7 @@ const compatibilityBudgets = {
     majorErrors: 1,            // Maximum 1 major error per browser
     performanceVariance: 30    // Max 30% performance difference
   },
-<<<<<<< HEAD
-  'autonomous-investigation': {
-=======
   'structured-investigation': {
->>>>>>> 001-modify-analyzer-method
     compatibilityScore: 80,    // 80% minimum compatibility
     criticalErrors: 0,         // No critical errors allowed
     majorErrors: 2,            // Maximum 2 major errors per browser

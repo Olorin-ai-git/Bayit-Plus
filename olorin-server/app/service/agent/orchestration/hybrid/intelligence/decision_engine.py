@@ -3,21 +3,15 @@ AI Confidence Decision Engine
 
 Main orchestrator for the modular AI confidence calculation system.
 Coordinates all specialized components to provide comprehensive routing decisions.
-<<<<<<< HEAD
-=======
 
 CRITICAL: In LIVE mode, uses real LLM for intelligent routing decisions.
          In DEMO mode, uses rule-based heuristics (no API costs).
->>>>>>> 001-modify-analyzer-method
 """
 
 import asyncio
 import time
-<<<<<<< HEAD
-=======
 import os
 import json
->>>>>>> 001-modify-analyzer-method
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
@@ -32,11 +26,7 @@ from .reasoning import (
     ReasoningBuilder, EvidenceAnalyzer, CompletenessTracker
 )
 
-<<<<<<< HEAD
-from ..state import HybridInvestigationState, AIRoutingDecision, AIConfidenceLevel, SafetyConcernType
-=======
 from ..state import HybridInvestigationState, AIRoutingDecision, AIConfidenceLevel, SafetyConcernType, InvestigationStrategy
->>>>>>> 001-modify-analyzer-method
 
 from app.service.logging import get_bridge_logger
 
@@ -46,14 +36,6 @@ logger = get_bridge_logger(__name__)
 class DecisionEngine:
     """
     Modular AI confidence decision engine orchestrator.
-<<<<<<< HEAD
-    
-    Coordinates specialized assessors, strategy components, and reasoning builders
-    to provide comprehensive AI routing decisions with full backward compatibility.
-    """
-    
-    def __init__(self):
-=======
 
     Coordinates specialized assessors, strategy components, and reasoning builders
     to provide comprehensive AI routing decisions with full backward compatibility.
@@ -82,35 +64,22 @@ class DecisionEngine:
         else:
             logger.info("🎭 DEMO MODE: Using rule-based heuristics (no API costs)")
 
->>>>>>> 001-modify-analyzer-method
         # Initialize all component modules
         self.snowflake_assessor = SnowflakeAssessor()
         self.tool_assessor = ToolAssessor()
         self.domain_assessor = DomainAssessor()
         self.pattern_assessor = PatternAssessor()
         self.velocity_assessor = VelocityAssessor()
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         self.strategy_selector = StrategySelector()
         self.action_planner = ActionPlanner()
         self.agent_selector = AgentSelector()
         self.tool_recommender = ToolRecommender()
-<<<<<<< HEAD
-        
-        self.reasoning_builder = ReasoningBuilder()
-        self.evidence_analyzer = EvidenceAnalyzer()
-        self.completeness_tracker = CompletenessTracker()
-        
-=======
 
         self.reasoning_builder = ReasoningBuilder()
         self.evidence_analyzer = EvidenceAnalyzer()
         self.completeness_tracker = CompletenessTracker()
 
->>>>>>> 001-modify-analyzer-method
         # Confidence weights (preserved from original)
         self.confidence_weights = {
             "snowflake_evidence": 0.35,
@@ -183,22 +152,6 @@ class DecisionEngine:
         """Calculate all confidence factors using specialized assessors."""
         logger.debug(f"   🔬 SPECIALIZED ASSESSOR CALCULATIONS:")
         
-<<<<<<< HEAD
-        # Calculate each factor with individual logging
-        snowflake_score = await self.snowflake_assessor.assess_evidence(state)
-        logger.debug(f"     Snowflake Evidence (35% weight): {snowflake_score:.3f}")
-        
-        tool_score = await self.tool_assessor.assess_evidence(state)
-        logger.debug(f"     Tool Evidence (25% weight): {tool_score:.3f}")
-        
-        domain_score = await self.domain_assessor.assess_evidence(state)
-        logger.debug(f"     Domain Evidence (20% weight): {domain_score:.3f}")
-        
-        pattern_score = await self.pattern_assessor.assess_evidence(state)
-        logger.debug(f"     Pattern Recognition (15% weight): {pattern_score:.3f}")
-        
-        velocity_score = await self.velocity_assessor.assess_evidence(state)
-=======
         # CRITICAL FIX: Handle None values from assessors - use 0.0 as default
         async def safe_assess(assessor, name: str) -> float:
             try:
@@ -228,7 +181,6 @@ class DecisionEngine:
         logger.debug(f"     Pattern Recognition (15% weight): {pattern_score:.3f}")
         
         velocity_score = await safe_assess(self.velocity_assessor, "Velocity")
->>>>>>> 001-modify-analyzer-method
         logger.debug(f"     Investigation Velocity (5% weight): {velocity_score:.3f}")
         
         factors = {
@@ -246,20 +198,6 @@ class DecisionEngine:
         """Calculate weighted overall confidence score."""
         logger.debug(f"   📊 WEIGHTED CONFIDENCE CALCULATION:")
         
-<<<<<<< HEAD
-        # Calculate each weighted component
-        snowflake_weighted = confidence_scores["snowflake"] * self.confidence_weights["snowflake_evidence"]
-        tool_weighted = confidence_scores["tool"] * self.confidence_weights["tool_evidence"]
-        domain_weighted = confidence_scores["domain"] * self.confidence_weights["domain_evidence"]
-        pattern_weighted = confidence_scores["pattern"] * self.confidence_weights["pattern_recognition"]
-        velocity_weighted = confidence_scores["velocity"] * self.confidence_weights["investigation_velocity"]
-        
-        logger.debug(f"     Snowflake: {confidence_scores['snowflake']:.3f} × 0.35 = {snowflake_weighted:.3f}")
-        logger.debug(f"     Tool: {confidence_scores['tool']:.3f} × 0.25 = {tool_weighted:.3f}")
-        logger.debug(f"     Domain: {confidence_scores['domain']:.3f} × 0.20 = {domain_weighted:.3f}")
-        logger.debug(f"     Pattern: {confidence_scores['pattern']:.3f} × 0.15 = {pattern_weighted:.3f}")
-        logger.debug(f"     Velocity: {confidence_scores['velocity']:.3f} × 0.05 = {velocity_weighted:.3f}")
-=======
         # CRITICAL FIX: Handle None values from assessors - use 0.0 as default
         def safe_score(key: str) -> float:
             score = confidence_scores.get(key)
@@ -290,7 +228,6 @@ class DecisionEngine:
         logger.debug(f"     Domain: {domain_score:.3f} × 0.20 = {domain_weighted:.3f}")
         logger.debug(f"     Pattern: {pattern_score:.3f} × 0.15 = {pattern_weighted:.3f}")
         logger.debug(f"     Velocity: {velocity_score:.3f} × 0.05 = {velocity_weighted:.3f}")
->>>>>>> 001-modify-analyzer-method
         
         overall = snowflake_weighted + tool_weighted + domain_weighted + pattern_weighted + velocity_weighted
         logger.debug(f"   ✅ TOTAL WEIGHTED CONFIDENCE: {overall:.3f}")
@@ -303,10 +240,6 @@ class DecisionEngine:
         overall_confidence: float,
         confidence_scores: Dict[str, float]
     ) -> AIRoutingDecision:
-<<<<<<< HEAD
-        """Generate complete routing decision using specialized strategy components."""
-        
-=======
         """Generate complete routing decision using specialized strategy components or LLM."""
 
         # LIVE MODE: Use real LLM for intelligent routing decisions
@@ -317,17 +250,12 @@ class DecisionEngine:
         # DEMO MODE: Use heuristic-based strategy components (no API costs)
         logger.debug("🎭 DEMO MODE: Using heuristic-based routing components")
 
->>>>>>> 001-modify-analyzer-method
         # Strategic decisions
         strategy = await self.strategy_selector.determine_strategy(state, overall_confidence)
         next_action = await self.action_planner.determine_next_action(state, overall_confidence, strategy)
         agents_to_activate = await self.agent_selector.determine_agents_to_activate(state, strategy, overall_confidence)
         tools_recommended = await self.tool_recommender.determine_recommended_tools(state, strategy, overall_confidence)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Analysis and reasoning
         reasoning = self.reasoning_builder.build_reasoning_chain(
             state, overall_confidence, strategy, next_action,
@@ -336,21 +264,13 @@ class DecisionEngine:
         )
         evidence_quality = await self.evidence_analyzer.calculate_evidence_quality(state)
         completeness = await self.completeness_tracker.calculate_investigation_completeness(state)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Additional assessments (preserved from original)
         confidence_level = self._determine_confidence_level(overall_confidence)
         safety_checks = self._determine_safety_checks(state, overall_confidence)
         resource_impact = self._assess_resource_impact(state, strategy, agents_to_activate)
         estimated_time = self._estimate_completion_time(state, strategy, overall_confidence)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         return AIRoutingDecision(
             confidence=overall_confidence,
             confidence_level=confidence_level,
@@ -364,12 +284,6 @@ class DecisionEngine:
             required_safety_checks=safety_checks,
             resource_impact=resource_impact,
             estimated_completion_time=estimated_time,
-<<<<<<< HEAD
-            model_used="modular_decision_engine_v2",
-            calculation_time_ms=0  # Will be set by caller
-        )
-    
-=======
             model_used="heuristic_engine_demo",
             calculation_time_ms=0  # Will be set by caller
         )
@@ -591,7 +505,6 @@ Investigation Progress:
             calculation_time_ms=0  # Will be set by caller
         )
 
->>>>>>> 001-modify-analyzer-method
     def _determine_confidence_level(self, confidence: float) -> AIConfidenceLevel:
         """Convert numeric confidence to confidence level enum."""
         if confidence >= 0.8:

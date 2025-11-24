@@ -1,14 +1,4 @@
 import axios, { AxiosResponse } from 'axios';
-<<<<<<< HEAD
-
-export interface RAGQuery {
-  query: string;
-  context?: string;
-  temperature?: number;
-  max_tokens?: number;
-  top_k?: number;
-  top_p?: number;
-=======
 import { getConfig } from '../config/env.config';
 
 export interface RAGQuery {
@@ -29,22 +19,11 @@ export interface Citation {
   investigation_id?: string;
   document_id?: string;
   metadata?: Record<string, any>;
->>>>>>> 001-modify-analyzer-method
 }
 
 export interface RAGResponse {
   answer: string;
   sources: {
-<<<<<<< HEAD
-    id: string;
-    content: string;
-    score: number;
-    metadata?: Record<string, any>;
-  }[];
-  confidence: number;
-  processing_time: number;
-  model_used: string;
-=======
     chunk_id: string;
     content: string;
     similarity_score: number;
@@ -56,7 +35,6 @@ export interface RAGResponse {
   confidence: number;
   processing_time_ms: number;
   query_id?: string;
->>>>>>> 001-modify-analyzer-method
 }
 
 export interface RAGConfiguration {
@@ -92,15 +70,10 @@ class RAGApiService {
   private apiKey?: string;
 
   constructor() {
-<<<<<<< HEAD
-    this.baseURL = process.env.REACT_APP_RAG_API_URL || 'http://localhost:8090/api/rag';
-    this.apiKey = process.env.REACT_APP_RAG_API_KEY;
-=======
     const config = getConfig();
     this.baseURL = `${config.api.baseUrl}/api/v1/rag`;
     // Get API key from config (handles browser environment)
     this.apiKey = config.api.apiKey;
->>>>>>> 001-modify-analyzer-method
   }
 
   private getHeaders() {
@@ -129,9 +102,6 @@ class RAGApiService {
     try {
       const response: AxiosResponse<RAGResponse> = await axios.post(
         `${this.baseURL}/query`,
-<<<<<<< HEAD
-        queryData,
-=======
         {
           query_text: queryData.query_text,
           data_source_ids: queryData.data_source_ids,
@@ -141,7 +111,6 @@ class RAGApiService {
           entity_id: queryData.entity_id,
           user_id: queryData.user_id
         },
->>>>>>> 001-modify-analyzer-method
         { headers: this.getHeaders() }
       );
       return response.data;
@@ -269,8 +238,6 @@ class RAGApiService {
       throw new Error('Failed to get system status');
     }
   }
-<<<<<<< HEAD
-=======
 
   async getDataSources(): Promise<any[]> {
     try {
@@ -429,7 +396,6 @@ class RAGApiService {
       throw new Error('Failed to add chat message');
     }
   }
->>>>>>> 001-modify-analyzer-method
 }
 
 export default new RAGApiService();

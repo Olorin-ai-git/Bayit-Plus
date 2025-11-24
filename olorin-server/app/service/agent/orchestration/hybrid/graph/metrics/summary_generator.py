@@ -83,22 +83,14 @@ class SummaryGenerator:
             "domains_completed": len(state.get("domains_completed", [])),
             "tools_used": len(state.get("tool_results", {})),  # Only count tools with actual results
             "safety_overrides": len(state.get("safety_overrides", [])),
-<<<<<<< HEAD
-            "risk_score": state.get("risk_score", 0.0),
-=======
             "risk_score": state.get("risk_score"),  # CRITICAL: Preserve None values, don't default to 0.0
->>>>>>> 001-modify-analyzer-method
             "risk_indicators": state.get("risk_indicators", []),
             "duration_ms": duration_ms,
             "efficiency": state.get("investigation_efficiency", 0.0),
             "ai_decisions": state.get("ai_decisions", []),
             "current_phase": state.get("current_phase", "unknown"),
-<<<<<<< HEAD
-            "hybrid_system_version": state.get("hybrid_system_version", "1.0.0")
-=======
             "hybrid_system_version": state.get("hybrid_system_version", "1.0.0"),
             "domain_findings": state.get("domain_findings", {})  # CRITICAL: Include domain findings to show domain risk scores
->>>>>>> 001-modify-analyzer-method
         }
     
     def _get_strategy_value(self, strategy):
@@ -192,10 +184,6 @@ class SummaryGenerator:
         """Generate risk assessment section."""
         fraud_likelihood = self._get_fraud_likelihood(data['risk_score'])
         
-<<<<<<< HEAD
-        return f"""## Risk Assessment
-- **Risk Score**: {fmt_num(data['risk_score'], 3)}
-=======
         # CRITICAL FIX: When final risk is blocked, show domain risk scores
         risk_score_display = fmt_num(data['risk_score'], 3) if data['risk_score'] is not None else "N/A"
         
@@ -220,7 +208,6 @@ class SummaryGenerator:
         
         return f"""## Risk Assessment
 - **Risk Score**: {risk_score_display}{domain_risk_info}
->>>>>>> 001-modify-analyzer-method
 - **Risk Indicators**: {len(data['risk_indicators'])}
 - **Fraud Likelihood**: {fraud_likelihood}
 """

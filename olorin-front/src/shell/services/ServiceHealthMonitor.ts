@@ -36,11 +36,7 @@ export interface HealthAlert {
 export class ServiceHealthMonitor {
   private services: ServiceConfig[] = [];
   private monitoring = false;
-<<<<<<< HEAD
-  private interval?: NodeJS.Timeout;
-=======
   private interval?: ReturnType<typeof setInterval>;
->>>>>>> 001-modify-analyzer-method
   private checkIntervalMs = 30000; // 30 seconds
   private alerts: HealthAlert[] = [];
   private metrics: HealthMetrics[] = [];
@@ -303,13 +299,9 @@ export class ServiceHealthMonitor {
         metrics: this.getRecentMetrics()
       };
 
-<<<<<<< HEAD
-      window.olorin.eventBus.emit('health:update', healthSummary);
-=======
       // Note: 'health:update' event type not yet defined in EventBusEvents
       // window.olorin.eventBus.emit('health:update', healthSummary);
       console.log('[Health Monitor] Health update:', healthSummary);
->>>>>>> 001-modify-analyzer-method
     }
   }
 

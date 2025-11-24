@@ -3,21 +3,12 @@
 Investigation Scenario Integration Runner
 
 This script integrates the new investigation scenario templates with the existing
-<<<<<<< HEAD
-Olorin autonomous investigation infrastructure. It acts as a bridge between the
-new scenario system and the existing bash orchestration scripts.
-
-Features:
-- Integrates with run-autonomous-investigation.sh
-- Uses existing unified_autonomous_test_runner.py 
-=======
 Olorin structured investigation infrastructure. It acts as a bridge between the
 new scenario system and the existing bash orchestration scripts.
 
 Features:
 - Integrates with run-structured-investigation.sh
 - Uses existing unified_structured_test_runner.py 
->>>>>>> 001-modify-analyzer-method
 - Provides scenario-based configuration for existing infrastructure
 - Maintains compatibility with existing monitoring and reporting
 - Adds scenario template capabilities to existing system
@@ -60,13 +51,8 @@ class InvestigationIntegrationRunner:
     def __init__(self):
         self.scenario_runner = ScenarioInvestigationRunner()
         self.olorin_root = Path(__file__).parent.parent.parent
-<<<<<<< HEAD
-        self.bash_script = self.olorin_root / "olorin-server" / "scripts" / "run-autonomous-investigation.sh"
-        self.test_runner = self.olorin_root / "olorin-server" / "scripts" / "testing" / "unified_autonomous_test_runner.py"
-=======
         self.bash_script = self.olorin_root / "olorin-server" / "scripts" / "run-structured-investigation.sh"
         self.test_runner = self.olorin_root / "olorin-server" / "scripts" / "testing" / "unified_structured_test_runner.py"
->>>>>>> 001-modify-analyzer-method
         
     def generate_bash_args_for_scenario(
         self, 
@@ -217,21 +203,12 @@ class InvestigationIntegrationRunner:
             "integration_notes": {
                 "generated_at": datetime.now().isoformat(),
                 "compatible_with": [
-<<<<<<< HEAD
-                    "run-autonomous-investigation.sh",
-                    "unified_autonomous_test_runner.py",
-                    "test_autonomous_investigation.sh"
-                ],
-                "usage": [
-                    f"./olorin-server/scripts/run-autonomous-investigation.sh {' '.join(self.generate_bash_args_for_scenario(scenario_id))}",
-=======
                     "run-structured-investigation.sh",
                     "unified_structured_test_runner.py",
                     "test_structured_investigation.sh"
                 ],
                 "usage": [
                     f"./olorin-server/scripts/run-structured-investigation.sh {' '.join(self.generate_bash_args_for_scenario(scenario_id))}",
->>>>>>> 001-modify-analyzer-method
                     f"python integration_runner.py --run-scenario {scenario_id}"
                 ]
             }

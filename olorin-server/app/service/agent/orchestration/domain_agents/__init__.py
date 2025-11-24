@@ -9,10 +9,7 @@ This package provides specialized agents for analyzing different aspects of frau
 - Location Agent: Geographic patterns and impossible travel
 - Logs Agent: System logs and behavioral analysis
 - Authentication Agent: Login patterns and security breaches
-<<<<<<< HEAD
-=======
 - Web Agent: Web intelligence, OSINT data, and online reputation analysis
->>>>>>> 001-modify-analyzer-method
 - Risk Agent: Final risk synthesis and assessment
 
 Each agent focuses on evidence collection for LLM-based risk scoring.
@@ -24,10 +21,7 @@ from .device_agent import device_agent_node
 from .location_agent import location_agent_node
 from .logs_agent import logs_agent_node
 from .authentication_agent import authentication_agent_node
-<<<<<<< HEAD
-=======
 from .web_agent import web_agent_node
->>>>>>> 001-modify-analyzer-method
 from .risk_agent import risk_agent_node
 
 # Import base utilities
@@ -40,10 +34,7 @@ __all__ = [
     'location_agent_node',
     'logs_agent_node',
     'authentication_agent_node',
-<<<<<<< HEAD
-=======
     'web_agent_node',
->>>>>>> 001-modify-analyzer-method
     'risk_agent_node',
     
     # Base utilities

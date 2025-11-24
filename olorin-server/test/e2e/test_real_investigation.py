@@ -17,32 +17,19 @@ async def test_real_device_agent():
     
     try:
         # Import the actual device agent function
-<<<<<<< HEAD
-        from app.service.agent.device_agent import autonomous_device_agent
-        from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
-        from langchain_core.runnables.config import RunnableConfig
-        
-        # Create a real investigation context - this simulates what happens in a real call
-        context = AutonomousInvestigationContext(
-=======
         from app.service.agent.device_agent import structured_device_agent
         from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
         from langchain_core.runnables.config import RunnableConfig
         
         # Create a real investigation context - this simulates what happens in a real call
         context = StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
             investigation_id="real-test-001",
             entity_id="test-user-123",
             entity_type=EntityType.USER_ID
         )
         
         # Store the context in the global context manager (simulating real flow)
-<<<<<<< HEAD
-        from app.service.agent.agent_communication import _get_or_create_autonomous_context
-=======
         from app.service.agent.agent_communication import _get_or_create_structured_context
->>>>>>> 001-modify-analyzer-method
         # The context will be created automatically in the real flow
         
         # Create config like the real system does
@@ -67,11 +54,7 @@ async def test_real_device_agent():
         print("   🚀 Executing real device agent...")
         
         # This is the actual agent call that would happen in production
-<<<<<<< HEAD
-        result = await autonomous_device_agent(state, config)
-=======
         result = await structured_device_agent(state, config)
->>>>>>> 001-modify-analyzer-method
         
         print(f"   📊 Agent result keys: {list(result.keys()) if isinstance(result, dict) else 'Not a dict'}")
         

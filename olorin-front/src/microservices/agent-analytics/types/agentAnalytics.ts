@@ -1,11 +1,7 @@
 export interface AgentMetrics {
   id: string;
   agentName: string;
-<<<<<<< HEAD
-  agentType: 'autonomous' | 'manual' | 'hybrid';
-=======
   agentType: 'structured' | 'manual' | 'hybrid';
->>>>>>> 001-modify-analyzer-method
   status: 'active' | 'inactive' | 'error' | 'maintenance';
 
   // Performance metrics
@@ -185,11 +181,7 @@ export interface AnalyticsSummary {
 export interface AgentConfiguration {
   id: string;
   name: string;
-<<<<<<< HEAD
-  type: 'autonomous' | 'manual' | 'hybrid';
-=======
   type: 'structured' | 'manual' | 'hybrid';
->>>>>>> 001-modify-analyzer-method
   enabled: boolean;
   maxConcurrentInvestigations: number;
   timeoutMinutes: number;

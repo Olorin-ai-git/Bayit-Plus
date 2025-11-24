@@ -249,13 +249,8 @@ export function useUsageTracking(
       const baseCalls = state.usagePatterns.reduce((sum, p) => sum + p.callCount, 0);
       const weekCalls = baseCalls * (0.8 + Math.random() * 0.4);
 
-<<<<<<< HEAD
-      const previousWeekCalls = i < 7 ? trends[trends.length - 1]?.callCount || weekCalls : weekCalls;
-      const change = previousWeekCalls > 0 ? ((weekCalls - previousWeekCalls) / previousWeekCalls) * 100 : 0;
-=======
       const previousWeekCalls: number = i < 7 ? trends[trends.length - 1]?.callCount || weekCalls : weekCalls;
       const change: number = previousWeekCalls > 0 ? ((weekCalls - previousWeekCalls) / previousWeekCalls) * 100 : 0;
->>>>>>> 001-modify-analyzer-method
 
       trends.push({
         period: `${weekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()}`,
@@ -289,11 +284,7 @@ export function useUsageTracking(
       );
 
       predictions.push({
-<<<<<<< HEAD
-        date: date.toISOString().split('T')[0],
-=======
         date: date.toISOString().split('T')[0] || '',
->>>>>>> 001-modify-analyzer-method
         predictedCalls,
         confidence: Math.max(0.6, 1 - (i * 0.02)) // Decreasing confidence over time
       });
@@ -306,16 +297,12 @@ export function useUsageTracking(
     const peakHours = getPeakUsageHours().slice(0, 3);
     const lowHours = getPeakUsageHours().slice(-3);
 
-<<<<<<< HEAD
-    const recommendations = [];
-=======
     const recommendations: Array<{
       timeSlot: string;
       currentCapacity: number;
       recommendedCapacity: number;
       reason: string;
     }> = [];
->>>>>>> 001-modify-analyzer-method
 
     // Recommendations for peak hours
     peakHours.forEach(peak => {
@@ -414,10 +401,7 @@ export function useUsageTracking(
 
       return () => clearInterval(interval);
     }
-<<<<<<< HEAD
-=======
     return undefined;
->>>>>>> 001-modify-analyzer-method
   }, [autoRefreshInterval, refreshAll, state.isLoading, state.isRefreshing]);
 
   // Auto-load data on mount
@@ -436,10 +420,7 @@ export function useUsageTracking(
 
       return () => clearInterval(interval);
     }
-<<<<<<< HEAD
-=======
     return undefined;
->>>>>>> 001-modify-analyzer-method
   }, [enableRealtimeUpdates, loadRealtimeMetrics]);
 
   return {

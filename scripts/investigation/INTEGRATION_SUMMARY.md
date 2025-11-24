@@ -2,11 +2,7 @@
 
 ## ✅ Mission Accomplished: Proper Integration with Existing Infrastructure
 
-<<<<<<< HEAD
-You were **absolutely right** - my new investigation scenario scripts needed to integrate with the existing `run_autonomous_investigation` bash script rather than trying to replace it. I've now created a comprehensive solution that **enhances** the existing proven infrastructure.
-=======
 You were **absolutely right** - my new investigation scenario scripts needed to integrate with the existing `run_structured_investigation` bash script rather than trying to replace it. I've now created a comprehensive solution that **enhances** the existing proven infrastructure.
->>>>>>> 001-modify-analyzer-method
 
 ## 🎯 What I Built
 
@@ -20,11 +16,7 @@ You were **absolutely right** - my new investigation scenario scripts needed to 
 
 #### 🚀 `run_scenario.sh` - User-Friendly Wrapper  
 - **Simple command-line interface** for running scenarios
-<<<<<<< HEAD
-- **Uses existing `run-autonomous-investigation.sh`** for reliable execution
-=======
 - **Uses existing `run-structured-investigation.sh`** for reliable execution
->>>>>>> 001-modify-analyzer-method
 - **Inherits all existing features**: server startup, monitoring, HTML reports, error handling
 - **Provides scenario-based configuration** with smart defaults
 
@@ -46,11 +38,7 @@ You were **absolutely right** - my new investigation scenario scripts needed to 
 1. **User runs**: `./scripts/investigation/run_scenario.sh account-takeover`
 2. **Script validates**: Existing infrastructure components available
 3. **Integration runner generates**: Proper bash arguments for the scenario
-<<<<<<< HEAD
-4. **Existing bash script executes**: `./olorin-server/scripts/run-autonomous-investigation.sh --scenario account_takeover --mode mock --show-websocket --show-llm --timeout 420 --html-report --concurrent 2`
-=======
 4. **Existing bash script executes**: `./olorin-server/scripts/run-structured-investigation.sh --scenario account_takeover --mode mock --show-websocket --show-llm --timeout 420 --html-report --concurrent 2`
->>>>>>> 001-modify-analyzer-method
 5. **All existing features work**: Server startup, monitoring, reporting, error handling
 
 ### The Result:
@@ -65,13 +53,8 @@ You were **absolutely right** - my new investigation scenario scripts needed to 
 ### Infrastructure Validation ✅
 ```bash
 $ ./scripts/investigation/run_scenario.sh --validate
-<<<<<<< HEAD
-✅ Found bash script: run-autonomous-investigation.sh
-✅ Found unified runner: unified_autonomous_test_runner.py  
-=======
 ✅ Found bash script: run-structured-investigation.sh
 ✅ Found unified runner: unified_structured_test_runner.py  
->>>>>>> 001-modify-analyzer-method
 ✅ Bash script is executable
 ✅ Poetry is available
 ✅ All infrastructure components are available
@@ -95,11 +78,7 @@ $ python scripts/investigation/integration_runner.py --generate-bash-args device
 ```bash
 $ ./scripts/investigation/run_scenario.sh device-spoofing --dry-run
 🔍 DRY RUN MODE - Command that would be executed:
-<<<<<<< HEAD
-/path/to/run-autonomous-investigation.sh --scenario device_spoofing --mode mock --show-websocket --show-llm --timeout 420 --html-report --concurrent 2
-=======
 /path/to/run-structured-investigation.sh --scenario device_spoofing --mode mock --show-websocket --show-llm --timeout 420 --html-report --concurrent 2
->>>>>>> 001-modify-analyzer-method
 ```
 
 ## 🎉 Key Accomplishments
@@ -160,11 +139,7 @@ python scripts/investigation/integration_runner.py --scenario money-laundering -
 python scripts/investigation/csv_scenario_generator.py --count 100 --output test_data.csv
 
 # Use existing batch capabilities with generated data
-<<<<<<< HEAD
-./olorin-server/scripts/run-autonomous-investigation.sh --csv-file test_data.csv --csv-limit 50 --html-report
-=======
 ./olorin-server/scripts/run-structured-investigation.sh --csv-file test_data.csv --csv-limit 50 --html-report
->>>>>>> 001-modify-analyzer-method
 ```
 
 ## 🔮 Future Enhancements
@@ -198,11 +173,7 @@ python scripts/investigation/csv_scenario_generator.py --count 100 --output test
 
 ## 🎯 Conclusion
 
-<<<<<<< HEAD
-The investigation scenario scripts now provide the **perfect integration** with Olorin's existing autonomous investigation infrastructure:
-=======
 The investigation scenario scripts now provide the **perfect integration** with Olorin's existing structured investigation infrastructure:
->>>>>>> 001-modify-analyzer-method
 
 1. **Leverages proven systems** - Uses existing bash orchestration, server management, monitoring
 2. **Adds structured scenarios** - 8 comprehensive fraud investigation templates

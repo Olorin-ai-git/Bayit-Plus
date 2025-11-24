@@ -5,10 +5,7 @@ Implements the user's specified evidence gating logic to prevent
 single-source investigations from publishing misleading risk scores.
 """
 
-<<<<<<< HEAD
-=======
 import os
->>>>>>> 001-modify-analyzer-method
 from typing import Dict, Any, Optional
 from app.service.logging import get_bridge_logger
 
@@ -18,26 +15,14 @@ logger = get_bridge_logger(__name__)
 def evidence_strength(sources: int, events: int, agree: float) -> float:
     """
     Calculate evidence strength based on sources, events, and agreement.
-<<<<<<< HEAD
-    
-=======
 
     DEMO MODE ADJUSTMENT: In demo/mock mode, accepts 1 source as sufficient
     to unblock tests while maintaining reasonable evidence standards.
 
->>>>>>> 001-modify-analyzer-method
     Args:
         sources: Distinct evidence types used (>=1)
         events: Transaction count
         agree: Agreement score between sources (0-1)
-<<<<<<< HEAD
-    
-    Returns:
-        Evidence strength score 0.0-1.0
-    """
-    # sources: distinct evidence types used (>=1), events: tx count, agree∈[0,1]
-    raw = 0.2 * (sources >= 2) + 0.2 * min(events / 5, 1.0) + 0.6 * agree
-=======
 
     Returns:
         Evidence strength score 0.0-1.0
@@ -56,7 +41,6 @@ def evidence_strength(sources: int, events: int, agree: float) -> float:
     if is_demo and sources >= 1:
         logger.debug(f"🎭 DEMO MODE: Evidence strength with {sources} source(s) = {round(raw, 3)}")
 
->>>>>>> 001-modify-analyzer-method
     return round(raw, 3)
 
 
@@ -92,14 +76,10 @@ def fuse(internal: float, external: float) -> float:
 def finalize(internal: float, external: float, ext_level: str, events: int, agree: float, sources: int) -> Dict[str, Any]:
     """
     Finalize risk score with evidence gating and discordance detection.
-<<<<<<< HEAD
-    
-=======
 
     DEMO MODE ADJUSTMENT: Uses lower evidence threshold (0.3 vs 0.5)
     to allow investigations to proceed with limited data in test scenarios.
 
->>>>>>> 001-modify-analyzer-method
     Args:
         internal: Internal model score
         external: External risk score
@@ -107,16 +87,6 @@ def finalize(internal: float, external: float, ext_level: str, events: int, agre
         events: Number of events
         agree: Agreement score between sources
         sources: Number of distinct evidence sources
-<<<<<<< HEAD
-    
-    Returns:
-        Dictionary with final risk score and status
-    """
-    fused = fuse(internal, external)
-    es = evidence_strength(sources, events, agree)
-    
-    if es < 0.5 or is_discordant(internal, ext_level, events):
-=======
 
     Returns:
         Dictionary with final risk score and status
@@ -135,17 +105,12 @@ def finalize(internal: float, external: float, ext_level: str, events: int, agre
         if is_demo:
             logger.debug(f"🎭 DEMO MODE: Evidence {es} below threshold {evidence_threshold}, capping risk at 0.40")
 
->>>>>>> 001-modify-analyzer-method
         return {
             "final": min(fused, 0.40),
             "status": "capped_for_low_evidence",
             "evidence_strength": es
         }
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     return {
         "final": fused,
         "status": "ok",
@@ -227,16 +192,11 @@ def apply_evidence_gating(state: Dict[str, Any]) -> Dict[str, Any]:
             if isinstance(results, list) and len(results) > 0:
                 first_record = results[0]
                 if isinstance(first_record, dict):
-<<<<<<< HEAD
-                    fraud_fields = ["IS_FRAUD_TX", "MODEL_SCORE", "NSURE_LAST_DECISION"]
-                    has_fraud_indicators = any(field in first_record for field in fraud_fields)
-=======
                     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
                     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
                     # Only check for behavioral fields (transaction decisions)
                     behavioral_fields = ["NSURE_LAST_DECISION"]
                     has_fraud_indicators = any(field in first_record for field in behavioral_fields)
->>>>>>> 001-modify-analyzer-method
 
                     # Comprehensive Snowflake = fraud indicators + substantial transaction data
                     if has_fraud_indicators and events >= 1:

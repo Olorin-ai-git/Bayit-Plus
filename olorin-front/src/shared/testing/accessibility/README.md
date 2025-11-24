@@ -38,11 +38,7 @@ npm run a11y:audit       # Axe-core audits for all services
 npm run a11y:keyboard    # Keyboard navigation testing
 
 # Test specific service
-<<<<<<< HEAD
-npm run a11y:service autonomous-investigation
-=======
 npm run a11y:service structured-investigation
->>>>>>> 001-modify-analyzer-method
 ```
 
 ### 2. View Results
@@ -67,13 +63,8 @@ await engine.initialize(browser);
 
 // Test single service accessibility
 const result = await engine.runAccessibilityAudit(
-<<<<<<< HEAD
-  'autonomous-investigation',
-  'http://localhost:3001/autonomous-investigation',
-=======
   'structured-investigation',
   'http://localhost:3001/structured-investigation',
->>>>>>> 001-modify-analyzer-method
   {
     includeKeyboard: true,
     includeScreenReader: true,
@@ -84,11 +75,7 @@ const result = await engine.runAccessibilityAudit(
 // Test multiple services
 const results = await engine.testMultipleServices([
   { name: 'core-ui', url: 'http://localhost:3000/' },
-<<<<<<< HEAD
-  { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
-=======
   { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
->>>>>>> 001-modify-analyzer-method
 ]);
 
 // Generate accessibility report
@@ -199,11 +186,7 @@ npm run a11y:audit
 const axeConfig = {
   services: [
     { name: 'core-ui', url: 'http://localhost:3000/', critical: true },
-<<<<<<< HEAD
-    { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation', critical: true }
-=======
     { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation', critical: true }
->>>>>>> 001-modify-analyzer-method
     // ... more services
   ],
   rules: {
@@ -339,11 +322,7 @@ Comprehensive accessibility validation in real browser environments:
 test('should meet WCAG 2.1 AA compliance for all critical services', async () => {
   const criticalServices = [
     { name: 'core-ui', url: 'http://localhost:3000/' },
-<<<<<<< HEAD
-    { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
-=======
     { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
->>>>>>> 001-modify-analyzer-method
   ];
 
   for (const service of criticalServices) {
@@ -383,11 +362,7 @@ const accessibilityBudgets = {
     seriousIssues: 1,       // Maximum 1 serious violation
     contrastRatio: 4.5      // AA contrast requirement
   },
-<<<<<<< HEAD
-  'autonomous-investigation': {
-=======
   'structured-investigation': {
->>>>>>> 001-modify-analyzer-method
     complianceScore: 80,    // 80% WCAG compliance
     criticalIssues: 0,      // No critical violations
     seriousIssues: 2,       // Maximum 2 serious violations

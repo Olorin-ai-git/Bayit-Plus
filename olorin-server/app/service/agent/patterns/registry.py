@@ -112,15 +112,10 @@ class PatternRegistry:
         if hasattr(metrics, 'success') and metrics.success:
             stats["successful_executions"] += 1
         
-<<<<<<< HEAD
-        if hasattr(metrics, 'duration_ms') and metrics.duration_ms:
-            stats["total_duration_ms"] += metrics.duration_ms
-=======
         # CRITICAL FIX: Handle None values to prevent TypeError
         duration_ms = getattr(metrics, 'duration_ms', None)
         if duration_ms is not None:
             stats["total_duration_ms"] += duration_ms
->>>>>>> 001-modify-analyzer-method
             # CRITICAL FIX: Enhanced None-safety for duration calculation
             total_duration = stats.get("total_duration_ms") or 0
             total_executions = max(1, stats.get("total_executions", 1))

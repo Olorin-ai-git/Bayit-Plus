@@ -1,20 +1,12 @@
 """
-<<<<<<< HEAD
-Autonomous Investigation Orchestrator Test Runner
-=======
 Structured Investigation Orchestrator Test Runner
->>>>>>> 001-modify-analyzer-method
 
 Comprehensive test execution script for all orchestrator test suites with
 detailed reporting, coverage analysis, and production readiness validation.
 
 Author: Gil Klainert  
 Date: 2025-09-06
-<<<<<<< HEAD
-Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
-=======
 Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
->>>>>>> 001-modify-analyzer-method
 Phase: 5.1 - Comprehensive Test Suite (Test Runner)
 """
 
@@ -37,11 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class OrchestratorTestRunner:
-<<<<<<< HEAD
-    """Comprehensive test runner for autonomous investigation orchestrator"""
-=======
     """Comprehensive test runner for structured investigation orchestrator"""
->>>>>>> 001-modify-analyzer-method
     
     def __init__(self):
         self.test_results = {
@@ -56,11 +44,7 @@ class OrchestratorTestRunner:
         # Test suite configuration
         self.test_suites = {
             "unit": {
-<<<<<<< HEAD
-                "path": "test/unit/test_autonomous_orchestrator.py",
-=======
                 "path": "test/unit/test_structured_orchestrator.py",
->>>>>>> 001-modify-analyzer-method
                 "markers": "not integration and not e2e",
                 "timeout": 300,  # 5 minutes
                 "min_coverage": 85,
@@ -85,11 +69,7 @@ class OrchestratorTestRunner:
         # Coverage configuration
         self.coverage_config = {
             "source_paths": [
-<<<<<<< HEAD
-                "app/service/agent/autonomous_orchestrator.py",
-=======
                 "app/service/agent/structured_orchestrator.py",
->>>>>>> 001-modify-analyzer-method
                 "app/service/agent/orchestrator_state.py",
                 "app/service/agent/agent_coordination.py",
                 "app/service/agent/flow_continuity.py",
@@ -114,11 +94,7 @@ class OrchestratorTestRunner:
         if test_types is None:
             test_types = ["unit", "integration", "e2e"]
         
-<<<<<<< HEAD
-        logger.info("🚀 Starting Autonomous Investigation Orchestrator Test Suite")
-=======
         logger.info("🚀 Starting Structured Investigation Orchestrator Test Suite")
->>>>>>> 001-modify-analyzer-method
         logger.info(f"Test types: {', '.join(test_types)}")
         
         start_time = time.time()
@@ -460,11 +436,7 @@ class OrchestratorTestRunner:
 
 async def main():
     """Main test runner entry point"""
-<<<<<<< HEAD
-    parser = argparse.ArgumentParser(description="Autonomous Investigation Orchestrator Test Runner")
-=======
     parser = argparse.ArgumentParser(description="Structured Investigation Orchestrator Test Runner")
->>>>>>> 001-modify-analyzer-method
     parser.add_argument(
         "--test-types",
         nargs="+",

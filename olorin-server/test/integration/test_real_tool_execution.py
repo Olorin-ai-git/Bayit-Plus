@@ -92,15 +92,9 @@ async def run_monitored_investigation():
         
         # Import required modules
         from app.service.agent.tools.tool_registry import tool_registry, initialize_tools
-<<<<<<< HEAD
-        from app.service.agent.autonomous_base import AutonomousInvestigationAgent
-        from app.service.agent.autonomous_context import (
-            AutonomousInvestigationContext,
-=======
         from app.service.agent.structured_base import StructuredInvestigationAgent
         from app.service.agent.structured_context import (
             StructuredInvestigationContext,
->>>>>>> 001-modify-analyzer-method
             EntityType
         )
         from app.service.agent.sequential_prompting import SequentialPromptManager
@@ -144,11 +138,7 @@ async def run_monitored_investigation():
         
         # Create investigation context
         print("\n🎯 Creating Investigation Context...")
-<<<<<<< HEAD
-        context = AutonomousInvestigationContext(
-=======
         context = StructuredInvestigationContext(
->>>>>>> 001-modify-analyzer-method
             investigation_id="tool_test_001",
             entity_id="192.168.1.100",
             entity_type=EntityType.IP,
@@ -171,11 +161,7 @@ async def run_monitored_investigation():
         domains = ["network", "device", "location", "logs"]
         
         for domain in domains:
-<<<<<<< HEAD
-            agent = AutonomousInvestigationAgent(
-=======
             agent = StructuredInvestigationAgent(
->>>>>>> 001-modify-analyzer-method
                 domain=domain,
                 tools=all_tools  # Give all tools to each agent
             )

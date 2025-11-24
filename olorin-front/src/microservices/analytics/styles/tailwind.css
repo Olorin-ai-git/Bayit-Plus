@@ -1,0 +1,8 @@
+/**
+ * Tailwind CSS imports for Analytics Microservice
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+

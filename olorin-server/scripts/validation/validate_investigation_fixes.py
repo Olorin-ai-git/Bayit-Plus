@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Validation script for autonomous investigation fixes.
-=======
 Validation script for structured investigation fixes.
->>>>>>> 001-modify-analyzer-method
 Tests both Snowflake data processing and risk calculation.
 """
 
@@ -113,11 +109,7 @@ async def test_risk_score_calculation():
 
 async def main():
     """Run all validation tests."""
-<<<<<<< HEAD
-    print("🚀 Starting Autonomous Investigation Fix Validation")
-=======
     print("🚀 Starting Structured Investigation Fix Validation")
->>>>>>> 001-modify-analyzer-method
     print("=" * 60)
     
     results = []

@@ -60,17 +60,10 @@ class HybridAssistant:
         llm_state["messages"] = enhanced_messages
         
         logger.info(f"   🤖 Running LLM with AI guidance context")
-<<<<<<< HEAD
-        
-        # Call LLM assistant with enhanced context
-        assistant_result = assistant(llm_state, config)
-        
-=======
 
         # Call LLM assistant with enhanced context (now async with resilience wrapper)
         assistant_result = await assistant(llm_state, config)
 
->>>>>>> 001-modify-analyzer-method
         # Merge LLM result back into hybrid state while preserving hybrid fields
         enhanced_state = self._merge_assistant_result(state, assistant_result, ai_context)
         

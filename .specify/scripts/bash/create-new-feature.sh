@@ -3,15 +3,6 @@
 set -e
 
 JSON_MODE=false
-<<<<<<< HEAD
-ARGS=()
-for arg in "$@"; do
-    case "$arg" in
-        --json) JSON_MODE=true ;;
-        --help|-h) echo "Usage: $0 [--json] <feature_description>"; exit 0 ;;
-        *) ARGS+=("$arg") ;;
-    esac
-=======
 SHORT_NAME=""
 BRANCH_NUMBER=""
 ARGS=()
@@ -68,16 +59,11 @@ while [ $i -le $# ]; do
             ;;
     esac
     i=$((i + 1))
->>>>>>> 001-modify-analyzer-method
 done
 
 FEATURE_DESCRIPTION="${ARGS[*]}"
 if [ -z "$FEATURE_DESCRIPTION" ]; then
-<<<<<<< HEAD
-    echo "Usage: $0 [--json] <feature_description>" >&2
-=======
     echo "Usage: $0 [--json] [--short-name <name>] [--number N] <feature_description>" >&2
->>>>>>> 001-modify-analyzer-method
     exit 1
 fi
 
@@ -94,8 +80,6 @@ find_repo_root() {
     return 1
 }
 
-<<<<<<< HEAD
-=======
 # Function to check existing branches (local and remote) and return next available number
 check_existing_branches() {
     local short_name="$1"
@@ -127,7 +111,6 @@ check_existing_branches() {
     echo $((max_num + 1))
 }
 
->>>>>>> 001-modify-analyzer-method
 # Resolve repository root. Prefer git information when available, but fall back
 # to searching for repository markers so the workflow still functions in repositories that
 # were initialised with --no-git.
@@ -150,25 +133,6 @@ cd "$REPO_ROOT"
 SPECS_DIR="$REPO_ROOT/specs"
 mkdir -p "$SPECS_DIR"
 
-<<<<<<< HEAD
-HIGHEST=0
-if [ -d "$SPECS_DIR" ]; then
-    for dir in "$SPECS_DIR"/*; do
-        [ -d "$dir" ] || continue
-        dirname=$(basename "$dir")
-        number=$(echo "$dirname" | grep -o '^[0-9]\+' || echo "0")
-        number=$((10#$number))
-        if [ "$number" -gt "$HIGHEST" ]; then HIGHEST=$number; fi
-    done
-fi
-
-NEXT=$((HIGHEST + 1))
-FEATURE_NUM=$(printf "%03d" "$NEXT")
-
-BRANCH_NAME=$(echo "$FEATURE_DESCRIPTION" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//' | sed 's/-$//')
-WORDS=$(echo "$BRANCH_NAME" | tr '-' '\n' | grep -v '^$' | head -3 | tr '\n' '-' | sed 's/-$//')
-BRANCH_NAME="${FEATURE_NUM}-${WORDS}"
-=======
 # Function to generate branch name with stop word filtering and length filtering
 generate_branch_name() {
     local description="$1"
@@ -269,7 +233,6 @@ if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
     >&2 echo "[specify] Original: $ORIGINAL_BRANCH_NAME (${#ORIGINAL_BRANCH_NAME} bytes)"
     >&2 echo "[specify] Truncated to: $BRANCH_NAME (${#BRANCH_NAME} bytes)"
 fi
->>>>>>> 001-modify-analyzer-method
 
 if [ "$HAS_GIT" = true ]; then
     git checkout -b "$BRANCH_NAME"
@@ -280,11 +243,7 @@ fi
 FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
 mkdir -p "$FEATURE_DIR"
 
-<<<<<<< HEAD
-TEMPLATE="$REPO_ROOT/templates/spec-template.md"
-=======
 TEMPLATE="$REPO_ROOT/.specify/templates/spec-template.md"
->>>>>>> 001-modify-analyzer-method
 SPEC_FILE="$FEATURE_DIR/spec.md"
 if [ -f "$TEMPLATE" ]; then cp "$TEMPLATE" "$SPEC_FILE"; else touch "$SPEC_FILE"; fi
 

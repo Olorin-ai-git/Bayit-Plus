@@ -17,11 +17,7 @@ The Olorin investigation system was failing during Phase 1 execution in all 4 ag
 ❌ Phase 1 execution error (attempt 3): 'list' object has no attribute 'lower'
 ```
 
-<<<<<<< HEAD
-This error blocked all autonomous investigations with the account_takeover scenario.
-=======
 This error blocked all structured investigations with the account_takeover scenario.
->>>>>>> 001-modify-analyzer-method
 
 ## Root Cause Analysis
 
@@ -41,11 +37,7 @@ word in f.lower()  # f could be a list instead of a string
 5. **String Operations**: The suspicious indicators logic tried to call `.lower()` on non-string objects
 
 ### Secondary Issue Location
-<<<<<<< HEAD
-**File**: `/app/service/agent/autonomous_orchestrator.py`  
-=======
 **File**: `/app/service/agent/structured_orchestrator.py`  
->>>>>>> 001-modify-analyzer-method
 **Line**: 652  
 **Code**:
 ```python
@@ -106,11 +98,7 @@ flattened_findings = self._flatten_findings_safely(phase_result.findings)
 all_findings.extend(flattened_findings)
 ```
 
-<<<<<<< HEAD
-**In autonomous_orchestrator.py**:
-=======
 **In structured_orchestrator.py**:
->>>>>>> 001-modify-analyzer-method
 ```python
 # OLD (line 652):
 consolidated_results["key_findings"].extend(findings)
@@ -137,11 +125,7 @@ word in self._safe_lower(f)
    - Updated findings aggregation logic (line 887)
    - Updated suspicious indicators logic (line 923)
 
-<<<<<<< HEAD
-2. **`/app/service/agent/autonomous_orchestrator.py`**
-=======
 2. **`/app/service/agent/structured_orchestrator.py`**
->>>>>>> 001-modify-analyzer-method
    - Added `_flatten_findings_safely()` method
    - Updated findings consolidation logic (line 653)
 
@@ -168,11 +152,7 @@ word in self._safe_lower(f)
 
 ### Before Fix
 - 🚨 **100% investigation failure rate**
-<<<<<<< HEAD
-- ❌ All autonomous investigations blocked  
-=======
 - ❌ All structured investigations blocked  
->>>>>>> 001-modify-analyzer-method
 - ❌ Phase 1 execution failing in all agents
 - ❌ Error occurred in retry attempts (1, 2, 3)
 
@@ -220,11 +200,7 @@ word in self._safe_lower(f)
 ### Rollback Plan
 If issues arise, the changes can be easily reverted by:
 1. Reverting the 3 edit blocks in sequential_prompting.py
-<<<<<<< HEAD
-2. Reverting the 2 edit blocks in autonomous_orchestrator.py  
-=======
 2. Reverting the 2 edit blocks in structured_orchestrator.py  
->>>>>>> 001-modify-analyzer-method
 3. The system will return to previous behavior (but with the original error)
 
 ## Conclusion

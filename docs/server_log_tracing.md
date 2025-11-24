@@ -19,11 +19,7 @@ Each investigation now has the following standardized structure:
 ```
 {MODE}_{INVESTIGATION_ID}_{TIMESTAMP}/
 ├── investigation.log              # Main investigation log
-<<<<<<< HEAD
-├── autonomous_activities.jsonl    # Agent activities log  
-=======
 ├── structured_activities.jsonl    # Agent activities log  
->>>>>>> 001-modify-analyzer-method
 ├── journey_tracking.json          # Journey tracking data
 ├── metadata.json                  # Investigation metadata
 ├── server_logs                    # 🆕 Server logs during investigation
@@ -55,11 +51,7 @@ The `server_logs` file contains JSON data with:
       "timestamp": "2025-09-09T21:05:45.124000+00:00",
       "level": "INFO",
       "logger_name": "app.service.agent.orchestration", 
-<<<<<<< HEAD
-      "message": "Starting autonomous investigation for device_spoofing scenario",
-=======
       "message": "Starting structured investigation for device_spoofing scenario",
->>>>>>> 001-modify-analyzer-method
       "thread_id": "140234567890",
       "process_id": "12345",
       "source_file": "/path/to/file.py",
@@ -128,13 +120,8 @@ stats = capture.get_capture_stats("investigation_123")
 
 ## Integration Points
 
-<<<<<<< HEAD
-### Unified Autonomous Test Runner
-The `unified_autonomous_test_runner.py` automatically:
-=======
 ### Unified Structured Test Runner
 The `unified_structured_test_runner.py` automatically:
->>>>>>> 001-modify-analyzer-method
 - Starts server log capture when investigation folder is created
 - Stops capture and saves logs when investigation completes (success or failure)
 - Logs capture status and file location

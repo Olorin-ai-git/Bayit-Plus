@@ -113,14 +113,6 @@ search index=rss-e2eidx olorin_userid={user_id}
 #### Authentication Summary
 ```json
 {
-<<<<<<< HEAD:back/docs/LOGS_DOMAIN_SPLUNK_ANALYSIS.md
-  "olorin_userid": "4621097846089147992",
-  "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
-  "values(olorin_offeringId)": [
-    "Olorin.cto.iam.ius",
-    "Olorin.dev.test.testeasy", 
-    "Olorin.fraudprevention.arrtestclient"
-=======
   "olorin_userid": "4621097846089147992",
   "values(olorin_username)": ["olorin_test_20250515", "iamtestpass_15171910655948"],
   "values(olorin_offeringId)": [

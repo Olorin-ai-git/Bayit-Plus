@@ -28,11 +28,7 @@ exposes: {
 
 // Remote modules consumed
 remotes: {
-<<<<<<< HEAD
-  'autonomous-investigation': 'autonomous_investigation@http://localhost:3001/remoteEntry.js',
-=======
   'structured-investigation': 'structured_investigation@http://localhost:3001/remoteEntry.js',
->>>>>>> 001-modify-analyzer-method
   'manual-investigation': 'manual_investigation@http://localhost:3002/remoteEntry.js',
   'agent-analytics': 'agent_analytics@http://localhost:3003/remoteEntry.js',
   'rag-intelligence': 'rag_intelligence@http://localhost:3004/remoteEntry.js',

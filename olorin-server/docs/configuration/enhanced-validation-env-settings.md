@@ -150,29 +150,17 @@ To monitor validation performance:
 
 1. Check logs for validation results:
    ```bash
-<<<<<<< HEAD
-   grep "Enhanced validation" logs/autonomous_investigation_*.log
-=======
    grep "Enhanced validation" logs/structured_investigation_*.log
->>>>>>> 001-modify-analyzer-method
    ```
 
 2. Look for critical issues:
    ```bash
-<<<<<<< HEAD
-   grep "FAILED validation" logs/autonomous_investigation_*.log
-=======
    grep "FAILED validation" logs/structured_investigation_*.log
->>>>>>> 001-modify-analyzer-method
    ```
 
 3. Review validation statistics:
    ```bash
-<<<<<<< HEAD
-   grep "Validation.*Score=" logs/autonomous_investigation_*.log
-=======
    grep "Validation.*Score=" logs/structured_investigation_*.log
->>>>>>> 001-modify-analyzer-method
    ```
 
 ## Integration with Test Runner

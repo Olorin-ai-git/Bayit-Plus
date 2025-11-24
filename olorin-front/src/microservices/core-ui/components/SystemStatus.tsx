@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
-import { useWebSocket } from '../../shared/services/WebSocketService';
-import { useEventListener } from '../../shared/services/EventBus';
-=======
 // useWebSocket removed per spec 005 - using polling instead
 import { useEventListener } from '@shared/events/UnifiedEventBus';
->>>>>>> 001-modify-analyzer-method
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -82,26 +77,12 @@ const StatusBadge: React.FC<{ status: 'online' | 'degraded' | 'offline' }> = ({ 
 
 export const SystemStatusIndicator: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const [overallStatus, setOverallStatus] = useState<'online' | 'degraded' | 'offline'>('online');
-<<<<<<< HEAD
-  const { isConnected } = useWebSocket();
-=======
->>>>>>> 001-modify-analyzer-method
 
   // Listen for backend status updates
   useEventListener('system:backend-status', (event) => {
     setOverallStatus(event.status);
   });
 
-<<<<<<< HEAD
-  // Update status based on WebSocket connection
-  useEffect(() => {
-    if (!isConnected) {
-      setOverallStatus('degraded');
-    }
-  }, [isConnected]);
-
-=======
->>>>>>> 001-modify-analyzer-method
   return (
     <button
       onClick={onClick}
@@ -128,18 +109,11 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
       uptime: '99.9%',
     },
     {
-<<<<<<< HEAD
-      name: 'WebSocket Service',
-      status: 'online',
-      lastChecked: new Date().toISOString(),
-      responseTime: 12,
-=======
       name: 'Polling Service',
       status: 'online',
       lastChecked: new Date().toISOString(),
       responseTime: 12,
       details: 'Polling-based updates (WebSocket removed per spec 005)'
->>>>>>> 001-modify-analyzer-method
     },
     {
       name: 'Database',
@@ -169,11 +143,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
     },
   ]);
 
-<<<<<<< HEAD
-  const [metrics, setMetrics] = useState<SystemMetrics>({
-=======
   const [metrics] = useState<SystemMetrics>({
->>>>>>> 001-modify-analyzer-method
     cpu: 45,
     memory: 62,
     storage: 78,
@@ -183,12 +153,8 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
   });
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-<<<<<<< HEAD
-  const { isConnected } = useWebSocket();
-=======
   // Polling-based connection status per spec 005 (WebSocket removed)
   const isConnected = true;
->>>>>>> 001-modify-analyzer-method
 
   const refreshStatus = async () => {
     setIsRefreshing(true);
@@ -220,30 +186,18 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
     ));
   });
 
-<<<<<<< HEAD
-  useEventListener('system:websocket-connected', () => {
-    setServices(prev => prev.map(service =>
-      service.name === 'WebSocket Service'
-=======
   // Polling service event listeners (WebSocket events removed per spec 005)
   useEventListener('system:polling-connected', () => {
     setServices(prev => prev.map(service =>
       service.name === 'Polling Service'
->>>>>>> 001-modify-analyzer-method
         ? { ...service, status: 'online', lastChecked: new Date().toISOString() }
         : service
     ));
   });
 
-<<<<<<< HEAD
-  useEventListener('system:websocket-disconnected', () => {
-    setServices(prev => prev.map(service =>
-      service.name === 'WebSocket Service'
-=======
   useEventListener('system:polling-disconnected', () => {
     setServices(prev => prev.map(service =>
       service.name === 'Polling Service'
->>>>>>> 001-modify-analyzer-method
         ? { ...service, status: 'offline', lastChecked: new Date().toISOString() }
         : service
     ));
@@ -271,15 +225,9 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
 
   if (compact) {
     return (
-<<<<<<< HEAD
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900">System Status</h3>
-=======
       <div className="bg-corporate-bgSecondary rounded-lg shadow-sm border-2 border-corporate-accentPrimary/40 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-corporate-textPrimary">System Status</h3>
->>>>>>> 001-modify-analyzer-method
           <button
             onClick={refreshStatus}
             disabled={isRefreshing}
@@ -322,11 +270,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75" onClick={onClose} />
 
-<<<<<<< HEAD
-        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-=======
         <div className="relative bg-corporate-bgPrimary rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border-2 border-corporate-accentPrimary/40">
->>>>>>> 001-modify-analyzer-method
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
@@ -492,15 +436,9 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({ isOpen, onClose, com
                   <div className="flex items-center space-x-3">
                     <StatusIcon status={isConnected ? 'online' : 'offline'} />
                     <div>
-<<<<<<< HEAD
-                      <h4 className="font-medium text-gray-900">WebSocket Connection</h4>
-                      <p className="text-sm text-gray-600">
-                        {isConnected ? 'Connected - Real-time updates active' : 'Disconnected - Attempting to reconnect'}
-=======
                       <h4 className="font-medium text-gray-900">Polling Connection</h4>
                       <p className="text-sm text-gray-600">
                         {isConnected ? 'Connected - Polling-based updates active' : 'Disconnected - Attempting to reconnect'}
->>>>>>> 001-modify-analyzer-method
                       </p>
                     </div>
                   </div>

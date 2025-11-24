@@ -37,11 +37,7 @@ logger = get_bridge_logger(__name__)
 
 # Determine which client to use based on environment
 USE_REAL_SNOWFLAKE = os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true'
-<<<<<<< HEAD
-TEST_MODE = os.getenv('TEST_MODE', '').lower() == 'mock'
-=======
 TEST_MODE = os.getenv('TEST_MODE', '').lower() == 'demo'
->>>>>>> 001-modify-analyzer-method
 
 # Force mock mode if TEST_MODE is set
 if TEST_MODE:

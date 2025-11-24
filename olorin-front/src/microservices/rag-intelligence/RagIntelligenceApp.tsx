@@ -1,10 +1,6 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-<<<<<<< HEAD
-import ErrorBoundary from '@shared/components/ErrorBoundary';
-=======
 import { ErrorBoundary } from '@shared/components/ErrorBoundary';
->>>>>>> 001-modify-analyzer-method
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
 // Lazy load components for better performance
@@ -18,20 +14,12 @@ const RAGConfigurationPage = React.lazy(() => import('./components/RAGConfigurat
 const RagIntelligenceApp: React.FC = () => {
   return (
     <ErrorBoundary serviceName="ragIntelligence">
-<<<<<<< HEAD
-      <div className="rag-intelligence-service min-h-screen bg-gray-50">
-=======
       <div className="rag-intelligence-service min-h-screen bg-black">
->>>>>>> 001-modify-analyzer-method
         <Suspense fallback={
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <LoadingSpinner size="md" />
-<<<<<<< HEAD
-              <p className="mt-2 text-sm text-gray-600">
-=======
               <p className="mt-2 text-sm text-corporate-textSecondary">
->>>>>>> 001-modify-analyzer-method
                 Loading RAG Intelligence Service...
               </p>
             </div>

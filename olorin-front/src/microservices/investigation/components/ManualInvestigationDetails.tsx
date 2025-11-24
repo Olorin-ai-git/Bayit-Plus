@@ -203,11 +203,7 @@ const ManualInvestigationDetails: React.FC<ManualInvestigationDetailsProps> = ({
             <span className="font-medium">{new Date(investigation.updatedAt).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center space-x-2">
-<<<<<<< HEAD
-            <CalendarIcon className="h-4 w-4 text-red-400" />
-=======
             <CalendarIcon className="h-4 w-4 text-corporate-error" />
->>>>>>> 001-modify-analyzer-method
             <span className="text-gray-600">Due:</span>
             <span className="font-medium text-red-600">{new Date(investigation.dueDate).toLocaleDateString()}</span>
           </div>
@@ -319,11 +315,7 @@ const ManualInvestigationDetails: React.FC<ManualInvestigationDetailsProps> = ({
                         <button className="text-gray-400 hover:text-gray-600">
                           <ArrowDownTrayIcon className="h-4 w-4" />
                         </button>
-<<<<<<< HEAD
-                        <button className="text-red-400 hover:text-red-600">
-=======
                         <button className="text-corporate-error hover:text-red-600">
->>>>>>> 001-modify-analyzer-method
                           <TrashIcon className="h-4 w-4" />
                         </button>
                       </div>
@@ -360,11 +352,7 @@ const ManualInvestigationDetails: React.FC<ManualInvestigationDetailsProps> = ({
                         <button className="text-gray-400 hover:text-gray-600">
                           <PencilIcon className="h-4 w-4" />
                         </button>
-<<<<<<< HEAD
-                        <button className="text-red-400 hover:text-red-600">
-=======
                         <button className="text-corporate-error hover:text-red-600">
->>>>>>> 001-modify-analyzer-method
                           <TrashIcon className="h-4 w-4" />
                         </button>
                       </div>

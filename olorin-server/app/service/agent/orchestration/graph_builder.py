@@ -132,11 +132,7 @@ async def create_resilient_memory():
 
 
 async def create_parallel_agent_graph(use_enhanced_tools=False):
-<<<<<<< HEAD
-    """Create autonomous agent graph for parallel execution with RecursionGuard protection."""
-=======
     """Create structured agent graph for parallel execution with RecursionGuard protection."""
->>>>>>> 001-modify-analyzer-method
     guard = get_recursion_guard()
     logger.info("Creating parallel graph with structured agents and RecursionGuard protection")
     
@@ -226,11 +222,7 @@ async def create_parallel_agent_graph(use_enhanced_tools=False):
     builder.add_edge("tools", "fraud_investigation")
     
     # NOTE: Agents have tools bound directly to their LLMs
-<<<<<<< HEAD
-    # They invoke tools internally within their autonomous_investigate method
-=======
     # They invoke tools internally within their structured_investigate method
->>>>>>> 001-modify-analyzer-method
     # This avoids circular reference issues with the graph-level tools node
 
     # Compile with memory
@@ -485,12 +477,9 @@ def _get_configured_tools():
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
     from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool
-<<<<<<< HEAD
-=======
     from pathlib import Path
     from dotenv import load_dotenv
     import os
->>>>>>> 001-modify-analyzer-method
     
     try:
         # Initialize the tool registry if not already initialized
@@ -509,9 +498,6 @@ def _get_configured_tools():
             # All tools from these categories will be loaded
         )
         
-<<<<<<< HEAD
-        # CRITICAL: Ensure Snowflake is the FIRST tool for primary data analysis
-=======
         # CRITICAL: Check DATABASE_PROVIDER FIRST before creating any database tool
         database_provider = os.getenv('DATABASE_PROVIDER', '').lower()
         use_postgres = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
@@ -571,17 +557,10 @@ def _get_configured_tools():
                     logger.warning("⚠️ DatabaseQueryTool not available: No PostgreSQL connection string found")
         
         # CRITICAL: Ensure Snowflake is available (for backward compatibility)
->>>>>>> 001-modify-analyzer-method
         has_snowflake = any(isinstance(t, SnowflakeQueryTool) for t in tools)
         if not has_snowflake:
             try:
                 snowflake_tool = SnowflakeQueryTool()
-<<<<<<< HEAD
-                tools.insert(0, snowflake_tool)  # Add Snowflake as FIRST tool
-                logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool for 30-day analysis")
-            except Exception as e:
-                logger.error(f"Could not add Snowflake tool: {e}")
-=======
                 # Add after database_query if it exists, otherwise as first
                 if has_database_query:
                     tools.insert(1, snowflake_tool)
@@ -614,7 +593,6 @@ def _get_configured_tools():
             logger.info(f"✅ SnowflakeQueryTool is available as fallback (total {len(tools)} tools)")
         else:
             logger.warning(f"⚠️ Database tool availability unclear: database_query={has_database_query}, snowflake={has_snowflake_query}, provider={database_provider}")
->>>>>>> 001-modify-analyzer-method
         
         # Ensure essential SIEM tools are available as fallback
         has_splunk = any(isinstance(t, SplunkQueryTool) for t in tools)

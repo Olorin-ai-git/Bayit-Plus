@@ -1563,20 +1563,12 @@ select {
   margin-bottom: 0;
 }
 
-<<<<<<< HEAD
-.btn-autonomous {
-=======
 .btn-structured {
->>>>>>> 001-modify-analyzer-method
   background-color: #16a34a;
   color: #fff;
 }
 
-<<<<<<< HEAD
-.btn-autonomous:hover {
-=======
 .btn-structured:hover {
->>>>>>> 001-modify-analyzer-method
   background-color: #15803d;
 }
 
@@ -1596,11 +1588,7 @@ select {
   padding: 1.5rem;
 }
 
-<<<<<<< HEAD
-.card-autonomous {
-=======
 .card-structured {
->>>>>>> 001-modify-analyzer-method
   background-color: #f0fdf4;
   border-color: #bbf7d0;
   border-width: 1px;
@@ -2863,11 +2851,7 @@ select {
   background-color: rgb(239 246 255 / var(--tw-bg-opacity, 1));
 }
 
-<<<<<<< HEAD
-.bg-autonomous-50 {
-=======
 .bg-structured-50 {
->>>>>>> 001-modify-analyzer-method
   --tw-bg-opacity: 1;
   background-color: rgb(240 253 244 / var(--tw-bg-opacity, 1));
 }
@@ -3624,11 +3608,7 @@ select {
   color: rgb(37 99 235 / var(--tw-text-opacity, 1));
 }
 
-<<<<<<< HEAD
-.text-autonomous-600 {
-=======
 .text-structured-600 {
->>>>>>> 001-modify-analyzer-method
   --tw-text-opacity: 1;
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
 }

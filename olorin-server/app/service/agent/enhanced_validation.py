@@ -85,11 +85,7 @@ class EnhancedValidationResult:
 
 class EnhancedInvestigationValidator:
     """
-<<<<<<< HEAD
-    Enhanced validation system for autonomous investigations.
-=======
     Enhanced validation system for structured investigations.
->>>>>>> 001-modify-analyzer-method
     
     Integrates with the verification LLM model and quality assurance system
     to provide comprehensive validation with automatic failure detection.
@@ -100,12 +96,6 @@ class EnhancedInvestigationValidator:
         self.llm_manager = LLMManager()
         self.quality_assurance = InvestigationQualityAssurance()
         self.verification_enabled = os.getenv('LLM_VERIFICATION_ENABLED', 'true').lower() == 'true'
-<<<<<<< HEAD
-        self.verification_threshold = float(os.getenv('VERIFICATION_THRESHOLD_DEFAULT', '85')) / 100
-        self.min_evidence_threshold = int(os.getenv('MIN_EVIDENCE_THRESHOLD', '3'))
-        self.max_risk_delta_threshold = float(os.getenv('MAX_RISK_DELTA_THRESHOLD', '0.5'))
-        
-=======
 
         # CRITICAL FIX B4: Lower verification threshold for demo mode (0.60 vs 0.85)
         test_mode = os.getenv('TEST_MODE', '').lower()
@@ -121,7 +111,6 @@ class EnhancedInvestigationValidator:
 
         self.max_risk_delta_threshold = float(os.getenv('MAX_RISK_DELTA_THRESHOLD', '0.5'))
 
->>>>>>> 001-modify-analyzer-method
         logger.info(f"Enhanced Validator initialized: verification={self.verification_enabled}, "
                    f"threshold={self.verification_threshold}, min_evidence={self.min_evidence_threshold}")
     
@@ -203,11 +192,6 @@ class EnhancedInvestigationValidator:
             critical_issues.append(f"Data extraction failed: {', '.join(extraction_failures)}")
         
         if not risk_consistency_passed and extraction_status == DataExtractionStatus.SUCCESS:
-<<<<<<< HEAD
-            critical_issues.append(
-                f"Risk score inconsistency: Initial={initial_risk:.2f}, Final={final_risk:.2f}, "
-                f"Delta={risk_delta:.2f} exceeds threshold {self.max_risk_delta_threshold}"
-=======
             # CRITICAL FIX: Handle None values before formatting
             initial_risk_str = f"{initial_risk:.2f}" if initial_risk is not None else "None"
             final_risk_str = f"{final_risk:.2f}" if final_risk is not None else "None"
@@ -215,7 +199,6 @@ class EnhancedInvestigationValidator:
             critical_issues.append(
                 f"Risk score inconsistency: Initial={initial_risk_str}, Final={final_risk_str}, "
                 f"Delta={delta_str} exceeds threshold {self.max_risk_delta_threshold}"
->>>>>>> 001-modify-analyzer-method
             )
         
         if not minimum_evidence_met:
@@ -301,19 +284,12 @@ class EnhancedInvestigationValidator:
         
         # Log validation result
         status_emoji = "✅" if validation_status == ValidationStatus.PASSED else "❌"
-<<<<<<< HEAD
-        logger.info(
-            f"{status_emoji} Validation {validation_status.value}: "
-            f"Score={overall_score:.1f}, Extraction={extraction_status.value}, "
-            f"RiskDelta={risk_delta:.2f}, Evidence={evidence_count}"
-=======
         # CRITICAL FIX: Handle None risk_delta before formatting
         risk_delta_str = f"{risk_delta:.2f}" if risk_delta is not None else "N/A"
         logger.info(
             f"{status_emoji} Validation {validation_status.value}: "
             f"Score={overall_score:.1f}, Extraction={extraction_status.value}, "
             f"RiskDelta={risk_delta_str}, Evidence={evidence_count}"
->>>>>>> 001-modify-analyzer-method
         )
         
         if critical_issues:
@@ -394,17 +370,11 @@ class EnhancedInvestigationValidator:
         snowflake_data = investigation_result.get('snowflake_data')
         if snowflake_data:
             if isinstance(snowflake_data, str):
-<<<<<<< HEAD
-                failures.append("Snowflake data is string format, cannot extract structured results")
-            elif isinstance(snowflake_data, dict) and snowflake_data.get('error'):
-                failures.append(f"Snowflake error: {snowflake_data['error']}")
-=======
                 failures.append("Database data is string format, cannot extract structured results")
             elif isinstance(snowflake_data, dict) and snowflake_data.get('error'):
                 # Use actual data source from snowflake_data (postgresql or snowflake)
                 data_source = snowflake_data.get('source', 'database').upper()
                 failures.append(f"{data_source} error: {snowflake_data['error']}")
->>>>>>> 001-modify-analyzer-method
             else:
                 any_success = True
         

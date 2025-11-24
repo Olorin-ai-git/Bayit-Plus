@@ -126,11 +126,7 @@ def calculate_safety_limits(state: InvestigationState) -> SafetyLimits:
 - **Task 1.4**: Create comprehensive unit tests for confidence calculation
 
 ### Sprint 2: Core Integration (Week 2) 
-<<<<<<< HEAD
-- **Task 2.1**: Integrate AutonomousOrchestrator strategies into clean graph
-=======
 - **Task 2.1**: Integrate StructuredOrchestrator strategies into clean graph
->>>>>>> 001-modify-analyzer-method
 - **Task 2.2**: Replace mechanical routing with hybrid intelligence in `route_from_orchestrator`
 - **Task 2.3**: Implement progressive safety framework
 - **Task 2.4**: Add decision history tracking and logging

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Graph Integration - Technical Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0B1221 0%, #1A2332 100%);
+            color: #F9FAFB;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 2px solid #374151;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #FF6600 0%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9CA3AF;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            color: #D1D5DB;
+        }
+
+        .metadata span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metadata span::before {
+            content: '•';
+            color: #FF6600;
+        }
+
+        .section {
+            background: #1A2332;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            color: #FF6600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            color: #06B6D4;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .description {
+            color: #D1D5DB;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #242E3E;
+            border-radius: 8px;
+            border-left: 3px solid #FF6600;
+        }
+
+        .mermaid-container {
+            background: #0B1221;
+            border: 1px solid #4B5563;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: #242E3E;
+            border: 1px solid #4B5563;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #FF6600;
+            box-shadow: 0 8px 16px rgba(255, 102, 0, 0.1);
+        }
+
+        .card h4 {
+            color: #06B6D4;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: #FF6600;
+            color: #FFFFFF;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+        }
+
+        .badge.secondary {
+            background: #06B6D4;
+        }
+
+        .badge.success {
+            background: #10B981;
+        }
+
+        .badge.warning {
+            background: #F59E0B;
+        }
+
+        .badge.error {
+            background: #EF4444;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: #242E3E;
+            border-radius: 6px;
+            border-left: 3px solid #10B981;
+            color: #D1D5DB;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #10B981;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .api-endpoint {
+            background: #0B1221;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .api-endpoint .method {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .api-endpoint .method.get { background: #10B981; color: white; }
+        .api-endpoint .method.post { background: #3B82F6; color: white; }
+        .api-endpoint .method.patch { background: #F59E0B; color: white; }
+        .api-endpoint .method.delete { background: #EF4444; color: white; }
+
+        .api-endpoint .path {
+            font-family: 'Courier New', monospace;
+            color: #06B6D4;
+        }
+
+        .code-block {
+            background: #0B1221;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #06B6D4;
+            overflow-x: auto;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #FF6600, #06B6D4);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.4rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: #FF6600;
+            border-radius: 50%;
+            border: 2px solid #1A2332;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #374151;
+            color: #9CA3AF;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .metadata {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hybrid Graph Integration</h1>
+            <p class="subtitle">Technical Architecture & Implementation Guide</p>
+            <div class="metadata">
+                <span>Feature 006</span>
+                <span>Author: Gil Klainert</span>
+                <span>Status: Architecture Complete</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>📊 System Overview</h2>
+            <div class="description">
+                Complete technical architecture for integrating the Hybrid Graph investigation system with the frontend wizard interface.
+                Enables configuration-driven fraud investigations through a 3-page wizard flow with real-time polling-based status updates.
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>Frontend Stack</h4>
+                    <p>React 18, TypeScript, Tailwind CSS, Zustand</p>
+                    <span class="badge">Microservices</span>
+                    <span class="badge secondary">Module Federation</span>
+                </div>
+                <div class="card">
+                    <h4>Backend Stack</h4>
+                    <p>FastAPI, Python 3.11, SQLAlchemy, LangChain</p>
+                    <span class="badge">AI Agents</span>
+                    <span class="badge secondary">Hybrid Graph</span>
+                </div>
+                <div class="card">
+                    <h4>Communication</h4>
+                    <p>REST API, HTTP Polling, JWT Authentication</p>
+                    <span class="badge">2s Polling</span>
+                    <span class="badge secondary">Exponential Backoff</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ Component Architecture</h2>
+            <div class="description">
+                Modular component hierarchy with strict 200-line file size limits ensuring maintainability and testability.
+            </div>
+
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    graph TB
+                        subgraph "Frontend Layer"
+                            WizardContainer[Wizard Container]
+                            WizardContainer --> SettingsPage["Settings Page<br/>< 200 lines"]
+                            WizardContainer --> ProgressPage["Progress Page<br/>< 200 lines"]
+                            WizardContainer --> ResultsPage["Results Page<br/>< 200 lines"]
+
+                            SettingsPage --> EntitySelector["Entity Selector<br/>50 lines"]
+                            SettingsPage --> TimeRange["Time Range Picker<br/>80 lines"]
+                            SettingsPage --> ToolMatrix["Tool Matrix<br/>150 lines"]
+
+                            ProgressPage --> ProgressBar["Progress Bar<br/>50 lines"]
+                            ProgressPage --> PhaseIndicator["Phase Indicator<br/>100 lines"]
+                            ProgressPage --> LogStream["Log Stream<br/>150 lines"]
+
+                            ResultsPage --> RiskGauge["Risk Gauge<br/>100 lines"]
+                            ResultsPage --> FindingsGrid["Findings Grid<br/>150 lines"]
+                            ResultsPage --> ExportControls["Export Controls<br/>80 lines"]
+                        end
+
+                        subgraph "Service Layer"
+                            InvestigationService["Investigation Service<br/>150 lines"]
+                            PollingService["Polling Service<br/>150 lines"]
+                            StorageService["Storage Service<br/>100 lines"]
+                        end
+
+                        SettingsPage -.-> InvestigationService
+                        ProgressPage -.-> PollingService
+                        ResultsPage -.-> StorageService
+
+                        style WizardContainer fill:#FF6600,stroke:#FF6600,color:#FFF
+                        style SettingsPage fill:#06B6D4,stroke:#06B6D4,color:#FFF
+                        style ProgressPage fill:#06B6D4,stroke:#06B6D4,color:#FFF
+                        style ResultsPage fill:#06B6D4,stroke:#06B6D4,color:#FFF
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 State Management Flow</h2>
+            <div class="description">
+                Complete investigation lifecycle from configuration through execution to results with comprehensive error handling.
+            </div>
+
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    stateDiagram-v2
+                        [*] --> Idle: Initial State
+
+                        Idle --> ConfiguringSettings: User Opens Wizard
+                        ConfiguringSettings --> ValidatingConfig: User Submits
+                        ValidatingConfig --> ConfiguringSettings: Validation Failed
+                        ValidatingConfig --> CreatingInvestigation: Validation Passed
+
+                        CreatingInvestigation --> PollingProgress: Investigation Created
+                        CreatingInvestigation --> ErrorState: Creation Failed
+
+                        PollingProgress --> UpdatingUI: Status Update
+                        UpdatingUI --> PollingProgress: Continue
+                        PollingProgress --> InvestigationComplete: Completed
+                        PollingProgress --> ErrorState: Failed
+
+                        InvestigationComplete --> ViewingResults: Navigate
+                        ViewingResults --> ExportingData: Export
+                        ExportingData --> ViewingResults: Done
+
+                        ErrorState --> ConfiguringSettings: Retry
+                        ErrorState --> [*]: Cancel
+                        ViewingResults --> [*]: Complete
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Polling Service Architecture</h2>
+            <div class="description">
+                Sophisticated polling mechanism with exponential backoff, automatic recovery, and state management.
+            </div>
+
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    stateDiagram-v2
+                        [*] --> Idle: Initial
+
+                        Idle --> Starting: start()
+                        Starting --> Polling: Controller Created
+
+                        Polling --> Fetching: Timer Triggered
+                        Fetching --> Processing: Response OK
+                        Fetching --> Retrying: Request Failed
+
+                        Processing --> Polling: Status = running
+                        Processing --> Completed: Status = completed
+                        Processing --> Failed: Status = failed
+
+                        Retrying --> BackingOff: Increment Count
+                        BackingOff --> Fetching: After Delay
+                        BackingOff --> Failed: Max Retries
+
+                        Polling --> Paused: pause()
+                        Paused --> Polling: resume()
+
+                        Polling --> Stopped: stop()
+                        Completed --> Stopped: Cleanup
+                        Failed --> Stopped: Cleanup
+
+                        Stopped --> Idle: Reset
+
+                        note right of BackingOff
+                            Exponential Backoff:
+                            Attempt 1: 2s delay
+                            Attempt 2: 4s delay
+                            Attempt 3: 8s delay
+                            Attempt 4: 16s delay (max)
+                        end note
+                </div>
+            </div>
+
+            <h3>Polling Configuration</h3>
+            <div class="code-block">
+{
+    "interval": 2000,           // Base polling interval (ms)
+    "maxRetries": 4,           // Maximum retry attempts
+    "backoffMultiplier": 2,    // Exponential backoff multiplier
+    "maxBackoff": 16000,       // Maximum backoff delay (ms)
+    "timeout": 30000,          // Request timeout (ms)
+    "cacheTime": 2000          // Response cache duration (ms)
+}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔌 API Endpoints</h2>
+            <div class="description">
+                RESTful API contract with comprehensive request/response schemas for all investigation operations.
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/investigations</span>
+                <p>Create new hybrid graph investigation</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/investigations/{id}/status</span>
+                <p>Poll investigation status (2-second intervals)</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method get">GET</span>
+                <span class="path">/api/investigations/{id}/results</span>
+                <p>Fetch complete investigation results</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method post">POST</span>
+                <span class="path">/api/investigations/{id}/export</span>
+                <p>Generate export (PDF, JSON, CSV)</p>
+            </div>
+
+            <div class="api-endpoint">
+                <span class="method patch">PATCH</span>
+                <span class="path">/api/investigations/{id}/control</span>
+                <p>Control investigation (pause/stop)</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🗄️ Database Schema</h2>
+            <div class="description">
+                Schema-locked database design with no DDL operations, using only existing columns.
+            </div>
+
+            <h3>investigation_states Table</h3>
+            <div class="code-block">
+investigation_id    VARCHAR(255) PRIMARY KEY
+user_id            VARCHAR(255) NOT NULL
+lifecycle_stage    VARCHAR(50)  NOT NULL  -- CREATED|SETTINGS|IN_PROGRESS|COMPLETED
+settings_json      TEXT                   -- Investigation configuration
+progress_json      TEXT                   -- Current progress state
+results_json       TEXT                   -- Final results
+status             VARCHAR(50)  NOT NULL  -- Status enum
+version            INTEGER      NOT NULL  -- Optimistic locking
+created_at         TIMESTAMP    NOT NULL
+updated_at         TIMESTAMP    NOT NULL
+last_accessed      TIMESTAMP
+            </div>
+
+            <h3>Schema Verification</h3>
+            <ul class="feature-list">
+                <li>Startup verification queries information_schema</li>
+                <li>Validates all required columns exist</li>
+                <li>Fails fast if schema mismatch detected</li>
+                <li>No DDL operations or auto-migrations</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📈 Performance Metrics</h2>
+            <div class="description">
+                Key performance indicators and optimization strategies to ensure responsive user experience.
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h4>Investigation Creation</h4>
+                    <p>Target: < 90 seconds</p>
+                    <span class="badge success">✓ Achievable</span>
+                </div>
+                <div class="card">
+                    <h4>Polling Latency</h4>
+                    <p>Target: < 2 seconds</p>
+                    <span class="badge success">✓ Achievable</span>
+                </div>
+                <div class="card">
+                    <h4>Results Loading</h4>
+                    <p>Target: < 3 seconds</p>
+                    <span class="badge success">✓ Achievable</span>
+                </div>
+                <div class="card">
+                    <h4>Polling Reliability</h4>
+                    <p>Target: 99.5% uptime</p>
+                    <span class="badge success">✓ Achievable</span>
+                </div>
+                <div class="card">
+                    <h4>Export Generation</h4>
+                    <p>Target: < 10 seconds</p>
+                    <span class="badge success">✓ Achievable</span>
+                </div>
+                <div class="card">
+                    <h4>Error Recovery</h4>
+                    <p>Automatic with backoff</p>
+                    <span class="badge success">✓ Implemented</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚨 Error Handling</h2>
+            <div class="description">
+                Comprehensive error handling strategy with user-friendly messages and recovery options.
+            </div>
+
+            <div class="mermaid-container">
+                <div class="mermaid">
+                    flowchart TD
+                        Start[Error Occurs] --> Detect[Error Detection]
+
+                        Detect --> Cat{Error Type}
+
+                        Cat -->|Network| Net[Network Error]
+                        Cat -->|Validation| Val[Validation Error]
+                        Cat -->|Backend| Back[Backend Error]
+                        Cat -->|Timeout| Time[Timeout Error]
+
+                        Net --> Backoff[Exponential Backoff]
+                        Backoff --> Retry{Success?}
+                        Retry -->|Yes| Resume[Resume]
+                        Retry -->|No| ShowNet[Show Error UI]
+
+                        Val --> ShowVal[Show Validation]
+                        Back --> MapCode[Map Error Code]
+                        MapCode --> ShowBack[User Message]
+                        Time --> Extend[Extend Timeout]
+
+                        ShowNet --> Recovery[Recovery Options]
+                        ShowBack --> Recovery
+                        ShowVal --> UserFix[User Corrects]
+
+                        Recovery --> Manual[Retry Button]
+                        Recovery --> Support[Contact Support]
+
+                        style Net fill:#EF4444
+                        style Val fill:#F59E0B
+                        style Back fill:#EF4444
+                        style Time fill:#F59E0B
+                </div>
+            </div>
+
+            <h3>Error Categories</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>Network Errors</h4>
+                    <p>Handled with exponential backoff and automatic retry</p>
+                </div>
+                <div class="card">
+                    <h4>Validation Errors</h4>
+                    <p>Clear field-level feedback with correction guidance</p>
+                </div>
+                <div class="card">
+                    <h4>Backend Errors</h4>
+                    <p>User-friendly messages mapped from error codes</p>
+                </div>
+                <div class="card">
+                    <h4>Timeout Errors</h4>
+                    <p>Option to extend timeout and retry investigation</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Success Criteria</h2>
+            <div class="description">
+                Measurable outcomes ensuring the architecture meets all business and technical requirements.
+            </div>
+
+            <ul class="feature-list">
+                <li>Investigation creation in under 90 seconds with validation feedback</li>
+                <li>Real-time updates with maximum 2-second polling latency</li>
+                <li>Results page loads within 3 seconds for 50+ findings</li>
+                <li>99.5% polling reliability with automatic recovery</li>
+                <li>95% workflow completion rate without errors</li>
+                <li>PDF export generation within 10 seconds</li>
+                <li>Graceful error handling with user-friendly messages</li>
+                <li>Support for up to 5 concurrent entities with correlation</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Configuration</h2>
+            <div class="description">
+                All configuration externalized to environment variables following SYSTEM MANDATE requirements.
+            </div>
+
+            <h3>Frontend Environment Variables</h3>
+            <div class="code-block">
+REACT_APP_API_BASE_URL=https://api.olorin.com
+REACT_APP_REQUEST_TIMEOUT_MS=30000
+REACT_APP_WIZARD_PROGRESS_UPDATE_INTERVAL_MS=2000
+REACT_APP_POLLING_MAX_RETRIES=4
+REACT_APP_POLLING_BACKOFF_MULTIPLIER=2
+REACT_APP_MAX_CONCURRENT_INVESTIGATIONS=3
+REACT_APP_DEFAULT_RISK_THRESHOLD=50
+REACT_APP_INVESTIGATION_TIMEOUT_MINUTES=15
+REACT_APP_FEATURE_ENABLE_HYBRID_GRAPH=true
+REACT_APP_FEATURE_ENABLE_MULTI_ENTITY=true
+REACT_APP_FEATURE_ENABLE_EXPORT=true
+            </div>
+
+            <h3>Backend Environment Variables</h3>
+            <div class="code-block">
+ENABLE_HYBRID_GRAPH=true
+MAX_CONCURRENT_INVESTIGATIONS=3
+INVESTIGATION_TIMEOUT_SECONDS=900
+POLLING_CACHE_TTL_SECONDS=2
+DATABASE_URL=postgresql://user:pass@localhost/olorin
+EXPORT_STORAGE_BUCKET=olorin-exports
+EXPORT_URL_EXPIRY_SECONDS=3600
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Implementation Roadmap</h2>
+            <div class="description">
+                Phased implementation approach ensuring incremental delivery and continuous testing.
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Phase 1: Backend Foundation</h4>
+                    <p>Implement polling adapter, status controller, and database integration</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 2: Settings Page</h4>
+                    <p>Build configuration UI with entity selection and tool matrix</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 3: Progress Monitoring</h4>
+                    <p>Implement polling service and real-time progress visualization</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 4: Results Display</h4>
+                    <p>Create results page with findings grid and evidence panel</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 5: Export & Polish</h4>
+                    <p>Add export functionality and comprehensive error handling</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Phase 6: Testing & Optimization</h4>
+                    <p>End-to-end testing, performance optimization, and documentation</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Olorin - Hybrid Graph Integration Architecture</p>
+            <p>Feature 006 | Production-Ready Implementation</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#0B1221',
+                primaryColor: '#FF6600',
+                primaryTextColor: '#F9FAFB',
+                primaryBorderColor: '#374151',
+                lineColor: '#06B6D4',
+                secondaryColor: '#1A2332',
+                tertiaryColor: '#242E3E',
+                mainBkg: '#1A2332',
+                secondBkg: '#242E3E',
+                tertiaryTextColor: '#9CA3AF',
+                fontSize: '14px'
+            }
+        });
+    </script>
+</body>
+</html>

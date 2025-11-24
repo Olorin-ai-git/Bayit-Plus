@@ -58,19 +58,11 @@ class DomainAssessor:
         
         return domain_confidence
     
-<<<<<<< HEAD
-    def _calculate_completion_ratio(self, domains_completed: List[str]) -> float:
-        """Calculate the ratio of completed domains."""
-        return len(domains_completed) / self.total_domains
-    
-    def _calculate_quality_factor(self, domains_completed: List[str], domain_findings: Dict[str, Any]) -> float:
-=======
     def _calculate_completion_ratio(self, domains_completed: List[Any]) -> float:
         """Calculate the ratio of completed domains."""
         return len(domains_completed) / self.total_domains
     
     def _calculate_quality_factor(self, domains_completed: List[Any], domain_findings: Dict[str, Any]) -> float:
->>>>>>> 001-modify-analyzer-method
         """Calculate quality factor based on high-confidence domain findings."""
         if not domains_completed:
             return 0.0
@@ -78,9 +70,6 @@ class DomainAssessor:
         high_confidence_domains = 0
         
         for domain in domains_completed:
-<<<<<<< HEAD
-            findings = domain_findings.get(domain, {})
-=======
             # Handle both string domain names and dict domain objects
             if isinstance(domain, dict):
                 domain_key = domain.get('domain') or domain.get('name') or str(domain)
@@ -92,7 +81,6 @@ class DomainAssessor:
                 domain_key = str(domain_key)
             
             findings = domain_findings.get(domain_key, {})
->>>>>>> 001-modify-analyzer-method
             if findings:
                 confidence = findings.get("confidence", 0.0)
                 if confidence > 0.7:
@@ -100,11 +88,7 @@ class DomainAssessor:
         
         return high_confidence_domains / len(domains_completed)
     
-<<<<<<< HEAD
-    def _calculate_average_risk_score(self, domains_completed: List[str], domain_findings: Dict[str, Any]) -> float:
-=======
     def _calculate_average_risk_score(self, domains_completed: List[Any], domain_findings: Dict[str, Any]) -> float:
->>>>>>> 001-modify-analyzer-method
         """Calculate average risk score across completed domains."""
         if not domains_completed:
             return 0.0
@@ -112,9 +96,6 @@ class DomainAssessor:
         total_risk_score = 0.0
         
         for domain in domains_completed:
-<<<<<<< HEAD
-            findings = domain_findings.get(domain, {})
-=======
             # Handle both string domain names and dict domain objects
             if isinstance(domain, dict):
                 domain_key = domain.get('domain') or domain.get('name') or str(domain)
@@ -126,7 +107,6 @@ class DomainAssessor:
                 domain_key = str(domain_key)
             
             findings = domain_findings.get(domain_key, {})
->>>>>>> 001-modify-analyzer-method
             if findings:
                 risk_score = findings.get("risk_score", 0.0)
                 total_risk_score += risk_score

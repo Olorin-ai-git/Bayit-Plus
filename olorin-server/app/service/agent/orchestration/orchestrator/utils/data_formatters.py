@@ -23,13 +23,6 @@ class DataFormatters:
 
             # Extract key metrics
             model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
-<<<<<<< HEAD
-            fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
-
-            summary = f"""- Total transactions: {len(results)}
-- Average MODEL_SCORE: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
-- High risk transactions (MODEL_SCORE > 0.7): {len([s for s in model_scores if s > 0.7])}
-=======
             # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
             # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
             # Use behavioral indicators only (rejected transactions)
@@ -39,15 +32,11 @@ class DataFormatters:
             summary = f"""- Total transactions: {len(results)}
 - Average MODEL_SCORE: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
 - High risk transactions (MODEL_SCORE > 0.7): {len([s for s in model_scores if s is not None and s > 0.7])}
->>>>>>> 001-modify-analyzer-method
 - Confirmed fraud transactions: {len(fraud_flags)}
 - Date range: {results[0].get('TX_DATETIME', 'N/A')} to {results[-1].get('TX_DATETIME', 'N/A') if results else 'N/A'}"""
 
             return summary
 
-<<<<<<< HEAD
-        return f"Raw data: {str(snowflake_data)[:500]}"
-=======
         # Summarize instead of returning raw data
         if isinstance(snowflake_data, dict):
             if "row_count" in snowflake_data:
@@ -58,7 +47,6 @@ class DataFormatters:
             return f"List data: {len(snowflake_data)} items"
         else:
             return f"Data available (type: {type(snowflake_data).__name__})"
->>>>>>> 001-modify-analyzer-method
 
     @staticmethod
     def format_tools_for_llm(tool_results: Dict) -> str:
@@ -74,12 +62,6 @@ class DataFormatters:
                     formatted.append(f"- {tool_name}: Risk score {result['risk_score']}")
                 elif "is_malicious" in result:
                     formatted.append(f"- {tool_name}: {'Malicious' if result['is_malicious'] else 'Clean'}")
-<<<<<<< HEAD
-                else:
-                    formatted.append(f"- {tool_name}: {str(result)[:100]}")
-            else:
-                formatted.append(f"- {tool_name}: {str(result)[:100]}")
-=======
                 elif "query" in result:
                     # Database query tool - summarize instead of showing full query
                     query_len = len(str(result.get('query', '')))
@@ -119,7 +101,6 @@ class DataFormatters:
             else:
                 # Other types - show type and length
                 formatted.append(f"- {tool_name}: {type(result).__name__} ({len(str(result))} chars)")
->>>>>>> 001-modify-analyzer-method
 
         return "\n".join(formatted)
 
@@ -158,12 +139,8 @@ class DataFormatters:
 
         try:
             if isinstance(snowflake_data, str):
-<<<<<<< HEAD
-                return f"Raw data summary: {snowflake_data[:200]}..."
-=======
                 # Summarize string data instead of showing raw content
                 return f"String data available ({len(snowflake_data)} chars)"
->>>>>>> 001-modify-analyzer-method
 
             if isinstance(snowflake_data, dict):
                 if "results" in snowflake_data:

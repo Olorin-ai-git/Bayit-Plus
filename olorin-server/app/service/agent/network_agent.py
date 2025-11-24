@@ -73,21 +73,11 @@ async def structured_network_agent(state, config) -> dict:
         metadata=start_metadata
     )
     
-<<<<<<< HEAD
-    # Create or get autonomous context with retry logic
-    autonomous_context = await get_context_with_retry(investigation_id, entity_id)
-    if not autonomous_context:
-        logger.error(f"Failed to get investigation context after retries: {investigation_id}")
-        return _create_error_response("Unable to access investigation context - race condition")
-    
-    autonomous_context.start_domain_analysis("network")
-=======
     # Create or get structured context with retry logic
     structured_context = await get_context_with_retry(investigation_id, entity_id)
     if not structured_context:
         logger.error(f"Failed to get investigation context after retries: {investigation_id}")
         return _create_error_response("Unable to access investigation context - race condition")
->>>>>>> 001-modify-analyzer-method
     
     structured_context.start_domain_analysis("network")
     
@@ -124,13 +114,8 @@ async def structured_network_agent(state, config) -> dict:
             logger.info("🔧 Created network agent with intelligent RAG-enhanced tool selection")
         else:
             # Fallback to standard agent creation
-<<<<<<< HEAD
-            from app.service.agent.agent_factory import create_autonomous_agent
-            network_agent = create_autonomous_agent("network", tools)
-=======
             from app.service.agent.agent_factory import create_structured_agent
             network_agent = create_structured_agent("network", tools)
->>>>>>> 001-modify-analyzer-method
             logger.info("🔧 Created standard network agent (RAG not available)")
         
         # Get enhanced objectives with MCP/RAG-augmented threat intelligence focus
@@ -157,28 +142,7 @@ async def structured_network_agent(state, config) -> dict:
                 pass  # Gracefully handle missing RAG stats
         
         # Record findings in context
-<<<<<<< HEAD
-        autonomous_context.record_domain_findings("network", findings)
-        
-        # Emit completion update with RAG enhancement info
-        from .network_agent_config import format_completion_message
-        completion_message = format_completion_message(
-            rag_enabled=(RAG_AVAILABLE and rag_config is not None),
-            findings_count=len(findings.key_findings),
-            risk_score=findings.risk_score,
-            rag_stats=rag_stats,
-            mcp_enhanced=MCP_ENHANCED
-        )
-        
-        await websocket_manager.broadcast_agent_result(
-            investigation_id,
-            AgentPhase.NETWORK_ANALYSIS,
-            findings.raw_data or {},
-            completion_message
-        )
-=======
         structured_context.record_domain_findings("network", findings)
->>>>>>> 001-modify-analyzer-method
         
         # Track network agent completion with RAG metrics
         completion_metadata = create_network_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats, MCP_ENHANCED)

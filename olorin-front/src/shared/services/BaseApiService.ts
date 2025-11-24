@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-=======
 import { snakeToCamel, camelToSnake } from '../utils/caseConversion';
 import { eventBusInstance } from '@shared/events/UnifiedEventBus';
 
->>>>>>> 001-modify-analyzer-method
 export interface ApiResponse<T = any> {
   data: T;
   message?: string;
@@ -54,19 +51,13 @@ export class BaseApiService {
     try {
       const response = await fetch(fullUrl, config);
 
-<<<<<<< HEAD
-      if (!response.ok) {
-=======
       // 304 Not Modified is a valid response - don't treat it as an error
       if (!response.ok && response.status !== 304) {
->>>>>>> 001-modify-analyzer-method
         await this.handleErrorResponse(response);
       }
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
-=======
       // Suppress browser extension errors that are harmless
       const errorMessage = error instanceof Error ? error.message : String(error);
       const isBrowserExtensionError = 
@@ -83,7 +74,6 @@ export class BaseApiService {
         throw new Error('Network request failed - browser extension may be interfering');
       }
       
->>>>>>> 001-modify-analyzer-method
       console.error('API request failed:', error);
       throw error;
     }
@@ -103,22 +93,6 @@ export class BaseApiService {
       errorData = { message: response.statusText };
     }
 
-<<<<<<< HEAD
-    const apiError: ApiError = {
-      message: errorData.message || `HTTP ${response.status}: ${response.statusText}`,
-      status: response.status,
-      code: errorData.code,
-      details: errorData.details,
-    };
-
-    throw apiError;
-  }
-
-  protected async get<T>(url: string): Promise<T> {
-    const response = await this.fetch(url, { method: 'GET' });
-    const data = await response.json();
-    return data.data || data;
-=======
     // Extract error message from various possible formats
     const errorMessage =
       errorData.message ||
@@ -200,61 +174,39 @@ export class BaseApiService {
     const result = data.data || data;
     // Transform snake_case to camelCase and convert ISO dates to Date objects
     return snakeToCamel<T>(result);
->>>>>>> 001-modify-analyzer-method
   }
 
   protected async post<T>(url: string, body?: any): Promise<T> {
     const response = await this.fetch(url, {
       method: 'POST',
-<<<<<<< HEAD
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const data = await response.json();
-    return data.data || data;
-=======
       body: body ? JSON.stringify(camelToSnake(body)) : undefined,
     });
     const data = await response.json();
     const result = data.data || data;
     // Transform snake_case to camelCase and convert ISO dates to Date objects
     return snakeToCamel<T>(result);
->>>>>>> 001-modify-analyzer-method
   }
 
   protected async put<T>(url: string, body?: any): Promise<T> {
     const response = await this.fetch(url, {
       method: 'PUT',
-<<<<<<< HEAD
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const data = await response.json();
-    return data.data || data;
-=======
       body: body ? JSON.stringify(camelToSnake(body)) : undefined,
     });
     const data = await response.json();
     const result = data.data || data;
     // Transform snake_case to camelCase and convert ISO dates to Date objects
     return snakeToCamel<T>(result);
->>>>>>> 001-modify-analyzer-method
   }
 
   protected async patch<T>(url: string, body?: any): Promise<T> {
     const response = await this.fetch(url, {
       method: 'PATCH',
-<<<<<<< HEAD
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    const data = await response.json();
-    return data.data || data;
-=======
       body: body ? JSON.stringify(camelToSnake(body)) : undefined,
     });
     const data = await response.json();
     const result = data.data || data;
     // Transform snake_case to camelCase and convert ISO dates to Date objects
     return snakeToCamel<T>(result);
->>>>>>> 001-modify-analyzer-method
   }
 
   protected async delete(url: string): Promise<void> {

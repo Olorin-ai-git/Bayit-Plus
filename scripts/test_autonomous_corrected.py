@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-WebSocket Monitor for Autonomous Investigation - Corrected Version
-=======
 WebSocket Monitor for Structured Investigation - Corrected Version
->>>>>>> 001-modify-analyzer-method
 Uses proper entity types and formats
 """
 import asyncio
@@ -13,16 +9,6 @@ import websockets
 import aiohttp
 from datetime import datetime
 
-<<<<<<< HEAD
-async def run_autonomous_investigation_test():
-    """Run complete autonomous investigation with WebSocket monitoring"""
-    
-    print("🚀 Autonomous Investigation WebSocket Test (Corrected)")
-    print("=" * 65)
-    
-    # Step 1: Start the autonomous investigation with correct entity type
-    investigation_id = await start_autonomous_investigation()
-=======
 async def run_structured_investigation_test():
     """Run complete structured investigation with WebSocket monitoring"""
     
@@ -31,7 +17,6 @@ async def run_structured_investigation_test():
     
     # Step 1: Start the structured investigation with correct entity type
     investigation_id = await start_structured_investigation()
->>>>>>> 001-modify-analyzer-method
     if not investigation_id:
         print("❌ Failed to start investigation")
         return
@@ -39,26 +24,15 @@ async def run_structured_investigation_test():
     print(f"✅ Investigation started: {investigation_id}")
     
     # Step 2: Monitor WebSocket for updates
-<<<<<<< HEAD
-    await monitor_autonomous_websocket(investigation_id)
-=======
     await monitor_structured_websocket(investigation_id)
->>>>>>> 001-modify-analyzer-method
     
     # Step 3: Check final status
     await check_investigation_status(investigation_id)
 
-<<<<<<< HEAD
-async def start_autonomous_investigation():
-    """Start autonomous investigation with correct entity type"""
-    
-    url = "http://localhost:8090/v1/autonomous/start_investigation"
-=======
 async def start_structured_investigation():
     """Start structured investigation with correct entity type"""
     
     url = "http://localhost:8090/v1/structured/start_investigation"
->>>>>>> 001-modify-analyzer-method
     
     # Use 'user' instead of 'user_id' as entity type based on the error message
     investigation_data = {
@@ -66,15 +40,9 @@ async def start_structured_investigation():
         "entity_type": "user",  # Changed from 'user_id' to 'user'
         "investigation_request": {
             "user_id": "user-websocket-test-001",
-<<<<<<< HEAD
-            "transaction_id": "txn-autonomous-ws-001",
-            "device_info": {
-                "device_id": "device-autonomous-001",
-=======
             "transaction_id": "txn-structured-ws-001",
             "device_info": {
                 "device_id": "device-structured-001",
->>>>>>> 001-modify-analyzer-method
                 "user_agent": "Mozilla/5.0 (WebSocket Test Browser) AppleWebKit/537.36",
                 "ip": "192.168.1.100",
                 "screen_resolution": "1920x1080",
@@ -99,11 +67,7 @@ async def start_structured_investigation():
         }
     }
     
-<<<<<<< HEAD
-    print("🔄 Starting autonomous investigation...")
-=======
     print("🔄 Starting structured investigation...")
->>>>>>> 001-modify-analyzer-method
     print(f"📋 Entity Type: {investigation_data['entity_type']}")
     print(f"📋 Entity ID: {investigation_data['entity_id']}")
     
@@ -152,28 +116,14 @@ async def start_structured_investigation():
         print(f"❌ Request exception: {e}")
         return None
 
-<<<<<<< HEAD
-async def monitor_autonomous_websocket(investigation_id):
-    """Monitor WebSocket for autonomous investigation updates"""
-=======
 async def monitor_structured_websocket(investigation_id):
     """Monitor WebSocket for structured investigation updates"""
->>>>>>> 001-modify-analyzer-method
     
     print(f"\n🔗 Starting WebSocket monitoring for: {investigation_id}")
     print("─" * 65)
     
     # Comprehensive list of WebSocket URL patterns to try
     ws_urls = [
-<<<<<<< HEAD
-        f"ws://localhost:8090/ws/autonomous/{investigation_id}",
-        f"ws://localhost:8090/ws/investigations/{investigation_id}",
-        f"ws://localhost:8090/ws/investigation/{investigation_id}",
-        f"ws://localhost:8090/ws/{investigation_id}",
-        f"ws://localhost:8090/websocket/autonomous/{investigation_id}",
-        f"ws://localhost:8090/ws/v1/autonomous/{investigation_id}",
-        f"ws://localhost:8090/v1/autonomous/ws/{investigation_id}"
-=======
         f"ws://localhost:8090/ws/structured/{investigation_id}",
         f"ws://localhost:8090/ws/investigations/{investigation_id}",
         f"ws://localhost:8090/ws/investigation/{investigation_id}",
@@ -181,7 +131,6 @@ async def monitor_structured_websocket(investigation_id):
         f"ws://localhost:8090/websocket/structured/{investigation_id}",
         f"ws://localhost:8090/ws/v1/structured/{investigation_id}",
         f"ws://localhost:8090/v1/structured/ws/{investigation_id}"
->>>>>>> 001-modify-analyzer-method
     ]
     
     for i, ws_url in enumerate(ws_urls, 1):
@@ -192,11 +141,7 @@ async def monitor_structured_websocket(investigation_id):
             async with websockets.connect(ws_url, ping_timeout=10, 
                                         close_timeout=10) as websocket:
                 print(f"✅ WebSocket Connected Successfully!")
-<<<<<<< HEAD
-                print(f"🎯 Listening for autonomous investigation messages...")
-=======
                 print(f"🎯 Listening for structured investigation messages...")
->>>>>>> 001-modify-analyzer-method
                 print("═" * 60)
                 
                 message_count = 0
@@ -318,15 +263,9 @@ async def check_investigation_status(investigation_id):
     print(f"\n🔍 Checking final investigation status...")
     
     status_endpoints = [
-<<<<<<< HEAD
-        f"/v1/autonomous/investigation/{investigation_id}/status",
-        f"/v1/autonomous/investigation/{investigation_id}/logs",
-        f"/v1/autonomous/investigation/{investigation_id}/journey"
-=======
         f"/v1/structured/investigation/{investigation_id}/status",
         f"/v1/structured/investigation/{investigation_id}/logs",
         f"/v1/structured/investigation/{investigation_id}/journey"
->>>>>>> 001-modify-analyzer-method
     ]
     
     async with aiohttp.ClientSession() as session:
@@ -349,15 +288,9 @@ async def check_investigation_status(investigation_id):
 
 if __name__ == "__main__":
     try:
-<<<<<<< HEAD
-        asyncio.run(run_autonomous_investigation_test())
-        print("\n" + "🎯" + "=" * 63 + "🎯")
-        print("   Autonomous Investigation WebSocket Test Complete!")
-=======
         asyncio.run(run_structured_investigation_test())
         print("\n" + "🎯" + "=" * 63 + "🎯")
         print("   Structured Investigation WebSocket Test Complete!")
->>>>>>> 001-modify-analyzer-method
         print("🎯" + "=" * 63 + "🎯")
     except KeyboardInterrupt:
         print("\n🛑 Test interrupted by user")

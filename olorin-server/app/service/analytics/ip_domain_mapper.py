@@ -63,16 +63,12 @@ class IPDomainMapper:
             LIMIT 1
             """
             
-<<<<<<< HEAD
-            results = await self.client.execute_query(query)
-=======
             # Handle both sync (Snowflake) and async (PostgreSQL) execute_query methods
             import inspect
             if inspect.iscoroutinefunction(self.client.execute_query):
                 results = await self.client.execute_query(query)
             else:
                 results = self.client.execute_query(query)
->>>>>>> 001-modify-analyzer-method
             
             if results and len(results) > 0:
                 domain = results[0].get('DOMAIN') or results[0].get('domain')

@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Fix the format string error in unified_autonomous_test_runner.py
-"""
-
-def fix_format_error():
-    file_path = "/Users/gklainert/Documents/olorin/olorin-server/scripts/testing/unified_autonomous_test_runner.py"
-=======
 Fix the format string error in unified_structured_test_runner.py
 """
 
 def fix_format_error():
     file_path = "/Users/gklainert/Documents/olorin/olorin-server/scripts/testing/unified_structured_test_runner.py"
->>>>>>> 001-modify-analyzer-method
     
     # Read the file
     with open(file_path, 'r') as f:
@@ -37,11 +29,7 @@ def fix_format_error():
     with open(file_path, 'w') as f:
         f.writelines(lines)
     
-<<<<<<< HEAD
-    print("✅ Fixed format string error in unified_autonomous_test_runner.py")
-=======
     print("✅ Fixed format string error in unified_structured_test_runner.py")
->>>>>>> 001-modify-analyzer-method
 
 if __name__ == "__main__":
     fix_format_error()

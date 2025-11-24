@@ -86,16 +86,10 @@ async def agenerate_chat_response(
             # Add thread configuration if using hybrid graph
             feature_flags = get_feature_flags()
             if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
-<<<<<<< HEAD
-                config["configurable"] = {"thread_id": investigation_id}
-                logger.info(f"🧠 Using Hybrid Intelligence graph for fraud investigation: {investigation_id}")
-            else:
-=======
                 config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
                 logger.info(f"🧠 Using Hybrid Intelligence graph for fraud investigation: {investigation_id}")
             else:
                 config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
->>>>>>> 001-modify-analyzer-method
                 logger.info(f"🔄 Using Clean graph orchestration for fraud investigation: {investigation_id}")
 
             # Execute the clean graph system
@@ -212,11 +206,7 @@ async def astart_investigation(
 
         # CRITICAL FIX: Use clean graph orchestration system instead of old agent service
         # This completes Option C: Remove old system and use only clean graph system
-<<<<<<< HEAD
-        logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for autonomous investigation")
-=======
         logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for structured investigation")
->>>>>>> 001-modify-analyzer-method
 
         from app.service.agent.orchestration.hybrid.migration_utilities import (
             get_investigation_graph,
@@ -254,16 +244,10 @@ async def astart_investigation(
         # Add thread configuration if using hybrid graph
         feature_flags = get_feature_flags()
         if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
-<<<<<<< HEAD
-            config["configurable"] = {"thread_id": investigation_id}
-            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
-        else:
-=======
             config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
             logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
         else:
             config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
->>>>>>> 001-modify-analyzer-method
             logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
 
         # Execute the clean graph system

@@ -40,11 +40,7 @@ class EvaluatorOptimizerPattern:
 ### Integration Points
 1. **Pattern Base**: `/app/service/agent/patterns/base.py`
 2. **Quality System**: `/app/service/agent/quality_assurance.py`
-<<<<<<< HEAD
-3. **Orchestrator**: `/app/service/agent/autonomous_orchestrator.py`
-=======
 3. **Orchestrator**: `/app/service/agent/structured_orchestrator.py`
->>>>>>> 001-modify-analyzer-method
 4. **WebSocket**: `/app/service/websocket_manager.py`
 5. **Logging**: `/app/service/logging/unified_logging_core.py`
 

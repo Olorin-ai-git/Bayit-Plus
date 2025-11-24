@@ -18,11 +18,7 @@ from .tool_recommender_strategies import ToolRecommendationStrategies
 from .tool_analysis_utils import ToolAnalysisUtils
 from .context_augmentor import ContextAugmentor, ContextAugmentationConfig, KnowledgeContext
 from .rag_orchestrator import RAGOrchestrator
-<<<<<<< HEAD
-from ..autonomous_context import AutonomousInvestigationContext
-=======
 from ..autonomous_context import StructuredInvestigationContext
->>>>>>> 001-modify-analyzer-method
 # Lazy import to avoid circular dependencies
 # from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
 from app.service.logging import get_bridge_logger

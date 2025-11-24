@@ -28,11 +28,7 @@ def configure_routes(app: FastAPI, config: SvcSettings) -> None:
 
     # Register error handlers
     _register_error_handlers(app)
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     # Add legacy health and actuator endpoints (enhanced health via router)
     _add_health_endpoints(app)
 
@@ -54,11 +50,6 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.polling_router import router as polling_router
     from app.router.mcp_bridge_router import router as mcp_bridge_router
     from app.router.performance_router import router as performance_router
-<<<<<<< HEAD
-    from app.router.autonomous_investigation_router import router as autonomous_router
-    from app.router.health_router import router as health_router
-    from app.router.smoke_test_router import router as smoke_test_router
-=======
     from app.router.autonomous_investigation_router import router as structured_router
     from app.router.health_router import router as health_router
     from app.router.smoke_test_router import router as smoke_test_router
@@ -67,7 +58,6 @@ def _include_core_routers(app: FastAPI) -> None:
     from app.router.investigation_comparison_router import router as investigation_comparison_router
     from app.router.reports_router import router as reports_router
     from app.router.kpi_router import router as kpi_router
->>>>>>> 001-modify-analyzer-method
     from .. import example
 
     # Include routers in order of dependency
@@ -109,11 +99,7 @@ def _register_error_handlers(app: FastAPI) -> None:
 
 def _add_health_endpoints(app: FastAPI) -> None:
     """Add legacy health check and root endpoints for backward compatibility."""
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     @app.get("/")
     async def root():
         """Root endpoint for basic connectivity test."""
@@ -131,15 +117,11 @@ def _add_health_endpoints(app: FastAPI) -> None:
         logger.info("pskhealth endpoints added successfully")
     except ImportError:
         logger.info("pskhealth not available, using enhanced health router")
-<<<<<<< HEAD
-    
-=======
     except Exception as e:
         # If add_health_endpoint fails (e.g., due to lifespan conflict), log and continue
         logger.warning(f"pskhealth add_health_endpoint failed (non-fatal): {e}")
         logger.info("Continuing without pskhealth endpoints - enhanced health router available")
 
->>>>>>> 001-modify-analyzer-method
     # Add actuator endpoints
     _add_actuator_endpoints(app)
 

@@ -26,11 +26,7 @@ export class ServiceCommunication {
   private pendingRequests: Map<string, {
     resolve: (data: any) => void;
     reject: (error: Error) => void;
-<<<<<<< HEAD
-    timeout: NodeJS.Timeout;
-=======
     timeout: ReturnType<typeof setTimeout>;
->>>>>>> 001-modify-analyzer-method
   }> = new Map();
 
   constructor(serviceName: string, eventBus: any) {

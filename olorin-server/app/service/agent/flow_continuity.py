@@ -18,10 +18,6 @@ import hashlib
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.agent_coordination import AgentType, HandoffTrigger, get_agent_coordinator
-<<<<<<< HEAD
-from app.service.websocket_manager import AgentPhase, websocket_manager
-=======
->>>>>>> 001-modify-analyzer-method
 
 logger = get_bridge_logger(__name__)
 

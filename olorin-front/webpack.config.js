@@ -20,15 +20,10 @@ const microservices = {
       ragIntelligence: 'ragIntelligence@http://localhost:3003/remoteEntry.js',
       visualization: 'visualization@http://localhost:3004/remoteEntry.js',
       reporting: 'reporting@http://localhost:3005/remoteEntry.js',
-<<<<<<< HEAD
-      autonomousInvestigation: 'autonomousInvestigation@http://localhost:3008/remoteEntry.js',
-      manualInvestigation: 'manualInvestigation@http://localhost:3009/remoteEntry.js',
-=======
       investigationsManagement: 'investigationsManagement@http://localhost:3008/remoteEntry.js',
       // TODO: Uncomment when implementing these microservices
       // structuredInvestigation: 'structuredInvestigation@http://localhost:3009/remoteEntry.js',
       // manualInvestigation: 'manualInvestigation@http://localhost:3010/remoteEntry.js',
->>>>>>> 001-modify-analyzer-method
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
   },
@@ -37,16 +32,9 @@ const microservices = {
     port: 3001,
     exposes: {
       './App': './src/microservices/investigation/InvestigationApp.tsx',
-<<<<<<< HEAD
-      './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard.tsx',
-      './AutonomousInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
-      './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
-      './InvestigationWizard': './src/microservices/investigation/components/InvestigationWizard.tsx',
-=======
       './StructuredInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
       './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
       './InvestigationWizard': './src/microservices/investigation/containers/InvestigationWizard.tsx',
->>>>>>> 001-modify-analyzer-method
       './EvidenceManager': './src/microservices/investigation/components/EvidenceManager.tsx',
       './InvestigationStepTracker': './src/microservices/investigation/components/InvestigationStepTracker.tsx',
       './CollaborationPanel': './src/microservices/investigation/components/CollaborationPanel.tsx'
@@ -96,14 +84,10 @@ const microservices = {
       './ChartBuilder': './src/microservices/visualization/components/ChartBuilder.tsx',
       './DataVisualization': './src/microservices/visualization/components/DataVisualization.tsx',
       './NetworkGraph': './src/microservices/visualization/components/NetworkGraph.tsx',
-<<<<<<< HEAD
-      './TimelineVisualization': './src/microservices/visualization/components/TimelineVisualization.tsx'
-=======
       './TimelineVisualization': './src/microservices/visualization/components/TimelineVisualization.tsx',
       './LineChart': './src/microservices/visualization/components/charts/LineChart.tsx',
       './BarChart': './src/microservices/visualization/components/charts/BarChart.tsx',
       './PieChart': './src/microservices/visualization/components/charts/PieChart.tsx'
->>>>>>> 001-modify-analyzer-method
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
@@ -134,11 +118,7 @@ const microservices = {
       './Header': './src/microservices/core-ui/components/Header.tsx',
       './Sidebar': './src/microservices/core-ui/components/Sidebar.tsx',
       './Layout': './src/microservices/core-ui/components/Layout.tsx',
-<<<<<<< HEAD
-      './EventBus': './src/microservices/core-ui/services/eventBus.ts',
-=======
       './EventBus': './src/shared/events/UnifiedEventBus.tsx',
->>>>>>> 001-modify-analyzer-method
       './AuthProvider': './src/microservices/core-ui/providers/AuthProvider.tsx'
     },
     remotes: {
@@ -155,35 +135,16 @@ const microservices = {
     },
     remotes: {}
   },
-<<<<<<< HEAD
-  autonomousInvestigation: {
-    name: 'autonomousInvestigation',
-    port: 3008,
-    exposes: {
-      './App': './src/microservices/autonomous-investigation/AutonomousInvestigationApp.tsx'
-=======
   investigationsManagement: {
     name: 'investigationsManagement',
     port: 3008,
     exposes: {
       './App': './src/microservices/investigations-management/InvestigationsManagementApp.tsx'
->>>>>>> 001-modify-analyzer-method
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
-<<<<<<< HEAD
-  },
-  manualInvestigation: {
-    name: 'manualInvestigation',
-    port: 3009,
-    exposes: {
-      './App': './src/microservices/manual-investigation/MinimalApp.js'
-    },
-    remotes: {}
-  }
-=======
   }
   // TODO: Uncomment when implementing these microservices
   // structuredInvestigation: {
@@ -205,7 +166,6 @@ const microservices = {
   //   },
   //   remotes: {}
   // }
->>>>>>> 001-modify-analyzer-method
 };
 
 // Get current service from environment or default to shell
@@ -235,12 +195,6 @@ const getEntryPoint = (service) => {
       return './src/microservices/core-ui/index.tsx';
     case 'designSystem':
       return './src/microservices/design-system/index.tsx';
-<<<<<<< HEAD
-    case 'autonomousInvestigation':
-      return './src/microservices/autonomous-investigation/index.tsx';
-    case 'manualInvestigation':
-      return './src/microservices/manual-investigation/index.tsx';
-=======
     case 'investigationsManagement':
       return './src/microservices/investigations-management/index.tsx';
     // TODO: Uncomment when implementing these microservices
@@ -248,7 +202,6 @@ const getEntryPoint = (service) => {
     //   return './src/microservices/structured-investigation/index.tsx';
     // case 'manualInvestigation':
     //   return './src/microservices/manual-investigation/index.tsx';
->>>>>>> 001-modify-analyzer-method
     default:
       return './src/bootstrap.tsx';
   }
@@ -262,11 +215,7 @@ const serviceOptimizations = {
   },
   investigation: {
     eager: ['react', 'react-dom'],
-<<<<<<< HEAD
-    priority: ['investigation-core', 'data-processing', 'websocket']
-=======
     priority: ['investigation-core', 'data-processing', 'polling']
->>>>>>> 001-modify-analyzer-method
   },
   agentAnalytics: {
     eager: ['react', 'react-dom', 'chart.js'],
@@ -292,15 +241,9 @@ const serviceOptimizations = {
     eager: ['react', 'react-dom', '@headlessui/react'],
     priority: ['design-tokens', 'components', 'figma-sync']
   },
-<<<<<<< HEAD
-  autonomousInvestigation: {
-    eager: ['react', 'react-dom'],
-    priority: ['autonomous-agents', 'ai-processing', 'investigation']
-=======
   structuredInvestigation: {
     eager: ['react', 'react-dom'],
     priority: ['structured-agents', 'ai-processing', 'investigation']
->>>>>>> 001-modify-analyzer-method
   },
   manualInvestigation: {
     eager: ['react', 'react-dom'],
@@ -331,11 +274,7 @@ const getSharedDependencies = (service) => {
     'react-router-dom': {
       singleton: true,
       requiredVersion: '^6.11.0',
-<<<<<<< HEAD
-      eager: service === 'shell' || service === 'autonomousInvestigation' || service === 'manualInvestigation' // Shell, autonomous, and manual investigation need eager router
-=======
       eager: service === 'shell' || service === 'structuredInvestigation' || service === 'manualInvestigation' // Shell, structured, and manual investigation need eager router
->>>>>>> 001-modify-analyzer-method
     },
     '@headlessui/react': {
       singleton: true,
@@ -360,9 +299,6 @@ const getSharedDependencies = (service) => {
     axios: {
       singleton: true,
       requiredVersion: '^1.4.0',
-<<<<<<< HEAD
-      eager: false
-=======
       eager: service === 'shell' // Make axios eager for shell to prevent consumption errors
     },
     zod: {
@@ -375,7 +311,6 @@ const getSharedDependencies = (service) => {
       requiredVersion: '>=4.4.0',
       eager: service === 'shell', // Make zustand eager for shell state management
       strictVersion: false // Allow version flexibility for zustand
->>>>>>> 001-modify-analyzer-method
     },
     'date-fns': {
       singleton: true,
@@ -385,11 +320,7 @@ const getSharedDependencies = (service) => {
     'lucide-react': {
       singleton: true,
       requiredVersion: '^0.263.0',
-<<<<<<< HEAD
-      eager: service === 'autonomousInvestigation' || service === 'shell' // Make eager for autonomous investigation
-=======
       eager: service === 'structuredInvestigation' || service === 'shell' // Make eager for structured investigation
->>>>>>> 001-modify-analyzer-method
     },
     mitt: {
       singleton: true,
@@ -503,13 +434,6 @@ module.exports = (env, argv) => {
       // Environment variables with service-specific configurations
       new (require('webpack').DefinePlugin)({
         'process.env.NODE_ENV': JSON.stringify(argv.mode || 'development'),
-<<<<<<< HEAD
-        'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
-        'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
-        'process.env.REACT_APP_VERSION': JSON.stringify(process.env.REACT_APP_VERSION || '1.0.0'),
-        'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090'),
-        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
-=======
         'process.env.REACT_APP_ENV': JSON.stringify(process.env.REACT_APP_ENV || argv.mode || 'development'),
         'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
         'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
@@ -602,7 +526,6 @@ module.exports = (env, argv) => {
         'process.env.REACT_APP_MAX_TOOL_EXECUTIONS_DISPLAY': JSON.stringify(process.env.REACT_APP_MAX_TOOL_EXECUTIONS_DISPLAY || '50'),
 
         // Module Federation URLs
->>>>>>> 001-modify-analyzer-method
         'process.env.REACT_APP_MF_SHELL_URL': JSON.stringify('http://localhost:3000'),
         'process.env.REACT_APP_MF_INVESTIGATION_URL': JSON.stringify('http://localhost:3001'),
         'process.env.REACT_APP_MF_AGENT_ANALYTICS_URL': JSON.stringify('http://localhost:3002'),
@@ -621,14 +544,9 @@ module.exports = (env, argv) => {
 
     devServer: {
       port: serviceConfig.port,
-<<<<<<< HEAD
-      hot: true,
-      liveReload: true,
-=======
       host: 'localhost',
       hot: true,
       liveReload: false, // Disable liveReload when hot is enabled to prevent conflicts
->>>>>>> 001-modify-analyzer-method
       historyApiFallback: true,
       allowedHosts: 'all',
       headers: {
@@ -639,22 +557,14 @@ module.exports = (env, argv) => {
         'X-Service-Version': '1.0.0',
         'X-Build-Timestamp': new Date().toISOString()
       },
-<<<<<<< HEAD
-=======
       webSocketServer: {
         type: 'ws'
       },
->>>>>>> 001-modify-analyzer-method
       client: {
         overlay: {
           errors: true,
           warnings: isDevelopment && currentService === 'shell' // Only show warnings for shell in dev
         },
-<<<<<<< HEAD
-        logging: currentService === 'shell' ? 'info' : 'warn', // Verbose logging only for shell
-        progress: true,
-        reconnect: 5
-=======
         logging: 'none', // Suppress webpack-dev-server logs
         progress: true,
         reconnect: 5, // Number of reconnection attempts
@@ -663,7 +573,6 @@ module.exports = (env, argv) => {
           hostname: process.env.WS_HOSTNAME || 'localhost',
           port: process.env.WS_PORT || serviceConfig.port
         }
->>>>>>> 001-modify-analyzer-method
       },
       static: {
         directory: path.join(__dirname, 'public'),
@@ -687,24 +596,6 @@ module.exports = (env, argv) => {
         writeToDisk: false
       },
       // Service-specific proxy configurations for API calls
-<<<<<<< HEAD
-      proxy: currentService === 'shell' ? {
-        '/api': {
-          target: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-          changeOrigin: true,
-          secure: false,
-          logLevel: 'warn'
-        },
-        '/ws': {
-          target: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-          ws: true,
-          changeOrigin: true,
-          secure: false
-        }
-      } : undefined,
-      compress: true,
-      open: currentService === 'shell' // Only auto-open shell service
-=======
       // Convert to array format for webpack dev server v5
       proxy: currentService === 'shell' ? [
         {
@@ -720,7 +611,6 @@ module.exports = (env, argv) => {
       ] : undefined,
       compress: true,
       open: currentService === 'shell' ? 'http://localhost:3000' : false // Auto-open shell with explicit URL
->>>>>>> 001-modify-analyzer-method
     },
 
     optimization: {

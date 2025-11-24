@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Autonomous Investigation Flow - Complete Technical Documentation
-=======
 # Structured Investigation Flow - Complete Technical Documentation
->>>>>>> 001-modify-analyzer-method
 
 **Author:** Gil Klainert  
 **Date:** 2025-01-09  
@@ -11,11 +7,7 @@
 
 ## Overview
 
-<<<<<<< HEAD
-This document provides a comprehensive, step-by-step breakdown of the Olorin autonomous investigation flow. **Every component, function call, state transition, and decision point has been VERIFIED against the actual codebase** to provide complete transparency into the fraud detection system's operation.
-=======
 This document provides a comprehensive, step-by-step breakdown of the Olorin structured investigation flow. **Every component, function call, state transition, and decision point has been VERIFIED against the actual codebase** to provide complete transparency into the fraud detection system's operation.
->>>>>>> 001-modify-analyzer-method
 
 **🧠 NEW IN VERSION 3.0**: The system now includes the **Hybrid Intelligence Graph** that unites AI-driven routing with comprehensive safety mechanisms, resolving the architectural conflict between rigid phase routing and AI intelligence.
 
@@ -29,11 +21,7 @@ This documentation is **100% VERIFIED** from the actual codebase:
 
 ## Architecture Summary
 
-<<<<<<< HEAD
-The autonomous investigation system uses a **LangGraph-based orchestration architecture** with the following key components:
-=======
 The structured investigation system uses a **LangGraph-based orchestration architecture** with the following key components:
->>>>>>> 001-modify-analyzer-method
 
 - **🧠 Hybrid Intelligence Graph**: AI-driven routing with confidence-based decisions (NEW)
 - **Orchestrator Agent**: Central coordinator managing investigation phases
@@ -181,17 +169,10 @@ The structured investigation system uses a **LangGraph-based orchestration archi
 
 ### 1. INITIALIZATION PHASE
 
-<<<<<<< HEAD
-#### 1.1 Entry Point (`unified_autonomous_test_runner.py`)
-- **Step 1.1.1**: Command line argument parsing
-  - `--mode mock` sets `os.environ["TEST_MODE"] = "mock"` **BEFORE** any agent imports
-  - **VERIFIED**: Line 47-48 in unified_autonomous_test_runner.py
-=======
 #### 1.1 Entry Point (`unified_structured_test_runner.py`)
 - **Step 1.1.1**: Command line argument parsing
   - `--mode mock` sets `os.environ["TEST_MODE"] = "mock"` **BEFORE** any agent imports
   - **VERIFIED**: Line 47-48 in unified_structured_test_runner.py
->>>>>>> 001-modify-analyzer-method
 - **Step 1.1.2**: Environment setup detection
   - MockLLM warning: "🎭🎭🎭 TEST_MODE=mock set - will use MockLLM instead of real Claude/GPT"
   - **VERIFIED**: Line 48 warning message
@@ -427,11 +408,7 @@ location_signals = _extract_location_signals(tool_name, result)
 - **Step 7.1.3**: Forced progression mechanisms
   - **VERIFIED**: Multiple "FORCED" progression points throughout routing
 
-<<<<<<< HEAD
-#### 7.2 Error Handling (`unified_autonomous_test_runner.py`)
-=======
 #### 7.2 Error Handling (`unified_structured_test_runner.py`)
->>>>>>> 001-modify-analyzer-method
 - **Step 7.2.1**: LLM error categorization
   - Context length, model not found, API errors
   - **VERIFIED**: Lines 1585-1609 with specific error handling
@@ -441,11 +418,7 @@ location_signals = _extract_location_signals(tool_name, result)
 
 ### 8. EXECUTION PARAMETERS
 
-<<<<<<< HEAD
-#### 8.1 Recursion Limits (`unified_autonomous_test_runner.py`)
-=======
 #### 8.1 Recursion Limits (`unified_structured_test_runner.py`)
->>>>>>> 001-modify-analyzer-method
 - **Step 8.1.1**: Mode-specific limits
   - LIVE: 100 recursion limit
   - MOCK: 50 recursion limit
@@ -625,11 +598,7 @@ The investigation follows this comprehensive data flow:
 - **Management Script**: `scripts/hybrid/manage_hybrid_system.py`
 
 #### **Traditional System** (Enhanced)
-<<<<<<< HEAD
-- **Entry Point**: `scripts/testing/unified_autonomous_test_runner.py`
-=======
 - **Entry Point**: `scripts/testing/unified_structured_test_runner.py`
->>>>>>> 001-modify-analyzer-method
 - **Graph Builder**: `app/service/agent/orchestration/clean_graph_builder.py` (preserved)
 - **Orchestrator**: `app/service/agent/orchestration/orchestrator_agent.py` (preserved)
 - **State Schema**: `app/service/agent/orchestration/state_schema.py` (preserved)
@@ -644,11 +613,7 @@ The investigation follows this comprehensive data flow:
 
 ## Conclusion
 
-<<<<<<< HEAD
-The Olorin autonomous investigation flow now represents a **revolutionary AI-driven fraud detection system** that successfully resolves the critical architectural conflict between rigid phase routing and AI intelligence. Every component has been **VERIFIED** against the actual codebase to ensure accuracy and completeness.
-=======
 The Olorin structured investigation flow now represents a **revolutionary AI-driven fraud detection system** that successfully resolves the critical architectural conflict between rigid phase routing and AI intelligence. Every component has been **VERIFIED** against the actual codebase to ensure accuracy and completeness.
->>>>>>> 001-modify-analyzer-method
 
 ### 🚀 **Revolutionary Achievement**
 
@@ -699,11 +664,7 @@ The system successfully balances **AI intelligence with safety**, providing **op
 **Related Documents**: 
 - [Hybrid Intelligence Graph Plan](../plans/2025-01-09-hybrid-intelligence-graph-plan.md)
 - [Hybrid System Integration Summary](../hybrid/hybrid-system-integration-summary.md)
-<<<<<<< HEAD
-- [HTML Flow Diagram](../diagrams/autonomous-investigation-flow-diagram.html)
-=======
 - [HTML Flow Diagram](../diagrams/structured-investigation-flow-diagram.html)
->>>>>>> 001-modify-analyzer-method
 - [Hybrid Architecture Diagram](../diagrams/hybrid-intelligence-graph-architecture.html)
 - [Clean Graph Builder](../../app/service/agent/orchestration/clean_graph_builder.py) (preserved)
 - [Orchestrator Agent](../../app/service/agent/orchestration/orchestrator_agent.py) (preserved)

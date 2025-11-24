@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-import React, { Suspense, useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { MainLayout } from './components/MainLayout';
-import { AuthProvider } from './components/AuthProvider';
-import { EventBusProvider } from '../shared/services/EventBus';
-import { WebSocketProvider } from '../shared/services/WebSocketService';
-import { LoadingSpinner } from './components/LoadingSpinner';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { NotificationSystem } from './components/NotificationSystem';
-import { useAuth } from './hooks/useAuth';
-import './styles/tailwind.css';
-
-// Lazy load microservices
-const AutonomousInvestigationApp = React.lazy(() =>
-  import('autonomousInvestigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-const ManualInvestigationApp = React.lazy(() =>
-  import('manualInvestigation/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-const AgentAnalyticsApp = React.lazy(() =>
-  import('agentAnalytics/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-const RAGIntelligenceApp = React.lazy(() =>
-  import('ragIntelligence/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-const VisualizationApp = React.lazy(() =>
-  import('visualization/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-const ReportingApp = React.lazy(() =>
-  import('reporting/App').catch(() => ({ default: () => <div>Service unavailable</div> }))
-);
-
-=======
 import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/MainLayout';
@@ -141,7 +107,6 @@ const AgentAnalyticsApp = lazy(async () => {
   }
 });
 
->>>>>>> 001-modify-analyzer-method
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
@@ -162,20 +127,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
 const Dashboard: React.FC = () => {
   return (
-<<<<<<< HEAD
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Olorin Investigation Platform</h1>
-          <p className="mt-2 text-gray-600">AI-powered fraud detection and investigation platform</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Autonomous Investigations</h3>
-            <p className="text-gray-600 mb-4">AI-powered automated fraud detection</p>
-            <a href="/autonomous" className="text-blue-600 hover:text-blue-800 font-medium">
-=======
     <div className="p-6 min-h-screen bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
@@ -188,17 +139,10 @@ const Dashboard: React.FC = () => {
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">New Investigation</h3>
             <p className="text-corporate-textSecondary mb-4">AI-powered investigation workflows (Feature 004)</p>
             <a href="/investigation/settings" className="text-corporate-accentPrimary hover:text-corporate-accentSecondary font-medium">
->>>>>>> 001-modify-analyzer-method
               Launch Service →
             </a>
           </div>
 
-<<<<<<< HEAD
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Manual Investigations</h3>
-            <p className="text-gray-600 mb-4">Expert-guided investigation tools</p>
-            <a href="/manual" className="text-blue-600 hover:text-blue-800 font-medium">
-=======
           <div className="bg-black/40 backdrop-blur-md rounded-lg border-2 border-corporate-accentPrimary/40 p-6 hover:border-corporate-accentPrimary/60 transition-all duration-300 shadow-lg">
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">Fraud Detection Analytics</h3>
             <p className="text-corporate-textSecondary mb-4">Anomaly detection and fraud metrics</p>
@@ -211,60 +155,30 @@ const Dashboard: React.FC = () => {
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">Agent Analytics</h3>
             <p className="text-corporate-textSecondary mb-4">AI agent performance metrics</p>
             <a href="/agent-analytics" className="text-corporate-accentPrimary hover:text-corporate-accentSecondary font-medium">
->>>>>>> 001-modify-analyzer-method
               Launch Service →
             </a>
           </div>
 
-<<<<<<< HEAD
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Agent Analytics</h3>
-            <p className="text-gray-600 mb-4">Performance metrics and insights</p>
-            <a href="/analytics" className="text-blue-600 hover:text-blue-800 font-medium">
-=======
           <div className="bg-black/40 backdrop-blur-md rounded-lg border-2 border-corporate-accentPrimary/40 p-6 hover:border-corporate-accentPrimary/60 transition-all duration-300 shadow-lg">
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">RAG Intelligence</h3>
             <p className="text-corporate-textSecondary mb-4">Knowledge retrieval and analysis</p>
             <a href="/rag" className="text-corporate-accentPrimary hover:text-corporate-accentSecondary font-medium">
->>>>>>> 001-modify-analyzer-method
               Launch Service →
             </a>
           </div>
 
-<<<<<<< HEAD
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">RAG Intelligence</h3>
-            <p className="text-gray-600 mb-4">Knowledge retrieval and analysis</p>
-            <a href="/rag" className="text-blue-600 hover:text-blue-800 font-medium">
-=======
           <div className="bg-black/40 backdrop-blur-md rounded-lg border-2 border-corporate-accentPrimary/40 p-6 hover:border-corporate-accentPrimary/60 transition-all duration-300 shadow-lg">
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">Visualization</h3>
             <p className="text-corporate-textSecondary mb-4">Interactive data visualization</p>
             <a href="/visualization" className="text-corporate-accentPrimary hover:text-corporate-accentSecondary font-medium">
->>>>>>> 001-modify-analyzer-method
               Launch Service →
             </a>
           </div>
 
-<<<<<<< HEAD
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Visualization</h3>
-            <p className="text-gray-600 mb-4">Interactive data visualization</p>
-            <a href="/visualization" className="text-blue-600 hover:text-blue-800 font-medium">
-              Launch Service →
-            </a>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Reporting</h3>
-            <p className="text-gray-600 mb-4">Generate comprehensive reports</p>
-            <a href="/reporting" className="text-blue-600 hover:text-blue-800 font-medium">
-=======
           <div className="bg-black/40 backdrop-blur-md rounded-lg border-2 border-corporate-accentPrimary/40 p-6 hover:border-corporate-accentPrimary/60 transition-all duration-300 shadow-lg">
             <h3 className="text-lg font-semibold text-corporate-textPrimary mb-2">Reporting</h3>
             <p className="text-corporate-textSecondary mb-4">Generate comprehensive reports</p>
             <a href="/reporting" className="text-corporate-accentPrimary hover:text-corporate-accentSecondary font-medium">
->>>>>>> 001-modify-analyzer-method
               Launch Service →
             </a>
           </div>
@@ -274,20 +188,6 @@ const Dashboard: React.FC = () => {
   );
 };
 
-<<<<<<< HEAD
-const LoginPage: React.FC = () => {
-  const { login } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      // TODO: Implement actual login logic
-      await login('demo@olorin.com', 'password');
-    } catch (error) {
-      console.error('Login failed:', error);
-=======
 // Validation schemas
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -338,52 +238,12 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error('Login failed:', error);
       setErrors({ email: 'Invalid email or password' });
->>>>>>> 001-modify-analyzer-method
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to Olorin
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <input
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                defaultValue="demo@olorin.com"
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                defaultValue="password"
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </button>
-=======
     <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="max-w-md w-full space-y-8 bg-black/40 backdrop-blur-md rounded-lg border-2 border-corporate-accentPrimary/40 p-8 shadow-2xl">
         <div>
@@ -433,7 +293,6 @@ const LoginPage: React.FC = () => {
 
           <div className="text-center text-xs text-corporate-textTertiary">
             <p>Demo credentials: demo@olorin.com / password</p>
->>>>>>> 001-modify-analyzer-method
           </div>
         </form>
       </div>
@@ -447,13 +306,8 @@ export const CoreUIApp: React.FC = () => {
       <BrowserRouter>
         <AuthProvider>
           <EventBusProvider>
-<<<<<<< HEAD
-            <WebSocketProvider>
-              <Routes>
-=======
             {/* WebSocketProvider removed per spec 005 - using polling instead */}
             <Routes>
->>>>>>> 001-modify-analyzer-method
                 <Route path="/login" element={<LoginPage />} />
                 <Route
                   path="/*"
@@ -463,38 +317,17 @@ export const CoreUIApp: React.FC = () => {
                         <Routes>
                           <Route path="/" element={<Dashboard />} />
                           <Route
-<<<<<<< HEAD
-                            path="/autonomous/*"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <AutonomousInvestigationApp />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/manual/*"
-                            element={
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <ManualInvestigationApp />
-                              </Suspense>
-=======
                             path="/investigations/*"
                             element={
                               <div className="p-6">
                                 <h2 className="text-2xl font-bold mb-4">Investigation Service</h2>
                                 <p className="text-gray-600">Investigation Wizard (Feature 004) - Coming Soon</p>
                               </div>
->>>>>>> 001-modify-analyzer-method
                             }
                           />
                           <Route
                             path="/analytics/*"
                             element={
-<<<<<<< HEAD
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <AgentAnalyticsApp />
-                              </Suspense>
-=======
                               <ErrorBoundary>
                                 <RemoteServiceBoundary serviceName="Analytics">
                                   <Suspense fallback={
@@ -528,47 +361,29 @@ export const CoreUIApp: React.FC = () => {
                                   </Suspense>
                                 </RemoteServiceBoundary>
                               </ErrorBoundary>
->>>>>>> 001-modify-analyzer-method
                             }
                           />
                           <Route
                             path="/rag/*"
                             element={
-<<<<<<< HEAD
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <RAGIntelligenceApp />
-                              </Suspense>
-=======
                               <div className="p-6">
                                 <h2 className="text-2xl font-bold mb-4">RAG Intelligence Service</h2>
                                 <p className="text-gray-600">Service will be available via Module Federation</p>
                               </div>
->>>>>>> 001-modify-analyzer-method
                             }
                           />
                           <Route
                             path="/visualization/*"
                             element={
-<<<<<<< HEAD
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <VisualizationApp />
-                              </Suspense>
-=======
                               <div className="p-6">
                                 <h2 className="text-2xl font-bold mb-4">Visualization Service</h2>
                                 <p className="text-gray-600">Service will be available via Module Federation</p>
                               </div>
->>>>>>> 001-modify-analyzer-method
                             }
                           />
                           <Route
                             path="/reporting/*"
                             element={
-<<<<<<< HEAD
-                              <Suspense fallback={<LoadingSpinner />}>
-                                <ReportingApp />
-                              </Suspense>
-=======
                               <RemoteServiceBoundary serviceName="Reporting">
                                 <Suspense fallback={
                                   <div className="flex items-center justify-center h-64">
@@ -581,7 +396,6 @@ export const CoreUIApp: React.FC = () => {
                                   <ReportingApp />
                                 </Suspense>
                               </RemoteServiceBoundary>
->>>>>>> 001-modify-analyzer-method
                             }
                           />
                         </Routes>
@@ -591,11 +405,7 @@ export const CoreUIApp: React.FC = () => {
                 />
               </Routes>
               <NotificationSystem />
-<<<<<<< HEAD
-            </WebSocketProvider>
-=======
             {/* WebSocketProvider removed per spec 005 - using polling instead */}
->>>>>>> 001-modify-analyzer-method
           </EventBusProvider>
         </AuthProvider>
       </BrowserRouter>

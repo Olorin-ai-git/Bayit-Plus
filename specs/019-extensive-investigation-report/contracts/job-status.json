@@ -1,0 +1,117 @@
+{
+  "endpoint": "GET /api/v1/reports/jobs/{job_id}",
+  "description": "Get status of a report generation job",
+  "authentication": "Required - JWT token in Authorization header",
+  "request": {
+    "path_parameters": {
+      "job_id": {
+        "type": "string",
+        "required": true,
+        "description": "UUID of the report generation job",
+        "example": "job-550e8400-e29b-41d4-a716-446655440001"
+      }
+    }
+  },
+  "response": {
+    "success": {
+      "status": 200,
+      "body": {
+        "id": {
+          "type": "string",
+          "example": "job-550e8400-e29b-41d4-a716-446655440001"
+        },
+        "investigation_id": {
+          "type": "string",
+          "example": "inv-2025-01-11-fraud-001"
+        },
+        "report_id": {
+          "type": "string",
+          "nullable": true,
+          "description": "Report UUID (only set when status=completed)",
+          "example": null
+        },
+        "status": {
+          "type": "string",
+          "enum": ["queued", "processing", "completed", "failed", "cancelled"],
+          "example": "processing"
+        },
+        "trigger_type": {
+          "type": "string",
+          "enum": ["manual", "automatic", "scheduled"],
+          "example": "manual"
+        },
+        "triggered_by": {
+          "type": "string",
+          "example": "analyst@olorin.com"
+        },
+        "progress_percentage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "example": 45
+        },
+        "current_step": {
+          "type": "string",
+          "nullable": true,
+          "description": "Description of current processing step",
+          "example": "Rendering Risk Dashboard visualizations..."
+        },
+        "started_at": {
+          "type": "string",
+          "format": "iso8601",
+          "nullable": true,
+          "example": "2025-01-11T14:35:05Z"
+        },
+        "completed_at": {
+          "type": "string",
+          "format": "iso8601",
+          "nullable": true,
+          "example": null
+        },
+        "error_message": {
+          "type": "string",
+          "nullable": true,
+          "description": "Error details if status=failed",
+          "example": null
+        },
+        "retry_count": {
+          "type": "integer",
+          "description": "Number of retry attempts",
+          "example": 0
+        },
+        "max_retries": {
+          "type": "integer",
+          "description": "Maximum retry attempts allowed",
+          "example": 3
+        },
+        "created_at": {
+          "type": "string",
+          "format": "iso8601"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "iso8601"
+        }
+      }
+    },
+    "errors": {
+      "404": {
+        "description": "Job not found",
+        "body": {
+          "detail": "Report generation job job-xyz not found"
+        }
+      }
+    }
+  },
+  "polling_guidance": {
+    "interval_seconds": 2,
+    "timeout_seconds": 300,
+    "stop_on_status": ["completed", "failed", "cancelled"],
+    "example": "Poll every 2 seconds until status is completed, failed, or cancelled. Stop polling after 5 minutes (300s) timeout."
+  },
+  "example_request": {
+    "curl": "curl -X GET https://api.olorin.com/api/v1/reports/jobs/job-550e8400-e29b-41d4-a716-446655440001 \\\n  -H 'Authorization: Bearer eyJ...'",
+    "python": "import requests\nimport time\n\njob_id = 'job-550e8400-e29b-41d4-a716-446655440001'\nwhile True:\n    response = requests.get(\n        f'https://api.olorin.com/api/v1/reports/jobs/{job_id}',\n        headers={'Authorization': 'Bearer eyJ...'}\n    )\n    job = response.json()\n    if job['status'] in ['completed', 'failed', 'cancelled']:\n        break\n    print(f\"Progress: {job['progress_percentage']}% - {job['current_step']}\")\n    time.sleep(2)",
+    "javascript": "const pollJobStatus = async (jobId) => {\n  while (true) {\n    const response = await fetch(\n      `https://api.olorin.com/api/v1/reports/jobs/${jobId}`,\n      { headers: {'Authorization': 'Bearer eyJ...'} }\n    );\n    const job = await response.json();\n    if (['completed', 'failed', 'cancelled'].includes(job.status)) {\n      return job;\n    }\n    console.log(`Progress: ${job.progress_percentage}% - ${job.current_step}`);\n    await new Promise(resolve => setTimeout(resolve, 2000));\n  }\n};"
+  }
+}

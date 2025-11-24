@@ -153,13 +153,8 @@ class DeviceAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_fingerprint_node(self, state: DomainState) -> DomainState:
         """Analyze device fingerprint patterns."""
         try:
-<<<<<<< HEAD
-            # Use appropriate agent based on autonomous setting
-            if self.autonomous:
-=======
             # Use appropriate agent based on structured setting
             if self.structured:
->>>>>>> 001-modify-analyzer-method
                 result = await device_agent_node(state)
             else:
                 result = await device_agent(state)
@@ -251,11 +246,7 @@ class NetworkAnalysisSubgraph(BaseDomainSubgraph):
         """Analyze network traffic patterns."""
         try:
             # Use appropriate agent
-<<<<<<< HEAD
-            if self.autonomous:
-=======
             if self.structured:
->>>>>>> 001-modify-analyzer-method
                 result = await network_agent_node(state)
             else:
                 result = await network_agent(state)
@@ -359,11 +350,7 @@ class LocationAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_geographic_patterns_node(self, state: DomainState) -> DomainState:
         """Analyze geographic patterns."""
         try:
-<<<<<<< HEAD
-            if self.autonomous:
-=======
             if self.structured:
->>>>>>> 001-modify-analyzer-method
                 result = await location_agent_node(state)
             else:
                 result = await location_agent(state)
@@ -447,11 +434,7 @@ class LogsAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_activity_patterns_node(self, state: DomainState) -> DomainState:
         """Analyze activity patterns in logs."""
         try:
-<<<<<<< HEAD
-            if self.autonomous:
-=======
             if self.structured:
->>>>>>> 001-modify-analyzer-method
                 result = await logs_agent_node(state)
             else:
                 result = await logs_agent(state)

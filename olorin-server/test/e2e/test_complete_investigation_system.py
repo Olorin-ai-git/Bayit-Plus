@@ -28,22 +28,14 @@ def test_complete_investigation_system():
     try:
         # Import all required components
         from app.service.logging.investigation_folder_manager import InvestigationMode, get_folder_manager
-<<<<<<< HEAD
-        from app.service.logging.autonomous_investigation_logger import AutonomousInvestigationLogger
-=======
         from app.service.logging.autonomous_investigation_logger import StructuredInvestigationLogger
->>>>>>> 001-modify-analyzer-method
         from app.service.logging.journey_tracker import get_journey_tracker
         
         print("✅ Successfully imported all system components")
         
         # Initialize components
         folder_manager = get_folder_manager()
-<<<<<<< HEAD
-        investigation_logger = AutonomousInvestigationLogger()
-=======
         investigation_logger = StructuredInvestigationLogger()
->>>>>>> 001-modify-analyzer-method
         journey_tracker = get_journey_tracker()
         
         # Create a comprehensive test investigation
@@ -66,11 +58,7 @@ def test_complete_investigation_system():
                 "description": "Comprehensive test of enhanced investigation results system",
                 "features_tested": [
                     "Unified folder structure",
-<<<<<<< HEAD
-                    "Autonomous investigation logging", 
-=======
                     "Structured investigation logging", 
->>>>>>> 001-modify-analyzer-method
                     "Journey tracking integration",
                     "HTML report generation",
                     "7 visualization components"
@@ -410,11 +398,7 @@ def test_complete_investigation_system():
         
         expected_files = [
             "metadata.json",
-<<<<<<< HEAD
-            "autonomous_activities.jsonl", 
-=======
             "structured_activities.jsonl", 
->>>>>>> 001-modify-analyzer-method
             "journey_tracking.json",
             "investigation.log",
             "investigation_report.html"
@@ -478,11 +462,7 @@ if __name__ == "__main__":
         print("🚀 Enhanced Investigation Results System is fully operational!")
         print("\n✨ System Features Verified:")
         print("   ✅ Unified investigation folder structure ({MODE}_{ID}_{TIMESTAMP})")
-<<<<<<< HEAD
-        print("   ✅ Comprehensive autonomous investigation logging")
-=======
         print("   ✅ Comprehensive structured investigation logging")
->>>>>>> 001-modify-analyzer-method
         print("   ✅ Journey tracking with node/state/coordination logging")
         print("   ✅ Automatic HTML report generation on completion")
         print("   ✅ Interactive visualizations (Charts, Mermaid diagrams)")

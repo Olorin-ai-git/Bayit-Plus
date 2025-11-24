@@ -838,44 +838,4 @@ export interface VisualizationError {
   stack?: string;
   recoverable: boolean;
   suggestions?: string[];
-<<<<<<< HEAD
 }
-
-// Export all types
-export type {
-  ChartType,
-  DataPoint,
-  Dataset,
-  AxisConfig,
-  LegendConfig,
-  TooltipConfig,
-  ChartConfig,
-  VisualizationTheme,
-  NetworkNode,
-  NetworkEdge,
-  NetworkGraphData,
-  NetworkGraphOptions,
-  TimelineItem,
-  TimelineGroup,
-  TimelineOptions,
-  GeoDataPoint,
-  GeoRegion,
-  MapVisualizationOptions,
-  HeatmapDataPoint,
-  HeatmapOptions,
-  VisualizationWidget,
-  VisualizationDashboard,
-  VisualizationFilter,
-  DrillDownAction,
-  VisualizationEvent,
-  ExportOptions,
-  SharingOptions,
-  VisualizationAnalytics,
-  VisualizationPerformance,
-  VisualizationUpdate,
-  ValidationResult,
-  VisualizationError
-};
-=======
-}
->>>>>>> 001-modify-analyzer-method

@@ -2,11 +2,7 @@
 Service Integration Resilience System
 
 External service failure detection, LLM API fallback strategies, database connectivity
-<<<<<<< HEAD
-resilience, and WebSocket communication resilience for the autonomous investigation
-=======
 resilience, and WebSocket communication resilience for the structured investigation
->>>>>>> 001-modify-analyzer-method
 orchestrator system.
 
 Phase 3.2: Service Integration Resilience Implementation
@@ -25,18 +21,10 @@ import redis.asyncio as redis
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.orchestrator_resilience import (
-<<<<<<< HEAD
-    CircuitBreakerState, 
-    CircuitBreaker,
-    get_bulletproof_exception_handler
-)
-from app.service.websocket_manager import websocket_manager
-=======
     CircuitBreakerState,
     CircuitBreaker,
     get_bulletproof_exception_handler
 )
->>>>>>> 001-modify-analyzer-method
 
 logger = get_bridge_logger(__name__)
 
@@ -756,24 +744,9 @@ class ServiceResilienceManager:
     # WebSocket resilience implementations
     
     async def _send_websocket_message(self, message: Dict[str, Any]) -> bool:
-<<<<<<< HEAD
-        """Send WebSocket message (simulated)"""
-        try:
-            # In real implementation, would use actual WebSocket manager
-            await websocket_manager.send_agent_phase(
-                investigation_id=message.get("investigation_id", ""),
-                agent_name="resilience_manager",
-                phase="info",
-                message=message.get("content", "")
-            )
-            return True
-        except Exception:
-            return False
-=======
         """Send WebSocket message - removed per spec 005, using polling instead"""
         # WebSocket messaging removed, replaced by polling-based updates
         return True
->>>>>>> 001-modify-analyzer-method
     
     async def _queue_websocket_message(self, message: Dict[str, Any]):
         """Queue WebSocket message for retry"""

@@ -84,11 +84,7 @@
     - Strategy: Runner core, scenarios, executors
     - Estimated modules: 7 files
 
-<<<<<<< HEAD
-16. **`autonomous_investigation_router_backup.py`** - 1,245 lines
-=======
 16. **`structured_investigation_router_backup.py`** - 1,245 lines
->>>>>>> 001-modify-analyzer-method
     - Location: `olorin-server/app/router/`
     - Strategy: Route handlers, validators, processors
     - Estimated modules: 7 files

@@ -59,15 +59,9 @@ export class ServiceDiscovery {
         status: 'loading',
         exposes: {
           './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard.tsx',
-<<<<<<< HEAD
-          './AutonomousInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
-          './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
-          './InvestigationWizard': './src/microservices/investigation/components/InvestigationWizard.tsx',
-=======
           './StructuredInvestigation': './src/microservices/investigation/components/StructuredInvestigation.tsx',
           './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
           './InvestigationWizard': './src/microservices/investigation/containers/InvestigationWizard.tsx',
->>>>>>> 001-modify-analyzer-method
           './EvidenceManager': './src/microservices/investigation/components/EvidenceManager.tsx'
         },
         remotes: {
@@ -174,41 +168,6 @@ export class ServiceDiscovery {
           './DesignTokens': './src/microservices/design-system/types/design.ts'
         },
         remotes: {}
-<<<<<<< HEAD
-      },
-      autonomousInvestigation: {
-        name: 'autonomousInvestigation',
-        port: 3008,
-        url: `${baseUrl}:3008`,
-        remoteEntry: `${baseUrl}:3008/remoteEntry.js`,
-        status: 'loading',
-        exposes: {
-          './AutonomousInvestigationDashboard': './src/microservices/autonomous-investigation/components/AutonomousInvestigationDashboard.tsx',
-          './AIAgentManager': './src/microservices/autonomous-investigation/components/AIAgentManager.tsx'
-        },
-        remotes: {
-          coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
-          designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
-          agentAnalytics: 'agentAnalytics@http://localhost:3002/remoteEntry.js'
-        }
-      },
-      manualInvestigation: {
-        name: 'manualInvestigation',
-        port: 3009,
-        url: `${baseUrl}:3009`,
-        remoteEntry: `${baseUrl}:3009/remoteEntry.js`,
-        status: 'loading',
-        exposes: {
-          './ManualInvestigationDashboard': './src/microservices/manual-investigation/components/ManualInvestigationDashboard.tsx',
-          './InvestigationTools': './src/microservices/manual-investigation/components/InvestigationTools.tsx'
-        },
-        remotes: {
-          coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
-          designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
-          visualization: 'visualization@http://localhost:3004/remoteEntry.js'
-        }
-=======
->>>>>>> 001-modify-analyzer-method
       }
     };
   }

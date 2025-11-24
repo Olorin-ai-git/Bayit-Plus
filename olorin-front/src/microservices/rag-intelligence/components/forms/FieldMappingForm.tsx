@@ -88,83 +88,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
   ];
 
   return (
-<<<<<<< HEAD
-    <div className={`bg-white rounded-lg border border-gray-200 shadow-sm ${className}`}>
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              RAG Configuration Management
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">
-              Manage field mappings, extraction patterns, and dynamic commands
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            {activeTab === 'mappings' && (
-              <button
-                onClick={() => setShowAddMapping(true)}
-                disabled={isLoading}
-                className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-1"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Mapping</span>
-              </button>
-            )}
-            {activeTab === 'patterns' && (
-              <button
-                onClick={() => setShowAddPattern(true)}
-                disabled={isLoading}
-                className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-1"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Pattern</span>
-              </button>
-            )}
-            {activeTab === 'commands' && (
-              <button
-                onClick={() => setShowAddCommand(true)}
-                disabled={isLoading}
-                className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-1"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Command</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex space-x-8 px-6">
-          {tabs.map(({ id, label, icon: Icon, count }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id as any)}
-              className={`
-                flex items-center space-x-2 py-4 border-b-2 font-medium text-sm transition-colors
-                ${activeTab === id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }
-              `}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{label}</span>
-              <span className={`
-                px-2 py-0.5 rounded-full text-xs
-                ${activeTab === id ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}
-              `}>
-                {count}
-              </span>
-            </button>
-          ))}
-        </nav>
-      </div>
-=======
     <div className={`space-y-6 ${className}`}>
       <div className="bg-black/40 backdrop-blur-md border-2 border-corporate-accentPrimary/40 rounded-lg">
         {/* Header */}
@@ -241,7 +164,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
             ))}
           </nav>
         </div>
->>>>>>> 001-modify-analyzer-method
 
       {/* Content */}
       <div className="p-6">
@@ -250,21 +172,12 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
           <div className="space-y-4">
             {fieldMappings.length === 0 ? (
               <div className="text-center py-12">
-<<<<<<< HEAD
-                <Database className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No field mappings configured</h3>
-                <p className="text-gray-500 mb-4">Create field mappings to categorize and organize your data fields.</p>
-                <button
-                  onClick={() => setShowAddMapping(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-=======
                 <Database className="w-12 h-12 text-corporate-textTertiary mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-corporate-textPrimary mb-2">No field mappings configured</h3>
                 <p className="text-corporate-textSecondary mb-4">Create field mappings to categorize and organize your data fields.</p>
                 <button
                   onClick={() => setShowAddMapping(true)}
                   className="px-4 py-2 bg-corporate-accentPrimary/80 text-white rounded-lg hover:bg-corporate-accentPrimary transition-colors border-2 border-corporate-accentPrimary/40"
->>>>>>> 001-modify-analyzer-method
                 >
                   Add Your First Mapping
                 </button>
@@ -272,15 +185,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
             ) : (
               <div className="grid gap-4">
                 {fieldMappings.map((mapping, index) => (
-<<<<<<< HEAD
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Database className="w-4 h-4 text-blue-600" />
-                          <h4 className="font-medium text-gray-900">{mapping.category}</h4>
-                          <span className="text-xs text-gray-500">({mapping.fields.length} fields)</span>
-=======
                   <div key={index} className="bg-black/40 backdrop-blur-md rounded-lg p-4 border-2 border-corporate-borderPrimary/40">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -288,17 +192,12 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
                           <Database className="w-4 h-4 text-corporate-accentPrimary" />
                           <h4 className="font-medium text-corporate-textPrimary">{mapping.category}</h4>
                           <span className="text-xs text-corporate-textTertiary">({mapping.fields.length} fields)</span>
->>>>>>> 001-modify-analyzer-method
                         </div>
                         <div className="flex flex-wrap gap-1">
                           {mapping.fields.map((field, fieldIndex) => (
                             <span
                               key={fieldIndex}
-<<<<<<< HEAD
-                              className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md"
-=======
                               className="px-2 py-1 bg-corporate-accentPrimary/20 text-corporate-accentPrimary text-xs rounded-md border border-corporate-accentPrimary/40"
->>>>>>> 001-modify-analyzer-method
                             >
                               {field}
                             </span>
@@ -308,11 +207,7 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
                       {onDeleteFieldMapping && (
                         <button
                           onClick={() => onDeleteFieldMapping(mapping.category)}
-<<<<<<< HEAD
-                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-=======
                           className="p-1 text-corporate-textSecondary hover:text-corporate-error transition-colors"
->>>>>>> 001-modify-analyzer-method
                           title="Delete mapping"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -331,21 +226,12 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
           <div className="space-y-4">
             {rexPatterns.length === 0 ? (
               <div className="text-center py-12">
-<<<<<<< HEAD
-                <Hash className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No regex patterns configured</h3>
-                <p className="text-gray-500 mb-4">Create regex patterns to extract specific data from fields.</p>
-                <button
-                  onClick={() => setShowAddPattern(true)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-=======
                 <Hash className="w-12 h-12 text-corporate-textTertiary mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-corporate-textPrimary mb-2">No regex patterns configured</h3>
                 <p className="text-corporate-textSecondary mb-4">Create regex patterns to extract specific data from fields.</p>
                 <button
                   onClick={() => setShowAddPattern(true)}
                   className="px-4 py-2 bg-corporate-success/80 text-white rounded-lg hover:bg-corporate-success transition-colors border-2 border-corporate-success/40"
->>>>>>> 001-modify-analyzer-method
                 >
                   Add Your First Pattern
                 </button>
@@ -353,16 +239,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
             ) : (
               <div className="grid gap-4">
                 {rexPatterns.map((pattern, index) => (
-<<<<<<< HEAD
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Hash className="w-4 h-4 text-green-600" />
-                          <h4 className="font-medium text-gray-900">{pattern.field_name}</h4>
-                        </div>
-                        <div className="bg-white p-2 rounded border font-mono text-sm text-gray-700">
-=======
                   <div key={index} className="bg-black/40 backdrop-blur-md rounded-lg p-4 border-2 border-corporate-borderPrimary/40">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -371,18 +247,13 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
                           <h4 className="font-medium text-corporate-textPrimary">{pattern.field_name}</h4>
                         </div>
                         <div className="bg-black/40 backdrop-blur-md p-2 rounded border-2 border-corporate-borderPrimary/40 font-mono text-sm text-corporate-textPrimary">
->>>>>>> 001-modify-analyzer-method
                           {pattern.pattern}
                         </div>
                       </div>
                       {onDeleteRexPattern && (
                         <button
                           onClick={() => onDeleteRexPattern(pattern.field_name)}
-<<<<<<< HEAD
-                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-=======
                           className="p-1 text-corporate-textSecondary hover:text-corporate-error transition-colors"
->>>>>>> 001-modify-analyzer-method
                           title="Delete pattern"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -401,21 +272,12 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
           <div className="space-y-4">
             {evalCommands.length === 0 ? (
               <div className="text-center py-12">
-<<<<<<< HEAD
-                <Edit3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No eval commands configured</h3>
-                <p className="text-gray-500 mb-4">Create dynamic evaluation commands for advanced data processing.</p>
-                <button
-                  onClick={() => setShowAddCommand(true)}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-=======
                 <Edit3 className="w-12 h-12 text-corporate-textTertiary mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-corporate-textPrimary mb-2">No eval commands configured</h3>
                 <p className="text-corporate-textSecondary mb-4">Create dynamic evaluation commands for advanced data processing.</p>
                 <button
                   onClick={() => setShowAddCommand(true)}
                   className="px-4 py-2 bg-corporate-accentSecondary/80 text-white rounded-lg hover:bg-corporate-accentSecondary transition-colors border-2 border-corporate-accentSecondary/40"
->>>>>>> 001-modify-analyzer-method
                 >
                   Add Your First Command
                 </button>
@@ -423,16 +285,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
             ) : (
               <div className="grid gap-4">
                 {evalCommands.map((command, index) => (
-<<<<<<< HEAD
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Edit3 className="w-4 h-4 text-purple-600" />
-                          <h4 className="font-medium text-gray-900">Dynamic Command</h4>
-                        </div>
-                        <div className="bg-white p-2 rounded border font-mono text-sm text-gray-700">
-=======
                   <div key={index} className="bg-black/40 backdrop-blur-md rounded-lg p-4 border-2 border-corporate-borderPrimary/40">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -441,18 +293,13 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
                           <h4 className="font-medium text-corporate-textPrimary">Dynamic Command</h4>
                         </div>
                         <div className="bg-black/40 backdrop-blur-md p-2 rounded border-2 border-corporate-borderPrimary/40 font-mono text-sm text-corporate-textPrimary">
->>>>>>> 001-modify-analyzer-method
                           {command.command}
                         </div>
                       </div>
                       {onDeleteEvalCommand && (
                         <button
                           onClick={() => onDeleteEvalCommand(command.command)}
-<<<<<<< HEAD
-                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-=======
                           className="p-1 text-corporate-textSecondary hover:text-corporate-error transition-colors"
->>>>>>> 001-modify-analyzer-method
                           title="Delete command"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -469,15 +316,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
       {/* Add Field Mapping Modal */}
       {showAddMapping && (
-<<<<<<< HEAD
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Add Field Mapping</h3>
-              <button
-                onClick={() => setShowAddMapping(false)}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-=======
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-black/90 backdrop-blur-md border-2 border-corporate-accentPrimary/40 rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 border-b-2 border-corporate-accentPrimary/20">
@@ -485,7 +323,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddMapping(false)}
                 className="p-1 text-corporate-textSecondary hover:text-corporate-textPrimary transition-colors"
->>>>>>> 001-modify-analyzer-method
               >
                 <X className="w-5 h-5" />
               </button>
@@ -493,47 +330,23 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
             <div className="p-6 space-y-4">
               <div>
-<<<<<<< HEAD
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-=======
                 <label className="block text-sm font-medium text-corporate-textSecondary mb-1">Category</label>
->>>>>>> 001-modify-analyzer-method
                 <input
                   type="text"
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
                   placeholder="e.g., fraud_indicators, user_data"
-<<<<<<< HEAD
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-=======
                   className="w-full px-3 py-2 bg-black/40 border-2 border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-2 focus:ring-corporate-accentPrimary/20 focus:border-corporate-accentPrimary/60 focus:outline-none"
->>>>>>> 001-modify-analyzer-method
                 />
               </div>
 
               <div>
-<<<<<<< HEAD
-                <label className="block text-sm font-medium text-gray-700 mb-1">Fields (comma-separated)</label>
-=======
                 <label className="block text-sm font-medium text-corporate-textSecondary mb-1">Fields (comma-separated)</label>
->>>>>>> 001-modify-analyzer-method
                 <textarea
                   value={newFields}
                   onChange={(e) => setNewFields(e.target.value)}
                   placeholder="e.g., transaction_amount, user_id, timestamp"
                   rows={3}
-<<<<<<< HEAD
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">Separate multiple fields with commas</p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowAddMapping(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-=======
                   className="w-full px-3 py-2 bg-black/40 border-2 border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-2 focus:ring-corporate-accentPrimary/20 focus:border-corporate-accentPrimary/60 focus:outline-none"
                 />
                 <p className="text-xs text-corporate-textTertiary mt-1">Separate multiple fields with commas</p>
@@ -544,18 +357,13 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddMapping(false)}
                 className="px-4 py-2 text-corporate-textSecondary bg-black/40 rounded-lg hover:bg-black/60 transition-colors border-2 border-corporate-borderPrimary/40"
->>>>>>> 001-modify-analyzer-method
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddFieldMapping}
                 disabled={!newCategory.trim() || !newFields.trim() || isLoading}
-<<<<<<< HEAD
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
-=======
                 className="px-4 py-2 bg-corporate-accentPrimary/80 text-white rounded-lg hover:bg-corporate-accentPrimary transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 border-2 border-corporate-accentPrimary/40"
->>>>>>> 001-modify-analyzer-method
               >
                 <Save className="w-4 h-4" />
                 <span>Add Mapping</span>
@@ -567,15 +375,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
       {/* Add Rex Pattern Modal */}
       {showAddPattern && (
-<<<<<<< HEAD
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Add Rex Pattern</h3>
-              <button
-                onClick={() => setShowAddPattern(false)}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-=======
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-black/90 backdrop-blur-md border-2 border-corporate-success/40 rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 border-b-2 border-corporate-success/20">
@@ -583,7 +382,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddPattern(false)}
                 className="p-1 text-corporate-textSecondary hover:text-corporate-textPrimary transition-colors"
->>>>>>> 001-modify-analyzer-method
               >
                 <X className="w-5 h-5" />
               </button>
@@ -591,47 +389,23 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
             <div className="p-6 space-y-4">
               <div>
-<<<<<<< HEAD
-                <label className="block text-sm font-medium text-gray-700 mb-1">Field Name</label>
-=======
                 <label className="block text-sm font-medium text-corporate-textSecondary mb-1">Field Name</label>
->>>>>>> 001-modify-analyzer-method
                 <input
                   type="text"
                   value={newFieldName}
                   onChange={(e) => setNewFieldName(e.target.value)}
                   placeholder="e.g., email, phone, ip_address"
-<<<<<<< HEAD
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-=======
                   className="w-full px-3 py-2 bg-black/40 border-2 border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-2 focus:ring-corporate-success/20 focus:border-corporate-success/60 focus:outline-none"
->>>>>>> 001-modify-analyzer-method
                 />
               </div>
 
               <div>
-<<<<<<< HEAD
-                <label className="block text-sm font-medium text-gray-700 mb-1">Regex Pattern</label>
-=======
                 <label className="block text-sm font-medium text-corporate-textSecondary mb-1">Regex Pattern</label>
->>>>>>> 001-modify-analyzer-method
                 <textarea
                   value={newPattern}
                   onChange={(e) => setNewPattern(e.target.value)}
                   placeholder="e.g., \b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
                   rows={3}
-<<<<<<< HEAD
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono text-sm"
-                />
-                <p className="text-xs text-gray-500 mt-1">Enter a valid regex pattern for field extraction</p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowAddPattern(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-=======
                   className="w-full px-3 py-2 bg-black/40 border-2 border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-2 focus:ring-corporate-success/20 focus:border-corporate-success/60 focus:outline-none font-mono text-sm"
                 />
                 <p className="text-xs text-corporate-textTertiary mt-1">Enter a valid regex pattern for field extraction</p>
@@ -642,18 +416,13 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddPattern(false)}
                 className="px-4 py-2 text-corporate-textSecondary bg-black/40 rounded-lg hover:bg-black/60 transition-colors border-2 border-corporate-borderPrimary/40"
->>>>>>> 001-modify-analyzer-method
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddRexPattern}
                 disabled={!newFieldName.trim() || !newPattern.trim() || isLoading}
-<<<<<<< HEAD
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
-=======
                 className="px-4 py-2 bg-corporate-success/80 text-white rounded-lg hover:bg-corporate-success transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 border-2 border-corporate-success/40"
->>>>>>> 001-modify-analyzer-method
               >
                 <Save className="w-4 h-4" />
                 <span>Add Pattern</span>
@@ -665,15 +434,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
       {/* Add Eval Command Modal */}
       {showAddCommand && (
-<<<<<<< HEAD
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Add Eval Command</h3>
-              <button
-                onClick={() => setShowAddCommand(false)}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-=======
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-black/90 backdrop-blur-md border-2 border-corporate-accentSecondary/40 rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 border-b-2 border-corporate-accentSecondary/20">
@@ -681,7 +441,6 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddCommand(false)}
                 className="p-1 text-corporate-textSecondary hover:text-corporate-textPrimary transition-colors"
->>>>>>> 001-modify-analyzer-method
               >
                 <X className="w-5 h-5" />
               </button>
@@ -689,28 +448,12 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
 
             <div className="p-6 space-y-4">
               <div>
-<<<<<<< HEAD
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dynamic Command</label>
-=======
                 <label className="block text-sm font-medium text-corporate-textSecondary mb-1">Dynamic Command</label>
->>>>>>> 001-modify-analyzer-method
                 <textarea
                   value={newEvalCommand}
                   onChange={(e) => setNewEvalCommand(e.target.value)}
                   placeholder="e.g., stats count by user_id | sort -count"
                   rows={3}
-<<<<<<< HEAD
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-mono text-sm"
-                />
-                <p className="text-xs text-gray-500 mt-1">Enter a dynamic evaluation command for data processing</p>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowAddCommand(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-=======
                   className="w-full px-3 py-2 bg-black/40 border-2 border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textTertiary focus:ring-2 focus:ring-corporate-accentSecondary/20 focus:border-corporate-accentSecondary/60 focus:outline-none font-mono text-sm"
                 />
                 <p className="text-xs text-corporate-textTertiary mt-1">Enter a dynamic evaluation command for data processing</p>
@@ -721,18 +464,13 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
               <button
                 onClick={() => setShowAddCommand(false)}
                 className="px-4 py-2 text-corporate-textSecondary bg-black/40 rounded-lg hover:bg-black/60 transition-colors border-2 border-corporate-borderPrimary/40"
->>>>>>> 001-modify-analyzer-method
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddEvalCommand}
                 disabled={!newEvalCommand.trim() || isLoading}
-<<<<<<< HEAD
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
-=======
                 className="px-4 py-2 bg-corporate-accentSecondary/80 text-white rounded-lg hover:bg-corporate-accentSecondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 border-2 border-corporate-accentSecondary/40"
->>>>>>> 001-modify-analyzer-method
               >
                 <Save className="w-4 h-4" />
                 <span>Add Command</span>
@@ -741,10 +479,7 @@ const FieldMappingForm: React.FC<FieldMappingFormProps> = ({
           </div>
         </div>
       )}
-<<<<<<< HEAD
-=======
       </div>
->>>>>>> 001-modify-analyzer-method
     </div>
   );
 };

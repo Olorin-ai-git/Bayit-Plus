@@ -1,10 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-<<<<<<< HEAD
-import designsystemApp from './App';
-=======
 import DesignSystemApp from './DesignSystemApp';
->>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Initialize the designsystem Service
@@ -21,11 +17,7 @@ const initializedesignsystemService = async () => {
 
     root.render(
       <React.StrictMode>
-<<<<<<< HEAD
-        <designsystemApp />
-=======
         <DesignSystemApp />
->>>>>>> 001-modify-analyzer-method
       </React.StrictMode>
     );
 

@@ -226,19 +226,11 @@ def test_agent_mcp_integration():
     
     try:
         # Test device agent import
-<<<<<<< HEAD
-        from app.service.agent.device_agent import autonomous_device_agent
-        print("✅ Device agent import successful")
-        
-        # Test network agent import
-        from app.service.agent.network_agent import autonomous_network_agent
-=======
         from app.service.agent.device_agent import structured_device_agent
         print("✅ Device agent import successful")
         
         # Test network agent import
         from app.service.agent.network_agent import structured_network_agent
->>>>>>> 001-modify-analyzer-method
         print("✅ Network agent import successful")
         
         # Test configuration imports

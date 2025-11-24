@@ -234,11 +234,7 @@ def main():
     
     if all_passed:
         print(f"\n🎉 ALL CRITICAL FIXES VALIDATED!")
-<<<<<<< HEAD
-        print("The autonomous investigation system should now:")
-=======
         print("The structured investigation system should now:")
->>>>>>> 001-modify-analyzer-method
         print("  • Parse Snowflake JSON data correctly (no more strings)")
         print("  • Calculate high risk scores from MODEL_SCORE >= 0.9")
         print("  • Aggregate domain risk scores properly")

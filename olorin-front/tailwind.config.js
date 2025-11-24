@@ -9,8 +9,6 @@ module.exports = {
     extend: {
       // Design Tokens for Olorin Microservices
       colors: {
-<<<<<<< HEAD
-=======
         // Olorin Corporate Colors (Feature: 004-new-olorin-frontend)
         corporate: {
           // Backgrounds (Dark Theme - Purple)
@@ -68,7 +66,6 @@ module.exports = {
             color: '#6B7280'
           }
         },
->>>>>>> 001-modify-analyzer-method
         // Primary Brand Colors
         primary: {
           50: '#faf5ff',
@@ -98,11 +95,7 @@ module.exports = {
           950: '#09090b',
         },
         // Semantic Colors for Investigation Types
-<<<<<<< HEAD
-        autonomous: {
-=======
         structured: {
->>>>>>> 001-modify-analyzer-method
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
@@ -371,19 +364,11 @@ module.exports = {
             backgroundColor: theme('colors.secondary.200'),
           },
         },
-<<<<<<< HEAD
-        '.btn-autonomous': {
-          backgroundColor: theme('colors.autonomous.600'),
-          color: theme('colors.white'),
-          '&:hover': {
-            backgroundColor: theme('colors.autonomous.700'),
-=======
         '.btn-structured': {
           backgroundColor: theme('colors.structured.600'),
           color: theme('colors.white'),
           '&:hover': {
             backgroundColor: theme('colors.structured.700'),
->>>>>>> 001-modify-analyzer-method
           },
         },
         '.btn-manual': {
@@ -407,15 +392,9 @@ module.exports = {
           padding: theme('spacing.6'),
         },
         // Service-specific Cards
-<<<<<<< HEAD
-        '.card-autonomous': {
-          backgroundColor: theme('colors.autonomous.50'),
-          borderColor: theme('colors.autonomous.200'),
-=======
         '.card-structured': {
           backgroundColor: theme('colors.structured.50'),
           borderColor: theme('colors.structured.200'),
->>>>>>> 001-modify-analyzer-method
           borderWidth: '1px',
         },
         '.card-manual': {
@@ -579,41 +558,25 @@ module.exports = {
   ],
   // Safelist for dynamic classes
   safelist: [
-<<<<<<< HEAD
-    'btn-autonomous',
-=======
     'btn-structured',
->>>>>>> 001-modify-analyzer-method
     'btn-manual',
     'btn-analytics',
     'btn-rag',
     'btn-visualization',
     'btn-reporting',
-<<<<<<< HEAD
-    'card-autonomous',
-=======
     'card-structured',
->>>>>>> 001-modify-analyzer-method
     'card-manual',
     'card-analytics',
     'card-rag',
     'card-visualization',
     'card-reporting',
-<<<<<<< HEAD
-    'text-autonomous-600',
-=======
     'text-structured-600',
->>>>>>> 001-modify-analyzer-method
     'text-manual-600',
     'text-analytics-600',
     'text-rag-600',
     'text-visualization-600',
     'text-reporting-600',
-<<<<<<< HEAD
-    'bg-autonomous-50',
-=======
     'bg-structured-50',
->>>>>>> 001-modify-analyzer-method
     'bg-manual-50',
     'bg-analytics-50',
     'bg-rag-50',

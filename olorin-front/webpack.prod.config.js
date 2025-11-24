@@ -38,10 +38,6 @@ const serviceConfigs = {
     port: 3001,
     exposes: {
       './InvestigationApp': './src/microservices/investigation/InvestigationApp',
-<<<<<<< HEAD
-      './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard',
-=======
->>>>>>> 001-modify-analyzer-method
       './InvestigationDetails': './src/microservices/investigation/components/InvestigationDetails',
       './InvestigationList': './src/microservices/investigation/components/InvestigationList'
     }
@@ -95,11 +91,7 @@ const serviceConfigs = {
     filename: 'remoteEntry.js',
     port: 3006,
     exposes: {
-<<<<<<< HEAD
-      './CoreUiApp': './src/microservices/core-ui/CoreUiApp',
-=======
       './CoreUIApp': './src/microservices/core-ui/CoreUIApp',
->>>>>>> 001-modify-analyzer-method
       './Layout': './src/microservices/core-ui/components/Layout',
       './Navigation': './src/microservices/core-ui/components/Navigation',
       './Header': './src/microservices/core-ui/components/Header',
@@ -243,8 +235,6 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
 
-<<<<<<< HEAD
-=======
     new (require('webpack').DefinePlugin)({
       'process.env.NODE_ENV': JSON.stringify('production'),
       'process.env.REACT_APP_ENV': JSON.stringify(process.env.REACT_APP_ENV || 'development'),
@@ -257,7 +247,6 @@ module.exports = {
       'process.env.REACT_APP_CACHE_TTL_MS': JSON.stringify(process.env.REACT_APP_CACHE_TTL_MS || '300000')
     }),
 
->>>>>>> 001-modify-analyzer-method
     new ModuleFederationPlugin({
       name: config.name,
       filename: config.filename,

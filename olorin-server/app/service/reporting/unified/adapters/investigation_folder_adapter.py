@@ -34,11 +34,7 @@ class InvestigationFolderAdapter(BaseAdapter):
     
     This adapter handles investigation folders with the standard structure:
     - metadata.json - Investigation configuration and metadata
-<<<<<<< HEAD
-    - autonomous_activities.jsonl - Structured activity logs
-=======
     - structured_activities.jsonl - Structured activity logs
->>>>>>> 001-modify-analyzer-method
     - journey_tracking.json - Investigation progress data
     - investigation.log - General investigation logs
     
@@ -133,11 +129,7 @@ class InvestigationFolderAdapter(BaseAdapter):
                 return False
             
             # Check for at least one of the expected files
-<<<<<<< HEAD
-            expected_files = ["metadata.json", "autonomous_activities.jsonl", "journey_tracking.json"]
-=======
             expected_files = ["metadata.json", "structured_activities.jsonl", "journey_tracking.json"]
->>>>>>> 001-modify-analyzer-method
             return any((folder_path / filename).exists() for filename in expected_files)
             
         except (TypeError, ValueError):
@@ -159,13 +151,8 @@ class InvestigationFolderAdapter(BaseAdapter):
         return {}
     
     def _load_activities(self, folder_path: Path) -> List[Dict[str, Any]]:
-<<<<<<< HEAD
-        """Load autonomous_activities.jsonl if it exists."""
-        activities_file = folder_path / "autonomous_activities.jsonl"
-=======
         """Load structured_activities.jsonl if it exists."""
         activities_file = folder_path / "structured_activities.jsonl"
->>>>>>> 001-modify-analyzer-method
         activities = []
         
         if activities_file.exists() and JSONLINES_AVAILABLE:

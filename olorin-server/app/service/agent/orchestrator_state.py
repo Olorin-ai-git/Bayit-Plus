@@ -114,11 +114,7 @@ class RecoveryState:
 
 class OrchestratorStateManager:
     """
-<<<<<<< HEAD
-    Enhanced State Management System for autonomous investigation orchestration.
-=======
     Enhanced State Management System for structured investigation orchestration.
->>>>>>> 001-modify-analyzer-method
     
     Provides comprehensive state tracking, decision history, performance metrics,
     and recovery capabilities for interrupted investigations.

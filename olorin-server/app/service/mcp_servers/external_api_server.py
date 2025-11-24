@@ -72,9 +72,6 @@ async def check_ip_reputation(
     and geolocation data. Falls back to AbuseIPDB if MaxMind unavailable.
     """
     try:
-<<<<<<< HEAD
-        logger.info(f"Checking IP reputation: {ip}")
-=======
         logger.info(f"Checking IP reputation using MaxMind: {ip}")
         
         # Use MaxMind client for IP risk scoring
@@ -98,20 +95,10 @@ async def check_ip_reputation(
             reputation_level = ReputationLevel.LOW_RISK
         else:
             reputation_level = ReputationLevel.CLEAN
->>>>>>> 001-modify-analyzer-method
         
         reputation_data = {
             "status": "success",
             "ip": ip,
-<<<<<<< HEAD
-            "reputation_level": ReputationLevel.UNKNOWN,
-            "risk_score": 0.0,
-            "is_proxy": False,
-            "is_vpn": False,
-            "is_tor": False,
-            "is_hosting": False,
-            "timestamp": datetime.now().isoformat()
-=======
             "reputation_level": reputation_level,
             "risk_score": risk_score,
             "is_proxy": score_data.get("is_proxy", False),
@@ -120,7 +107,6 @@ async def check_ip_reputation(
             "is_hosting": False,  # MaxMind doesn't provide this
             "provider": score_data.get("provider", "maxmind"),
             "timestamp": score_data.get("scored_at", datetime.now().isoformat())
->>>>>>> 001-modify-analyzer-method
         }
         
         if include_details:
@@ -138,30 +124,6 @@ async def check_ip_reputation(
                 "velocity_signals": score_data.get("velocity_signals", {})
             }
         
-<<<<<<< HEAD
-        # TODO: Implement actual API calls to IP reputation services
-        # Services to integrate:
-        # - IPQualityScore
-        # - AbuseIPDB
-        # - Shodan
-        # - MaxMind GeoIP2
-        
-        # Simulate basic IP validation
-        import ipaddress
-        try:
-            ip = ipaddress.ip_address(ip)
-            if ip.is_private:
-                reputation_data["reputation_level"] = ReputationLevel.CLEAN
-                reputation_data["risk_score"] = 0.1
-            elif ip.is_loopback:
-                reputation_data["reputation_level"] = ReputationLevel.CLEAN
-                reputation_data["risk_score"] = 0.0
-        except ValueError:
-            reputation_data["status"] = "error"
-            reputation_data["error"] = "Invalid IP address format"
-        
-=======
->>>>>>> 001-modify-analyzer-method
         return reputation_data
         
     except Exception as e:

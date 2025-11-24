@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
-import { toast } from 'react-hot-toast';
-import { Settings, MessageSquare, Database, FileText } from 'lucide-react';
-import ChatInterface from './chat/ChatInterface';
-import FieldMappingForm from './forms/FieldMappingForm';
-import PreparedPromptsManager from './forms/PreparedPromptsManager';
-=======
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@shared/components/ui/tabs';
@@ -16,7 +7,6 @@ import ChatInterface from './chat/ChatInterface';
 import FieldMappingForm from './forms/FieldMappingForm';
 import PreparedPromptsManager from './forms/PreparedPromptsManager';
 import DataSourceConfig from './DataSourceConfig';
->>>>>>> 001-modify-analyzer-method
 import { FieldMapping, RexPattern, EvalCommand, PreparedPrompt } from '../types/ragIntelligence';
 import RAGApiService from '@shared/services/RAGApiService';
 
@@ -25,10 +15,6 @@ interface RAGConfigurationPageProps {
 }
 
 const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className = "" }) => {
-<<<<<<< HEAD
-  // State management
-  const [activeTab, setActiveTab] = useState('chat');
-=======
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,7 +29,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
   
   // State management
   const [activeTab, setActiveTab] = useState(() => getInitialTab());
->>>>>>> 001-modify-analyzer-method
   const [isLoading, setIsLoading] = useState(false);
 
   // Configuration states
@@ -52,13 +37,8 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
   const [evalCommands, setEvalCommands] = useState<EvalCommand[]>([]);
   const [preparedPrompts, setPreparedPrompts] = useState<PreparedPrompt[]>([]);
 
-<<<<<<< HEAD
-  // Initialize RAG service
-  const ragService = useMemo(() => new RAGApiService(null), []);
-=======
   // Initialize RAG service (singleton instance)
   const ragService = useMemo(() => RAGApiService, []);
->>>>>>> 001-modify-analyzer-method
 
   // Load field mappings and patterns
   const loadFieldMappings = useCallback(async () => {
@@ -155,17 +135,10 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
       });
 
       await loadFieldMappings();
-<<<<<<< HEAD
-      toast.success('Field mapping added successfully');
-    } catch (error) {
-      console.error('Failed to add field mapping:', error);
-      toast.error('Failed to add field mapping');
-=======
       showToast('success', 'Success', 'Field mapping added successfully');
     } catch (error) {
       console.error('Failed to add field mapping:', error);
       showToast('error', 'Error', 'Failed to add field mapping');
->>>>>>> 001-modify-analyzer-method
     }
   }, [ragService, loadFieldMappings]);
 
@@ -179,17 +152,10 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
       });
 
       await loadFieldMappings();
-<<<<<<< HEAD
-      toast.success('Rex pattern added successfully');
-    } catch (error) {
-      console.error('Failed to add rex pattern:', error);
-      toast.error('Failed to add rex pattern');
-=======
       showToast('success', 'Success', 'Rex pattern added successfully');
     } catch (error) {
       console.error('Failed to add rex pattern:', error);
       showToast('error', 'Error', 'Failed to add rex pattern');
->>>>>>> 001-modify-analyzer-method
     }
   }, [ragService, loadFieldMappings]);
 
@@ -201,17 +167,10 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
       });
 
       await loadFieldMappings();
-<<<<<<< HEAD
-      toast.success('Eval command added successfully');
-    } catch (error) {
-      console.error('Failed to add eval command:', error);
-      toast.error('Failed to add eval command');
-=======
       showToast('success', 'Success', 'Eval command added successfully');
     } catch (error) {
       console.error('Failed to add eval command:', error);
       showToast('error', 'Error', 'Failed to add eval command');
->>>>>>> 001-modify-analyzer-method
     }
   }, [ragService, loadFieldMappings]);
 
@@ -227,17 +186,10 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
 
       // For now, store locally (in a real app, this would call the API)
       setPreparedPrompts(prev => [...prev, newPrompt]);
-<<<<<<< HEAD
-      toast.success('Prompt created successfully');
-    } catch (error) {
-      console.error('Failed to create prompt:', error);
-      toast.error('Failed to create prompt');
-=======
       showToast('success', 'Success', 'Prompt created successfully');
     } catch (error) {
       console.error('Failed to create prompt:', error);
       showToast('error', 'Error', 'Failed to create prompt');
->>>>>>> 001-modify-analyzer-method
     }
   }, []);
 
@@ -250,45 +202,25 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
             : prompt
         )
       );
-<<<<<<< HEAD
-      toast.success('Prompt updated successfully');
-    } catch (error) {
-      console.error('Failed to update prompt:', error);
-      toast.error('Failed to update prompt');
-=======
       showToast('success', 'Success', 'Prompt updated successfully');
     } catch (error) {
       console.error('Failed to update prompt:', error);
       showToast('error', 'Error', 'Failed to update prompt');
->>>>>>> 001-modify-analyzer-method
     }
   }, []);
 
   const handleDeletePrompt = useCallback(async (id: string) => {
     try {
       setPreparedPrompts(prev => prev.filter(prompt => prompt.id !== id));
-<<<<<<< HEAD
-      toast.success('Prompt deleted successfully');
-    } catch (error) {
-      console.error('Failed to delete prompt:', error);
-      toast.error('Failed to delete prompt');
-=======
       showToast('success', 'Success', 'Prompt deleted successfully');
     } catch (error) {
       console.error('Failed to delete prompt:', error);
       showToast('error', 'Error', 'Failed to delete prompt');
->>>>>>> 001-modify-analyzer-method
     }
   }, []);
 
   const handleApplyPrompt = useCallback((prompt: PreparedPrompt) => {
     // Switch to chat tab and apply the prompt
-<<<<<<< HEAD
-    setActiveTab('chat');
-    // This would ideally be handled by the ChatInterface component
-    toast.success(`Applied prompt: ${prompt.title}`);
-  }, []);
-=======
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set('tab', 'chat');
     setSearchParams(newSearchParams, { replace: true });
@@ -319,7 +251,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
       setActiveTab(validTab);
     }
   }, [searchParams, activeTab, validTabs]);
->>>>>>> 001-modify-analyzer-method
 
   // Load data on mount
   useEffect(() => {
@@ -335,15 +266,12 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
       description: 'Interactive RAG chat with natural language queries'
     },
     {
-<<<<<<< HEAD
-=======
       id: 'data-sources',
       label: 'Data Sources',
       icon: Server,
       description: 'Configure data sources for RAG queries'
     },
     {
->>>>>>> 001-modify-analyzer-method
       id: 'configuration',
       label: 'Field Mappings',
       icon: Database,
@@ -358,37 +286,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
   ];
 
   return (
-<<<<<<< HEAD
-    <div className={`h-full bg-gray-50 ${className}`}>
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                RAG Intelligence Service
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Retrieval-Augmented Generation with intelligent data processing
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <div className={`
-                flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium
-                ${isLoading
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-green-100 text-green-800'
-                }
-              `}>
-                <div className={`
-                  w-2 h-2 rounded-full
-                  ${isLoading ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}
-                `} />
-                <span>{isLoading ? 'Loading...' : 'Ready'}</span>
-              </div>
-            </div>
-=======
     <div className={`min-h-screen bg-black ${className}`}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Title */}
@@ -413,23 +310,10 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
               ${isLoading ? 'bg-corporate-warning animate-pulse' : 'bg-corporate-success'}
             `} />
             <span>{isLoading ? 'Loading...' : 'Ready'}</span>
->>>>>>> 001-modify-analyzer-method
           </div>
         </div>
 
         {/* Tabs */}
-<<<<<<< HEAD
-        <div className="flex-1 min-h-0">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            {/* Tab List */}
-            <div className="flex-shrink-0 bg-white border-b border-gray-200">
-              <TabsList className="w-full justify-start bg-transparent p-0">
-                {tabs.map(({ id, label, icon: Icon, description }) => (
-                  <TabsTrigger
-                    key={id}
-                    value={id}
-                    className="flex items-center space-x-2 px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none bg-transparent"
-=======
         <div className="space-y-6">
           <Tabs 
             value={activeTab} 
@@ -449,7 +333,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
                     key={id}
                     value={id}
                     className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-corporate-textSecondary hover:text-corporate-textPrimary data-[state=active]:text-corporate-accentPrimary data-[state=active]:bg-black/50 rounded-md transition-colors"
->>>>>>> 001-modify-analyzer-method
                   >
                     <Icon className="w-4 h-4" />
                     <span>{label}</span>
@@ -459,14 +342,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
             </div>
 
             {/* Tab Content */}
-<<<<<<< HEAD
-            <div className="flex-1 min-h-0">
-              <TabsContent value="chat" className="h-full p-6 m-0">
-                <ChatInterface className="h-full" />
-              </TabsContent>
-
-              <TabsContent value="configuration" className="h-full p-6 m-0">
-=======
             <div>
               <TabsContent value="chat" className="m-0">
                 <ChatInterface className="h-full" />
@@ -477,7 +352,6 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
               </TabsContent>
 
               <TabsContent value="configuration" className="m-0">
->>>>>>> 001-modify-analyzer-method
                 <FieldMappingForm
                   fieldMappings={fieldMappings}
                   rexPatterns={rexPatterns}
@@ -490,11 +364,7 @@ const RAGConfigurationPage: React.FC<RAGConfigurationPageProps> = ({ className =
                 />
               </TabsContent>
 
-<<<<<<< HEAD
-              <TabsContent value="prompts" className="h-full p-6 m-0">
-=======
               <TabsContent value="prompts" className="m-0">
->>>>>>> 001-modify-analyzer-method
                 <PreparedPromptsManager
                   prompts={preparedPrompts}
                   onCreatePrompt={handleCreatePrompt}

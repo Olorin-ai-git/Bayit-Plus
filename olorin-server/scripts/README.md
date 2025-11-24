@@ -14,11 +14,7 @@ Scripts for system diagnostics, debugging, and troubleshooting:
 
 ### 📊 reporting/
 Scripts for report generation and test data creation:
-<<<<<<< HEAD
-- `html_report_generator.py` - HTML report generation for autonomous investigations
-=======
 - `html_report_generator.py` - HTML report generation for structured investigations
->>>>>>> 001-modify-analyzer-method
 - `create_test_investigation.py` - Creates sample investigation data for testing
 
 ### 🖥️ server/
@@ -27,13 +23,8 @@ Scripts for server deployment and application entry points:
 - `simple_main.py` - Minimal FastAPI backend version
 
 ### 🧪 testing/
-<<<<<<< HEAD
-Scripts for autonomous investigation testing:
-- `unified_autonomous_test_runner.py` - Comprehensive test suite for investigations
-=======
 Scripts for structured investigation testing:
 - `unified_structured_test_runner.py` - Comprehensive test suite for investigations
->>>>>>> 001-modify-analyzer-method
 - `test_clean_graph.py` - Graph-based testing framework
 - And other testing utilities...
 
@@ -95,11 +86,7 @@ python scripts/server/main.py
 python scripts/server/simple_main.py
 
 # Testing scripts
-<<<<<<< HEAD
-poetry run python scripts/testing/unified_autonomous_test_runner.py --help
-=======
 poetry run python scripts/testing/unified_structured_test_runner.py --help
->>>>>>> 001-modify-analyzer-method
 ```
 
 ## Benefits

@@ -111,15 +111,9 @@ npm start
 
 **Frontend will be accessible at:** http://localhost:3001
 
-<<<<<<< HEAD
-### Running Autonomous Investigations
-
-The unified autonomous investigation runner provides comprehensive testing capabilities for the fraud detection system:
-=======
 ### Running Structured Investigations
 
 The unified structured investigation runner provides comprehensive testing capabilities for the fraud detection system:
->>>>>>> 001-modify-analyzer-method
 
 #### Quick Start Examples
 
@@ -127,11 +121,7 @@ The unified structured investigation runner provides comprehensive testing capab
 ```bash
 # Full investigation with maximum visibility (recommended for debugging)
 cd /Users/gklainert/Documents/olorin/olorin-server && \
-<<<<<<< HEAD
-./scripts/run-autonomous-investigation.sh --show-all --verbose --all
-=======
 ./scripts/run-structured-investigation.sh --show-all --verbose --all
->>>>>>> 001-modify-analyzer-method
 ```
 
 **Or navigate first then run:**
@@ -139,21 +129,6 @@ cd /Users/gklainert/Documents/olorin/olorin-server && \
 cd olorin-server
 
 # Run all fraud scenarios with HTML report
-<<<<<<< HEAD
-./scripts/run-autonomous-investigation.sh --all --html-report
-
-# Test specific fraud scenario with full monitoring
-./scripts/run-autonomous-investigation.sh --scenario device_spoofing --show-all --verbose
-
-# Monitor LLM reasoning and WebSocket messages
-./scripts/run-autonomous-investigation.sh --scenario impossible_travel --show-llm --show-websocket
-
-# Full investigation visibility (ALL monitoring enabled)
-./scripts/run-autonomous-investigation.sh --all --show-all --follow-logs --html-report
-
-# Test with CSV data and agent conversations
-./scripts/run-autonomous-investigation.sh --csv-file ./transactions.csv --csv-limit 50 --show-agents
-=======
 ./scripts/run-structured-investigation.sh --all --html-report
 
 # Test specific fraud scenario with full monitoring
@@ -167,7 +142,6 @@ cd olorin-server
 
 # Test with CSV data and agent conversations
 ./scripts/run-structured-investigation.sh --csv-file ./transactions.csv --csv-limit 50 --show-agents
->>>>>>> 001-modify-analyzer-method
 ```
 
 #### Available Fraud Scenarios
@@ -195,11 +169,7 @@ cd olorin-server
 | `--follow-logs` | Tail server logs |
 
 #### Investigation Monitoring Features
-<<<<<<< HEAD
-The investigation runner provides deep visibility into the autonomous investigation process:
-=======
 The investigation runner provides deep visibility into the structured investigation process:
->>>>>>> 001-modify-analyzer-method
 
 - **WebSocket Monitoring** (`--show-websocket`): Real-time WebSocket message tracking
 - **LLM Interactions** (`--show-llm`): View all LLM reasoning and decision-making
@@ -219,15 +189,9 @@ The investigation runner automatically:
 
 ## Investigating Top Risk Entities with Real Data
 
-<<<<<<< HEAD
-### Snowflake-Driven Autonomous Investigations
-
-The system now supports using real Snowflake data to seed autonomous investigations. This powerful workflow:
-=======
 ### Snowflake-Driven Structured Investigations
 
 The system now supports using real Snowflake data to seed structured investigations. This powerful workflow:
->>>>>>> 001-modify-analyzer-method
 1. Identifies top 10% risk entities from Snowflake
 2. Retrieves historical patterns for each entity
 3. Detects anomalies by comparing recent activity to historical baselines
@@ -287,11 +251,7 @@ poetry run python scripts/investigate_top_risk_entities.py \
    - **location_impossible_travel**: Geographic anomalies
    - **advanced_persistent_fraud**: Complex multi-factor anomalies
 
-<<<<<<< HEAD
-5. **Investigation Execution**: Triggers autonomous investigation with:
-=======
 5. **Investigation Execution**: Triggers structured investigation with:
->>>>>>> 001-modify-analyzer-method
    - Entity-specific context and historical data
    - Appropriate fraud scenario
    - Real-time monitoring options
@@ -332,11 +292,7 @@ Investigation 1/5: risky142@tempmail.com
    Risk Score: 0.921
    Total Amount: $12,345.67
 
-<<<<<<< HEAD
-🔍 Triggering autonomous investigation for email: risky142@tempmail.com
-=======
 🔍 Triggering structured investigation for email: risky142@tempmail.com
->>>>>>> 001-modify-analyzer-method
    Scenario: velocity_abuse
    Volume Anomaly Score: 4.72
    Risk Anomaly Score: 1.34
@@ -685,11 +641,7 @@ The `.env` file controls all aspects of the Snowflake POC. Here's what you can c
 SELECTED_MODEL=claude-opus-4-1-20250805
 
 # Verification model for dual-model verification system
-<<<<<<< HEAD
-LLM_VERIFICATION_MODEL=gpt-5-chat-latest
-=======
 LLM_VERIFICATION_MODEL=gpt-4o-mini  # Valid: gemini-1.5-flash, claude-3-haiku-20240307, gpt-3.5-turbo, gpt-4o-mini
->>>>>>> 001-modify-analyzer-method
 
 # ============================================
 # LLM VERIFICATION SYSTEM
@@ -716,11 +668,7 @@ VERIFICATION_MAX_RETRIES=1
 
 # Model to use for verification (can be any supported model)
 # Examples: claude-opus-4.1, gpt-4-turbo, gpt-5-chat-latest
-<<<<<<< HEAD
-LLM_VERIFICATION_MODEL_NAME=claude-opus-4.1
-=======
 LLM_VERIFICATION_MODEL_NAME=gpt-4o-mini  # Valid: gemini-1.5-flash, claude-3-haiku-20240307, gpt-3.5-turbo, gpt-4o-mini
->>>>>>> 001-modify-analyzer-method
 ```
 
 ### Essential Snowflake Configuration

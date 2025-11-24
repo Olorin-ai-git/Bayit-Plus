@@ -4,11 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-<<<<<<< HEAD
-import { useEventBus } from '../events/eventBus';
-=======
 import { useEventBus } from '../events/UnifiedEventBus';
->>>>>>> 001-modify-analyzer-method
 import { storage } from '../utils';
 
 /**
@@ -105,30 +101,8 @@ export function useAsync<T, E = string>(
   return { execute, status, value, error };
 }
 
-<<<<<<< HEAD
-/**
- * Hook for event bus communication
- */
-export function useEventBusSubscription<K extends keyof import('../events/eventBus').EventBusEvents>(
-  event: K,
-  handler: (data: import('../events/eventBus').EventBusEvents[K]) => void,
-  deps: React.DependencyList = []
-) {
-  const { subscribe, cleanup } = useEventBus();
-
-  useEffect(() => {
-    const unsubscribe = subscribe(event, handler, 'useEventBusSubscription');
-    return unsubscribe;
-  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    return () => cleanup('useEventBusSubscription');
-  }, [cleanup]);
-}
-=======
 // Event bus hooks are now provided by UnifiedEventBus
 // See: src/shared/events/UnifiedEventBus.tsx
->>>>>>> 001-modify-analyzer-method
 
 /**
  * Hook for window size
@@ -237,8 +211,6 @@ export function useServiceHealth(serviceName: string) {
   return health;
 }
 
-<<<<<<< HEAD
-=======
 // Investigation Wizard Hooks (Feature: 004-new-olorin-frontend)
 export { useWizardNavigation } from './useWizardNavigation';
 export type { WizardNavigationResult } from './useWizardNavigation';
@@ -262,23 +234,15 @@ export { useInvestigationState } from './useInvestigationState';
 export { useNotifications } from './useNotifications';
 export type { Notification } from '../types/core/notification.types';
 
->>>>>>> 001-modify-analyzer-method
 export default {
   useLocalStorage,
   useDebounce,
   usePrevious,
   useAsync,
-<<<<<<< HEAD
-  useEventBusSubscription,
-=======
->>>>>>> 001-modify-analyzer-method
   useWindowSize,
   useMediaQuery,
   useIntersectionObserver,
   useServiceHealth,
-<<<<<<< HEAD
-=======
   useInvestigationState,
   useNotifications,
->>>>>>> 001-modify-analyzer-method
 };

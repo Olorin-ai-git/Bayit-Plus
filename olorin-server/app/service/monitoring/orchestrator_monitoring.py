@@ -1,20 +1,12 @@
 """
 Orchestrator Monitoring & Alerting System
 
-<<<<<<< HEAD
-Provides comprehensive monitoring, alerting, and health checks for the autonomous
-=======
 Provides comprehensive monitoring, alerting, and health checks for the structured
->>>>>>> 001-modify-analyzer-method
 investigation orchestrator system with proactive issue detection and notification.
 
 Author: Gil Klainert  
 Date: 2025-09-06
-<<<<<<< HEAD
-Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
-=======
 Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
->>>>>>> 001-modify-analyzer-method
 Phase: 4.3 - Monitoring & Alerting
 """
 
@@ -111,11 +103,7 @@ class OrchestratorMonitoring:
     """
     Orchestrator Monitoring & Alerting System
     
-<<<<<<< HEAD
-    Provides comprehensive monitoring capabilities for the autonomous investigation
-=======
     Provides comprehensive monitoring capabilities for the structured investigation
->>>>>>> 001-modify-analyzer-method
     orchestrator, including proactive alerting, health checks, performance tracking,
     and automated issue detection and notification.
     """

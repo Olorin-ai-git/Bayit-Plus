@@ -92,11 +92,7 @@ src/microservices/rag-intelligence/
 
 **File:** `src/js/pages/InvestigationPage.tsx`
 **Current Status:** Complete investigation workflow
-<<<<<<< HEAD
-**New Implementation:** `src/microservices/autonomous-investigation/` - Basic structure
-=======
 **New Implementation:** `src/microservices/structured-investigation/` - Basic structure
->>>>>>> 001-modify-analyzer-method
 
 #### Missing Core Features:
 1. **Main Investigation Workflow**
@@ -121,11 +117,7 @@ src/microservices/rag-intelligence/
    - RAG-enhanced investigation panels
    - Comment system integration
    - Tools sidebar with investigation utilities
-<<<<<<< HEAD
-   - Autonomous investigation display
-=======
    - Structured investigation display
->>>>>>> 001-modify-analyzer-method
 
 #### Investigation Component Analysis
 
@@ -137,22 +129,14 @@ src/js/components/
 ├── InvestigationSteps.tsx (step management)
 ├── MultiEntityInvestigationPanel.tsx (multi-entity analysis)
 ├── ManualInvestigationPanel.tsx (manual investigations)
-<<<<<<< HEAD
-├── RAGEnhancedAutonomousInvestigationPanel.tsx (RAG integration)
-=======
 ├── RAGEnhancedStructuredInvestigationPanel.tsx (RAG integration)
->>>>>>> 001-modify-analyzer-method
 ├── EnhancedInvestigationPanel.tsx (enhanced features)
 └── EditStepsModal.tsx (step editing)
 ```
 
 **New Components:**
 ```
-<<<<<<< HEAD
-src/microservices/autonomous-investigation/components/
-=======
 src/microservices/structured-investigation/components/
->>>>>>> 001-modify-analyzer-method
 ├── InvestigationDashboard.tsx (basic dashboard)
 ├── InvestigationDetails.tsx (basic details)
 ├── ExportReporting.tsx (export functionality)
@@ -270,11 +254,7 @@ src/microservices/agent-analytics/components/
    - Extract investigation execution logic (lines 1-600)
    - Create step management components
    - Convert Material-UI to Tailwind CSS
-<<<<<<< HEAD
-   - Implement in `src/microservices/autonomous-investigation/components/workflow/`
-=======
    - Implement in `src/microservices/structured-investigation/components/workflow/`
->>>>>>> 001-modify-analyzer-method
 
 ### Phase 3: Agent Analytics Dashboard (Days 7-8)
 1. **Migrate AgentDetailsTable.tsx**
@@ -305,11 +285,7 @@ src/microservices/rag-intelligence/
 
 ### Investigation Service
 ```
-<<<<<<< HEAD
-src/microservices/autonomous-investigation/
-=======
 src/microservices/structured-investigation/
->>>>>>> 001-modify-analyzer-method
 ├── components/
 │   ├── workflow/
 │   │   ├── InvestigationRunner.tsx (<200 lines)

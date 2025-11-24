@@ -174,11 +174,7 @@ class ConnectionPoolManager:
     async def initialize_redis_pool(self) -> bool:
         """Initialize Redis connection pool."""
         try:
-<<<<<<< HEAD
-            logger.info(f"Attempting to connect to Redis at {self.config.redis_host}:{self.config.redis_port}...")
-=======
             logger.debug(f"Attempting to connect to Redis at {self.config.redis_host}:{self.config.redis_port}...")
->>>>>>> 001-modify-analyzer-method
 
             self.redis_pool = redis.ConnectionPool(
                 host=self.config.redis_host,
@@ -198,17 +194,6 @@ class ConnectionPoolManager:
             await asyncio.wait_for(redis_client.ping(), timeout=3.0)
             await redis_client.aclose()
 
-<<<<<<< HEAD
-            logger.info(f"✅ Redis connection pool initialized ({self.config.connection_pool_size} connections)")
-            return True
-
-        except asyncio.TimeoutError:
-            logger.info("⏰ Redis connection timeout - continuing without Redis caching")
-            self.redis_pool = None
-            return False
-        except Exception as e:
-            logger.info(f"❌ Redis not available, continuing without Redis caching: {e}")
-=======
             logger.debug(f"✅ Redis connection pool initialized ({self.config.connection_pool_size} connections)")
             return True
 
@@ -218,7 +203,6 @@ class ConnectionPoolManager:
             return False
         except Exception as e:
             logger.debug(f"❌ Redis not available, continuing without Redis caching: {e}")
->>>>>>> 001-modify-analyzer-method
             self.redis_pool = None
             return False
     

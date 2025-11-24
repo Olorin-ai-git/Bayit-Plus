@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """
-<<<<<<< HEAD
-Validation Script for Autonomous Investigation System Fixes
-=======
 Validation Script for Structured Investigation System Fixes
->>>>>>> 001-modify-analyzer-method
 Validates that the critical fixes are working by running a real investigation test.
 """
 

@@ -14,8 +14,6 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
-<<<<<<< HEAD
-=======
 def force_tools_routing(state):
     """
     Custom routing function that forces tool usage.
@@ -59,7 +57,6 @@ def force_tools_routing(state):
     return "fraud_investigation"
 
 
->>>>>>> 001-modify-analyzer-method
 class EdgeConfigurator:
     """
     Configures edges and routing for the hybrid intelligence graph.
@@ -111,11 +108,6 @@ class EdgeConfigurator:
         
     def _configure_investigation_routing(self, builder: StateGraph) -> None:
         """Configure initial investigation routing."""
-<<<<<<< HEAD
-        # Raw data or investigation routing
-        builder.add_conditional_edges(
-            "start_investigation",
-=======
         # CRITICAL FIX A0.2: Add database fetch before conditional routing
         # Ensures agents have access to transaction data
         builder.add_edge("start_investigation", "fetch_database_data")
@@ -123,35 +115,18 @@ class EdgeConfigurator:
         # Raw data or investigation routing (now from fetch_database_data)
         builder.add_conditional_edges(
             "fetch_database_data",
->>>>>>> 001-modify-analyzer-method
             raw_data_or_investigation_routing,
             {
                 "raw_data_node": "raw_data_node",
                 "fraud_investigation": "fraud_investigation"
             }
         )
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Raw data flows to fraud investigation
         builder.add_edge("raw_data_node", "fraud_investigation")
         
     def _configure_tool_routing(self, builder: StateGraph, use_enhanced_tools: bool) -> None:
         """Configure tool execution routing."""
-<<<<<<< HEAD
-        # Add tools_condition routing from fraud_investigation
-        builder.add_conditional_edges(
-            "fraud_investigation",
-            tools_condition,
-            {
-                "tools": "tools",
-                "__end__": "ai_confidence_assessment"  # Only continue when NO tools are called
-            }
-        )
-        
-=======
         # CRITICAL FIX: Use custom routing that forces tool usage with retry logic
         # This ensures the LLM is given multiple chances to call tools before proceeding
         # However, to prevent infinite recursion, we limit retries and ensure proper state updates
@@ -176,7 +151,6 @@ class EdgeConfigurator:
             # Retry reset will happen in tools node
             pass
         
->>>>>>> 001-modify-analyzer-method
         # Tool flow depends on whether enhanced tracking is enabled
         if use_enhanced_tools:
             # Enhanced flow: tools -> metadata tracking -> orchestrator
@@ -214,13 +188,9 @@ class EdgeConfigurator:
                 "location_agent": "location_agent",
                 "logs_agent": "logs_agent",
                 "authentication_agent": "authentication_agent",
-<<<<<<< HEAD
-                "risk_agent": "risk_agent",
-=======
                 "merchant_agent": "merchant_agent",
                 "risk_agent": "risk_agent",
                 "remediation_agent": "remediation_agent",
->>>>>>> 001-modify-analyzer-method
                 
                 # Tools
                 "tools": "tools"
@@ -230,14 +200,6 @@ class EdgeConfigurator:
     def _configure_domain_agent_routing(self, builder: StateGraph) -> None:
         """Configure domain agent return routing."""
         # Domain agents flow back to orchestrator for coordination
-<<<<<<< HEAD
-        domain_agents = [
-            "network_agent", "device_agent", "location_agent", 
-            "logs_agent", "authentication_agent", "risk_agent"
-        ]
-        for agent in domain_agents:
-            builder.add_edge(agent, "hybrid_orchestrator")
-=======
         # EXCEPTION: risk_agent flows to remediation_agent first, then to summary
         domain_agents = [
             "network_agent", "device_agent", "location_agent", 
@@ -249,7 +211,6 @@ class EdgeConfigurator:
         # Risk agent flows to remediation agent (for labeling), then to summary
         builder.add_edge("risk_agent", "remediation_agent")
         builder.add_edge("remediation_agent", "summary")
->>>>>>> 001-modify-analyzer-method
             
     def _configure_completion_routing(self, builder: StateGraph) -> None:
         """Configure final completion routing."""

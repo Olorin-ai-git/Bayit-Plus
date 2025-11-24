@@ -66,16 +66,9 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         # Generate aggregation narrative
         aggregation_narrative = _generate_aggregation_narrative(facts, domain_findings)
         
-<<<<<<< HEAD
-        # Determine fraud floor status for narrative (handle both boolean and integer)
-        is_fraud_tx = facts.get("IS_FRAUD_TX")
-        fraud_floor = bool(
-            (is_fraud_tx is True or is_fraud_tx == 1) or
-=======
         # Determine fraud floor status for narrative
         # CRITICAL: IS_FRAUD_TX removed - must not use ground truth labels during investigation
         fraud_floor = bool(
->>>>>>> 001-modify-analyzer-method
             facts.get("chargeback_confirmed") or
             facts.get("manual_case_outcome") == "fraud"
         )
@@ -155,16 +148,6 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             }
         }
         
-<<<<<<< HEAD
-        # Synthesize domain findings
-        _synthesize_domain_findings(domain_findings, risk_findings)
-        
-        # Generate narrative about risk assessment process (no numeric scoring)
-        _generate_risk_narrative(facts, domain_findings, risk_findings)
-        
-        # Analyze cross-domain patterns
-        _analyze_cross_domain_patterns(domain_findings, risk_findings)
-=======
         # Synthesize domain findings (basic aggregation)
         _synthesize_domain_findings(domain_findings, risk_findings)
         
@@ -191,7 +174,6 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             # Fallback to algorithmic synthesis
             _generate_risk_narrative(facts, domain_findings, risk_findings)
             _analyze_cross_domain_patterns(domain_findings, risk_findings)
->>>>>>> 001-modify-analyzer-method
         
         # Calculate investigation confidence
         _calculate_investigation_confidence(state, risk_findings)
@@ -200,19 +182,10 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         risk_findings["evidence_summary"] = {
             "domains_synthesized": len(domain_findings),
             "total_risk_indicators": len(risk_indicators),
-<<<<<<< HEAD
-            "confidence_level": risk_findings["confidence"]  # Use REAL calculated confidence
-        }
-        
-        # NARRATIVE-ONLY: Generate synthesis narrative (no LLM scoring)
-        # Risk domain provides narrative context without numeric score emission
-        
-=======
             "confidence_level": risk_findings["confidence"],  # Use REAL calculated confidence
             "llm_synthesis_used": "llm_analysis" in risk_findings
         }
         
->>>>>>> 001-modify-analyzer-method
         # Finalize findings
         analysis_duration = time.time() - start_time
         DomainAgentBase.finalize_findings(
@@ -225,8 +198,6 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         
         logger.info(f"[Step 5.2.6] ✅ Risk synthesis complete - Narrative-only domain with {len(risk_findings.get('evidence', []))} synthesis points")
         
-<<<<<<< HEAD
-=======
         # Calculate per-transaction risk scores
         try:
             # Extract entity info for advanced features
@@ -246,7 +217,6 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             # Continue with investigation even if per-transaction scoring fails
             state["transaction_scores"] = {}
         
->>>>>>> 001-modify-analyzer-method
         # Update state with risk findings
         return add_domain_findings(state, "risk", risk_findings)
     
@@ -327,21 +297,11 @@ def _generate_aggregation_narrative(facts: Dict[str, Any], domain_findings: Dict
     """Generate narrative explaining aggregation decisions."""
     narrative_parts = []
     
-<<<<<<< HEAD
-    # Check for hard evidence that triggers fraud floor (handle both boolean and integer)
-    hard_evidence = []
-    is_fraud_tx = facts.get("IS_FRAUD_TX")
-    if is_fraud_tx is True or is_fraud_tx == 1:
-        hard_evidence.append("confirmed fraud transaction")
-    if facts.get("chargeback_confirmed") is True:
-        hard_evidence.append("confirmed chargeback")
-=======
     # Check for hard evidence that triggers fraud floor
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
     # Only manual case outcomes can be used (if provided externally, not from Snowflake)
     hard_evidence = []
->>>>>>> 001-modify-analyzer-method
     if facts.get("manual_case_outcome") == "fraud":
         hard_evidence.append("manual fraud determination")
     
@@ -397,19 +357,12 @@ def _generate_risk_narrative(facts: Dict[str, Any], domain_findings: Dict[str, A
 def _analyze_cross_domain_patterns(domain_findings: Dict[str, Any], risk_findings: Dict[str, Any]) -> None:
     """Analyze patterns across multiple domains (narrative only)."""
     if len(domain_findings) >= 3:
-<<<<<<< HEAD
-        high_risk_domains = [
-            d for d, f in domain_findings.items() 
-            if isinstance(f, dict) and f.get("risk_score", 0) is not None and f.get("risk_score", 0) > 0.6
-        ]
-=======
         high_risk_domains = []
         for d, f in domain_findings.items():
             if isinstance(f, dict):
                 risk_score = f.get("risk_score")
                 if risk_score is not None and risk_score > 0.6:
                     high_risk_domains.append(d)
->>>>>>> 001-modify-analyzer-method
         
         if len(high_risk_domains) >= 2:
             risk_findings["evidence"].append(f"Cross-domain pattern: {len(high_risk_domains)} domains ({', '.join(high_risk_domains)}) show elevated risk")
@@ -445,18 +398,9 @@ def _calculate_investigation_confidence(state: InvestigationState, risk_findings
 
 def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str, Any]) -> float:
     """Calculate REAL risk score based on actual domain analysis results with volume weighting."""
-<<<<<<< HEAD
-    # Check for confirmed fraud indicators (handle both boolean True and integer 1)
-    is_fraud_tx = facts.get("IS_FRAUD_TX")
-    if is_fraud_tx is True or is_fraud_tx == 1:
-        return 1.0
-    if facts.get("chargeback_confirmed") is True:
-        return 0.95
-=======
     # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
     # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
     # Only manual case outcomes can be used (if provided externally, not from Snowflake)
->>>>>>> 001-modify-analyzer-method
     if facts.get("manual_case_outcome") == "fraud":
         return 0.9
 
@@ -525,27 +469,8 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
             logger.warning(f"⚠️ No domain scores available, using volume-weighted transaction risk: {volume_weighted_risk:.3f}")
             return volume_weighted_risk
         else:
-<<<<<<< HEAD
-            # Fallback to simple model scores
-            model_scores = []
-            for result in facts.get("results", []):
-                if isinstance(result, dict) and "MODEL_SCORE" in result:
-                    model_score = result["MODEL_SCORE"]
-                    if model_score is not None:
-                        model_scores.append(model_score)
-
-            if model_scores:
-                avg_model_score = sum(model_scores) / len(model_scores)
-                avg_model_score = min(1.0, max(0.0, avg_model_score + device_penalty))
-                logger.warning(f"⚠️ No domain scores available, using model score fallback: {avg_model_score:.3f}")
-                return avg_model_score
-            else:
-                # No valid data available - investigation should not continue with numeric scoring
-                raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
-=======
             # No valid data available - investigation should not continue with numeric scoring
             raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
->>>>>>> 001-modify-analyzer-method
 
     # Calculate confidence-weighted mean of domain scores
     total_weight = sum(weight for _, weight in weighted_scores)
@@ -646,9 +571,6 @@ def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List
     else:
         weighted_confidence = confidence_factors[0]
 
-<<<<<<< HEAD
-    return min(1.0, max(0.0, weighted_confidence))
-=======
     return min(1.0, max(0.0, weighted_confidence))
 
 
@@ -1654,4 +1576,3 @@ def _calculate_per_transaction_scores(
         )
     
     return transaction_scores
->>>>>>> 001-modify-analyzer-method

@@ -59,14 +59,9 @@ class SnowflakeHandler:
         messages = state.get("messages", [])
 
         for msg in messages:
-<<<<<<< HEAD
-            if isinstance(msg, ToolMessage) and "snowflake" in msg.name.lower():
-                logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
-=======
             # Support both database_query (unified) and snowflake_query_tool (legacy)
             if isinstance(msg, ToolMessage) and ("snowflake" in msg.name.lower() or "database_query" in msg.name.lower()):
                 logger.warning("🔧 Found Database ToolMessage but completion flag not set - forcing completion")
->>>>>>> 001-modify-analyzer-method
 
                 snowflake_data = self.data_parser.parse_snowflake_data(msg.content)
                 return {
@@ -83,24 +78,14 @@ class SnowflakeHandler:
         for msg in reversed(messages):
             if hasattr(msg, "tool_calls") and msg.tool_calls:
                 for tool_call in msg.tool_calls:
-<<<<<<< HEAD
-                    if "snowflake" in str(tool_call.get("name", "")).lower():
-=======
                     tool_name = str(tool_call.get("name", "")).lower()
                     # Support both database_query (unified) and snowflake_query_tool (legacy)
                     if "snowflake" in tool_name or "database_query" in tool_name:
->>>>>>> 001-modify-analyzer-method
                         return True
         return False
 
     async def _generate_snowflake_tool_call(self, state: InvestigationState) -> Dict[str, Any]:
         """Generate a new Snowflake tool call."""
-<<<<<<< HEAD
-        date_range_days = state.get('date_range_days', 7)
-
-        logger.debug(f"[Step 3.2.4.2] Tool call generation for Snowflake - Date range: {date_range_days} days")
-        logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
-=======
         # Check if explicit time_range is provided, otherwise use date_range_days
         time_range = state.get('time_range')
         date_range_days = state.get('date_range_days', 7)
@@ -111,7 +96,6 @@ class SnowflakeHandler:
         else:
             logger.debug(f"[Step 3.2.4.2] Tool call generation for Snowflake - Date range: {date_range_days} days")
             logger.info(f"❄️ Starting MANDATORY Snowflake {date_range_days}-day analysis")
->>>>>>> 001-modify-analyzer-method
 
         # Create messages for LLM
         messages = self.message_builder.create_snowflake_messages(state, date_range_days)

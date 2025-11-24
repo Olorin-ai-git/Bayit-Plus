@@ -28,12 +28,6 @@ class MessageBuilder:
         existing_messages = [m for m in state.get("messages", [])
                            if not isinstance(m, SystemMessage)]
 
-<<<<<<< HEAD
-        # Create system message
-        base_prompt = f"""You are the investigation orchestrator. Your FIRST and MANDATORY task is to
-query Snowflake for {date_range_days} days of historical data. This is non-negotiable.
-Use the snowflake_query_tool immediately."""
-=======
         # Create system message with appropriate time range description
         time_range = state.get('time_range')
         if time_range:
@@ -49,7 +43,6 @@ You MUST use the database_query tool immediately to retrieve transaction data.
 The database_query tool works with both Snowflake and PostgreSQL - use it to query transaction data.
 
 Failure to call the tool will result in an incomplete investigation."""
->>>>>>> 001-modify-analyzer-method
 
         enhanced_prompt = self._create_enhanced_system_prompt(base_prompt, state)
         system_msg = SystemMessage(content=enhanced_prompt)

@@ -1,21 +1,13 @@
 """
 Structured Agent Prompt Generation
 
-<<<<<<< HEAD
-Unified prompt generation for autonomous investigation agents.
-=======
 Unified prompt generation for structured investigation agents.
->>>>>>> 001-modify-analyzer-method
 Single source of truth replacing scattered Gaia and Olorin prompts.
 """
 
 from typing import List, Optional, Dict, Any
 
-<<<<<<< HEAD
-from app.service.agent.autonomous_context import AutonomousInvestigationContext
-=======
 from app.service.agent.autonomous_context import StructuredInvestigationContext
->>>>>>> 001-modify-analyzer-method
 from app.service.logging import get_bridge_logger
 from app.service.agent.unified_prompts import (
     get_unified_investigation_prompt,
@@ -54,17 +46,6 @@ def create_investigation_prompt(
     
     # Use unified prompt system - single source of truth
     logger.info(f"Using unified prompt system for domain: {domain}")
-<<<<<<< HEAD
-    # Generate unified prompt with emphasis on comprehensive tool usage
-    unified_prompt = get_unified_investigation_prompt(
-        domain=domain,
-        context=context,
-        llm_context=llm_context,
-        available_tools=tool_names,
-        specific_objectives=specific_objectives
-    )
-    
-=======
     
     # Extract entity_type from context if available
     entity_type = None
@@ -88,14 +69,12 @@ def create_investigation_prompt(
         entity_type=entity_type
     )
     
->>>>>>> 001-modify-analyzer-method
     return unified_prompt
 
 
 # Validation function for agent responses
 def validate_investigation_response(response: str, domain: str) -> Dict[str, Any]:
     """Validate that the investigation response meets requirements.
-<<<<<<< HEAD
     
     Args:
         response: Agent's investigation response
@@ -107,19 +86,6 @@ def validate_investigation_response(response: str, domain: str) -> Dict[str, Any
     # Validate tool usage
     tool_validation = validate_tool_usage(response)
     
-=======
-    
-    Args:
-        response: Agent's investigation response
-        domain: Investigation domain
-    
-    Returns:
-        Validation result dictionary
-    """
-    # Validate tool usage
-    tool_validation = validate_tool_usage(response)
-    
->>>>>>> 001-modify-analyzer-method
     # Check for required fields
     has_risk_score = 'risk_score' in response.lower() or 'risk score' in response.lower()
     

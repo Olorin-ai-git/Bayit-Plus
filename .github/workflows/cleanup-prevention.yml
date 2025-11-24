@@ -1,0 +1,180 @@
+# GitHub Actions workflow to prevent reintroduction of dead code and garbage files
+name: Cleanup Prevention CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  prevent-backup-files:
+    name: Prevent Backup Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for backup file patterns
+        run: |
+          echo "Checking for backup file patterns..."
+          BACKUP_FILES=$(find . -type f \( -name "*.bak" -o -name "*.backup" -o -name "*.old" -o -name "*.orig" -o -name "*.copy" -o -name "*.tmp" -o -name "*.temp" -o -name "*~" \) ! -path "*/node_modules/*" ! -path "*/.git/*" ! -path "*/dist/*" ! -path "*/build/*")
+
+          if [ -n "$BACKUP_FILES" ]; then
+            echo "❌ ERROR: Backup files detected!"
+            echo "$BACKUP_FILES"
+            echo ""
+            echo "Please remove these backup files. Git provides version control."
+            exit 1
+          fi
+
+          echo "✅ No backup files found"
+
+  prevent-garbage-files:
+    name: Prevent Garbage Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for .DS_Store and other garbage
+        run: |
+          echo "Checking for garbage files..."
+          GARBAGE_FILES=$(find . -type f \( -name ".DS_Store" -o -name "Thumbs.db" -o -name "Desktop.ini" \) ! -path "*/node_modules/*" ! -path "*/.git/*")
+
+          if [ -n "$GARBAGE_FILES" ]; then
+            echo "❌ ERROR: Garbage files detected!"
+            echo "$GARBAGE_FILES"
+            echo ""
+            echo "Please remove these files and add them to .gitignore"
+            exit 1
+          fi
+
+          echo "✅ No garbage files found"
+
+  prevent-test-logs:
+    name: Prevent Test/Build Logs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for temporary log files
+        run: |
+          echo "Checking for temporary log files..."
+          LOG_FILES=$(find . -type f -name "*.log" ! -path "*/logs/investigations/*" ! -path "*/node_modules/*" ! -path "*/.git/*" ! -path "*/dist/*" ! -path "*/build/*" ! -path "*/.tox/*")
+
+          if [ -n "$LOG_FILES" ]; then
+            echo "❌ ERROR: Temporary log files detected!"
+            echo "$LOG_FILES"
+            echo ""
+            echo "Please remove these temporary logs. Structured logs should be in logs/ directory."
+            exit 1
+          fi
+
+          echo "✅ No temporary log files found"
+
+  frontend-dead-code-check:
+    name: Frontend Dead Code Detection
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./olorin-front
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: ./olorin-front/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ts-prune (detect unused exports)
+        run: |
+          npx ts-prune --threshold 80 || {
+            echo "❌ ERROR: Unused exports detected!"
+            echo ""
+            echo "Please review and remove unused code."
+            exit 1
+          }
+
+      - name: ESLint unused variables check
+        run: |
+          npm run lint -- --rule 'no-unused-vars: error' --rule '@typescript-eslint/no-unused-vars: error' || {
+            echo "❌ ERROR: Unused variables detected!"
+            echo ""
+            echo "Please remove unused variables."
+            exit 1
+          }
+
+  backend-dead-code-check:
+    name: Backend Dead Code Detection
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./olorin-server
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run vulture (detect unused code)
+        run: |
+          poetry run vulture app/ --min-confidence 80 || {
+            echo "❌ ERROR: Unused code detected!"
+            echo ""
+            echo "Please review and remove unused code."
+            exit 1
+          }
+
+      - name: Run Ruff unused code checks
+        run: |
+          poetry run ruff check --select F401,F841 app/ || {
+            echo "❌ ERROR: Unused imports or variables detected!"
+            echo ""
+            echo "Please remove unused imports and variables."
+            exit 1
+          }
+
+  file-size-compliance:
+    name: File Size Compliance (< 200 lines)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check file size compliance
+        run: |
+          echo "Checking for files over 200 lines..."
+          OVERSIZED_FILES=$(find olorin-front/src olorin-server/app -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) ! -path "*/node_modules/*" ! -path "*/.tox/*" ! -path "*/__pycache__/*" -exec wc -l {} \; | awk '$1 > 200' || true)
+
+          if [ -n "$OVERSIZED_FILES" ]; then
+            echo "⚠️ WARNING: Files over 200 lines detected!"
+            echo "$OVERSIZED_FILES"
+            echo ""
+            echo "Project standard requires files under 200 lines."
+            echo "Please split large files into focused modules."
+            # Don't fail for now, just warn
+          else
+            echo "✅ All files comply with 200-line limit"
+          fi
+
+  summary:
+    name: Cleanup Prevention Summary
+    runs-on: ubuntu-latest
+    needs: [prevent-backup-files, prevent-garbage-files, prevent-test-logs, frontend-dead-code-check, backend-dead-code-check]
+    steps:
+      - name: Success
+        run: |
+          echo "✅ All cleanup prevention checks passed!"
+          echo ""
+          echo "No dead code, backup files, or garbage detected."

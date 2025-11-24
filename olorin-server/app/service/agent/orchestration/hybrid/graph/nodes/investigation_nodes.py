@@ -35,11 +35,7 @@ class InvestigationNodes:
         config: Optional[Dict] = None
     ) -> HybridInvestigationState:
         """Enhanced start investigation with hybrid intelligence tracking"""
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         logger.debug(f"🚀 Starting Hybrid Intelligence Graph investigation")
         logger.debug(f"   Investigation ID: {state.get('investigation_id')}")
         logger.debug(f"   Entity: {state.get('entity_type')} - {state.get('entity_id')}")
@@ -155,9 +151,6 @@ class InvestigationNodes:
     ) -> HybridInvestigationState:
         """Enhanced fraud investigation with AI confidence integration"""
         
-<<<<<<< HEAD
-        logger.debug(f"🕵️ Hybrid Intelligence fraud investigation starting")
-=======
         # Check if this is a retry by counting consecutive AI messages without tool calls
         messages = state.get("messages", [])
         consecutive_ai_without_tools = 0
@@ -175,7 +168,6 @@ class InvestigationNodes:
         else:
             logger.debug(f"🕵️ Hybrid Intelligence fraud investigation starting")
         
->>>>>>> 001-modify-analyzer-method
         logger.debug(f"   AI-powered investigation velocity tracking")
         logger.debug(f"   Performance metrics: Real-time optimization")
         
@@ -188,13 +180,10 @@ class InvestigationNodes:
         with run_timer(state):
             enhanced_state = await hybrid_assistant.hybrid_aware_assistant(state, config)
             
-<<<<<<< HEAD
-=======
             # CRITICAL FIX: Ensure performance_metrics exists before accessing
             if "performance_metrics" not in enhanced_state:
                 enhanced_state["performance_metrics"] = {}
             
->>>>>>> 001-modify-analyzer-method
             # Update performance metrics in the hybrid state
             enhanced_state["performance_metrics"]["investigation_velocity"] = (
                 enhanced_state["performance_metrics"].get("investigation_velocity", 0) + 0.1
@@ -207,9 +196,6 @@ class InvestigationNodes:
             enhanced_state["end_time"] = state.get("end_time")
             enhanced_state["total_duration_ms"] = state.get("total_duration_ms")
             
-<<<<<<< HEAD
-        return enhanced_state
-=======
             # Preserve retry tracking in enhanced state
             enhanced_state["fraud_investigation_retry_count"] = state.get("fraud_investigation_retry_count", 0)
             enhanced_state["force_tool_usage"] = state.get("force_tool_usage", False)
@@ -459,4 +445,3 @@ def _emit_no_data_event(
     state["no_data_events"].append(no_data_event)
 
     logger.debug(f"✅ D2 FIX: no_data event recorded (total: {len(state['no_data_events'])} events)")
->>>>>>> 001-modify-analyzer-method

@@ -63,11 +63,7 @@ npm run olorin restart
 ### 1. Entity ID vs IP Address Resolution
 - **Problem**: Entity IDs (e.g., "K1F6HIIGBVHH20TX") were being passed to threat intelligence tools instead of IP addresses
 - **Solution**: 
-<<<<<<< HEAD
-  - Added `get_ip_addresses()` method to `AutonomousInvestigationContext`
-=======
   - Added `get_ip_addresses()` method to `StructuredInvestigationContext`
->>>>>>> 001-modify-analyzer-method
   - Updated network agent objectives to explicitly extract IP addresses from context
   - Added validation to prevent entity IDs from being treated as IPs
 
@@ -98,23 +94,14 @@ poetry run pytest test/unit/test_threat_intelligence_tools.py -v
 
 ### Integration Tests
 ```bash
-<<<<<<< HEAD
-# Run autonomous investigation tests with threat intelligence
-./scripts/run-autonomous-investigation.sh --scenario device_spoofing --verbose
-=======
 # Run structured investigation tests with threat intelligence
 ./scripts/run-structured-investigation.sh --scenario device_spoofing --verbose
->>>>>>> 001-modify-analyzer-method
 ```
 
 ### Mock Mode Testing
 ```bash
 # Test with mock responses (no API calls)
-<<<<<<< HEAD
-poetry run python scripts/testing/unified_autonomous_test_runner.py \
-=======
 poetry run python scripts/testing/unified_structured_test_runner.py \
->>>>>>> 001-modify-analyzer-method
   --scenario device_spoofing \
   --mode mock \
   --csv-file /Users/gklainert/Documents/olorin/transaction_dataset.csv \

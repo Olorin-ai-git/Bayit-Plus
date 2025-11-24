@@ -1,11 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-<<<<<<< HEAD
-=======
 import mitt from 'mitt';
 import { env } from '@shared/config/env.config';
 import { EventBusManager } from '@shared/events/UnifiedEventBus';
->>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Standalone CoreUI App (no remote imports)
@@ -62,11 +59,7 @@ const initializeCoreUIService = async () => {
 
     // Register service as ready
     if (window.olorin?.eventBus) {
-<<<<<<< HEAD
-      window.olorin.eventBus.emit('service:ready', { service: 'coreUi' });
-=======
       window.olorin.eventBus.emit('service:ready', { service: 'coreUi', timestamp: new Date() });
->>>>>>> 001-modify-analyzer-method
     }
 
   } catch (error) {
@@ -123,33 +116,6 @@ const initializeCoreUIService = async () => {
   }
 };
 
-<<<<<<< HEAD
-// Initialize global Olorin namespace if not already present
-if (!window.olorin) {
-  window.olorin = {
-    version: process.env.REACT_APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development',
-    services: {},
-    eventBus: null,
-    monitoring: null,
-    config: {
-      apiBaseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
-      wsUrl: process.env.REACT_APP_WS_URL || 'ws://localhost:8090',
-      enableDebug: process.env.NODE_ENV === 'development'
-    }
-  };
-
-  // Service registration helper
-  window.olorin.registerService = (name: string, service: any) => {
-    window.olorin.services[name] = service;
-    console.log(`[CoreUI] Registered service: ${name}`);
-  };
-
-  // Get service helper
-  window.olorin.getService = (name: string) => {
-    return window.olorin.services[name];
-  };
-=======
 // Initialize global Olorin namespace if not already present (for standalone mode)
 // In production, this will be provided by the shell app
 if (!window.olorin) {
@@ -169,7 +135,6 @@ if (!window.olorin) {
       return window.olorin.services.get(name);
     }
   };
->>>>>>> 001-modify-analyzer-method
 }
 
 // Start the Core UI microservice

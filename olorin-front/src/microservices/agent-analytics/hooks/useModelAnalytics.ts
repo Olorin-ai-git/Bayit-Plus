@@ -292,10 +292,7 @@ export function useModelAnalytics(
 
       return () => clearInterval(interval);
     }
-<<<<<<< HEAD
-=======
     return undefined;
->>>>>>> 001-modify-analyzer-method
   }, [autoRefreshInterval, refreshAll, state.isLoading, state.isRefreshing]);
 
   // Auto-load data on mount

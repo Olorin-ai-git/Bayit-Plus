@@ -3,11 +3,7 @@
 Batch Investigation Runner
 
 Runs multiple investigation scenarios in batch mode for comprehensive testing
-<<<<<<< HEAD
-and validation of the autonomous investigation system. Supports CSV input,
-=======
 and validation of the structured investigation system. Supports CSV input,
->>>>>>> 001-modify-analyzer-method
 concurrent execution, and comprehensive reporting.
 
 Features:

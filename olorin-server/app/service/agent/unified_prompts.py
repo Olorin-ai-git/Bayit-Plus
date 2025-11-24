@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Unified Prompt System for Autonomous Agents
-=======
 Unified Prompt System for Structured Agents
->>>>>>> 001-modify-analyzer-method
 
 Single source of truth for all agent prompts with emphasis on comprehensive tool usage.
 Replaces scattered Gaia and Olorin prompt systems.
@@ -24,12 +20,8 @@ def get_unified_investigation_prompt(
     context: Any,
     llm_context: str,
     available_tools: List[str],
-<<<<<<< HEAD
-    specific_objectives: List[str] = None
-=======
     specific_objectives: List[str] = None,
     entity_type: str = None
->>>>>>> 001-modify-analyzer-method
 ) -> str:
     """
     Generate unified investigation prompt that emphasizes using ALL available tools.
@@ -87,8 +79,6 @@ Based on the entity type and available data, you should:
 
 ⚡ INVESTIGATION WORKFLOW:
 1. 🔴 SNOWFLAKE FIRST (30-DAY ANALYSIS):
-<<<<<<< HEAD
-=======
    - Query transactions WHERE [ENTITY_COLUMN] = [ENTITY_ID]
    - IMPORTANT: Dynamically use the correct column name based on entity_type:
      * If entity_type is 'ip': use {IP} column (WHERE {IP} = entity_id)
@@ -96,7 +86,6 @@ Based on the entity type and available data, you should:
      * If entity_type is 'device' or 'device_id': use {DEVICE_ID} column (WHERE {DEVICE_ID} = entity_id)
      * If entity_type is 'user_id': use UNIQUE_USER_ID column (WHERE UNIQUE_USER_ID = entity_id)
    - The entity_type is: {entity_type if entity_type else 'not specified - check investigation context'}
->>>>>>> 001-modify-analyzer-method
    - Network Agent: Query {IP}, {IP_COUNTRY_CODE}, ISP_NAME, VPN_INDICATOR fields
    - Device Agent: Query {DEVICE_ID}, {USER_AGENT}, BROWSER_NAME, OS_NAME fields
    - Location Agent: Query {IP_COUNTRY_CODE} fields

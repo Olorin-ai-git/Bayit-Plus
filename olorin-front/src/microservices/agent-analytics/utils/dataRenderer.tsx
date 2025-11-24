@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-=======
->>>>>>> 001-modify-analyzer-method
 
 type DetailValue =
   | string

@@ -61,15 +61,9 @@ class EvidenceAnalyzer:
 
             # Configure for evidence analysis
             if hasattr(llm, 'temperature'):
-<<<<<<< HEAD
-                llm.temperature = 0.2  # Lower temperature for consistent analysis
-            if hasattr(llm, 'max_tokens'):
-                llm.max_tokens = 2000  # Sufficient for detailed analysis
-=======
                 llm.temperature = 0.1  # Low temperature for consistent, deterministic results
             if hasattr(llm, 'max_tokens'):
                 llm.max_tokens = 4096  # Increased for comprehensive fraud analysis responses
->>>>>>> 001-modify-analyzer-method
 
             logger.info(f"🤖 Evidence analyzer using live model: {llm_manager.selected_model_id}")
             return llm
@@ -81,70 +75,6 @@ class EvidenceAnalyzer:
             return self._create_mock_llm()
 
     def _create_mock_llm(self):
-<<<<<<< HEAD
-        """Create a mock LLM for fallback scenarios."""
-        from unittest.mock import MagicMock
-
-        # Create a mock that returns structured risk assessment
-        mock_llm = MagicMock()
-
-        async def mock_ainvoke(messages, *args, **kwargs):
-            from langchain_core.messages import AIMessage
-
-            logger.info("🧪 Mock LLM: Analyzing evidence (fallback mode)")
-
-            # Extract domain from messages to provide domain-specific mock responses
-            domain = "unknown"
-            for msg in messages:
-                if hasattr(msg, 'content'):
-                    content = str(msg.content).lower()
-                    if 'network' in content:
-                        domain = "network"
-                    elif 'device' in content:
-                        domain = "device"
-                    elif 'location' in content:
-                        domain = "location"
-                    elif 'logs' in content:
-                        domain = "logs"
-                    elif 'authentication' in content:
-                        domain = "authentication"
-                    elif 'risk' in content:
-                        domain = "risk"
-                    break
-
-            # Provide domain-specific mock assessment
-            mock_response = f"""Based on the {domain} domain evidence analysis:
-
-RISK SCORE: 0.3
-CONFIDENCE: 0.7
-
-RISK FACTORS:
-- Limited data available for comprehensive analysis
-- Evidence shows normal patterns with minor anomalies
-- No critical red flags identified
-
-REASONING:
-The {domain} evidence shows typical behavior patterns with some minor variations
-that warrant monitoring but do not indicate immediate fraud risk. The analysis
-is based on available data points and standard risk assessment criteria.
-
-RECOMMENDATIONS:
-- Continue monitoring for unusual patterns
-- Gather additional evidence if needed
-- Review in context of other domain findings"""
-
-            return AIMessage(content=mock_response)
-
-        mock_llm.ainvoke = mock_ainvoke
-        return mock_llm
-    
-    async def analyze_domain_evidence(
-        self, 
-        domain: str,
-        evidence: List[str], 
-        metrics: Dict[str, Any],
-        snowflake_data: Optional[Dict[str, Any]] = None,
-=======
         """Create a mock LLM using the real MockLLM with enhanced responses."""
         from app.service.agent.mock_llm import get_mock_llm
         import sys
@@ -190,50 +120,29 @@ RECOMMENDATIONS:
         metrics: Dict[str, Any],
         snowflake_data: Optional[Dict[str, Any]] = None,
         tool_results: Optional[Dict[str, Any]] = None,
->>>>>>> 001-modify-analyzer-method
         entity_type: str = "unknown",
         entity_id: str = "unknown",
         computed_risk_score: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         Analyze domain evidence using LLM to generate risk assessment.
-<<<<<<< HEAD
-        
-=======
 
         CRITICAL: Now includes tool_results to ensure LLM has access to ALL tool execution data.
 
->>>>>>> 001-modify-analyzer-method
         Args:
             domain: Domain name (network, device, location, logs, authentication)
             evidence: List of evidence points collected
             metrics: Metrics and data points collected
             snowflake_data: Optional Snowflake context data
-<<<<<<< HEAD
-            entity_type: Type of entity being analyzed
-            entity_id: ID of entity being analyzed
-            
-=======
             tool_results: ALL tool execution results from state (ADDED for complete aggregation)
             entity_type: Type of entity being analyzed
             entity_id: ID of entity being analyzed
             computed_risk_score: Optional pre-computed risk score for validation
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Dict containing risk_score, confidence, analysis reasoning
         """
         start_time = time.time()
-<<<<<<< HEAD
-        
-        logger.debug(f"🧠 Analyzing {domain} domain evidence for {entity_type} {entity_id}")
-        logger.debug(f"   Evidence points: {len(evidence)}")
-        logger.debug(f"   Metrics available: {len(metrics)}")
-        
-        # Prepare comprehensive analysis prompt with computed score
-        analysis_prompt = self._create_evidence_analysis_prompt(
-            domain, evidence, metrics, snowflake_data, entity_type, entity_id, computed_risk_score
-=======
 
         logger.debug(f"🧠 Analyzing {domain} domain evidence for {entity_type} {entity_id}")
         logger.debug(f"   Evidence points: {len(evidence)}")
@@ -255,7 +164,6 @@ RECOMMENDATIONS:
         # Prepare comprehensive analysis prompt with ALL data sources
         analysis_prompt = self._create_evidence_analysis_prompt(
             domain, evidence, metrics, snowflake_data, tool_results, entity_type, entity_id, computed_risk_score
->>>>>>> 001-modify-analyzer-method
         )
         
         # Create system message for domain-specific analysis
@@ -263,8 +171,6 @@ RECOMMENDATIONS:
         system_msg = SystemMessage(content=system_prompt)
         human_msg = HumanMessage(content=analysis_prompt)
         
-<<<<<<< HEAD
-=======
         # Log full LLM prompt when snowflake data is included
         if snowflake_data:
             logger.info("📝 LLM Prompt (with formatted Snowflake data):")
@@ -275,22 +181,12 @@ RECOMMENDATIONS:
             if len(analysis_prompt) > 3000:
                 logger.info(f"   ... (truncated, full length: {len(analysis_prompt)} chars)")
         
->>>>>>> 001-modify-analyzer-method
         try:
             # Invoke LLM for evidence analysis
             logger.debug(f"🤖 Invoking LLM for {domain} evidence analysis...")
             response = await self.llm.ainvoke([system_msg, human_msg])
             analysis_duration = time.time() - start_time
             
-<<<<<<< HEAD
-            # Parse LLM response, with computed score override if provided
-            analysis_result = self._parse_evidence_analysis(response.content, domain, computed_risk_score)
-            analysis_result["analysis_duration"] = analysis_duration
-            
-            logger.debug(f"✅ {domain} evidence analysis complete:")
-            logger.debug(f"   Risk Score: {analysis_result['risk_score']:.2f}")
-            logger.debug(f"   Confidence: {analysis_result['confidence']:.2f}")
-=======
             # Log full LLM response (increased limit for better visibility)
             if snowflake_data:
                 logger.info("🤖 LLM Response (after receiving formatted Snowflake data):")
@@ -316,17 +212,12 @@ RECOMMENDATIONS:
             else:
                 logger.debug(f"   Risk Score: INSUFFICIENT_DATA (LLM did not provide a score)")
             logger.debug(f"   Confidence: {analysis_result.get('confidence', 0.0):.2f}")
->>>>>>> 001-modify-analyzer-method
             logger.debug(f"   Duration: {analysis_duration:.3f}s")
             
             return analysis_result
             
         except Exception as e:
             analysis_duration = time.time() - start_time
-<<<<<<< HEAD
-            logger.error(f"❌ {domain} evidence analysis failed: {e}")
-            
-=======
             # Enhanced logging to capture full exception details
             import traceback
             import sys
@@ -347,7 +238,6 @@ RECOMMENDATIONS:
             logger.error(f"   Exception args: {e.args}")
             logger.error(f"   Full traceback:\n{traceback.format_exc()}")
 
->>>>>>> 001-modify-analyzer-method
             # Return fallback analysis
             return self._create_fallback_analysis(domain, evidence, metrics, analysis_duration)
     
@@ -382,32 +272,6 @@ RECOMMENDATIONS:
         
         base_prompt = domain_expertise.get(domain, f"You are a {domain} analysis expert.")
         
-<<<<<<< HEAD
-        return f"""{base_prompt}
-
-You MUST NOT use MODEL_SCORE (or any model-derived risk score) to set or justify the numeric risk you return.
-You may cite it as context, but its weight is 0 in your final risk computation.
-If evidence volume is low (≤1 event) or external TI is MINIMAL/clean, default to LOW or "needs more evidence".
-Return a numeric risk ONLY if you can justify it from non-model evidence.
-
-Your task is to analyze evidence from {domain} domain analysis and provide:
-1. A risk score from 0.0 to 1.0 based on the evidence (NEVER using MODEL_SCORE as justification)
-2. Confidence level in your assessment (0.0 to 1.0)
-3. Key risk factors identified (exclude MODEL_SCORE references)
-4. Detailed reasoning for your assessment (based on patterns, not model scores)
-5. Specific recommendations
-
-CRITICAL: Base your assessment ONLY on the actual evidence provided. 
-Do not make assumptions or use arbitrary values. If evidence is limited, 
-reflect that in your confidence score.
-
-MODEL_SCORE BAN: You are FORBIDDEN from using MODEL_SCORE values to justify risk levels.
-Focus on behavioral patterns, threat intelligence, technical indicators, and fraud signals.
-
-DATA AVAILABILITY CHECK: CRITICAL - Only make claims about data that was actually provided.
-If evidence shows "data not available" or "fields not queried", DO NOT invent conclusions about that data.
-Example: If evidence says "Browser/OS data not available", DO NOT claim "No browser variations detected".
-=======
         # Domain-specific analysis instructions
         domain_instructions = {
             "network": """CRITICAL: Focus ONLY on network/IP-related evidence:
@@ -490,43 +354,22 @@ Focus on {domain}-specific behavioral patterns, threat intelligence, technical i
 
 DATA AVAILABILITY CHECK: CRITICAL - Only make claims about {domain} data that was actually provided.
 If evidence shows "{domain} data not available" or "{domain} fields not queried", DO NOT invent conclusions about that data.
->>>>>>> 001-modify-analyzer-method
 
 RENDER CONTEXT LOCK: When engine-computed scores are provided, use EXACTLY those values.
 Do not calculate, estimate, or invent numeric scores in your analysis prose.
 Focus on qualitative interpretation of the provided quantitative values."""
 
     def _create_evidence_analysis_prompt(
-<<<<<<< HEAD
-        self, 
-        domain: str,
-        evidence: List[str], 
-        metrics: Dict[str, Any],
-        snowflake_data: Optional[Dict[str, Any]],
-=======
         self,
         domain: str,
         evidence: List[str],
         metrics: Dict[str, Any],
         snowflake_data: Optional[Dict[str, Any]],
         tool_results: Optional[Dict[str, Any]],
->>>>>>> 001-modify-analyzer-method
         entity_type: str,
         entity_id: str,
         computed_risk_score: Optional[float] = None
     ) -> str:
-<<<<<<< HEAD
-        """Create comprehensive prompt for evidence analysis with render context lock."""
-        
-        # Format evidence
-        evidence_text = "\n".join([f"- {e}" for e in evidence]) if evidence else "No evidence collected"
-        
-        # Format metrics
-        metrics_text = self._format_metrics_for_analysis(metrics)
-        
-        # Format Snowflake context
-        snowflake_text = self._format_snowflake_for_analysis(snowflake_data) if snowflake_data else "No Snowflake context available"
-=======
         """Create comprehensive prompt for evidence analysis with ALL data sources.
 
         CRITICAL: Now includes tool_results to provide LLM with complete tool execution data.
@@ -687,7 +530,6 @@ Focus on qualitative interpretation of the provided quantitative values."""
                     logger.info(f"   {line}")
             logger.info(f"   📝 Included in: SystemMessage (evidence analysis phase)")
             logger.info(f"   📊 Source data: {row_count} raw records → formatted summary")
->>>>>>> 001-modify-analyzer-method
         
         # CRITICAL PATCH C: Create render context with only engine values (prevent LLM invention)
         if computed_risk_score is not None:
@@ -719,17 +561,6 @@ FORBIDDEN: Do not write phrases like "I assess...", "I estimate...", "appears to
                 risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
         else:
             risk_instruction = "1. **RISK SCORE**: (0.0 to 1.0) - Must be justified by evidence"
-<<<<<<< HEAD
-        
-        # Add system-level numeric scoring ban
-        scoring_ban = """
-SYSTEM RULE: Use the numeric scores exactly as provided in the render context. If a score is missing (None), write 'N/A'. 
-Do not infer, calculate, estimate, or create numeric scores in your prose. Focus on qualitative analysis only."""
-        
-        prompt = f"""Analyze this {domain} domain evidence for fraud risk assessment:
-
-{scoring_ban}
-=======
 
         # Add system-level numeric scoring ban ONLY when computed score is provided
         if computed_risk_score is not None:
@@ -745,7 +576,6 @@ Calculate the score by analyzing risk factors, patterns, and fraud indicators in
         prompt = f"""Analyze this {domain} domain evidence for fraud risk assessment:
 
 {scoring_ban}{evidence_warning}
->>>>>>> 001-modify-analyzer-method
 
 ## Entity Information
 - Type: {entity_type}
@@ -759,12 +589,6 @@ Calculate the score by analyzing risk factors, patterns, and fraud indicators in
 {metrics_text}
 
 ## Snowflake Context
-<<<<<<< HEAD
-{snowflake_text}
-
-## Analysis Requirements
-Provide a comprehensive fraud risk assessment based ONLY on the evidence above:
-=======
 {snowflake_text}{fraud_patterns_text}
 
 ## Tool Execution Results
@@ -783,19 +607,10 @@ If tool results show "No tool execution results available" or are missing, you M
 
 ## Analysis Requirements
 Provide a comprehensive fraud risk assessment based ONLY on ALL the evidence above (including tool results):
->>>>>>> 001-modify-analyzer-method
 
 {risk_instruction}
 2. **CONFIDENCE**: (0.0 to 1.0) - Based on evidence quality and completeness
 3. **RISK FACTORS**: List specific factors that increase/decrease risk
-<<<<<<< HEAD
-4. **REASONING**: Detailed explanation of your risk assessment
-5. **RECOMMENDATIONS**: Specific actions based on your findings
-
-Format your response clearly with these sections. Be precise and evidence-based.
-REMINDER: Do not create numeric scores in your prose - use only the provided engine values."""
-        
-=======
 4. **REASONING**: Detailed explanation of your risk assessment (reference tool results where applicable)
 5. **RECOMMENDATIONS**: Specific actions based on your findings
 
@@ -814,7 +629,6 @@ Format your response clearly with these sections. Be precise and evidence-based.
         else:
             prompt += "\nREMINDER: You MUST provide a numeric risk score (0.0-1.0) based on evidence analysis."
 
->>>>>>> 001-modify-analyzer-method
         return prompt
     
     def _format_metrics_for_analysis(self, metrics: Dict[str, Any]) -> str:
@@ -835,13 +649,6 @@ Format your response clearly with these sections. Be precise and evidence-based.
         
         return "\n".join(formatted) if formatted else "No meaningful metrics"
     
-<<<<<<< HEAD
-    def _format_snowflake_for_analysis(self, snowflake_data: Dict[str, Any]) -> str:
-        """Format Snowflake data for evidence analysis with dollar-weighted statistics."""
-        if not snowflake_data:
-            return "No Snowflake data available"
-
-=======
     def _format_snowflake_for_analysis(self, snowflake_data: Dict[str, Any], domain: str = None) -> str:
         """Format Snowflake data for evidence analysis with dollar-weighted statistics, date range, and sample records.
         
@@ -862,7 +669,6 @@ Format your response clearly with these sections. Be precise and evidence-based.
                     return f"Database query failed: {error_msg} (Query: {query_preview})"
                 return f"Database query failed: {error_msg}"
 
->>>>>>> 001-modify-analyzer-method
         if isinstance(snowflake_data, dict) and "results" in snowflake_data:
             results = snowflake_data["results"]
             if not results:
@@ -870,14 +676,6 @@ Format your response clearly with these sections. Be precise and evidence-based.
 
             # Extract key insights for context
             total_records = len(results)
-<<<<<<< HEAD
-            model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
-            fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
-
-            avg_model_score = sum(model_scores)/len(model_scores) if model_scores else 0
-            avg_score_str = f"{avg_model_score:.3f}"
-            high_risk_count = len([s for s in model_scores if s > 0.7])
-=======
             # CRITICAL FIX: Filter out None values from model_scores to prevent "unsupported operand type(s) for +: 'float' and 'NoneType'" error
             model_scores = [r.get("MODEL_SCORE") for r in results if "MODEL_SCORE" in r]
             model_scores = [s for s in model_scores if s is not None]  # Filter out None values
@@ -908,17 +706,11 @@ Format your response clearly with these sections. Be precise and evidence-based.
                         date_range_str = f"\n- Date Range: {earliest} to {latest}"
                 except Exception as e:
                     logger.debug(f"Could not parse date range: {e}")
->>>>>>> 001-modify-analyzer-method
 
             # CRITICAL ENHANCEMENT: Add dollar-weighted statistics
             from app.service.agent.tools.snowflake_tool.schema_constants import PAID_AMOUNT_VALUE_IN_CURRENCY
             dollar_weighted_stats = self._calculate_dollar_weighted_stats(results, PAID_AMOUNT_VALUE_IN_CURRENCY)
 
-<<<<<<< HEAD
-            context = f"""Snowflake Transaction Context:
-- Total Records: {total_records}
-- Average Model Score: {avg_score_str}
-=======
             # CRITICAL: Filter sample transactions by domain-specific fields
             # Each domain should only see fields relevant to their analysis
             sample_records = self._format_sample_transactions(results[:5], domain=domain)
@@ -938,20 +730,12 @@ Format your response clearly with these sections. Be precise and evidence-based.
             context = f"""{context_header}:
 - Total Records: {total_records}{date_range_str}
 - Average Model Score: {avg_score_str} (reference only)
->>>>>>> 001-modify-analyzer-method
 - High Risk Transactions (>0.7): {high_risk_count}
 - Confirmed Fraud: {len(fraud_flags)}
 
 DOLLAR-WEIGHTED ANALYSIS:
 {dollar_weighted_stats}
 
-<<<<<<< HEAD
-NOTE: MODEL_SCORE is for reference only - your analysis should be based on domain-specific evidence."""
-
-            return context
-
-        return f"Raw Snowflake data: {str(snowflake_data)[:300]}..."
-=======
 SAMPLE TRANSACTIONS (first 5 of {total_records}) - {domain.upper() if domain else 'ALL'} DOMAIN FIELDS ONLY:
 {sample_records}
 
@@ -982,7 +766,6 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
             return f"Snowflake data: String data ({len(snowflake_data)} chars)"
         else:
             return f"Snowflake data: Available (type: {type(snowflake_data).__name__})"
->>>>>>> 001-modify-analyzer-method
 
     def _calculate_dollar_weighted_stats(self, results: list, amount_field: str) -> str:
         """Calculate dollar-weighted statistics for high-risk transactions."""
@@ -1045,15 +828,6 @@ NOTE: MODEL_SCORE is for reference only - your analysis should be based on {doma
 
         return stats
     
-<<<<<<< HEAD
-    def _parse_evidence_analysis(self, llm_response: str, domain: str, computed_risk_score: Optional[float] = None) -> Dict[str, Any]:
-        """Parse LLM response to extract structured analysis."""
-        import re
-        
-        # PRIORITY 1: Extract LLM-determined risk score (primary authority)
-        risk_pattern = r"risk\s*score[:\s]*(\d*\.?\d+)"
-        risk_match = re.search(risk_pattern, llm_response.lower())
-=======
     def _format_sample_transactions(self, sample_results: List[Dict[str, Any]], domain: str = None) -> str:
         """Format sample transaction records for LLM context, filtered by domain.
         
@@ -1254,38 +1028,11 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         
         if not risk_match:
             logger.debug(f"⚠️ No risk score pattern matched. LLM response preview: {repr(llm_response[:200])}")
->>>>>>> 001-modify-analyzer-method
 
         if risk_match:
             # LLM provided a risk score - use it as primary authority
             risk_score = float(risk_match.group(1))
             logger.debug(f"🤖 Using LLM-determined risk score: {risk_score:.3f}")
-<<<<<<< HEAD
-        elif computed_risk_score is not None:
-            # FALLBACK: Use computed score when LLM doesn't provide one
-            try:
-                # Validate computed_risk_score is a valid number
-                risk_score = float(computed_risk_score)
-                if not (0.0 <= risk_score <= 1.0):
-                    logger.warning(f"⚠️ Invalid computed_risk_score range ({risk_score}), clamping to valid range")
-                    risk_score = max(0.0, min(1.0, risk_score))  # Clamp to valid range
-                logger.warning(f"⚠️ LLM did not provide risk score, using algorithmic fallback: {risk_score:.3f}")
-            except (ValueError, TypeError) as e:
-                logger.error(f"❌ Invalid computed_risk_score in parse function ({computed_risk_score}): {e}")
-                logger.error("🚨 Both LLM and computed risk scores are invalid, using emergency fallback")
-                risk_score = 0.5  # Emergency fallback
-        else:
-            # CRITICAL FAILURE: Neither LLM nor algorithmic scoring provided valid score
-            error_msg = f"CRITICAL: Neither LLM nor algorithmic risk scoring provided valid score for {domain} domain (LLM provided: {llm_response[:100] if llm_response else 'None'})"
-            logger.error(f"❌ {error_msg}")
-            raise RuntimeError(error_msg)
-        
-        # Extract confidence
-        conf_pattern = r"confidence[:\s]*(\d*\.?\d+)"
-        conf_match = re.search(conf_pattern, llm_response.lower())
-        confidence = float(conf_match.group(1)) if conf_match else 0.5
-        
-=======
         else:
             # CRITICAL: LLM did not provide a risk score - mark as insufficient data
             # DO NOT use algorithmic fallback or default values - this is insufficient data
@@ -1336,7 +1083,6 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         if confidence > 1.0:
             confidence = min(confidence / 100.0, 1.0)
         
->>>>>>> 001-modify-analyzer-method
         # Extract risk factors
         factors_section = self._extract_section(llm_response, "risk factors")
         
@@ -1346,22 +1092,16 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         # Extract recommendations
         recommendations_section = self._extract_section(llm_response, "recommendations")
         
-<<<<<<< HEAD
-=======
         # Extract specific values from analysis for actionable recommendations
         extracted_values = self._extract_specific_values(llm_response, snowflake_data)
         
->>>>>>> 001-modify-analyzer-method
         return {
             "risk_score": min(1.0, max(0.0, risk_score)),
             "confidence": min(1.0, max(0.0, confidence)),
             "risk_factors": factors_section,
             "reasoning": reasoning_section,
             "recommendations": recommendations_section,
-<<<<<<< HEAD
-=======
             "extracted_values": extracted_values,  # IPs, devices, emails extracted for recommendations
->>>>>>> 001-modify-analyzer-method
             "llm_response": llm_response,
             "domain": domain,
             "analysis_type": "llm_evidence_analysis"
@@ -1385,8 +1125,6 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         # Fallback: return portion of text that might contain the section
         return f"Section not clearly identified in response: {text[:200]}..."
     
-<<<<<<< HEAD
-=======
     def _extract_specific_values(self, llm_response: str, snowflake_data: Optional[Dict[str, Any]] = None) -> Dict[str, List[str]]:
         """
         Extract specific values (IPs, devices, emails) from LLM response and Snowflake data.
@@ -1466,7 +1204,6 @@ PRIORITY: Execute external tool analysis to fill these gaps"""
         
         return extracted
     
->>>>>>> 001-modify-analyzer-method
     def _create_fallback_analysis(
         self, 
         domain: str, 

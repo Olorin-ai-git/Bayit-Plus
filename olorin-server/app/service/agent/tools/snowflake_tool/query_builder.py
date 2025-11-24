@@ -85,13 +85,10 @@ class SnowflakeQueryBuilder:
     ) -> Dict[str, Any]:
         """
         Build an optimized investigation query with comprehensive evidence collection.
-<<<<<<< HEAD
-=======
         
         CRITICAL: MODEL_SCORE and IS_FRAUD_TX are automatically excluded from investigation queries
         to prevent contamination of investigation results. These columns are only used AFTER investigation
         for comparison purposes.
->>>>>>> 001-modify-analyzer-method
 
         Args:
             entity_type: Type of entity (IP, EMAIL, DEVICE_ID, etc.)
@@ -110,8 +107,6 @@ class SnowflakeQueryBuilder:
             investigation_focus = "comprehensive"
 
         field_collection = cls.EVIDENCE_FIELD_COLLECTIONS[investigation_focus]
-<<<<<<< HEAD
-=======
         
         # CRITICAL: Exclude MODEL_SCORE and all FRAUD-related columns from investigation queries
         # These columns must NOT appear in SELECT clauses during investigation
@@ -132,7 +127,6 @@ class SnowflakeQueryBuilder:
         if excluded_fraud_columns:
             logger.info(f"🚫 Excluded {len(excluded_fraud_columns)} fraud-related columns from investigation query (unbiased evaluation)")
             logger.debug(f"🚫 Excluded columns: {', '.join(excluded_fraud_columns[:10])}{'...' if len(excluded_fraud_columns) > 10 else ''}")
->>>>>>> 001-modify-analyzer-method
 
         # Build safe column selection
         safe_columns = build_safe_select_columns(field_collection)

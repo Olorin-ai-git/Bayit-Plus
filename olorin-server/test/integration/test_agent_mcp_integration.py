@@ -50,13 +50,8 @@ class TestAgentMCPIntegration:
         return redis_mock
 
     @pytest.fixture
-<<<<<<< HEAD
-    def mock_autonomous_context(self):
-        """Mock autonomous context for agent operations."""
-=======
     def mock_structured_context(self):
         """Mock structured context for agent operations."""
->>>>>>> 001-modify-analyzer-method
         context = Mock()
         context.investigation_id = "test_investigation_123"
         context.entity_id = "test_entity_456"
@@ -123,11 +118,7 @@ class TestAgentMCPIntegration:
                 assert True
 
     @pytest.mark.asyncio
-<<<<<<< HEAD
-    async def test_device_agent_mcp_fallback_behavior(self, mock_autonomous_context):
-=======
     async def test_device_agent_mcp_fallback_behavior(self, mock_structured_context):
->>>>>>> 001-modify-analyzer-method
         """Test device agent fallback behavior when MCP is not available."""
         
         config = {"investigation_id": "test_investigation_123", "entity_id": "test_entity_456"}
@@ -135,19 +126,11 @@ class TestAgentMCPIntegration:
         # Mock the device agent function to test fallback
         with patch('app.service.agent.device_agent.logger') as mock_logger:
             try:
-<<<<<<< HEAD
-                from app.service.agent.device_agent import autonomous_device_agent
-                
-                # Test the agent function (will use fallback if MCP not available)
-                state = {}
-                result = await autonomous_device_agent(state, config)
-=======
                 from app.service.agent.device_agent import structured_device_agent
                 
                 # Test the agent function (will use fallback if MCP not available)
                 state = {}
                 result = await structured_device_agent(state, config)
->>>>>>> 001-modify-analyzer-method
                 
                 # Should return a result even with fallbacks
                 assert result is not None
@@ -163,30 +146,18 @@ class TestAgentMCPIntegration:
                 assert True
 
     @pytest.mark.asyncio
-<<<<<<< HEAD
-    async def test_network_agent_mcp_integration(self, mock_autonomous_context):
-=======
     async def test_network_agent_mcp_integration(self, mock_structured_context):
->>>>>>> 001-modify-analyzer-method
         """Test network agent MCP integration and fallback."""
         
         config = {"investigation_id": "test_investigation_123", "entity_id": "test_entity_456"}
         
         with patch('app.service.agent.network_agent.logger') as mock_logger:
             try:
-<<<<<<< HEAD
-                from app.service.agent.network_agent import autonomous_network_agent
-                
-                # Test the agent function
-                state = {}
-                result = await autonomous_network_agent(state, config)
-=======
                 from app.service.agent.network_agent import structured_network_agent
                 
                 # Test the agent function
                 state = {}
                 result = await structured_network_agent(state, config)
->>>>>>> 001-modify-analyzer-method
                 
                 # Should return a result
                 assert result is not None
@@ -361,11 +332,7 @@ class TestAgentMCPIntegration:
             print("✅ MCP connection pooling working correctly")
 
     @pytest.mark.asyncio
-<<<<<<< HEAD
-    async def test_complete_agent_workflow_with_mcp(self, mock_settings, mock_redis_client, mock_autonomous_context):
-=======
     async def test_complete_agent_workflow_with_mcp(self, mock_settings, mock_redis_client, mock_structured_context):
->>>>>>> 001-modify-analyzer-method
         """Test complete agent workflow with MCP integration."""
         
         with patch.multiple(
@@ -390,17 +357,6 @@ class TestAgentMCPIntegration:
                 config = {"investigation_id": "test_investigation_123", "entity_id": "test_entity_456"}
                 
                 # Mock investigation context
-<<<<<<< HEAD
-                mock_autonomous_context.start_domain_analysis = Mock()
-                mock_autonomous_context.record_domain_findings = Mock()
-                
-                # Step 4: Run device agent with MCP enhancement
-                try:
-                    from app.service.agent.device_agent import autonomous_device_agent
-                    
-                    state = {}
-                    result = await autonomous_device_agent(state, config)
-=======
                 mock_structured_context.start_domain_analysis = Mock()
                 mock_structured_context.record_domain_findings = Mock()
                 
@@ -410,7 +366,6 @@ class TestAgentMCPIntegration:
                     
                     state = {}
                     result = await structured_device_agent(state, config)
->>>>>>> 001-modify-analyzer-method
                     
                     assert result is not None
                     print("✅ Step 4: Device agent executed successfully")

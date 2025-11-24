@@ -82,16 +82,6 @@ source "$SCRIPT_DIR/common.sh"
 eval $(get_feature_paths)
 check_feature_branch "$CURRENT_BRANCH" "$HAS_GIT" || exit 1
 
-<<<<<<< HEAD
-# If paths-only mode, output paths and exit
-if $PATHS_ONLY; then
-    echo "REPO_ROOT: $REPO_ROOT"
-    echo "BRANCH: $CURRENT_BRANCH"
-    echo "FEATURE_DIR: $FEATURE_DIR"
-    echo "FEATURE_SPEC: $FEATURE_SPEC"
-    echo "IMPL_PLAN: $IMPL_PLAN"
-    echo "TASKS: $TASKS"
-=======
 # If paths-only mode, output paths and exit (support JSON + paths-only combined)
 if $PATHS_ONLY; then
     if $JSON_MODE; then
@@ -106,39 +96,26 @@ if $PATHS_ONLY; then
         echo "IMPL_PLAN: $IMPL_PLAN"
         echo "TASKS: $TASKS"
     fi
->>>>>>> 001-modify-analyzer-method
     exit 0
 fi
 
 # Validate required directories and files
 if [[ ! -d "$FEATURE_DIR" ]]; then
     echo "ERROR: Feature directory not found: $FEATURE_DIR" >&2
-<<<<<<< HEAD
-    echo "Run /specify first to create the feature structure." >&2
-=======
     echo "Run /speckit.specify first to create the feature structure." >&2
->>>>>>> 001-modify-analyzer-method
     exit 1
 fi
 
 if [[ ! -f "$IMPL_PLAN" ]]; then
     echo "ERROR: plan.md not found in $FEATURE_DIR" >&2
-<<<<<<< HEAD
-    echo "Run /plan first to create the implementation plan." >&2
-=======
     echo "Run /speckit.plan first to create the implementation plan." >&2
->>>>>>> 001-modify-analyzer-method
     exit 1
 fi
 
 # Check for tasks.md if required
 if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
     echo "ERROR: tasks.md not found in $FEATURE_DIR" >&2
-<<<<<<< HEAD
-    echo "Run /tasks first to create the task list." >&2
-=======
     echo "Run /speckit.tasks first to create the task list." >&2
->>>>>>> 001-modify-analyzer-method
     exit 1
 fi
 
@@ -186,8 +163,4 @@ else
     if $INCLUDE_TASKS; then
         check_file "$TASKS" "tasks.md"
     fi
-<<<<<<< HEAD
 fi
-=======
-fi
->>>>>>> 001-modify-analyzer-method

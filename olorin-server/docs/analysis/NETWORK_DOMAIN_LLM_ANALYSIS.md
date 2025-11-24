@@ -233,11 +233,6 @@ agent_context_for_network_risk = AgentContext(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/NETWORK_DOMAIN_LLM_ANALYSIS.md
-    olorin_header=OlorinHeader(
-        olorin_tid=request.headers.get(
-            "olorin-tid", f"olorin-network-risk-{user_id}"
-=======
     olorin_header=OlorinHeader(
         olorin_tid=request.headers.get(
             "olorin-tid", f"olorin-network-risk-{user_id}"
@@ -272,9 +267,6 @@ The agent uses a hierarchical naming scheme: `"Olorin.cas.hri.olorin:network-ris
 The system intelligently handles HTTP headers:
 
 ```python
-<<<<<<< HEAD:back/docs/NETWORK_DOMAIN_LLM_ANALYSIS.md
-olorin_tid=request.headers.get("olorin-tid", f"olorin-network-risk-{user_id}")
-=======
 olorin_tid=request.headers.get("olorin-tid", f"olorin-network-risk-{user_id}")
 >>>>>>> restructure-projects:olorin-server/docs/NETWORK_DOMAIN_LLM_ANALYSIS.md
 ```

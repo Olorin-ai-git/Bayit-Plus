@@ -164,9 +164,6 @@ python tests/run_structured_investigation_for_device.py
 - [Testing Scripts](./docs/README_structured_investigation.md)
 - [Contributing](./docs/CONTRIBUTING.md)
 
-<<<<<<< HEAD:back/README.md
-For more detailed information, explore the [`/docs`](./docs) directory. 
-=======
 After running `poetry install` for the first time, [commit your poetry.lock file to version control](https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control).
 
 ## Pre-requisites for running your Agent
@@ -379,9 +376,6 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct
 
 ## License
 
-<<<<<<< HEAD
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-=======
 ## OLORIN Backend
 
 

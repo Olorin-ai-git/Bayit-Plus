@@ -502,8 +502,4 @@ The verification evidence confirms that Olorin's evaluation infrastructure is no
 - **Human-in-the-Loop**: `/app/service/agent/orchestration/human_in_the_loop.py`
 - **Monitoring System**: `/app/service/monitoring/orchestrator_monitoring.py`
 - **Performance Manager**: `/app/service/performance/performance_manager.py`
-<<<<<<< HEAD
-- **Plan Reference**: `/docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md`
-=======
 - **Plan Reference**: `/docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md`
->>>>>>> 001-modify-analyzer-method

@@ -4,35 +4,9 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-<<<<<<< HEAD
-import { EventBusManager } from '../events/eventBus';
-
-export interface APIResponse<T = any> {
-  data: T;
-  status: number;
-  message: string;
-  timestamp: string;
-}
-
-export interface ServiceConfig {
-  baseURL: string;
-  timeout: number;
-  retries: number;
-  headers?: Record<string, string>;
-}
-
-export interface ServiceHealth {
-  service: string;
-  status: 'healthy' | 'degraded' | 'down';
-  latency: number;
-  errorRate: number;
-  lastCheck: Date;
-}
-=======
 import { EventBusManager } from '../events/UnifiedEventBus';
 import type { APIResponse } from '../types/api/response.types';
 import type { ServiceConfig, ServiceHealth } from '../types/api/config.types';
->>>>>>> 001-modify-analyzer-method
 
 /**
  * Base API Service for all microservices
@@ -288,23 +262,6 @@ export const serviceRegistry = new ServiceRegistry();
  * Initialize default services for Olorin microservices
  */
 export function initializeServices(): void {
-<<<<<<< HEAD
-  // Register all 8 microservices
-  serviceRegistry.register('autonomous-investigation', {
-    baseURL: 'http://localhost:3001',
-    timeout: 30000,
-    retries: 3
-  });
-
-  serviceRegistry.register('manual-investigation', {
-    baseURL: 'http://localhost:3002',
-    timeout: 30000,
-    retries: 3
-  }, InvestigationService as any);
-
-  serviceRegistry.register('agent-analytics', {
-    baseURL: 'http://localhost:3003',
-=======
   // Register Investigation Wizard service (Feature 004 - replaces legacy structured/manual investigation)
   serviceRegistry.register('investigation', {
     baseURL: 'http://localhost:3001',
@@ -314,7 +271,6 @@ export function initializeServices(): void {
 
   serviceRegistry.register('agent-analytics', {
     baseURL: 'http://localhost:3002',
->>>>>>> 001-modify-analyzer-method
     timeout: 15000,
     retries: 2
   }, AnalyticsService as any);

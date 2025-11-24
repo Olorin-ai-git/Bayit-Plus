@@ -547,11 +547,7 @@ DEBUG=api-test npm run api:test
 npm run api:test -- --grep "investigations"
 
 # Validate specific contract
-<<<<<<< HEAD
-npm run api:contracts -- --service autonomous-investigation
-=======
 npm run api:contracts -- --service structured-investigation
->>>>>>> 001-modify-analyzer-method
 
 # Generate verbose reports
 npm run api:contracts -- --verbose

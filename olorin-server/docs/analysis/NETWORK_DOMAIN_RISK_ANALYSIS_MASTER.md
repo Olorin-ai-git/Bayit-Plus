@@ -311,12 +311,6 @@ agent_context_for_network_risk = AgentContext(
         interaction_group_id=f"network-risk-assessment-{user_id}",
         additional_metadata={"userId": user_id},
     ),
-<<<<<<< HEAD:back/docs/NETWORK_DOMAIN_RISK_ANALYSIS_MASTER.md
-    olorin_header=OlorinHeader(
-        olorin_tid=request.headers.get("olorin-tid", f"olorin-network-risk-{user_id}"),
-        olorin_originating_assetalias=request.headers.get(
-            "olorin_originating_assetalias", settings.olorin_originating_assetalias
-=======
     olorin_header=OlorinHeader(
         olorin_tid=request.headers.get("olorin-tid", f"olorin-network-risk-{user_id}"),
         olorin_originating_assetalias=request.headers.get(

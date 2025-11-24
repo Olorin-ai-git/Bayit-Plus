@@ -1,0 +1,887 @@
+openapi: 3.0.3
+info:
+  title: Olorin Investigation Template API
+  version: 1.0.0
+  description: |
+    REST API for managing investigation templates. Templates allow users to save and reuse
+    investigation configurations for common scenarios.
+
+    **Key Features:**
+    - Create templates from existing investigations
+    - List user's saved templates
+    - Apply templates to new investigations
+    - Update template metadata (name, description)
+    - Delete templates
+    - Track template usage statistics
+
+    **Use Cases:**
+    - Save frequently used investigation configurations
+    - Share investigation patterns across team
+    - Quick-start investigations with pre-configured settings
+    - Standardize investigation workflows
+
+    **Configuration:**
+    All endpoint URLs and limits are read from environment variables.
+
+servers:
+  - url: '{apiBaseUrl}/api/v1'
+    description: Configurable backend API server
+    variables:
+      apiBaseUrl:
+        default: 'http://localhost:8090'
+        description: Base URL from REACT_APP_API_BASE_URL environment variable
+
+security:
+  - bearerAuth: []
+
+paths:
+  /templates:
+    get:
+      summary: List all templates for current user
+      description: |
+        Retrieves all investigation templates created by the authenticated user.
+
+        **Sorting:**
+        Can sort by name, created_at, last_used, usage_count.
+
+        **Filtering:**
+        Can filter by tags, entity types, tool selections.
+
+        **Pagination:**
+        Results are paginated with configurable size.
+      operationId: listTemplates
+      tags:
+        - Templates
+      parameters:
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            enum: [name, created_at, last_used, usage_count]
+            default: created_at
+        - name: sort_order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Maximum number of templates to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of templates to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateListResponse'
+              examples:
+                userTemplates:
+                  summary: User's saved templates
+                  value:
+                    templates:
+                      - template_id: "tmpl_account_takeover"
+                        user_id: "user123"
+                        name: "Account Takeover Investigation"
+                        description: "Standard investigation for suspected account takeover incidents"
+                        template_json:
+                          entities:
+                            - entity_type: "user_id"
+                          time_range:
+                            duration_hours: 24
+                          tools:
+                            - tool_name: "device_fingerprint"
+                              enabled: true
+                            - tool_name: "location_analysis"
+                              enabled: true
+                          correlation_mode: "OR"
+                        tags: ["account_security", "takeover"]
+                        usage_count: 15
+                        created_at: "2024-01-01T10:00:00Z"
+                        last_used: "2024-01-15T10:00:00Z"
+                      - template_id: "tmpl_fraud_detection"
+                        user_id: "user123"
+                        name: "Credit Card Fraud Detection"
+                        description: "Investigation template for credit card fraud cases"
+                        template_json:
+                          entities:
+                            - entity_type: "card_number"
+                            - entity_type: "transaction_id"
+                          time_range:
+                            duration_hours: 72
+                          tools:
+                            - tool_name: "transaction_analysis"
+                              enabled: true
+                              config:
+                                threshold: 0.8
+                            - tool_name: "pattern_detection"
+                              enabled: true
+                          correlation_mode: "AND"
+                        tags: ["fraud", "credit_card"]
+                        usage_count: 8
+                        created_at: "2024-01-05T14:00:00Z"
+                        last_used: "2024-01-14T09:00:00Z"
+                    total: 2
+                    limit: 20
+                    offset: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      summary: Create new investigation template
+      description: |
+        Creates a new template from investigation settings. Can be created from:
+        - Current investigation wizard settings
+        - Manual template configuration
+        - Copy of existing template with modifications
+
+        **Validation:**
+        - Template name must be unique for user
+        - Template JSON must validate against InvestigationSettings schema
+        - Entity values can be placeholders (e.g., "{user_id}", "{card_number}")
+        - Tool configurations must be valid
+
+        **Auto-tagging:**
+        Server can automatically suggest tags based on entity types and tools selected.
+      operationId: createTemplate
+      tags:
+        - Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreate'
+            examples:
+              fromInvestigation:
+                summary: Create template from investigation
+                value:
+                  name: "VIP Account Monitoring"
+                  description: "Template for monitoring VIP customer accounts"
+                  template_json:
+                    entities:
+                      - entity_type: "user_id"
+                    time_range:
+                      duration_hours: 168
+                    tools:
+                      - tool_name: "device_fingerprint"
+                        enabled: true
+                      - tool_name: "location_analysis"
+                        enabled: true
+                        config:
+                          radius_km: 50
+                      - tool_name: "logs_analysis"
+                        enabled: true
+                    correlation_mode: "OR"
+                  tags: ["vip", "monitoring"]
+              manualTemplate:
+                summary: Manually created template
+                value:
+                  name: "Multi-Device Investigation"
+                  description: "Template for investigating activity across multiple devices"
+                  template_json:
+                    entities:
+                      - entity_type: "user_id"
+                      - entity_type: "device_id"
+                    time_range:
+                      duration_hours: 48
+                    tools:
+                      - tool_name: "device_fingerprint"
+                        enabled: true
+                      - tool_name: "network_analysis"
+                        enabled: true
+                    correlation_mode: "OR"
+                  tags: ["multi_device", "correlation"]
+      responses:
+        '201':
+          description: Template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+              examples:
+                created:
+                  summary: Successfully created template
+                  value:
+                    template_id: "tmpl_vip_monitoring"
+                    user_id: "user123"
+                    name: "VIP Account Monitoring"
+                    description: "Template for monitoring VIP customer accounts"
+                    template_json:
+                      entities:
+                        - entity_type: "user_id"
+                      time_range:
+                        duration_hours: 168
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                        - tool_name: "location_analysis"
+                          enabled: true
+                          config:
+                            radius_km: 50
+                        - tool_name: "logs_analysis"
+                          enabled: true
+                      correlation_mode: "OR"
+                    tags: ["vip", "monitoring"]
+                    usage_count: 0
+                    created_at: "2024-01-15T10:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /templates/{templateId}:
+    parameters:
+      - name: templateId
+        in: path
+        required: true
+        description: Unique template identifier
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        example: "tmpl_account_takeover"
+
+    get:
+      summary: Retrieve specific template
+      description: |
+        Retrieves complete template details including full configuration JSON.
+
+        **Access Control:**
+        - Users can only retrieve their own templates
+        - Admin users can retrieve any template
+
+        **Usage Tracking:**
+        This endpoint does not increment usage_count. Only applying template to
+        investigation increments usage.
+      operationId: getTemplate
+      tags:
+        - Templates
+      responses:
+        '200':
+          description: Template retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+              examples:
+                template:
+                  summary: Complete template details
+                  value:
+                    template_id: "tmpl_account_takeover"
+                    user_id: "user123"
+                    name: "Account Takeover Investigation"
+                    description: "Standard investigation for suspected account takeover incidents"
+                    template_json:
+                      entities:
+                        - entity_type: "user_id"
+                      time_range:
+                        duration_hours: 24
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                        - tool_name: "location_analysis"
+                          enabled: true
+                      correlation_mode: "OR"
+                    tags: ["account_security", "takeover"]
+                    usage_count: 15
+                    created_at: "2024-01-01T10:00:00Z"
+                    updated_at: "2024-01-10T14:00:00Z"
+                    last_used: "2024-01-15T10:00:00Z"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      summary: Update template metadata
+      description: |
+        Updates template name, description, and tags. Template JSON configuration
+        can also be updated if no investigations are currently using it.
+
+        **Restrictions:**
+        - Cannot modify template_json if template is in use (usage_count > 0)
+        - To modify configuration, create new template instead
+        - Can always update name, description, tags
+
+        **Version Control:**
+        If template_json is modified, a new version is created and old version
+        is retained for audit purposes.
+      operationId: updateTemplate
+      tags:
+        - Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateUpdate'
+            examples:
+              updateMetadata:
+                summary: Update template metadata only
+                value:
+                  name: "Updated Account Takeover Investigation"
+                  description: "Enhanced investigation template with improved tool selection"
+                  tags: ["account_security", "takeover", "enhanced"]
+              updateConfiguration:
+                summary: Update template configuration
+                value:
+                  name: "Account Takeover Investigation v2"
+                  template_json:
+                    entities:
+                      - entity_type: "user_id"
+                      - entity_type: "ip_address"
+                    time_range:
+                      duration_hours: 24
+                    tools:
+                      - tool_name: "device_fingerprint"
+                        enabled: true
+                      - tool_name: "location_analysis"
+                        enabled: true
+                      - tool_name: "network_analysis"
+                        enabled: true
+                    correlation_mode: "OR"
+      responses:
+        '200':
+          description: Template updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+              examples:
+                updated:
+                  summary: Successfully updated template
+                  value:
+                    template_id: "tmpl_account_takeover"
+                    user_id: "user123"
+                    name: "Updated Account Takeover Investigation"
+                    description: "Enhanced investigation template with improved tool selection"
+                    template_json:
+                      entities:
+                        - entity_type: "user_id"
+                      time_range:
+                        duration_hours: 24
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                        - tool_name: "location_analysis"
+                          enabled: true
+                      correlation_mode: "OR"
+                    tags: ["account_security", "takeover", "enhanced"]
+                    usage_count: 15
+                    created_at: "2024-01-01T10:00:00Z"
+                    updated_at: "2024-01-15T11:00:00Z"
+                    last_used: "2024-01-15T10:00:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: Delete template
+      description: |
+        Permanently deletes a template. Used when:
+        - User no longer needs template
+        - Template is obsolete or incorrect
+        - Cleanup of unused templates
+
+        **Soft Delete:**
+        Templates are soft-deleted if they have usage_count > 0 (retained for audit).
+        Hard delete only occurs if usage_count = 0.
+
+        **Access Control:**
+        - Users can only delete their own templates
+        - Admin users can delete any template
+      operationId: deleteTemplate
+      tags:
+        - Templates
+      responses:
+        '204':
+          description: Template deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /templates/{templateId}/apply:
+    parameters:
+      - name: templateId
+        in: path
+        required: true
+        description: Template to apply
+        schema:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        example: "tmpl_account_takeover"
+
+    post:
+      summary: Apply template to new investigation
+      description: |
+        Creates new investigation wizard state from template configuration.
+        This is the primary way templates are used to start investigations.
+
+        **Process:**
+        1. Load template configuration
+        2. Replace placeholders with provided entity values
+        3. Create new wizard state with investigation_id
+        4. Set wizard_step to SETTINGS
+        5. Increment template usage_count
+        6. Return complete wizard state
+
+        **Placeholder Replacement:**
+        Template can include placeholders like {user_id}, {card_number}.
+        These are replaced with values from entity_values parameter.
+
+        **Overrides:**
+        Can override specific template settings (e.g., time_range, tool configs).
+      operationId: applyTemplate
+      tags:
+        - Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateApplyRequest'
+            examples:
+              applyWithValues:
+                summary: Apply template with entity values
+                value:
+                  investigation_id: "inv_2024_050"
+                  investigation_name: "Account Takeover - User ABC123"
+                  entity_values:
+                    - entity_type: "user_id"
+                      entity_value: "ABC123"
+                  overrides:
+                    time_range:
+                      start_time: "2024-01-01T00:00:00Z"
+                      end_time: "2024-01-15T23:59:59Z"
+              applyMultipleEntities:
+                summary: Apply template with multiple entities
+                value:
+                  investigation_id: "inv_2024_051"
+                  investigation_name: "Multi-Device Investigation"
+                  entity_values:
+                    - entity_type: "user_id"
+                      entity_value: "user456"
+                    - entity_type: "device_id"
+                      entity_value: "device789"
+                    - entity_type: "ip_address"
+                      entity_value: "192.168.1.100"
+      responses:
+        '201':
+          description: Investigation created from template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WizardStateResponse'
+              examples:
+                created:
+                  summary: Investigation created from template
+                  value:
+                    investigation_id: "inv_2024_050"
+                    user_id: "user123"
+                    wizard_step: "SETTINGS"
+                    settings:
+                      name: "Account Takeover - User ABC123"
+                      entities:
+                        - entity_type: "user_id"
+                          entity_value: "ABC123"
+                      time_range:
+                        start_time: "2024-01-01T00:00:00Z"
+                        end_time: "2024-01-15T23:59:59Z"
+                      tools:
+                        - tool_name: "device_fingerprint"
+                          enabled: true
+                        - tool_name: "location_analysis"
+                          enabled: true
+                      correlation_mode: "OR"
+                    status: "IN_PROGRESS"
+                    created_at: "2024-01-15T11:30:00Z"
+                    updated_at: "2024-01-15T11:30:00Z"
+                    version: 1
+                    template_id: "tmpl_account_takeover"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TemplateResponse:
+      type: object
+      required:
+        - template_id
+        - user_id
+        - name
+        - template_json
+        - created_at
+      properties:
+        template_id:
+          type: string
+          description: Unique template identifier
+        user_id:
+          type: string
+          description: User who created template
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Template name
+        description:
+          type: string
+          maxLength: 1000
+          description: Template description
+        template_json:
+          type: object
+          description: Investigation configuration (InvestigationSettings schema)
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Template tags for categorization
+        usage_count:
+          type: integer
+          minimum: 0
+          description: Number of times template has been used
+        created_at:
+          type: string
+          format: date-time
+          description: When template was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When template was last updated
+        last_used:
+          type: string
+          format: date-time
+          description: When template was last applied
+
+    TemplateCreate:
+      type: object
+      required:
+        - name
+        - template_json
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Template name (must be unique for user)
+        description:
+          type: string
+          maxLength: 1000
+          description: Template description
+        template_json:
+          type: object
+          description: Investigation configuration
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Template tags
+
+    TemplateUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Updated template name
+        description:
+          type: string
+          maxLength: 1000
+          description: Updated template description
+        template_json:
+          type: object
+          description: Updated investigation configuration
+          additionalProperties: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Updated template tags
+
+    TemplateListResponse:
+      type: object
+      required:
+        - templates
+        - total
+        - limit
+        - offset
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateResponse'
+        total:
+          type: integer
+          description: Total number of templates
+        limit:
+          type: integer
+          description: Page size
+        offset:
+          type: integer
+          description: Current offset
+
+    TemplateApplyRequest:
+      type: object
+      required:
+        - investigation_id
+        - investigation_name
+      properties:
+        investigation_id:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+          description: ID for new investigation
+        investigation_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Name for new investigation
+        entity_values:
+          type: array
+          items:
+            type: object
+            required:
+              - entity_type
+              - entity_value
+            properties:
+              entity_type:
+                type: string
+              entity_value:
+                type: string
+          description: Entity values to replace template placeholders
+        overrides:
+          type: object
+          description: Override specific template settings
+          properties:
+            time_range:
+              type: object
+              description: Override time range
+            tools:
+              type: array
+              description: Override tool configurations
+
+    WizardStateResponse:
+      type: object
+      description: Complete wizard state (references wizard-state-api.yaml schema)
+      required:
+        - investigation_id
+        - user_id
+        - wizard_step
+        - status
+        - created_at
+        - updated_at
+        - version
+      properties:
+        investigation_id:
+          type: string
+        user_id:
+          type: string
+        wizard_step:
+          type: string
+          enum: [SETTINGS, PROGRESS, RESULTS]
+        settings:
+          type: object
+        status:
+          type: string
+          enum: [IN_PROGRESS, COMPLETED, ERROR, CANCELLED]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        template_id:
+          type: string
+          description: ID of template used to create investigation
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+    ValidationErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+        - validation_errors
+      properties:
+        error:
+          type: string
+          enum: [validation_error]
+        message:
+          type: string
+        validation_errors:
+          type: array
+          items:
+            type: object
+            required:
+              - field
+              - message
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "bad_request"
+            message: "Cannot modify template configuration - template is in use"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "unauthorized"
+            message: "Authentication required"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "forbidden"
+            message: "Access denied to this template"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "not_found"
+            message: "Template not found"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "conflict"
+            message: "Template with this name already exists"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+    ValidationError:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+          example:
+            error: "validation_error"
+            message: "Template validation failed"
+            validation_errors:
+              - field: "template_json.entities"
+                message: "At least one entity required"
+              - field: "template_json.tools"
+                message: "At least one tool must be enabled"
+
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: "internal_server_error"
+            message: "An unexpected error occurred"
+            timestamp: "2024-01-15T11:00:00Z"
+            request_id: "req_def456"
+
+tags:
+  - name: Templates
+    description: Investigation template management operations

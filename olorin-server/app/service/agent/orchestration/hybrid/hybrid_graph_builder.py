@@ -40,16 +40,6 @@ class HybridGraphBuilder:
     Original functionality preserved with improved modularity.
     """
     
-<<<<<<< HEAD
-    def __init__(self, intelligence_mode: str = "adaptive"):
-        """Initialize with backward compatibility."""
-        logger.info(f"🔄 LEGACY: Initializing HybridGraphBuilder wrapper (intelligence_mode: {intelligence_mode})")
-        logger.info(f"   ✅ Delegating to new modular hybrid intelligence system")
-        logger.info(f"   📦 Using 14 focused components for improved maintainability")
-        
-        # Initialize the new modular graph builder
-        self._modular_builder = ModularHybridGraphBuilder(intelligence_mode)
-=======
     def __init__(self, intelligence_mode: str = "adaptive", llm=None):
         """Initialize with backward compatibility."""
         logger.info(f"🔄 LEGACY: Initializing HybridGraphBuilder wrapper (intelligence_mode: {intelligence_mode}, llm={'provided' if llm else 'None'})")
@@ -58,7 +48,6 @@ class HybridGraphBuilder:
 
         # Initialize the new modular graph builder with LLM support
         self._modular_builder = ModularHybridGraphBuilder(intelligence_mode, llm=llm)
->>>>>>> 001-modify-analyzer-method
         
         # Expose legacy properties for backward compatibility
         self.intelligence_mode = intelligence_mode
@@ -72,52 +61,31 @@ class HybridGraphBuilder:
         self,
         use_enhanced_tools: bool = True,
         enable_streaming: bool = True,
-<<<<<<< HEAD
-        enable_interrupts: bool = False
-    ) -> StateGraph:
-        """
-        Build unified hybrid graph using new modular system.
-        
-=======
         enable_interrupts: bool = False,
         investigation_id: Optional[str] = None
     ) -> StateGraph:
         """
         Build unified hybrid graph using new modular system.
 
->>>>>>> 001-modify-analyzer-method
         Args:
             use_enhanced_tools: Whether to use enhanced tool execution
             enable_streaming: Whether to enable real-time streaming
             enable_interrupts: Whether to interrupt before tool execution
-<<<<<<< HEAD
-            
-=======
             investigation_id: Unique investigation identifier for tool persistence
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Compiled hybrid investigation graph (same as before)
         """
         logger.info(f"🔄 LEGACY: build_hybrid_investigation_graph called")
         logger.info(f"   ➡️ Delegating to modular graph builder")
-<<<<<<< HEAD
-        logger.info(f"   📊 Parameters: enhanced_tools={use_enhanced_tools}, streaming={enable_streaming}, interrupts={enable_interrupts}")
-        
-=======
         logger.info(f"   📊 Parameters: enhanced_tools={use_enhanced_tools}, streaming={enable_streaming}, interrupts={enable_interrupts}, investigation_id={investigation_id}")
 
->>>>>>> 001-modify-analyzer-method
         # Delegate to the new modular system
         graph = await self._modular_builder.build_hybrid_investigation_graph(
             use_enhanced_tools=use_enhanced_tools,
             enable_streaming=enable_streaming,
-<<<<<<< HEAD
-            enable_interrupts=enable_interrupts
-=======
             enable_interrupts=enable_interrupts,
             investigation_id=investigation_id
->>>>>>> 001-modify-analyzer-method
         )
         
         logger.info(f"✅ LEGACY: Graph building delegated successfully")

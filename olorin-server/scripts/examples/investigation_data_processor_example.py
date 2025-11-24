@@ -234,11 +234,7 @@ def main():
         
         if not folders:
             logger.warning("No investigation folders found in logs directory")
-<<<<<<< HEAD
-            logger.info("To create sample data, run the autonomous investigation tests")
-=======
             logger.info("To create sample data, run the structured investigation tests")
->>>>>>> 001-modify-analyzer-method
             return
         
         print(f"Found {len(folders)} investigation folders:")

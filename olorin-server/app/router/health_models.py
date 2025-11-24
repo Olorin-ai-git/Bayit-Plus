@@ -51,8 +51,6 @@ class ReadinessProbe(BaseModel):
     dependencies_ready: Dict[str, bool]
 
 
-<<<<<<< HEAD
-=======
 class StartupProbe(BaseModel):
     """
     Startup probe response for Kubernetes.
@@ -67,7 +65,6 @@ class StartupProbe(BaseModel):
     startup_time_seconds: Optional[float] = None
 
 
->>>>>>> 001-modify-analyzer-method
 def get_current_timestamp() -> str:
     """Get current ISO timestamp."""
     return datetime.now(timezone.utc).isoformat()

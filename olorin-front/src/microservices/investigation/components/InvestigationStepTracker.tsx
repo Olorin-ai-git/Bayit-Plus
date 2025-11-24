@@ -4,13 +4,7 @@ import {
   ClockIcon,
   ExclamationTriangleIcon,
   XCircleIcon,
-<<<<<<< HEAD
-  PlayIcon,
   PauseIcon,
-  StopIcon,
-=======
-  PauseIcon,
->>>>>>> 001-modify-analyzer-method
   ArrowPathIcon,
   EyeIcon,
   DocumentTextIcon,
@@ -61,17 +55,9 @@ const InvestigationStepTracker: React.FC<InvestigationStepTrackerProps> = ({
 }) => {
   const [steps, setSteps] = useState<InvestigationStep[]>([]);
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
-<<<<<<< HEAD
-  const [selectedStep, setSelectedStep] = useState<string | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-
-  // Mock data for demonstration
-=======
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Initialize investigation steps on component mount
->>>>>>> 001-modify-analyzer-method
   useEffect(() => {
     const mockSteps: InvestigationStep[] = [
       {

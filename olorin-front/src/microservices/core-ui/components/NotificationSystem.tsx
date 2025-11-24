@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-<<<<<<< HEAD
-import { useEventListener } from '../../shared/services/EventBus';
-=======
 import { useEventListener } from '@shared/events/UnifiedEventBus';
 import { investigationApiService } from '../../../shared/services/InvestigationApiService';
->>>>>>> 001-modify-analyzer-method
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -39,8 +35,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
   const [isVisible, setIsVisible] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
-<<<<<<< HEAD
-=======
   const handleDismiss = useCallback(() => {
     setIsLeaving(true);
     setTimeout(() => {
@@ -48,7 +42,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
     }, 300);
   }, [notification.id, onDismiss]);
 
->>>>>>> 001-modify-analyzer-method
   useEffect(() => {
     // Trigger animation
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -63,36 +56,17 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
       }, duration);
       return () => clearTimeout(timer);
     }
-<<<<<<< HEAD
-  }, [notification.duration, notification.persistent]);
-
-  const handleDismiss = () => {
-    setIsLeaving(true);
-    setTimeout(() => {
-      onDismiss(notification.id);
-    }, 300);
-  };
-=======
     return undefined;
   }, [notification.duration, notification.persistent, handleDismiss]);
->>>>>>> 001-modify-analyzer-method
 
   const getIcon = () => {
     switch (notification.type) {
       case 'success':
-<<<<<<< HEAD
-        return <CheckCircleIcon className="h-5 w-5 text-green-400" />;
-      case 'warning':
-        return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" />;
-      case 'error':
-        return <ExclamationCircleIcon className="h-5 w-5 text-red-400" />;
-=======
         return <CheckCircleIcon className="h-5 w-5 text-corporate-success" />;
       case 'warning':
         return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" />;
       case 'error':
         return <ExclamationCircleIcon className="h-5 w-5 text-corporate-error" />;
->>>>>>> 001-modify-analyzer-method
       default:
         return <InformationCircleIcon className="h-5 w-5 text-blue-400" />;
     }
@@ -101,15 +75,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
   const getBackgroundColor = () => {
     switch (notification.type) {
       case 'success':
-<<<<<<< HEAD
-        return 'bg-green-50 border-green-200';
-      case 'warning':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'error':
-        return 'bg-red-50 border-red-200';
-      default:
-        return 'bg-blue-50 border-blue-200';
-=======
         return 'bg-green-900/30 border-green-500 shadow-lg shadow-green-500/20';
       case 'warning':
         return 'bg-amber-900/20 border-amber-500 shadow-lg shadow-amber-500/20';
@@ -117,22 +82,12 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
         return 'bg-red-900/30 border-red-500 shadow-lg shadow-red-500/20';
       default:
         return 'bg-cyan-900/30 border-cyan-500 shadow-lg shadow-cyan-500/20';
->>>>>>> 001-modify-analyzer-method
     }
   };
 
   const getTextColor = () => {
     switch (notification.type) {
       case 'success':
-<<<<<<< HEAD
-        return 'text-green-800';
-      case 'warning':
-        return 'text-yellow-800';
-      case 'error':
-        return 'text-red-800';
-      default:
-        return 'text-blue-800';
-=======
         return 'text-green-200';
       case 'warning':
         return 'text-amber-200';
@@ -153,7 +108,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
         return 'text-red-400';
       default:
         return 'text-cyan-400';
->>>>>>> 001-modify-analyzer-method
     }
   };
 
@@ -211,15 +165,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onDis
           onClick={handleDismiss}
           className={`
             inline-flex rounded-md p-1.5 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2
-<<<<<<< HEAD
-            ${notification.type === 'error' ? 'text-red-400 hover:bg-red-100 focus:ring-red-500' :
-              notification.type === 'warning' ? 'text-yellow-400 hover:bg-yellow-100 focus:ring-yellow-500' :
-              notification.type === 'success' ? 'text-green-400 hover:bg-green-100 focus:ring-green-500' :
-=======
             ${notification.type === 'error' ? 'text-corporate-error hover:bg-red-100 focus:ring-red-500' :
               notification.type === 'warning' ? 'text-yellow-400 hover:bg-yellow-100 focus:ring-yellow-500' :
               notification.type === 'success' ? 'text-corporate-success hover:bg-green-100 focus:ring-green-500' :
->>>>>>> 001-modify-analyzer-method
               'text-blue-400 hover:bg-blue-100 focus:ring-blue-500'
             }
           `}
@@ -243,8 +191,6 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
 }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-<<<<<<< HEAD
-=======
   // Debug: Log when component mounts
   React.useEffect(() => {
     // Component mounted and ready
@@ -253,7 +199,6 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     };
   }, []);
 
->>>>>>> 001-modify-analyzer-method
   const addNotification = useCallback((notification: Omit<Notification, 'id' | 'timestamp'>) => {
     const newNotification: Notification = {
       ...notification,
@@ -275,15 +220,6 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     setNotifications([]);
   }, []);
 
-<<<<<<< HEAD
-  // Listen for system notification events
-  useEventListener('system:notification', (event) => {
-    addNotification({
-      type: event.type,
-      message: event.message,
-      duration: event.duration,
-    });
-=======
   // Listen for UI notification events
   useEventListener('ui:notification:show', (event) => {
     // Received notification event
@@ -293,7 +229,6 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
     } else {
       // Event received but no notification data
     }
->>>>>>> 001-modify-analyzer-method
   });
 
   // Listen for investigation events
@@ -305,11 +240,7 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
       actions: [
         {
           label: 'View',
-<<<<<<< HEAD
-          onClick: () => {
-=======
           onClick: async () => {
->>>>>>> 001-modify-analyzer-method
             window.location.href = `/${event.type}/${event.id}`;
           },
           variant: 'primary'
@@ -326,11 +257,7 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
       actions: [
         {
           label: 'View Results',
-<<<<<<< HEAD
-          onClick: () => {
-=======
           onClick: async () => {
->>>>>>> 001-modify-analyzer-method
             window.location.href = `/investigation/${event.id}`;
           },
           variant: 'primary'
@@ -348,14 +275,8 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
       actions: [
         {
           label: 'Retry',
-<<<<<<< HEAD
-          onClick: () => {
-            // TODO: Implement retry logic
-            console.log('Retry investigation:', event.id);
-=======
           onClick: async () => {
             await investigationApiService.retryInvestigation({ investigationId: event.id });
->>>>>>> 001-modify-analyzer-method
           },
           variant: 'primary'
         }
@@ -389,11 +310,7 @@ export const NotificationSystem: React.FC<NotificationSystemProps> = ({
       actions: [
         {
           label: 'Download',
-<<<<<<< HEAD
-          onClick: () => {
-=======
           onClick: async () => {
->>>>>>> 001-modify-analyzer-method
             window.open(event.downloadUrl, '_blank');
           },
           variant: 'primary'

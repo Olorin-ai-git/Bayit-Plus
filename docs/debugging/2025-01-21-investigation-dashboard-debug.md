@@ -16,15 +16,9 @@ Based on the comprehensive validation, the Hybrid Graph Investigation UI has **3
 
 #### Strategy: Modular Decomposition
 ```typescript
-<<<<<<< HEAD
-// Example: Breaking down AutonomousInvestigationApp.tsx (255 lines)
-// Split into:
-├── AutonomousInvestigationApp.tsx (150 lines)
-=======
 // Example: Breaking down StructuredInvestigationApp.tsx (255 lines)
 // Split into:
 ├── StructuredInvestigationApp.tsx (150 lines)
->>>>>>> 001-modify-analyzer-method
 ├── components/AppProvider.tsx (80 lines)
 ├── components/AppRoutes.tsx (120 lines)
 └── hooks/useAppInitialization.tsx (100 lines)

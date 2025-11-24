@@ -14,8 +14,6 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
-<<<<<<< HEAD
-=======
 def _summarize_snowflake_data_for_logging(snowflake_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Create a summarized version of snowflake_data for logging purposes.
@@ -149,7 +147,6 @@ def _summarize_tool_results_for_logging(tool_results: Optional[Dict[str, Any]]) 
     return summarized
 
 
->>>>>>> 001-modify-analyzer-method
 def _normalize_snowflake_data_type(data):
     """
     Normalize snowflake data to expected type (object instead of JSON string).
@@ -209,10 +206,7 @@ class InvestigationState(TypedDict):
     
     # Configuration parameters
     date_range_days: int  # Number of days for Snowflake analysis (default 7)
-<<<<<<< HEAD
-=======
     time_range: Optional[Dict[str, str]]  # Optional explicit time range with start_time and end_time (ISO 8601)
->>>>>>> 001-modify-analyzer-method
     tool_count: str  # Number of tools to select (default "5-6")
     
     # Snowflake data (configurable day analysis)
@@ -267,10 +261,7 @@ def create_initial_state(
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,
     date_range_days: int = 7,
-<<<<<<< HEAD
-=======
     time_range: Optional[Dict[str, str]] = None,
->>>>>>> 001-modify-analyzer-method
     tool_count: int = 5
 ) -> InvestigationState:
     """
@@ -340,10 +331,7 @@ def create_initial_state(
         
         # Configuration parameters
         "date_range_days": date_range_days,
-<<<<<<< HEAD
-=======
         "time_range": time_range,
->>>>>>> 001-modify-analyzer-method
         "tool_count": tool_count,
         
         # Snowflake data
@@ -395,12 +383,9 @@ def create_initial_state(
         "end_time": None,
         "total_duration_ms": None,
         
-<<<<<<< HEAD
-=======
         # Performance metrics (for hybrid graph compatibility)
         "performance_metrics": {},
         
->>>>>>> 001-modify-analyzer-method
         # Optional context
         "agent_context": None
     }
@@ -417,14 +402,10 @@ def create_initial_state(
     logger.debug(f"[Step 9.1]     date_range_days: {initial_state['date_range_days']}")
     logger.debug(f"[Step 9.1]     tool_count: '{initial_state['tool_count']}'")
     logger.debug(f"[Step 9.1]   Data fields verified:")
-<<<<<<< HEAD
-    logger.debug(f"[Step 9.1]     snowflake_data: {initial_state['snowflake_data']}")
-=======
     # Reduce verbosity for large result sets - always use summary
     snowflake_data = initial_state.get('snowflake_data')
     snowflake_summary = _summarize_snowflake_data_for_logging(snowflake_data)
     logger.debug(f"[Step 9.1]     snowflake_data: {snowflake_summary}")
->>>>>>> 001-modify-analyzer-method
     logger.debug(f"[Step 9.1]     snowflake_completed: {initial_state['snowflake_completed']}")
     logger.debug(f"[Step 9.1]     tool_results: {len(initial_state['tool_results'])} entries")
     logger.debug(f"[Step 9.1]     domain_findings: {len(initial_state['domain_findings'])} domains")
@@ -519,34 +500,21 @@ def add_tool_result(state: InvestigationState, tool_name: str, result: Any) -> D
         "tools_used": tools_used,
         "tool_results": tool_results
     }
-<<<<<<< HEAD
-    
-    if "snowflake" in tool_name.lower():
-=======
 
     # CRITICAL FIX A0: Recognize both "database" and "snowflake" tool names
     # PostgreSQL uses "database_query" tool, legacy Snowflake used "snowflake" tools
     if "snowflake" in tool_name.lower() or "database" in tool_name.lower():
->>>>>>> 001-modify-analyzer-method
         # CRITICAL FIX: Normalize snowflake data type (JSON string → object)
         snowflake_data = _normalize_snowflake_data_type(result)
         updates["snowflake_data"] = snowflake_data
         updates["snowflake_completed"] = True
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 001-modify-analyzer-method
     return updates
 
 
 def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[str, Any]) -> Dict[str, Any]:
     """
-<<<<<<< HEAD
-    Add findings from a domain agent.
-=======
     Add findings from a domain agent and persist to database.
->>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Current investigation state
@@ -576,11 +544,6 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
     }
     
     # Handle both old risk_score format and new evidence-based format
-<<<<<<< HEAD
-    if "risk_score" in findings:
-        # Legacy format - still update for compatibility
-        updates["risk_score"] = max(state.get("risk_score", 0.0), findings["risk_score"])
-=======
     # CRITICAL: No fallback scores - only update if findings has a valid risk_score
     if "risk_score" in findings and findings["risk_score"] is not None:
         # Legacy format - still update for compatibility
@@ -591,14 +554,10 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
         else:
             # State has None, findings has a value - use findings value
             updates["risk_score"] = findings["risk_score"]
->>>>>>> 001-modify-analyzer-method
     elif "metrics" in findings and "avg_model_score" in findings["metrics"]:
         # New evidence-based format - use MODEL_SCORE as temporary risk indicator
         # The actual risk score will be determined by LLM in the summary phase
         model_score = findings["metrics"]["avg_model_score"]
-<<<<<<< HEAD
-        updates["risk_score"] = max(state.get("risk_score", 0.0), model_score)
-=======
         if model_score is not None:
             state_risk_score = state.get("risk_score")
             if state_risk_score is not None:
@@ -675,7 +634,6 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
         except Exception as e:
             # Don't fail the investigation if persistence fails - log and continue
             logger.warning(f"Failed to persist domain findings to database: {str(e)}", exc_info=True)
->>>>>>> 001-modify-analyzer-method
     
     return updates
 
@@ -683,12 +641,8 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
 def calculate_final_risk_score(state: InvestigationState) -> float:
     """
     Calculate the final risk score based on all findings.
-<<<<<<< HEAD
-    NOTE: This is now a fallback - the actual risk score should come from LLM analysis.
-=======
     NOTE: This function is deprecated - use risk agent calculation instead.
     This is kept for backward compatibility only.
->>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Current investigation state
@@ -696,53 +650,16 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     Returns:
         Final risk score (0.0 - 1.0)
     """
-<<<<<<< HEAD
-    # First check if we have an LLM-determined risk score
-    if state.get("llm_risk_score") is not None:
-        return state["llm_risk_score"]
-    
-=======
     # Use risk agent calculation method
->>>>>>> 001-modify-analyzer-method
     domain_findings = state.get("domain_findings", {})
     
     if not domain_findings:
         raise ValueError("CRITICAL: No domain findings available - cannot calculate risk score without REAL data")
     
-<<<<<<< HEAD
-    # Collect MODEL_SCORES from new evidence-based format
-    model_scores = []
-    for domain, findings in domain_findings.items():
-        if isinstance(findings, dict):
-            # Check for legacy risk_score
-            if "risk_score" in findings:
-                model_scores.append(findings["risk_score"])
-            # Check for new metrics format
-            elif "metrics" in findings and "avg_model_score" in findings["metrics"]:
-                model_scores.append(findings["metrics"]["avg_model_score"])
-    
-    if model_scores:
-        # Use average of MODEL_SCORES as fallback
-        return min(1.0, sum(model_scores) / len(model_scores))
-    
-    # Final fallback to risk indicators
-    risk_indicators = state.get("risk_indicators", [])
-    if len(risk_indicators) > 10:
-        return 0.9
-    elif len(risk_indicators) > 5:
-        return 0.7
-    elif len(risk_indicators) > 2:
-        return 0.5
-    elif len(risk_indicators) > 0:
-        return 0.3
-    else:
-        return 0.1
-=======
     # Use risk agent's calculation method
     from app.service.agent.orchestration.domain_agents.risk_agent import _calculate_real_risk_score
     facts = state.get("facts", {})
     return _calculate_real_risk_score(domain_findings, facts)
->>>>>>> 001-modify-analyzer-method
 
 
 def is_investigation_complete(state: InvestigationState) -> bool:

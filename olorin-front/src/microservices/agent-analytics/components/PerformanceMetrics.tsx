@@ -122,10 +122,6 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
       sum + entry.accuracy, 0) / filteredHistory.length;
 
     // Find peak performance time
-<<<<<<< HEAD
-    const bestPerformance = filteredHistory.reduce((best, entry) =>
-      entry.successRate > best.successRate ? entry : best, filteredHistory[0]);
-=======
     const firstEntry = filteredHistory[0];
     if (!firstEntry) {
       return {
@@ -139,7 +135,6 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
 
     const bestPerformance = filteredHistory.reduce((best, entry) =>
       entry.successRate > best.successRate ? entry : best, firstEntry);
->>>>>>> 001-modify-analyzer-method
 
     const peakPerformanceTime = new Date(bestPerformance.timestamp).toLocaleString();
 

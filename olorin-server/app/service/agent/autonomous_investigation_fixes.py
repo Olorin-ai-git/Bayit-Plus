@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Autonomous Investigation Critical Fixes
-=======
 Structured Investigation Critical Fixes
->>>>>>> 001-modify-analyzer-method
 
 Implements immediate fixes for the 7 critical issues preventing successful investigation runs:
 A) Runtime failures (LangSmith, WebSocket, RAG init)
@@ -26,11 +22,7 @@ from contextlib import suppress
 logger = logging.getLogger(__name__)
 
 class InvestigationFixesManager:
-<<<<<<< HEAD
-    """Manages critical fixes for autonomous investigation system"""
-=======
     """Manages critical fixes for structured investigation system"""
->>>>>>> 001-modify-analyzer-method
     
     def __init__(self, demo_mode: bool = True):
         self.demo_mode = demo_mode
@@ -323,11 +315,7 @@ def apply_immediate_fixes(demo_mode: bool = True) -> Dict[str, Any]:
     fixes_manager = InvestigationFixesManager(demo_mode=demo_mode)
     results = fixes_manager.apply_all_critical_fixes()
     
-<<<<<<< HEAD
-    logger.info("🔧 Applied immediate fixes for autonomous investigation system")
-=======
     logger.info("🔧 Applied immediate fixes for structured investigation system")
->>>>>>> 001-modify-analyzer-method
     logger.info(f"Fixes applied: {', '.join(fixes_manager.applied_fixes)}")
     
     return {

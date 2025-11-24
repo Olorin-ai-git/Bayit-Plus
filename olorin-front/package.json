@@ -5,10 +5,7 @@
   "dependencies": {
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@googlemaps/js-api-loader": "1.16.8",
-<<<<<<< HEAD
-=======
     "@googlemaps/markerclusterer": "2.6.2",
->>>>>>> 001-modify-analyzer-method
     "@headlessui/react": "2.2.8",
     "@headlessui/tailwindcss": "0.2.2",
     "@heroicons/react": "^2.0.18",
@@ -25,36 +22,11 @@
     "@types/react-dom": "^18.2.0",
     "@types/react-window": "1.8.8",
     "axios": "^1.4.0",
-<<<<<<< HEAD
-    "chart.js": "^4.2.1",
-=======
     "chart.js": "4.2.1",
->>>>>>> 001-modify-analyzer-method
     "d3": "7.9.0",
     "date-fns": "^2.29.3",
     "dompurify": "3.2.6",
     "firebase": "11.10.0",
-<<<<<<< HEAD
-    "html2canvas": "^1.4.1",
-    "lucide-react": "^0.263.0",
-    "mitt": "3.0.1",
-    "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0",
-    "react-flow-renderer": "10.3.17",
-    "react-hot-toast": "2.6.0",
-    "react-icons": "5.5.0",
-    "react-intersection-observer": "9.16.0",
-    "react-router-dom": "^6.11.0",
-    "react-scripts": "5.0.1",
-    "react-window": "2.1.1",
-    "recharts": "3.2.1",
-    "socket.io-client": "4.8.1",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4",
-    "zustand": "5.0.8"
-=======
     "html2canvas": "1.4.1",
     "lucide-react": "0.263.0",
     "mermaid": "11.12.1",
@@ -82,16 +54,12 @@
     "zod": "3.22.4",
     "zustand": "5.0.8",
     "@fingerprintjs/fingerprintjs-pro": "^4.5.0"
->>>>>>> 001-modify-analyzer-method
   },
   "scripts": {
     "start": "npm run start:shell",
     "build": "npm run build:all",
     "build:staging": "NODE_ENV=production REACT_APP_ENV=staging npm run build",
-<<<<<<< HEAD
-=======
     "generate-api-types": "./scripts/generate-api-types.sh",
->>>>>>> 001-modify-analyzer-method
     "build:production": "./scripts/build-production.sh",
     "build:production:docker": "docker build -f Dockerfile.production -t olorin-frontend .",
     "build:optimized": "NODE_ENV=production npm run build:clean && npm run build:analyze",
@@ -170,8 +138,6 @@
     "api:health": "curl -f http://localhost:8090/api/health || echo 'Backend not available'",
     "api:auth": "node -e \"fetch('http://localhost:8090/api/auth/login', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: 'test', password: 'test'})}).then(r=>r.json()).then(console.log)\"",
     "api:all": "npm run api:health && npm run api:test && npm run api:contracts",
-<<<<<<< HEAD
-=======
     "contract:test": "npm run generate-api-types && dredd dredd.yml",
     "contract:test:ci": "BACKEND_URL=${BACKEND_URL:-http://localhost:8090} npm run contract:test",
     "contract:validate": "dredd dredd.yml --dry-run",
@@ -182,7 +148,6 @@
     "api:compare-schemas": "ts-node scripts/compare-schemas.ts",
     "api:diff-schemas": "ts-node scripts/compare-schemas.ts src/api/generated/openapi-old.json src/api/generated/openapi.json",
     "api:diff-schemas:json": "ts-node scripts/compare-schemas.ts src/api/generated/openapi-old.json src/api/generated/openapi.json --format=json",
->>>>>>> 001-modify-analyzer-method
     "start:shell": "SERVICE=shell webpack serve --mode development",
     "start:investigation": "SERVICE=investigation webpack serve --mode development",
     "start:agent-analytics": "SERVICE=agentAnalytics webpack serve --mode development",
@@ -191,17 +156,11 @@
     "start:reporting": "SERVICE=reporting webpack serve --mode development",
     "start:core-ui": "SERVICE=coreUi webpack serve --mode development",
     "start:design-system": "SERVICE=designSystem webpack serve --mode development",
-<<<<<<< HEAD
-    "start:autonomous-investigation": "SERVICE=autonomousInvestigation webpack serve --mode development",
-    "start:manual-investigation": "SERVICE=manualInvestigation webpack serve --mode development",
-    "dev:all": "concurrently \"npm run start:shell\" \"npm run start:investigation\" \"npm run start:agent-analytics\" \"npm run start:rag-intelligence\" \"npm run start:visualization\" \"npm run start:reporting\" \"npm run start:core-ui\" \"npm run start:design-system\" \"npm run start:autonomous-investigation\" \"npm run start:manual-investigation\"",
-=======
     "start:investigations-management": "SERVICE=investigationsManagement webpack serve --mode development",
     "_comment_structured": "TODO: Uncomment when implementing these microservices",
     "_start:structured-investigation": "SERVICE=structuredInvestigation webpack serve --mode development",
     "_start:manual-investigation": "SERVICE=manualInvestigation webpack serve --mode development",
     "dev:all": "concurrently \"npm run start:shell\" \"npm run start:investigation\" \"npm run start:agent-analytics\" \"npm run start:rag-intelligence\" \"npm run start:visualization\" \"npm run start:reporting\" \"npm run start:core-ui\" \"npm run start:design-system\"",
->>>>>>> 001-modify-analyzer-method
     "dev:core": "concurrently \"npm run start:shell\" \"npm run start:core-ui\" \"npm run start:design-system\"",
     "dev:services": "concurrently \"npm run start:investigation\" \"npm run start:agent-analytics\" \"npm run start:rag-intelligence\" \"npm run start:visualization\" \"npm run start:reporting\"",
     "build:shell": "SERVICE=shell webpack --mode production",
@@ -212,16 +171,10 @@
     "build:reporting": "SERVICE=reporting webpack --mode production",
     "build:core-ui": "SERVICE=coreUi webpack --mode production",
     "build:design-system": "SERVICE=designSystem webpack --mode production",
-<<<<<<< HEAD
-    "build:autonomous-investigation": "SERVICE=autonomousInvestigation webpack --mode production",
-    "build:manual-investigation": "SERVICE=manualInvestigation webpack --mode production",
-    "build:all": "npm run build:design-system && npm run build:core-ui && npm run build:investigation && npm run build:agent-analytics && npm run build:rag-intelligence && npm run build:visualization && npm run build:reporting && npm run build:autonomous-investigation && npm run build:manual-investigation && npm run build:shell",
-=======
     "build:investigations-management": "SERVICE=investigationsManagement webpack --mode production",
     "_build:structured-investigation": "SERVICE=structuredInvestigation webpack --mode production",
     "_build:manual-investigation": "SERVICE=manualInvestigation webpack --mode production",
     "build:all": "npm run build:design-system && npm run build:core-ui && npm run build:investigation && npm run build:agent-analytics && npm run build:rag-intelligence && npm run build:visualization && npm run build:reporting",
->>>>>>> 001-modify-analyzer-method
     "test:shell": "SERVICE=shell npm run test",
     "test:investigation": "SERVICE=investigation npm run test",
     "test:agent-analytics": "SERVICE=agentAnalytics npm run test",
@@ -261,17 +214,11 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "@figma/plugin-typings": "1.117.0",
-    "@figma/rest-api-spec": "0.33.0",
-    "@playwright/test": "1.55.0",
-=======
     "@babel/preset-env": "7.28.5",
     "@babel/preset-react": "7.28.5",
     "@figma/plugin-typings": "1.117.0",
     "@figma/rest-api-spec": "0.33.0",
     "@playwright/test": "1.56.1",
->>>>>>> 001-modify-analyzer-method
     "@tailwindcss/forms": "^0.5.0",
     "@tailwindcss/typography": "^0.5.0",
     "@testing-library/dom": "10.4.1",
@@ -281,10 +228,7 @@
     "@typescript-eslint/parser": "^5.59.0",
     "ajv": "8.17.1",
     "autoprefixer": "^10.4.14",
-<<<<<<< HEAD
-=======
     "babel-jest": "30.2.0",
->>>>>>> 001-modify-analyzer-method
     "chrome-launcher": "1.2.0",
     "clean-webpack-plugin": "^4.0.0",
     "compression-webpack-plugin": "^10.0.0",
@@ -295,10 +239,7 @@
     "dredd": "11.2.0",
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
-<<<<<<< HEAD
-=======
     "eslint-config-react-app": "7.0.1",
->>>>>>> 001-modify-analyzer-method
     "eslint-import-resolver-typescript": "4.4.4",
     "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-import": "2.32.0",
@@ -312,18 +253,6 @@
     "figma-transformer": "2.1.0",
     "gzip-size": "7.0.0",
     "html-webpack-plugin": "^5.5.0",
-<<<<<<< HEAD
-    "image-webpack-loader": "^8.1.0",
-    "lighthouse": "^11.4.0",
-    "playwright": "1.55.0",
-    "postcss": "^8.4.23",
-    "postcss-loader": "^7.1.0",
-    "prettier": "^2.8.8",
-    "react-app-rewired": "^2.2.1",
-    "style-loader": "^3.3.2",
-    "terser-webpack-plugin": "^5.3.9",
-    "thread-loader": "^3.0.4",
-=======
     "image-webpack-loader": "8.0.1",
     "jest-environment-jsdom": "30.2.0",
     "jest-html-reporters": "3.1.7",
@@ -342,16 +271,12 @@
     "terser-webpack-plugin": "^5.3.9",
     "thread-loader": "^3.0.4",
     "ts-jest": "29.4.5",
->>>>>>> 001-modify-analyzer-method
     "ts-loader": "^9.4.2",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
     "webpack": "5.101.3",
     "webpack-bundle-analyzer": "^4.9.0",
     "webpack-cli": "6.0.1",
-<<<<<<< HEAD
-=======
     "webpack-dev-server": "5.2.2",
->>>>>>> 001-modify-analyzer-method
     "workbox-webpack-plugin": "^6.6.0"
   },
   "engines": {

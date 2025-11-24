@@ -24,21 +24,6 @@ logger = get_bridge_logger(__name__)
 class HybridGraphBuilder:
     """
     Main orchestrator for hybrid intelligence graph construction.
-<<<<<<< HEAD
-    
-    Coordinates all components to build a complete, modular hybrid intelligence
-    investigation graph with comprehensive functionality.
-    """
-    
-    def __init__(self, intelligence_mode: str = "adaptive"):
-        """Initialize graph builder with intelligence mode."""
-        self.intelligence_mode = intelligence_mode
-        
-        # Initialize foundation components
-        self.foundation = GraphFoundation(intelligence_mode)
-        self.components = self.foundation.get_components()
-        
-=======
 
     Coordinates all components to build a complete, modular hybrid intelligence
     investigation graph with comprehensive functionality.
@@ -62,7 +47,6 @@ class HybridGraphBuilder:
         self.foundation = GraphFoundation(intelligence_mode, llm=llm)
         self.components = self.foundation.get_components()
 
->>>>>>> 001-modify-analyzer-method
         # Initialize all component modules
         self._initialize_components()
         
@@ -93,30 +77,18 @@ class HybridGraphBuilder:
         self,
         use_enhanced_tools: bool = True,
         enable_streaming: bool = True,
-<<<<<<< HEAD
-        enable_interrupts: bool = False
-    ) -> StateGraph:
-        """
-        Build complete hybrid intelligence investigation graph.
-        
-=======
         enable_interrupts: bool = False,
         investigation_id: Optional[str] = None
     ) -> StateGraph:
         """
         Build complete hybrid intelligence investigation graph.
 
->>>>>>> 001-modify-analyzer-method
         Args:
             use_enhanced_tools: Whether to use enhanced tool execution
             enable_streaming: Whether to enable real-time streaming
             enable_interrupts: Whether to interrupt before tool execution
-<<<<<<< HEAD
-            
-=======
             investigation_id: Unique investigation identifier for tool persistence
 
->>>>>>> 001-modify-analyzer-method
         Returns:
             Compiled hybrid investigation graph
         """
@@ -125,21 +97,12 @@ class HybridGraphBuilder:
             self.foundation.log_graph_creation_start(
                 use_enhanced_tools, enable_streaming, enable_interrupts
             )
-<<<<<<< HEAD
-            
-            # Create base graph
-            builder = self.foundation.create_base_graph()
-            
-            # Add all nodes to the graph
-            self._add_all_nodes(builder, use_enhanced_tools)
-=======
 
             # Create base graph
             builder = self.foundation.create_base_graph()
 
             # Add all nodes to the graph
             self._add_all_nodes(builder, use_enhanced_tools, investigation_id)
->>>>>>> 001-modify-analyzer-method
             
             # Configure all edges and routing
             self.edge_configurator.define_workflow_edges(builder, use_enhanced_tools)
@@ -160,11 +123,7 @@ class HybridGraphBuilder:
         except Exception as e:
             raise self.foundation.handle_graph_creation_error(e)
     
-<<<<<<< HEAD
-    def _add_all_nodes(self, builder: StateGraph, use_enhanced_tools: bool) -> None:
-=======
     def _add_all_nodes(self, builder: StateGraph, use_enhanced_tools: bool, investigation_id: Optional[str] = None) -> None:
->>>>>>> 001-modify-analyzer-method
         """Add all nodes to the graph builder."""
         # Add core investigation nodes
         self.node_factory.add_core_investigation_nodes(
@@ -174,31 +133,19 @@ class HybridGraphBuilder:
             self.orchestrator_node,
             self.summary_nodes
         )
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Add domain agent nodes
         self.node_factory.add_domain_agent_nodes(
             builder,
             self.domain_agent_enhancer
         )
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 001-modify-analyzer-method
         # Add tool nodes
         self.node_factory.add_tool_nodes(
             builder,
             self.tool_nodes,
-<<<<<<< HEAD
-            use_enhanced_tools
-=======
             use_enhanced_tools,
             investigation_id
->>>>>>> 001-modify-analyzer-method
         )
         
         # Log node creation completion

@@ -287,11 +287,7 @@ While gaps exist in historical learning and adaptive capabilities, the foundatio
 - `/app/service/agent/patterns/base.py` (Pattern foundation)
 
 ### Supporting Systems
-<<<<<<< HEAD
-- `/app/service/agent/autonomous_orchestrator.py` (Orchestration)
-=======
 - `/app/service/agent/structured_orchestrator.py` (Orchestration)
->>>>>>> 001-modify-analyzer-method
 - `/app/service/websocket_manager.py` (Real-time streaming)
 - `/app/service/logging/unified_logging_core.py` (Performance tracking)
 
