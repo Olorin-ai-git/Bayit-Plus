@@ -378,3 +378,25 @@ mock_ips_cache_client.py
 
 # Test directories
 # olorin-server/app/test/ - Commented out to allow essential test files to be tracked
+
+# ===== Fraud Detection Artifacts and Packages =====
+# Generated investigation packages
+olorin-server/packages/
+packages/
+
+# Generated confusion tables and reports
+**/confusion*.html
+**/confusion_table*.html
+**/*package*.zip
+**/*report*.zip
+**/*comparison*.zip
+**/*fraud*.zip
+
+# Claude Agent Files (AI Assistant State)
+.claude/
+**/.claude/
+*.claude
+CLAUDE.md
+**/CLAUDE.md
+.gitmessage*
+**/.gitmessage*
