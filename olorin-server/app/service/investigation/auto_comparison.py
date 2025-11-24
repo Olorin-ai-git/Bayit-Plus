@@ -295,6 +295,35 @@ async def create_and_wait_for_investigation(
             db.commit()
             db.refresh(state)
             
+            # Initialize investigation folder structure with proper logging
+            try:
+                from app.service.logging.investigation_folder_manager import get_folder_manager, InvestigationMode
+                folder_manager = get_folder_manager()
+                
+                # Determine mode from environment
+                import os
+                mode_str = os.getenv('INVESTIGATION_MODE', 'LIVE').upper()
+                mode = InvestigationMode[mode_str] if mode_str in ['LIVE', 'MOCK', 'DEMO'] else InvestigationMode.LIVE
+                
+                # Create investigation folder with metadata
+                folder_path, metadata = folder_manager.create_investigation_folder(
+                    investigation_id=investigation_id,
+                    mode=mode,
+                    scenario=f"auto_comparison_{entity_type}_{entity_value}",
+                    config={
+                        "entity_id": entity_value,
+                        "entity_type": entity_type,
+                        "window_start": window_start.isoformat(),
+                        "window_end": window_end.isoformat(),
+                        "investigation_type": "auto_comparison"
+                    }
+                )
+                logger.info(f"✅ Created investigation folder: {folder_path}")
+                
+            except Exception as fe:
+                logger.warning(f"⚠️ Failed to create investigation folder: {fe}")
+                # Don't fail investigation if folder creation fails
+            
             # Initialize journey tracking before execution starts
             try:
                 from app.service.agent.journey_tracker import get_journey_tracker
@@ -309,7 +338,7 @@ async def create_and_wait_for_investigation(
                         "window_end": window_end.isoformat()
                     }
                 )
-                logger.debug(f"✅ Initialized journey tracking for investigation {investigation_id}")
+                logger.info(f"✅ Initialized journey tracking for investigation {investigation_id}")
             except Exception as je:
                 logger.warning(f"⚠️ Failed to initialize journey tracking: {je}")
                 # Don't fail investigation if journey tracking fails
