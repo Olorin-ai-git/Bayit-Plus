@@ -3,11 +3,19 @@
 # Scenario Investigation Wrapper Script
 #
 # This script provides an easy interface to run investigation scenarios using
+<<<<<<< HEAD
 # the existing Olorin autonomous investigation infrastructure. It bridges the
 # new scenario templates with the proven bash orchestration system.
 #
 # Features:
 # - Uses existing run-autonomous-investigation.sh for reliable execution
+=======
+# the existing Olorin structured investigation infrastructure. It bridges the
+# new scenario templates with the proven bash orchestration system.
+#
+# Features:
+# - Uses existing run-structured-investigation.sh for reliable execution
+>>>>>>> 001-modify-analyzer-method
 # - Integrates scenario templates with existing monitoring
 # - Maintains compatibility with all existing features
 # - Provides simplified interface for common scenarios
@@ -32,7 +40,11 @@ readonly NC='\033[0m' # No Color
 # Configuration
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly OLORIN_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+<<<<<<< HEAD
 readonly BASH_RUNNER="$OLORIN_ROOT/olorin-server/scripts/run-autonomous-investigation.sh"
+=======
+readonly BASH_RUNNER="$OLORIN_ROOT/olorin-server/scripts/run-structured-investigation.sh"
+>>>>>>> 001-modify-analyzer-method
 readonly INTEGRATION_RUNNER="$SCRIPT_DIR/integration_runner.py"
 
 # Global variables
@@ -92,8 +104,13 @@ show_usage() {
     echo ""
     echo -e "${WHITE}INFRASTRUCTURE INTEGRATION:${NC}"
     echo -e "${CYAN}This script uses the existing proven infrastructure:${NC}"
+<<<<<<< HEAD
     echo "  • run-autonomous-investigation.sh - Server orchestration and monitoring"
     echo "  • unified_autonomous_test_runner.py - Core investigation execution"
+=======
+    echo "  • run-structured-investigation.sh - Server orchestration and monitoring"
+    echo "  • unified_structured_test_runner.py - Core investigation execution"
+>>>>>>> 001-modify-analyzer-method
     echo "  • All existing features: WebSocket monitoring, HTML reports, error handling"
     echo ""
     echo -e "${WHITE}OUTPUT:${NC}"
@@ -304,14 +321,22 @@ run_scenario() {
     echo ""
     
     # Execute the investigation
+<<<<<<< HEAD
     show_progress "Starting autonomous investigation via existing infrastructure"
+=======
+    show_progress "Starting structured investigation via existing infrastructure"
+>>>>>>> 001-modify-analyzer-method
     
     if "${full_cmd[@]}"; then
         echo ""
         show_success "Investigation completed successfully"
         
         # Look for generated reports
+<<<<<<< HEAD
         local html_reports=$(find . -name "autonomous_test_report_*.html" -o -name "*investigation*.html" 2>/dev/null | head -3)
+=======
+        local html_reports=$(find . -name "structured_test_report_*.html" -o -name "*investigation*.html" 2>/dev/null | head -3)
+>>>>>>> 001-modify-analyzer-method
         if [[ -n "$html_reports" ]]; then
             echo ""
             echo -e "${BLUE}📊 Generated Reports:${NC}"

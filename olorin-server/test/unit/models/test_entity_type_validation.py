@@ -7,7 +7,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.models.validation import ValidatedEntityType, ValidatedInvestigationRequest
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
+from app.router.models.structured_investigation_models import StructuredInvestigationRequest
 from app.utils.entity_validation import (
     get_all_entity_types,
     get_entity_type_categories,
@@ -242,10 +242,10 @@ class TestValidatedInvestigationRequest:
             entity_type="device",
             investigation_id="inv456",
             time_range="7d",
-            mode="autonomous"
+            mode="structured"
         )
         
-        assert request.mode == "autonomous"
+        assert request.mode == "structured"
 
     def test_invalid_entity_type_in_request(self):
         """Test invalid entity type in investigation request"""
@@ -261,12 +261,12 @@ class TestValidatedInvestigationRequest:
         assert "Invalid entity type" in error
 
 
-class TestAutonomousInvestigationRequest:
-    """Test AutonomousInvestigationRequest model validation"""
+class TestStructuredInvestigationRequest:
+    """Test StructuredInvestigationRequest model validation"""
 
-    def test_valid_autonomous_request(self):
-        """Test valid autonomous investigation request"""
-        request = AutonomousInvestigationRequest(
+    def test_valid_structured_request(self):
+        """Test valid structured investigation request"""
+        request = StructuredInvestigationRequest(
             entity_id="test789",
             entity_type="transaction"
         )
@@ -277,9 +277,9 @@ class TestAutonomousInvestigationRequest:
         assert request.enable_journey_tracking is True  # default
         assert request.investigation_priority == "normal"  # default
 
-    def test_autonomous_request_with_options(self):
-        """Test autonomous request with custom options"""
-        request = AutonomousInvestigationRequest(
+    def test_structured_request_with_options(self):
+        """Test structured request with custom options"""
+        request = StructuredInvestigationRequest(
             entity_id="test999",
             entity_type="account",
             investigation_id="custom_inv",
@@ -293,10 +293,10 @@ class TestAutonomousInvestigationRequest:
         assert request.investigation_priority == "high"
         assert request.metadata == {"custom": "data"}
 
-    def test_invalid_entity_type_autonomous(self):
-        """Test invalid entity type in autonomous request"""
+    def test_invalid_entity_type_structured(self):
+        """Test invalid entity type in structured request"""
         with pytest.raises(ValidationError) as exc_info:
-            AutonomousInvestigationRequest(
+            StructuredInvestigationRequest(
                 entity_id="test123",
                 entity_type="invalid_entity"
             )

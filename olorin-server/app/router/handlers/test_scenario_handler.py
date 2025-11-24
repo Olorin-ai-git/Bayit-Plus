@@ -1,5 +1,5 @@
 """
-Test Scenario Handler for Autonomous Investigations
+Test Scenario Handler for Structured Investigations
 This module handles test scenario management and validation logic.
 """
 from typing import Dict, List, Any
@@ -16,7 +16,7 @@ logger = get_bridge_logger(__name__)
 
 async def list_test_scenarios() -> Dict[str, List[str]]:
     """
-    List all available test scenarios for autonomous investigations.
+    List all available test scenarios for structured investigations.
     
     Returns:
         Dict mapping scenario categories to scenario names
@@ -35,7 +35,7 @@ async def validate_investigation_results(
     active_investigations: Dict[str, Dict[str, Any]]
 ) -> Dict[str, Any]:
     """
-    Validate autonomous investigation results against expected outcomes.
+    Validate structured investigation results against expected outcomes.
     
     This function validates investigation quality and accuracy
     against predefined scenarios.

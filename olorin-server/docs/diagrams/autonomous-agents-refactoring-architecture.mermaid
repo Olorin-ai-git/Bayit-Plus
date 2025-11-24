@@ -1,11 +1,11 @@
 ```mermaid
 graph TB
     subgraph "BEFORE: Single Large File (943 lines)"
-        A[autonomous_agents.py<br/>943 lines<br/>❌ Violates 200-line rule]
+        A[structured_agents.py<br/>943 lines<br/>❌ Violates 200-line rule]
     end
 
     subgraph "AFTER: Modular Architecture (All files < 200 lines)"
-        B[autonomous_agents.py<br/>~20 lines<br/>✅ Import/Export Only]
+        B[structured_agents.py<br/>~20 lines<br/>✅ Import/Export Only]
         
         C[base_agents.py<br/>~180 lines<br/>✅ Core Agent Classes]
         
@@ -30,19 +30,19 @@ graph TB
 
     subgraph "Core Components Detail"
         subgraph "base_agents.py"
-            C1[AutonomousInvestigationAgent<br/>- __init__<br/>- autonomous_investigate<br/>- _create_investigation_prompt<br/>- _parse_autonomous_result<br/>- _extract_findings_from_content]
+            C1[StructuredInvestigationAgent<br/>- __init__<br/>- structured_investigate<br/>- _create_investigation_prompt<br/>- _parse_structured_result<br/>- _extract_findings_from_content]
         end
         
         subgraph "domain_agents.py"
-            D1[Domain Agent Functions<br/>- autonomous_network_agent<br/>- autonomous_device_agent<br/>- autonomous_location_agent<br/>- autonomous_logs_agent]
+            D1[Domain Agent Functions<br/>- structured_network_agent<br/>- structured_device_agent<br/>- structured_location_agent<br/>- structured_logs_agent]
         end
         
         subgraph "agent_communication.py"
-            E1[Communication Utilities<br/>- _extract_investigation_info<br/>- _create_error_response<br/>- _get_or_create_autonomous_context<br/>- _broadcast_agent_progress]
+            E1[Communication Utilities<br/>- _extract_investigation_info<br/>- _create_error_response<br/>- _get_or_create_structured_context<br/>- _broadcast_agent_progress]
         end
         
         subgraph "agent_factory.py"
-            F1[Factory Functions<br/>- create_autonomous_agent<br/>- configure_domain_tools<br/>- get_domain_objectives<br/>- initialize_llm_with_tools]
+            F1[Factory Functions<br/>- create_structured_agent<br/>- configure_domain_tools<br/>- get_domain_objectives<br/>- initialize_llm_with_tools]
         end
     end
 

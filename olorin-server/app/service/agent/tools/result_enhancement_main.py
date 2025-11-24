@@ -15,7 +15,7 @@ from .result_augmentation_core import (
 )
 from .enhanced_tool_base import ToolResult
 from .rag_tool_context import ToolExecutionContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -64,7 +64,7 @@ class ResultEnhancementEngine:
         self,
         result: ToolResult,
         context: Optional[ToolExecutionContext] = None,
-        investigation_context: Optional[AutonomousInvestigationContext] = None,
+        investigation_context: Optional[StructuredInvestigationContext] = None,
         domain: Optional[str] = None
     ) -> ResultInsights:
         """Generate enhanced insights using RAG knowledge"""
@@ -134,7 +134,7 @@ class ResultEnhancementEngine:
         self,
         result: ToolResult,
         context: Optional[ToolExecutionContext] = None,
-        investigation_context: Optional[AutonomousInvestigationContext] = None,
+        investigation_context: Optional[StructuredInvestigationContext] = None,
         max_recommendations: int = 10
     ) -> List[NextStepRecommendation]:
         """Generate intelligent next step recommendations"""

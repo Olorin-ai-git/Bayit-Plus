@@ -1,10 +1,10 @@
-# Autonomous Investigation Workflow Flow Diagram
+# Structured Investigation Workflow Flow Diagram
 
 ```mermaid
 graph TB
     %% Frontend Layer
     subgraph "Frontend (olorin-front)"
-        A[Investigation Trigger] --> B[AutonomousInvestigationClient]
+        A[Investigation Trigger] --> B[StructuredInvestigationClient]
         B --> C[REST API Call: /api/v1/agent/start/{entity_id}]
         B --> D[WebSocket Connection: /ws/{investigation_id}]
     end
@@ -23,8 +23,8 @@ graph TB
         I --> J[Graph State: MessagesState]
     end
 
-    %% Autonomous Agents Layer
-    subgraph "Autonomous Agents"
+    %% Structured Agents Layer
+    subgraph "Structured Agents"
         J --> K[Network Agent]
         J --> L[Location Agent]
         J --> M[Device Agent]
@@ -34,11 +34,11 @@ graph TB
 
     %% LLM Integration Layer
     subgraph "LLM Integration (Claude Opus 4.1)"
-        K --> P[autonomous_llm: ChatAnthropic]
+        K --> P[structured_llm: ChatAnthropic]
         L --> P
         M --> P
         N --> P
-        O --> Q[autonomous_llm: Risk Analysis]
+        O --> Q[structured_llm: Risk Analysis]
         P --> R[Tool Selection & Execution]
         Q --> S[Risk Score Calculation]
     end
@@ -98,7 +98,7 @@ graph TB
 ## Key Validation Points
 
 ### 1. Frontend Trigger
-- **File**: `/olorin-front/src/js/services/AutonomousInvestigationClient.ts`
+- **File**: `/olorin-front/src/js/services/StructuredInvestigationClient.ts`
 - **API Call**: `POST /api/v1/agent/start/{entity_id}?entity_type={type}`
 - **Headers**: Authorization, Content-Type, olorin_tid, etc.
 
@@ -110,13 +110,13 @@ graph TB
 ### 3. LangGraph Execution
 - **Graph Selection**: Parallel vs Sequential based on investigation settings
 - **State Management**: MessagesState with HumanMessage input
-- **Agent Coordination**: Each domain agent runs autonomously
+- **Agent Coordination**: Each domain agent runs structuredly
 
-### 4. Autonomous LLM Usage
+### 4. Structured LLM Usage
 - **Model**: Claude Opus 4.1 (`claude-opus-4-1-20250805`)
 - **Configuration**: Temperature 0.1, 8090 max tokens, 90s timeout
 - **Tool Binding**: Real tools bound to LLM with `bind_tools(tools, strict=True)`
-- **Decision Making**: LLM selects tools and analysis approaches autonomously
+- **Decision Making**: LLM selects tools and analysis approaches structuredly
 
 ### 5. Real Service Integration
 - **Network**: NetworkAnalysisService → Splunk API calls
@@ -139,7 +139,7 @@ graph TB
 ## Critical Flow Characteristics
 
 1. **End-to-End Real APIs**: From frontend fetch() to external service APIs
-2. **LLM-Driven Decisions**: Claude Opus 4.1 makes autonomous tool selections
+2. **LLM-Driven Decisions**: Claude Opus 4.1 makes structured tool selections
 3. **Real-time Communication**: WebSocket streaming of progress and results
 4. **Stateful Investigation**: Persistent investigation context across agents
 5. **Error Recovery**: Robust error handling and retry mechanisms

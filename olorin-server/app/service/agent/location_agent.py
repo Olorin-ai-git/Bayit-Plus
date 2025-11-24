@@ -1,7 +1,7 @@
 """
-Autonomous Location Analysis Agent
+Structured Location Analysis Agent
 
-Location domain autonomous investigation agent using LLM-driven tool selection.
+Location domain structured investigation agent using LLM-driven tool selection.
 """
 
 import json
@@ -12,7 +12,7 @@ from app.service.logging import get_bridge_logger
 
 from app.service.agent.agent_communication import (
     _extract_investigation_info,
-    _get_or_create_autonomous_context,
+    _get_or_create_structured_context,
     _create_error_response,
 )
 from app.service.agent.agent_factory import create_rag_agent, create_agent_with_intelligent_tools
@@ -25,7 +25,6 @@ except ImportError as e:
     logger = get_bridge_logger(__name__)
     logger.warning(f"RAG modules not available: {e}")
     RAG_AVAILABLE = False
-from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.journey_tracker import (
     get_journey_tracker,
     NodeType,
@@ -38,8 +37,11 @@ logger = get_bridge_logger(__name__)
 journey_tracker = get_journey_tracker()
 
 
-async def autonomous_location_agent(state, config) -> dict:
-    """Autonomous location analysis using LLM-driven tool selection with optional RAG enhancement"""
+async def structured_location_agent(state, config) -> dict:
+    """Structured location analysis using LLM-driven tool selection with optional RAG enhancement"""
+    
+    # Track execution start time
+    start_time = time.perf_counter()
     
     # Track execution start time
     start_time = time.perf_counter()
@@ -66,23 +68,15 @@ async def autonomous_location_agent(state, config) -> dict:
         output_state={"location_analysis": "in_progress", "agent_status": "active", "rag_enhancement": "initializing"},
         duration_ms=0,
         status=NodeStatus.IN_PROGRESS,
-        agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "AutonomousLocationAgent",
+        agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "StructuredLocationAgent",
         metadata=start_metadata
     )
     
-    # Create or get autonomous context
-    autonomous_context = _get_or_create_autonomous_context(
+    # Create or get structured context
+    structured_context = _get_or_create_structured_context(
         investigation_id, entity_id, investigation_type="fraud_investigation"
     )
-    autonomous_context.start_domain_analysis("location")
-    
-    # Emit progress update
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.LOCATION_ANALYSIS,
-        0.1,
-        "Starting autonomous location analysis..."
-    )
+    structured_context.start_domain_analysis("location")
     
     try:
         # Get available tools from global scope
@@ -97,7 +91,7 @@ async def autonomous_location_agent(state, config) -> dict:
         if RAG_AVAILABLE and rag_config:
             location_agent = await create_agent_with_intelligent_tools(
                 domain="location",
-                investigation_context=autonomous_context,
+                investigation_context=structured_context,
                 fallback_tools=tools,
                 enable_rag=True,
                 categories=["intelligence", "threat_intelligence", "ml_ai", "web", "olorin"]
@@ -105,15 +99,15 @@ async def autonomous_location_agent(state, config) -> dict:
             logger.info("🗺️ Created location agent with intelligent RAG-enhanced tool selection")
         else:
             # Fallback to standard agent creation
-            from app.service.agent.agent_factory import create_autonomous_agent
-            location_agent = create_autonomous_agent("location", tools)
+            from app.service.agent.agent_factory import create_structured_agent
+            location_agent = create_structured_agent("location", tools)
             logger.info("🗺️ Created standard location agent (RAG not available)")
         
         # Get enhanced objectives with RAG-augmented threat intelligence focus
         location_objectives = get_location_objectives(rag_enabled=(RAG_AVAILABLE and rag_config is not None))
         
-        findings = await location_agent.autonomous_investigate(
-            context=autonomous_context,
+        findings = await location_agent.structured_investigate(
+            context=structured_context,
             config=config,
             specific_objectives=location_objectives
         )
@@ -130,23 +124,7 @@ async def autonomous_location_agent(state, config) -> dict:
                 pass  # Gracefully handle missing RAG stats
         
         # Record findings in context
-        autonomous_context.record_domain_findings("location", findings)
-        
-        # Emit completion update with RAG enhancement info
-        from .location_agent_config import format_completion_message
-        completion_message = format_completion_message(
-            rag_enabled=(RAG_AVAILABLE and rag_config is not None),
-            findings_count=len(findings.key_findings),
-            risk_score=findings.risk_score,
-            rag_stats=rag_stats
-        )
-        
-        await websocket_manager.broadcast_agent_result(
-            investigation_id,
-            AgentPhase.LOCATION_ANALYSIS,
-            findings.raw_data or {},
-            completion_message
-        )
+        structured_context.record_domain_findings("location", findings)
         
         # Track location agent completion with RAG metrics
         completion_metadata = create_location_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats)
@@ -170,7 +148,7 @@ async def autonomous_location_agent(state, config) -> dict:
             },
             duration_ms=int((time.perf_counter() - start_time) * 1000),
             status=NodeStatus.COMPLETED,
-            agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "AutonomousLocationAgent",
+            agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "StructuredLocationAgent",
             metadata=completion_metadata
         )
         
@@ -191,7 +169,7 @@ async def autonomous_location_agent(state, config) -> dict:
             error_context += f" (RAG context: {rag_stats['knowledge_retrieval_count']} retrievals)"
         
         logger.error(error_context)
-        autonomous_context.fail_domain_analysis("location", str(e))
+        structured_context.fail_domain_analysis("location", str(e))
         
         # Track failure with RAG metadata
         error_metadata = create_location_agent_metadata(RAG_AVAILABLE, rag_stats)
@@ -205,7 +183,7 @@ async def autonomous_location_agent(state, config) -> dict:
             output_state={"location_analysis": "failed", "error": str(e), "rag_enabled": RAG_AVAILABLE},
             duration_ms=0,
             status=NodeStatus.FAILED,
-            agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "AutonomousLocationAgent",
+            agent_name="RAG-Enhanced-LocationAgent" if RAG_AVAILABLE else "StructuredLocationAgent",
             metadata=error_metadata
         )
         

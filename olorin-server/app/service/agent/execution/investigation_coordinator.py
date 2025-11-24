@@ -17,7 +17,6 @@ from app.service.logging import get_bridge_logger
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
 
-from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.agent_utils import _get_config_value, _rehydrate_agent_context
 
 logger = get_bridge_logger(__name__)
@@ -58,13 +57,7 @@ async def start_investigation(state: MessagesState, config) -> dict:
     from app.models.api_models import InvestigationCreate
     from app.persistence import create_investigation
 
-    # Emit progress update: Starting investigation
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.INITIALIZATION,
-        0.1,
-        f"Starting investigation for {entity_type} {entity_id}",
-    )
+    # WebSocket progress updates removed per spec 005 - using polling instead
 
     # Create a new investigation record
     create_investigation(
@@ -77,13 +70,7 @@ async def start_investigation(state: MessagesState, config) -> dict:
     agent_context.metadata.additional_metadata["investigation_id"] = investigation_id
     agent_context.metadata.additional_metadata["investigationId"] = investigation_id
 
-    # Emit progress update: Investigation initialized
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.INITIALIZATION,
-        1.0,
-        "Investigation initialized successfully",
-    )
+    # WebSocket progress updates removed per spec 005 - using polling instead
 
     # Emit initial user message to kick off LLM in fraud_investigation node
     init_msg = HumanMessage(
@@ -138,23 +125,8 @@ async def coordinate_investigation_phase(
         result_data: Optional result data to broadcast
     """
     try:
-        # Broadcast progress update
-        await websocket_manager.broadcast_progress(
-            investigation_id=investigation_id,
-            phase=phase,
-            progress=progress,
-            message=message
-        )
-        
-        # Broadcast results if provided
-        if result_data:
-            await websocket_manager.broadcast_agent_result(
-                investigation_id=investigation_id,
-                phase=phase,
-                result=result_data,
-                message=message
-            )
-            
+        # WebSocket progress updates removed per spec 005 - using polling instead
+
         logger.info(f"Investigation phase coordinated: {phase} - {message}")
         
     except Exception as e:

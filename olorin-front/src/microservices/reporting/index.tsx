@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+<<<<<<< HEAD
 import reportingApp from './App';
+=======
+import ReportingApp from './ReportingApp';
+>>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Initialize the reporting Service
@@ -17,7 +21,11 @@ const initializereportingService = async () => {
 
     root.render(
       <React.StrictMode>
+<<<<<<< HEAD
         <reportingApp />
+=======
+        <ReportingApp />
+>>>>>>> 001-modify-analyzer-method
       </React.StrictMode>
     );
 

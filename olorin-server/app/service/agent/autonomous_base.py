@@ -2,9 +2,9 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 """
-Autonomous Investigation Agent Base Class
+Structured Investigation Agent Base Class
 
-Core autonomous investigation agent with LLM-driven tool selection and decision making.
+Core structured investigation agent with LLM-driven tool selection and decision making.
 """
 
 import json
@@ -18,7 +18,7 @@ from langchain_core.runnables.config import RunnableConfig
 from langchain_anthropic import ChatAnthropic
 
 from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+    StructuredInvestigationContext,
     DomainFindings,
 )
 from app.service.config import get_settings_for_env
@@ -26,33 +26,47 @@ from app.service.config import get_settings_for_env
 logger = logging.getLogger(__name__)
 
 # Global variable for lazy initialization
-_autonomous_llm = None
+_structured_llm = None
 
+<<<<<<< HEAD
 def get_autonomous_llm():
     """Get or create the autonomous LLM using the configured SELECTED_MODEL."""
     global _autonomous_llm
     
     if _autonomous_llm is None:
+=======
+def get_structured_llm():
+    """Get or create the structured LLM using the configured SELECTED_MODEL."""
+    global _structured_llm
+    
+    if _structured_llm is None:
+>>>>>>> 001-modify-analyzer-method
         from app.service.llm_manager import get_llm_manager
         
         # Use the LLM manager which respects SELECTED_MODEL and USE_FIREBASE_SECRETS settings
         llm_manager = get_llm_manager()
+<<<<<<< HEAD
         _autonomous_llm = llm_manager.get_selected_model()
         
         logger.info("Initialized autonomous LLM using configured SELECTED_MODEL")
+=======
+        _structured_llm = llm_manager.get_selected_model()
+        
+        logger.info("Initialized structured LLM using configured SELECTED_MODEL")
+>>>>>>> 001-modify-analyzer-method
     
-    return _autonomous_llm
+    return _structured_llm
 
 # For backward compatibility - lazy initialization
 # This will be initialized when first accessed
-autonomous_llm = None
+structured_llm = None
 
 def _get_backward_compatible_llm():
-    """Backward compatibility accessor for autonomous_llm."""
-    global autonomous_llm
-    if autonomous_llm is None:
-        autonomous_llm = get_autonomous_llm()
-    return autonomous_llm
+    """Backward compatibility accessor for structured_llm."""
+    global structured_llm
+    if structured_llm is None:
+        structured_llm = get_structured_llm()
+    return structured_llm
 
 # Create a property-like access
 class _LLMWrapper:
@@ -64,12 +78,12 @@ class _LLMWrapper:
         llm = _get_backward_compatible_llm()
         return llm.bind_tools(tools, **kwargs)
 
-autonomous_llm = _LLMWrapper()
+structured_llm = _LLMWrapper()
 
 
-class AutonomousInvestigationAgent:
+class StructuredInvestigationAgent:
     """
-    Base class for autonomous investigation agents.
+    Base class for structured investigation agents.
     
     Uses LLM-driven decision making to select tools and analysis approaches
     based on investigation context and objectives.
@@ -84,14 +98,50 @@ class AutonomousInvestigationAgent:
         self.supports_tool_refresh = False
         self.tool_refresh_callback = None
         
-        # Bind tools to autonomous LLM using lazy initialization
+        # Bind tools to structured LLM using lazy initialization
         try:
-            autonomous_llm_instance = get_autonomous_llm()
-            self.llm_with_tools = autonomous_llm_instance.bind_tools(tools)
-            logger.info(f"Successfully bound {len(tools)} tools to {domain} autonomous agent")
+            structured_llm_instance = get_structured_llm()
+            self.llm_with_tools = structured_llm_instance.bind_tools(tools)
+            logger.info(f"Successfully bound {len(tools)} tools to {domain} structured agent")
         except Exception as e:
             logger.error(f"Failed to bind tools to {domain} agent: {e}")
-            self.llm_with_tools = get_autonomous_llm()
+            self.llm_with_tools = get_structured_llm()
+    
+    def _format_tool_summary(self) -> str:
+        """Format a summary of available tools by category."""
+        categories = {
+            "Threat Intelligence": [],
+            "ML/AI Analysis": [],
+            "Database/Logs": [],
+            "Blockchain": [],
+            "OSINT": [],
+            "Web/Network": [],
+            "Other": []
+        }
+        
+        for tool_name in self.tool_map.keys():
+            tool_lower = tool_name.lower()
+            if any(x in tool_lower for x in ['abuse', 'virus', 'shodan', 'threat']):
+                categories["Threat Intelligence"].append(tool_name)
+            elif any(x in tool_lower for x in ['ml', 'anomaly', 'pattern', 'behavioral', 'risk_scoring', 'fraud']):
+                categories["ML/AI Analysis"].append(tool_name)
+            elif any(x in tool_lower for x in ['snowflake', 'splunk', 'sumo', 'database', 'query']):
+                categories["Database/Logs"].append(tool_name)
+            elif any(x in tool_lower for x in ['blockchain', 'crypto', 'nft', 'defi', 'wallet']):
+                categories["Blockchain"].append(tool_name)
+            elif any(x in tool_lower for x in ['osint', 'social', 'people', 'dark', 'deep']):
+                categories["OSINT"].append(tool_name)
+            elif any(x in tool_lower for x in ['web', 'http', 'scrape']):
+                categories["Web/Network"].append(tool_name)
+            else:
+                categories["Other"].append(tool_name)
+        
+        summary = []
+        for cat, tools in categories.items():
+            if tools:
+                summary.append(f"- {cat}: {', '.join(tools[:5])}{'...' if len(tools) > 5 else ''}")
+        
+        return '\n'.join(summary)
     
     def _format_tool_summary(self) -> str:
         """Format a summary of available tools by category."""
@@ -140,7 +190,7 @@ class AutonomousInvestigationAgent:
         self.tool_refresh_callback = refresh_callback
         logger.info(f"Tool refresh enabled for {self.domain} agent")
     
-    async def refresh_tools(self, context: AutonomousInvestigationContext) -> bool:
+    async def refresh_tools(self, context: StructuredInvestigationContext) -> bool:
         """Refresh tools dynamically using the configured callback.
         
         Args:
@@ -168,8 +218,8 @@ class AutonomousInvestigationAgent:
                 self.tool_map = {tool.name: tool for tool in new_tools}
                 
                 # Re-bind tools to LLM
-                autonomous_llm_instance = get_autonomous_llm()
-                self.llm_with_tools = autonomous_llm_instance.bind_tools(new_tools)
+                structured_llm_instance = get_structured_llm()
+                self.llm_with_tools = structured_llm_instance.bind_tools(new_tools)
                 
                 logger.info(
                     f"Tools refreshed for {self.domain}: {old_tool_count} -> {len(new_tools)} tools "
@@ -184,14 +234,14 @@ class AutonomousInvestigationAgent:
             logger.error(f"Tool refresh failed for {self.domain}: {str(e)}")
             return False
     
-    async def autonomous_investigate(
+    async def structured_investigate(
         self,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         config: RunnableConfig,
         specific_objectives: List[str] = None
     ) -> DomainFindings:
         """
-        Perform autonomous investigation using LLM-driven tool selection.
+        Perform structured investigation using LLM-driven tool selection.
         
         Args:
             context: Rich investigation context
@@ -199,10 +249,10 @@ class AutonomousInvestigationAgent:
             specific_objectives: Specific objectives for this domain
             
         Returns:
-            DomainFindings with autonomous analysis results
+            DomainFindings with structured analysis results
         """
-        from .autonomous_prompts import create_investigation_prompt
-        from .autonomous_parsing import parse_autonomous_result
+        from .structured_prompts import create_investigation_prompt
+        from .structured_parsing import parse_structured_result
         
         # Optional: Refresh tools dynamically if enabled
         if self.supports_tool_refresh:
@@ -216,7 +266,11 @@ class AutonomousInvestigationAgent:
         # Generate rich investigation context for LLM
         llm_context = context.generate_llm_context(self.domain)
         
+<<<<<<< HEAD
         # Create autonomous investigation prompt with available tools
+=======
+        # Create structured investigation prompt with available tools
+>>>>>>> 001-modify-analyzer-method
         investigation_prompt = create_investigation_prompt(
             self.domain, context, llm_context, specific_objectives, available_tools=self.tools
         )
@@ -225,7 +279,11 @@ class AutonomousInvestigationAgent:
         logger.info(f"🔥 UNIFIED PROMPTS: Using comprehensive investigation prompt for {self.domain} domain")
         logger.info(f"        📊 {len(self.tools)} tools available for comprehensive {self.domain.title()} analysis")
         
+<<<<<<< HEAD
         # Create system message for autonomous agent
+=======
+        # Create system message for structured agent
+>>>>>>> 001-modify-analyzer-method
         system_msg = SystemMessage(content=f"""
 You are an ADVANCED fraud investigation agent specializing in {self.domain.upper()} ANALYSIS.
 
@@ -254,14 +312,14 @@ You have access to {len(self.tools)} tools including:
 {self._format_tool_summary()}
 
 IMPORTANT: The investigation prompt will contain exact format requirements from the Gaia system.
-Follow these requirements precisely while maintaining your autonomous tool selection capability.
+Follow these requirements precisely while maintaining your structured tool selection capability.
 
 Remember: You have full autonomy to choose which tools to use and how to analyze the data.
 Let the investigation context guide your decisions, not fixed workflows.
 """)
         
         try:
-            # Import autonomous investigation logger for console output
+            # Import structured investigation logger for console output
             from app.service.logging.autonomous_investigation_logger import get_console_logger
             console_logger = get_console_logger()
             
@@ -287,9 +345,9 @@ Let the investigation context guide your decisions, not fixed workflows.
             )
             logger.info(console_prompt)
             
-            # Execute autonomous investigation
+            # Execute structured investigation
             logger.info(f"        🤖 Starting {self.domain.title()} Agent analysis...")
-            logger.info(f"Starting autonomous {self.domain} investigation for {context.investigation_id}")
+            logger.info(f"Starting structured {self.domain} investigation for {context.investigation_id}")
             
             messages = [system_msg, HumanMessage(content=enhanced_prompt)]
             
@@ -304,9 +362,9 @@ Let the investigation context guide your decisions, not fixed workflows.
             
             console_logger.log_llm_interaction(
                 investigation_id=context.investigation_id,
-                agent_name=f"Autonomous{self.domain.title()}Agent",
+                agent_name=f"Structured{self.domain.title()}Agent",
                 model_name="claude-opus-4-1-20250805",
-                prompt_template="autonomous_investigation_prompt",
+                prompt_template="structured_investigation_prompt",
                 full_prompt=enhanced_prompt,
                 response="[Pending]",
                 tokens_used={"total_tokens": 0},
@@ -437,7 +495,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 logger.info(f"        🔍 Getting final analysis with tool results for {self.domain.title()}...")
                 
                 # Get the final analysis with tool results
-                final_result = await get_autonomous_llm().ainvoke(
+                final_result = await get_structured_llm().ainvoke(
                     analysis_messages,
                     config=config
                 )
@@ -476,7 +534,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 logger.info(f"        🔍 Getting formatted response for {self.domain.title()}...")
                 
                 # Get the formatted response
-                formatted_result = await get_autonomous_llm().ainvoke(
+                formatted_result = await get_structured_llm().ainvoke(
                     format_messages,
                     config=config
                 )
@@ -514,8 +572,8 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
             logger.info(f"{log_response}")
             
             # Validate Olorin/Gaia format response
-            from app.service.agent.autonomous_prompts import validate_investigation_response
-            from app.service.agent.autonomous_parsing import extract_content_from_response
+            from app.service.agent.structured_prompts import validate_investigation_response
+            from app.service.agent.structured_parsing import extract_content_from_response
             
             # Extract content as string for validation (handles lists and objects)
             response_content = extract_content_from_response(result.content)
@@ -529,8 +587,8 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 logger.warning(f"⚠️ FORMAT WARNING: Response may not follow expected format for {self.domain}")
                 logger.warning(f"        ⚠️ Format validation warning for {self.domain.title()} response")
             
-            # Parse and structure the autonomous analysis result
-            findings = parse_autonomous_result(result, context, self.domain)
+            # Parse and structure the structured analysis result
+            findings = parse_structured_result(result, context, self.domain)
             
             # Log completion with detailed results
             risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.3f}"
@@ -556,10 +614,10 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 logger.info(f"   Tools Used: {', '.join(tools_used)} ({len(result.tool_calls)} total calls)")
                 console_logger.log_tool_execution(
                     investigation_id=context.investigation_id,
-                    agent_name=f"Autonomous{self.domain.title()}Agent",
+                    agent_name=f"Structured{self.domain.title()}Agent",
                     tool_name=f"Multiple Tools: {', '.join(tools_used)}",
                     tool_parameters={"tool_calls": len(result.tool_calls)},
-                    selection_reasoning=f"LLM selected {len(result.tool_calls)} tools autonomously",
+                    selection_reasoning=f"LLM selected {len(result.tool_calls)} tools structuredly",
                     execution_result={"findings_count": len(findings.key_findings), "risk_score": findings.risk_score},
                     success=True,
                     execution_time_ms=0  # Would need timing from earlier
@@ -580,7 +638,7 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
             
         except Exception as e:
             logger.error(
-                f"CRITICAL: Autonomous {self.domain} investigation failed completely! "
+                f"CRITICAL: Structured {self.domain} investigation failed completely! "
                 f"No risk assessment available for investigation {context.investigation_id}: {str(e)}"
             )
             logger.error(f"        ❌ ERROR: {self.domain.title()} Agent failed completely - no risk_score available!")

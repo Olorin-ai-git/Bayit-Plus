@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Transaction Data Schema",
-  "description": "Schema for realistic transaction data used in autonomous investigation testing",
+  "description": "Schema for realistic transaction data used in structured investigation testing",
   "type": "object",
   "properties": {
     "transaction": {

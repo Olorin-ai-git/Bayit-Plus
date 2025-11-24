@@ -1,12 +1,12 @@
 """
 Phase 5: Agent System Endpoint Testing for Olorin Platform.
 
-Tests AI agent endpoints to verify agent invocation, autonomous investigation,
+Tests AI agent endpoints to verify agent invocation, structured investigation,
 and agent metadata handling. Uses REAL AI models - NO MOCK DATA.
 
 Endpoints tested:
 1. POST /v1/agent/invoke - General agent invocation
-2. POST /v1/agent/start/{entity_id} - Start autonomous investigation
+2. POST /v1/agent/start/{entity_id} - Start structured investigation
 """
 
 import pytest
@@ -163,9 +163,9 @@ class TestAgentEndpoints:
             pytest.fail(f"Agent invocation validation failed: {'; '.join(result.errors)}")
 
     @pytest.mark.asyncio
-    async def test_agent_start_autonomous_investigation(self, endpoint_client, endpoint_validator, auth_headers, real_test_data):
-        """Test POST /v1/agent/start/{entity_id} - Start autonomous investigation."""
-        logger.info("Testing autonomous investigation: POST /v1/agent/start/{entity_id}")
+    async def test_agent_start_structured_investigation(self, endpoint_client, endpoint_validator, auth_headers, real_test_data):
+        """Test POST /v1/agent/start/{entity_id} - Start structured investigation."""
+        logger.info("Testing structured investigation: POST /v1/agent/start/{entity_id}")
         
         if not auth_headers:
             pytest.skip("No authentication headers available - skipping protected endpoint test")
@@ -174,8 +174,8 @@ class TestAgentEndpoints:
         test_data = real_test_data.generate_comprehensive_test_data()
         entity_id = test_data.entity_id
         
-        # Prepare autonomous investigation payload
-        autonomous_payload = {
+        # Prepare structured investigation payload
+        structured_payload = {
             "investigationId": test_data.investigation_id,
             "entityType": "user_id",
             "instructions": f"Conduct comprehensive fraud investigation for entity {entity_id}. Analyze all available data sources.",
@@ -185,7 +185,7 @@ class TestAgentEndpoints:
                 "include_sources": ["device", "network", "logs"]
             },
             "metadata": {
-                "testCase": "autonomous_investigation",
+                "testCase": "structured_investigation",
                 "priority": "high",
                 "initiatedBy": "endpoint_test"
             }
@@ -194,39 +194,39 @@ class TestAgentEndpoints:
         # Add required Olorin headers
         agent_headers = auth_headers.copy()
         agent_headers.update({
-            "olorin_experience_id": "olorin-autonomous-test-experience",
+            "olorin_experience_id": "olorin-structured-test-experience",
             "olorin_originating_assetalias": "Olorin.cas.hri.olorin", 
-            "olorin_tid": f"autonomous-test-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+            "olorin_tid": f"structured-test-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
         })
         
-        # Start autonomous investigation
+        # Start structured investigation
         response, metrics = await endpoint_client.post(
             f"/v1/agent/start/{entity_id}",
             headers=agent_headers,
-            json_data=autonomous_payload
+            json_data=structured_payload
         )
         
         # Validate response
         result = endpoint_validator.validate_agent_response(response, metrics)
         
         # Log results
-        logger.info(f"Autonomous investigation result: {result.get_summary()}")
+        logger.info(f"Structured investigation result: {result.get_summary()}")
         
         if response.status_code == 200:
-            # Test successful autonomous investigation start
+            # Test successful structured investigation start
             try:
                 data = response.json()
-                logger.info("Autonomous investigation started successfully")
+                logger.info("Structured investigation started successfully")
                 
-                # Check for autonomous investigation response fields
-                autonomous_fields = [
+                # Check for structured investigation response fields
+                structured_fields = [
                     "investigationId", "status", "session_id", "agent_config",
                     "execution_plan", "estimated_duration", "trace_id"
                 ]
-                found_fields = [field for field in autonomous_fields if field in data]
+                found_fields = [field for field in structured_fields if field in data]
                 
                 if found_fields:
-                    logger.info(f"Autonomous response fields found: {found_fields}")
+                    logger.info(f"Structured response fields found: {found_fields}")
                     
                     # Check investigation status
                     if "status" in data:
@@ -260,15 +260,15 @@ class TestAgentEndpoints:
                         logger.info(f"Estimated investigation duration: {duration}")
                         
                 else:
-                    logger.warning("No standard autonomous investigation fields found")
-                    logger.info(f"Raw autonomous response fields: {list(data.keys())}")
+                    logger.warning("No standard structured investigation fields found")
+                    logger.info(f"Raw structured response fields: {list(data.keys())}")
                 
             except Exception as e:
-                pytest.fail(f"Autonomous investigation response parsing failed: {e}")
+                pytest.fail(f"Structured investigation response parsing failed: {e}")
         
         elif response.status_code == 202:
             # Investigation queued/accepted for processing
-            logger.info("Autonomous investigation accepted for processing (202)")
+            logger.info("Structured investigation accepted for processing (202)")
             try:
                 data = response.json()
                 if "investigationId" in data:
@@ -279,13 +279,13 @@ class TestAgentEndpoints:
         
         elif response.status_code == 422:
             # Validation error
-            logger.error("Autonomous investigation failed with validation error")
+            logger.error("Structured investigation failed with validation error")
             try:
                 error_data = response.json()
-                logger.error(f"Autonomous validation error: {error_data}")
-                pytest.fail(f"Autonomous investigation validation failed: {error_data}")
+                logger.error(f"Structured validation error: {error_data}")
+                pytest.fail(f"Structured investigation validation failed: {error_data}")
             except:
-                pytest.fail("Autonomous investigation failed with 422 validation error")
+                pytest.fail("Structured investigation failed with 422 validation error")
         
         elif response.status_code == 409:
             # Conflict - investigation may already exist
@@ -297,14 +297,14 @@ class TestAgentEndpoints:
                 pass
         
         elif response.status_code == 503:
-            logger.warning("Agent service unavailable (503) - autonomous system may be down")
+            logger.warning("Agent service unavailable (503) - structured system may be down")
         
         else:
-            pytest.fail(f"Unexpected status code for autonomous investigation: {response.status_code}")
+            pytest.fail(f"Unexpected status code for structured investigation: {response.status_code}")
         
         # Fail if validation errors (except for conflicts which can be expected)
         if result.errors and response.status_code != 409:
-            pytest.fail(f"Autonomous investigation validation failed: {'; '.join(result.errors)}")
+            pytest.fail(f"Structured investigation validation failed: {'; '.join(result.errors)}")
 
     @pytest.mark.asyncio
     async def test_agent_capabilities_exploration(self, endpoint_client, endpoint_validator, auth_headers, real_test_data):
@@ -570,11 +570,11 @@ async def test_agent_endpoints_summary(endpoint_client, auth_headers, real_test_
             "success": False
         }
     
-    # Test autonomous investigation
+    # Test structured investigation
     try:
-        logger.info("Testing autonomous investigation...")
+        logger.info("Testing structured investigation...")
         
-        autonomous_payload = {
+        structured_payload = {
             "investigationId": f"summary-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
             "entityType": "user_id",
             "instructions": f"Basic investigation for {entity_id}",
@@ -584,18 +584,18 @@ async def test_agent_endpoints_summary(endpoint_client, auth_headers, real_test_
         response, metrics = await endpoint_client.post(
             f"/v1/agent/start/{entity_id}",
             headers=agent_headers,
-            json_data=autonomous_payload
+            json_data=structured_payload
         )
         
         success = response.status_code in [200, 202, 409]  # 409 is acceptable (conflict)
-        results["Autonomous Investigation"] = {
+        results["Structured Investigation"] = {
             "status": response.status_code,
             "time_ms": metrics["response_time_ms"],
             "success": success
         }
         
     except Exception as e:
-        results["Autonomous Investigation"] = {
+        results["Structured Investigation"] = {
             "status": "ERROR", 
             "error": str(e),
             "success": False

@@ -43,7 +43,24 @@ class ToolRecommender:
         Returns:
             List of recommended tool identifiers
         """
+<<<<<<< HEAD
         tools_used = set(state.get("tools_used", []))
+=======
+        # Extract tool names from tools_used (can be strings or dicts)
+        tools_used_raw = state.get("tools_used", [])
+        tools_used = set()
+        for tool in tools_used_raw:
+            if isinstance(tool, dict):
+                tool_name = tool.get('tool_name') or tool.get('name') or str(tool)
+            else:
+                tool_name = str(tool)
+            # Ensure it's a string before adding to set
+            if isinstance(tool_name, str):
+                tools_used.add(tool_name)
+            else:
+                tools_used.add(str(tool_name))
+        
+>>>>>>> 001-modify-analyzer-method
         snowflake_data = state.get("snowflake_data", {})
         
         recommendations = self._recommend_by_strategy(strategy, tools_used, snowflake_data)

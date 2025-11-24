@@ -12,7 +12,7 @@ from unittest.mock import Mock
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from tests.autonomous.run_all_scenarios import FraudScenarioRunner
+from tests.structured.run_all_scenarios import FraudScenarioRunner
 
 
 class TestRiskScoreAggregation:
@@ -36,7 +36,7 @@ class TestRiskScoreAggregation:
                     "summary": "Test device analysis",
                     "thoughts": "Test thoughts",
                     "timestamp": "2025-08-30T16:00:00",
-                    "autonomous_execution": True,
+                    "structured_execution": True,
                     "domain": "device"
                 }
             },
@@ -49,7 +49,7 @@ class TestRiskScoreAggregation:
                     "summary": "Test network analysis",
                     "thoughts": "Test thoughts", 
                     "timestamp": "2025-08-30T16:00:00",
-                    "autonomous_execution": True,
+                    "structured_execution": True,
                     "domain": "network"
                 }
             },
@@ -62,7 +62,7 @@ class TestRiskScoreAggregation:
                     "summary": "Test logs analysis",
                     "thoughts": "Test thoughts",
                     "timestamp": "2025-08-30T16:00:00", 
-                    "autonomous_execution": True,
+                    "structured_execution": True,
                     "domain": "logs"
                 }
             },
@@ -75,7 +75,7 @@ class TestRiskScoreAggregation:
                     "summary": "Test risk assessment",
                     "thoughts": "Test thoughts",
                     "timestamp": "2025-08-30T16:00:00",
-                    "autonomous_execution": True,
+                    "structured_execution": True,
                     "domain": "risk",
                     "recommended_actions": []
                 }
@@ -89,7 +89,7 @@ class TestRiskScoreAggregation:
                     "summary": "Test location analysis",
                     "thoughts": "Test thoughts",
                     "timestamp": "2025-08-30T16:00:00",
-                    "autonomous_execution": True,
+                    "structured_execution": True,
                     "domain": "location"
                 }
             }

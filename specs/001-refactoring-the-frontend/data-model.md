@@ -11,7 +11,11 @@ graph TB
     UI --> SHARED[Shared Components]
     UI --> DESIGN[Design System Service]
 
+<<<<<<< HEAD
     AUTO[Autonomous Investigation Service] --> AUTOSTATE[Autonomous State]
+=======
+    AUTO[Structured Investigation Service] --> AUTOSTATE[Structured State]
+>>>>>>> 001-modify-analyzer-method
     MANUAL[Manual Investigation Service] --> MANUALSTATE[Manual State]
 
     AGENT[Agent Analytics Service] --> AGENTSTATE[Agent State]
@@ -37,9 +41,15 @@ graph TB
 
 ## Enhanced Core Entities
 
+<<<<<<< HEAD
 ### 1. Autonomous Investigation Entity
 ```typescript
 interface AutonomousInvestigation {
+=======
+### 1. Structured Investigation Entity
+```typescript
+interface StructuredInvestigation {
+>>>>>>> 001-modify-analyzer-method
   id: string;
   userId: string;
   entityType: 'user_id' | 'email' | 'phone' | 'device_id';
@@ -221,22 +231,36 @@ interface TestRun {
 
 ## Enhanced Service Definitions
 
+<<<<<<< HEAD
 ### 1. Autonomous Investigation Service
+=======
+### 1. Structured Investigation Service
+>>>>>>> 001-modify-analyzer-method
 **Responsibility**: AI-driven automated fraud investigations
 **Port**: 3001
 
 **State**:
 ```typescript
+<<<<<<< HEAD
 interface AutonomousInvestigationState {
   activeInvestigations: AutonomousInvestigation[];
+=======
+interface StructuredInvestigationState {
+  activeInvestigations: StructuredInvestigation[];
+>>>>>>> 001-modify-analyzer-method
   aiOrchestration: AIOrchestrationState;
   automationRules: AutomationRule[];
   escalationQueue: EscalationItem[];
   performanceMetrics: AIPerformanceMetrics;
 }
 
+<<<<<<< HEAD
 interface AutonomousInvestigationActions {
   startAutonomousInvestigation: (params: AutoInvestigationParams) => void;
+=======
+interface StructuredInvestigationActions {
+  startStructuredInvestigation: (params: AutoInvestigationParams) => void;
+>>>>>>> 001-modify-analyzer-method
   configureAIStrategy: (strategy: AIStrategy) => void;
   updateOrchestration: (id: string, updates: Partial<AIOrchestration>) => void;
   escalateToManual: (id: string, reason: string) => void;
@@ -363,8 +387,13 @@ interface DesignSystemActions {
 ### Extended Event Bus Schema
 ```typescript
 interface EnhancedEventBusEvents {
+<<<<<<< HEAD
   // Autonomous Investigation events
   'auto:investigation:started': { investigation: AutonomousInvestigation };
+=======
+  // Structured Investigation events
+  'auto:investigation:started': { investigation: StructuredInvestigation };
+>>>>>>> 001-modify-analyzer-method
   'auto:investigation:escalated': { id: string; reason: string; targetService: 'manual' };
   'auto:ai:decision': { investigationId: string; decision: AIDecision };
   'auto:risk:calculated': { investigationId: string; score: number; factors: RiskFactor[] };
@@ -396,6 +425,7 @@ interface EnhancedEventBusEvents {
 
 #### 1. Investigation Handoff Pattern
 ```typescript
+<<<<<<< HEAD
 // Autonomous to Manual Investigation Handoff
 class InvestigationHandoff {
   async escalateToManual(
@@ -403,6 +433,15 @@ class InvestigationHandoff {
     reason: EscalationReason
   ): Promise<ManualInvestigation> {
     // 1. Create manual investigation from autonomous
+=======
+// Structured to Manual Investigation Handoff
+class InvestigationHandoff {
+  async escalateToManual(
+    autoInvestigation: StructuredInvestigation,
+    reason: EscalationReason
+  ): Promise<ManualInvestigation> {
+    // 1. Create manual investigation from structured
+>>>>>>> 001-modify-analyzer-method
     const manualInvestigation = this.transformToManual(autoInvestigation);
 
     // 2. Transfer context and findings
@@ -462,7 +501,11 @@ class DesignSystemUpdater {
 class TestOrchestrator {
   async runCrossServiceTests() {
     const services = [
+<<<<<<< HEAD
       'autonomousInvestigation',
+=======
+      'structuredInvestigation',
+>>>>>>> 001-modify-analyzer-method
       'manualInvestigation',
       'agentAnalytics',
       'ragIntelligence',
@@ -498,9 +541,15 @@ class TestOrchestrator {
 
 ## Data Flow Patterns (Enhanced)
 
+<<<<<<< HEAD
 ### 1. Autonomous Investigation Flow
 ```
 User Input → Autonomous Service → AI Orchestration → Agent Analytics
+=======
+### 1. Structured Investigation Flow
+```
+User Input → Structured Service → AI Orchestration → Agent Analytics
+>>>>>>> 001-modify-analyzer-method
      ↓              ↓                    ↓                 ↓
 Event Bus ← Risk Calculation ← RAG Intelligence ← WebSocket
      ↓

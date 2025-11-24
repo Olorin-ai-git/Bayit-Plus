@@ -1,6 +1,10 @@
 # Enhanced HTML Report Generator
 
+<<<<<<< HEAD
 Comprehensive HTML report generation for investigation folders created by the autonomous investigation system.
+=======
+Comprehensive HTML report generation for investigation folders created by the structured investigation system.
+>>>>>>> 001-modify-analyzer-method
 
 ## Overview
 
@@ -32,7 +36,11 @@ The Enhanced HTML Report Generator processes investigation folders and creates i
 
 ### 📁 File Format Support
 - **metadata.json** - Investigation configuration and metadata
+<<<<<<< HEAD
 - **autonomous_activities.jsonl** - Structured activity logs
+=======
+- **structured_activities.jsonl** - Structured activity logs
+>>>>>>> 001-modify-analyzer-method
 - **journey_tracking.json** - Investigation progress data  
 - **investigation.log** - General investigation logs
 
@@ -235,7 +243,11 @@ This will demonstrate:
 The enhanced HTML report generator integrates seamlessly with:
 
 - **Investigation Folder Manager** - Unified folder structure
+<<<<<<< HEAD
 - **Autonomous Investigation Logger** - Activity data extraction
+=======
+- **Structured Investigation Logger** - Activity data extraction
+>>>>>>> 001-modify-analyzer-method
 - **Journey Tracker** - Progress visualization
 - **Risk Assessment System** - Risk analysis and scoring
 

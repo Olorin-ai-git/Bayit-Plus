@@ -1,7 +1,7 @@
 """
 Multi-Entity Investigation API Integration Tests
 
-Comprehensive integration tests for multi-entity autonomous investigation endpoints.
+Comprehensive integration tests for multi-entity structured investigation endpoints.
 Tests end-to-end functionality including request/response validation and error handling.
 """
 
@@ -74,7 +74,7 @@ class TestMultiEntityInvestigationAPI:
             }
             
             response = client.post(
-                "/v1/autonomous/multi-entity/start",
+                "/v1/structured/multi-entity/start",
                 json=sample_multi_entity_request
             )
             
@@ -94,14 +94,14 @@ class TestMultiEntityInvestigationAPI:
         """Test validation errors for invalid requests"""
         # Test missing entities
         response = client.post(
-            "/v1/autonomous/multi-entity/start",
+            "/v1/structured/multi-entity/start",
             json={"entities": []}
         )
         assert response.status_code == 422  # Validation error
         
         # Test invalid entity structure
         response = client.post(
-            "/v1/autonomous/multi-entity/start", 
+            "/v1/structured/multi-entity/start", 
             json={
                 "entities": [{"invalid": "structure"}]
             }
@@ -111,7 +111,7 @@ class TestMultiEntityInvestigationAPI:
         # Test too many entities (>10)
         entities = [{"entity_id": f"entity_{i}", "entity_type": "user"} for i in range(15)]
         response = client.post(
-            "/v1/autonomous/multi-entity/start",
+            "/v1/structured/multi-entity/start",
             json={"entities": entities}
         )
         assert response.status_code == 422
@@ -131,7 +131,7 @@ class TestMultiEntityInvestigationAPI:
                 "estimated_completion_time": "2025-01-09T10:05:00Z"
             }
             
-            response = client.get("/v1/autonomous/multi-entity/multi_test123/status")
+            response = client.get("/v1/structured/multi-entity/multi_test123/status")
             
             assert response.status_code == 200
             data = response.json()
@@ -148,7 +148,7 @@ class TestMultiEntityInvestigationAPI:
             mock_orchestrator.return_value = mock_instance
             mock_instance.get_investigation_status.return_value = None
             
-            response = client.get("/v1/autonomous/multi-entity/nonexistent123/status")
+            response = client.get("/v1/structured/multi-entity/nonexistent123/status")
             
             assert response.status_code == 404
             assert "not found" in response.json()["detail"]
@@ -156,7 +156,7 @@ class TestMultiEntityInvestigationAPI:
     def test_get_multi_entity_investigation_results_success(self, client):
         """Test successful results retrieval"""
         # Note: This will return placeholder until Phase 2.2 storage is implemented
-        response = client.get("/v1/autonomous/multi-entity/multi_test123/results")
+        response = client.get("/v1/structured/multi-entity/multi_test123/results")
         
         # Currently returns placeholder - should be 200 when storage is implemented
         assert response.status_code in [200, 501]  # 501 for not implemented
@@ -183,7 +183,7 @@ class TestMultiEntityInvestigationAPI:
             }
             
             response = client.put(
-                "/v1/autonomous/multi-entity/multi_test123/relationships",
+                "/v1/structured/multi-entity/multi_test123/relationships",
                 json=new_relationships
             )
             
@@ -196,7 +196,7 @@ class TestMultiEntityInvestigationAPI:
     
     def test_get_enhanced_entity_types_success(self, client):
         """Test enhanced entity types endpoint"""
-        response = client.get("/v1/autonomous/entities/types/enhanced")
+        response = client.get("/v1/structured/entities/types/enhanced")
         
         assert response.status_code == 200
         data = response.json()
@@ -234,7 +234,7 @@ class TestMultiEntityInvestigationAPI:
                 "boolean_query_complexity_avg": 3.2
             }
             
-            response = client.get("/v1/autonomous/multi-entity/metrics")
+            response = client.get("/v1/structured/multi-entity/metrics")
             
             assert response.status_code == 200
             data = response.json()
@@ -253,7 +253,7 @@ class TestMultiEntityInvestigationAPI:
                 "total_coordinated_investigations": 10
             }
             
-            response = client.get("/v1/autonomous/health")
+            response = client.get("/v1/structured/health")
             
             assert response.status_code == 200
             data = response.json()
@@ -280,7 +280,7 @@ class TestMultiEntityAPIErrorHandling:
             mock_orchestrator.side_effect = Exception("Orchestrator service unavailable")
             
             response = client.post(
-                "/v1/autonomous/multi-entity/start",
+                "/v1/structured/multi-entity/start",
                 json={
                     "entities": [
                         {"entity_id": "user_123", "entity_type": "user"},
@@ -300,7 +300,7 @@ class TestMultiEntityAPIErrorHandling:
             mock_instance.start_multi_entity_investigation.side_effect = ValueError("Invalid Boolean expression")
             
             response = client.post(
-                "/v1/autonomous/multi-entity/start",
+                "/v1/structured/multi-entity/start",
                 json={
                     "entities": [
                         {"entity_id": "user_123", "entity_type": "user"},
@@ -346,7 +346,7 @@ class TestMultiEntityAPIErrorHandling:
             
             def make_request():
                 response = client.post(
-                    "/v1/autonomous/multi-entity/start",
+                    "/v1/structured/multi-entity/start",
                     json=request_data
                 )
                 results.append(response.status_code)
@@ -406,7 +406,7 @@ class TestMultiEntityAPIPerformance:
             start_time = time.time()
             
             response = client.post(
-                "/v1/autonomous/multi-entity/start",
+                "/v1/structured/multi-entity/start",
                 json=request_data
             )
             
@@ -448,7 +448,7 @@ class TestMultiEntityAPIPerformance:
             start_time = time.time()
             
             response = client.post(
-                "/v1/autonomous/multi-entity/start",
+                "/v1/structured/multi-entity/start",
                 json=request_data
             )
             

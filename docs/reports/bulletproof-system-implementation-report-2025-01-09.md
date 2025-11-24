@@ -176,7 +176,7 @@ class TestEnhancedToolNode:
 ### System Integration
 - **LangGraph Compatibility**: Full integration with existing graph builders
 - **Tool Registry**: Enhanced support for all tool categories
-- **Investigation Workflow**: Seamless integration with autonomous investigation system
+- **Investigation Workflow**: Seamless integration with structured investigation system
 - **MCP Integration**: Enhanced tool support for MCP server tools
 
 ## Operational Impact

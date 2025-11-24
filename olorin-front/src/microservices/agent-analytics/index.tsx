@@ -1,6 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+<<<<<<< HEAD
 import agentanalyticsApp from './App';
+=======
+import mitt from 'mitt';
+import { env } from '@shared/config/env.config';
+import { EventBusManager } from '@shared/events/UnifiedEventBus';
+import AgentAnalyticsApp from './AgentAnalyticsApp';
+>>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Initialize the agentanalytics Service
@@ -17,14 +24,22 @@ const initializeagentanalyticsService = async () => {
 
     root.render(
       <React.StrictMode>
+<<<<<<< HEAD
         <agentanalyticsApp />
+=======
+        <AgentAnalyticsApp />
+>>>>>>> 001-modify-analyzer-method
       </React.StrictMode>
     );
 
     console.log('[agentanalytics] agentanalytics microservice initialized successfully');
 
     if (window.olorin?.eventBus) {
+<<<<<<< HEAD
       window.olorin.eventBus.emit('service:ready', { service: 'agent-analytics' });
+=======
+      window.olorin.eventBus.emit('service:ready', { service: 'agent-analytics', timestamp: new Date() });
+>>>>>>> 001-modify-analyzer-method
     }
 
   } catch (error) {
@@ -33,6 +48,7 @@ const initializeagentanalyticsService = async () => {
   }
 };
 
+<<<<<<< HEAD
 // Initialize global Olorin namespace if not already present
 if (!window.olorin) {
   window.olorin = {
@@ -56,6 +72,27 @@ if (!window.olorin) {
   window.olorin.getService = (name: string) => {
     return window.olorin.services[name];
   };
+=======
+// Initialize global Olorin namespace if not already present (for standalone mode)
+// In production, this will be provided by the shell app
+if (!window.olorin) {
+  const eventBusInstance = mitt();
+  const eventBusManagerInstance = EventBusManager.getInstance();
+
+  window.olorin = {
+    version: env.appVersion,
+    services: new Map<string, any>(),
+    eventBus: eventBusInstance,
+    eventBusManager: eventBusManagerInstance,
+    registerService: (name: string, service: any) => {
+      window.olorin.services.set(name, service);
+      console.log(`[agentanalytics] Registered service: ${name}`);
+    },
+    getService: (name: string) => {
+      return window.olorin.services.get(name);
+    }
+  };
+>>>>>>> 001-modify-analyzer-method
 }
 
 // Start the agentanalytics microservice

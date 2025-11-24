@@ -19,7 +19,11 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <div className={`min-h-screen bg-gray-50 ${className}`}>
       <Navigation />
+<<<<<<< HEAD
       <Header title={title} />
+=======
+      <Header {...(title !== undefined && { title })} />
+>>>>>>> 001-modify-analyzer-method
       <div className="flex">
         {showSidebar && <Sidebar />}
         <main className="flex-1 p-6">

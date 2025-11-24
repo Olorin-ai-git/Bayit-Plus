@@ -16,6 +16,7 @@ import sys
 import time
 from contextlib import contextmanager
 from enum import Enum
+from pathlib import Path
 from typing import Dict, Optional, Any, Union, List
 from functools import lru_cache
 import json
@@ -488,6 +489,51 @@ class UnifiedLoggingCore:
             'async_enabled': self._async_enabled,
             'configuration': dict(self._config),
         }
+    
+    def add_investigation_handler(
+        self,
+        investigation_id: str,
+        investigation_folder: Path
+    ) -> Optional['InvestigationLogHandler']:
+        """
+        Add investigation-specific log handler.
+        
+        This method is a convenience wrapper for creating investigation handlers.
+        The actual handler creation is done by InvestigationLogManager.
+        
+        Args:
+            investigation_id: Investigation identifier
+            investigation_folder: Path to investigation folder
+            
+        Returns:
+            InvestigationLogHandler instance (imported here to avoid circular dependency)
+            
+        Note:
+            This method is primarily for integration purposes. For full functionality,
+            use InvestigationLogManager.start_investigation_logging() instead.
+        """
+        # Import here to avoid circular dependency
+        from .investigation_log_handler import InvestigationLogHandler
+        
+        try:
+            log_format = self._config.get('log_format', LogFormat.HUMAN)
+            if isinstance(log_format, str):
+                log_format = LogFormat(log_format)
+            
+            handler = InvestigationLogHandler(
+                investigation_id=investigation_id,
+                investigation_folder=investigation_folder,
+                log_format=log_format,
+                log_level=logging.DEBUG
+            )
+            
+            return handler
+        except Exception as e:
+            logging.getLogger(__name__).error(
+                f"Failed to create investigation handler: {e}",
+                exc_info=True
+            )
+            return None
     
     def shutdown(self):
         """Shutdown the unified logging system"""

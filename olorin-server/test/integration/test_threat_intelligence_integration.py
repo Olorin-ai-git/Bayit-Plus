@@ -3,10 +3,10 @@ logger = get_bridge_logger(__name__)
 
 #!/usr/bin/env python3
 """
-Test Threat Intelligence Integration in Autonomous Investigation
+Test Threat Intelligence Integration in Structured Investigation
 
 This script demonstrates how the threat intelligence tools are integrated
-and accessible to the autonomous investigation agents.
+and accessible to the structured investigation agents.
 """
 
 import asyncio
@@ -104,7 +104,7 @@ async def demonstrate_agent_with_threat_intel():
     logger.info("="*60 + "\n")
     
     # Create a sample investigation context
-    from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+    from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
     
     investigation_id = f"test_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     entity_id = "test_user_123"
@@ -113,7 +113,7 @@ async def demonstrate_agent_with_threat_intel():
     logger.info(f"  Investigation ID: {investigation_id}")
     logger.info(f"  Entity ID: {entity_id}")
     
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id=investigation_id,
         entity_id=entity_id,
         entity_type=EntityType.USER_ID,
@@ -155,7 +155,7 @@ async def demonstrate_agent_with_threat_intel():
     for obj in objectives:
         logger.info(f"  {obj}")
     
-    logger.info("\n✓ Agent can now autonomously select and use these tools!")
+    logger.info("\n✓ Agent can now structuredly select and use these tools!")
     logger.info("  The LLM will decide which tools to use based on investigation needs.")
     
     return True
@@ -190,8 +190,8 @@ async def main():
             logger.info("\n🎉 ALL TESTS PASSED! Threat intelligence is fully integrated.")
             logger.info("\nKey Points:")
             logger.info("  • 12 threat intelligence tools are registered and available")
-            logger.info("  • Tools are accessible to all autonomous agents")
-            logger.info("  • Agents can autonomously select threat intel tools based on needs")
+            logger.info("  • Tools are accessible to all structured agents")
+            logger.info("  • Agents can structuredly select threat intel tools based on needs")
             logger.info("  • Integration includes AbuseIPDB, VirusTotal, and Shodan")
             logger.info("  • Unified aggregator provides multi-source correlation")
         else:

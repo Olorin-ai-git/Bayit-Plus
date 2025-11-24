@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './shell/App';
 import reportWebVitals from './reportWebVitals';
+import { initializeRuntimeConfig } from './shared/config/runtimeConfig';
+
+// Initialize runtime configuration before app startup
+initializeRuntimeConfig();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

@@ -1,5 +1,5 @@
 """
-Unit Tests for Autonomous Agents with Real API Calls.
+Unit Tests for Structured Agents with Real API Calls.
 
 NO MOCK DATA - All tests use real Anthropic API calls and real data patterns.
 Tests validate agent behavior, tool selection, and LLM responses with actual API.
@@ -17,20 +17,20 @@ import pytest_asyncio
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.runnables.config import RunnableConfig
 
-from app.service.agent.autonomous_agents import (
-    AutonomousInvestigationAgent,
-    autonomous_llm,
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
-    create_autonomous_agent,
+from app.service.agent.structured_agents import (
+    StructuredInvestigationAgent,
+    structured_llm,
+    structured_network_agent,
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_risk_agent,
+    create_structured_agent,
     configure_domain_tools,
     get_default_domain_objectives,
 )
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     DomainFindings,
     InvestigationPhase,
 )
@@ -42,16 +42,16 @@ from tests.fixtures.real_investigation_scenarios import (
 logger = logging.getLogger(__name__)
 
 
-class TestAutonomousLLM:
+class TestStructuredLLM:
     """Test the real Anthropic LLM configuration and responses."""
     
     @pytest.mark.asyncio
     async def test_real_llm_initialization(self, real_anthropic_client, api_cost_monitor):
         """Test that the LLM is properly initialized with real API."""
         # Verify LLM configuration
-        assert autonomous_llm.model_name == "claude-opus-4-1-20250805"
-        assert autonomous_llm.temperature == 0.1
-        assert autonomous_llm.max_tokens == 8090
+        assert structured_llm.model_name == "claude-opus-4-1-20250805"
+        assert structured_llm.temperature == 0.1
+        assert structured_llm.max_tokens == 8090
         
         # Make a real API call to verify connection
         messages = [
@@ -59,7 +59,7 @@ class TestAutonomousLLM:
             HumanMessage(content="Analyze this pattern: User logged in from 5 different countries in 1 hour.")
         ]
         
-        response = await autonomous_llm.ainvoke(messages)
+        response = await structured_llm.ainvoke(messages)
         
         # Track API cost
         # Estimate tokens (rough approximation)
@@ -84,7 +84,11 @@ class TestAutonomousLLM:
         ]
         
         # Bind tools to LLM (removed strict=True for compatibility)
+<<<<<<< HEAD
         llm_with_tools = autonomous_llm.bind_tools(tools)
+=======
+        llm_with_tools = structured_llm.bind_tools(tools)
+>>>>>>> 001-modify-analyzer-method
         
         # Test tool calling with real API
         messages = [
@@ -103,8 +107,8 @@ class TestAutonomousLLM:
         logger.info(f"Tool-bound LLM response: {type(response)}")
 
 
-class TestAutonomousInvestigationAgent:
-    """Test the base AutonomousInvestigationAgent class with real API."""
+class TestStructuredInvestigationAgent:
+    """Test the base StructuredInvestigationAgent class with real API."""
     
     @pytest.mark.asyncio
     async def test_agent_initialization(self):
@@ -115,7 +119,7 @@ class TestAutonomousInvestigationAgent:
             MagicMock(name="geo_location"),
         ]
         
-        agent = AutonomousInvestigationAgent(domain, tools)
+        agent = StructuredInvestigationAgent(domain, tools)
         
         assert agent.domain == domain
         assert len(agent.tools) == 2
@@ -123,27 +127,27 @@ class TestAutonomousInvestigationAgent:
         assert agent.llm_with_tools is not None
     
     @pytest.mark.asyncio
-    async def test_autonomous_investigate_real_api(
+    async def test_structured_investigate_real_api(
         self,
         real_investigation_context,
         api_cost_monitor
     ):
-        """Test autonomous investigation with real API call."""
+        """Test structured investigation with real API call."""
         # Create agent with mock tools
         tools = [
             MagicMock(name="analyze_ip", description="Analyze IP address patterns"),
             MagicMock(name="check_velocity", description="Check transaction velocity"),
         ]
         
-        agent = AutonomousInvestigationAgent("network", tools)
+        agent = StructuredInvestigationAgent("network", tools)
         
         # Perform real investigation
         config = RunnableConfig(
             tags=["test", "real_api"],
-            metadata={"test_id": "test_autonomous_investigate"}
+            metadata={"test_id": "test_structured_investigate"}
         )
         
-        findings = await agent.autonomous_investigate(
+        findings = await agent.structured_investigate(
             real_investigation_context,
             config,
             specific_objectives=["Detect IP anomalies", "Check for proxy usage"]
@@ -192,7 +196,7 @@ class TestDomainAgents:
         }
         
         # Run real network analysis
-        findings = await autonomous_network_agent(
+        findings = await structured_network_agent(
             real_investigation_context,
             config
         )
@@ -242,7 +246,7 @@ class TestDomainAgents:
         }
         
         # Run real device analysis
-        findings = await autonomous_device_agent(
+        findings = await structured_device_agent(
             real_investigation_context,
             config
         )
@@ -297,7 +301,7 @@ class TestDomainAgents:
         }
         
         # Run real location analysis
-        findings = await autonomous_location_agent(
+        findings = await structured_location_agent(
             real_investigation_context,
             config
         )
@@ -360,7 +364,7 @@ class TestDomainAgents:
         }
         
         # Run real logs analysis
-        findings = await autonomous_logs_agent(
+        findings = await structured_logs_agent(
             real_investigation_context,
             config
         )
@@ -412,7 +416,7 @@ class TestDomainAgents:
         }
         
         # Run real risk aggregation
-        findings = await autonomous_risk_agent(
+        findings = await structured_risk_agent(
             real_investigation_context,
             config
         )
@@ -434,16 +438,16 @@ class TestDomainAgents:
 class TestAgentFactory:
     """Test agent factory functions with real configuration."""
     
-    def test_create_autonomous_agent(self):
+    def test_create_structured_agent(self):
         """Test creating agents with real configuration."""
         # Test network agent creation
-        agent = create_autonomous_agent("network")
-        assert isinstance(agent, AutonomousInvestigationAgent)
+        agent = create_structured_agent("network")
+        assert isinstance(agent, StructuredInvestigationAgent)
         assert agent.domain == "network"
         assert len(agent.tools) > 0
         
         # Test device agent creation
-        agent = create_autonomous_agent("device")
+        agent = create_structured_agent("device")
         assert agent.domain == "device"
         assert len(agent.tools) > 0
     
@@ -499,7 +503,7 @@ class TestRealScenarioInvestigations:
         )
         
         # Run network agent for ATO detection
-        network_findings = await autonomous_network_agent(
+        network_findings = await structured_network_agent(
             real_investigation_context,
             config
         )
@@ -546,7 +550,7 @@ class TestRealScenarioInvestigations:
         )
         
         # Run device agent for payment fraud
-        device_findings = await autonomous_device_agent(
+        device_findings = await structured_device_agent(
             real_investigation_context,
             config
         )
@@ -576,28 +580,28 @@ class TestRealScenarioInvestigations:
         domain_results = {}
         
         # Network analysis
-        domain_results["network"] = await autonomous_network_agent(
+        domain_results["network"] = await structured_network_agent(
             real_investigation_context,
             config
         )
         api_cost_monitor.track_call(1500, 1200)
         
         # Device analysis
-        domain_results["device"] = await autonomous_device_agent(
+        domain_results["device"] = await structured_device_agent(
             real_investigation_context,
             config
         )
         api_cost_monitor.track_call(1400, 1100)
         
         # Location analysis
-        domain_results["location"] = await autonomous_location_agent(
+        domain_results["location"] = await structured_location_agent(
             real_investigation_context,
             config
         )
         api_cost_monitor.track_call(1300, 1000)
         
         # Logs analysis
-        domain_results["logs"] = await autonomous_logs_agent(
+        domain_results["logs"] = await structured_logs_agent(
             real_investigation_context,
             config
         )
@@ -605,7 +609,7 @@ class TestRealScenarioInvestigations:
         
         # Risk aggregation
         real_investigation_context.domain_findings = domain_results
-        final_risk = await autonomous_risk_agent(
+        final_risk = await structured_risk_agent(
             real_investigation_context,
             config
         )
@@ -640,7 +644,7 @@ class TestRealScenarioInvestigations:
         )
         
         # Run same analysis twice
-        first_result = await autonomous_network_agent(
+        first_result = await structured_network_agent(
             real_investigation_context,
             config
         )
@@ -649,7 +653,7 @@ class TestRealScenarioInvestigations:
         # Slightly modify context to simulate time passing
         real_investigation_context.request_metadata["timestamp"] = datetime.now().isoformat()
         
-        second_result = await autonomous_network_agent(
+        second_result = await structured_network_agent(
             real_investigation_context,
             config
         )
@@ -691,7 +695,7 @@ class TestPerformanceAndCost:
         
         start_time = time.time()
         
-        findings = await autonomous_network_agent(
+        findings = await structured_network_agent(
             real_investigation_context,
             config
         )
@@ -720,7 +724,7 @@ class TestPerformanceAndCost:
         )
         
         # Run investigation
-        findings = await autonomous_device_agent(
+        findings = await structured_device_agent(
             real_investigation_context,
             config
         )
@@ -757,7 +761,7 @@ class TestPerformanceAndCost:
         
         # Run parallel investigations
         tasks = [
-            autonomous_network_agent(ctx, config)
+            structured_network_agent(ctx, config)
             for ctx in contexts
         ]
         
@@ -804,10 +808,10 @@ class TestIntegrationWorkflows:
         domain_findings = {}
         
         for domain_func, domain_name in [
-            (autonomous_network_agent, "network"),
-            (autonomous_device_agent, "device"),
-            (autonomous_location_agent, "location"),
-            (autonomous_logs_agent, "logs"),
+            (structured_network_agent, "network"),
+            (structured_device_agent, "device"),
+            (structured_location_agent, "location"),
+            (structured_logs_agent, "logs"),
         ]:
             logger.info(f"Running {domain_name} analysis...")
             findings = await domain_func(real_investigation_context, config)
@@ -820,7 +824,7 @@ class TestIntegrationWorkflows:
         
         # Step 3: Risk aggregation
         real_investigation_context.domain_findings = domain_findings
-        final_assessment = await autonomous_risk_agent(real_investigation_context, config)
+        final_assessment = await structured_risk_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2000, 1800)
         
         # Step 4: Update investigation status

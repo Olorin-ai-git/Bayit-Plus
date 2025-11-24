@@ -2,11 +2,19 @@
 Investigation Dashboard Integration Service
 
 Provides real-time orchestrator decision visualization and investigation flow monitoring
+<<<<<<< HEAD
 for the autonomous investigation orchestrator system.
 
 Author: Gil Klainert  
 Date: 2025-09-06
 Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
+=======
+for the structured investigation orchestrator system.
+
+Author: Gil Klainert  
+Date: 2025-09-06
+Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
+>>>>>>> 001-modify-analyzer-method
 Phase: 4.2 - Investigation Dashboard Integration
 """
 
@@ -95,7 +103,11 @@ class OrchestratorDashboardService:
     """
     Investigation Dashboard Integration Service
     
+<<<<<<< HEAD
     Provides comprehensive real-time visualization capabilities for the autonomous
+=======
+    Provides comprehensive real-time visualization capabilities for the structured
+>>>>>>> 001-modify-analyzer-method
     investigation orchestrator, enabling operators to monitor AI-driven decisions,
     agent coordination, investigation flow, and performance metrics.
     """

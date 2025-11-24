@@ -5,12 +5,18 @@ Handles LLM initialization for orchestrator with mock support.
 """
 
 import os
+<<<<<<< HEAD
 from unittest.mock import MagicMock
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import AIMessage
 
 from app.service.logging import get_bridge_logger
 from app.service.agent.tools.snowflake_tool.schema_constants import IP, get_full_table_name
+=======
+from langchain_anthropic import ChatAnthropic
+
+from app.service.logging import get_bridge_logger
+>>>>>>> 001-modify-analyzer-method
 
 logger = get_bridge_logger(__name__)
 
@@ -29,11 +35,20 @@ class LLMInitializer:
                       os.getenv("OPENAI_API_KEY") or
                       os.getenv("GEMINI_API_KEY"))
 
+<<<<<<< HEAD
         use_mock = test_mode == "mock" or not has_api_key
 
         if use_mock:
             logger.info("🧪 Using mock LLM for testing")
             return LLMInitializer._create_mock_llm()
+=======
+        use_mock = test_mode in ["demo", "mock", "test"] or not has_api_key
+
+        if use_mock:
+            logger.info("🧪 Using MockLLM for testing")
+            from app.service.agent.mock_llm import MockLLM
+            return MockLLM()
+>>>>>>> 001-modify-analyzer-method
 
         # Initialize real LLM
         try:
@@ -44,6 +59,7 @@ class LLMInitializer:
             return llm
         except Exception as e:
             logger.error(f"Failed to initialize LLM: {e}, falling back to mock")
+<<<<<<< HEAD
             return LLMInitializer._create_mock_llm()
 
     @staticmethod
@@ -186,3 +202,7 @@ class LLMInitializer:
             content=f"I'll analyze the {entity_type} '{entity_id}' by querying Snowflake for the last 7 days of transaction data.",
             tool_calls=[snowflake_tool_call]
         )
+=======
+            from app.service.agent.mock_llm import MockLLM
+            return MockLLM()
+>>>>>>> 001-modify-analyzer-method

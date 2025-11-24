@@ -1,5 +1,5 @@
 """
-Autonomous Investigation Context System
+Structured Investigation Context System
 
 Provides rich, structured context for LLM-driven decision making in fraud investigations.
 Enables agents to make intelligent decisions about which tools to use and how to proceed.
@@ -100,13 +100,13 @@ class InvestigationProgress:
     confidence_score: float = 0.0
 
 
-class AutonomousInvestigationContext:
+class StructuredInvestigationContext:
     """
-    Rich context system for autonomous fraud investigation.
+    Rich context system for structured fraud investigation.
     
     Provides LLMs with comprehensive context about the investigation,
     available tools, current findings, and objectives to enable
-    intelligent autonomous decision-making.
+    intelligent structured decision-making.
     """
     
     def __init__(
@@ -430,7 +430,7 @@ class AutonomousInvestigationContext:
         Generate rich context string for LLM decision-making.
         
         This provides the LLM with comprehensive information about the investigation
-        state, available tools, and objectives to make intelligent autonomous decisions.
+        state, available tools, and objectives to make intelligent structured decisions.
         """
         
         context_parts = []
@@ -543,7 +543,7 @@ Expected outputs: Risk score, findings, suspicious indicators, recommendations
         # Investigation guidance
         context_parts.append(f"""
 === AUTONOMOUS INVESTIGATION GUIDANCE ===
-Your role: Intelligent fraud investigator with autonomous tool selection
+Your role: Intelligent fraud investigator with structured tool selection
 Decision making: Choose tools based on investigation needs, not predetermined patterns
 Tool selection: Select tools that best provide the required data for current objectives
 Quality focus: Prioritize high-confidence findings with strong evidence

@@ -22,11 +22,19 @@ class DataAnalyzer:
 
         # Handle both string (non-JSON) and dict (JSON) data
         if isinstance(snowflake_data, str):
+<<<<<<< HEAD
             # Raw string content from Snowflake
             return f"Snowflake raw result: {snowflake_data[:200]}{'...' if len(snowflake_data) > 200 else ''}"
 
         if not isinstance(snowflake_data, dict):
             return f"Snowflake data type: {type(snowflake_data)} - {str(snowflake_data)[:200]}"
+=======
+            # Summarize string data instead of showing raw content
+            return f"Snowflake data available ({len(snowflake_data)} chars)"
+
+        if not isinstance(snowflake_data, dict):
+            return f"Snowflake data type: {type(snowflake_data).__name__}"
+>>>>>>> 001-modify-analyzer-method
 
         # Extract key metrics from JSON data
         summary_parts = []
@@ -36,6 +44,7 @@ class DataAnalyzer:
             summary_parts.append(f"- {len(results)} records analyzed")
 
             # Look for high risk scores
+<<<<<<< HEAD
             high_risk = [r for r in results if r.get("MODEL_SCORE", 0) > 0.7]
             if high_risk:
                 summary_parts.append(f"- {len(high_risk)} high-risk transactions found")
@@ -44,6 +53,16 @@ class DataAnalyzer:
             fraud_txs = [r for r in results if r.get("IS_FRAUD_TX")]
             if fraud_txs:
                 summary_parts.append(f"- {len(fraud_txs)} confirmed fraud transactions")
+=======
+            # CRITICAL FIX: Handle None values to prevent TypeError
+            high_risk = [r for r in results if r.get("MODEL_SCORE") is not None and r.get("MODEL_SCORE", 0) > 0.7]
+            if high_risk:
+                summary_parts.append(f"- {len(high_risk)} high-risk transactions found")
+
+            # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+            # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+            # Summary must be based on behavioral patterns only
+>>>>>>> 001-modify-analyzer-method
 
         if "row_count" in snowflake_data:
             summary_parts.append(f"- Total rows: {snowflake_data['row_count']}")
@@ -71,13 +90,26 @@ class DataAnalyzer:
         metrics["total_records"] = len(results)
 
         # Calculate risk metrics
+<<<<<<< HEAD
         model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
+=======
+        # CRITICAL FIX: Filter out None values to prevent TypeError
+        model_scores = [r.get("MODEL_SCORE") for r in results if "MODEL_SCORE" in r and r.get("MODEL_SCORE") is not None]
+>>>>>>> 001-modify-analyzer-method
         if model_scores:
             metrics["average_risk_score"] = sum(model_scores) / len(model_scores)
             metrics["high_risk_count"] = len([s for s in model_scores if s > 0.7])
 
+<<<<<<< HEAD
         # Count fraud transactions
         metrics["fraud_count"] = len([r for r in results if r.get("IS_FRAUD_TX")])
+=======
+        # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+        # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+        # Fraud count must be based on behavioral patterns only (e.g., rejected transactions)
+        metrics["fraud_count"] = len([r for r in results 
+                                     if r.get("NSURE_LAST_DECISION") in ("REJECT", "BLOCK", "DECLINE")])
+>>>>>>> 001-modify-analyzer-method
 
         # Extract date range
         if results:
@@ -105,9 +137,18 @@ class DataAnalyzer:
             return patterns
 
         # Analyze risk score distribution
+<<<<<<< HEAD
         risk_ranges = {"low": 0, "medium": 0, "high": 0, "critical": 0}
         for record in results:
             score = record.get("MODEL_SCORE", 0)
+=======
+        # CRITICAL FIX: Handle None values to prevent TypeError
+        risk_ranges = {"low": 0, "medium": 0, "high": 0, "critical": 0}
+        for record in results:
+            score = record.get("MODEL_SCORE")
+            if score is None:
+                continue  # Skip None scores
+>>>>>>> 001-modify-analyzer-method
             if score < 0.3:
                 risk_ranges["low"] += 1
             elif score < 0.6:
@@ -122,11 +163,22 @@ class DataAnalyzer:
         # Identify fraud indicators
         fraud_indicators = []
         for record in results:
+<<<<<<< HEAD
             if record.get("IS_FRAUD_TX"):
                 fraud_indicators.append("Confirmed fraud transaction")
             if record.get("NSURE_LAST_DECISION") == "reject":
                 fraud_indicators.append("Transaction rejected by rules")
             if record.get("MODEL_SCORE", 0) > 0.9:
+=======
+            # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+            # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+            # Fraud indicators must be based on behavioral patterns only
+            if record.get("NSURE_LAST_DECISION") == "reject":
+                fraud_indicators.append("Transaction rejected by rules")
+            # CRITICAL FIX: Handle None values to prevent TypeError
+            model_score = record.get("MODEL_SCORE")
+            if model_score is not None and model_score > 0.9:
+>>>>>>> 001-modify-analyzer-method
                 fraud_indicators.append("Very high risk score")
 
         patterns["fraud_indicators"] = list(set(fraud_indicators))

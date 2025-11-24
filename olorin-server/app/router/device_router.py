@@ -25,7 +25,7 @@ from app.persistence import (
     get_investigation,
     update_investigation_llm_thoughts,
 )
-# from app.service.agent.tools.di_tool.di_tool import DITool  # Removed non-existent tool
+from app.security.auth import User, require_read
 from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
@@ -89,6 +89,10 @@ async def analyze_device(
     entity_type: str = Query(..., pattern="^(user_id|device_id)$"),
     profile_id: str = "9341450868951246",
     service: LLMDeviceRiskService = Depends(LLMDeviceRiskService),
+<<<<<<< HEAD
+=======
+    current_user: User = Depends(require_read),
+>>>>>>> 001-modify-analyzer-method
 ) -> dict:
     # Only keep HTTP-specific logic here
     ensure_investigation_exists(investigation_id, entity_id, entity_type)

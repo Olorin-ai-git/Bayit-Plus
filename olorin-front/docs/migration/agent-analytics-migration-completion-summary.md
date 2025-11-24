@@ -80,7 +80,11 @@ Successfully migrated the core Agent Analytics functionality from the legacy mon
 #### Key Features Implemented:
 - ✅ **RAG Enhancement Indicators** - Optional AI-powered log analysis display
 - ✅ **Investigation Context** - Links logs to specific investigation sessions
+<<<<<<< HEAD
 - ✅ **Autonomous Mode Detection** - Enhanced features for autonomous investigations
+=======
+- ✅ **Structured Mode Detection** - Enhanced features for structured investigations
+>>>>>>> 001-modify-analyzer-method
 - ✅ **Contextual AI Analysis** - Integration points for RAG Intelligence Service
 
 ## 📊 Migration Statistics
@@ -152,7 +156,11 @@ Successfully migrated the core Agent Analytics functionality from the legacy mon
 
 ### Integration Points
 - **OlorinService API** - Seamless integration with existing investigation infrastructure
+<<<<<<< HEAD
 - **RAG Intelligence Service** - Enhanced analysis capabilities for autonomous mode
+=======
+- **RAG Intelligence Service** - Enhanced analysis capabilities for structured mode
+>>>>>>> 001-modify-analyzer-method
 - **Event-Driven Communication** - Real-time updates through WebSocket connections
 
 ## 🚀 Migration Impact

@@ -12,7 +12,11 @@
 After thorough verification of the actual codebase, Olorin ALREADY HAS sophisticated planning and orchestration capabilities using LangGraph. The platform implements advanced patterns including:
 
 - ✅ **LangGraph Integration** (v0.2.70) - Fully integrated
+<<<<<<< HEAD
 - ✅ **Autonomous Orchestrator** - Comprehensive implementation
+=======
+- ✅ **Structured Orchestrator** - Comprehensive implementation
+>>>>>>> 001-modify-analyzer-method
 - ✅ **StateGraph Workflows** - Multiple workflow implementations
 - ✅ **Adaptive Planning** - OrchestrationStrategy with multiple modes
 - ✅ **Multi-Agent Coordination** - Sophisticated agent handoff system
@@ -26,11 +30,19 @@ After thorough verification of the actual codebase, Olorin ALREADY HAS sophistic
 - **20+ Files** using LangGraph throughout the codebase
 - **Core Integration**: `/app/service/agent/orchestration/orchestrator_graph.py`
 
+<<<<<<< HEAD
 ### 1.2 Autonomous Orchestrator (IMPLEMENTED)
 
 **File**: `/app/service/agent/autonomous_orchestrator.py`
 ```python
 class AutonomousOrchestrator:
+=======
+### 1.2 Structured Orchestrator (IMPLEMENTED)
+
+**File**: `/app/service/agent/structured_orchestrator.py`
+```python
+class StructuredOrchestrator:
+>>>>>>> 001-modify-analyzer-method
     """Master Orchestrator for AI-driven investigation coordination."""
     
     # Features found:
@@ -89,7 +101,11 @@ class AutonomousOrchestrator:
 | Feature | Status | Implementation Location |
 |---------|--------|------------------------|
 | LangGraph Integration | ✅ IMPLEMENTED | orchestrator_graph.py |
+<<<<<<< HEAD
 | Orchestration Strategies | ✅ IMPLEMENTED | autonomous_orchestrator.py |
+=======
+| Orchestration Strategies | ✅ IMPLEMENTED | structured_orchestrator.py |
+>>>>>>> 001-modify-analyzer-method
 | State Management | ✅ IMPLEMENTED | StateGraph throughout |
 | Checkpointing | ✅ IMPLEMENTED | Redis/Memory savers |
 | Adaptive Planning | ✅ IMPLEMENTED | OrchestrationStrategy enum |
@@ -139,7 +155,11 @@ class InvestigationState(TypedDict):
 
 ### 4.2 Orchestration Strategy Implementation
 ```python
+<<<<<<< HEAD
 # From autonomous_orchestrator.py
+=======
+# From structured_orchestrator.py
+>>>>>>> 001-modify-analyzer-method
 class OrchestrationStrategy(Enum):
     COMPREHENSIVE = "comprehensive"  # All agents in parallel
     FOCUSED = "focused"  # Single domain deep dive
@@ -211,7 +231,11 @@ ls -la app/service/agent/orchestration/
 # Result: 23 orchestration-related files
 
 # Examined key files
+<<<<<<< HEAD
 cat app/service/agent/autonomous_orchestrator.py
+=======
+cat app/service/agent/structured_orchestrator.py
+>>>>>>> 001-modify-analyzer-method
 cat app/service/agent/orchestration/orchestrator_graph.py
 ```
 

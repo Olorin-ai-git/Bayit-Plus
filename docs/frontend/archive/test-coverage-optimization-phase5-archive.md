@@ -53,7 +53,7 @@ Phase 5 successfully implemented BUILD MODE for the OLORIN WebPlugin test covera
 ### **Component-Level Achievements** ✅
 
 #### Zero-to-Complete Coverage Components
-1. **AutonomousInvestigationPanel.tsx**: 0% → 100% coverage
+1. **StructuredInvestigationPanel.tsx**: 0% → 100% coverage
 2. **DeviceDetailsTable.tsx**: 0% → 100% coverage  
 3. **Home.tsx**: 0% → 100% coverage
 4. **InvestigationForm.tsx**: 0% → 100% coverage
@@ -199,7 +199,7 @@ expect(screen.getByText("olorin's Stack Overflow")).toBeInTheDocument();
 
 ### **Immediate Next Steps (Phase 6)**
 1. **Continue Coverage Expansion**: Target remaining high-impact, low-coverage components
-2. **Hook Testing**: Focus on custom hooks like `useAutonomousInvestigation.ts` (13.95% coverage)
+2. **Hook Testing**: Focus on custom hooks like `useStructuredInvestigation.ts` (13.95% coverage)
 3. **Service Layer Completion**: Complete remaining service components like `StepExecutionManager.ts` (5.59% coverage)
 4. **Integration Testing**: Add more comprehensive integration test coverage
 
@@ -236,7 +236,7 @@ expect(screen.getByText("olorin's Stack Overflow")).toBeInTheDocument();
 - **Test Pass Rate**: 94.4% → 95.1% (+0.7% improvement)
 
 ### **Component Achievement Highlights**
-- **100% Coverage Achieved**: 7 components (AutonomousInvestigationPanel, DeviceDetailsTable, Home, InvestigationForm, LogDetailsTable, HelpInfo, UserInfoForm)
+- **100% Coverage Achieved**: 7 components (StructuredInvestigationPanel, DeviceDetailsTable, Home, InvestigationForm, LogDetailsTable, HelpInfo, UserInfoForm)
 - **Major Improvements**: OLORINService (+45.37%), Settings (significantly improved)
 - **Infrastructure Fixed**: All blocking TypeScript and test execution issues resolved
 

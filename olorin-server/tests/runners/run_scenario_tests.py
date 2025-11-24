@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from tests.fixtures.real_investigation_scenarios import RealScenarioGenerator
-from tests.runners.run_autonomous_investigation_for_user import RealInvestigationRunner
+from tests.runners.run_structured_investigation_for_user import RealInvestigationRunner
 
 
 class ScenarioTestRunner:

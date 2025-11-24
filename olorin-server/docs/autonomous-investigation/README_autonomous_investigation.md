@@ -1,15 +1,15 @@
-# Autonomous Investigation Scripts
+# Structured Investigation Scripts
 
-This directory contains scripts for testing the autonomous investigation flow with real-time WebSocket monitoring.
+This directory contains scripts for testing the structured investigation flow with real-time WebSocket monitoring.
 
 ## Scripts
 
-### 1. `run_autonomous_investigation_for_user.py`
-Tests the autonomous investigation flow for a user entity with real-time WebSocket progress monitoring.
+### 1. `run_structured_investigation_for_user.py`
+Tests the structured investigation flow for a user entity with real-time WebSocket progress monitoring.
 
 **Usage:**
 ```bash
-python tests/run_autonomous_investigation_for_user.py
+python tests/run_structured_investigation_for_user.py
 ```
 
 **Configuration:**
@@ -18,29 +18,29 @@ python tests/run_autonomous_investigation_for_user.py
   - `parallel_execution = False`: Agents run sequentially (network → location → logs → device → risk)
 
 **Features:**
-- Starts autonomous investigation for user ID `4621097846089147992`
+- Starts structured investigation for user ID `4621097846089147992`
 - Connects to WebSocket for real-time progress updates with parallel/sequential execution control
 - Monitors all investigation phases (initialization, network analysis, location analysis, device analysis, behavior analysis, risk assessment)
 - Captures complete API response data from each phase
 - Generates comprehensive PDF report with investigation results
 - Handles investigation ID extraction and WebSocket connection management
 
-### 2. `run_autonomous_investigation_for_device.py`
-Tests the autonomous investigation flow for a device entity with real-time WebSocket progress monitoring.
+### 2. `run_structured_investigation_for_device.py`
+Tests the structured investigation flow for a device entity with real-time WebSocket progress monitoring.
 
 **Usage:**
 ```bash
 # Use default device ID with parallel execution (default)
-python tests/run_autonomous_investigation_for_device.py
+python tests/run_structured_investigation_for_device.py
 
 # Run with sequential execution
-python tests/run_autonomous_investigation_for_device.py --sequential
+python tests/run_structured_investigation_for_device.py --sequential
 
 # Use custom device ID with parallel execution
-python tests/run_autonomous_investigation_for_device.py --device-id f394742f39214c908476c01623bf4bcd --parallel
+python tests/run_structured_investigation_for_device.py --device-id f394742f39214c908476c01623bf4bcd --parallel
 
 # Use custom API endpoints with sequential execution
-python tests/run_autonomous_investigation_for_device.py --base-url http://localhost:8090/api --ws-url ws://localhost:8090/ws --sequential
+python tests/run_structured_investigation_for_device.py --base-url http://localhost:8090/api --ws-url ws://localhost:8090/ws --sequential
 ```
 
 **Command Line Options:**
@@ -52,15 +52,15 @@ python tests/run_autonomous_investigation_for_device.py --base-url http://localh
 
 ## How It Works
 
-### 1. Autonomous Investigation Flow
-1. **Start Investigation**: Calls `POST /api/agent/start/{entity_id}` to initiate the autonomous investigation
+### 1. Structured Investigation Flow
+1. **Start Investigation**: Calls `POST /api/agent/start/{entity_id}` to initiate the structured investigation
 2. **WebSocket Connection**: Connects to `/ws/{investigation_id}` for real-time updates
 3. **Progress Monitoring**: Receives progress updates for each investigation phase
 4. **Data Capture**: Captures complete API response data from each agent (network, location, device, logs, risk assessment)
 5. **PDF Generation**: Creates comprehensive PDF report with all investigation results
 
 ### 2. Investigation Phases
-The autonomous investigation flows through these phases:
+The structured investigation flows through these phases:
 - **Initialization**: Investigation setup and ID generation
 - **Network Analysis**: Network risk assessment with ISP and geographic analysis
 - **Location Analysis**: Geographic risk assessment with device location tracking
@@ -121,14 +121,14 @@ The scripts generate comprehensive PDF reports containing:
 
 ## Output Files
 
-- **User Investigation**: `autonomous_investigation_user_{entity_id}.pdf`
-- **Device Investigation**: `autonomous_investigation_device_{device_id}.pdf`
+- **User Investigation**: `structured_investigation_user_{entity_id}.pdf`
+- **Device Investigation**: `structured_investigation_device_{device_id}.pdf`
 
 ## Comparison with Traditional Scripts
 
-| Feature | Traditional Scripts | Autonomous Scripts |
+| Feature | Traditional Scripts | Structured Scripts |
 |---------|-------------------|-------------------|
-| Investigation Type | Manual API calls | Autonomous LangGraph flow |
+| Investigation Type | Manual API calls | Structured LangGraph flow |
 | Progress Monitoring | None | Real-time WebSocket updates |
 | Data Collection | Sequential API calls | Parallel agent execution |
 | Investigation ID | Pre-defined | Auto-generated by system |
@@ -143,7 +143,7 @@ The scripts generate comprehensive PDF reports containing:
 - Verify the investigation is actually running (check server logs)
 
 ### Missing Investigation Data
-- The autonomous investigation may take time to complete
+- The structured investigation may take time to complete
 - WebSocket messages contain the real-time data as it becomes available
 - Check the server logs for any agent execution errors
 
@@ -155,10 +155,10 @@ The scripts generate comprehensive PDF reports containing:
 ## Example Output
 
 ```
-🚀 Starting Autonomous Investigation for user_id: 4621097846089147992
+🚀 Starting Structured Investigation for user_id: 4621097846089147992
 ============================================================
 
-1️⃣ Starting autonomous investigation...
+1️⃣ Starting structured investigation...
 Status: 200
 {'agentOutput': {'plainText': '...', 'outputs': []}, 'agentMetadata': {'agentTraceId': '...'}}
 
@@ -202,9 +202,9 @@ Connecting to WebSocket: ws://localhost:8090/ws/abc123...
 ... (other phases)
 
 5️⃣ Generating PDF Summary...
-📄 PDF summary saved as autonomous_investigation_user_4621097846089147992.pdf
+📄 PDF summary saved as structured_investigation_user_4621097846089147992.pdf
 
-✅ Autonomous investigation test completed!
+✅ Structured investigation test completed!
 📊 Total WebSocket messages received: 12
 🔍 Investigation phases completed: 6
 🎉 Investigation completed successfully! 

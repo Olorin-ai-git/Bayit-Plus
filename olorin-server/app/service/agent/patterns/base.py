@@ -286,7 +286,7 @@ class OpenAIPatternConfig:
     """Configuration specific to OpenAI Agent patterns"""
     
     # Core OpenAI API settings
-    model: str = "gpt-4o"
+    model: str = "gpt-4o-mini"  # Cheaper alternative to gpt-4o
     temperature: float = 0.1
     max_tokens: Optional[int] = None
     top_p: float = 1.0

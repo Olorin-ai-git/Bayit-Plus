@@ -1,4 +1,19 @@
 // Main service classes
+<<<<<<< HEAD
+=======
+// Import services for factory usage
+import {
+  KnowledgeBaseService,
+  DocumentService,
+  SearchService,
+  VectorDatabaseService,
+  RAGGenerationService,
+  RAGAnalyticsService
+} from './ragIntelligenceService';
+
+import { withErrorHandling } from './errorService';
+
+>>>>>>> 001-modify-analyzer-method
 export {
   KnowledgeBaseService,
   DocumentService,
@@ -31,6 +46,7 @@ export {
 
 export type { ApiError } from './apiService';
 
+<<<<<<< HEAD
 // WebSocket services
 export {
   RAGWebSocketService,
@@ -45,6 +61,8 @@ export type {
   WebSocketConfig
 } from './websocketService';
 
+=======
+>>>>>>> 001-modify-analyzer-method
 // Error handling
 export {
   RAGErrorService,
@@ -413,4 +431,8 @@ export const ragServices = {
   generation: RAGServiceFactory.createRAGGenerationService(),
   vectorDatabase: RAGServiceFactory.createVectorDatabaseService(),
   analytics: RAGServiceFactory.createAnalyticsService()
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 001-modify-analyzer-method

@@ -61,11 +61,11 @@ def validate_real_api_configuration():
     print("\n🌐 VALIDATING REAL API CONFIGURATION")
     print("="*60)
     
-    # Check for real API configuration in autonomous_base.py
-    autonomous_base = Path(__file__).parent.parent / "app/service/agent/autonomous_base.py"
+    # Check for real API configuration in structured_base.py
+    structured_base = Path(__file__).parent.parent / "app/service/agent/structured_base.py"
     
-    if autonomous_base.exists():
-        with open(autonomous_base, 'r') as f:
+    if structured_base.exists():
+        with open(structured_base, 'r') as f:
             content = f.read()
         
         validations = [
@@ -85,7 +85,7 @@ def validate_real_api_configuration():
         
         return all_passed
     else:
-        print("❌ autonomous_base.py not found")
+        print("❌ structured_base.py not found")
         return False
 
 def validate_test_infrastructure():
@@ -98,9 +98,9 @@ def validate_test_infrastructure():
     required_files = [
         "conftest.py",
         "fixtures/real_investigation_scenarios.py",
-        "unit/service/agent/test_autonomous_agents.py",
-        "integration/test_autonomous_investigation.py",
-        "runners/run_autonomous_investigation_for_user.py",
+        "unit/service/agent/test_structured_agents.py",
+        "integration/test_structured_investigation.py",
+        "runners/run_structured_investigation_for_user.py",
         "runners/run_scenario_tests.py",
         "runners/run_validation_suite.py"
     ]
@@ -139,7 +139,7 @@ def main():
     all_passed = no_mock and real_api and test_infra
     if all_passed:
         print("\n🎆 ALL VALIDATIONS PASSED - SYSTEM USES REAL APIs")
-        print("The Olorin autonomous investigation system is configured to use")
+        print("The Olorin structured investigation system is configured to use")
         print("real Anthropic Claude Opus 4.1 API with no mock data.")
     else:
         print("\n⚠️ SOME VALIDATIONS FAILED - REVIEW REQUIRED")

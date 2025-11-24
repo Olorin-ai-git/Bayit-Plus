@@ -1,7 +1,13 @@
 """
+<<<<<<< HEAD
 LangGraph Integration for Autonomous Investigation Orchestrator
 
 This module integrates the AutonomousOrchestrator into LangGraph workflows,
+=======
+LangGraph Integration for Structured Investigation Orchestrator
+
+This module integrates the StructuredOrchestrator into LangGraph workflows,
+>>>>>>> 001-modify-analyzer-method
 providing master orchestration capabilities for investigation coordination.
 
 Key Features:
@@ -22,8 +28,13 @@ from langgraph.prebuilt import ToolNode, tools_condition
 from typing_extensions import TypedDict
 
 from app.service.agent.autonomous_orchestrator import (
+<<<<<<< HEAD
     AutonomousOrchestrator,
     autonomous_orchestrator_node,
+=======
+    StructuredOrchestrator,
+    structured_orchestrator_node,
+>>>>>>> 001-modify-analyzer-method
     OrchestrationStrategy
 )
 from app.service.agent.orchestration.enhanced_tool_executor import (
@@ -235,9 +246,15 @@ async def create_orchestrator_driven_graph(
     orchestration_mode: str = "ai_driven"
 ) -> StateGraph:
     """
+<<<<<<< HEAD
     Create LangGraph with autonomous orchestrator as master coordinator.
     
     This creates a LangGraph where the AutonomousOrchestrator serves as the
+=======
+    Create LangGraph with structured orchestrator as master coordinator.
+    
+    This creates a LangGraph where the StructuredOrchestrator serves as the
+>>>>>>> 001-modify-analyzer-method
     master coordinator, making AI-driven decisions about investigation strategy
     and agent coordination.
     
@@ -263,12 +280,20 @@ async def create_orchestrator_driven_graph(
         builder.add_node("fraud_investigation", assistant)
         
         # Add master orchestrator node (Phase 1.3 integration)
+<<<<<<< HEAD
         builder.add_node("autonomous_orchestrator", autonomous_orchestrator_node)
+=======
+        builder.add_node("structured_orchestrator", structured_orchestrator_node)
+>>>>>>> 001-modify-analyzer-method
         
         # Add orchestration decision processing node
         builder.add_node("orchestration_processor", orchestration_decision_node)
         
+<<<<<<< HEAD
         # Add autonomous agent nodes
+=======
+        # Add structured agent nodes
+>>>>>>> 001-modify-analyzer-method
         builder.add_node("network_agent", network_agent_node)
         builder.add_node("device_agent", device_agent_node)
         builder.add_node("location_agent", location_agent_node)
@@ -301,10 +326,17 @@ async def create_orchestrator_driven_graph(
         builder.add_edge("raw_data_node", "fraud_investigation")
         
         # Initial investigation flows to master orchestrator
+<<<<<<< HEAD
         builder.add_edge("fraud_investigation", "autonomous_orchestrator")
         
         # Orchestrator decision processing
         builder.add_edge("autonomous_orchestrator", "orchestration_processor")
+=======
+        builder.add_edge("fraud_investigation", "structured_orchestrator")
+        
+        # Orchestrator decision processing
+        builder.add_edge("structured_orchestrator", "orchestration_processor")
+>>>>>>> 001-modify-analyzer-method
         
         # AI-driven conditional routing from orchestrator
         builder.add_conditional_edges(
@@ -373,7 +405,11 @@ async def create_hybrid_orchestration_graph(
         builder.add_node("fraud_investigation", assistant)
         
         # Dual orchestration nodes
+<<<<<<< HEAD
         builder.add_node("autonomous_orchestrator", autonomous_orchestrator_node)
+=======
+        builder.add_node("structured_orchestrator", structured_orchestrator_node)
+>>>>>>> 001-modify-analyzer-method
         builder.add_node("orchestration_processor", orchestration_decision_node)
         
         # Agent nodes
@@ -404,8 +440,13 @@ async def create_hybrid_orchestration_graph(
         builder.add_edge("raw_data_node", "fraud_investigation")
         
         # Hybrid orchestration decision point
+<<<<<<< HEAD
         builder.add_edge("fraud_investigation", "autonomous_orchestrator")
         builder.add_edge("autonomous_orchestrator", "orchestration_processor")
+=======
+        builder.add_edge("fraud_investigation", "structured_orchestrator")
+        builder.add_edge("structured_orchestrator", "orchestration_processor")
+>>>>>>> 001-modify-analyzer-method
         
         # Dynamic routing based on orchestration mode
         builder.add_conditional_edges(

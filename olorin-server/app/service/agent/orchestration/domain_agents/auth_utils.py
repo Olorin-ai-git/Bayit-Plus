@@ -31,11 +31,25 @@ def analyze_login_attempts(results: list, findings: Dict[str, Any]) -> None:
         
         if max_attempts > 20:
             findings["risk_indicators"].append(f"Brute force detected: {max_attempts} login attempts")
+<<<<<<< HEAD
             findings["risk_score"] += 0.6
             findings["evidence"].append(f"CRITICAL: {max_attempts} login attempts indicates brute force attack")
         elif max_attempts > 10:
             findings["risk_indicators"].append(f"High login attempts: {max_attempts}")
             findings["risk_score"] += 0.3
+=======
+            # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.6
+            findings["evidence"].append(f"CRITICAL: {max_attempts} login attempts indicates brute force attack")
+        elif max_attempts > 10:
+            findings["risk_indicators"].append(f"High login attempts: {max_attempts}")
+            # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.3
+>>>>>>> 001-modify-analyzer-method
             findings["evidence"].append(f"SUSPICIOUS: {max_attempts} login attempts may indicate attack")
         
         findings["analysis"]["max_login_attempts"] = max_attempts
@@ -62,11 +76,25 @@ def analyze_failed_login_ratios(results: list, findings: Dict[str, Any]) -> None
         
         if max_failed_ratio > 0.8:
             findings["risk_indicators"].append(f"High failure rate: {max_failed_ratio:.1%}")
+<<<<<<< HEAD
             findings["risk_score"] += 0.5
             findings["evidence"].append(f"CRITICAL: {max_failed_ratio:.1%} failure rate indicates potential attack")
         elif max_failed_ratio > 0.5:
             findings["risk_indicators"].append(f"Moderate failure rate: {max_failed_ratio:.1%}")
             findings["risk_score"] += 0.2
+=======
+            # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.5
+            findings["evidence"].append(f"CRITICAL: {max_failed_ratio:.1%} failure rate indicates potential attack")
+        elif max_failed_ratio > 0.5:
+            findings["risk_indicators"].append(f"Moderate failure rate: {max_failed_ratio:.1%}")
+            # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.2
+>>>>>>> 001-modify-analyzer-method
             findings["evidence"].append(f"SUSPICIOUS: {max_failed_ratio:.1%} failure rate above normal")
         
         findings["analysis"]["max_failed_ratio"] = max_failed_ratio
@@ -79,7 +107,14 @@ def analyze_security_indicators(results: list, findings: Dict[str, Any]) -> None
     mfa_bypass_attempts = [r for r in results if r.get("MFA_BYPASS_ATTEMPT")]
     if mfa_bypass_attempts:
         findings["risk_indicators"].append(f"MFA bypass attempts detected: {len(mfa_bypass_attempts)}")
+<<<<<<< HEAD
         findings["risk_score"] += 0.7
+=======
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            findings["risk_score"] = current_score + 0.7
+>>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"CRITICAL: {len(mfa_bypass_attempts)} MFA bypass attempts detected")
         findings["metrics"]["mfa_bypass_count"] = len(mfa_bypass_attempts)
         findings["analysis"]["mfa_bypass_attempts"] = len(mfa_bypass_attempts)
@@ -95,7 +130,14 @@ def analyze_security_indicators(results: list, findings: Dict[str, Any]) -> None
     if travel_scores:
         max_travel_score = max(travel_scores)
         findings["risk_indicators"].append(f"Impossible travel detected (confidence: {max_travel_score:.2f})")
+<<<<<<< HEAD
         findings["risk_score"] += 0.6
+=======
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            findings["risk_score"] = current_score + 0.6
+>>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"CRITICAL: Impossible travel with {max_travel_score:.2f} confidence")
         findings["metrics"]["impossible_travel_confidence"] = max_travel_score
         findings["analysis"]["impossible_travel_scores"] = travel_scores
@@ -104,7 +146,14 @@ def analyze_security_indicators(results: list, findings: Dict[str, Any]) -> None
     stuffing_indicators = [r for r in results if r.get("CREDENTIAL_STUFFING_BATCH_ID")]
     if stuffing_indicators:
         findings["risk_indicators"].append(f"Credential stuffing detected: {len(stuffing_indicators)} batches")
+<<<<<<< HEAD
         findings["risk_score"] += 0.5
+=======
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            findings["risk_score"] = current_score + 0.5
+>>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"SUSPICIOUS: {len(stuffing_indicators)} credential stuffing batches")
         findings["metrics"]["credential_stuffing_batches"] = len(stuffing_indicators)
         findings["analysis"]["credential_stuffing_indicators"] = len(stuffing_indicators)
@@ -113,7 +162,14 @@ def analyze_security_indicators(results: list, findings: Dict[str, Any]) -> None
     sim_swap_indicators = [r for r in results if r.get("SIM_SWAP_INDICATOR")]
     if sim_swap_indicators:
         findings["risk_indicators"].append(f"SIM swap indicators: {len(sim_swap_indicators)}")
+<<<<<<< HEAD
         findings["risk_score"] += 0.8
+=======
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            findings["risk_score"] = current_score + 0.8
+>>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"CRITICAL: {len(sim_swap_indicators)} SIM swap indicators detected")
         findings["metrics"]["sim_swap_indicators"] = len(sim_swap_indicators)
         findings["analysis"]["sim_swap_count"] = len(sim_swap_indicators)
@@ -236,6 +292,7 @@ def _process_auth_signals(tool_name: str, signals: Dict[str, Any], findings: Dic
                 findings["evidence"].append(f"{tool_name}: Normal authentication behavior {key} = {value}")
     
     # Apply risk adjustment based on authentication assessment
+<<<<<<< HEAD
     if auth_risk_level > 0.5:
         # High authentication risk detected - increase risk
         risk_multiplier = 1.0 + min(0.2, auth_risk_level * 0.12)
@@ -246,6 +303,21 @@ def _process_auth_signals(tool_name: str, signals: Dict[str, Any], findings: Dic
         risk_multiplier = 1.0 + max(-0.1, auth_risk_level * 0.15)  # auth_risk_level is negative
         findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
         findings["evidence"].append(f"{tool_name}: Authentication behavior appears normal (level: {auth_risk_level:.2f})")
+=======
+    # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+    current_score = findings.get("risk_score")
+    if current_score is not None:
+        if auth_risk_level > 0.5:
+            # High authentication risk detected - increase risk
+            risk_multiplier = 1.0 + min(0.2, auth_risk_level * 0.12)
+            findings["risk_score"] = min(1.0, current_score * risk_multiplier)
+            findings["risk_indicators"].append(f"{tool_name}: Authentication threats detected (level: {auth_risk_level:.2f})")
+        elif auth_risk_level < -0.15:
+            # Normal authentication behavior - reduce risk
+            risk_multiplier = 1.0 + max(-0.1, auth_risk_level * 0.15)  # auth_risk_level is negative
+            findings["risk_score"] = max(0.1, current_score * risk_multiplier)
+            findings["evidence"].append(f"{tool_name}: Authentication behavior appears normal (level: {auth_risk_level:.2f})")
+>>>>>>> 001-modify-analyzer-method
     
     # Store aggregated metrics
     if evidence_count > 0:

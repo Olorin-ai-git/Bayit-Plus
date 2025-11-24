@@ -109,7 +109,7 @@ def create_logs_agent_metadata(rag_enabled: bool, rag_stats: Dict[str, Any]) -> 
     """Create metadata for logs agent tracking."""
     return {
         "domain": "logs",
-        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven",
+        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "structured_llm_driven",
         "objectives_count": 19 if rag_enabled else 17,
         "rag_available": RAG_AVAILABLE,
         "rag_enabled": rag_enabled,
@@ -140,10 +140,10 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,
             "suspicious_indicators": findings.suspicious_indicators,
-            "summary": f"{'RAG-enhanced' if rag_enabled else 'Autonomous'} logs analysis: {len(findings.key_findings)} findings{summary_suffix}",
+            "summary": f"{'RAG-enhanced' if rag_enabled else 'Structured'} logs analysis: {len(findings.key_findings)} findings{summary_suffix}",
             "thoughts": f"Used {analysis_type} tool selection for logs analysis with domain knowledge integration",
             "timestamp": findings.timestamp.isoformat(),
-            "autonomous_execution": True,
+            "structured_execution": True,
             "domain": "logs",
             "enhancement_type": "rag_enhanced" if rag_enabled else "standard",
             "rag_performance": rag_stats,

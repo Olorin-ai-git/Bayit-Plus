@@ -63,7 +63,11 @@ Deployment Automation Architecture:
 ### Specialized Subagent Coordination Matrix
 
 **Phase 1 Planning Team**:
+<<<<<<< HEAD
 - **@autonomous-investigation-architect**: Master plan creation and strategy design
+=======
+- **@structured-investigation-architect**: Master plan creation and strategy design
+>>>>>>> 001-modify-analyzer-method
 - **@devops-troubleshooter**: CI/CD pipeline design and GitHub Actions expertise
 - **@firebase-deployment-specialist**: Firebase integration and deployment automation
 - **@cloud-architect**: Google Cloud Run orchestration and infrastructure management

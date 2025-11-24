@@ -6,6 +6,7 @@
 
 ## Executive Summary
 
+<<<<<<< HEAD
 Enhanced research confirms the viability of an 8-microservice architecture (increased from 6) with separate autonomous and manual investigation services. Integration of Figma MCP for design consistency and Playwright MCP for comprehensive testing will ensure higher quality and maintainability. Key technologies identified: Module Federation for runtime composition, Tailwind CSS with Figma-driven component library, event-driven state management, and Playwright for E2E testing.
 
 ## Enhanced Research Areas
@@ -18,6 +19,20 @@ Enhanced research confirms the viability of an 8-microservice architecture (incr
 - Autonomous investigation needs complex AI orchestration
 - Manual investigation needs human-friendly UI workflows
 - Independent scaling requirements (autonomous typically higher load)
+=======
+Enhanced research confirms the viability of an 8-microservice architecture (increased from 6) with separate structured and manual investigation services. Integration of Figma MCP for design consistency and Playwright MCP for comprehensive testing will ensure higher quality and maintainability. Key technologies identified: Module Federation for runtime composition, Tailwind CSS with Figma-driven component library, event-driven state management, and Playwright for E2E testing.
+
+## Enhanced Research Areas
+
+### 1. Structured vs Manual Investigation Service Separation
+
+**Decision**: Separate microservices for structured and manual investigation workflows
+**Rationale**:
+- Different complexity levels require different architectures
+- Structured investigation needs complex AI orchestration
+- Manual investigation needs human-friendly UI workflows
+- Independent scaling requirements (structured typically higher load)
+>>>>>>> 001-modify-analyzer-method
 - Different testing strategies (AI validation vs user journey testing)
 
 **Alternatives considered**:
@@ -27,8 +42,13 @@ Enhanced research confirms the viability of an 8-microservice architecture (incr
 
 **Implementation approach**:
 ```typescript
+<<<<<<< HEAD
 // Autonomous Investigation Service
 const AutonomousInvestigationService = {
+=======
+// Structured Investigation Service
+const StructuredInvestigationService = {
+>>>>>>> 001-modify-analyzer-method
   port: 3001,
   features: [
     'AI agent orchestration',
@@ -140,6 +160,7 @@ interface PlaywrightMCPConfig {
 
 // Cross-Service Testing
 test.describe('Cross-Service Investigation Flow', () => {
+<<<<<<< HEAD
   test('Autonomous investigation triggers manual review', async ({
     autonomousPage,
     manualPage,
@@ -148,6 +169,16 @@ test.describe('Cross-Service Investigation Flow', () => {
     // Start autonomous investigation
     await autonomousPage.goto('/investigations/new');
     await autonomousPage.click('[data-testid="start-autonomous"]');
+=======
+  test('Structured investigation triggers manual review', async ({
+    structuredPage,
+    manualPage,
+    eventBus
+  }) => {
+    // Start structured investigation
+    await structuredPage.goto('/investigations/new');
+    await structuredPage.click('[data-testid="start-structured"]');
+>>>>>>> 001-modify-analyzer-method
 
     // Monitor event bus for completion
     const investigationComplete = await eventBus.waitForEvent('investigation:requires-review');
@@ -192,7 +223,11 @@ module.exports = {
     new ModuleFederationPlugin({
       name: 'shell',
       remotes: {
+<<<<<<< HEAD
         autonomousInvestigation: 'autonomousInvestigation@http://localhost:3001/remoteEntry.js',
+=======
+        structuredInvestigation: 'structuredInvestigation@http://localhost:3001/remoteEntry.js',
+>>>>>>> 001-modify-analyzer-method
         manualInvestigation: 'manualInvestigation@http://localhost:3002/remoteEntry.js',
         agentAnalytics: 'agentAnalytics@http://localhost:3003/remoteEntry.js',
         ragIntelligence: 'ragIntelligence@http://localhost:3004/remoteEntry.js',
@@ -275,7 +310,11 @@ class DesignSystemEventBus {
 **Testing Layers**:
 ```typescript
 // 1. Unit Tests (Jest + React Testing Library)
+<<<<<<< HEAD
 describe('AutonomousInvestigation Component', () => {
+=======
+describe('StructuredInvestigation Component', () => {
+>>>>>>> 001-modify-analyzer-method
   it('renders investigation form', () => {
     render(<InvestigationForm />);
     expect(screen.getByRole('form')).toBeInTheDocument();
@@ -283,7 +322,11 @@ describe('AutonomousInvestigation Component', () => {
 });
 
 // 2. Service Tests (Playwright - Single Service)
+<<<<<<< HEAD
 test('Autonomous Investigation Service', async ({ page }) => {
+=======
+test('Structured Investigation Service', async ({ page }) => {
+>>>>>>> 001-modify-analyzer-method
   await page.goto('http://localhost:3001');
   await page.fill('[name="userId"]', 'test-user');
   await page.click('[type="submit"]');
@@ -292,11 +335,19 @@ test('Autonomous Investigation Service', async ({ page }) => {
 
 // 3. Integration Tests (Playwright - Multiple Services)
 test('Investigation Handoff Integration', async ({ browser }) => {
+<<<<<<< HEAD
   const autonomousContext = await browser.newContext({ baseURL: 'http://localhost:3001' });
   const manualContext = await browser.newContext({ baseURL: 'http://localhost:3002' });
 
   // Test service interaction
   const autonomousPage = await autonomousContext.newPage();
+=======
+  const structuredContext = await browser.newContext({ baseURL: 'http://localhost:3001' });
+  const manualContext = await browser.newContext({ baseURL: 'http://localhost:3002' });
+
+  // Test service interaction
+  const structuredPage = await structuredContext.newPage();
+>>>>>>> 001-modify-analyzer-method
   const manualPage = await manualContext.newPage();
 
   // Perform cross-service test
@@ -339,7 +390,11 @@ const loadService = async (serviceName: string) => {
 
 // 2. Service Prioritization
 const servicePriority = {
+<<<<<<< HEAD
   critical: ['coreUI', 'autonomousInvestigation'],
+=======
+  critical: ['coreUI', 'structuredInvestigation'],
+>>>>>>> 001-modify-analyzer-method
   high: ['manualInvestigation', 'visualization'],
   medium: ['agentAnalytics', 'reporting'],
   low: ['ragIntelligence', 'designSystem']

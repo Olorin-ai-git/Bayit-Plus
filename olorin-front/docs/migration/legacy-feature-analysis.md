@@ -15,7 +15,11 @@ This document analyzes legacy features to ensure all functionality is preserved 
 | Legacy Feature | Legacy File | New Implementation | Status |
 |----------------|-------------|-------------------|---------|
 | Investigation Dashboard | InvestigationPage.tsx (lines 1-200) | InvestigationDashboard.tsx | ✅ Complete |
+<<<<<<< HEAD
 | Autonomous Investigation Panel | InvestigationPage.tsx (lines 500-800) | AutonomousInvestigation.tsx | ✅ Complete |
+=======
+| Structured Investigation Panel | InvestigationPage.tsx (lines 500-800) | StructuredInvestigation.tsx | ✅ Complete |
+>>>>>>> 001-modify-analyzer-method
 | Manual Investigation Details | InvestigationPage.tsx (lines 800-1200) | ManualInvestigationDetails.tsx | ✅ Complete |
 | Investigation Wizard | InvestigationPage.tsx (lines 300-500) | InvestigationWizard.tsx | ✅ Complete |
 | Evidence Manager | N/A (new feature) | EvidenceManager.tsx | ✅ Complete |

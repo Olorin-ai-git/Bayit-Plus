@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Multi-Entity Investigation System supports sophisticated Boolean logic expressions to define relationships and conditions between entities. This guide provides comprehensive documentation for constructing effective Boolean queries for autonomous investigations.
+The Multi-Entity Investigation System supports sophisticated Boolean logic expressions to define relationships and conditions between entities. This guide provides comprehensive documentation for constructing effective Boolean queries for structured investigations.
 
 ## Table of Contents
 

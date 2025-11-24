@@ -13,8 +13,19 @@ from typing import Dict, Any, Optional, List
 from contextlib import contextmanager
 from functools import wraps
 
-from langfuse import Langfuse
-from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+try:
+    from langfuse import Langfuse
+    try:
+        from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
+    except ImportError:
+        # langfuse.callback may not exist in newer versions
+        LangfuseCallbackHandler = None
+    LANGFUSE_AVAILABLE = True
+except ImportError:
+    Langfuse = None
+    LangfuseCallbackHandler = None
+    LANGFUSE_AVAILABLE = False
+
 from langchain_core.runnables import RunnableConfig
 from app.service.logging import get_bridge_logger
 
@@ -48,26 +59,35 @@ class LangfuseTracer:
         self.host = host or os.getenv("LANGFUSE_HOST", "https://us.cloud.langfuse.com")
         
         # Initialize Langfuse client
-        self.langfuse = Langfuse(
-            secret_key=self.secret_key,
-            public_key=self.public_key,
-            host=self.host,
-            release=release,
-            debug=debug
-        )
-        
-        # Create callback handler for LangChain
-        self.callback_handler = LangfuseCallbackHandler(
-            secret_key=self.secret_key,
-            public_key=self.public_key,
-            host=self.host,
-            release=release,
-            debug=debug
-        )
-        
-        logger.info(f"✅ Langfuse tracing initialized - Host: {self.host}")
+        if Langfuse is None:
+            logger.warning("⚠️ Langfuse not available - tracing disabled")
+            self.langfuse = None
+            self.callback_handler = None
+        else:
+            self.langfuse = Langfuse(
+                secret_key=self.secret_key,
+                public_key=self.public_key,
+                host=self.host,
+                release=release,
+                debug=debug
+            )
+            
+            # Create callback handler for LangChain
+            if LangfuseCallbackHandler is None:
+                logger.warning("⚠️ Langfuse CallbackHandler not available - callback tracing disabled")
+                self.callback_handler = None
+            else:
+                self.callback_handler = LangfuseCallbackHandler(
+                    secret_key=self.secret_key,
+                    public_key=self.public_key,
+                    host=self.host,
+                    release=release,
+                    debug=debug
+                )
+            
+            logger.info(f"✅ Langfuse tracing initialized - Host: {self.host}")
     
-    def get_callback_handler(self) -> LangfuseCallbackHandler:
+    def get_callback_handler(self) -> Optional[Any]:
         """Get the Langfuse callback handler for LangChain integration."""
         return self.callback_handler
     
@@ -99,19 +119,22 @@ class LangfuseTracer:
         callbacks = config.get("callbacks", [])
         
         # Create new callback handler with session info
-        handler = LangfuseCallbackHandler(
-            secret_key=self.secret_key,
-            public_key=self.public_key,
-            host=self.host,
-            session_id=session_id,
-            user_id=user_id,
-            tags=tags,
-            metadata=metadata
-        )
-        
-        # Add to callbacks
-        callbacks.append(handler)
-        config["callbacks"] = callbacks
+        if LangfuseCallbackHandler is None:
+            logger.debug("Langfuse CallbackHandler not available - skipping callback registration")
+        else:
+            handler = LangfuseCallbackHandler(
+                secret_key=self.secret_key,
+                public_key=self.public_key,
+                host=self.host,
+                session_id=session_id,
+                user_id=user_id,
+                tags=tags,
+                metadata=metadata
+            )
+            
+            # Add to callbacks
+            callbacks.append(handler)
+            config["callbacks"] = callbacks
         
         # Add tags to config
         config_tags = config.get("tags", [])
@@ -143,6 +166,11 @@ class LangfuseTracer:
         Yields:
             Trace context with callback handler
         """
+        if self.langfuse is None:
+            # Return empty context if Langfuse is not available
+            yield {"trace": None, "handler": None}
+            return
+        
         # Create trace
         trace = self.langfuse.trace(
             name=f"investigation_{investigation_id}",
@@ -153,14 +181,17 @@ class LangfuseTracer:
         
         try:
             # Create callback handler for this trace
-            handler = LangfuseCallbackHandler(
-                secret_key=self.secret_key,
-                public_key=self.public_key,
-                host=self.host,
-                session_id=investigation_id,
-                user_id=user_id,
-                trace_id=trace.id
-            )
+            if LangfuseCallbackHandler is None:
+                handler = None
+            else:
+                handler = LangfuseCallbackHandler(
+                    secret_key=self.secret_key,
+                    public_key=self.public_key,
+                    host=self.host,
+                    session_id=investigation_id,
+                    user_id=user_id,
+                    trace_id=trace.id
+                )
             
             yield {"trace": trace, "handler": handler}
             

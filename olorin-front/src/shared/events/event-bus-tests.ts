@@ -4,7 +4,11 @@
  */
 
 import { EventBusManager } from './eventBus';
+<<<<<<< HEAD
 import { WebSocketManager } from './websocket-manager';
+=======
+// WebSocketManager removed per spec 005 - using polling instead
+>>>>>>> 001-modify-analyzer-method
 import { ServiceAdapterRegistry, ServiceAdapters } from './service-adapters';
 import { EventPersistenceManager } from './event-persistence';
 import { EventRouter } from './event-routing';
@@ -38,7 +42,11 @@ export interface EventBusTest {
  */
 export class EventBusTestRunner {
   private eventBus: EventBusManager;
+<<<<<<< HEAD
   private webSocketManager: WebSocketManager | null = null;
+=======
+  // webSocketManager removed per spec 005 - using polling instead
+>>>>>>> 001-modify-analyzer-method
   private serviceRegistry: ServiceAdapterRegistry;
   private persistenceManager: EventPersistenceManager | null = null;
   private eventRouter: EventRouter;
@@ -235,11 +243,19 @@ export class EventBusTestRunner {
       description: 'Test service-specific adapters',
       tests: [
         {
+<<<<<<< HEAD
           id: 'autonomous-investigation-adapter',
           name: 'Autonomous Investigation Adapter',
           description: 'Test autonomous investigation service adapter',
           test: async () => {
             const adapter = ServiceAdapters.autonomousInvestigation();
+=======
+          id: 'structured-investigation-adapter',
+          name: 'Structured Investigation Adapter',
+          description: 'Test structured investigation service adapter',
+          test: async () => {
+            const adapter = ServiceAdapters.structuredInvestigation();
+>>>>>>> 001-modify-analyzer-method
             let received = false;
 
             const unsubscribe = this.eventBus.subscribe('auto:investigation:started', () => {
@@ -340,8 +356,13 @@ export class EventBusTestRunner {
       tests: [
         {
           id: 'escalation-routing',
+<<<<<<< HEAD
           name: 'Autonomous to Manual Escalation',
           description: 'Test escalation from autonomous to manual investigation',
+=======
+          name: 'Structured to Manual Escalation',
+          description: 'Test escalation from structured to manual investigation',
+>>>>>>> 001-modify-analyzer-method
           test: async () => {
             let manualStarted = false;
 

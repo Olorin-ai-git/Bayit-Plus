@@ -209,12 +209,26 @@ def register_cleanup_on_shutdown():
 
             if loop and loop.is_running():
                 # Schedule cleanup task if loop is running
+<<<<<<< HEAD
                 task = loop.create_task(cleanup_async_clients())
                 # Give it a moment to complete
                 try:
                     loop.run_until_complete(asyncio.wait_for(task, timeout=2.0))
                 except (asyncio.TimeoutError, RuntimeError):
                     logger.warning("📡 Cleanup task timed out or failed")
+=======
+                # Cannot use run_until_complete() when loop is already running
+                # Just schedule the task and let it run in the background
+                task = loop.create_task(cleanup_async_clients())
+                # Add a callback to log if it fails
+                def log_cleanup_result(task):
+                    try:
+                        if task.exception():
+                            logger.warning(f"📡 Cleanup task failed: {task.exception()}")
+                    except Exception:
+                        pass
+                task.add_done_callback(log_cleanup_result)
+>>>>>>> 001-modify-analyzer-method
             else:
                 # Run cleanup if loop is not running
                 try:

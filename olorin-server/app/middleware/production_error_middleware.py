@@ -12,6 +12,7 @@ from typing import Dict, Any, Optional
 from fastapi import Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response as StarletteResponse
 import os
 
 logger = get_bridge_logger(__name__)
@@ -39,15 +40,20 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
         """Process request and sanitize error responses."""
         try:
             response = await call_next(request)
+            # Ensure CORS headers are preserved on successful responses
             return response
             
         except HTTPException as e:
             # Handle FastAPI HTTPExceptions
-            return await self._handle_http_exception(request, e)
+            error_response = await self._handle_http_exception(request, e)
+            # CORS middleware should add headers, but ensure response is properly formatted
+            return error_response
             
         except Exception as e:
             # Handle unexpected exceptions
-            return await self._handle_generic_exception(request, e)
+            error_response = await self._handle_generic_exception(request, e)
+            # CORS middleware should add headers, but ensure response is properly formatted
+            return error_response
     
     async def _handle_http_exception(self, request: Request, exc: HTTPException) -> JSONResponse:
         """Handle FastAPI HTTP exceptions with sanitization."""
@@ -64,10 +70,13 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
             }
         )
         
+        # Get origin from request for CORS
+        origin = request.headers.get("origin")
+        
         if self.is_production:
             # Sanitize error response for production
             sanitized_detail = self._sanitize_error_message(exc.detail, exc.status_code)
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=exc.status_code,
                 content={
                     "error": sanitized_detail,
@@ -77,7 +86,7 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
             )
         else:
             # Return original error in development
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=exc.status_code,
                 content={
                     "error": exc.detail,
@@ -85,6 +94,16 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
                     "path": str(request.url.path)
                 }
             )
+        
+        # Ensure CORS headers are added to error responses
+        # CORS middleware should handle this, but we ensure it's set for localhost origins
+        if origin and ("localhost" in origin or "127.0.0.1" in origin):
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
+        
+        return response
     
     async def _handle_generic_exception(self, request: Request, exc: Exception) -> JSONResponse:
         """Handle unexpected exceptions with sanitization."""
@@ -101,9 +120,12 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
             }
         )
         
+        # Get origin from request for CORS
+        origin = request.headers.get("origin")
+        
         if self.is_production:
             # Return generic error message in production
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=500,
                 content={
                     "error": "Internal server error. Please try again later.",
@@ -113,7 +135,7 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
             )
         else:
             # Return detailed error in development
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=500,
                 content={
                     "error": f"{type(exc).__name__}: {str(exc)}",
@@ -122,6 +144,16 @@ class ProductionErrorMiddleware(BaseHTTPMiddleware):
                     "traceback": traceback.format_exc().split('\n') if logger.isEnabledFor(logging.DEBUG) else None
                 }
             )
+        
+        # Ensure CORS headers are added to error responses
+        # CORS middleware should handle this, but we ensure it's set for localhost origins
+        if origin and ("localhost" in origin or "127.0.0.1" in origin):
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+            response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, Accept, X-Requested-With"
+        
+        return response
     
     def _sanitize_error_message(self, detail: Any, status_code: int) -> str:
         """Sanitize error messages for production environments."""

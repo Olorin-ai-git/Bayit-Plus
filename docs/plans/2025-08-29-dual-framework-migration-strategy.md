@@ -95,7 +95,7 @@ class TestConfigIntegration:
 #### LangGraph Wrapper Implementation
 1. **Framework Adapter**
    - Implement `app/service/agent/frameworks/langgraph_framework.py`
-   - Wrap existing `autonomous_agents.py` functionality
+   - Wrap existing `structured_agents.py` functionality
    - Maintain all existing features and behaviors
    - Add unified interface compliance
 
@@ -334,7 +334,7 @@ production:
     default_framework: "langgraph"  # Safe default
     framework_override: {}          # No overrides initially
     enable_streaming: true
-    enable_autonomous_mode: true
+    enable_structured_mode: true
     max_concurrent_agents: 5
     investigation_timeout_seconds: 300
     
@@ -397,7 +397,7 @@ class FrameworkMetrics:
 3. **Full Agent Coverage**
    - Enable for `network` and `logs` agents
    - Complete feature parity validation
-   - Monitor autonomous mode behavior
+   - Monitor structured mode behavior
 
 #### A/B Testing Implementation
 ```python

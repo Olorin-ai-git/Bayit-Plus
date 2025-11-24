@@ -3,7 +3,7 @@
 RAG Enhancement Validation Test
 
 This script tests the key RAG enhancement components to verify they are working 
-correctly in the autonomous investigation system.
+correctly in the structured investigation system.
 
 NO MOCK DATA - Tests real RAG system integration points.
 """
@@ -15,7 +15,7 @@ from typing import Dict, Any, Optional
 
 from app.service.agent.rag_enhanced_agent import RAGEnhancedInvestigationAgent
 from app.service.agent.rag import RAGOrchestrator, KnowledgeBase, ContextAugmentor, get_rag_orchestrator
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -105,7 +105,7 @@ class RAGValidationTester:
         """Test 4: Investigation context can be created for testing"""
         try:
             # Create test investigation context
-            context = AutonomousInvestigationContext(
+            context = StructuredInvestigationContext(
                 investigation_id="test-rag-validation-123",
                 entity_id="test-user-456", 
                 entity_type=EntityType.USER_ID

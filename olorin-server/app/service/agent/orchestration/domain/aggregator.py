@@ -13,17 +13,30 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 # Hard evidence keys that trigger fraud floor
+<<<<<<< HEAD
 HARD_EVIDENCE_KEYS = {"IS_FRAUD_TX", "chargeback_confirmed", "manual_case_outcome_fraud"}
+=======
+# CRITICAL: IS_FRAUD_TX removed - must not use ground truth labels during investigation
+HARD_EVIDENCE_KEYS = {"chargeback_confirmed", "manual_case_outcome_fraud"}
+>>>>>>> 001-modify-analyzer-method
 
 
 def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[Optional[float], Optional[float], str]:
     """
     THE ONLY aggregator - single source of truth to prevent dual finals.
+<<<<<<< HEAD
     
     Args:
         domains: Domain results
         facts: Investigation facts
         
+=======
+
+    Args:
+        domains: Domain results
+        facts: Investigation facts
+
+>>>>>>> 001-modify-analyzer-method
     Returns:
         Tuple of (pre_gate_average, final_risk, gating_status)
     """
@@ -35,14 +48,22 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
     else:
         # Already dictionaries
         domain_dicts = [d if isinstance(d, dict) else d.__dict__ for d in domain_list]
+<<<<<<< HEAD
     
     # Normalize domains to prevent KeyError crashes
     normalized_domains = normalize_domains(domain_dicts)
     
+=======
+
+    # Normalize domains to prevent KeyError crashes
+    normalized_domains = normalize_domains(domain_dicts)
+
+>>>>>>> 001-modify-analyzer-method
     # Get only numeric domains (excludes narrative-only domains like 'risk')
     numeric_domains = get_numeric_domains(normalized_domains)
     numeric = [d["score"] for d in numeric_domains]
     signals = sum(len(d.get("signals", [])) for d in normalized_domains)
+<<<<<<< HEAD
     
     # Check for hard evidence
     hard = any([
@@ -54,6 +75,44 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
     # Calculate pre-gate average
     pre_gate = (sum(numeric) / len(numeric)) if numeric else None
     
+=======
+
+    # C1 FIX: Track missing/insufficient domains for clear failure reporting
+    insufficient_domains = []
+    missing_domains = []
+
+    # Identify domains with insufficient evidence
+    for domain_dict in normalized_domains:
+        domain_name = domain_dict.get("name", "unknown")
+        domain_status = domain_dict.get("status", "UNKNOWN")
+        domain_score = domain_dict.get("score")
+        domain_signals = domain_dict.get("signals", [])
+
+        if domain_status == "INSUFFICIENT_EVIDENCE" or domain_score is None:
+            reason = _get_domain_failure_reason(domain_dict)
+            insufficient_domains.append({"name": domain_name, "reason": reason, "signals": len(domain_signals)})
+
+    # Check for completely missing expected domains
+    expected_domains = {"logs", "network", "device", "location", "authentication"}
+    present_domains = {d.get("name") for d in normalized_domains}
+    missing_domain_names = expected_domains - present_domains
+
+    if missing_domain_names:
+        for missing_name in missing_domain_names:
+            missing_domains.append({"name": missing_name, "reason": "Domain not executed or missing from results"})
+
+    # Check for hard evidence
+    # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+    # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+    # Only manual case outcomes can be used (if provided externally, not from Snowflake)
+    hard = any([
+        facts.get("manual_case_outcome") == "fraud",
+    ])
+
+    # Calculate pre-gate average
+    pre_gate = (sum(numeric) / len(numeric)) if numeric else None
+
+>>>>>>> 001-modify-analyzer-method
     # Evidence gating and fraud floor logic
     if hard:
         gate = "PASS"
@@ -64,18 +123,74 @@ def aggregate(domains: Iterable[DomainResult], facts: Dict[str, Any]) -> Tuple[O
         enough = (len(numeric) >= 2) or (len(numeric) >= 1 and signals >= 2)
         gate = "PASS" if enough else "BLOCK"
         final = pre_gate if gate == "PASS" else None
+<<<<<<< HEAD
         
         if gate == "BLOCK":
             logger.info(f"🚫 EVIDENCE GATING: Insufficient evidence (scores={len(numeric)}, signals={signals})")
         else:
             logger.info(f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})")
     
+=======
+
+        if gate == "BLOCK":
+            # C1 FIX: Provide detailed failure information
+            logger.error(f"🚫 AGGREGATION FAILED: Insufficient evidence for risk calculation")
+            logger.error(f"   Requirements: ≥2 domain scores OR ≥1 score + ≥2 signals")
+            logger.error(f"   Current state: {len(numeric)} scores, {signals} signals")
+
+            if insufficient_domains:
+                logger.error(f"   Domains with insufficient evidence ({len(insufficient_domains)}):")
+                for domain_info in insufficient_domains:
+                    logger.error(f"     - {domain_info['name']}: {domain_info['reason']} (signals: {domain_info['signals']})")
+
+            if missing_domains:
+                logger.error(f"   Missing domains ({len(missing_domains)}):")
+                for domain_info in missing_domains:
+                    logger.error(f"     - {domain_info['name']}: {domain_info['reason']}")
+
+            if numeric_domains:
+                logger.info(f"   Available domains ({len(numeric_domains)}): {[d.get('name') for d in numeric_domains]}")
+        else:
+            logger.info(f"✅ EVIDENCE GATING: PASS (scores={len(numeric)}, signals={signals})")
+
+>>>>>>> 001-modify-analyzer-method
     logger.info(f"🎯 SINGLE AGGREGATOR: numeric_domains={[d.get('name', 'unknown') for d in numeric_domains]}")
     logger.info(f"🎯 SINGLE AGGREGATOR: scores={numeric}")
     logger.info(f"🎯 SINGLE AGGREGATOR: pre_gate={fmt(pre_gate)}, final={fmt(final)}, gate={gate}")
     return pre_gate, final, gate
 
 
+<<<<<<< HEAD
+=======
+def _get_domain_failure_reason(domain_dict: Dict[str, Any]) -> str:
+    """
+    C1 FIX: Generate clear failure reason for a domain with insufficient evidence.
+
+    Args:
+        domain_dict: Domain dictionary with score, signals, and status
+
+    Returns:
+        Human-readable reason for domain failure
+    """
+    domain_name = domain_dict.get("name", "unknown")
+    score = domain_dict.get("score")
+    signals = domain_dict.get("signals", [])
+    status = domain_dict.get("status", "UNKNOWN")
+
+    # Build detailed reason
+    if score is None and len(signals) == 0:
+        return f"No data available - no score and no signals collected"
+    elif score is None and len(signals) > 0:
+        return f"Insufficient signal quality - {len(signals)} signals but no numeric score"
+    elif score is not None and len(signals) == 0:
+        return f"Score present ({fmt(score)}) but no supporting signals/evidence"
+    elif status == "INSUFFICIENT_EVIDENCE":
+        return f"Marked insufficient by domain agent - {len(signals)} signals, score {fmt(score)}"
+    else:
+        return f"Unknown failure condition - status: {status}"
+
+
+>>>>>>> 001-modify-analyzer-method
 def fmt(v: Optional[float]) -> str:
     """Safe formatting - prevents float(None) crashes."""
     return "N/A" if v is None else f"{v:.3f}"
@@ -108,6 +223,7 @@ def render_summary(domains: List[DomainResult], pre_gate: Optional[float], final
 
 # Legacy compatibility functions - redirect to single aggregator
 def aggregate_domains(
+<<<<<<< HEAD
     domains: List[DomainResult], 
     facts: Dict[str, Any]
 ) -> Tuple[Optional[float], str, Optional[str]]:
@@ -118,6 +234,48 @@ def aggregate_domains(
         f"Evidence check: {len([d for d in domains if d.score is not None])} domains" if gate == "PASS" else
         "Insufficient corroborating evidence"
     )
+=======
+    domains: List[DomainResult],
+    facts: Dict[str, Any]
+) -> Tuple[Optional[float], str, Optional[str]]:
+    """
+    Legacy wrapper - redirects to single aggregator with enhanced gating reasons.
+
+    C1 FIX: Now provides detailed failure information when aggregation fails.
+    """
+    pre_gate, final, gate = aggregate(domains, facts)
+
+    # C1 FIX: Build comprehensive gating_reason with specific failure details
+    # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+    # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+    if facts.get("manual_case_outcome") == "fraud":
+        gating_reason = "Hard evidence detected (manual fraud determination)"
+    elif gate == "PASS":
+        scored_domains = [d for d in domains if d.score is not None]
+        gating_reason = f"Evidence check passed: {len(scored_domains)} domains scored"
+    else:
+        # BLOCK case - provide detailed failure information
+        insufficient = [d for d in domains if d.status == "INSUFFICIENT_EVIDENCE" or d.score is None]
+        scored = [d for d in domains if d.score is not None]
+
+        # Build comprehensive failure reason
+        parts = [f"Aggregation blocked: {len(scored)} scored domains (need ≥2)"]
+
+        if insufficient:
+            insufficient_names = [d.name for d in insufficient]
+            parts.append(f"Insufficient evidence: {', '.join(insufficient_names)}")
+
+        # Check for completely missing domains
+        expected_domains = {"logs", "network", "device", "location", "authentication"}
+        present_domains = {d.name for d in domains}
+        missing = expected_domains - present_domains
+
+        if missing:
+            parts.append(f"Missing domains: {', '.join(sorted(missing))}")
+
+        gating_reason = " | ".join(parts)
+
+>>>>>>> 001-modify-analyzer-method
     return final, gate, gating_reason
 
 

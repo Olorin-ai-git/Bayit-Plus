@@ -16,7 +16,7 @@ from app.service.agent.rag.context_augmentor import (
 )
 from app.service.agent.rag.rag_orchestrator import RAGOrchestrator, RAGConfig
 from app.service.agent.rag.knowledge_base import DocumentChunk, DocumentMetadata
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
 
 
 class TestContextAugmentationConfig:
@@ -103,7 +103,7 @@ class TestContextAugmentor:
     @pytest.fixture
     def mock_investigation_context(self):
         """Create mock investigation context"""
-        context = Mock(spec=AutonomousInvestigationContext)
+        context = Mock(spec=StructuredInvestigationContext)
         context.investigation_id = "test-investigation-123"
         context.entity_id = "test-entity-456"
         context.entity_type = EntityType.USER

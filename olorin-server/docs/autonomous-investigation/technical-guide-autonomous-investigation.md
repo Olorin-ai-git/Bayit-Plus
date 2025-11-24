@@ -1,11 +1,11 @@
-# Olorin Autonomous Investigation System - Technical Engineering Guide
+# Olorin Structured Investigation System - Technical Engineering Guide
 
 ## Table of Contents
 
 1. [System Architecture Overview](#system-architecture-overview)
 2. [LangGraph Implementation Deep Dive](#langgraph-implementation-deep-dive)
 3. [LLM-Agent-Tool Interaction Flow](#llm-agent-tool-interaction-flow)
-4. [Autonomous Agent Implementation](#autonomous-agent-implementation)
+4. [Structured Agent Implementation](#structured-agent-implementation)
 5. [Tool Execution Architecture](#tool-execution-architecture)
 6. [Testing Infrastructure](#testing-infrastructure)
 7. [Debugging and Troubleshooting](#debugging-and-troubleshooting)
@@ -19,7 +19,7 @@
 
 ### Core Components
 
-The Olorin autonomous investigation system is built on a sophisticated multi-agent architecture powered by LangGraph and Claude Opus 4.1. The system consists of:
+The Olorin structured investigation system is built on a sophisticated multi-agent architecture powered by LangGraph and Claude Opus 4.1. The system consists of:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -33,7 +33,7 @@ The Olorin autonomous investigation system is built on a sophisticated multi-age
 │         │                    │                    │          │
 │         ▼                    ▼                    ▼          │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │              Autonomous Domain Agents                 │   │
+│  │              Structured Domain Agents                 │   │
 │  ├────────────┬────────────┬────────────┬──────────────┤   │
 │  │  Network   │  Location  │   Device   │    Logs      │   │
 │  │   Agent    │   Agent    │   Agent    │   Agent      │   │
@@ -60,10 +60,10 @@ olorin-server/
 │   │   │   │   ├── graph_builder.py      # LangGraph construction
 │   │   │   │   ├── investigation_coordinator.py
 │   │   │   │   └── assistant.py          # Main coordination node
-│   │   │   ├── autonomous_agents.py      # Refactored to modules
-│   │   │   ├── autonomous_base.py        # Base agent class
+│   │   │   ├── structured_agents.py      # Refactored to modules
+│   │   │   ├── structured_base.py        # Base agent class
 │   │   │   ├── domain_agents.py          # Domain-specific agents
-│   │   │   ├── autonomous_context.py     # Investigation context
+│   │   │   ├── structured_context.py     # Investigation context
 │   │   │   ├── journey_tracker.py        # Execution tracking
 │   │   │   └── tools/
 │   │   │       ├── splunk_tool/
@@ -73,8 +73,8 @@ olorin-server/
 │   └── tools/
 │       └── fraud_investigation_tools.py  # Tool templates
 └── tests/
-    ├── enhanced_autonomous_investigation_test.py
-    └── run_autonomous_investigation_*.py
+    ├── enhanced_structured_investigation_test.py
+    └── run_structured_investigation_*.py
 ```
 
 ---
@@ -89,20 +89,20 @@ The system supports two execution modes: **parallel** and **sequential**. Here's
 # app/service/agent/orchestration/graph_builder.py
 
 def create_parallel_agent_graph():
-    """Create autonomous agent graph for parallel execution."""
+    """Create structured agent graph for parallel execution."""
     guard = get_recursion_guard()
-    logger.info("Creating parallel graph with autonomous agents")
+    logger.info("Creating parallel graph with structured agents")
     
     builder = StateGraph(MessagesState)
 
-    # Define nodes - each is an autonomous agent
+    # Define nodes - each is an structured agent
     builder.add_node("start_investigation", start_investigation)
     builder.add_node("fraud_investigation", assistant)
-    builder.add_node("network_agent", autonomous_network_agent)
-    builder.add_node("location_agent", autonomous_location_agent)
-    builder.add_node("logs_agent", autonomous_logs_agent)
-    builder.add_node("device_agent", autonomous_device_agent)
-    builder.add_node("risk_agent", autonomous_risk_agent)
+    builder.add_node("network_agent", structured_network_agent)
+    builder.add_node("location_agent", structured_location_agent)
+    builder.add_node("logs_agent", structured_logs_agent)
+    builder.add_node("device_agent", structured_device_agent)
+    builder.add_node("risk_agent", structured_risk_agent)
 
     # Add tools node with validation
     tools = _get_configured_tools()
@@ -113,7 +113,7 @@ def create_parallel_agent_graph():
     builder.add_edge(START, "start_investigation")
     builder.add_edge("start_investigation", "fraud_investigation")
     
-    # Autonomous tool selection using tools_condition
+    # Structured tool selection using tools_condition
     builder.add_conditional_edges("fraud_investigation", tools_condition)
     builder.add_edge("tools", "fraud_investigation")
     
@@ -157,13 +157,13 @@ This allows messages to accumulate as the investigation progresses, maintaining 
 
 ### The Discovery: How Agents Call Claude Opus 4.1
 
-Through our investigation, we discovered the exact flow of how autonomous agents interact with the LLM:
+Through our investigation, we discovered the exact flow of how structured agents interact with the LLM:
 
 ```python
-# app/service/agent/autonomous_base.py
+# app/service/agent/structured_base.py
 
-# Create autonomous LLM for decision making using Claude Opus 4.1
-autonomous_llm = ChatAnthropic(
+# Create structured LLM for decision making using Claude Opus 4.1
+structured_llm = ChatAnthropic(
     api_key=settings_for_env.anthropic_api_key,
     model="claude-opus-4-1-20250805",  # Claude Opus 4.1
     temperature=0.1,  # Lower temperature for focused decision making
@@ -174,33 +174,33 @@ autonomous_llm = ChatAnthropic(
 
 ### Agent Decision Process
 
-Here's how an agent makes autonomous decisions:
+Here's how an agent makes structured decisions:
 
 ```python
-class AutonomousInvestigationAgent:
+class StructuredInvestigationAgent:
     def __init__(self, domain: str, tools: List[Any]):
         self.domain = domain
         self.tools = tools
         self.tool_map = {tool.name: tool for tool in tools}
         
-        # Bind tools to autonomous LLM - THIS IS KEY!
-        self.llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+        # Bind tools to structured LLM - THIS IS KEY!
+        self.llm_with_tools = structured_llm.bind_tools(tools, strict=True)
     
-    async def autonomous_investigate(
+    async def structured_investigate(
         self,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         config: RunnableConfig,
         specific_objectives: List[str] = None
     ) -> DomainFindings:
         # Generate rich investigation context for LLM
         llm_context = context.generate_llm_context(self.domain)
         
-        # Create system message with autonomous instructions
+        # Create system message with structured instructions
         system_msg = SystemMessage(content=f"""
 You are an intelligent fraud investigation agent specializing in {self.domain.upper()} ANALYSIS.
 
 Your capabilities:
-- Autonomous tool selection based on investigation needs
+- Structured tool selection based on investigation needs
 - Advanced reasoning and pattern recognition
 - Cross-domain correlation and analysis
 - Evidence-based risk assessment
@@ -221,21 +221,21 @@ Available tools: {', '.join(self.tool_map.keys())}
         messages = [system_msg, HumanMessage(content=investigation_prompt)]
         result = await self.llm_with_tools.ainvoke(messages, config=config)
         
-        # Parse and structure the autonomous analysis result
-        findings = parse_autonomous_result(result, context, self.domain)
+        # Parse and structure the structured analysis result
+        findings = parse_structured_result(result, context, self.domain)
         
         return findings
 ```
 
 ### The LLM Prompt Engineering
 
-The key to autonomous operation is the sophisticated prompt construction:
+The key to structured operation is the sophisticated prompt construction:
 
 ```python
-# app/service/agent/autonomous_prompts.py (inferred structure)
+# app/service/agent/structured_prompts.py (inferred structure)
 
 def create_investigation_prompt(domain, context, llm_context, objectives):
-    """Create investigation prompt for autonomous agent."""
+    """Create investigation prompt for structured agent."""
     
     prompt = f"""
 INVESTIGATION CONTEXT:
@@ -266,7 +266,7 @@ Do not follow a predetermined pattern - let the context guide your decisions.
 
 ---
 
-## Autonomous Agent Implementation
+## Structured Agent Implementation
 
 ### Domain Agent Factory Pattern
 
@@ -275,15 +275,15 @@ Each domain agent follows a factory pattern for consistency:
 ```python
 # app/service/agent/domain_agents.py
 
-async def autonomous_network_agent(state: MessagesState, config: RunnableConfig):
-    """Autonomous network analysis agent."""
+async def structured_network_agent(state: MessagesState, config: RunnableConfig):
+    """Structured network analysis agent."""
     try:
         # Extract investigation context
         messages = state.get("messages", [])
         investigation_id, entity_type, entity_id = _extract_investigation_info(messages)
         
-        # Get or create autonomous context
-        context = _get_or_create_autonomous_context(
+        # Get or create structured context
+        context = _get_or_create_structured_context(
             investigation_id, entity_type, entity_id
         )
         
@@ -296,8 +296,8 @@ async def autonomous_network_agent(state: MessagesState, config: RunnableConfig)
             VPNDetectionTool()
         ]
         
-        # Create autonomous agent
-        agent = AutonomousInvestigationAgent("network", tools)
+        # Create structured agent
+        agent = StructuredInvestigationAgent("network", tools)
         
         # Define network-specific objectives
         objectives = [
@@ -308,8 +308,8 @@ async def autonomous_network_agent(state: MessagesState, config: RunnableConfig)
             "Identify connection pattern anomalies"
         ]
         
-        # Execute autonomous investigation
-        findings = await agent.autonomous_investigate(
+        # Execute structured investigation
+        findings = await agent.structured_investigate(
             context, config, objectives
         )
         
@@ -334,11 +334,11 @@ async def autonomous_network_agent(state: MessagesState, config: RunnableConfig)
 
 ### Tool Binding and Execution
 
-The magic happens in tool binding - this enables the LLM to call tools autonomously:
+The magic happens in tool binding - this enables the LLM to call tools structuredly:
 
 ```python
 # Tool binding process
-llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+llm_with_tools = structured_llm.bind_tools(tools, strict=True)
 
 # When the LLM decides to use a tool, it generates a tool call like:
 {
@@ -427,12 +427,12 @@ From our test execution, here's how multiple tools work together:
 
 ## Testing Infrastructure
 
-### Enhanced Autonomous Investigation Test
+### Enhanced Structured Investigation Test
 
 The comprehensive test framework we developed:
 
 ```python
-# tests/enhanced_autonomous_investigation_test.py
+# tests/enhanced_structured_investigation_test.py
 
 class NodeExecutionTracker:
     """Tracks detailed node execution in LangGraph"""
@@ -478,13 +478,13 @@ class NodeExecutionTracker:
 ### Running Tests
 
 ```bash
-# Run enhanced autonomous investigation test
+# Run enhanced structured investigation test
 cd olorin-server
-poetry run python tests/enhanced_autonomous_investigation_test.py
+poetry run python tests/enhanced_structured_investigation_test.py
 
 # Run with specific execution mode
-poetry run python tests/run_autonomous_investigation_for_user.py --parallel
-poetry run python tests/run_autonomous_investigation_for_device.py --sequential
+poetry run python tests/run_structured_investigation_for_user.py --parallel
+poetry run python tests/run_structured_investigation_for_device.py --sequential
 
 # Monitor test execution
 tail -f enhanced_investigation_test.log
@@ -536,13 +536,13 @@ Error: "Failed to bind tools to network agent: Invalid tool schema"
 
 # Solution: Ensure strict mode and proper schema
 try:
-    self.llm_with_tools = autonomous_llm.bind_tools(tools, strict=True)
+    self.llm_with_tools = structured_llm.bind_tools(tools, strict=True)
     logger.info(f"Successfully bound {len(tools)} tools")
 except Exception as e:
     logger.error(f"Tool binding failed: {e}")
     # Fallback to filtered tools
     working_tools = _filter_working_tools(tools)
-    self.llm_with_tools = autonomous_llm.bind_tools(working_tools, strict=True)
+    self.llm_with_tools = structured_llm.bind_tools(working_tools, strict=True)
 ```
 
 #### 2. Context Loss Between Agents
@@ -551,8 +551,8 @@ except Exception as e:
 # Problem: Agents losing investigation context
 # Solution: Use persistent context manager
 
-class AutonomousInvestigationContext:
-    _instances: Dict[str, 'AutonomousInvestigationContext'] = {}
+class StructuredInvestigationContext:
+    _instances: Dict[str, 'StructuredInvestigationContext'] = {}
     
     @classmethod
     def get_or_create(cls, investigation_id: str, entity_type: str, entity_id: str):
@@ -781,13 +781,13 @@ spec:
 
 ```python
 # POST /api/agent/start/{entity_id}
-async def start_autonomous_investigation(
+async def start_structured_investigation(
     entity_id: str,
     entity_type: str = "user_id",
     parallel: bool = True
 ) -> Dict:
     """
-    Start autonomous fraud investigation.
+    Start structured fraud investigation.
     
     Returns:
         {
@@ -948,21 +948,21 @@ async def investigate(entity_id: str, entity_type: str):
 
 ## Conclusion
 
-The Olorin Autonomous Investigation System represents a sophisticated implementation of multi-agent AI systems for fraud detection. Key technical achievements include:
+The Olorin Structured Investigation System represents a sophisticated implementation of multi-agent AI systems for fraud detection. Key technical achievements include:
 
 1. **LangGraph Orchestration**: Seamless coordination of multiple AI agents
 2. **Claude Opus 4.1 Integration**: Advanced reasoning and decision-making
-3. **Autonomous Tool Selection**: Agents intelligently choose tools based on context
+3. **Structured Tool Selection**: Agents intelligently choose tools based on context
 4. **Parallel Execution**: Significant performance improvements through parallelization
 5. **Production Readiness**: Comprehensive testing, monitoring, and deployment infrastructure
 
 ### Key Code Locations
 
 - **Graph Builder**: `/app/service/agent/orchestration/graph_builder.py`
-- **Autonomous Agents**: `/app/service/agent/autonomous_base.py`
+- **Structured Agents**: `/app/service/agent/structured_base.py`
 - **Domain Agents**: `/app/service/agent/domain_agents.py`
 - **Tools**: `/app/service/agent/tools/`
-- **Tests**: `/tests/enhanced_autonomous_investigation_test.py`
+- **Tests**: `/tests/enhanced_structured_investigation_test.py`
 - **Configuration**: `/app/service/config.py`
 
 ### Performance Benchmarks

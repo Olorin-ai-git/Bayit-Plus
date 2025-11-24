@@ -88,7 +88,7 @@ class ShodanHostResponse(BaseModel):
     
     ip_str: str = Field(..., description="IP address string")
     ip: Optional[int] = Field(None, description="IP address as integer")
-    asn: Optional[str] = Field(None, description="Autonomous System Number")
+    asn: Optional[str] = Field(None, description="Structured System Number")
     isp: Optional[str] = Field(None, description="Internet Service Provider")
     org: Optional[str] = Field(None, description="Organization")
     os: Optional[str] = Field(None, description="Operating system")

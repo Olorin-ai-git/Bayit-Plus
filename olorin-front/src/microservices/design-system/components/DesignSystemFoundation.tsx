@@ -321,7 +321,11 @@ const getColorValue = (theme: DesignTheme, colorPath: string, scale?: ColorScale
   if (parts.length === 1) {
     // Simple color name, default to 500 scale
     const colorName = parts[0];
+<<<<<<< HEAD
     for (const [category, colors] of Object.entries(theme.colors)) {
+=======
+    for (const [, colors] of Object.entries(theme.colors)) {
+>>>>>>> 001-modify-analyzer-method
       if (colors[colorName]) {
         return colors[colorName]['500']?.value || colors[colorName]['400']?.value || '#000000';
       }
@@ -329,7 +333,11 @@ const getColorValue = (theme: DesignTheme, colorPath: string, scale?: ColorScale
   } else if (parts.length === 2) {
     // Color with scale (e.g., 'blue-500')
     const [colorName, colorScale] = parts;
+<<<<<<< HEAD
     for (const [category, colors] of Object.entries(theme.colors)) {
+=======
+    for (const [, colors] of Object.entries(theme.colors)) {
+>>>>>>> 001-modify-analyzer-method
       if (colors[colorName] && colors[colorName][colorScale as ColorScale]) {
         return colors[colorName][colorScale as ColorScale]!.value;
       }
@@ -432,7 +440,11 @@ const DesignTokenDisplay: React.FC<DesignTokenDisplayProps> = ({
   showCopyCode = true,
   className
 }) => {
+<<<<<<< HEAD
   const { theme, getColor } = useDesignSystem();
+=======
+  const { theme } = useDesignSystem();
+>>>>>>> 001-modify-analyzer-method
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -556,7 +568,10 @@ const ComponentLibraryBrowser: React.FC<ComponentLibraryBrowserProps> = ({
   onComponentSelect,
   className
 }) => {
+<<<<<<< HEAD
   const { theme } = useDesignSystem();
+=======
+>>>>>>> 001-modify-analyzer-method
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 

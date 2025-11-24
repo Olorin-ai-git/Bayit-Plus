@@ -127,22 +127,30 @@ class EnhancedFraudRouter:
             if "device" in findings:
                 device_findings = findings["device"]
                 if "risk_score" in device_findings:
-                    indicators.device_anomaly_score = device_findings["risk_score"]
+                    # CRITICAL FIX: Handle None values to prevent TypeError
+                    risk_score = device_findings["risk_score"]
+                    indicators.device_anomaly_score = risk_score if risk_score is not None else 0.0
             
             if "network" in findings:
                 network_findings = findings["network"]
                 if "risk_score" in network_findings:
-                    indicators.network_risk_score = network_findings["risk_score"]
+                    # CRITICAL FIX: Handle None values to prevent TypeError
+                    risk_score = network_findings["risk_score"]
+                    indicators.network_risk_score = risk_score if risk_score is not None else 0.0
             
             if "location" in findings:
                 location_findings = findings["location"]
                 if "risk_score" in location_findings:
-                    indicators.location_risk_score = location_findings["risk_score"]
+                    # CRITICAL FIX: Handle None values to prevent TypeError
+                    risk_score = location_findings["risk_score"]
+                    indicators.location_risk_score = risk_score if risk_score is not None else 0.0
             
             if "logs" in findings:
                 logs_findings = findings["logs"]
                 if "risk_score" in logs_findings:
-                    indicators.activity_risk_score = logs_findings["risk_score"]
+                    # CRITICAL FIX: Handle None values to prevent TypeError
+                    risk_score = logs_findings["risk_score"]
+                    indicators.activity_risk_score = risk_score if risk_score is not None else 0.0
         
         # Extract entity metadata
         if "entity_metadata" in state:
@@ -172,12 +180,14 @@ class EnhancedFraudRouter:
             Confidence score between 0 and 1
         """
         # Count non-zero indicators
+        # CRITICAL FIX: Handle None values to prevent TypeError: '>' not supported between instances of 'NoneType' and 'float'
+        from app.service.agent.orchestration.metrics.safe import safe_gt
         active_indicators = sum([
-            1 if indicators.device_anomaly_score > 0 else 0,
-            1 if indicators.network_risk_score > 0 else 0,
-            1 if indicators.location_risk_score > 0 else 0,
-            1 if indicators.activity_risk_score > 0 else 0,
-            1 if indicators.velocity_score > 0 else 0
+            1 if safe_gt(indicators.device_anomaly_score, 0, default=False) else 0,
+            1 if safe_gt(indicators.network_risk_score, 0, default=False) else 0,
+            1 if safe_gt(indicators.location_risk_score, 0, default=False) else 0,
+            1 if safe_gt(indicators.activity_risk_score, 0, default=False) else 0,
+            1 if safe_gt(indicators.velocity_score, 0, default=False) else 0
         ])
         
         # Base confidence on number of active indicators
@@ -489,27 +499,47 @@ def raw_data_or_investigation_routing(state: Dict[str, Any]) -> str:
     """
     Primary routing function that determines whether to process raw CSV data
     or proceed with standard fraud investigation.
-    
+
     This is the main entry point for investigation routing after initialization.
     It first checks for raw CSV data, and if found, routes to raw data processing.
     Otherwise, it proceeds with standard investigation flow.
-    
+
     Args:
         state: Current investigation state
-        
+
     Returns:
         Next node to execute ("raw_data_node" or "fraud_investigation")
     """
     logger.info("Determining investigation routing: raw data vs standard flow")
     
-    # First check for CSV data
-    if _detect_csv_data_in_messages(state.get("messages", [])):
-        logger.info("Raw CSV data detected - routing to raw data processing")
-        return "raw_data_node"
+    # Check for CSV data in messages
+    messages = state.get("messages", [])
+    has_csv_data = _detect_csv_data_in_messages(messages)
     
-    # No CSV data found, proceed with standard investigation
-    logger.info("No raw data detected - routing to standard fraud investigation")
-    return "fraud_investigation"
+    # Check for database-fetched transaction data
+    snowflake_data = state.get("snowflake_data")
+    has_database_data = (
+        snowflake_data and 
+        isinstance(snowflake_data, dict) and 
+        snowflake_data.get("success") and 
+        snowflake_data.get("row_count", 0) > 0
+    )
+    
+    # Log what data sources are available
+    if has_csv_data:
+        logger.info("Raw CSV data detected in messages - routing to raw data processing")
+        return "raw_data_node"
+    elif has_database_data:
+        row_count = snowflake_data.get("row_count", 0)
+        source = snowflake_data.get("source", "unknown")
+        logger.info(
+            f"Database transaction data detected ({row_count} rows from {source}) - "
+            "routing to standard fraud investigation (CSV data not found in messages)"
+        )
+        return "fraud_investigation"
+    else:
+        logger.info("No raw data detected (no CSV in messages, no database data) - routing to standard fraud investigation")
+        return "fraud_investigation"
 
 
 def _detect_csv_data_in_messages(messages: List[BaseMessage]) -> bool:

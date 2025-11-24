@@ -49,7 +49,11 @@ src/js/components/rag/
 ## 2. Investigation Service - MAJOR GAP
 
 **Legacy:** `src/js/pages/InvestigationPage.tsx` (1,913 lines)
+<<<<<<< HEAD
 **New:** `src/microservices/autonomous-investigation/` (basic structure)
+=======
+**New:** `src/microservices/structured-investigation/` (basic structure)
+>>>>>>> 001-modify-analyzer-method
 
 ### Missing Core Investigation Features:
 - **Main Investigation Dashboard** - Primary investigation interface
@@ -62,7 +66,11 @@ src/js/components/rag/
 ### Legacy Investigation Components to Migrate:
 ```
 src/js/components/
+<<<<<<< HEAD
 ├── AutonomousInvestigationPanel.tsx
+=======
+├── StructuredInvestigationPanel.tsx
+>>>>>>> 001-modify-analyzer-method
 ├── ManualInvestigationPanel.tsx
 ├── InvestigationForm.tsx
 ├── InvestigationHeader.tsx

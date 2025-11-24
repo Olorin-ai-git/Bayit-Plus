@@ -15,7 +15,10 @@ from app.service.config import SvcSettings
 logger = get_bridge_logger(__name__)
 
 def get_database_password(settings: SvcSettings) -> str:
-    """Get database password with Firebase secrets fallback
+    """Get database password with priority: .env > Firebase Secrets Manager
+    
+    Checks environment variables first (POSTGRES_PASSWORD, DB_PASSWORD), then
+    falls back to Firebase Secrets Manager if not found in .env.
     
     Args:
         settings: Application settings configuration
@@ -26,26 +29,38 @@ def get_database_password(settings: SvcSettings) -> str:
     Raises:
         ValueError: If password cannot be retrieved from any source
     """
-    # Try direct environment override first (for local development)
+    # Priority 1: Check POSTGRES_PASSWORD environment variable first
+    db_password = os.getenv("POSTGRES_PASSWORD")
+    if db_password:
+        logger.debug("✅ Using POSTGRES_PASSWORD from .env file")
+        return db_password
+    
+    # Priority 2: Check DB_PASSWORD environment variable (via settings)
     db_password = settings.database_password
+    if db_password:
+        logger.debug("✅ Using DB_PASSWORD from .env file")
+        return db_password
     
-    if not db_password:
-        # Retrieve from Firebase Secrets Manager
-        try:
-            db_password = get_app_secret(settings.database_password_secret)
-            if db_password:
-                logger.debug("Retrieved database password from Firebase Secrets Manager")
-        except Exception as e:
-            logger.error(f"Failed to retrieve database password from Firebase: {e}")
+    # Priority 3: Retrieve from Firebase Secrets Manager (fallback)
+    logger.info(f"⚠️  Database password not found in .env, attempting Firebase Secrets Manager fallback...")
+    try:
+        db_password = get_app_secret(settings.database_password_secret)
+        if db_password:
+            logger.info("✅ Retrieved database password from Firebase Secrets Manager")
+            return db_password
+    except Exception as e:
+        logger.warning(f"⚠️  Failed to retrieve database password from Firebase Secrets Manager: {e}")
+        logger.warning("   This is expected if Firebase CLI is not installed or not authenticated")
     
-    if not db_password:
-        raise ValueError(
-            "Database password not available via Firebase Secrets Manager. "
-            "Ensure Firebase secret exists at: "
-            f"{settings.database_password_secret}"
-        )
-    
-    return db_password
+    # If we get here, password was not found in any source
+    raise ValueError(
+        "Database password not available from any source.\n"
+        "Please set one of the following:\n"
+        "  - POSTGRES_PASSWORD environment variable in .env file (recommended for local development)\n"
+        "  - DB_PASSWORD environment variable in .env file\n"
+        "  - Configure Firebase Secrets Manager with secret: "
+        f"{settings.database_password_secret}"
+    )
 
 
 def get_redis_api_key(settings: SvcSettings) -> Optional[str]:
@@ -197,10 +212,11 @@ def build_database_url(settings: SvcSettings,
         ValueError: If required parameters are missing
     """
     # Use provided parameters or fall back to environment variables
-    host = db_host or os.getenv("DB_HOST", "localhost")
-    port = db_port or int(os.getenv("DB_PORT", "5432"))
-    database = db_name or os.getenv("DB_NAME", "olorin")
-    user = db_user or os.getenv("DB_USER", "olorin_user")
+    # Check POSTGRES_* variables first, then DB_* variables, then defaults
+    host = db_host or os.getenv("POSTGRES_HOST") or os.getenv("DB_HOST", "localhost")
+    port = db_port or int(os.getenv("POSTGRES_PORT") or os.getenv("DB_PORT", "5432"))
+    database = db_name or os.getenv("POSTGRES_DATABASE") or os.getenv("DB_NAME", "olorin")
+    user = db_user or os.getenv("POSTGRES_USER") or os.getenv("DB_USER", "olorin_user")
     
     # Get password with Firebase secrets integration
     password = get_database_password(settings)
@@ -208,7 +224,8 @@ def build_database_url(settings: SvcSettings,
     # URL-encode password to handle special characters
     encoded_password = quote_plus(password)
     
-    database_url = f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}"
+    # Add gssencmode=disable to avoid GSSAPI errors on local connections
+    database_url = f"postgresql://{user}:{encoded_password}@{host}:{port}/{database}?gssencmode=disable"
     
     logger.info(f"Built database URL for {host}:{port}/{database} with user {user}")
     return database_url

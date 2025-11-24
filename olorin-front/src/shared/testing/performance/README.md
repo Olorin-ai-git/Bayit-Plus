@@ -103,8 +103,13 @@ await engine.initialize(browser);
 
 // Test single service
 const result = await engine.testServicePerformance(
+<<<<<<< HEAD
   'autonomous-investigation',
   'http://localhost:3001/autonomous-investigation',
+=======
+  'structured-investigation',
+  'http://localhost:3001/structured-investigation',
+>>>>>>> 001-modify-analyzer-method
   {
     networkCondition: 'slow',
     deviceType: 'mobile',
@@ -116,7 +121,11 @@ const result = await engine.testServicePerformance(
 // Test multiple services
 const results = await engine.testMultipleServices([
   { name: 'core-ui', url: 'http://localhost:3000/' },
+<<<<<<< HEAD
   { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
+=======
+  { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
+>>>>>>> 001-modify-analyzer-method
 ], {
   networkConditions: ['fast', 'slow'],
   deviceTypes: ['mobile', 'desktop']
@@ -164,7 +173,11 @@ npm run perf:lighthouse
 const config = {
   services: [
     { name: 'core-ui', url: 'http://localhost:3000/', critical: true },
+<<<<<<< HEAD
     { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation', critical: true }
+=======
+    { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation', critical: true }
+>>>>>>> 001-modify-analyzer-method
     // ... more services
   ],
   devices: ['desktop', 'mobile'],
@@ -225,7 +238,11 @@ test('should meet Core Web Vitals thresholds for all critical services', async (
   // Test critical services
   const criticalServices = [
     { name: 'core-ui', url: 'http://localhost:3000/' },
+<<<<<<< HEAD
     { name: 'autonomous-investigation', url: 'http://localhost:3001/autonomous-investigation' }
+=======
+    { name: 'structured-investigation', url: 'http://localhost:3001/structured-investigation' }
+>>>>>>> 001-modify-analyzer-method
   ];
 
   for (const service of criticalServices) {
@@ -264,7 +281,11 @@ const performanceBudgets = {
     cls: 0.08,    // 0.08
     totalSize: 1800000  // 1.8MB
   },
+<<<<<<< HEAD
   'autonomous-investigation': {
+=======
+  'structured-investigation': {
+>>>>>>> 001-modify-analyzer-method
     fcp: 1800,    // 1.8s
     lcp: 2500,    // 2.5s
     fid: 100,     // 100ms

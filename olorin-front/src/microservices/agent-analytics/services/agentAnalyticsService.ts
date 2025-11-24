@@ -1,4 +1,9 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+<<<<<<< HEAD
+=======
+import { env } from '@shared/config/env.config';
+import { createAxiosErrorInterceptor } from '@shared/utils/axiosErrorHandler';
+>>>>>>> 001-modify-analyzer-method
 import {
   AgentMetrics,
   AgentAlert,
@@ -21,6 +26,10 @@ interface ApiResponse<T> {
   message?: string;
 }
 
+<<<<<<< HEAD
+=======
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+>>>>>>> 001-modify-analyzer-method
 interface PaginatedResponse<T> {
   items: T[];
   total: number;
@@ -38,7 +47,11 @@ class AgentAnalyticsService {
   private wsCallbacks: Map<string, (data: any) => void> = new Map();
 
   constructor() {
+<<<<<<< HEAD
     this.baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+=======
+    this.baseURL = env.api.baseUrl;
+>>>>>>> 001-modify-analyzer-method
 
     this.api = axios.create({
       baseURL: `${this.baseURL}/api/v1`,
@@ -64,6 +77,7 @@ class AgentAnalyticsService {
       (error) => Promise.reject(error)
     );
 
+<<<<<<< HEAD
     // Response interceptor for error handling
     this.api.interceptors.response.use(
       (response) => response,
@@ -74,6 +88,12 @@ class AgentAnalyticsService {
         }
         return Promise.reject(error);
       }
+=======
+    // Response interceptor with error notification handling
+    this.api.interceptors.response.use(
+      (response) => response,
+      createAxiosErrorInterceptor(true)
+>>>>>>> 001-modify-analyzer-method
     );
   }
 

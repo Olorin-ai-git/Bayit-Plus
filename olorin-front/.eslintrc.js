@@ -33,7 +33,7 @@ module.exports = {
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
           },
           typescript: {
-            project: ['tsconfig.json', './cypress/tsconfig.json'],
+            project: ['/Users/gklainert/Documents/olorin/olorin-front/tsconfig.json', '/Users/gklainert/Documents/olorin/olorin-front/cypress/tsconfig.json'],
           },
         },
       },
@@ -42,7 +42,8 @@ module.exports = {
           jsx: true,
         },
         ecmaVersion: 2018,
-        project: ['tsconfig.json', './cypress/tsconfig.json'],
+        project: ['/Users/gklainert/Documents/olorin/olorin-front/tsconfig.json', '/Users/gklainert/Documents/olorin/olorin-front/cypress/tsconfig.json'],
+        tsconfigRootDir: '/Users/gklainert/Documents/olorin/olorin-front',
       },
     },
   ],

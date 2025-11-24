@@ -9,6 +9,66 @@ module.exports = {
     extend: {
       // Design Tokens for Olorin Microservices
       colors: {
+<<<<<<< HEAD
+=======
+        // Olorin Corporate Colors (Feature: 004-new-olorin-frontend)
+        corporate: {
+          // Backgrounds (Dark Theme - Purple)
+          bgPrimary: '#1A0B2E',        // Main background (dark purple/black)
+          bgSecondary: '#2D1B4E',      // Secondary panels (medium purple)
+          bgTertiary: '#3E2C5F',       // Tertiary surfaces (light purple)
+
+          // Accent Colors (Purple Palette)
+          accentPrimary: '#A855F7',        // Purple (primary actions, highlights)
+          accentPrimaryHover: '#9333EA',   // Purple hover state
+          accentSecondary: '#C084FC',      // Light purple (secondary accent)
+          accentSecondaryHover: '#A855F7', // Light purple hover state
+
+          // Status Colors
+          success: '#10B981',   // Green (success states)
+          warning: '#F59E0B',   // Amber (warnings)
+          error: '#EF4444',     // Red (errors, critical)
+          info: '#818CF8',      // Purple-blue (info messages)
+
+          // Text Colors
+          textPrimary: '#F9FAFB',    // Primary text (white)
+          textSecondary: '#D8B4FE',  // Secondary text (purple tinted)
+          textTertiary: '#C084FC',   // Tertiary text (light purple)
+          textDisabled: '#7C3AED',   // Disabled state (purple)
+
+          // Border Colors
+          borderPrimary: '#6B21A8',    // Primary borders (purple)
+          borderSecondary: '#7C3AED',  // Secondary borders (purple)
+          borderAccent: '#A855F7'      // Accent borders (purple)
+        },
+        // Risk Level Colors (for Investigation Wizard)
+        risk: {
+          critical: {   // 80-100 score
+            bg: 'bg-red-900/30',
+            text: 'text-red-400',
+            border: 'border-red-500',
+            color: '#EF4444'
+          },
+          high: {       // 60-79 score
+            bg: 'bg-amber-900/20',
+            text: 'text-amber-400',
+            border: 'border-amber-500',
+            color: '#F59E0B'
+          },
+          medium: {     // 40-59 score
+            bg: 'bg-purple-900/30',
+            text: 'text-purple-400',
+            border: 'border-purple-500',
+            color: '#C084FC'
+          },
+          low: {        // 0-39 score
+            bg: 'bg-gray-800/50',
+            text: 'text-gray-400',
+            border: 'border-gray-600',
+            color: '#6B7280'
+          }
+        },
+>>>>>>> 001-modify-analyzer-method
         // Primary Brand Colors
         primary: {
           50: '#faf5ff',
@@ -38,7 +98,11 @@ module.exports = {
           950: '#09090b',
         },
         // Semantic Colors for Investigation Types
+<<<<<<< HEAD
         autonomous: {
+=======
+        structured: {
+>>>>>>> 001-modify-analyzer-method
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
@@ -307,11 +371,19 @@ module.exports = {
             backgroundColor: theme('colors.secondary.200'),
           },
         },
+<<<<<<< HEAD
         '.btn-autonomous': {
           backgroundColor: theme('colors.autonomous.600'),
           color: theme('colors.white'),
           '&:hover': {
             backgroundColor: theme('colors.autonomous.700'),
+=======
+        '.btn-structured': {
+          backgroundColor: theme('colors.structured.600'),
+          color: theme('colors.white'),
+          '&:hover': {
+            backgroundColor: theme('colors.structured.700'),
+>>>>>>> 001-modify-analyzer-method
           },
         },
         '.btn-manual': {
@@ -335,9 +407,15 @@ module.exports = {
           padding: theme('spacing.6'),
         },
         // Service-specific Cards
+<<<<<<< HEAD
         '.card-autonomous': {
           backgroundColor: theme('colors.autonomous.50'),
           borderColor: theme('colors.autonomous.200'),
+=======
+        '.card-structured': {
+          backgroundColor: theme('colors.structured.50'),
+          borderColor: theme('colors.structured.200'),
+>>>>>>> 001-modify-analyzer-method
           borderWidth: '1px',
         },
         '.card-manual': {
@@ -501,25 +579,41 @@ module.exports = {
   ],
   // Safelist for dynamic classes
   safelist: [
+<<<<<<< HEAD
     'btn-autonomous',
+=======
+    'btn-structured',
+>>>>>>> 001-modify-analyzer-method
     'btn-manual',
     'btn-analytics',
     'btn-rag',
     'btn-visualization',
     'btn-reporting',
+<<<<<<< HEAD
     'card-autonomous',
+=======
+    'card-structured',
+>>>>>>> 001-modify-analyzer-method
     'card-manual',
     'card-analytics',
     'card-rag',
     'card-visualization',
     'card-reporting',
+<<<<<<< HEAD
     'text-autonomous-600',
+=======
+    'text-structured-600',
+>>>>>>> 001-modify-analyzer-method
     'text-manual-600',
     'text-analytics-600',
     'text-rag-600',
     'text-visualization-600',
     'text-reporting-600',
+<<<<<<< HEAD
     'bg-autonomous-50',
+=======
+    'bg-structured-50',
+>>>>>>> 001-modify-analyzer-method
     'bg-manual-50',
     'bg-analytics-50',
     'bg-rag-50',

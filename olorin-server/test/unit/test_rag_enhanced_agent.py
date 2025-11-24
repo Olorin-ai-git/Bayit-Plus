@@ -17,8 +17,8 @@ from app.service.agent.rag import (
     KnowledgeContext,
     ContextAugmentationConfig
 )
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     DomainFindings,
     EntityType
 )
@@ -52,7 +52,7 @@ def mock_context_augmentor():
 @pytest.fixture
 def mock_investigation_context():
     """Create mock investigation context"""
-    context = Mock(spec=AutonomousInvestigationContext)
+    context = Mock(spec=StructuredInvestigationContext)
     context.investigation_id = "test-investigation-123"
     context.entity_id = "test-entity-456"
     context.entity_type = EntityType.USER_ID
@@ -145,13 +145,13 @@ class TestRAGEnhancedInvestigationAgent:
                 assert agent.rag_stats[key] == 0 or agent.rag_stats[key] == 0.0
     
     @pytest.mark.asyncio
-    async def test_autonomous_investigate_rag_enhanced(
+    async def test_structured_investigate_rag_enhanced(
         self, 
         mock_tools, 
         mock_rag_orchestrator,
         mock_investigation_context
     ):
-        """Test RAG-enhanced autonomous investigation"""
+        """Test RAG-enhanced structured investigation"""
         
         # Setup mocks
         mock_findings = Mock(spec=DomainFindings)
@@ -174,7 +174,7 @@ class TestRAGEnhancedInvestigationAgent:
             config = RunnableConfig()
             objectives = ["Test network analysis"]
             
-            result = await agent.autonomous_investigate(
+            result = await agent.structured_investigate(
                 mock_investigation_context,
                 config,
                 objectives
@@ -187,7 +187,7 @@ class TestRAGEnhancedInvestigationAgent:
             )
     
     @pytest.mark.asyncio
-    async def test_autonomous_investigate_rag_failure_fallback(
+    async def test_structured_investigate_rag_failure_fallback(
         self,
         mock_tools,
         mock_rag_orchestrator,
@@ -209,12 +209,12 @@ class TestRAGEnhancedInvestigationAgent:
             agent._rag_enhanced_investigation = AsyncMock(side_effect=Exception("RAG failed"))
             
             # Mock parent class method
-            with patch.object(agent.__class__.__bases__[0], 'autonomous_investigate', new_callable=AsyncMock) as mock_parent:
+            with patch.object(agent.__class__.__bases__[0], 'structured_investigate', new_callable=AsyncMock) as mock_parent:
                 mock_parent.return_value = mock_findings
                 
                 config = RunnableConfig()
                 
-                result = await agent.autonomous_investigate(
+                result = await agent.structured_investigate(
                     mock_investigation_context,
                     config,
                     None
@@ -226,7 +226,7 @@ class TestRAGEnhancedInvestigationAgent:
                 mock_parent.assert_called_once()
     
     @pytest.mark.asyncio
-    async def test_autonomous_investigate_rag_disabled(
+    async def test_structured_investigate_rag_disabled(
         self,
         mock_tools,
         mock_investigation_context
@@ -242,12 +242,12 @@ class TestRAGEnhancedInvestigationAgent:
         )
         
         # Mock parent class method
-        with patch.object(agent.__class__.__bases__[0], 'autonomous_investigate', new_callable=AsyncMock) as mock_parent:
+        with patch.object(agent.__class__.__bases__[0], 'structured_investigate', new_callable=AsyncMock) as mock_parent:
             mock_parent.return_value = mock_findings
             
             config = RunnableConfig()
             
-            result = await agent.autonomous_investigate(
+            result = await agent.structured_investigate(
                 mock_investigation_context,
                 config,
                 None
@@ -491,7 +491,7 @@ class TestRAGEnhancedAgentIntegration:
             assert agent.enable_rag is True
     
     def test_backward_compatibility_with_base_agent(self):
-        """Test backward compatibility with AutonomousInvestigationAgent"""
+        """Test backward compatibility with StructuredInvestigationAgent"""
         mock_tools = [Mock() for _ in range(2)]
         
         agent = RAGEnhancedInvestigationAgent(
@@ -505,7 +505,7 @@ class TestRAGEnhancedAgentIntegration:
         assert hasattr(agent, 'tools')
         assert hasattr(agent, 'tool_map')
         assert hasattr(agent, 'llm_with_tools')
-        assert callable(getattr(agent, 'autonomous_investigate'))
+        assert callable(getattr(agent, 'structured_investigate'))
     
     @pytest.mark.asyncio
     async def test_enhanced_logging_integration(self, mock_tools, mock_rag_orchestrator):

@@ -1,12 +1,20 @@
 """
+<<<<<<< HEAD
 Integration Tests for Autonomous Investigation Orchestrator
+=======
+Integration Tests for Structured Investigation Orchestrator
+>>>>>>> 001-modify-analyzer-method
 
 Tests the complete integration between orchestrator components, LangGraph,
 WebSocket events, dashboard services, and monitoring systems.
 
 Author: Gil Klainert  
 Date: 2025-09-06
+<<<<<<< HEAD
 Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
+=======
+Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
+>>>>>>> 001-modify-analyzer-method
 Phase: 5.1 - Comprehensive Test Suite (Integration Tests)
 """
 
@@ -18,7 +26,11 @@ from datetime import datetime
 from unittest.mock import Mock, AsyncMock, patch
 from typing import Dict, Any, List
 
+<<<<<<< HEAD
 from app.service.agent.autonomous_orchestrator import AutonomousInvestigationOrchestrator
+=======
+from app.service.agent.structured_orchestrator import StructuredInvestigationOrchestrator
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestration.orchestrator_graph import create_orchestrator_driven_graph, OrchestratorState
 from app.router.handlers.orchestrator_websocket import OrchestratorWebSocketHandler
 from app.service.dashboard.orchestrator_dashboard import OrchestratorDashboardService, DashboardViewType
@@ -28,7 +40,11 @@ from app.service.monitoring.orchestrator_monitoring import OrchestratorMonitorin
 @pytest.fixture
 async def integrated_orchestrator_system():
     """Create fully integrated orchestrator system for testing"""
+<<<<<<< HEAD
     orchestrator = AutonomousInvestigationOrchestrator()
+=======
+    orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
     await orchestrator.initialize()
     
     # Initialize all components
@@ -136,7 +152,11 @@ class TestLangGraphIntegration:
             "next_phase": "device_analysis"
         }
         
+<<<<<<< HEAD
         with patch('app.service.agent.autonomous_orchestrator.AutonomousInvestigationOrchestrator') as mock_orchestrator_class:
+=======
+        with patch('app.service.agent.structured_orchestrator.StructuredInvestigationOrchestrator') as mock_orchestrator_class:
+>>>>>>> 001-modify-analyzer-method
             mock_orchestrator = AsyncMock()
             mock_orchestrator._make_ai_decision.return_value = Mock(
                 decision="proceed_to_device_analysis",

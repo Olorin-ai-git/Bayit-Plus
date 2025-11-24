@@ -147,3 +147,19 @@ class AuditLog(Base, TimestampMixin):
     
     def __repr__(self):
         return f"<AuditLog(id={self.id}, action={self.action}, success={self.success})>"
+
+
+class ReportRecord(Base, TimestampMixin):
+    """Report record model for investigation reports."""
+    
+    __tablename__ = "reports"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    owner = Column(String, nullable=False, index=True)
+    title = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    status = Column(String, default="Draft", nullable=False, index=True)
+    tags = Column(JSON, nullable=True)
+    
+    def __repr__(self):
+        return f"<ReportRecord(id={self.id}, title={self.title[:50]}, status={self.status})>"

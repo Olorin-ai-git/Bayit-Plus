@@ -23,17 +23,42 @@ class DataFormatters:
 
             # Extract key metrics
             model_scores = [r.get("MODEL_SCORE", 0) for r in results if "MODEL_SCORE" in r]
+<<<<<<< HEAD
             fraud_flags = [r for r in results if r.get("IS_FRAUD_TX")]
 
             summary = f"""- Total transactions: {len(results)}
 - Average MODEL_SCORE: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
 - High risk transactions (MODEL_SCORE > 0.7): {len([s for s in model_scores if s > 0.7])}
+=======
+            # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+            # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+            # Use behavioral indicators only (rejected transactions)
+            fraud_flags = [r for r in results 
+                          if r.get("NSURE_LAST_DECISION") in ("REJECT", "BLOCK", "DECLINE")]
+
+            summary = f"""- Total transactions: {len(results)}
+- Average MODEL_SCORE: {sum(model_scores)/len(model_scores) if model_scores else 0:.3f}
+- High risk transactions (MODEL_SCORE > 0.7): {len([s for s in model_scores if s is not None and s > 0.7])}
+>>>>>>> 001-modify-analyzer-method
 - Confirmed fraud transactions: {len(fraud_flags)}
 - Date range: {results[0].get('TX_DATETIME', 'N/A')} to {results[-1].get('TX_DATETIME', 'N/A') if results else 'N/A'}"""
 
             return summary
 
+<<<<<<< HEAD
         return f"Raw data: {str(snowflake_data)[:500]}"
+=======
+        # Summarize instead of returning raw data
+        if isinstance(snowflake_data, dict):
+            if "row_count" in snowflake_data:
+                return f"Transaction data: {snowflake_data['row_count']} rows"
+            else:
+                return f"Structured data: {len(snowflake_data)} fields"
+        elif isinstance(snowflake_data, list):
+            return f"List data: {len(snowflake_data)} items"
+        else:
+            return f"Data available (type: {type(snowflake_data).__name__})"
+>>>>>>> 001-modify-analyzer-method
 
     @staticmethod
     def format_tools_for_llm(tool_results: Dict) -> str:
@@ -49,10 +74,52 @@ class DataFormatters:
                     formatted.append(f"- {tool_name}: Risk score {result['risk_score']}")
                 elif "is_malicious" in result:
                     formatted.append(f"- {tool_name}: {'Malicious' if result['is_malicious'] else 'Clean'}")
+<<<<<<< HEAD
                 else:
                     formatted.append(f"- {tool_name}: {str(result)[:100]}")
             else:
                 formatted.append(f"- {tool_name}: {str(result)[:100]}")
+=======
+                elif "query" in result:
+                    # Database query tool - summarize instead of showing full query
+                    query_len = len(str(result.get('query', '')))
+                    result_count = len(result.get('results', [])) if isinstance(result.get('results'), list) else 0
+                    formatted.append(f"- {tool_name}: SQL query ({query_len} chars, {result_count} results)")
+                elif "results" in result:
+                    # Results dict - show count
+                    results = result.get('results', [])
+                    result_count = len(results) if isinstance(results, list) else 0
+                    formatted.append(f"- {tool_name}: {result_count} results")
+                else:
+                    # Other dict - show key count
+                    formatted.append(f"- {tool_name}: {len(result)} fields")
+            elif isinstance(result, str):
+                # String result - check if it's JSON with a query
+                try:
+                    import json
+                    parsed = json.loads(result)
+                    if isinstance(parsed, dict):
+                        if "query" in parsed:
+                            query_len = len(str(parsed.get('query', '')))
+                            result_count = len(parsed.get('results', [])) if isinstance(parsed.get('results'), list) else 0
+                            formatted.append(f"- {tool_name}: JSON with SQL query ({query_len} chars, {result_count} results)")
+                        elif "results" in parsed:
+                            results = parsed.get('results', [])
+                            formatted.append(f"- {tool_name}: JSON with {len(results)} results")
+                        else:
+                            formatted.append(f"- {tool_name}: JSON dict ({len(parsed)} keys)")
+                    else:
+                        formatted.append(f"- {tool_name}: JSON ({type(parsed).__name__})")
+                except (json.JSONDecodeError, Exception):
+                    # Not JSON - check if it looks like SQL
+                    if "SELECT" in result.upper() or "FROM" in result.upper():
+                        formatted.append(f"- {tool_name}: SQL query ({len(result)} chars)")
+                    else:
+                        formatted.append(f"- {tool_name}: String ({len(result)} chars)")
+            else:
+                # Other types - show type and length
+                formatted.append(f"- {tool_name}: {type(result).__name__} ({len(str(result))} chars)")
+>>>>>>> 001-modify-analyzer-method
 
         return "\n".join(formatted)
 
@@ -91,7 +158,12 @@ class DataFormatters:
 
         try:
             if isinstance(snowflake_data, str):
+<<<<<<< HEAD
                 return f"Raw data summary: {snowflake_data[:200]}..."
+=======
+                # Summarize string data instead of showing raw content
+                return f"String data available ({len(snowflake_data)} chars)"
+>>>>>>> 001-modify-analyzer-method
 
             if isinstance(snowflake_data, dict):
                 if "results" in snowflake_data:

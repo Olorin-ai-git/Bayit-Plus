@@ -105,14 +105,14 @@ const ContactPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 to-secondary-100 py-20">
+      <section className="relative bg-gradient-to-br from-corporate-bgPrimary via-corporate-bgSecondary to-corporate-bgPrimary py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-secondary-900 mb-6">
-              Get in <span className="text-primary-600">Touch</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-corporate-textPrimary mb-6">
+              Get in <span className="text-corporate-accentPrimary">Touch</span>
             </h1>
-            <p className="text-xl text-secondary-600 max-w-3xl mx-auto">
-              Ready to transform your fraud prevention with AI? Contact our experts 
+            <p className="text-xl text-corporate-textSecondary max-w-3xl mx-auto">
+              Ready to transform your fraud prevention with AI? Contact our experts
               to schedule a demo and see how Olorin.ai can protect your business.
             </p>
           </div>
@@ -120,43 +120,43 @@ const ContactPage: React.FC = () => {
       </section>
 
       {/* Contact Form & Info Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-corporate-bgSecondary/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <h2 className="text-3xl font-bold text-secondary-900 mb-6">
+              <h2 className="text-3xl font-bold text-corporate-textPrimary mb-6">
                 Send Us a Message
               </h2>
-              <p className="text-lg text-secondary-600 mb-8">
+              <p className="text-lg text-corporate-textSecondary mb-8">
                 Fill out the form below and our team will get back to you within 24 hours.
               </p>
               
               {isSubmitted ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">
+                <div className="glass-card bg-green-500/10 border-green-400/30 p-6 text-center">
+                  <CheckCircle className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-green-300 mb-2">
                     Message Sent Successfully!
                   </h3>
-                  <p className="text-green-600">
+                  <p className="text-green-400/80">
                     Thank you for contacting us. We'll respond within 24 hours.
                   </p>
                 </div>
               ) : (
                 <div>
                   {submitError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start space-x-3">
-                      <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div className="glass-card bg-red-500/10 border-red-400/30 p-4 mb-6 flex items-start space-x-3">
+                      <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="text-red-800 font-medium">Error sending message</h4>
-                        <p className="text-red-600 text-sm mt-1">{submitError}</p>
+                        <h4 className="text-red-300 font-medium">Error sending message</h4>
+                        <p className="text-red-400/80 text-sm mt-1">{submitError}</p>
                       </div>
                     </div>
                   )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="firstName" className="block text-sm font-medium text-secondary-700 mb-2">
+                      <label htmlFor="firstName" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                         First Name *
                       </label>
                       <input
@@ -166,12 +166,12 @@ const ContactPage: React.FC = () => {
                         required
                         value={formData.firstName}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                         placeholder="Enter your first name"
                       />
                     </div>
                     <div>
-                      <label htmlFor="lastName" className="block text-sm font-medium text-secondary-700 mb-2">
+                      <label htmlFor="lastName" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                         Last Name *
                       </label>
                       <input
@@ -181,14 +181,14 @@ const ContactPage: React.FC = () => {
                         required
                         value={formData.lastName}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                         placeholder="Enter your last name"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-secondary-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                       Email Address *
                     </label>
                     <input
@@ -198,14 +198,14 @@ const ContactPage: React.FC = () => {
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                       placeholder="Enter your email address"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="company" className="block text-sm font-medium text-secondary-700 mb-2">
+                      <label htmlFor="company" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                         Company
                       </label>
                       <input
@@ -214,12 +214,12 @@ const ContactPage: React.FC = () => {
                         name="company"
                         value={formData.company}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                         placeholder="Enter your company name"
                       />
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-secondary-700 mb-2">
+                      <label htmlFor="phone" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                         Phone Number
                       </label>
                       <input
@@ -228,14 +228,14 @@ const ContactPage: React.FC = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                        className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                         placeholder="Enter your phone number"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-secondary-700 mb-2">
+                    <label htmlFor="subject" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                       Subject *
                     </label>
                     <select
@@ -244,7 +244,7 @@ const ContactPage: React.FC = () => {
                       required
                       value={formData.subject}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all"
                     >
                       <option value="">Select a subject</option>
                       {subjects.map((subject, index) => (
@@ -254,7 +254,7 @@ const ContactPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-secondary-700 mb-2">
+                    <label htmlFor="message" className="block text-sm font-medium text-corporate-textPrimary mb-2">
                       Message *
                     </label>
                     <textarea
@@ -264,7 +264,7 @@ const ContactPage: React.FC = () => {
                       rows={6}
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                      className="w-full px-4 py-3 bg-corporate-bgSecondary/50 backdrop-blur-sm border border-corporate-borderPrimary/40 rounded-lg text-corporate-textPrimary placeholder-corporate-textMuted focus:ring-2 focus:ring-corporate-accentPrimary focus:border-corporate-accentPrimary transition-all resize-none"
                       placeholder="Tell us about your fraud prevention needs..."
                     />
                   </div>
@@ -272,10 +272,10 @@ const ContactPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full px-6 py-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center space-x-2 ${
-                      isSubmitting 
-                        ? 'bg-gray-400 cursor-not-allowed' 
-                        : 'bg-primary-600 hover:bg-primary-700'
+                    className={`w-full px-6 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
+                      isSubmitting
+                        ? 'bg-corporate-bgSecondary/50 cursor-not-allowed border border-corporate-borderPrimary/40'
+                        : 'bg-corporate-accentPrimary hover:brightness-110 shadow-lg'
                     } text-white`}
                   >
                     {isSubmitting ? (
@@ -297,30 +297,30 @@ const ContactPage: React.FC = () => {
 
             {/* Contact Information */}
             <div>
-              <h2 className="text-3xl font-bold text-secondary-900 mb-6">
+              <h2 className="text-3xl font-bold text-corporate-textPrimary mb-6">
                 Contact Information
               </h2>
-              <p className="text-lg text-secondary-600 mb-8">
-                Get in touch with our team of fraud prevention experts. We're here to help 
+              <p className="text-lg text-corporate-textSecondary mb-8">
+                Get in touch with our team of fraud prevention experts. We're here to help
                 you secure your business with cutting-edge AI technology.
               </p>
 
               <div className="space-y-6">
                 {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start space-x-4 p-6 bg-secondary-50 rounded-lg">
-                    <div className="flex-shrink-0 bg-primary-100 p-3 rounded-lg">
-                      <div className="text-primary-600">
+                  <div key={index} className="glass-card flex items-start space-x-4 p-6 hover:border-corporate-accentPrimary/60 transition-all duration-200">
+                    <div className="flex-shrink-0 bg-corporate-accentPrimary/20 backdrop-blur-sm p-3 rounded-lg border border-corporate-accentPrimary/30">
+                      <div className="text-corporate-accentPrimary">
                         {info.icon}
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-secondary-900 mb-1">
+                      <h3 className="text-lg font-semibold text-corporate-textPrimary mb-1">
                         {info.title}
                       </h3>
-                      <p className="text-primary-600 font-medium mb-1">
+                      <p className="text-corporate-accentPrimary font-medium mb-1">
                         {info.details}
                       </p>
-                      <p className="text-sm text-secondary-600">
+                      <p className="text-sm text-corporate-textSecondary">
                         {info.description}
                       </p>
                     </div>
@@ -329,13 +329,13 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Additional Info */}
-              <div className="mt-8 p-6 bg-primary-50 rounded-lg border border-primary-200">
-                <h3 className="text-lg font-semibold text-primary-900 mb-3">
+              <div className="mt-8 glass-card bg-corporate-accentPrimary/10 border-corporate-accentPrimary/30 p-6">
+                <h3 className="text-lg font-semibold text-corporate-textPrimary mb-3">
                   Quick Response Guarantee
                 </h3>
-                <p className="text-primary-700">
-                  We understand that fraud prevention is time-sensitive. Our team commits 
-                  to responding to all inquiries within 24 hours, with urgent security 
+                <p className="text-corporate-textSecondary">
+                  We understand that fraud prevention is time-sensitive. Our team commits
+                  to responding to all inquiries within 24 hours, with urgent security
                   matters addressed within 4 hours.
                 </p>
               </div>
@@ -345,18 +345,18 @@ const ContactPage: React.FC = () => {
       </section>
 
       {/* Map or Additional CTA Section */}
-      <section className="py-20 bg-secondary-900 text-white">
+      <section className="py-20 bg-gradient-to-r from-corporate-accentPrimary/30 via-corporate-accentSecondary/30 to-corporate-accentPrimary/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-corporate-textPrimary mb-6">
             Prefer to Schedule a Call?
           </h2>
-          <p className="text-xl text-secondary-300 mb-8 max-w-2xl mx-auto">
-            Book a personalized demo with our fraud prevention experts to see 
+          <p className="text-xl text-corporate-textSecondary mb-8 max-w-2xl mx-auto">
+            Book a personalized demo with our fraud prevention experts to see
             how Olorin.ai can protect your specific business needs.
           </p>
           <a
             href="tel:+12013979142"
-            className="inline-flex items-center space-x-2 bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-all duration-200"
+            className="inline-flex items-center space-x-2 bg-corporate-accentPrimary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:brightness-110 transition-all duration-200 shadow-lg"
           >
             <Phone className="h-5 w-5" />
             <span>Call Now: +1 (201) 397-9142</span>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Autonomous Investigation Scenario Runner
+Comprehensive Structured Investigation Scenario Runner
 Executes all 10 fraud detection scenarios with multi-tool support
 """
 import asyncio
@@ -16,13 +16,13 @@ from dataclasses import dataclass
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
-from app.service.agent.autonomous_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
+from app.service.agent.structured_agents import (
+    structured_network_agent,
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_risk_agent,
 )
 from app.service.agent.journey_tracker import get_journey_tracker
 from app.service.agent.tools.tool_registry import initialize_tools
@@ -187,7 +187,7 @@ class FraudScenarioRunner:
         
         try:
             # Create context for the scenario
-            context = AutonomousInvestigationContext(
+            context = StructuredInvestigationContext(
                 entity_type=scenario['entity_type'],
                 entity_id=scenario['entity_id'],
                 investigation_id=f"investigation_{scenario['id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -249,7 +249,7 @@ class FraudScenarioRunner:
                 # Device-focused investigation
                 print(f"\n   🔧 Running Device Analysis Agent...")
                 device_start = time.time()
-                device_result = await autonomous_device_agent(state, config)
+                device_result = await structured_device_agent(state, config)
                 device_duration = int((time.time() - device_start) * 1000)
                 agent_results["device_analysis"] = device_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -259,7 +259,7 @@ class FraudScenarioRunner:
                 
                 print(f"\n   🌐 Running Network Analysis Agent...")
                 network_start = time.time()
-                network_result = await autonomous_network_agent(state, config)
+                network_result = await structured_network_agent(state, config)
                 network_duration = int((time.time() - network_start) * 1000)
                 agent_results["network_analysis"] = network_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -269,7 +269,7 @@ class FraudScenarioRunner:
                 
                 print(f"\n   📋 Running Logs Analysis Agent...")
                 logs_start = time.time()
-                logs_result = await autonomous_logs_agent(state, config)
+                logs_result = await structured_logs_agent(state, config)
                 logs_duration = int((time.time() - logs_start) * 1000)
                 agent_results["logs_analysis"] = logs_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -281,7 +281,7 @@ class FraudScenarioRunner:
                 # User-focused investigation
                 print(f"\n   📍 Running Location Analysis Agent...")
                 location_start = time.time()
-                location_result = await autonomous_location_agent(state, config)
+                location_result = await structured_location_agent(state, config)
                 location_duration = int((time.time() - location_start) * 1000)
                 agent_results["location_analysis"] = location_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -291,7 +291,7 @@ class FraudScenarioRunner:
                 
                 print(f"\n   📋 Running Logs Analysis Agent...")
                 logs_start = time.time()
-                logs_result = await autonomous_logs_agent(state, config)
+                logs_result = await structured_logs_agent(state, config)
                 logs_duration = int((time.time() - logs_start) * 1000)
                 agent_results["logs_analysis"] = logs_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -301,7 +301,7 @@ class FraudScenarioRunner:
                 
                 print(f"\n   🔧 Running Device Analysis Agent...")
                 device_start = time.time()
-                device_result = await autonomous_device_agent(state, config)
+                device_result = await structured_device_agent(state, config)
                 device_duration = int((time.time() - device_start) * 1000)
                 agent_results["device_analysis"] = device_result
                 self.agent_performance_metrics.append(AgentPerformanceMetrics(
@@ -312,7 +312,7 @@ class FraudScenarioRunner:
             # Always run risk assessment
             print(f"\n   ⚖️  Running Risk Assessment Agent...")
             risk_start = time.time()
-            risk_result = await autonomous_risk_agent(state, config)
+            risk_result = await structured_risk_agent(state, config)
             risk_duration = int((time.time() - risk_start) * 1000)
             agent_results["risk_assessment"] = risk_result
             self.agent_performance_metrics.append(AgentPerformanceMetrics(

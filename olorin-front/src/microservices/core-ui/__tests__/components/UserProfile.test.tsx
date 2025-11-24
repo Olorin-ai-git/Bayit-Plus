@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import React from 'react';
+=======
+>>>>>>> 001-modify-analyzer-method
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { UserProfile } from '../../components/UserProfile';
@@ -44,8 +47,13 @@ describe('UserProfile', () => {
   });
 
   it('renders nothing when not open', () => {
+<<<<<<< HEAD
     const { container } = render(<UserProfile {...defaultProps} isOpen={false} />);
     expect(container.firstChild).toBeNull();
+=======
+    render(<UserProfile {...defaultProps} isOpen={false} />);
+    expect(screen.queryByText('User Profile')).not.toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('renders user profile dialog when open', () => {
@@ -129,8 +137,14 @@ describe('UserProfile', () => {
 
     await waitFor(() => {
       expect(mockLogout).toHaveBeenCalledTimes(1);
+<<<<<<< HEAD
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
+=======
+    });
+    
+    expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('toggles notification settings', () => {
@@ -146,22 +160,45 @@ describe('UserProfile', () => {
       toggle.getAttribute('class')?.includes('bg-gray-200')
     );
 
+<<<<<<< HEAD
     if (emailToggle) {
       fireEvent.click(emailToggle);
       // Check that the toggle state changed
       expect(emailToggle).toBeInTheDocument();
+=======
+    // Assert toggle exists before interacting
+    expect(emailToggle).toBeDefined();
+    expect(emailToggle).toBeInTheDocument();
+    if (emailToggle) {
+      fireEvent.click(emailToggle);
+>>>>>>> 001-modify-analyzer-method
     }
   });
 
   it('closes dialog when clicking outside', () => {
     render(<UserProfile {...defaultProps} />);
 
+<<<<<<< HEAD
     // Click outside (on the backdrop)
     const backdrop = document.querySelector('.fixed.inset-0.bg-gray-500');
     if (backdrop) {
       fireEvent.click(backdrop);
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     }
+=======
+    // Click outside (on the backdrop) - use Testing Library query
+    const dialog = screen.getByRole('dialog');
+    // eslint-disable-next-line testing-library/no-node-access
+    const backdrop = dialog.parentElement?.querySelector('.fixed.inset-0.bg-gray-500');
+    
+    // Assert backdrop exists before interacting
+    expect(backdrop).toBeDefined();
+    expect(backdrop).toBeInTheDocument();
+    if (backdrop) {
+      fireEvent.click(backdrop);
+    }
+    expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('closes dialog when clicking X button', () => {

@@ -122,8 +122,24 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({
       sum + entry.accuracy, 0) / filteredHistory.length;
 
     // Find peak performance time
+<<<<<<< HEAD
     const bestPerformance = filteredHistory.reduce((best, entry) =>
       entry.successRate > best.successRate ? entry : best, filteredHistory[0]);
+=======
+    const firstEntry = filteredHistory[0];
+    if (!firstEntry) {
+      return {
+        averageSuccessRate: 0,
+        averageCompletionTime: 0,
+        averageAccuracy: 0,
+        peakPerformanceTime: 'N/A',
+        performanceTrend: 'stable' as const
+      };
+    }
+
+    const bestPerformance = filteredHistory.reduce((best, entry) =>
+      entry.successRate > best.successRate ? entry : best, firstEntry);
+>>>>>>> 001-modify-analyzer-method
 
     const peakPerformanceTime = new Date(bestPerformance.timestamp).toLocaleString();
 

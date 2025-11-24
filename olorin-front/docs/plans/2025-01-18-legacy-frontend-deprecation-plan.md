@@ -33,8 +33,13 @@ This document outlines a comprehensive plan to safely deprecate the legacy Mater
 
 3. **Services Layer** (8 service files):
    - `OlorinService.ts` (1,001 lines)
+<<<<<<< HEAD
    - `GAIAService.ts` (904 lines)
    - `AutonomousInvestigationClient.ts` (690 lines)
+=======
+   - `OlorinService.ts` (904 lines)
+   - `StructuredInvestigationClient.ts` (690 lines)
+>>>>>>> 001-modify-analyzer-method
    - API client services
 
 4. **Shared Utilities** (6 utility files):
@@ -104,7 +109,11 @@ The new architecture consists of 8 microservices in `src/microservices/`:
 **Major Files to Migrate:**
 - `InvestigationPage.tsx` (1,913 lines) → Break into 15-20 components
 - `Investigations.tsx` (734 lines) → Investigation listing and management
+<<<<<<< HEAD
 - `AutonomousInvestigationPanel.tsx` → Core investigation interface
+=======
+- `StructuredInvestigationPanel.tsx` → Core investigation interface
+>>>>>>> 001-modify-analyzer-method
 - `ManualInvestigationPanel.tsx` → Manual investigation tools
 
 **Service-Specific Tasks:**

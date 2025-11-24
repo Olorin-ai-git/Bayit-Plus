@@ -1,16 +1,15 @@
 """
 Investigation Completion - Results Processing Logic
-This module contains the results processing and completion logic for autonomous investigations.
+This module contains the results processing and completion logic for structured investigations.
 """
 import logging
 import re
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
-from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
+from app.service.logging.autonomous_investigation_logger import structured_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
-from app.router.handlers.websocket_handler import notify_websocket_connections
+from app.router.models.autonomous_investigation_models import StructuredInvestigationRequest
 from app.router.controllers.investigation_controller import update_investigation_status
 from app.service.logging import get_bridge_logger
 
@@ -20,13 +19,13 @@ logger = get_bridge_logger(__name__)
 async def _execute_results_processing_phase(
     investigation_id: str, 
     result: str, 
-    request: AutonomousInvestigationRequest
+    request: StructuredInvestigationRequest
 ):
     """Execute the results processing phase"""
     
     # Phase 4: Process REAL agent results
     # Always log phases for monitoring and testing
-    autonomous_investigation_logger.log_investigation_progress(
+    structured_investigation_logger.log_investigation_progress(
         investigation_id=investigation_id,
         progress_type="phase_progress",
         current_phase="results_processing",
@@ -41,14 +40,7 @@ async def _execute_results_processing_phase(
         "current_phase": "results_processing",
         "progress_percentage": 85.0
     })
-    
-    await notify_websocket_connections(investigation_id, {
-        "type": "phase_update",
-        "phase": "results_processing",
-        "progress": 85.0,
-        "description": "Processing REAL investigation findings from AI agents"
-    })
-    
+
     # Extract actual results from the agent execution
     investigation_result = result if result else ""
     final_risk_score = extract_risk_score_from_result(investigation_result)
@@ -62,7 +54,7 @@ async def _execute_results_processing_phase(
 async def _complete_investigation(
     investigation_id: str, 
     result: str, 
-    request: AutonomousInvestigationRequest
+    request: StructuredInvestigationRequest
 ):
     """Complete the investigation with final results"""
     
@@ -89,51 +81,61 @@ async def _complete_investigation(
     })
     
     # Always log completion for monitoring and testing
-    autonomous_investigation_logger.log_investigation_progress(
+    structured_investigation_logger.log_investigation_progress(
         investigation_id=investigation_id,
         progress_type="completed",
         current_phase="completion",
         completed_phases=["agent_initialization", "context_preparation", "agent_execution", "results_processing"],
         findings_summary={
-            "investigation_outcome": "REAL autonomous investigation completed",
+            "investigation_outcome": "REAL structured investigation completed",
             "agent_result_length": len(investigation_result),
             "execution_duration_ms": 0,  # Will be updated
             "real_llm_execution": True
         },
-        risk_score_progression=[final_risk_score],
+        risk_score_progression=[{"risk_score": final_risk_score}] if final_risk_score is not None else [],
         agent_status={"completion": "completed"},
         estimated_completion_time=None
     )
-    
-    await notify_websocket_connections(investigation_id, {
-        "type": "phase_update",
-        "phase": "completion",
-        "progress": 100.0,
-        "description": "REAL autonomous investigation completed successfully"
-    })
-    
+
     # Update final status with REAL results
+    # Structure findings_summary to match InvestigationResults schema:
+    # - risk_score: Optional[int] (0-100) - NO FALLBACKS, use None if not found
+    # - findings: List[Dict[str, Any]] (optional, defaults to empty list)
+    # - summary: Optional[str] (optional)
+    # - completed_at: Optional[datetime] (optional)
+    risk_score_int = int(final_risk_score) if final_risk_score is not None else None
+    if risk_score_int is not None:
+        risk_score_int = max(0, min(100, risk_score_int))  # Clamp to 0-100 range
+    
     update_investigation_status(investigation_id, {
         "status": "completed",
         "completion_time": datetime.now(timezone.utc).isoformat(),
         "findings_summary": {
-            "investigation_outcome": "REAL autonomous investigation completed",
-            "total_agents_used": 5,  # Device, Location, Network, Logs, Risk
-            "final_risk_score": final_risk_score,
-            "investigation_duration_ms": 0,  # Will be updated
-            "real_agent_execution": True,
-            "agent_result_summary": extract_investigation_summary(investigation_result)
+            "risk_score": risk_score_int,  # Required field for InvestigationResults
+            "findings": [
+                {
+                    "investigation_outcome": "REAL structured investigation completed",
+                    "total_agents_used": 5,  # Device, Location, Network, Logs, Risk
+                    "investigation_duration_ms": 0,  # Will be updated
+                    "real_agent_execution": True
+                }
+            ],
+            "summary": extract_investigation_summary(investigation_result),
+            "completed_at": datetime.now(timezone.utc).isoformat()
         }
     })
     
-    logger.info(f"Completed autonomous investigation: {investigation_id}")
+    logger.info(f"Completed structured investigation: {investigation_id}")
 
 
-def extract_risk_score_from_result(result: str) -> int:
-    """Extract risk score from agent result text"""
-    
+def extract_risk_score_from_result(result: str) -> Optional[int]:
+    """
+    Extract risk score from agent result text.
+    NO FALLBACKS - only returns real numeric scores found in the text.
+    Returns None if no explicit numeric score is found.
+    """
     if not result:
-        return 50  # Default medium risk
+        return None  # NO FALLBACK - return None if no result
     
     result_lower = result.lower()
     
@@ -150,18 +152,8 @@ def extract_risk_score_from_result(result: str) -> int:
         score = int(percentage_match.group(1))
         return min(100, max(0, score))
     
-    # Fallback to keyword-based scoring
-    if any(word in result_lower for word in ["high risk", "fraud", "suspicious", "alert"]):
-        return 85
-    elif any(word in result_lower for word in ["medium risk", "moderate", "caution"]):
-        return 65
-    elif any(word in result_lower for word in ["low risk", "minimal", "safe"]):
-        return 35
-    elif any(word in result_lower for word in ["no risk", "legitimate", "clean"]):
-        return 15
-    
-    # Default
-    return 50
+    # NO FALLBACKS - if no explicit numeric score found, return None
+    return None
 
 
 def extract_investigation_summary(result: str, max_length: int = 1000) -> str:
@@ -184,8 +176,12 @@ def extract_investigation_summary(result: str, max_length: int = 1000) -> str:
         return truncated + "..."
 
 
-def categorize_investigation_outcome(risk_score: int) -> str:
+def categorize_investigation_outcome(risk_score: Optional[int]) -> str:
     """Categorize investigation outcome based on risk score"""
+    
+    # Handle None risk_score
+    if risk_score is None:
+        return "unknown_risk"
     
     if risk_score >= 80:
         return "high_fraud_risk"

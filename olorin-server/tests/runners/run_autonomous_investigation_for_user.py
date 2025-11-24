@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run autonomous investigation for a specific user with real API calls."""
+"""Run structured investigation for a specific user with real API calls."""
 
 import asyncio
 import json
@@ -12,12 +12,12 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import aiohttp
-from app.service.agent.autonomous_agents import (
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_network_agent,
-    autonomous_risk_agent,
+from app.service.agent.structured_agents import (
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_network_agent,
+    structured_risk_agent,
 )
 from app.service.config import get_settings_for_env
 
@@ -26,7 +26,7 @@ from langchain_anthropic import ChatAnthropic
 
 
 class RealInvestigationRunner:
-    """Runner for real autonomous investigations with API tracking."""
+    """Runner for real structured investigations with API tracking."""
     
     def __init__(self):
         """Initialize with real API client."""
@@ -41,7 +41,7 @@ class RealInvestigationRunner:
         self.start_time = None
         
     async def run_investigation(self, entity_id: str) -> dict:
-        """Run real autonomous investigation.
+        """Run real structured investigation.
         
         Args:
             entity_id: User/entity to investigate
@@ -50,7 +50,7 @@ class RealInvestigationRunner:
             Investigation results with real API responses
         """
         self.start_time = time.time()
-        print(f"\n🔍 Starting REAL autonomous investigation for: {entity_id}")
+        print(f"\n🔍 Starting REAL structured investigation for: {entity_id}")
         print("="*60)
         
         # Create real investigation context
@@ -59,11 +59,11 @@ class RealInvestigationRunner:
         # Run each agent with real API calls
         results = {}
         agents = [
-            ("network", autonomous_network_agent),
-            ("device", autonomous_device_agent),
-            ("location", autonomous_location_agent),
-            ("logs", autonomous_logs_agent),
-            ("risk", autonomous_risk_agent),
+            ("network", structured_network_agent),
+            ("device", structured_device_agent),
+            ("location", structured_location_agent),
+            ("logs", structured_logs_agent),
+            ("risk", structured_risk_agent),
         ]
         
         for agent_name, agent in agents:
@@ -72,7 +72,7 @@ class RealInvestigationRunner:
             
             try:
                 # Real API call to Anthropic Claude
-                finding = await agent.autonomous_investigate(
+                finding = await agent.structured_investigate(
                     context=context,
                     config={"configurable": {"thread_id": f"{entity_id}-{agent_name}"}},
                     specific_objectives=None
@@ -129,7 +129,7 @@ class RealInvestigationRunner:
             "entity_id": entity_id,
             "entity_type": "user_id",
             "timestamp": datetime.now().isoformat(),
-            "investigation_type": "autonomous",
+            "investigation_type": "structured",
             "data_sources": {
                 "splunk": "enabled",
                 "database": "connected",

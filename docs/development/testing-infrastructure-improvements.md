@@ -12,7 +12,11 @@ This document summarizes the testing infrastructure improvements copied from the
 
 ### 1. Enhanced Testing Framework
 
+<<<<<<< HEAD
 #### Unified Test Runner (`scripts/testing/unified_autonomous_test_runner.py`)
+=======
+#### Unified Test Runner (`scripts/testing/unified_structured_test_runner.py`)
+>>>>>>> 001-modify-analyzer-method
 - **Features:**
   - Comprehensive test execution with multiple scenarios
   - Enhanced reporting in HTML, JSON, Markdown, and Terminal formats
@@ -23,7 +27,11 @@ This document summarizes the testing infrastructure improvements copied from the
   - Concurrent test execution with intelligent batching
 
 #### Journey Initialization Testing (`scripts/testing/test_journey_initialization.py`)
+<<<<<<< HEAD
 - **Purpose:** Tests autonomous investigation journey initialization
+=======
+- **Purpose:** Tests structured investigation journey initialization
+>>>>>>> 001-modify-analyzer-method
 - **Features:**
   - Context validation and setup verification
   - Agent initialization testing
@@ -123,7 +131,11 @@ python debug_agent_tools.py
 ### Running Unified Tests
 ```bash
 cd olorin-server
+<<<<<<< HEAD
 python scripts/testing/unified_autonomous_test_runner.py --scenario device_spoofing --html-report
+=======
+python scripts/testing/unified_structured_test_runner.py --scenario device_spoofing --html-report
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ### Cost Management Testing

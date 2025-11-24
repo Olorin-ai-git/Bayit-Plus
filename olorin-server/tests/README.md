@@ -1,8 +1,8 @@
-# Olorin Autonomous Investigation Test Infrastructure
+# Olorin Structured Investigation Test Infrastructure
 
 ## 🚀 NEW: Real API Test Infrastructure (NO MOCK DATA)
 
-This test infrastructure now includes comprehensive testing for the autonomous investigation system using **ONLY REAL API CALLS** - NO MOCK DATA.
+This test infrastructure now includes comprehensive testing for the structured investigation system using **ONLY REAL API CALLS** - NO MOCK DATA.
 
 ### Key Features of New Test Infrastructure
 
@@ -24,9 +24,9 @@ tests/
 ├── unit/
 │   └── service/
 │       └── agent/
-│           └── test_autonomous_agents.py  # NEW: Unit tests for agents
+│           └── test_structured_agents.py  # NEW: Unit tests for agents
 └── integration/
-    └── test_autonomous_investigation.py  # NEW: End-to-end integration tests
+    └── test_structured_investigation.py  # NEW: End-to-end integration tests
 ```
 
 ## Test Files Overview
@@ -182,14 +182,14 @@ python tests/run_tests.py --coverage
 # Run with cost tracking
 python tests/run_tests.py --track-costs --max-cost 5.0
 
-# Run unit tests for autonomous agents
+# Run unit tests for structured agents
 python tests/run_tests.py --unit
 
 # Run integration tests
 python tests/run_tests.py --integration
 
 # Run specific test file
-python tests/run_tests.py tests/unit/service/agent/test_autonomous_agents.py
+python tests/run_tests.py tests/unit/service/agent/test_structured_agents.py
 ```
 
 ### Individual Test Execution
@@ -224,14 +224,14 @@ pytest --cov --cov-report html --cov-report term
 ## Test Categories
 
 ### 🟢 **Unit Tests**
-- **NEW**: `test_autonomous_agents.py` - Real API tests for autonomous agents
+- **NEW**: `test_structured_agents.py` - Real API tests for structured agents
 - `run_vector_tests.py` - Vector search tool unit tests
 - `test_vector_search_simple.py` - Comprehensive vector search testing
 - `test_pdf_generation.py` - PDF generation with mock data
 - `app/test/unit/` - Official unit tests
 
 ### 🟡 **Integration Tests**
-- **NEW**: `test_autonomous_investigation.py` - E2E tests with real Anthropic API
+- **NEW**: `test_structured_investigation.py` - E2E tests with real Anthropic API
 - `test_investigation_workflow.py` - Full workflow integration
 - `test_location_api_integration.py` - Location API integration
 - `test_location_client_vector_search.py` - Client integration
@@ -249,7 +249,7 @@ All tests use mock data to ensure consistent and predictable results:
 
 ## Coverage Requirements
 
-- **NEW Target Coverage**: 87% for autonomous investigation system
+- **NEW Target Coverage**: 87% for structured investigation system
 - **Minimum Coverage**: 30% (configured in `tox.ini`)
 - **Target Coverage**: 50%+ for production readiness
 - **Exclusions**: External API tools, mock files, test files
@@ -339,13 +339,13 @@ When adding new tests:
 1. Place them in the appropriate category (unit/integration)
 2. Follow the naming convention: `test_*.py`
 3. Include docstrings explaining the test purpose
-4. **NEW**: Use only real API calls - no mocks for autonomous agent tests
+4. **NEW**: Use only real API calls - no mocks for structured agent tests
 5. **NEW**: Include cost tracking in tests using `api_cost_monitor`
 6. **NEW**: Add appropriate test markers (@pytest.mark.real_api, etc.)
 7. **NEW**: Document expected API costs in test docstrings
 8. **NEW**: Ensure tests handle API failures gracefully
 9. **NEW**: Validate natural response variation from real LLM
-10. **NEW**: Maintain 87% coverage threshold for autonomous system
+10. **NEW**: Maintain 87% coverage threshold for structured system
 11. Update this README if adding new test categories
 12. For PDF-related changes, test with `test_pdf_generation.py` first
 

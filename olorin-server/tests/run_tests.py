@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Test Runner for Olorin Autonomous Investigation System.
+Test Runner for Olorin Structured Investigation System.
 
 This script runs tests with real API calls and provides detailed reporting.
 NO MOCK DATA - All tests use real Anthropic API and real data.
@@ -217,7 +217,7 @@ class TestRunner:
 def main():
     """Main entry point for test runner."""
     parser = argparse.ArgumentParser(
-        description="Run Olorin autonomous investigation tests with real API calls"
+        description="Run Olorin structured investigation tests with real API calls"
     )
     
     # Test selection

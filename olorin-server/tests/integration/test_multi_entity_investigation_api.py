@@ -83,7 +83,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
         
         # Make request to start investigation
         response = client.post(
-            "/v1/autonomous/multi-entity/start",
+            "/v1/structured/multi-entity/start",
             json=sample_multi_entity_request
         )
         
@@ -124,14 +124,14 @@ class TestMultiEntityInvestigationAPIEndpoints:
             "entities": [{"entity_id": "USER_123", "entity_type": "user"}]  # Only 1 entity
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=invalid_request_1)
+        response = client.post("/v1/structured/multi-entity/start", json=invalid_request_1)
         assert response.status_code == 422  # Validation error
         
         # Test with too many entities (maximum 10 allowed)
         entities = [{"entity_id": f"entity_{i}", "entity_type": "user"} for i in range(11)]
         invalid_request_2 = {"entities": entities}
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=invalid_request_2)
+        response = client.post("/v1/structured/multi-entity/start", json=invalid_request_2)
         assert response.status_code == 422  # Validation error
         
         # Test with invalid priority
@@ -143,7 +143,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
             "priority": "invalid_priority"
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=invalid_request_3)
+        response = client.post("/v1/structured/multi-entity/start", json=invalid_request_3)
         assert response.status_code == 422  # Validation error
         
         # Test with invalid entity type
@@ -154,19 +154,19 @@ class TestMultiEntityInvestigationAPIEndpoints:
             ]
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=invalid_request_4)
+        response = client.post("/v1/structured/multi-entity/start", json=invalid_request_4)
         assert response.status_code == 400  # Bad request (will fail during orchestrator processing)
     
     def test_get_multi_entity_investigation_status_endpoint(self, client, sample_multi_entity_request):
         """Test getting multi-entity investigation status via API"""
         
         # First start an investigation
-        start_response = client.post("/v1/autonomous/multi-entity/start", json=sample_multi_entity_request)
+        start_response = client.post("/v1/structured/multi-entity/start", json=sample_multi_entity_request)
         assert start_response.status_code == 200
         investigation_id = start_response.json()["investigation_id"]
         
         # Get status
-        status_response = client.get(f"/v1/autonomous/multi-entity/{investigation_id}/status")
+        status_response = client.get(f"/v1/structured/multi-entity/{investigation_id}/status")
         
         if status_response.status_code == 200:
             # Investigation is still active
@@ -192,7 +192,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
     def test_get_multi_entity_investigation_status_not_found(self, client):
         """Test getting status for non-existent investigation"""
         
-        response = client.get("/v1/autonomous/multi-entity/non_existent_id/status")
+        response = client.get("/v1/structured/multi-entity/non_existent_id/status")
         
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
@@ -200,7 +200,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
     def test_get_multi_entity_investigation_results_endpoint(self, client):
         """Test getting multi-entity investigation results (Phase 2.2 placeholder)"""
         
-        response = client.get("/v1/autonomous/multi-entity/test_id/results")
+        response = client.get("/v1/structured/multi-entity/test_id/results")
         
         # Should return 501 Not Implemented for Phase 2.1
         assert response.status_code == 501
@@ -219,7 +219,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
         ]
         
         response = client.put(
-            "/v1/autonomous/multi-entity/test_id/relationships",
+            "/v1/structured/multi-entity/test_id/relationships",
             json=relationships
         )
         
@@ -230,7 +230,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
     def test_get_enhanced_entity_types_endpoint(self, client):
         """Test getting enhanced entity types"""
         
-        response = client.get("/v1/autonomous/entities/types/enhanced")
+        response = client.get("/v1/structured/entities/types/enhanced")
         
         assert response.status_code == 200
         data = response.json()
@@ -263,7 +263,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
     def test_get_multi_entity_metrics_endpoint(self, client):
         """Test getting multi-entity orchestrator metrics"""
         
-        response = client.get("/v1/autonomous/multi-entity/metrics")
+        response = client.get("/v1/structured/multi-entity/metrics")
         
         assert response.status_code == 200
         data = response.json()
@@ -289,7 +289,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
     def test_health_check_with_multi_entity_features(self, client):
         """Test health check endpoint includes multi-entity features"""
         
-        response = client.get("/v1/autonomous/health")
+        response = client.get("/v1/structured/health")
         
         assert response.status_code == 200
         data = response.json()
@@ -328,7 +328,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
             "boolean_logic": "USER_123 AND TXN_456"
         }
         
-        response = await async_client.post("/v1/autonomous/multi-entity/start", json=valid_request)
+        response = await async_client.post("/v1/structured/multi-entity/start", json=valid_request)
         assert response.status_code == 200
         
         # Test relationship strength validation
@@ -347,7 +347,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
             ]
         }
         
-        response = await async_client.post("/v1/autonomous/multi-entity/start", json=invalid_strength_request)
+        response = await async_client.post("/v1/structured/multi-entity/start", json=invalid_strength_request)
         assert response.status_code == 422  # Validation error
     
     def test_entity_relationship_enum_values(self, client):
@@ -378,7 +378,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
                 ]
             }
             
-            response = client.post("/v1/autonomous/multi-entity/start", json=request)
+            response = client.post("/v1/structured/multi-entity/start", json=request)
             assert response.status_code == 200, f"Failed for relationship type: {relationship_type}"
     
     def test_investigation_scope_validation(self, client):
@@ -404,7 +404,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
                 "investigation_scope": scope
             }
             
-            response = client.post("/v1/autonomous/multi-entity/start", json=request)
+            response = client.post("/v1/structured/multi-entity/start", json=request)
             assert response.status_code == 200, f"Failed for scope: {scope}"
     
     def test_boolean_logic_parameter(self, client):
@@ -430,7 +430,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
                 "boolean_logic": expression
             }
             
-            response = client.post("/v1/autonomous/multi-entity/start", json=request)
+            response = client.post("/v1/structured/multi-entity/start", json=request)
             assert response.status_code == 200, f"Failed for boolean logic: {expression}"
             
             data = response.json()
@@ -453,7 +453,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
             }
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=request_with_metadata)
+        response = client.post("/v1/structured/multi-entity/start", json=request_with_metadata)
         assert response.status_code == 200
         
         # Metadata should be preserved in the investigation context
@@ -478,7 +478,7 @@ class TestMultiEntityInvestigationAPIEndpoints:
         
         # Start all investigations concurrently
         tasks = [
-            async_client.post("/v1/autonomous/multi-entity/start", json=req)
+            async_client.post("/v1/structured/multi-entity/start", json=req)
             for req in requests
         ]
         
@@ -509,7 +509,7 @@ class TestMultiEntityInvestigationErrorHandling:
         
         # Send malformed JSON
         response = client.post(
-            "/v1/autonomous/multi-entity/start",
+            "/v1/structured/multi-entity/start",
             data='{"entities": [{"entity_id": "USER_123", "entity_type": "user"',  # Missing closing braces
             headers={"Content-Type": "application/json"}
         )
@@ -524,7 +524,7 @@ class TestMultiEntityInvestigationErrorHandling:
             "boolean_logic": "A AND B"
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=request_missing_entities)
+        response = client.post("/v1/structured/multi-entity/start", json=request_missing_entities)
         assert response.status_code == 422
     
     def test_empty_entities_list(self, client):
@@ -534,7 +534,7 @@ class TestMultiEntityInvestigationErrorHandling:
             "entities": []
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=request_empty_entities)
+        response = client.post("/v1/structured/multi-entity/start", json=request_empty_entities)
         assert response.status_code == 422  # Should fail min_items validation
     
     def test_invalid_relationship_references(self, client):
@@ -554,7 +554,7 @@ class TestMultiEntityInvestigationErrorHandling:
             ]
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=request_invalid_relationship)
+        response = client.post("/v1/structured/multi-entity/start", json=request_invalid_relationship)
         assert response.status_code == 400  # Bad request from orchestrator validation
     
     @patch('app.service.agent.multi_entity.investigation_orchestrator.MultiEntityInvestigationOrchestrator.start_multi_entity_investigation')
@@ -571,7 +571,7 @@ class TestMultiEntityInvestigationErrorHandling:
             ]
         }
         
-        response = client.post("/v1/autonomous/multi-entity/start", json=valid_request)
+        response = client.post("/v1/structured/multi-entity/start", json=valid_request)
         assert response.status_code == 400
         assert "Failed to start investigation" in response.json()["detail"]
 

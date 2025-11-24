@@ -146,7 +146,7 @@ Extended environment configuration:
 #### **Integration Points**
 - ✅ Used by `InvestigationApiService` for API calls
 - ✅ Used by `EnhancedInvestigationWebSocket` for connections
-- ✅ Consistent with existing MCP, autonomous, and settings services
+- ✅ Consistent with existing MCP, structured, and settings services
 
 ---
 

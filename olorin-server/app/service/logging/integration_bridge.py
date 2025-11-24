@@ -160,7 +160,11 @@ class UnifiedLoggingBridge:
             
         root.addHandler(handler)
         root.setLevel(level)
-        
+
+        # Set LangGraph internal logging to DEBUG level to reduce noise
+        langgraph_logger = logging.getLogger('langgraph')
+        langgraph_logger.setLevel(logging.DEBUG)
+
         # Also update all existing loggers to respect the new level
         self._update_existing_loggers(level)
     

@@ -29,7 +29,7 @@ risk assessment.
 
 **Plugin Purpose:** OLORIN (Generative AI Investigation Assistant) Web Plugin
 provides an intelligent fraud investigation platform that combines manual
-investigation tools with autonomous AI-powered analysis.
+investigation tools with structured AI-powered analysis.
 
 **Target User Audience:** Fraud analysts, security investigators, risk
 assessment teams, and compliance officers.
@@ -40,7 +40,7 @@ assessment teams, and compliance officers.
 
 - **Manual Mode**: Traditional step-by-step investigation control with detailed
   analysis
-- **Autonomous Mode**: AI-powered automatic investigation with real-time
+- **Structured Mode**: AI-powered automatic investigation with real-time
   progress tracking
 
 ### 🤖 **AI-Powered Analysis**
@@ -52,7 +52,7 @@ assessment teams, and compliance officers.
 - **Location Agent**: Analyzes geographical patterns and location anomalies
 - **Risk Assessment**: Calculates comprehensive risk scores
 
-### ⚡ **Autonomous Investigation Features**
+### ⚡ **Structured Investigation Features**
 
 - **Parallel Execution**: Run all agents simultaneously for faster results
 - **Sequential Execution**: Step-by-step analysis with agent dependencies
@@ -175,11 +175,11 @@ Learn more about
 - **[Frontend Polling Specification](./FRONTEND_POLLING_SPECIFICATION.md)** - Complete polling implementation spec (27KB, 1002 lines)
 - **[Polling API Examples](./POLLING_API_EXAMPLES.md)** - Polling API usage examples (11KB, 417 lines)
 - **[Polling Implementation Summary](./POLLING_SPECIFICATION_IMPLEMENTATION_SUMMARY.md)** - Implementation status and details (8.2KB, 239 lines)
-- **[WebSocket Autonomous Mode Guide](./websocket-autonomous-mode-guide.md)** - WebSocket implementation guide (20KB, 758 lines)
+- **[WebSocket Structured Mode Guide](./websocket-structured-mode-guide.md)** - WebSocket implementation guide (20KB, 758 lines)
 
 ### **🤖 Investigation & Analysis**
-- **[Autonomous Investigation Technical Guide](./AUTONOMOUS_INVESTIGATION_TECHNICAL_GUIDE.md)** - Technical implementation details (17KB, 709 lines)
-- **[Autonomous Investigation Demo](./autonomous-investigation-demo.md)** - Demo and usage examples (6.8KB, 265 lines)
+- **[Structured Investigation Technical Guide](./AUTONOMOUS_INVESTIGATION_TECHNICAL_GUIDE.md)** - Technical implementation details (17KB, 709 lines)
+- **[Structured Investigation Demo](./structured-investigation-demo.md)** - Demo and usage examples (6.8KB, 265 lines)
 - **[OLORIN User Manual](./OLORIN_User_Manual.md)** - End-user documentation (18KB, 729 lines)
 
 ### **🎨 UI & Design**

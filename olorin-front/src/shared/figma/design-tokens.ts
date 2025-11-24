@@ -16,7 +16,11 @@ export interface DesignTokens {
 export interface ColorTokens {
   primary: ColorScale;
   secondary: ColorScale;
+<<<<<<< HEAD
   autonomous: ColorScale;
+=======
+  structured: ColorScale;
+>>>>>>> 001-modify-analyzer-method
   manual: ColorScale;
   analytics: ColorScale;
   rag: ColorScale;
@@ -192,7 +196,11 @@ export const designTokens: DesignTokens = {
       900: '#18181b',
       950: '#09090b',
     },
+<<<<<<< HEAD
     autonomous: {
+=======
+    structured: {
+>>>>>>> 001-modify-analyzer-method
       50: '#f0fdf4',
       100: '#dcfce7',
       200: '#bbf7d0',
@@ -388,12 +396,21 @@ export const designTokens: DesignTokens = {
  * Service-specific theme configurations
  */
 export const serviceThemes = {
+<<<<<<< HEAD
   autonomous: {
     primary: designTokens.colors.autonomous,
     cardClass: 'card-autonomous',
     buttonClass: 'btn-autonomous',
     textColor: 'text-autonomous-600',
     bgColor: 'bg-autonomous-50',
+=======
+  structured: {
+    primary: designTokens.colors.structured,
+    cardClass: 'card-structured',
+    buttonClass: 'btn-structured',
+    textColor: 'text-structured-600',
+    bgColor: 'bg-structured-50',
+>>>>>>> 001-modify-analyzer-method
   },
   manual: {
     primary: designTokens.colors.manual,

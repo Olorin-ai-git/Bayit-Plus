@@ -12,7 +12,7 @@ This roadmap outlines the complete implementation plan for the Olorin dual-frame
 ## Architecture Overview
 
 ### Current State
-- **LangGraph-based system**: Sophisticated autonomous investigation agents
+- **LangGraph-based system**: Sophisticated structured investigation agents
 - **Complex orchestration**: Multi-agent graphs with parallel/sequential execution
 - **Rich tooling**: 15+ specialized fraud detection tools
 - **WebSocket streaming**: Real-time investigation updates

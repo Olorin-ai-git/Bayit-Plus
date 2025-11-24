@@ -1,7 +1,7 @@
 """
-Tests for Autonomous Agent System
+Tests for Structured Agent System
 
-Comprehensive tests for autonomous investigation agents, context management,
+Comprehensive tests for structured investigation agents, context management,
 and LLM-driven tool selection behavior.
 """
 
@@ -12,16 +12,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from langchain_core.messages import AIMessage, HumanMessage
 
-from app.service.agent.autonomous_agents import (
-    AutonomousInvestigationAgent,
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
+from app.service.agent.structured_agents import (
+    StructuredInvestigationAgent,
+    structured_network_agent,
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_risk_agent,
 )
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     DomainFindings,
     EntityType,
     InvestigationPhase,
@@ -30,12 +30,12 @@ from app.service.agent.autonomous_context import (
 from app.service.agent.recursion_guard import RecursionGuard
 
 
-class TestAutonomousInvestigationContext:
-    """Test the autonomous investigation context system"""
+class TestStructuredInvestigationContext:
+    """Test the structured investigation context system"""
     
     def test_context_initialization(self):
         """Test context is properly initialized"""
-        context = AutonomousInvestigationContext(
+        context = StructuredInvestigationContext(
             investigation_id="test_inv_001",
             entity_id="user_123",
             entity_type=EntityType.USER_ID,
@@ -52,7 +52,7 @@ class TestAutonomousInvestigationContext:
     
     def test_domain_findings_recording(self):
         """Test recording domain findings"""
-        context = AutonomousInvestigationContext(
+        context = StructuredInvestigationContext(
             investigation_id="test_inv_001",
             entity_id="user_123", 
             entity_type=EntityType.USER_ID
@@ -75,8 +75,8 @@ class TestAutonomousInvestigationContext:
         assert context.progress.overall_risk_score > 0  # Should be updated
     
     def test_llm_context_generation(self):
-        """Test LLM context generation for autonomous decision making"""
-        context = AutonomousInvestigationContext(
+        """Test LLM context generation for structured decision making"""
+        context = StructuredInvestigationContext(
             investigation_id="test_inv_001",
             entity_id="user_123",
             entity_type=EntityType.USER_ID
@@ -108,7 +108,7 @@ class TestAutonomousInvestigationContext:
     
     def test_anomaly_detection(self):
         """Test anomaly detection and correlation"""
-        context = AutonomousInvestigationContext(
+        context = StructuredInvestigationContext(
             investigation_id="test_inv_001",
             entity_id="user_123",
             entity_type=EntityType.USER_ID
@@ -206,8 +206,8 @@ class TestRecursionGuard:
         assert not guard.enter_node("test_001", "thread_001", "test_node")
 
 
-class TestAutonomousInvestigationAgent:
-    """Test the autonomous investigation agent"""
+class TestStructuredInvestigationAgent:
+    """Test the structured investigation agent"""
     
     @pytest.fixture
     def mock_tools(self):
@@ -223,9 +223,9 @@ class TestAutonomousInvestigationAgent:
         return [mock_tool1, mock_tool2]
     
     @pytest.fixture
-    def autonomous_context(self):
-        """Create test autonomous context"""
-        return AutonomousInvestigationContext(
+    def structured_context(self):
+        """Create test structured context"""
+        return StructuredInvestigationContext(
             investigation_id="test_inv_001",
             entity_id="user_123",
             entity_type=EntityType.USER_ID,
@@ -233,17 +233,17 @@ class TestAutonomousInvestigationAgent:
         )
     
     def test_agent_initialization(self, mock_tools):
-        """Test autonomous agent initialization"""
-        agent = AutonomousInvestigationAgent("network", mock_tools)
+        """Test structured agent initialization"""
+        agent = StructuredInvestigationAgent("network", mock_tools)
         
         assert agent.domain == "network"
         assert len(agent.tools) == 2
         assert "test_tool_1" in agent.tool_map
         assert "test_tool_2" in agent.tool_map
     
-    @patch('app.service.agent.autonomous_agents.autonomous_llm')
-    async def test_autonomous_investigation(self, mock_llm, mock_tools, autonomous_context):
-        """Test autonomous investigation execution"""
+    @patch('app.service.agent.structured_agents.structured_llm')
+    async def test_structured_investigation(self, mock_llm, mock_tools, structured_context):
+        """Test structured investigation execution"""
         # Mock LLM response
         mock_response = MagicMock()
         mock_response.content = json.dumps({
@@ -257,11 +257,11 @@ class TestAutonomousInvestigationAgent:
         
         mock_llm.bind_tools.return_value.ainvoke = AsyncMock(return_value=mock_response)
         
-        agent = AutonomousInvestigationAgent("network", mock_tools)
+        agent = StructuredInvestigationAgent("network", mock_tools)
         config = {"configurable": {"agent_context": {}, "thread_id": "test_thread"}}
         
-        findings = await agent.autonomous_investigate(
-            context=autonomous_context,
+        findings = await agent.structured_investigate(
+            context=structured_context,
             config=config,
             specific_objectives=["Test network analysis"]
         )
@@ -275,8 +275,8 @@ class TestAutonomousInvestigationAgent:
     
     def test_default_domain_objectives(self, mock_tools):
         """Test default domain objectives generation"""
-        network_agent = AutonomousInvestigationAgent("network", mock_tools)
-        device_agent = AutonomousInvestigationAgent("device", mock_tools)
+        network_agent = StructuredInvestigationAgent("network", mock_tools)
+        device_agent = StructuredInvestigationAgent("device", mock_tools)
         
         network_objectives = network_agent._get_default_domain_objectives()
         device_objectives = device_agent._get_default_domain_objectives()
@@ -288,8 +288,8 @@ class TestAutonomousInvestigationAgent:
         assert any("device" in obj.lower() for obj in device_objectives)
 
 
-class TestAutonomousDomainAgents:
-    """Test autonomous domain agent functions"""
+class TestStructuredDomainAgents:
+    """Test structured domain agent functions"""
     
     @pytest.fixture
     def mock_config(self):
@@ -314,14 +314,14 @@ class TestAutonomousDomainAgents:
         }
         return mock_context
     
-    @patch('app.service.agent.autonomous_agents._get_or_create_autonomous_context')
-    @patch('app.service.agent.autonomous_agents.websocket_manager')
+    @patch('app.service.agent.structured_agents._get_or_create_structured_context')
+    @patch('app.service.agent.structured_agents.websocket_manager')
     @patch('app.service.agent.agent.tools')
-    async def test_autonomous_network_agent(self, mock_tools, mock_ws_manager, mock_get_context, mock_config, mock_agent_context):
-        """Test autonomous network agent execution"""
+    async def test_structured_network_agent(self, mock_tools, mock_ws_manager, mock_get_context, mock_config, mock_agent_context):
+        """Test structured network agent execution"""
         # Setup mocks
         mock_config["configurable"]["agent_context"] = mock_agent_context
-        mock_context = MagicMock(spec=AutonomousInvestigationContext)
+        mock_context = MagicMock(spec=StructuredInvestigationContext)
         mock_get_context.return_value = mock_context
         
         mock_findings = DomainFindings(
@@ -334,34 +334,34 @@ class TestAutonomousDomainAgents:
             timestamp=datetime.now()
         )
         
-        # Mock the autonomous investigation
-        with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent_class:
+        # Mock the structured investigation
+        with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent_class:
             mock_agent_instance = AsyncMock()
-            mock_agent_instance.autonomous_investigate.return_value = mock_findings
+            mock_agent_instance.structured_investigate.return_value = mock_findings
             mock_agent_class.return_value = mock_agent_instance
             
-            # Execute autonomous network agent
-            result = await autonomous_network_agent({}, mock_config)
+            # Execute structured network agent
+            result = await structured_network_agent({}, mock_config)
             
             # Verify result structure
             assert "messages" in result
             message_content = json.loads(result["messages"][0].content)
             assert "risk_assessment" in message_content
-            assert message_content["risk_assessment"]["autonomous_execution"] is True
+            assert message_content["risk_assessment"]["structured_execution"] is True
             assert message_content["risk_assessment"]["domain"] == "network"
             
             # Verify context interactions
             mock_context.start_domain_analysis.assert_called_with("network")
             mock_context.record_domain_findings.assert_called_with("network", mock_findings)
     
-    @patch('app.service.agent.autonomous_agents._get_or_create_autonomous_context')
-    @patch('app.service.agent.autonomous_agents.websocket_manager')
+    @patch('app.service.agent.structured_agents._get_or_create_structured_context')
+    @patch('app.service.agent.structured_agents.websocket_manager')
     @patch('app.service.agent.agent.tools')
-    async def test_autonomous_device_agent(self, mock_tools, mock_ws_manager, mock_get_context, mock_config, mock_agent_context):
-        """Test autonomous device agent execution"""
+    async def test_structured_device_agent(self, mock_tools, mock_ws_manager, mock_get_context, mock_config, mock_agent_context):
+        """Test structured device agent execution"""
         # Setup mocks
         mock_config["configurable"]["agent_context"] = mock_agent_context
-        mock_context = MagicMock(spec=AutonomousInvestigationContext)
+        mock_context = MagicMock(spec=StructuredInvestigationContext)
         mock_get_context.return_value = mock_context
         
         mock_findings = DomainFindings(
@@ -374,42 +374,42 @@ class TestAutonomousDomainAgents:
             timestamp=datetime.now()
         )
         
-        with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent_class:
+        with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent_class:
             mock_agent_instance = AsyncMock()
-            mock_agent_instance.autonomous_investigate.return_value = mock_findings
+            mock_agent_instance.structured_investigate.return_value = mock_findings
             mock_agent_class.return_value = mock_agent_instance
             
-            # Execute autonomous device agent
-            result = await autonomous_device_agent({}, mock_config)
+            # Execute structured device agent
+            result = await structured_device_agent({}, mock_config)
             
             # Verify result structure
             assert "messages" in result
             message_content = json.loads(result["messages"][0].content)
             assert "llm_assessment" in message_content  # Device agent uses llm_assessment
-            assert message_content["llm_assessment"]["autonomous_execution"] is True
+            assert message_content["llm_assessment"]["structured_execution"] is True
             assert message_content["llm_assessment"]["domain"] == "device"
     
     async def test_agent_error_handling(self, mock_config):
-        """Test error handling in autonomous agents"""
+        """Test error handling in structured agents"""
         # Test with missing investigation context
         mock_config["configurable"]["agent_context"] = None
         
-        result = await autonomous_network_agent({}, mock_config)
+        result = await structured_network_agent({}, mock_config)
         
         # Should return error response
         assert "messages" in result
         message_content = json.loads(result["messages"][0].content)
         assert "error" in message_content
-        assert message_content["autonomous_execution"] is False
+        assert message_content["structured_execution"] is False
 
 
 class TestIntegration:
-    """Integration tests for autonomous mode"""
+    """Integration tests for structured mode"""
     
-    @patch('app.service.agent.autonomous_agents.autonomous_llm')
-    @patch('app.service.agent.autonomous_agents.websocket_manager')
-    async def test_end_to_end_autonomous_investigation(self, mock_ws_manager, mock_llm):
-        """Test complete autonomous investigation flow"""
+    @patch('app.service.agent.structured_agents.structured_llm')
+    @patch('app.service.agent.structured_agents.websocket_manager')
+    async def test_end_to_end_structured_investigation(self, mock_ws_manager, mock_llm):
+        """Test complete structured investigation flow"""
         # Mock LLM responses for different domains
         mock_responses = {
             "network": {
@@ -434,7 +434,7 @@ class TestIntegration:
             return mock_response
         
         # Create investigation context
-        context = AutonomousInvestigationContext(
+        context = StructuredInvestigationContext(
             investigation_id="integration_test_001",
             entity_id="user_test_123",
             entity_type=EntityType.USER_ID,

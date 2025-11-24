@@ -1,5 +1,5 @@
 """
-End-to-End Integration Tests for Autonomous Investigation System.
+End-to-End Integration Tests for Structured Investigation System.
 
 NO MOCK DATA - All tests use real API calls and real-time responses.
 Tests complete investigation workflows, WebSocket communications, and performance.
@@ -18,17 +18,17 @@ import pytest_asyncio
 from langchain_core.runnables.config import RunnableConfig
 from sqlalchemy.orm import Session
 
-from app.service.agent.autonomous_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
+from app.service.agent.structured_agents import (
+    structured_network_agent,
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_risk_agent,
     cleanup_investigation_context,
     get_investigation_contexts,
 )
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     EntityType,
     InvestigationPhase as InvestigationStatus,  # Using InvestigationPhase as status
     DomainFindings,
@@ -52,8 +52,8 @@ from tests.fixtures.real_investigation_scenarios import (
 logger = logging.getLogger(__name__)
 
 
-class TestAutonomousInvestigationE2E:
-    """End-to-end tests for complete autonomous investigations."""
+class TestStructuredInvestigationE2E:
+    """End-to-end tests for complete structured investigations."""
     
     @pytest.mark.asyncio
     async def test_full_investigation_lifecycle(
@@ -94,7 +94,7 @@ class TestAutonomousInvestigationE2E:
             )
             
             start_time = time.time()
-            network_findings = await autonomous_network_agent(
+            network_findings = await structured_network_agent(
                 real_investigation_context,
                 config
             )
@@ -121,7 +121,7 @@ class TestAutonomousInvestigationE2E:
             )
             
             start_time = time.time()
-            device_findings = await autonomous_device_agent(
+            device_findings = await structured_device_agent(
                 real_investigation_context,
                 config
             )
@@ -148,7 +148,7 @@ class TestAutonomousInvestigationE2E:
             )
             
             start_time = time.time()
-            location_findings = await autonomous_location_agent(
+            location_findings = await structured_location_agent(
                 real_investigation_context,
                 config
             )
@@ -175,7 +175,7 @@ class TestAutonomousInvestigationE2E:
             )
             
             start_time = time.time()
-            logs_findings = await autonomous_logs_agent(
+            logs_findings = await structured_logs_agent(
                 real_investigation_context,
                 config
             )
@@ -210,7 +210,7 @@ class TestAutonomousInvestigationE2E:
             }
             
             start_time = time.time()
-            final_risk = await autonomous_risk_agent(
+            final_risk = await structured_risk_agent(
                 real_investigation_context,
                 config
             )
@@ -344,7 +344,7 @@ class TestAutonomousInvestigationE2E:
                 db_session.commit()
                 
                 # Create context
-                context = AutonomousInvestigationContext(
+                context = StructuredInvestigationContext(
                     investigation_id=investigation.id,
                     entity_id=entity.entity_id,
                     entity_type=EntityType.USER_ID,
@@ -368,7 +368,7 @@ class TestAutonomousInvestigationE2E:
                 metadata={"test_type": "concurrent_investigations"},
                 configurable={"agent_context": ctx}
             )
-            findings = await autonomous_network_agent(ctx, investigation_config)
+            findings = await structured_network_agent(ctx, investigation_config)
             api_cost_monitor.track_call(1500, 1200)
             return findings
         
@@ -446,7 +446,7 @@ class TestAutonomousInvestigationE2E:
         
         # Network analysis
         await send_webhook("domain_analysis_started", {"domain": "network"})
-        network_findings = await autonomous_network_agent(real_investigation_context, config)
+        network_findings = await structured_network_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1800, 1500)
         await send_webhook("domain_analysis_completed", {
             "domain": "network",
@@ -456,7 +456,7 @@ class TestAutonomousInvestigationE2E:
         
         # Device analysis
         await send_webhook("domain_analysis_started", {"domain": "device"})
-        device_findings = await autonomous_device_agent(real_investigation_context, config)
+        device_findings = await structured_device_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1700, 1400)
         await send_webhook("domain_analysis_completed", {
             "domain": "device",
@@ -471,7 +471,7 @@ class TestAutonomousInvestigationE2E:
         }
         
         await send_webhook("risk_aggregation_started", {})
-        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        final_risk = await structured_risk_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2000, 1800)
         await send_webhook("risk_aggregation_completed", {
             "final_risk_score": final_risk.risk_score,
@@ -520,7 +520,7 @@ class TestAutonomousInvestigationE2E:
         real_investigation_context.user_data = {}
         
         try:
-            findings = await autonomous_network_agent(real_investigation_context, config)
+            findings = await structured_network_agent(real_investigation_context, config)
             api_cost_monitor.track_call(1500, 1200)
             
             # Should still return findings even with missing data
@@ -540,7 +540,7 @@ class TestAutonomousInvestigationE2E:
         
         async def slow_investigation():
             await asyncio.sleep(0.1)  # Simulate quick response
-            return await autonomous_device_agent(real_investigation_context, config)
+            return await structured_device_agent(real_investigation_context, config)
         
         try:
             # Set a reasonable timeout
@@ -627,7 +627,7 @@ class TestScenarioBasedInvestigations:
             db_session.commit()
             
             # Create context with ATO patterns
-            context = AutonomousInvestigationContext(
+            context = StructuredInvestigationContext(
                 investigation_id=investigation.id,
                 entity_id=entity.entity_id,
                 entity_type=EntityType.USER_ID,
@@ -646,20 +646,20 @@ class TestScenarioBasedInvestigations:
         findings = {}
         
         # Network analysis should detect IP anomalies
-        findings["network"] = await autonomous_network_agent(context, config)
+        findings["network"] = await structured_network_agent(context, config)
         api_cost_monitor.track_call(2000, 1800)
         
         # Device analysis should detect fingerprint changes
-        findings["device"] = await autonomous_device_agent(context, config)
+        findings["device"] = await structured_device_agent(context, config)
         api_cost_monitor.track_call(1900, 1700)
         
         # Logs analysis should detect failed login attempts
-        findings["logs"] = await autonomous_logs_agent(context, config)
+        findings["logs"] = await structured_logs_agent(context, config)
         api_cost_monitor.track_call(2100, 1900)
         
         # Risk aggregation
         context.domain_findings = findings
-        final_risk = await autonomous_risk_agent(context, config)
+        final_risk = await structured_risk_agent(context, config)
         api_cost_monitor.track_call(2200, 2000)
         
         # Extract risk assessment from final_risk (dict format)
@@ -751,18 +751,18 @@ class TestScenarioBasedInvestigations:
         findings = {}
         
         # Each agent should detect different ML indicators
-        findings["network"] = await autonomous_network_agent(real_investigation_context, config)
+        findings["network"] = await structured_network_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2100, 1900)
         
-        findings["logs"] = await autonomous_logs_agent(real_investigation_context, config)
+        findings["logs"] = await structured_logs_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2000, 1800)
         
-        findings["location"] = await autonomous_location_agent(real_investigation_context, config)
+        findings["location"] = await structured_location_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1900, 1700)
         
         # Risk aggregation for ML
         real_investigation_context.domain_findings = findings
-        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        final_risk = await structured_risk_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2300, 2100)
         
         # Validate ML detection
@@ -811,10 +811,10 @@ class TestPerformanceAndReliability:
         
         # Measure each agent's performance
         agents_to_test = [
-            ("network", autonomous_network_agent, (1800, 1500)),
-            ("device", autonomous_device_agent, (1700, 1400)),
-            ("location", autonomous_location_agent, (1600, 1300)),
-            ("logs", autonomous_logs_agent, (1900, 1600)),
+            ("network", structured_network_agent, (1800, 1500)),
+            ("device", structured_device_agent, (1700, 1400)),
+            ("location", structured_location_agent, (1600, 1300)),
+            ("logs", structured_logs_agent, (1900, 1600)),
         ]
         
         for agent_name, agent_func, (input_tokens, output_tokens) in agents_to_test:
@@ -871,7 +871,7 @@ class TestPerformanceAndReliability:
         async def attempt_investigation():
             nonlocal retry_count
             try:
-                findings = await autonomous_network_agent(real_investigation_context, config)
+                findings = await structured_network_agent(real_investigation_context, config)
                 api_cost_monitor.track_call(1500, 1200)
                 return findings
             except Exception as e:
@@ -894,7 +894,7 @@ class TestPerformanceAndReliability:
         # Test handling of rate limits (simulated by rapid requests)
         rapid_results = []
         for i in range(3):
-            result = await autonomous_device_agent(real_investigation_context, config)
+            result = await structured_device_agent(real_investigation_context, config)
             api_cost_monitor.track_call(1400, 1100)
             rapid_results.append(result)
             
@@ -922,7 +922,7 @@ class TestPerformanceAndReliability:
         # Run same investigation multiple times
         results = []
         for i in range(3):
-            findings = await autonomous_network_agent(real_investigation_context, config)
+            findings = await structured_network_agent(real_investigation_context, config)
             api_cost_monitor.track_call(1500, 1200)
             results.append(findings)
             
@@ -968,7 +968,7 @@ class TestPerformanceAndReliability:
         )
         
         # Strategy 1: Selective agent execution based on initial risk
-        initial_findings = await autonomous_network_agent(real_investigation_context, config)
+        initial_findings = await structured_network_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1500, 1200)
         
         total_cost = api_cost_monitor.get_summary()["total_cost"]
@@ -976,10 +976,10 @@ class TestPerformanceAndReliability:
         # Only run additional agents if initial risk is high
         if initial_findings.risk_score > 0.5:
             # High risk - run full investigation
-            device_findings = await autonomous_device_agent(real_investigation_context, config)
+            device_findings = await structured_device_agent(real_investigation_context, config)
             api_cost_monitor.track_call(1400, 1100)
             
-            logs_findings = await autonomous_logs_agent(real_investigation_context, config)
+            logs_findings = await structured_logs_agent(real_investigation_context, config)
             api_cost_monitor.track_call(1600, 1300)
             
             investigation_type = "full"
@@ -1003,7 +1003,7 @@ class TestPerformanceAndReliability:
 
 
 class TestWebToolsIntegration:
-    """Test web tools integration with PII sanitization in autonomous investigations."""
+    """Test web tools integration with PII sanitization in structured investigations."""
     
     @pytest.mark.asyncio
     async def test_web_search_domain_reputation(
@@ -1029,7 +1029,7 @@ class TestWebToolsIntegration:
         )
         
         # Run network agent which should use web search for domain reputation
-        findings = await autonomous_network_agent(real_investigation_context, config)
+        findings = await structured_network_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2000, 1800)  # Web search may use more tokens
         
         # Validate findings structure
@@ -1091,7 +1091,7 @@ class TestWebToolsIntegration:
         )
         
         # Run location agent which should use web scraping for business verification
-        findings = await autonomous_location_agent(real_investigation_context, config)
+        findings = await structured_location_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1900, 1700)  # Web scraping may use more tokens
         
         # Validate findings structure
@@ -1160,7 +1160,7 @@ class TestWebToolsIntegration:
         )
         
         # Run logs agent which should use web search for threat pattern research
-        findings = await autonomous_logs_agent(real_investigation_context, config)
+        findings = await structured_logs_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2100, 1900)  # Threat research may use more tokens
         
         # Validate findings structure
@@ -1251,7 +1251,7 @@ class TestWebToolsIntegration:
         )
         
         # Run risk agent which should use web search for recent fraud trends
-        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        final_risk = await structured_risk_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2300, 2100)  # Risk analysis with web research uses more tokens
         
         # Validate final risk assessment structure
@@ -1324,19 +1324,19 @@ class TestWebToolsIntegration:
         )
         
         # Phase 1: Network analysis with web domain research
-        network_findings = await autonomous_network_agent(real_investigation_context, config)
+        network_findings = await structured_network_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2000, 1800)
         
         # Phase 2: Device analysis with web security research 
-        device_findings = await autonomous_device_agent(real_investigation_context, config)
+        device_findings = await structured_device_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1800, 1600)
         
         # Phase 3: Location analysis with web business verification
-        location_findings = await autonomous_location_agent(real_investigation_context, config)
+        location_findings = await structured_location_agent(real_investigation_context, config)
         api_cost_monitor.track_call(1900, 1700)
         
         # Phase 4: Logs analysis with web threat research
-        logs_findings = await autonomous_logs_agent(real_investigation_context, config)
+        logs_findings = await structured_logs_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2100, 1900)
         
         # Phase 5: Risk aggregation with web fraud trend analysis
@@ -1347,7 +1347,7 @@ class TestWebToolsIntegration:
             "logs": logs_findings
         }
         
-        final_risk = await autonomous_risk_agent(real_investigation_context, config)
+        final_risk = await structured_risk_agent(real_investigation_context, config)
         api_cost_monitor.track_call(2400, 2200)
         
         # Validate all phases completed successfully

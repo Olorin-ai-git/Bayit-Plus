@@ -1,7 +1,7 @@
 """
 LLM-Tool Interaction Demo
 
-This test demonstrates the EXACT flow of how the AutonomousInvestigationAgent:
+This test demonstrates the EXACT flow of how the StructuredInvestigationAgent:
 1. Calls the LLM with a fraud investigation prompt
 2. LLM decides to use SplunkQueryTool based on the context 
 3. Shows the exact tool call logs when LLM makes the decision
@@ -28,8 +28,8 @@ from langchain_core.runnables.config import RunnableConfig
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langchain_anthropic import ChatAnthropic
 
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     EntityType,
     DomainFindings,
 )
@@ -159,7 +159,7 @@ async def main():
     
     # 1. Create investigation context with real fraud scenario
     print("📋 Step 1: Creating Investigation Context")
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id="fraud_demo_001",
         entity_id="user_1736943425_5678", 
         entity_type=EntityType.USER_ID,
@@ -225,7 +225,7 @@ Please begin your investigation by querying Splunk for relevant data.
 You are an intelligent fraud investigation agent specializing in BEHAVIORAL ANALYSIS.
 
 Your capabilities:
-- Autonomous tool selection based on investigation needs
+- Structured tool selection based on investigation needs
 - Advanced reasoning and pattern recognition  
 - Cross-domain correlation and analysis
 - Evidence-based risk assessment

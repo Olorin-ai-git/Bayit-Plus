@@ -70,24 +70,31 @@ class BaseThreatIntelligenceTool(EnhancedToolBase):
         **kwargs
     ):
         """Initialize threat intelligence tool."""
-        super().__init__(
+        # Create ToolConfig object for EnhancedToolBase
+        from ..enhanced_tool_base import ToolConfig
+
+        tool_config = ToolConfig(
             name=name,
-            description=description,
             validation_level=ValidationLevel.COMPREHENSIVE,
             retry_strategy=RetryStrategy.EXPONENTIAL_BACKOFF,
-            cache_enabled=config.enable_caching,
-            cache_ttl=config.cache_ttl_seconds,
-            timeout=config.timeout_seconds,
-            **kwargs
+            timeout_seconds=config.timeout_seconds,
+            max_retries=config.max_retries,
+            cache_ttl_seconds=config.cache_ttl_seconds
         )
-        
+
+        super().__init__(config=tool_config)
+
+        # Store name and description for LangChain compatibility
+        self.name = name
+        self.description = description
+
         self.config = config
         self._api_key: Optional[str] = None
         self._rate_limiter = RateLimiter(
             max_requests=config.rate_limit_requests,
             window_seconds=config.rate_limit_window
         )
-        
+
         # Initialize enhanced caching system
         self._cache = self._initialize_cache()
     

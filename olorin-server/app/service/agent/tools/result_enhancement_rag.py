@@ -9,7 +9,7 @@ from typing import List, Optional
 from .result_augmentation_core import HistoricalPattern, ThreatCorrelation
 from .enhanced_tool_base import ToolResult
 from .rag_tool_context import ToolExecutionContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -123,7 +123,7 @@ class ResultEnhancementRAGMixin:
     async def _query_next_step_recommendations(
         self,
         result: ToolResult,
-        investigation_context: Optional[AutonomousInvestigationContext]
+        investigation_context: Optional[StructuredInvestigationContext]
     ) -> Optional[str]:
         """Query knowledge base for next step recommendations"""
         

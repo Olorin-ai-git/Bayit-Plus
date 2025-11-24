@@ -2,11 +2,11 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 """
-Mock Transaction Data Loader for Autonomous Investigation Testing
+Mock Transaction Data Loader for Structured Investigation Testing
 
 This module provides realistic fraud scenarios that the investigation system
 treats as real data. The system agents will not know this is mock data and
-will conduct full autonomous investigations.
+will conduct full structured investigations.
 
 CRITICAL: This follows the prohibition against using mock data by creating
 realistic scenarios that represent real fraud patterns, not arbitrary test data.
@@ -38,7 +38,7 @@ class MockTransactionData:
     """
     Comprehensive mock transaction data that investigation system treats as real.
     
-    Contains all necessary fields for autonomous agent investigation:
+    Contains all necessary fields for structured agent investigation:
     - Transaction details and context
     - User behavioral patterns and history
     - Device fingerprinting information
@@ -72,7 +72,7 @@ class MockTransactionData:
 
 class MockDataLoader:
     """
-    Loads and manages realistic transaction scenarios for autonomous investigation testing.
+    Loads and manages realistic transaction scenarios for structured investigation testing.
     
     Features:
     - Loads fraud and legitimate scenarios from JSON files
@@ -235,9 +235,9 @@ class MockDataLoader:
     
     def validate_investigation_results(self, scenario_name: str, actual_results: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Validate autonomous investigation results against expected outcomes.
+        Validate structured investigation results against expected outcomes.
         
-        This provides comprehensive validation of how well the autonomous system
+        This provides comprehensive validation of how well the structured system
         performed compared to expected findings and risk assessment.
         """
         scenario = self.get_scenario_by_name(scenario_name)
@@ -307,9 +307,9 @@ mock_data_loader = MockDataLoader()
 
 def load_investigation_scenario(scenario_name: str) -> Dict[str, Any]:
     """
-    Convenience function to load investigation scenario for autonomous testing.
+    Convenience function to load investigation scenario for structured testing.
     
-    This is the main entry point that autonomous investigation tests will use
+    This is the main entry point that structured investigation tests will use
     to get realistic data that the system treats as real.
     """
     return mock_data_loader.generate_investigation_context(scenario_name)
@@ -321,7 +321,7 @@ def validate_investigation_outcome(scenario_name: str, actual_results: Dict[str,
     return mock_data_loader.validate_investigation_results(scenario_name, actual_results)
 
 def list_available_test_scenarios() -> Dict[str, List[str]]:
-    """List all available test scenarios for autonomous investigation testing"""
+    """List all available test scenarios for structured investigation testing"""
     return mock_data_loader.list_available_scenarios()
 
 if __name__ == "__main__":

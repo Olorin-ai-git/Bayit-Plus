@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { EventBusManager, eventBus } from '@shared/events/eventBus';
 import './globals';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
+=======
+import { EventBusManager, eventBus } from '@shared/events/UnifiedEventBus';
+import './globals';
+import { ErrorBoundary } from '@shared/components/ErrorBoundary';
+>>>>>>> 001-modify-analyzer-method
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
 interface ShellState {

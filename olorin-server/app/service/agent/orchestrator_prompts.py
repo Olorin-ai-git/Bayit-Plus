@@ -1,5 +1,9 @@
 """
+<<<<<<< HEAD
 Orchestrator Prompt System for Autonomous Investigation
+=======
+Orchestrator Prompt System for Structured Investigation
+>>>>>>> 001-modify-analyzer-method
 
 Main orchestration prompt system providing bulletproof AI decision-making
 with sophisticated, context-aware prompt generation.

@@ -48,6 +48,7 @@ class InvestigationCreate(BaseModel):
     id: str  # investigationId
     entity_id: str
     entity_type: str = "user_id"  # Default to user_id for backward compatibility
+    agent_tools_mapping: Optional[Dict[str, List[str]]] = None  # Custom agent→tools mapping
 
 
 class InvestigationUpdate(BaseModel):
@@ -59,21 +60,36 @@ class InvestigationUpdate(BaseModel):
 
 class InvestigationOut(BaseModel):
     id: str
-    entity_id: str
-    entity_type: str
+    entity_id: Optional[str] = None  # NO FALLBACKS - extracted from settings_json.entities[0].entityValue
+    entity_type: Optional[str] = None  # NO FALLBACKS - extracted from settings_json.entities[0].entityType
     user_id: Optional[str] = None  # Deprecated, kept for backward compatibility
     status: str = "IN_PROGRESS"
     policy_comments: str = ""
     investigator_comments: str = ""
-    overall_risk_score: float = 0.0
-    device_llm_thoughts: str = ""
-    location_llm_thoughts: str = ""
-    network_llm_thoughts: str = ""
-    logs_llm_thoughts: str = ""
-    device_risk_score: float = 0.0
-    location_risk_score: float = 0.0
-    network_risk_score: float = 0.0
-    logs_risk_score: float = 0.0
+    # NO FALLBACKS - use None if data doesn't exist
+    overall_risk_score: Optional[float] = None
+    device_llm_thoughts: Optional[str] = None
+    location_llm_thoughts: Optional[str] = None
+    network_llm_thoughts: Optional[str] = None
+    logs_llm_thoughts: Optional[str] = None
+    device_risk_score: Optional[float] = None
+    location_risk_score: Optional[float] = None
+    network_risk_score: Optional[float] = None
+    logs_risk_score: Optional[float] = None
+    
+    # Frontend-required fields (extracted from settings_json and progress_json)
+    name: Optional[str] = None  # Extracted from settings_json.name
+    owner: Optional[str] = None  # Mapped from user_id or entity_id
+    created: Optional[str] = None  # From InvestigationState.created_at
+    updated: Optional[str] = None  # From InvestigationState.updated_at
+    sources: Optional[List[str]] = None  # Extracted from settings_json.sources
+    tools: Optional[List[str]] = None  # Extracted from settings_json.tools
+    progress: Optional[float] = None  # Extracted from progress_json.percent_complete
+    phases: Optional[List[Dict[str, Any]]] = None  # Extracted from progress_json
+    riskModel: Optional[str] = None  # Extracted from settings_json.risk_model
+    description: Optional[str] = None  # Extracted from settings_json.description
+    from_date: Optional[str] = None  # Extracted from settings_json.time_range.from
+    to_date: Optional[str] = None  # Extracted from settings_json.time_range.to
     
     # Raw data processing fields
     raw_data_processed: bool = False

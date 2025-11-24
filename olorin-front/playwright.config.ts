@@ -8,11 +8,19 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
+<<<<<<< HEAD
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+=======
+  forbidOnly: !!process.env['CI'],
+  /* Retry on CI only */
+  retries: process.env['CI'] ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: process.env['CI'] ? 1 : undefined,
+>>>>>>> 001-modify-analyzer-method
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
@@ -159,7 +167,11 @@ export default defineConfig({
   webServer: {
     command: 'npm run start',
     url: 'http://localhost:3000',
+<<<<<<< HEAD
     reuseExistingServer: !process.env.CI,
+=======
+    reuseExistingServer: !process.env['CI'],
+>>>>>>> 001-modify-analyzer-method
     timeout: 120 * 1000,
   },
 
@@ -170,9 +182,15 @@ export default defineConfig({
   metadata: {
     'Test Suite': 'Olorin Microservices E2E Tests',
     'Version': '1.0.0',
+<<<<<<< HEAD
     'Environment': process.env.NODE_ENV || 'development',
     'Services': [
       'autonomous-investigation',
+=======
+    'Environment': process.env['NODE_ENV'] || 'development',
+    'Services': [
+      'structured-investigation',
+>>>>>>> 001-modify-analyzer-method
       'manual-investigation',
       'agent-analytics',
       'rag-intelligence',
@@ -183,13 +201,23 @@ export default defineConfig({
     ]
   },
 
+<<<<<<< HEAD
   /* Test timeout */
   timeout: 30 * 1000,
+=======
+  /* Test timeout - increased for investigation state management tests */
+  timeout: 5 * 60 * 1000, // 5 minutes
+>>>>>>> 001-modify-analyzer-method
   expect: {
     /* Maximum time expect() should wait for the condition to be met. */
     timeout: 5000,
     /* Threshold for visual comparisons */
     toHaveScreenshot: { threshold: 0.98, animations: 'disabled' },
+<<<<<<< HEAD
     toMatchScreenshot: { threshold: 0.98, animations: 'disabled' },
   },
 });
+=======
+  },
+});
+>>>>>>> 001-modify-analyzer-method

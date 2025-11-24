@@ -58,7 +58,11 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   const [isAnimating, setIsAnimating] = useState(true);
 
   useEffect(() => {
+<<<<<<< HEAD
     if (!isAnimating) return;
+=======
+    if (!isAnimating) return undefined;
+>>>>>>> 001-modify-analyzer-method
 
     if (displayedCharCount < text.length) {
       const timer = setTimeout(() => {
@@ -68,6 +72,10 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
       return () => clearTimeout(timer);
     } else {
       setIsAnimating(false);
+<<<<<<< HEAD
+=======
+      return undefined;
+>>>>>>> 001-modify-analyzer-method
     }
   }, [displayedCharCount, text.length, charSpeed, isAnimating]);
 
@@ -115,7 +123,10 @@ const AgentLogMonitor: React.FC<AgentLogMonitorProps> = ({
   agentId
 }) => {
   const logContainerRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD
   const sidebarRef = useRef<HTMLDivElement>(null);
+=======
+>>>>>>> 001-modify-analyzer-method
   const [copied, setCopied] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [visibleLogs, setVisibleLogs] = useState<LogEntry[]>([]);
@@ -130,16 +141,32 @@ const AgentLogMonitor: React.FC<AgentLogMonitorProps> = ({
 
   // Animate log display when not paused
   useEffect(() => {
+<<<<<<< HEAD
     if (isPaused) return;
 
     if (logs.length > currentLogIndex) {
       const timer = setTimeout(() => {
         setVisibleLogs(prev => [...prev, logs[currentLogIndex]]);
         setCurrentLogIndex(prev => prev + 1);
+=======
+    if (isPaused) return undefined;
+
+    if (logs.length > currentLogIndex) {
+      const timer = setTimeout(() => {
+        const nextLog = logs[currentLogIndex];
+        if (nextLog) {
+          setVisibleLogs(prev => [...prev, nextLog]);
+          setCurrentLogIndex(prev => prev + 1);
+        }
+>>>>>>> 001-modify-analyzer-method
       }, 100);
 
       return () => clearTimeout(timer);
     }
+<<<<<<< HEAD
+=======
+    return undefined;
+>>>>>>> 001-modify-analyzer-method
   }, [logs, currentLogIndex, isPaused]);
 
   // Reset when logs are cleared
@@ -298,7 +325,11 @@ const AgentLogMonitor: React.FC<AgentLogMonitorProps> = ({
             <span>{logs.length} entries</span>
             <span className="flex items-center space-x-1">
               <Clock className="w-3 h-3" />
+<<<<<<< HEAD
               <span>{logs.length > 0 ? new Date(logs[logs.length - 1].timestamp).toLocaleTimeString() : '--:--:--'}</span>
+=======
+              <span>{logs.length > 0 && logs[logs.length - 1] ? new Date(logs[logs.length - 1].timestamp).toLocaleTimeString() : '--:--:--'}</span>
+>>>>>>> 001-modify-analyzer-method
             </span>
             {isPaused && (
               <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">
@@ -320,7 +351,11 @@ const AgentLogMonitor: React.FC<AgentLogMonitorProps> = ({
       {/* Log content */}
       <div
         ref={logContainerRef}
+<<<<<<< HEAD
         className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3 bg-gray-900 text-green-400 font-mono text-sm"
+=======
+        className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-3 bg-gray-900 text-corporate-success font-mono text-sm"
+>>>>>>> 001-modify-analyzer-method
       >
         {visibleLogs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">

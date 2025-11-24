@@ -8,6 +8,7 @@
 ## Execution Flow (main)
 ```
 1. Parse user description from Input
+<<<<<<< HEAD
    ’ Extracted: migration of manual investigation UI from legacy to microservices with backend integration
 2. Extract key concepts from description
    ’ Identify: manual investigation UI, legacy monolithic system, microservices architecture, backend integration
@@ -20,12 +21,30 @@
 6. Identify Key Entities (investigation data models and agent interactions)
 7. Run Review Checklist
    ’ Verify all investigation features are covered
+=======
+   ï¿½ Extracted: migration of manual investigation UI from legacy to microservices with backend integration
+2. Extract key concepts from description
+   ï¿½ Identify: manual investigation UI, legacy monolithic system, microservices architecture, backend integration
+3. For each unclear aspect:
+   ï¿½ Mark with clarification needs for specific investigation features and workflows
+4. Fill User Scenarios & Testing section
+   ï¿½ Define comprehensive user flows for investigation operations
+5. Generate Functional Requirements
+   ï¿½ Each requirement must support investigation workflows and backend integration
+6. Identify Key Entities (investigation data models and agent interactions)
+7. Run Review Checklist
+   ï¿½ Verify all investigation features are covered
+>>>>>>> 001-modify-analyzer-method
 8. Return: SUCCESS (spec ready for planning)
 ```
 
 ---
 
+<<<<<<< HEAD
 ## ¡ Quick Guidelines
+=======
+## ï¿½ Quick Guidelines
+>>>>>>> 001-modify-analyzer-method
 -  Focus on WHAT users need and WHY
 - L Avoid HOW to implement (no tech stack, APIs, code structure)
 - =e Written for business stakeholders, not developers
@@ -78,7 +97,11 @@ As a fraud investigator, I need to conduct manual investigations using a modern,
 - **FR-006**: System MUST enable collaboration through comments, notes, and shared insights
 - **FR-007**: System MUST provide evidence collection and management capabilities
 - **FR-008**: System MUST generate comprehensive investigation reports in multiple formats
+<<<<<<< HEAD
 - **FR-009**: System MUST support both autonomous and manual investigation modes
+=======
+- **FR-009**: System MUST support both structured and manual investigation modes
+>>>>>>> 001-modify-analyzer-method
 - **FR-010**: System MUST integrate with existing authentication and authorization systems
 - **FR-011**: System MUST maintain investigation history and audit trails
 - **FR-012**: System MUST support investigation templates and workflows

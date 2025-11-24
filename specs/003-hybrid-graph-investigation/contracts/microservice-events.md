@@ -6,7 +6,11 @@
 
 ## Overview
 
+<<<<<<< HEAD
 This document defines the event-driven communication contracts between the autonomous-investigation microservice and other microservices in the Olorin frontend architecture. These contracts ensure loose coupling and reliable inter-service communication.
+=======
+This document defines the event-driven communication contracts between the structured-investigation microservice and other microservices in the Olorin frontend architecture. These contracts ensure loose coupling and reliable inter-service communication.
+>>>>>>> 001-modify-analyzer-method
 
 ## Event Bus Architecture
 
@@ -50,7 +54,11 @@ interface MicroserviceEvent<T = unknown> {
 
 type MicroserviceName =
   | "investigation"              // Main investigation service (port 3001)
+<<<<<<< HEAD
   | "autonomous-investigation"   // This microservice
+=======
+  | "structured-investigation"   // This microservice
+>>>>>>> 001-modify-analyzer-method
   | "agent-analytics"           // Agent monitoring (port 3002)
   | "rag-intelligence"          // RAG analytics (port 3003)
   | "visualization"             // Charts/graphs (port 3004)
@@ -89,7 +97,11 @@ interface InvestigationStartedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics, reporting
+=======
+// Subscribers: structured-investigation, agent-analytics, reporting
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Investigation Progress Update
@@ -108,7 +120,11 @@ interface InvestigationProgressEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics
+=======
+// Subscribers: structured-investigation, agent-analytics
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Investigation Status Changed
@@ -124,7 +140,11 @@ interface InvestigationStatusChangedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: investigation, autonomous-investigation
+=======
+// Publishers: investigation, structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: agent-analytics, reporting
 ```
 
@@ -149,7 +169,11 @@ interface InvestigationCompletedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics, reporting
+=======
+// Subscribers: structured-investigation, agent-analytics, reporting
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ### Evidence Events
@@ -175,7 +199,11 @@ interface EvidenceFoundEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, visualization, reporting
+=======
+// Subscribers: structured-investigation, visualization, reporting
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Evidence Verified
@@ -192,7 +220,11 @@ interface EvidenceVerifiedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: autonomous-investigation
+=======
+// Publishers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: investigation, agent-analytics, reporting
 ```
 
@@ -215,7 +247,11 @@ interface RiskScoreUpdatedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, visualization, agent-analytics
+=======
+// Subscribers: structured-investigation, visualization, agent-analytics
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Risk Threshold Breached
@@ -234,7 +270,11 @@ interface RiskThresholdBreachedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics, reporting
+=======
+// Subscribers: structured-investigation, agent-analytics, reporting
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ## Agent and Tool Events
@@ -256,7 +296,11 @@ interface AgentStatusChangedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics
+=======
+// Subscribers: structured-investigation, agent-analytics
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Tool Execution Started
@@ -275,7 +319,11 @@ interface ToolExecutionStartedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics
+=======
+// Subscribers: structured-investigation, agent-analytics
+>>>>>>> 001-modify-analyzer-method
 ```
 
 #### Tool Execution Completed
@@ -300,7 +348,11 @@ interface ToolExecutionCompletedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, agent-analytics
+=======
+// Subscribers: structured-investigation, agent-analytics
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ## Timeline Events
@@ -328,7 +380,11 @@ interface TimelineEventCreatedEvent {
 }
 
 // Publishers: investigation
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation, visualization, reporting
+=======
+// Subscribers: structured-investigation, visualization, reporting
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ## UI Interaction Events
@@ -347,7 +403,11 @@ interface InvestigationViewChangedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: autonomous-investigation
+=======
+// Publishers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: agent-analytics
 ```
 
@@ -366,7 +426,11 @@ interface GraphNodeSelectedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: autonomous-investigation
+=======
+// Publishers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: visualization, agent-analytics
 ```
 
@@ -384,7 +448,11 @@ interface TimelineFilterAppliedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: autonomous-investigation
+=======
+// Publishers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: agent-analytics
 ```
 
@@ -405,7 +473,11 @@ interface ExportRequestedEvent {
   };
 }
 
+<<<<<<< HEAD
 // Publishers: autonomous-investigation
+=======
+// Publishers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 // Subscribers: reporting
 ```
 
@@ -426,7 +498,11 @@ interface ExportCompletedEvent {
 }
 
 // Publishers: reporting
+<<<<<<< HEAD
 // Subscribers: autonomous-investigation
+=======
+// Subscribers: structured-investigation
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ## System Health Events
@@ -481,8 +557,13 @@ interface PerformanceAlertEvent {
 ### Service-Specific Subscriptions
 
 ```typescript
+<<<<<<< HEAD
 // autonomous-investigation microservice subscriptions
 const autonomousInvestigationSubscriptions = [
+=======
+// structured-investigation microservice subscriptions
+const structuredInvestigationSubscriptions = [
+>>>>>>> 001-modify-analyzer-method
   "investigation.started",
   "investigation.progress",
   "investigation.completed",

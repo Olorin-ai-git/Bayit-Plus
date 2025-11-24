@@ -132,8 +132,14 @@ export const UsageTracking: React.FC<UsageTrackingProps> = ({
   const usageStats = useMemo(() => {
     const totalCalls = filteredAgents.reduce((sum, agent) => sum + agent.usage.totalCalls, 0);
     const averageCallsPerDay = filteredAgents.reduce((sum, agent) => sum + agent.usage.averageCallsPerDay, 0) / filteredAgents.length;
+<<<<<<< HEAD
     const peakHour = usagePatterns.reduce((max, pattern) =>
       pattern.callCount > max.callCount ? pattern : max, usagePatterns[0])?.timeOfDay || 0;
+=======
+    const firstPattern = usagePatterns[0];
+    const peakHour = firstPattern ? usagePatterns.reduce((max, pattern) =>
+      pattern.callCount > max.callCount ? pattern : max, firstPattern)?.timeOfDay || 0 : 0;
+>>>>>>> 001-modify-analyzer-method
 
     return {
       totalCalls,

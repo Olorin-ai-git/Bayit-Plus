@@ -21,12 +21,21 @@ from app.service.agent.orchestration.state_schema import (
     _normalize_snowflake_data_type
 )
 from app.service.agent.orchestration.orchestrator_agent import orchestrator_node
+<<<<<<< HEAD
+=======
+from app.service.agent.orchestration.enhanced_tool_executor import EnhancedToolNode
+>>>>>>> 001-modify-analyzer-method
 # Import domain agents directly to avoid circular imports via domain_agents/__init__.py
 from app.service.agent.orchestration.domain_agents.network_agent import network_agent_node
 from app.service.agent.orchestration.domain_agents.device_agent import device_agent_node
 from app.service.agent.orchestration.domain_agents.location_agent import location_agent_node
 from app.service.agent.orchestration.domain_agents.logs_agent import logs_agent_node
 from app.service.agent.orchestration.domain_agents.authentication_agent import authentication_agent_node
+<<<<<<< HEAD
+=======
+from app.service.agent.orchestration.domain_agents.web_agent import web_agent_node
+from app.service.agent.orchestration.domain_agents.merchant_agent import merchant_agent_node
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestration.domain_agents.risk_agent import risk_agent_node
 
 logger = get_bridge_logger(__name__)
@@ -65,11 +74,84 @@ def get_all_tools() -> List[Any]:
             ]
         )
         
+<<<<<<< HEAD
         # CRITICAL: Ensure Snowflake is the FIRST tool
+=======
+        # CRITICAL: Check DATABASE_PROVIDER FIRST before creating any database tool
+        from pathlib import Path
+        from dotenv import load_dotenv
+        import os
+        
+        # Ensure .env file is loaded (in case it wasn't loaded yet)
+        env_path = Path(__file__).parent.parent.parent.parent.parent / '.env'
+        if env_path.exists():
+            load_dotenv(env_path, override=True)
+            logger.debug(f"Loaded .env file from {env_path}")
+        
+        database_provider = os.getenv('DATABASE_PROVIDER', '').lower()
+        use_postgres = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
+        
+        logger.debug(f"Clean graph builder database config: DATABASE_PROVIDER={database_provider}, USE_POSTGRES={use_postgres}")
+        
+        # Initialize has_database_query before conditional blocks to avoid UnboundLocalError
+        has_database_query = any(t.name == "database_query" for t in tools)
+        
+        # Only create DatabaseQueryTool if DATABASE_PROVIDER is explicitly PostgreSQL
+        # NEVER use DatabaseQueryTool when DATABASE_PROVIDER=snowflake
+        if database_provider == 'snowflake':
+            logger.info("✅ DATABASE_PROVIDER=snowflake - Skipping DatabaseQueryTool, will use SnowflakeQueryTool instead")
+        elif database_provider == 'postgresql' or use_postgres:
+            # Only create DatabaseQueryTool for PostgreSQL
+            from app.service.agent.tools.database_tool import DatabaseQueryTool
+            
+            has_database_query = any(t.name == "database_query" for t in tools)
+            if not has_database_query:
+                database_connection_string = None
+                
+                # Build PostgreSQL connection string from config (read from .env)
+                postgres_host = os.getenv('POSTGRES_HOST') or os.getenv('DB_HOST')
+                postgres_port = os.getenv('POSTGRES_PORT') or os.getenv('DB_PORT', '5432')
+                postgres_database = os.getenv('POSTGRES_DATABASE') or os.getenv('POSTGRES_DB') or os.getenv('DB_NAME')
+                postgres_user = os.getenv('POSTGRES_USER') or os.getenv('DB_USER')
+                postgres_password = os.getenv('POSTGRES_PASSWORD') or os.getenv('DB_PASSWORD')
+                
+                logger.debug(f"PostgreSQL env vars: host={bool(postgres_host)}, port={postgres_port}, db={bool(postgres_database)}, user={bool(postgres_user)}, password={'***' if postgres_password else None}")
+                
+                if postgres_host and postgres_database and postgres_user and postgres_password:
+                    # Add gssencmode=disable to avoid GSSAPI errors on local connections
+                    database_connection_string = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}?gssencmode=disable"
+                    logger.info(f"✅ Built PostgreSQL connection string from .env config (host={postgres_host}, db={postgres_database}, user={postgres_user})")
+                else:
+                    missing = []
+                    if not postgres_host: missing.append('POSTGRES_HOST or DB_HOST')
+                    if not postgres_database: missing.append('POSTGRES_DATABASE/POSTGRES_DB/DB_NAME')
+                    if not postgres_user: missing.append('POSTGRES_USER or DB_USER')
+                    if not postgres_password: missing.append('POSTGRES_PASSWORD or DB_PASSWORD')
+                    logger.warning(f"⚠️ PostgreSQL config incomplete. Missing from .env: {', '.join(missing)}")
+            
+            # Fallback to direct PostgreSQL environment variables (NOT Snowflake)
+            if not database_connection_string:
+                database_connection_string = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL')
+                if database_connection_string:
+                    logger.info("✅ Using DATABASE_URL/POSTGRES_URL from .env")
+            
+            if database_connection_string:
+                try:
+                    database_tool = DatabaseQueryTool(connection_string=database_connection_string)
+                    tools.insert(0, database_tool)  # Add as first tool
+                    logger.info("✅ Added DatabaseQueryTool as PRIMARY tool (PostgreSQL only)")
+                except Exception as e:
+                    logger.warning(f"Could not add DatabaseQueryTool: {e}")
+            else:
+                logger.warning("⚠️ DatabaseQueryTool not available: No PostgreSQL connection string found")
+        
+        # CRITICAL: Ensure Snowflake is available (for backward compatibility)
+>>>>>>> 001-modify-analyzer-method
         has_snowflake = any(isinstance(t, SnowflakeQueryTool) for t in tools)
         if not has_snowflake:
             try:
                 snowflake_tool = SnowflakeQueryTool()
+<<<<<<< HEAD
                 tools.insert(0, snowflake_tool)
                 logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool")
             except Exception as e:
@@ -85,12 +167,49 @@ def get_all_tools() -> List[Any]:
         # Log tool categories for debugging
         threat_tools = len([t for t in tools if 'threat' in t.name.lower() or 'virus' in t.name.lower()])
         db_tools = len([t for t in tools if 'splunk' in t.name.lower() or 'sumo' in t.name.lower() or 'snowflake' in t.name.lower()])
+=======
+                # Add after database_query if it exists, otherwise as first
+                if has_database_query:
+                    tools.insert(1, snowflake_tool)
+                else:
+                    tools.insert(0, snowflake_tool)
+                logger.info("✅ Added SnowflakeQueryTool as fallback tool")
+            except Exception as e:
+                logger.error(f"Could not add Snowflake tool: {e}")
+        else:
+            # Move Snowflake after database_query if both exist
+            if has_database_query:
+                snowflake_tools = [t for t in tools if isinstance(t, SnowflakeQueryTool)]
+                other_tools = [t for t in tools if not isinstance(t, SnowflakeQueryTool)]
+                tools = other_tools[:1] + snowflake_tools + other_tools[1:]  # Keep database_query first
+        
+        logger.info(f"📦 Loaded {len(tools)} tools for investigation")
+        
+        # Log tool names for debugging (especially database tools)
+        tool_names = [t.name for t in tools]
+        database_tool_names = [name for name in tool_names if 'database' in name.lower() or 'snowflake' in name.lower() or 'query' in name.lower()]
+        
+        logger.info(f"  🔧 Database/Query Tools Available: {database_tool_names}")
+        
+        # Log tool categories for debugging
+        threat_tools = len([t for t in tools if 'threat' in t.name.lower() or 'virus' in t.name.lower()])
+        db_tools = len([t for t in tools if 'splunk' in t.name.lower() or 'sumo' in t.name.lower() or 'snowflake' in t.name.lower() or 'database' in t.name.lower()])
+>>>>>>> 001-modify-analyzer-method
         ml_tools = len([t for t in tools if 'ml' in t.name.lower() or 'anomaly' in t.name.lower()])
         
         logger.info(f"  - Threat Intelligence: {threat_tools} tools")
         logger.info(f"  - Database/SIEM: {db_tools} tools")
         logger.info(f"  - ML/AI: {ml_tools} tools")
         
+<<<<<<< HEAD
+=======
+        # CRITICAL: Verify database_query tool is available
+        if not any(t.name == "database_query" for t in tools):
+            logger.error("❌ CRITICAL: database_query tool is NOT available! LLM cannot query database!")
+        else:
+            logger.info("✅ database_query tool is available and will be bound to LLM")
+        
+>>>>>>> 001-modify-analyzer-method
         return tools
         
     except Exception as e:
@@ -113,7 +232,11 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
         State updates based on tool execution
     """
     import os
+<<<<<<< HEAD
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
+=======
+    is_test_mode = os.environ.get("TEST_MODE") == "demo"
+>>>>>>> 001-modify-analyzer-method
     
     messages = state.get("messages", [])
     tools_used = state.get("tools_used", []).copy()
@@ -148,11 +271,54 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                 tool_name = tool_message.name
                 content_raw = tool_message.content
                 content_length = len(str(content_raw)) if content_raw else 0
+<<<<<<< HEAD
                 content_preview = str(content_raw)[:150] if content_raw else 'Empty'
                 
                 logger.debug(f"[Step 4.3.1]     Tool name: {tool_name}")
                 logger.debug(f"[Step 4.3.1]     Content length: {content_length} characters")
                 logger.debug(f"[Step 4.3.1]     Content preview: {content_preview}...")
+=======
+                
+                # Summarize content instead of showing raw preview (especially for SQL queries)
+                if content_raw:
+                    if isinstance(content_raw, str):
+                        # Check if it looks like JSON with a query
+                        try:
+                            import json
+                            parsed = json.loads(content_raw)
+                            if isinstance(parsed, dict):
+                                if "query" in parsed:
+                                    content_summary = f"JSON with SQL query ({len(parsed.get('query', ''))} chars)"
+                                elif "results" in parsed:
+                                    results = parsed.get("results", [])
+                                    content_summary = f"JSON with {len(results)} results"
+                                else:
+                                    content_summary = f"JSON dict with {len(parsed)} keys"
+                            else:
+                                content_summary = f"JSON parsed ({type(parsed).__name__})"
+                        except (json.JSONDecodeError, Exception):
+                            # Not JSON - check if it looks like SQL
+                            if "SELECT" in content_raw.upper() or "FROM" in content_raw.upper():
+                                content_summary = f"SQL query ({content_length} chars)"
+                            else:
+                                content_summary = f"String content ({content_length} chars)"
+                    elif isinstance(content_raw, dict):
+                        if "query" in content_raw:
+                            content_summary = f"Dict with SQL query ({len(str(content_raw.get('query', '')))} chars)"
+                        elif "results" in content_raw:
+                            results = content_raw.get("results", [])
+                            content_summary = f"Dict with {len(results)} results"
+                        else:
+                            content_summary = f"Dict with {len(content_raw)} keys"
+                    else:
+                        content_summary = f"{type(content_raw).__name__} ({content_length} chars)"
+                else:
+                    content_summary = 'Empty'
+                
+                logger.debug(f"[Step 4.3.1]     Tool name: {tool_name}")
+                logger.debug(f"[Step 4.3.1]     Content length: {content_length} characters")
+                logger.debug(f"[Step 4.3.1]     Content summary: {content_summary}")
+>>>>>>> 001-modify-analyzer-method
                 
                 # Skip if already processed
                 if tool_name in tool_results:
@@ -194,9 +360,16 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                     parsed_result = content_raw
                 
                 # Step 4.3.2: Special Snowflake handling (inside the loop)
+<<<<<<< HEAD
                 if "snowflake" in tool_name.lower():
                     logger.debug(f"[Step 4.3.2] ❄️ SNOWFLAKE HANDLING - Processing Snowflake tool result")
                     logger.debug(f"[Step 4.3.2]   Snowflake tool detected: {tool_name}")
+=======
+                # Support both database_query (unified) and snowflake_query_tool (legacy)
+                if "snowflake" in tool_name.lower() or "database_query" in tool_name.lower():
+                    logger.debug(f"[Step 4.3.2] ❄️ DATABASE HANDLING - Processing database tool result")
+                    logger.debug(f"[Step 4.3.2]   Database tool detected: {tool_name}")
+>>>>>>> 001-modify-analyzer-method
                     logger.debug(f"[Step 4.3.2]   Parsed successfully: {parsed_successfully}")
                     logger.debug(f"[Step 4.3.2]   Content type: {'JSON' if parsed_successfully else 'RAW'}")
                     
@@ -218,6 +391,7 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
             logger.debug(f"[Step 4.3.3]   Tools used: {tools_used}")
             logger.debug(f"[Step 4.3.3]   Tool results keys: {list(tool_results.keys())}")
             
+<<<<<<< HEAD
             # Check if Snowflake was processed for special handling
             snowflake_tools = [name for name in tool_results.keys() if 'snowflake' in name.lower()]
             if snowflake_tools:
@@ -231,6 +405,22 @@ async def process_tool_results(state: InvestigationState) -> Dict[str, Any]:
                 
                 # CRITICAL FIX: Normalize snowflake data type (JSON string → object)
                 snowflake_data = _normalize_snowflake_data_type(snowflake_result)
+=======
+            # Check if database/Snowflake was processed for special handling
+            # Support both database_query (unified) and snowflake_query_tool (legacy)
+            database_tools = [name for name in tool_results.keys() if 'snowflake' in name.lower() or 'database_query' in name.lower()]
+            if database_tools:
+                database_tool_name = database_tools[0]  # Get first database tool
+                database_result = tool_results[database_tool_name]
+                
+                logger.debug(f"[Step 4.3.3] 🎯 PHASE TRANSITION - Moving to tool_execution phase")
+                logger.debug(f"[Step 4.3.3]   Reason: Database query processing completed")
+                logger.debug(f"[Step 4.3.3]   Database tool: {database_tool_name}")
+                logger.debug(f"[Step 4.3.3]   Next steps: Orchestrator will handle additional tool selection")
+                
+                # CRITICAL FIX: Normalize database data type (JSON string → object)
+                snowflake_data = _normalize_snowflake_data_type(database_result)
+>>>>>>> 001-modify-analyzer-method
                 
                 return {
                     "tools_used": tools_used,
@@ -481,7 +671,11 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         return next_node
     
     # Step 7.1.1: Orchestrator loop limits - ALIGNED with LangGraph recursion limits
+<<<<<<< HEAD
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
+=======
+    is_test_mode = os.environ.get("TEST_MODE") == "demo"
+>>>>>>> 001-modify-analyzer-method
     max_loops = 45 if is_test_mode else 55  # ALIGNED: Well below LangGraph recursion limits (50/60)
     
     logger.debug(f"[Step 7.1.1] 🔄 ORCHESTRATOR LOOP LIMITS - Configuration check")
@@ -599,6 +793,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         logger.debug(f"      Snowflake completed: {snowflake_completed}")
         
         if not snowflake_completed:
+<<<<<<< HEAD
             # ADDITIONAL SAFETY: Check if any Snowflake ToolMessage already exists
             from langchain_core.messages import ToolMessage
             snowflake_tool_found = False
@@ -612,6 +807,22 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             if snowflake_messages:
                 logger.debug(f"      Snowflake messages: {snowflake_messages}")
                 logger.warning("🔧 Found Snowflake ToolMessage but completion flag not set - forcing completion")
+=======
+            # ADDITIONAL SAFETY: Check if any database ToolMessage already exists
+            # Support both database_query (unified) and snowflake_query_tool (legacy)
+            from langchain_core.messages import ToolMessage
+            database_tool_found = False
+            database_messages = []
+            for i, msg in enumerate(messages):
+                if isinstance(msg, ToolMessage) and ("snowflake" in msg.name.lower() or "database_query" in msg.name.lower()):
+                    database_tool_found = True
+                    database_messages.append(f"Message {i}: {msg.name}")
+            
+            logger.debug(f"      Database ToolMessages found: {len(database_messages)}")
+            if database_messages:
+                logger.debug(f"      Database messages: {database_messages}")
+                logger.warning("🔧 Found Database ToolMessage but completion flag not set - forcing completion")
+>>>>>>> 001-modify-analyzer-method
             
             # Step 7.1.2: Phase-specific thresholds - Snowflake: 6 loops (TEST) / 8 loops (LIVE)
             loop_threshold = 6 if is_test_mode else 8  # Allow more loops for proper execution
@@ -619,6 +830,7 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             logger.debug(f"[Step 7.1.2]   Environment mode: {'TEST' if is_test_mode else 'LIVE'}")
             logger.debug(f"[Step 7.1.2]   Snowflake loop threshold: {loop_threshold} ({'TEST: 6' if is_test_mode else 'LIVE: 8'})")
             logger.debug(f"[Step 7.1.2]   Current predicted loops: {orchestrator_loops}")
+<<<<<<< HEAD
             logger.debug(f"[Step 7.1.2]   Snowflake ToolMessage detected: {snowflake_tool_found}")
             logger.debug(f"[Step 7.1.2]   Threshold exceeded: {orchestrator_loops >= loop_threshold}")
             logger.debug(f"[Step 7.1.2]   Force progression condition: {snowflake_tool_found or orchestrator_loops >= loop_threshold}")
@@ -630,6 +842,19 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
                 logger.debug(f"[Step 7.1.2]   Routing destination: process_tools")
                 logger.info(f"  → FORCED move to tool_execution phase (Snowflake ToolMessage found or loops >= {loop_threshold})")
                 logger.debug(f"      Reason: {'Snowflake ToolMessage found' if snowflake_tool_found else 'Loop threshold exceeded'}")
+=======
+            logger.debug(f"[Step 7.1.2]   Database ToolMessage detected: {database_tool_found}")
+            logger.debug(f"[Step 7.1.2]   Threshold exceeded: {orchestrator_loops >= loop_threshold}")
+            logger.debug(f"[Step 7.1.2]   Force progression condition: {database_tool_found or orchestrator_loops >= loop_threshold}")
+            
+            if database_tool_found or orchestrator_loops >= loop_threshold:
+                logger.debug(f"[Step 7.1.2] ⚡ FORCED PROGRESSION TRIGGERED - Moving to tool_execution phase")
+                logger.debug(f"[Step 7.1.2]   Trigger reason: {'Database ToolMessage found' if database_tool_found else 'Loop threshold exceeded'}")
+                logger.debug(f"[Step 7.1.2]   Target phase: tool_execution")
+                logger.debug(f"[Step 7.1.2]   Routing destination: process_tools")
+                logger.info(f"  → FORCED move to tool_execution phase (Database ToolMessage found or loops >= {loop_threshold})")
+                logger.debug(f"      Reason: {'Database ToolMessage found' if database_tool_found else 'Loop threshold exceeded'}")
+>>>>>>> 001-modify-analyzer-method
                 # Force phase completion by routing to process_tools
                 return "process_tools"
             else:
@@ -723,7 +948,11 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         logger.debug(f"      Domain analysis phase active - executing domain agents sequentially")
         
         # Step 5.1.1: Domain execution order
+<<<<<<< HEAD
         domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
+=======
+        domain_order = ["network", "device", "location", "logs", "authentication", "web", "merchant", "risk"]
+>>>>>>> 001-modify-analyzer-method
         logger.debug(f"[Step 5.1.1] 📋 Domain execution order defined: {domain_order}")
         logger.debug(f"[Step 5.1.1]   Sequential execution ensures proper data flow between domain agents")
         
@@ -740,13 +969,22 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
             else:
                 logger.debug(f"[Step 5.1.2]   Domain {i+1}/{len(domain_order)}: {domain} - ✅ COMPLETED")
         
+<<<<<<< HEAD
         # Allow sufficient loops for all 6 domain agents to execute sequentially
         domain_threshold = 30 if is_test_mode else 35  # INCREASED: Need sufficient loops for 6 domain agents including risk agent
+=======
+        # Allow sufficient loops for all 7 domain agents to execute sequentially (6 domain + risk)
+        domain_threshold = 30 if is_test_mode else 35  # INCREASED: Need sufficient loops for 7 agents (6 domain + risk)
+>>>>>>> 001-modify-analyzer-method
         logger.debug(f"      Domain threshold for this mode: {domain_threshold}")
         logger.debug(f"      Predicted loops: {orchestrator_loops}")
         
         # All domains complete OR too many loops - force to summary
+<<<<<<< HEAD
         total_domains = len(domain_order)  # Use all 6 domains: network, device, location, logs, authentication, risk
+=======
+        total_domains = len(domain_order)  # Use all 7 agents: network, device, location, logs, authentication, merchant, risk
+>>>>>>> 001-modify-analyzer-method
         should_summarize = len(domains_completed) >= total_domains or orchestrator_loops >= domain_threshold
         logger.debug(f"      Should move to summary: {should_summarize}")
         logger.debug(f"      Reasons: domains={len(domains_completed)}>={total_domains}, loops={orchestrator_loops}>={domain_threshold}")
@@ -824,24 +1062,43 @@ def route_from_orchestrator(state: InvestigationState) -> Union[str, List[str]]:
         return "orchestrator"
 
 
+<<<<<<< HEAD
 def build_clean_investigation_graph() -> StateGraph:
     """
     Build the complete clean investigation graph.
     
+=======
+def build_clean_investigation_graph(investigation_id: Optional[str] = None) -> StateGraph:
+    """
+    Build the complete clean investigation graph.
+
+    Args:
+        investigation_id: Optional investigation ID for tool execution persistence
+
+>>>>>>> 001-modify-analyzer-method
     Returns:
         Compiled StateGraph ready for execution
     """
     logger.info("🏗️ Building clean investigation graph")
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 001-modify-analyzer-method
     # Create the graph with our state schema
     logger.debug("[Step 1.2.1] StateGraph creation with InvestigationState schema")
     builder = StateGraph(InvestigationState)
     logger.debug("[Step 1.2.1] StateGraph(InvestigationState) created successfully")
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 001-modify-analyzer-method
     # Get all tools for the graph
     logger.debug("[Step 1.2.2] Tool loading via get_all_tools() - Starting tool collection")
     tools = get_all_tools()
     logger.debug(f"[Step 1.2.2] get_all_tools() returned {len(tools)} tools from registry")
+<<<<<<< HEAD
     
     # Create tool executor node with Phase 4 Step 4.2.1 logging wrapper
     logger.debug("[Step 1.2.2] Creating ToolNode with collected tools")
@@ -849,6 +1106,21 @@ def build_clean_investigation_graph() -> StateGraph:
     # Create the actual ToolNode
     base_tool_executor = ToolNode(tools)
     logger.debug(f"[Step 1.2.2] Base ToolNode created successfully with {len(tools)} tools")
+=======
+
+    # Create tool executor node with tool execution persistence
+    logger.debug("[Step 1.2.2] Creating EnhancedToolNode with collected tools")
+
+    # Create the EnhancedToolNode with persistence
+    try:
+        base_tool_executor = EnhancedToolNode(tools, investigation_id=investigation_id)
+        logger.info(f"✅ Created EnhancedToolNode with {len(tools)} tools and investigation_id={investigation_id}")
+        logger.debug(f"[Step 1.2.2] EnhancedToolNode created successfully with {len(tools)} tools and persistence enabled")
+    except Exception as e:
+        logger.warning(f"Failed to create EnhancedToolNode: {e}, falling back to standard ToolNode")
+        base_tool_executor = ToolNode(tools)
+        logger.debug(f"[Step 1.2.2] Fallback to standard ToolNode created successfully with {len(tools)} tools")
+>>>>>>> 001-modify-analyzer-method
     
     # Create wrapper function for Step 4.2.1 logging
     async def tool_executor_with_logging(state: InvestigationState):
@@ -936,11 +1208,27 @@ def build_clean_investigation_graph() -> StateGraph:
     logger.debug("[Step 1.2.3] Added 'logs_agent' → logs_agent_node")
     builder.add_node("authentication_agent", authentication_agent_node)
     logger.debug("[Step 1.2.3] Added 'authentication_agent' → authentication_agent_node")
+<<<<<<< HEAD
     builder.add_node("risk_agent", risk_agent_node)
     logger.debug("[Step 1.2.3] Added 'risk_agent' → risk_agent_node")
     builder.add_node("summary", summary_node)
     logger.debug("[Step 1.2.3] Added 'summary' → summary_node")
     logger.debug("[Step 1.2.3] All 11 nodes registered successfully")
+=======
+    builder.add_node("web_agent", web_agent_node)
+    logger.debug("[Step 1.2.3] Added 'web_agent' → web_agent_node")
+    builder.add_node("merchant_agent", merchant_agent_node)
+    logger.debug("[Step 1.2.3] Added 'merchant_agent' → merchant_agent_node")
+    builder.add_node("risk_agent", risk_agent_node)
+    logger.debug("[Step 1.2.3] Added 'risk_agent' → risk_agent_node")
+    # Add Remediation Agent - runs after risk assessment to label entities
+    from app.service.agent.orchestration.remediation_agent import remediation_agent_node
+    builder.add_node("remediation_agent", remediation_agent_node)
+    logger.debug("[Step 1.2.3] Added 'remediation_agent' → remediation_agent_node")
+    builder.add_node("summary", summary_node)
+    logger.debug("[Step 1.2.3] Added 'summary' → summary_node")
+    logger.debug("[Step 1.2.3] All 13 nodes registered successfully (including web_agent and remediation_agent)")
+>>>>>>> 001-modify-analyzer-method
     
     logger.info("✅ Added all nodes to graph")
     
@@ -966,7 +1254,14 @@ def build_clean_investigation_graph() -> StateGraph:
         "location_agent": "location_agent",
         "logs_agent": "logs_agent",
         "authentication_agent": "authentication_agent",
+<<<<<<< HEAD
         "risk_agent": "risk_agent",
+=======
+        "web_agent": "web_agent",
+        "merchant_agent": "merchant_agent",  # CRITICAL FIX: Add merchant_agent to routing destinations
+        "risk_agent": "risk_agent",
+        "remediation_agent": "remediation_agent",  # CRITICAL: Add remediation_agent to routing destinations
+>>>>>>> 001-modify-analyzer-method
         "summary": "summary",
         END: END
     }
@@ -976,7 +1271,11 @@ def build_clean_investigation_graph() -> StateGraph:
         route_from_orchestrator,
         routing_destinations
     )
+<<<<<<< HEAD
     logger.debug("[Step 1.3.3] Conditional edges added for orchestrator with 10 routing destinations")
+=======
+    logger.debug("[Step 1.3.3] Conditional edges added for orchestrator with 12 routing destinations (including merchant_agent and remediation_agent)")
+>>>>>>> 001-modify-analyzer-method
     
     # Tools go to processor, then back to orchestrator
     logger.debug("[Step 1.3.4] Tool processing flow: 'tools' → 'process_tools' → 'orchestrator'")
@@ -985,13 +1284,31 @@ def build_clean_investigation_graph() -> StateGraph:
     builder.add_edge("process_tools", "orchestrator")
     logger.debug("[Step 1.3.4] Edge added: 'process_tools' → 'orchestrator'")
     
+<<<<<<< HEAD
     # All agents return to orchestrator
     agents = ["network_agent", "device_agent", "location_agent", "logs_agent", "authentication_agent", "risk_agent"]
     logger.debug(f"[Step 1.3.5] Agent return flow: All {len(agents)} agents → 'orchestrator'")
+=======
+    # All agents return to orchestrator (except risk_agent and remediation_agent)
+    # risk_agent → remediation_agent → summary (ensures entity labeling when risk >= 0.3)
+    agents = ["network_agent", "device_agent", "location_agent", "logs_agent", "authentication_agent", "web_agent", "merchant_agent"]  # Exclude risk_agent - it goes to remediation_agent
+    logger.debug(f"[Step 1.3.5] Agent return flow: {len(agents)} agents → 'orchestrator'")
+>>>>>>> 001-modify-analyzer-method
     for agent in agents:
         builder.add_edge(agent, "orchestrator")
         logger.debug(f"[Step 1.3.5] Edge added: '{agent}' → 'orchestrator'")
     
+<<<<<<< HEAD
+=======
+    # CRITICAL: risk_agent flows to remediation_agent first, then to summary
+    # This ensures entities are labeled when risk >= 0.3
+    logger.debug("[Step 1.3.5.1] Remediation flow: 'risk_agent' → 'remediation_agent' → 'summary'")
+    builder.add_edge("risk_agent", "remediation_agent")
+    logger.debug("[Step 1.3.5.1] Edge added: 'risk_agent' → 'remediation_agent'")
+    builder.add_edge("remediation_agent", "summary")
+    logger.debug("[Step 1.3.5.1] Edge added: 'remediation_agent' → 'summary'")
+    
+>>>>>>> 001-modify-analyzer-method
     # Summary can end
     logger.debug("[Step 1.3.6] Exit: 'summary' → END")
     builder.add_edge("summary", END)
@@ -1045,6 +1362,7 @@ async def run_investigation(
     )
     
     logger.info("📊 Initial state created")
+<<<<<<< HEAD
     
     # Build the graph
     graph = build_clean_investigation_graph()
@@ -1054,6 +1372,17 @@ async def run_investigation(
     # Step 8.2.1: Investigation timeouts - TEST: 60 seconds, LIVE: 180 seconds
     # Check if we're in TEST_MODE or live environment
     is_test_mode = os.environ.get("TEST_MODE") == "mock"
+=======
+
+    # Build the graph with investigation_id for tool execution persistence
+    graph = build_clean_investigation_graph(investigation_id=investigation_id)
+
+    logger.info("🏗️ Graph built with tool execution persistence enabled, starting execution")
+    
+    # Step 8.2.1: Investigation timeouts - TEST: 60 seconds, LIVE: 180 seconds
+    # Check if we're in TEST_MODE or live environment
+    is_test_mode = os.environ.get("TEST_MODE") == "demo"
+>>>>>>> 001-modify-analyzer-method
     
     # CRITICAL FIX: Set recursion limits well above orchestrator limits (45/55) to prevent premature termination
     recursion_limit = 70 if is_test_mode else 90  # Allow sufficient loops for orchestrator (45/55) + domain agents

@@ -192,7 +192,7 @@ async def integrate_with_fraud_agents():
     """
     Example of integrating RawDataNode with existing fraud detection agents.
     """
-    from app.service.agent.autonomous_agents import autonomous_risk_agent
+    from app.service.agent.structured_agents import structured_risk_agent
     
     # Create enhanced graph with raw data and risk assessment
     builder = StateGraph(MessagesState)
@@ -202,7 +202,7 @@ async def integrate_with_fraud_agents():
     
     # Add nodes
     builder.add_node("process_raw_data", raw_data_node)
-    builder.add_node("risk_assessment", autonomous_risk_agent)
+    builder.add_node("risk_assessment", structured_risk_agent)
     builder.add_node("final_report", generate_investigation_summary)
     
     # Define flow

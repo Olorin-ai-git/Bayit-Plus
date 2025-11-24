@@ -62,7 +62,11 @@ class DynamicLimitsCalculator:
             Calculated safety limits adjusted for context
         """
         # Get base limits for current mode
+<<<<<<< HEAD
         is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'mock'
+=======
+        is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'demo'
+>>>>>>> 001-modify-analyzer-method
         base_limits = self.threshold_config.get_base_limits_for_mode(is_test_mode)
         
         # Get safety level multipliers
@@ -210,7 +214,11 @@ class DynamicLimitsCalculator:
         Returns:
             Human-readable explanation
         """
+<<<<<<< HEAD
         is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'mock'
+=======
+        is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'demo'
+>>>>>>> 001-modify-analyzer-method
         strategy = state.get("investigation_strategy", InvestigationStrategy.ADAPTIVE)
         context_adjustments = self._calculate_context_adjustments(state)
         

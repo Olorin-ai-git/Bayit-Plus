@@ -83,13 +83,22 @@ class SummaryGenerator:
             "domains_completed": len(state.get("domains_completed", [])),
             "tools_used": len(state.get("tool_results", {})),  # Only count tools with actual results
             "safety_overrides": len(state.get("safety_overrides", [])),
+<<<<<<< HEAD
             "risk_score": state.get("risk_score", 0.0),
+=======
+            "risk_score": state.get("risk_score"),  # CRITICAL: Preserve None values, don't default to 0.0
+>>>>>>> 001-modify-analyzer-method
             "risk_indicators": state.get("risk_indicators", []),
             "duration_ms": duration_ms,
             "efficiency": state.get("investigation_efficiency", 0.0),
             "ai_decisions": state.get("ai_decisions", []),
             "current_phase": state.get("current_phase", "unknown"),
+<<<<<<< HEAD
             "hybrid_system_version": state.get("hybrid_system_version", "1.0.0")
+=======
+            "hybrid_system_version": state.get("hybrid_system_version", "1.0.0"),
+            "domain_findings": state.get("domain_findings", {})  # CRITICAL: Include domain findings to show domain risk scores
+>>>>>>> 001-modify-analyzer-method
         }
     
     def _get_strategy_value(self, strategy):
@@ -183,8 +192,35 @@ class SummaryGenerator:
         """Generate risk assessment section."""
         fraud_likelihood = self._get_fraud_likelihood(data['risk_score'])
         
+<<<<<<< HEAD
         return f"""## Risk Assessment
 - **Risk Score**: {fmt_num(data['risk_score'], 3)}
+=======
+        # CRITICAL FIX: When final risk is blocked, show domain risk scores
+        risk_score_display = fmt_num(data['risk_score'], 3) if data['risk_score'] is not None else "N/A"
+        
+        # If final risk is blocked, show highest domain risk score
+        domain_risk_info = ""
+        if data['risk_score'] is None and 'domain_findings' in data:
+            domain_findings = data.get('domain_findings', {})
+            domain_scores = []
+            for domain_name, domain_data in domain_findings.items():
+                if isinstance(domain_data, dict):
+                    domain_risk = domain_data.get('risk_score')
+                    if domain_risk is not None:
+                        domain_scores.append((domain_name, domain_risk))
+            
+            if domain_scores:
+                # Sort by risk score descending
+                domain_scores.sort(key=lambda x: x[1], reverse=True)
+                highest_domain = domain_scores[0]
+                domain_risk_info = f"\n- **Highest Domain Risk**: {highest_domain[0].title()}: {fmt_num(highest_domain[1], 3)}"
+                if len(domain_scores) > 1:
+                    domain_risk_info += f"\n- **Domain Risk Scores**: {', '.join([f'{d[0].title()}: {fmt_num(d[1], 2)}' for d in domain_scores[:5]])}"
+        
+        return f"""## Risk Assessment
+- **Risk Score**: {risk_score_display}{domain_risk_info}
+>>>>>>> 001-modify-analyzer-method
 - **Risk Indicators**: {len(data['risk_indicators'])}
 - **Fraud Likelihood**: {fraud_likelihood}
 """

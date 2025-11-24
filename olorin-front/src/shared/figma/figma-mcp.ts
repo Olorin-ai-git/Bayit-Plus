@@ -3,7 +3,11 @@
  * Provides design-to-code automation, token synchronization, and visual consistency
  */
 
+<<<<<<< HEAD
 import { EventBusManager } from '../events/eventBus';
+=======
+import { EventBusManager } from '../events/UnifiedEventBus';
+>>>>>>> 001-modify-analyzer-method
 
 export interface FigmaToken {
   id: string;
@@ -375,7 +379,11 @@ export default ${componentName};
 
   private extractServiceFromName(name: string): string | undefined {
     const services = [
+<<<<<<< HEAD
       'autonomous-investigation',
+=======
+      'structured-investigation',
+>>>>>>> 001-modify-analyzer-method
       'manual-investigation',
       'agent-analytics',
       'rag-intelligence',

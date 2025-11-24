@@ -1,8 +1,8 @@
 """
-Agent Services for Autonomous Investigation System
+Agent Services for Structured Investigation System
 
 This package provides agent coordination, journey tracking, and chain of thought
-logging for autonomous investigation workflows.
+logging for structured investigation workflows.
 """
 
 from .journey_tracker import (

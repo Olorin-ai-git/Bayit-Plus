@@ -30,8 +30,19 @@ class LoggerUtilities:
         logger.debug(f"   🔧 Available tools: {tools_count}")
 
         if snowflake_data:
+<<<<<<< HEAD
             logger.debug(f"   📊 Snowflake context available: Yes ({len(str(snowflake_data))} chars)")
             logger.debug(f"   📊 Snowflake preview: {str(snowflake_data)[:150]}...")
+=======
+            # Summarize snowflake_data instead of logging raw content
+            if isinstance(snowflake_data, dict) and 'results' in snowflake_data:
+                results = snowflake_data.get('results', [])
+                logger.debug(f"   📊 Snowflake context available: Yes ({len(results)} records)")
+            elif isinstance(snowflake_data, dict) and 'row_count' in snowflake_data:
+                logger.debug(f"   📊 Snowflake context available: Yes ({snowflake_data.get('row_count', 0)} rows)")
+            else:
+                logger.debug(f"   📊 Snowflake context available: Yes (data available)")
+>>>>>>> 001-modify-analyzer-method
         else:
             logger.debug(f"   📊 Snowflake context available: No")
 

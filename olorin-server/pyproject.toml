@@ -30,12 +30,16 @@ grandalf = "^0.8"
 aiohttp = ">=3.8.0"
 pyyaml = ">=6.0"
 python-dateutil = ">=2.8.2"
+pytz = ">=2024.1"
+phonenumbers = ">=8.13.0"
 typing-extensions = ">=4.0.0"
 pytest = ">=7.0.0"
 pytest-asyncio = ">=0.18.0"
 prometheus-client = ">=0.16.0"
 python-json-logger = ">=2.0.7"
 structlog = ">=23.1.0"
+click = ">=8.0.0"
+hypothesis = ">=6.0.0"
 python-dotenv = ">=1.0.0"
 aioredis = ">=2.0.1"
 cryptography = ">=40.0.0"
@@ -47,7 +51,16 @@ openai = "^1.75.0"
 openai-agents = "^0.0.12"
 pycryptodome = "^3.10"
 fpdf = "^1.7.2"
+composio = "^0.9.0"
+maxminddb = "^2.2.0"
+neo4j = "^5.20.0"
+pyTigerGraph = "^1.3.0"
+confluent-kafka = "^2.3.0"
 numpy = "*"
+pandas = "^2.2.3"
+statsmodels = "^0.14.0"
+scikit-learn = "^1.3.0"
+apscheduler = "^3.10.0"
 reportlab = "^4.4.1"
 markdown2 = "^2.5.3"
 websockets = "^12.0"
@@ -71,6 +84,12 @@ bcrypt = "^4.3.0"
 email-validator = "^2.3.0"
 validators = "^0.35.0"
 langchain-google-genai = "^2.1.10"
+<<<<<<< HEAD
+=======
+schemathesis = "^4.3.16"
+pytest-cov = "^7.0.0"
+openapi-spec-validator = "^0.7.2"
+>>>>>>> 001-modify-analyzer-method
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
@@ -78,6 +97,7 @@ isort = "^6.0.1"
 mypy = ">=1.15.0"
 pytest-asyncio = "^1.0.0"
 tox = "^4.26.0"
+vulture = "^2.14"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=8.3.5"
@@ -93,6 +113,11 @@ sentence-transformers = "^3.4.1"
 torch = "2.2.2"
 transformers = "^4.49.0"
 pytest-asyncio = ">=0.14.0"
+# Contract testing dependencies
+openapi-core = "^0.19.4"
+pyyaml = ">=6.0"
+# Docker test containers
+testcontainers = "^4.0.0"
 
 # Removed custom repository - using default PyPI
 
@@ -106,7 +131,7 @@ skip_glob = ["venv/*", ".venv/*", ".tox/*", "**/venv/*", "**/.venv/*", "**/.tox/
 
 [tool.pytest.ini_options]
 log_level = "DEBUG"
-addopts = "--cov --cov-report html --cov-report term --cov-report xml:coverage/coverage.xml --cov-fail-under=0 --color=yes"
+addopts = "--cov --cov-report html --cov-report term --cov-report xml:coverage/coverage.xml --cov-fail-under=30 --color=yes"
 asyncio_default_fixture_loop_scope = "function"
 markers = ["integration: mark a test as a integration test.",
           "unit: mark a test as a unit test.",]

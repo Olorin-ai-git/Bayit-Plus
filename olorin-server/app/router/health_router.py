@@ -9,10 +9,17 @@ import os
 from datetime import datetime, timezone
 from typing import Dict, Any
 
+<<<<<<< HEAD
 from fastapi import APIRouter
 
 from .health_models import (
     HealthStatus, DetailedHealthStatus, LivenessProbe, ReadinessProbe,
+=======
+from fastapi import APIRouter, Request
+
+from .health_models import (
+    HealthStatus, DetailedHealthStatus, LivenessProbe, ReadinessProbe, StartupProbe,
+>>>>>>> 001-modify-analyzer-method
     get_current_timestamp, get_service_uptime, create_basic_health_response
 )
 from .health_checks import (
@@ -57,7 +64,11 @@ async def liveness_probe():
 async def readiness_probe():
     """
     Kubernetes readiness probe endpoint.
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 001-modify-analyzer-method
     Checks if the application is ready to serve traffic.
     Includes basic dependency checks.
     """
@@ -65,10 +76,17 @@ async def readiness_probe():
         "database": await check_database_connectivity(),
         "redis": await check_redis_connectivity(),
     }
+<<<<<<< HEAD
     
     # Service is ready if all critical dependencies are available
     all_ready = all(dependencies_ready.values())
     
+=======
+
+    # Service is ready if all critical dependencies are available
+    all_ready = all(dependencies_ready.values())
+
+>>>>>>> 001-modify-analyzer-method
     return ReadinessProbe(
         ready=all_ready,
         timestamp=get_current_timestamp(),
@@ -76,8 +94,37 @@ async def readiness_probe():
     )
 
 
+<<<<<<< HEAD
 @router.get("/detailed", response_model=DetailedHealthStatus)
 async def detailed_health():
+=======
+@router.get("/startup", response_model=StartupProbe)
+async def startup_probe():
+    """
+    Kubernetes startup probe endpoint.
+
+    Indicates whether the application has finished starting up.
+    Should return success after initialization is complete.
+
+    Constitutional Compliance:
+    - No hardcoded startup time threshold
+    - Startup status based on actual service state
+    - Uptime from runtime calculation (not hardcoded)
+    """
+    uptime = get_service_uptime()
+
+    # Service is considered started if it's been running for any amount of time
+    # (if we're responding to this request, we've started successfully)
+    return StartupProbe(
+        started=True,
+        timestamp=get_current_timestamp(),
+        startup_time_seconds=uptime
+    )
+
+
+@router.get("/detailed", response_model=DetailedHealthStatus)
+async def detailed_health(request: Request):
+>>>>>>> 001-modify-analyzer-method
     """
     Detailed health check with comprehensive dependency validation.
     
@@ -93,6 +140,28 @@ async def detailed_health():
         "external_services": await check_external_services(),
     }
     
+<<<<<<< HEAD
+=======
+    # Add microservice availability status (if available)
+    if request and hasattr(request, 'app') and hasattr(request.app, 'state'):
+        services = {}
+        if hasattr(request.app.state, 'database_available'):
+            services["database"] = request.app.state.database_available
+        if hasattr(request.app.state, 'database_provider_connected'):
+            services["database_provider"] = request.app.state.database_provider_connected
+        if hasattr(request.app.state, 'agent_system_available'):
+            services["agent_system"] = request.app.state.agent_system_available
+        if hasattr(request.app.state, 'anomaly_detection_available'):
+            services["anomaly_detection"] = request.app.state.anomaly_detection_available
+        if hasattr(request.app.state, 'rag_initialized'):
+            services["rag"] = request.app.state.rag_initialized
+        if hasattr(request.app.state, 'detection_scheduler'):
+            services["detection_scheduler"] = request.app.state.detection_scheduler is not None
+        
+        if services:
+            dependencies["microservices"] = services
+    
+>>>>>>> 001-modify-analyzer-method
     # Run system checks
     checks = {
         "disk_space_available": check_disk_space(),

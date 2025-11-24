@@ -198,7 +198,11 @@ class AIRoutingDecisionPayload(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0, description="Overall confidence score (0.0-1.0)")
     confidence_level: str = Field(..., description="Confidence level enum value")
     recommended_action: str = Field(..., min_length=1, description="Next action to take")
+<<<<<<< HEAD
     reasoning: List[str] = Field(..., min_items=1, description="AI reasoning chain")
+=======
+    reasoning: List[str] = Field(..., min_length=1, description="AI reasoning chain")
+>>>>>>> 001-modify-analyzer-method
     evidence_quality: float = Field(..., ge=0.0, le=1.0, description="Evidence quality score (0.0-1.0)")
     investigation_completeness: float = Field(..., ge=0.0, le=1.0, description="Investigation completeness (0.0-1.0)")
     

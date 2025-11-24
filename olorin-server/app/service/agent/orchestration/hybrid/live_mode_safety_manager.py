@@ -1,5 +1,9 @@
 """
+<<<<<<< HEAD
 Live Mode Safety Manager for Autonomous Investigation System
+=======
+Live Mode Safety Manager for Structured Investigation System
+>>>>>>> 001-modify-analyzer-method
 
 This module provides enhanced safety mechanisms specifically designed for live mode debugging
 with real financial costs. It includes cost circuit breakers, time limits, error monitoring,
@@ -117,7 +121,11 @@ class SafetyStatus:
 
 class LiveModeSafetyManager:
     """
+<<<<<<< HEAD
     Enhanced safety manager for live mode autonomous investigation debugging.
+=======
+    Enhanced safety manager for live mode structured investigation debugging.
+>>>>>>> 001-modify-analyzer-method
     
     Provides comprehensive safety mechanisms including:
     - Real-time cost monitoring and circuit breakers

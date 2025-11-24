@@ -23,7 +23,11 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
     
     # Read investigation data
     metadata_file = folder_path / "metadata.json"
+<<<<<<< HEAD
     autonomous_file = folder_path / "autonomous_activities.jsonl" 
+=======
+    structured_file = folder_path / "structured_activities.jsonl" 
+>>>>>>> 001-modify-analyzer-method
     journey_file = folder_path / "journey_tracking.json"
     log_file = folder_path / "investigation.log"
     
@@ -33,10 +37,17 @@ def generate_simple_html_report(investigation_folder_path: str) -> str:
         with open(metadata_file) as f:
             metadata = json.load(f)
     
+<<<<<<< HEAD
     # Load autonomous activities
     activities = []
     if autonomous_file.exists():
         with open(autonomous_file) as f:
+=======
+    # Load structured activities
+    activities = []
+    if structured_file.exists():
+        with open(structured_file) as f:
+>>>>>>> 001-modify-analyzer-method
             for line in f:
                 try:
                     activities.append(json.loads(line.strip()))

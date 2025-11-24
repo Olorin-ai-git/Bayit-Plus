@@ -107,7 +107,7 @@ def create_risk_agent_metadata(rag_enabled: bool, rag_stats: Dict[str, Any]) -> 
     """Create metadata for risk agent tracking."""
     return {
         "domain": "risk",
-        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven",
+        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "structured_llm_driven",
         "objectives_count": 17 if rag_enabled else 13,
         "rag_available": RAG_AVAILABLE,
         "rag_enabled": rag_enabled,
@@ -138,10 +138,10 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,
             "suspicious_indicators": findings.suspicious_indicators,
-            "summary": f"{'RAG-enhanced' if rag_enabled else 'Autonomous'} risk assessment: {len(findings.key_findings)} findings{summary_suffix}",
+            "summary": f"{'RAG-enhanced' if rag_enabled else 'Structured'} risk assessment: {len(findings.key_findings)} findings{summary_suffix}",
             "thoughts": f"Used {analysis_type} tool selection for comprehensive risk evaluation with domain knowledge integration",
             "timestamp": findings.timestamp.isoformat(),
-            "autonomous_execution": True,
+            "structured_execution": True,
             "domain": "risk",
             "enhancement_type": "rag_enhanced" if rag_enabled else "standard",
             "rag_performance": rag_stats,

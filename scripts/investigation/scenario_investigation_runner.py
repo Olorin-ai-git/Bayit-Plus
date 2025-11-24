@@ -2,9 +2,15 @@
 """
 Investigation Scenario Template Runner
 
+<<<<<<< HEAD
 Creates and runs investigation scenarios using the existing autonomous investigation system.
 This script provides templates for common fraud investigation scenarios and triggers
 the unified autonomous test runner with appropriate configurations.
+=======
+Creates and runs investigation scenarios using the existing structured investigation system.
+This script provides templates for common fraud investigation scenarios and triggers
+the unified structured test runner with appropriate configurations.
+>>>>>>> 001-modify-analyzer-method
 
 Features:
 - Pre-defined investigation scenarios
@@ -53,8 +59,13 @@ logger = get_bridge_logger(__name__)
 
 # Import unified test runner (try-except for flexibility)
 try:
+<<<<<<< HEAD
     from olorin_server.scripts.testing.unified_autonomous_test_runner import (
         UnifiedAutonomousTestRunner,
+=======
+    from olorin_server.scripts.testing.unified_structured_test_runner import (
+        UnifiedStructuredTestRunner,
+>>>>>>> 001-modify-analyzer-method
         TestScenario,
         TestMode
     )
@@ -62,12 +73,20 @@ except ImportError:
     # Fallback for direct execution
     try:
         sys.path.insert(0, str(Path(__file__).parent.parent.parent / "olorin-server" / "scripts" / "testing"))
+<<<<<<< HEAD
         from unified_autonomous_test_runner import UnifiedAutonomousTestRunner
+=======
+        from unified_structured_test_runner import UnifiedStructuredTestRunner
+>>>>>>> 001-modify-analyzer-method
         TestScenario = dict  # Fallback
         TestMode = str  # Fallback
     except ImportError:
         print("⚠️  Warning: Unified test runner not available. Some features may be limited.")
+<<<<<<< HEAD
         UnifiedAutonomousTestRunner = None
+=======
+        UnifiedStructuredTestRunner = None
+>>>>>>> 001-modify-analyzer-method
         TestScenario = dict
         TestMode = str
 
@@ -393,14 +412,24 @@ class ScenarioInvestigationRunner:
         
         # Execute the investigation using unified test runner
         print(f"\n🚀 Executing investigation with unified test runner...")
+<<<<<<< HEAD
         print(f"📋 Command: unified_autonomous_test_runner.py {' '.join(runner_args)}")
+=======
+        print(f"📋 Command: unified_structured_test_runner.py {' '.join(runner_args)}")
+>>>>>>> 001-modify-analyzer-method
         
         try:
             # Execute investigation
             start_time = time.time()
+<<<<<<< HEAD
             if UnifiedAutonomousTestRunner is not None:
                 # Import and run the unified test runner
                 runner = UnifiedAutonomousTestRunner()
+=======
+            if UnifiedStructuredTestRunner is not None:
+                # Import and run the unified test runner
+                runner = UnifiedStructuredTestRunner()
+>>>>>>> 001-modify-analyzer-method
                 
                 # Configure runner based on our parameters
                 if mode == "mock":

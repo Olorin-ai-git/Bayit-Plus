@@ -189,7 +189,7 @@ Use filters to find specific cases:
 
 #### **Investigation Mode**
 - **Manual**: Step through each phase manually
-- **Autonomous**: System runs all checks automatically ⭐
+- **Structured**: System runs all checks automatically ⭐
 
 #### **Processing Mode**
 - **Parallel**: Run steps simultaneously (faster) ⭐
@@ -453,7 +453,7 @@ Be specific in your questions:
 
 #### **Investigation Defaults**
 - **Time Range**: Set preferred analysis period
-- **Investigation Mode**: Manual or autonomous default
+- **Investigation Mode**: Manual or structured default
 - **Processing**: Parallel or sequential default
 
 #### **Display Settings**
@@ -548,7 +548,7 @@ Be specific in your questions:
 
 #### **Investigation Speed**
 - Start with shorter time ranges
-- Use autonomous mode for standard cases
+- Use structured mode for standard cases
 - Manual configuration only when needed
 - Prioritize high-risk investigations
 
@@ -645,7 +645,7 @@ Be specific in your questions:
 
 **Agent** - AI component performing specific analysis (Network, Location, Device, etc.)
 
-**Autonomous Mode** - System automatically runs all investigation steps
+**Structured Mode** - System automatically runs all investigation steps
 
 **Device Fingerprinting** - Unique device identification technique
 

@@ -16,7 +16,7 @@ from .rag_tool_context import (
     ToolExecutionContext,
     get_tool_context_enhancer
 )
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -129,7 +129,7 @@ class RAGEnhancedToolBase(EnhancedToolBase):
         self,
         input_data: Dict[str, Any],
         context: Optional[Dict[str, Any]],
-        investigation_context: Optional[AutonomousInvestigationContext],
+        investigation_context: Optional[StructuredInvestigationContext],
         domain: Optional[str]
     ) -> ToolResult:
         """Execute tool with RAG context enhancement"""
@@ -190,7 +190,7 @@ class RAGEnhancedToolBase(EnhancedToolBase):
     def _extract_investigation_context(
         self, 
         context: Optional[Dict[str, Any]]
-    ) -> Optional[AutonomousInvestigationContext]:
+    ) -> Optional[StructuredInvestigationContext]:
         """Extract investigation context from execution context"""
         if not context:
             return None
@@ -199,8 +199,8 @@ class RAGEnhancedToolBase(EnhancedToolBase):
         if "investigation_context" in context:
             return context["investigation_context"]
         
-        if "autonomous_context" in context:
-            return context["autonomous_context"]
+        if "structured_context" in context:
+            return context["structured_context"]
             
         # Try to construct from available data
         if "investigation_id" in context:
@@ -234,7 +234,7 @@ class RAGEnhancedToolBase(EnhancedToolBase):
         self,
         result: ToolResult,
         enhanced_context: ToolExecutionContext,
-        investigation_context: Optional[AutonomousInvestigationContext],
+        investigation_context: Optional[StructuredInvestigationContext],
         domain: Optional[str]
     ) -> ToolResult:
         """Enhance tool result with comprehensive RAG augmentation"""

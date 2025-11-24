@@ -35,7 +35,11 @@ class InvestigationNodes:
         config: Optional[Dict] = None
     ) -> HybridInvestigationState:
         """Enhanced start investigation with hybrid intelligence tracking"""
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 001-modify-analyzer-method
         logger.debug(f"🚀 Starting Hybrid Intelligence Graph investigation")
         logger.debug(f"   Investigation ID: {state.get('investigation_id')}")
         logger.debug(f"   Entity: {state.get('entity_type')} - {state.get('entity_id')}")
@@ -151,7 +155,27 @@ class InvestigationNodes:
     ) -> HybridInvestigationState:
         """Enhanced fraud investigation with AI confidence integration"""
         
+<<<<<<< HEAD
         logger.debug(f"🕵️ Hybrid Intelligence fraud investigation starting")
+=======
+        # Check if this is a retry by counting consecutive AI messages without tool calls
+        messages = state.get("messages", [])
+        consecutive_ai_without_tools = 0
+        for msg in reversed(messages[-10:]):
+            from langchain_core.messages import AIMessage
+            if isinstance(msg, AIMessage):
+                if hasattr(msg, 'tool_calls') and msg.tool_calls:
+                    break  # Found tool calls, not a retry
+                consecutive_ai_without_tools += 1
+        
+        if consecutive_ai_without_tools > 0:
+            # This is a retry - set flag for stronger prompts
+            state["force_tool_usage"] = True
+            logger.debug(f"🕵️ Hybrid Intelligence fraud investigation starting (retry {consecutive_ai_without_tools})")
+        else:
+            logger.debug(f"🕵️ Hybrid Intelligence fraud investigation starting")
+        
+>>>>>>> 001-modify-analyzer-method
         logger.debug(f"   AI-powered investigation velocity tracking")
         logger.debug(f"   Performance metrics: Real-time optimization")
         
@@ -164,6 +188,13 @@ class InvestigationNodes:
         with run_timer(state):
             enhanced_state = await hybrid_assistant.hybrid_aware_assistant(state, config)
             
+<<<<<<< HEAD
+=======
+            # CRITICAL FIX: Ensure performance_metrics exists before accessing
+            if "performance_metrics" not in enhanced_state:
+                enhanced_state["performance_metrics"] = {}
+            
+>>>>>>> 001-modify-analyzer-method
             # Update performance metrics in the hybrid state
             enhanced_state["performance_metrics"]["investigation_velocity"] = (
                 enhanced_state["performance_metrics"].get("investigation_velocity", 0) + 0.1
@@ -176,4 +207,256 @@ class InvestigationNodes:
             enhanced_state["end_time"] = state.get("end_time")
             enhanced_state["total_duration_ms"] = state.get("total_duration_ms")
             
+<<<<<<< HEAD
         return enhanced_state
+=======
+            # Preserve retry tracking in enhanced state
+            enhanced_state["fraud_investigation_retry_count"] = state.get("fraud_investigation_retry_count", 0)
+            enhanced_state["force_tool_usage"] = state.get("force_tool_usage", False)
+
+        return enhanced_state
+
+    async def fetch_database_data(
+        self,
+        state: HybridInvestigationState,
+        config: Optional[Dict] = None
+    ) -> HybridInvestigationState:
+        """
+        Fetch database data using the same PostgreSQL connection as risky entity retrieval.
+
+        CRITICAL FIX A0.2: Uses PostgreSQLProvider to query transaction data directly,
+        following the same pattern used for retrieving top 10% risky entities.
+        """
+
+        logger.info(f"📊 DATABASE FETCH: Starting data retrieval")
+
+        # Extract entity from state root
+        entity_id = state.get("entity_id")
+        entity_type = state.get("entity_type")
+
+        if not entity_id:
+            logger.warning(f"⚠️ DATABASE FETCH: No entity_id in state")
+            return state
+
+        logger.info(f"📊 DATABASE FETCH: Entity={entity_id} (type: {entity_type})")
+
+        try:
+            # Use database provider factory to respect DATABASE_PROVIDER configuration
+            from app.service.agent.tools.database_tool.database_factory import get_database_provider
+
+            # Create provider based on DATABASE_PROVIDER environment variable
+            db_provider = get_database_provider()
+            provider_type = type(db_provider).__name__
+            logger.info(f"📊 DATABASE FETCH: {provider_type} provider initialized")
+
+            # Get full table name (schema.table)
+            table_name = db_provider.get_full_table_name()
+
+            # Build query using database provider-appropriate syntax
+            # Detect database provider to use correct column names and syntax
+            import os
+            db_provider_name = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+            
+            # Map entity_type to database column name dynamically
+            entity_type_lower = (entity_type or 'ip').lower()
+            if db_provider_name == 'snowflake':
+                # Snowflake: uppercase column names
+                entity_column_map = {
+                    'ip': 'IP',
+                    'email': 'EMAIL',
+                    'device': 'DEVICE_ID',
+                    'device_id': 'DEVICE_ID',
+                    'phone': 'PHONE_NUMBER',
+                    'user_id': 'UNIQUE_USER_ID'
+                }
+            else:
+                # PostgreSQL: lowercase column names
+                entity_column_map = {
+                    'ip': 'ip',
+                    'email': 'email',
+                    'device': 'device_id',
+                    'device_id': 'device_id',
+                    'phone': 'phone_number',
+                    'user_id': 'unique_user_id'
+                }
+            
+            # Get the appropriate column name for the entity type
+            entity_column = entity_column_map.get(entity_type_lower, entity_type_lower.upper() if db_provider_name == 'snowflake' else entity_type_lower)
+            
+            if db_provider_name == 'snowflake':
+                # Snowflake: uppercase column names, no parameterized queries
+                # TXS schema uses PAID_AMOUNT_CURRENCY (not PAID_CURRENCY_CODE)
+                # CRITICAL: Exclude MODEL_SCORE and IS_FRAUD_TX from investigation queries
+                sql_query = f"""
+                    SELECT
+                        TX_ID_KEY,
+                        EMAIL,
+                        IP,
+                        PAID_AMOUNT_VALUE_IN_CURRENCY,
+                        PAID_AMOUNT_CURRENCY,
+                        TX_DATETIME,
+                        PAYMENT_METHOD,
+                        CARD_BRAND,
+                        DEVICE_ID,
+                        USER_AGENT,
+                        IP_COUNTRY_CODE,
+                        NSURE_LAST_DECISION as MODEL_DECISION
+                    FROM {table_name}
+                    WHERE {entity_column} = '{entity_id}'
+                    ORDER BY TX_DATETIME DESC
+                    LIMIT 2000
+                """
+            else:
+                # PostgreSQL: lowercase column names, parameterized queries
+                # CRITICAL: Exclude MODEL_SCORE and IS_FRAUD_TX from investigation queries
+                sql_query = f"""
+                    SELECT
+                        tx_id_key,
+                        email,
+                        ip,
+                        paid_amount_value_in_currency,
+                        paid_amount_currency,
+                        tx_datetime,
+                        payment_method,
+                        card_brand,
+                        device_id,
+                        user_agent,
+                        ip_country_code,
+                        nSure_last_decision as model_decision
+                    FROM {table_name}
+                    WHERE {entity_column} = $1
+                    ORDER BY tx_datetime DESC
+                    LIMIT 2000
+                """
+
+            # Execute query using provider's async execute_query_async method
+            logger.info(f"📊 DATABASE FETCH: Executing query for {entity_type}={entity_id} (column: {entity_column})")
+            try:
+                if db_provider_name == 'snowflake':
+                    # Snowflake execute_query_async doesn't support params dict
+                    results = await db_provider.execute_query_async(sql_query)
+                else:
+                    # PostgreSQL supports parameterized queries
+                    param_name = entity_type_lower if entity_type_lower in ['ip', 'email', 'device', 'device_id', 'phone', 'user_id'] else 'entity_id'
+                    results = await db_provider.execute_query_async(
+                        sql_query,
+                        params={param_name: entity_id}
+                    )
+                
+                # Validate results - ensure it's a list, not an error dict
+                if not isinstance(results, list):
+                    raise ValueError(f"Query returned unexpected type: {type(results).__name__}, expected list. Response: {results}")
+                
+                logger.info(
+                    f"✅ DATABASE FETCH: Retrieved {len(results)} transactions "
+                    f"(query limit: 2000, matched: {len(results)} for {entity_type}={entity_id})"
+                )
+            except Exception as query_error:
+                # Re-raise to be caught by outer exception handler
+                logger.error(f"❌ DATABASE FETCH: Query execution failed: {str(query_error)}")
+                raise
+
+            # D2 FIX: Emit no_data event if database returned 0 results
+            if len(results) == 0:
+                logger.warning(f"📭 D2 FIX: DATABASE returned 0 results for {entity_id}")
+                db_provider_name = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+                _emit_no_data_event(
+                    state, "database", db_provider_name,
+                    reason=f"Query executed successfully but returned 0 transactions for {entity_id}"
+                )
+
+            # Track database query as tool usage
+            tools_used = list(state.get("tools_used", []))
+            tools_used.append({
+                "tool_name": f"{db_provider_name}_direct_query",
+                "description": f"Direct {db_provider_name.upper()} database query for transaction data",
+                "entity_id": entity_id,
+                "query_type": "transactions",
+                "results_count": len(results)
+            })
+            logger.info(f"📊 DATABASE FETCH: Tracked as tool usage (total tools: {len(tools_used)})")
+
+            # Store in snowflake_data format for agents (name kept for backward compatibility)
+            return {
+                **state,
+                "snowflake_data": {
+                    "success": True,
+                    "row_count": len(results),
+                    "results": results,
+                    "source": db_provider_name
+                },
+                "snowflake_completed": True,
+                "tools_used": tools_used
+            }
+
+        except Exception as e:
+            logger.error(f"❌ DATABASE FETCH: Failed: {str(e)}")
+
+            # D2 FIX: Emit no_data event for query failure
+            import os
+            db_provider_name = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+            _emit_no_data_event(
+                state, "database", db_provider_name,
+                reason=f"Query failed: {str(e)}"
+            )
+
+            # Continue without data - store error information for debugging
+            return {
+                **state,
+                "snowflake_data": {
+                    "success": False,
+                    "error": str(e),
+                    "query": sql_query if 'sql_query' in locals() else "Query not available",
+                    "row_count": 0,
+                    "results": []
+                },
+                "snowflake_completed": False,
+                "errors": state.get("errors", []) + [{
+                    "timestamp": datetime.now().isoformat(),
+                    "error_type": "database_fetch_failure",
+                    "message": str(e)
+                }]
+            }
+
+
+def _emit_no_data_event(
+    state: HybridInvestigationState,
+    source_type: str,
+    source_name: str,
+    reason: str
+) -> None:
+    """
+    D2 FIX: Emit explicit no_data event when a data source returns no results.
+
+    This provides transparency about which data sources failed to provide data,
+    allowing domain agents and aggregation to make informed decisions about
+    evidence sufficiency.
+
+    Args:
+        state: Investigation state to update with no_data event
+        source_type: Type of data source (e.g., "database", "api", "external_tool")
+        source_name: Specific source name (e.g., "postgresql", "splunk", "abuseipdb")
+        reason: Human-readable explanation for missing data
+    """
+    logger.info(f"📭 D2 FIX: Emitting no_data event")
+    logger.info(f"   Source: {source_type}/{source_name}")
+    logger.info(f"   Reason: {reason}")
+
+    # Initialize no_data_events list if not present
+    if "no_data_events" not in state:
+        state["no_data_events"] = []
+
+    # Create no_data event record
+    no_data_event = {
+        "timestamp": datetime.now().isoformat(),
+        "source_type": source_type,
+        "source_name": source_name,
+        "reason": reason,
+        "event_type": "NO_DATA"
+    }
+
+    # Append to state
+    state["no_data_events"].append(no_data_event)
+
+    logger.debug(f"✅ D2 FIX: no_data event recorded (total: {len(state['no_data_events'])} events)")
+>>>>>>> 001-modify-analyzer-method

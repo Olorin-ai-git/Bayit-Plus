@@ -1,11 +1,11 @@
 """
-Autonomous Investigation API Router
-This module provides REST API endpoints for triggering and monitoring autonomous
+Structured Investigation API Router
+This module provides REST API endpoints for triggering and monitoring structured
 investigations with comprehensive logging, real-time progress tracking, and
 complete visibility into the investigation process.
 
 All endpoints are designed to work with curl commands for easy testing and
-automation of autonomous investigation workflows.
+automation of structured investigation workflows.
 
 This is the refactored version using modular architecture for maintainability.
 """
@@ -15,16 +15,15 @@ from typing import Dict, Any, List
 from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket, Path
 
 from app.router.models.autonomous_investigation_models import (
-    AutonomousInvestigationRequest,
-    AutonomousInvestigationResponse,
+    StructuredInvestigationRequest,
+    StructuredInvestigationResponse,
     InvestigationStatusResponse,
     InvestigationLogsResponse,
     LangGraphJourneyResponse
 )
 from app.models.multi_entity_investigation import (
     MultiEntityInvestigationRequest,
-    MultiEntityInvestigationResult,
-    MultiEntityInvestigationStatus
+    MultiEntityInvestigationResult
 )
 from app.router.models.multi_entity_api_schemas import (
     MultiEntityInvestigationRequestSchema,
@@ -37,7 +36,7 @@ from app.router.models.multi_entity_api_schemas import (
     APIExamples
 )
 from app.router.controllers.investigation_controller import (
-    start_autonomous_investigation,
+    start_structured_investigation,
     get_active_investigations
 )
 from app.router.controllers.investigation_status_controller import (
@@ -45,8 +44,9 @@ from app.router.controllers.investigation_status_controller import (
     get_investigation_logs,
     get_investigation_journey
 )
-from app.router.controllers.investigation_executor import execute_autonomous_investigation
-from app.router.handlers.websocket_handler import monitor_investigation_websocket, get_websocket_connections
+from app.router.controllers.investigation_executor import execute_structured_investigation
+# WebSocket handler import removed per spec 005 - using polling instead
+# from app.router.handlers.websocket_handler import monitor_investigation_websocket, get_websocket_connections
 from app.router.handlers.test_scenario_handler import list_test_scenarios, validate_investigation_results
 from app.service.agent.multi_entity.investigation_orchestrator import get_multi_entity_orchestrator
 from app.service.agent.multi_entity.query_validator import validate_multi_entity_query
@@ -54,20 +54,20 @@ from app.service.agent.multi_entity.query_validator import validate_multi_entity
 logger = get_bridge_logger(__name__)
 
 # Router setup
-router = APIRouter(prefix="/v1/autonomous", tags=["autonomous-investigation"])
+router = APIRouter(prefix="/v1/structured", tags=["structured-investigation"])
 
 
-@router.post("/start_investigation", response_model=AutonomousInvestigationResponse)
-async def start_autonomous_investigation_endpoint(
-    request: AutonomousInvestigationRequest,
+@router.post("/start_investigation", response_model=StructuredInvestigationResponse)
+async def start_structured_investigation_endpoint(
+    request: StructuredInvestigationRequest,
     background_tasks: BackgroundTasks
-) -> AutonomousInvestigationResponse:
+) -> StructuredInvestigationResponse:
     """
-    Start a new autonomous investigation.
+    Start a new structured investigation.
     
     Example curl command:
     ```bash
-    curl -X POST "http://localhost:8090/v1/autonomous/start_investigation" \
+    curl -X POST "http://localhost:8090/v1/structured/start_investigation" \
       -H "Content-Type: application/json" \
       -d '{
         "entity_id": "USER_12345",
@@ -83,23 +83,23 @@ async def start_autonomous_investigation_endpoint(
     def background_task_wrapper(investigation_id, investigation_context, request):
         """Wrapper to handle background task execution"""
         background_tasks.add_task(
-            execute_autonomous_investigation,
+            execute_structured_investigation,
             investigation_id,
             investigation_context,
             request
         )
     
-    return await start_autonomous_investigation(request, background_task_wrapper)
+    return await start_structured_investigation(request, background_task_wrapper)
 
 
 @router.get("/investigation/{investigation_id}/status", response_model=InvestigationStatusResponse)
 async def get_investigation_status_endpoint(investigation_id: str) -> InvestigationStatusResponse:
     """
-    Get real-time status of an autonomous investigation.
+    Get real-time status of an structured investigation.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
+    curl -X GET "http://localhost:8090/v1/structured/investigation/AUTO_INVEST_USER_12345_20250829_143000/status"
     ```
     """
     active_investigations = get_active_investigations()
@@ -109,11 +109,11 @@ async def get_investigation_status_endpoint(investigation_id: str) -> Investigat
 @router.get("/investigation/{investigation_id}/logs", response_model=InvestigationLogsResponse)
 async def get_investigation_logs_endpoint(investigation_id: str) -> InvestigationLogsResponse:
     """
-    Get comprehensive logs for an autonomous investigation.
+    Get comprehensive logs for an structured investigation.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
+    curl -X GET "http://localhost:8090/v1/structured/investigation/AUTO_INVEST_USER_12345_20250829_143000/logs"
     ```
     """
     return await get_investigation_logs(investigation_id)
@@ -122,35 +122,36 @@ async def get_investigation_logs_endpoint(investigation_id: str) -> Investigatio
 @router.get("/investigation/{investigation_id}/journey", response_model=LangGraphJourneyResponse)
 async def get_investigation_journey_endpoint(investigation_id: str) -> LangGraphJourneyResponse:
     """
-    Get LangGraph journey visualization for an autonomous investigation.
+    Get LangGraph journey visualization for an structured investigation.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
+    curl -X GET "http://localhost:8090/v1/structured/investigation/AUTO_INVEST_USER_12345_20250829_143000/journey"
     ```
     """
     return await get_investigation_journey(investigation_id)
 
 
-@router.websocket("/investigation/{investigation_id}/monitor")
-async def monitor_investigation_websocket_endpoint(websocket: WebSocket, investigation_id: str):
-    """
-    WebSocket endpoint for real-time investigation monitoring.
-    
-    Provides live updates of investigation progress, agent activities, and findings.
-    """
-    active_investigations = get_active_investigations()
-    await monitor_investigation_websocket(websocket, investigation_id, active_investigations)
+# WebSocket endpoint removed per spec 005 - using polling-based monitoring instead
+# @router.websocket("/investigation/{investigation_id}/monitor")
+# async def monitor_investigation_websocket_endpoint(websocket: WebSocket, investigation_id: str):
+#     """
+#     WebSocket endpoint for real-time investigation monitoring.
+#
+#     Provides live updates of investigation progress, agent activities, and findings.
+#     """
+#     active_investigations = get_active_investigations()
+#     await monitor_investigation_websocket(websocket, investigation_id, active_investigations)
 
 
 @router.get("/scenarios", response_model=Dict[str, list])
 async def list_test_scenarios_endpoint():
     """
-    List all available test scenarios for autonomous investigations.
+    List all available test scenarios for structured investigations.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/scenarios"
+    curl -X GET "http://localhost:8090/v1/structured/scenarios"
     ```
     """
     return await list_test_scenarios()
@@ -159,7 +160,7 @@ async def list_test_scenarios_endpoint():
 @router.post("/investigation/{investigation_id}/validate")
 async def validate_investigation_results_endpoint(investigation_id: str, results: Dict[str, Any]):
     """
-    Validate autonomous investigation results against expected outcomes.
+    Validate structured investigation results against expected outcomes.
     
     This endpoint is used to validate investigation quality and accuracy
     against predefined scenarios.
@@ -190,7 +191,7 @@ async def validate_investigation_results_endpoint(investigation_id: str, results
         }
     },
     summary="Start Multi-Entity Investigation",
-    description="Start a new multi-entity autonomous investigation with Boolean logic and cross-entity analysis capabilities.",
+    description="Start a new multi-entity structured investigation with Boolean logic and cross-entity analysis capabilities.",
     tags=["Multi-Entity Investigation"]
 )
 async def start_multi_entity_investigation_endpoint(
@@ -198,14 +199,14 @@ async def start_multi_entity_investigation_endpoint(
     background_tasks: BackgroundTasks
 ) -> MultiEntityInvestigationResultSchema:
     """
-    Start a new multi-entity autonomous investigation.
+    Start a new multi-entity structured investigation.
     
     This endpoint supports investigating multiple related entities simultaneously
     with Boolean logic and cross-entity analysis.
     
     Example curl command:
     ```bash
-    curl -X POST "http://localhost:8090/v1/autonomous/multi-entity/start" \
+    curl -X POST "http://localhost:8090/v1/structured/multi-entity/start" \
       -H "Content-Type: application/json" \
       -d '{
         "entities": [
@@ -308,14 +309,14 @@ async def start_multi_entity_investigation_endpoint(
     tags=["Multi-Entity Investigation"]
 )
 async def get_multi_entity_investigation_status_endpoint(
-    investigation_id: str = Path(description="Unique investigation identifier", example="multi_a1b2c3d4")
+    investigation_id: str = Path(description="Unique investigation identifier", examples=["multi_a1b2c3d4"])
 ) -> InvestigationStatusSummary:
     """
-    Get real-time status of a multi-entity autonomous investigation.
+    Get real-time status of a multi-entity structured investigation.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/multi-entity/multi_a1b2c3d4/status"
+    curl -X GET "http://localhost:8090/v1/structured/multi-entity/multi_a1b2c3d4/status"
     ```
     """
     try:
@@ -354,14 +355,14 @@ async def get_multi_entity_investigation_status_endpoint(
     tags=["Multi-Entity Investigation"]
 )
 async def get_multi_entity_investigation_results_endpoint(
-    investigation_id: str = Path(description="Unique investigation identifier", example="multi_a1b2c3d4")
+    investigation_id: str = Path(description="Unique investigation identifier", examples=["multi_a1b2c3d4"])
 ) -> MultiEntityInvestigationResultSchema:
     """
-    Get complete results for a multi-entity autonomous investigation.
+    Get complete results for a multi-entity structured investigation.
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/multi-entity/multi_a1b2c3d4/results"
+    curl -X GET "http://localhost:8090/v1/structured/multi-entity/multi_a1b2c3d4/results"
     ```
     """
     try:
@@ -394,7 +395,7 @@ async def update_multi_entity_relationships_endpoint(
     
     Example curl command:
     ```bash
-    curl -X PUT "http://localhost:8090/v1/autonomous/multi-entity/multi_a1b2c3d4/relationships" \
+    curl -X PUT "http://localhost:8090/v1/structured/multi-entity/multi_a1b2c3d4/relationships" \
       -H "Content-Type: application/json" \
       -d '[
         {
@@ -443,7 +444,7 @@ async def get_enhanced_entity_types_endpoint() -> EnhancedEntityTypesResponse:
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/entities/types/enhanced"
+    curl -X GET "http://localhost:8090/v1/structured/entities/types/enhanced"
     ```
     """
     try:
@@ -495,7 +496,7 @@ async def get_multi_entity_metrics_endpoint() -> MultiEntityMetricsResponse:
     
     Example curl command:
     ```bash
-    curl -X GET "http://localhost:8090/v1/autonomous/multi-entity/metrics"
+    curl -X GET "http://localhost:8090/v1/structured/multi-entity/metrics"
     ```
     """
     try:
@@ -517,30 +518,31 @@ async def get_multi_entity_metrics_endpoint() -> MultiEntityMetricsResponse:
         }
     },
     summary="Health Check",
-    description="Check the health status of the autonomous investigation service and all its components.",
+    description="Check the health status of the structured investigation service and all its components.",
     tags=["Monitoring", "Health"]
 )
 async def health_check() -> HealthCheckResponse:
     """Health check endpoint for monitoring router status"""
     active_investigations = get_active_investigations()
-    websocket_connections = get_websocket_connections()
-    
+    # WebSocket connections removed per spec 005 - using polling instead
+    # websocket_connections = get_websocket_connections()
+
     try:
         orchestrator = get_multi_entity_orchestrator()
         multi_entity_metrics = orchestrator.get_orchestrator_metrics()
     except Exception:
         multi_entity_metrics = {"error": "Failed to get orchestrator metrics"}
-    
+
     return {
         "status": "healthy",
         "active_investigations_count": len(active_investigations),
-        "websocket_connections_count": len(websocket_connections),
+        # "websocket_connections_count": len(websocket_connections),  # Removed per spec 005
         "multi_entity_investigations": multi_entity_metrics.get("active_investigations", 0),
         "router_version": "2.1.0-multi-entity",
         "modules": [
             "models.autonomous_investigation_models",
             "models.multi_entity_investigation",
-            "handlers.websocket_handler", 
+            # "handlers.websocket_handler",  # Removed per spec 005 
             "handlers.test_scenario_handler",
             "controllers.investigation_controller",
             "controllers.investigation_status_controller",

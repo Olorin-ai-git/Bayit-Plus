@@ -85,13 +85,21 @@ module.exports = {
 
       // Remote modules this shell will consume
       remotes: {
+<<<<<<< HEAD
         'autonomous-investigation': 'autonomous_investigation@http://localhost:3001/remoteEntry.js',
+=======
+        'structured-investigation': 'structured_investigation@http://localhost:3001/remoteEntry.js',
+>>>>>>> 001-modify-analyzer-method
         'manual-investigation': 'manual_investigation@http://localhost:3002/remoteEntry.js',
         'agent-analytics': 'agent_analytics@http://localhost:3003/remoteEntry.js',
         'rag-intelligence': 'rag_intelligence@http://localhost:3004/remoteEntry.js',
         'visualization': 'visualization@http://localhost:3005/remoteEntry.js',
         'reporting': 'reporting@http://localhost:3006/remoteEntry.js',
         'design-system': 'design_system@http://localhost:3007/remoteEntry.js',
+<<<<<<< HEAD
+=======
+        'analytics': 'analytics@http://localhost:3008/remoteEntry.js',
+>>>>>>> 001-modify-analyzer-method
       },
 
       // Shared dependencies

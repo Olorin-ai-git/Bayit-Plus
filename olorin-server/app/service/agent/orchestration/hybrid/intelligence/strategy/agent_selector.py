@@ -23,7 +23,11 @@ class AgentSelector:
     def __init__(self):
         self.all_agents = [
             "network_agent", "device_agent", "location_agent", 
+<<<<<<< HEAD
             "logs_agent", "authentication_agent", "risk_agent"
+=======
+            "logs_agent", "authentication_agent", "merchant_agent", "risk_agent"
+>>>>>>> 001-modify-analyzer-method
         ]
         
     async def determine_agents_to_activate(

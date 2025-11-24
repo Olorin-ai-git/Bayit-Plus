@@ -2,7 +2,7 @@
 graph TD
     subgraph "Test Execution Layer"
         A[pytest Test Runner] --> B[Integration Test Suite]
-        B --> C[Autonomous Investigation Tests]
+        B --> C[Structured Investigation Tests]
         C --> D[Real API Calls]
         C --> E[WebSocket Communication]
         C --> F[Performance Monitoring]

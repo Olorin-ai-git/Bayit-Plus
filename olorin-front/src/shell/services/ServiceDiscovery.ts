@@ -59,9 +59,15 @@ export class ServiceDiscovery {
         status: 'loading',
         exposes: {
           './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard.tsx',
+<<<<<<< HEAD
           './AutonomousInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
           './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
           './InvestigationWizard': './src/microservices/investigation/components/InvestigationWizard.tsx',
+=======
+          './StructuredInvestigation': './src/microservices/investigation/components/StructuredInvestigation.tsx',
+          './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
+          './InvestigationWizard': './src/microservices/investigation/containers/InvestigationWizard.tsx',
+>>>>>>> 001-modify-analyzer-method
           './EvidenceManager': './src/microservices/investigation/components/EvidenceManager.tsx'
         },
         remotes: {
@@ -168,6 +174,7 @@ export class ServiceDiscovery {
           './DesignTokens': './src/microservices/design-system/types/design.ts'
         },
         remotes: {}
+<<<<<<< HEAD
       },
       autonomousInvestigation: {
         name: 'autonomousInvestigation',
@@ -200,6 +207,8 @@ export class ServiceDiscovery {
           designSystem: 'designSystem@http://localhost:3007/remoteEntry.js',
           visualization: 'visualization@http://localhost:3004/remoteEntry.js'
         }
+=======
+>>>>>>> 001-modify-analyzer-method
       }
     };
   }

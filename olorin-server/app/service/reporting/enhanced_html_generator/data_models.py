@@ -70,7 +70,11 @@ class ReportConfig:
 class ExtractedData:
     """Raw extracted data from investigation files"""
     metadata: Dict[str, Any]
+<<<<<<< HEAD
     autonomous_activities: List[Dict[str, Any]]
+=======
+    structured_activities: List[Dict[str, Any]]
+>>>>>>> 001-modify-analyzer-method
     journey_tracking: Dict[str, Any]
     investigation_log: List[Dict[str, Any]]
     files_info: Dict[str, Any]

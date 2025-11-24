@@ -20,8 +20,15 @@ const microservices = {
       ragIntelligence: 'ragIntelligence@http://localhost:3003/remoteEntry.js',
       visualization: 'visualization@http://localhost:3004/remoteEntry.js',
       reporting: 'reporting@http://localhost:3005/remoteEntry.js',
+<<<<<<< HEAD
       autonomousInvestigation: 'autonomousInvestigation@http://localhost:3008/remoteEntry.js',
       manualInvestigation: 'manualInvestigation@http://localhost:3009/remoteEntry.js',
+=======
+      investigationsManagement: 'investigationsManagement@http://localhost:3008/remoteEntry.js',
+      // TODO: Uncomment when implementing these microservices
+      // structuredInvestigation: 'structuredInvestigation@http://localhost:3009/remoteEntry.js',
+      // manualInvestigation: 'manualInvestigation@http://localhost:3010/remoteEntry.js',
+>>>>>>> 001-modify-analyzer-method
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
   },
@@ -30,10 +37,16 @@ const microservices = {
     port: 3001,
     exposes: {
       './App': './src/microservices/investigation/InvestigationApp.tsx',
+<<<<<<< HEAD
       './InvestigationDashboard': './src/microservices/investigation/components/InvestigationDashboard.tsx',
       './AutonomousInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
       './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
       './InvestigationWizard': './src/microservices/investigation/components/InvestigationWizard.tsx',
+=======
+      './StructuredInvestigation': './src/microservices/investigation/components/AutonomousInvestigation.tsx',
+      './ManualInvestigationDetails': './src/microservices/investigation/components/ManualInvestigationDetails.tsx',
+      './InvestigationWizard': './src/microservices/investigation/containers/InvestigationWizard.tsx',
+>>>>>>> 001-modify-analyzer-method
       './EvidenceManager': './src/microservices/investigation/components/EvidenceManager.tsx',
       './InvestigationStepTracker': './src/microservices/investigation/components/InvestigationStepTracker.tsx',
       './CollaborationPanel': './src/microservices/investigation/components/CollaborationPanel.tsx'
@@ -83,7 +96,14 @@ const microservices = {
       './ChartBuilder': './src/microservices/visualization/components/ChartBuilder.tsx',
       './DataVisualization': './src/microservices/visualization/components/DataVisualization.tsx',
       './NetworkGraph': './src/microservices/visualization/components/NetworkGraph.tsx',
+<<<<<<< HEAD
       './TimelineVisualization': './src/microservices/visualization/components/TimelineVisualization.tsx'
+=======
+      './TimelineVisualization': './src/microservices/visualization/components/TimelineVisualization.tsx',
+      './LineChart': './src/microservices/visualization/components/charts/LineChart.tsx',
+      './BarChart': './src/microservices/visualization/components/charts/BarChart.tsx',
+      './PieChart': './src/microservices/visualization/components/charts/PieChart.tsx'
+>>>>>>> 001-modify-analyzer-method
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
@@ -114,7 +134,11 @@ const microservices = {
       './Header': './src/microservices/core-ui/components/Header.tsx',
       './Sidebar': './src/microservices/core-ui/components/Sidebar.tsx',
       './Layout': './src/microservices/core-ui/components/Layout.tsx',
+<<<<<<< HEAD
       './EventBus': './src/microservices/core-ui/services/eventBus.ts',
+=======
+      './EventBus': './src/shared/events/UnifiedEventBus.tsx',
+>>>>>>> 001-modify-analyzer-method
       './AuthProvider': './src/microservices/core-ui/providers/AuthProvider.tsx'
     },
     remotes: {
@@ -131,16 +155,25 @@ const microservices = {
     },
     remotes: {}
   },
+<<<<<<< HEAD
   autonomousInvestigation: {
     name: 'autonomousInvestigation',
     port: 3008,
     exposes: {
       './App': './src/microservices/autonomous-investigation/AutonomousInvestigationApp.tsx'
+=======
+  investigationsManagement: {
+    name: 'investigationsManagement',
+    port: 3008,
+    exposes: {
+      './App': './src/microservices/investigations-management/InvestigationsManagementApp.tsx'
+>>>>>>> 001-modify-analyzer-method
     },
     remotes: {
       coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
       designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
     }
+<<<<<<< HEAD
   },
   manualInvestigation: {
     name: 'manualInvestigation',
@@ -150,6 +183,29 @@ const microservices = {
     },
     remotes: {}
   }
+=======
+  }
+  // TODO: Uncomment when implementing these microservices
+  // structuredInvestigation: {
+  //   name: 'structuredInvestigation',
+  //   port: 3008,
+  //   exposes: {
+  //     './App': './src/microservices/structured-investigation/StructuredInvestigationApp.tsx'
+  //   },
+  //   remotes: {
+  //     coreUi: 'coreUi@http://localhost:3006/remoteEntry.js',
+  //     designSystem: 'designSystem@http://localhost:3007/remoteEntry.js'
+  //   }
+  // },
+  // manualInvestigation: {
+  //   name: 'manualInvestigation',
+  //   port: 3009,
+  //   exposes: {
+  //     './App': './src/microservices/manual-investigation/MinimalApp.js'
+  //   },
+  //   remotes: {}
+  // }
+>>>>>>> 001-modify-analyzer-method
 };
 
 // Get current service from environment or default to shell
@@ -179,10 +235,20 @@ const getEntryPoint = (service) => {
       return './src/microservices/core-ui/index.tsx';
     case 'designSystem':
       return './src/microservices/design-system/index.tsx';
+<<<<<<< HEAD
     case 'autonomousInvestigation':
       return './src/microservices/autonomous-investigation/index.tsx';
     case 'manualInvestigation':
       return './src/microservices/manual-investigation/index.tsx';
+=======
+    case 'investigationsManagement':
+      return './src/microservices/investigations-management/index.tsx';
+    // TODO: Uncomment when implementing these microservices
+    // case 'structuredInvestigation':
+    //   return './src/microservices/structured-investigation/index.tsx';
+    // case 'manualInvestigation':
+    //   return './src/microservices/manual-investigation/index.tsx';
+>>>>>>> 001-modify-analyzer-method
     default:
       return './src/bootstrap.tsx';
   }
@@ -196,7 +262,11 @@ const serviceOptimizations = {
   },
   investigation: {
     eager: ['react', 'react-dom'],
+<<<<<<< HEAD
     priority: ['investigation-core', 'data-processing', 'websocket']
+=======
+    priority: ['investigation-core', 'data-processing', 'polling']
+>>>>>>> 001-modify-analyzer-method
   },
   agentAnalytics: {
     eager: ['react', 'react-dom', 'chart.js'],
@@ -222,9 +292,15 @@ const serviceOptimizations = {
     eager: ['react', 'react-dom', '@headlessui/react'],
     priority: ['design-tokens', 'components', 'figma-sync']
   },
+<<<<<<< HEAD
   autonomousInvestigation: {
     eager: ['react', 'react-dom'],
     priority: ['autonomous-agents', 'ai-processing', 'investigation']
+=======
+  structuredInvestigation: {
+    eager: ['react', 'react-dom'],
+    priority: ['structured-agents', 'ai-processing', 'investigation']
+>>>>>>> 001-modify-analyzer-method
   },
   manualInvestigation: {
     eager: ['react', 'react-dom'],
@@ -255,7 +331,11 @@ const getSharedDependencies = (service) => {
     'react-router-dom': {
       singleton: true,
       requiredVersion: '^6.11.0',
+<<<<<<< HEAD
       eager: service === 'shell' || service === 'autonomousInvestigation' || service === 'manualInvestigation' // Shell, autonomous, and manual investigation need eager router
+=======
+      eager: service === 'shell' || service === 'structuredInvestigation' || service === 'manualInvestigation' // Shell, structured, and manual investigation need eager router
+>>>>>>> 001-modify-analyzer-method
     },
     '@headlessui/react': {
       singleton: true,
@@ -280,7 +360,22 @@ const getSharedDependencies = (service) => {
     axios: {
       singleton: true,
       requiredVersion: '^1.4.0',
+<<<<<<< HEAD
       eager: false
+=======
+      eager: service === 'shell' // Make axios eager for shell to prevent consumption errors
+    },
+    zod: {
+      singleton: true,
+      requiredVersion: '^3.22.0',
+      eager: service === 'shell' // Make zod eager for shell to prevent validation errors
+    },
+    zustand: {
+      singleton: true,
+      requiredVersion: '>=4.4.0',
+      eager: service === 'shell', // Make zustand eager for shell state management
+      strictVersion: false // Allow version flexibility for zustand
+>>>>>>> 001-modify-analyzer-method
     },
     'date-fns': {
       singleton: true,
@@ -290,7 +385,11 @@ const getSharedDependencies = (service) => {
     'lucide-react': {
       singleton: true,
       requiredVersion: '^0.263.0',
+<<<<<<< HEAD
       eager: service === 'autonomousInvestigation' || service === 'shell' // Make eager for autonomous investigation
+=======
+      eager: service === 'structuredInvestigation' || service === 'shell' // Make eager for structured investigation
+>>>>>>> 001-modify-analyzer-method
     },
     mitt: {
       singleton: true,
@@ -404,11 +503,106 @@ module.exports = (env, argv) => {
       // Environment variables with service-specific configurations
       new (require('webpack').DefinePlugin)({
         'process.env.NODE_ENV': JSON.stringify(argv.mode || 'development'),
+<<<<<<< HEAD
         'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
         'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
         'process.env.REACT_APP_VERSION': JSON.stringify(process.env.REACT_APP_VERSION || '1.0.0'),
         'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090'),
         'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
+=======
+        'process.env.REACT_APP_ENV': JSON.stringify(process.env.REACT_APP_ENV || argv.mode || 'development'),
+        'process.env.SERVICE_NAME': JSON.stringify(serviceConfig.name),
+        'process.env.SERVICE_PORT': JSON.stringify(serviceConfig.port),
+        'process.env.REACT_APP_FRONTEND_PORT': JSON.stringify(process.env.REACT_APP_FRONTEND_PORT || '3000'),
+        'process.env.REACT_APP_VERSION': JSON.stringify(process.env.REACT_APP_VERSION || '1.0.0'),
+
+        // API Configuration
+        'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090'),
+        'process.env.REACT_APP_WS_URL': JSON.stringify(process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
+        'process.env.REACT_APP_WS_BASE_URL': JSON.stringify(process.env.REACT_APP_WS_BASE_URL || process.env.REACT_APP_WS_URL || 'ws://localhost:8090'),
+        'process.env.REACT_APP_REQUEST_TIMEOUT_MS': JSON.stringify(process.env.REACT_APP_REQUEST_TIMEOUT_MS || '30000'),
+
+        // Polling Configuration
+        'process.env.REACT_APP_POLLING_BASE_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_POLLING_BASE_INTERVAL_MS || '30000'),
+        'process.env.REACT_APP_POLLING_FAST_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_POLLING_FAST_INTERVAL_MS || '30000'),
+        'process.env.REACT_APP_POLLING_SLOW_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_POLLING_SLOW_INTERVAL_MS || '10000'),
+        'process.env.REACT_APP_POLLING_MAX_RETRIES': JSON.stringify(process.env.REACT_APP_POLLING_MAX_RETRIES || '3'),
+        'process.env.REACT_APP_POLLING_BACKOFF_MULTIPLIER': JSON.stringify(process.env.REACT_APP_POLLING_BACKOFF_MULTIPLIER || '2'),
+        'process.env.REACT_APP_POLLING_MAX_BACKOFF_MS': JSON.stringify(process.env.REACT_APP_POLLING_MAX_BACKOFF_MS || '60000'),
+
+        // Feature flags
+        'process.env.REACT_APP_FEATURE_ENABLE_RAG': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_RAG || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_REAL_TIME_UPDATES': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_REAL_TIME_UPDATES || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_MICROSERVICES': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_MICROSERVICES || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_WIZARD': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_WIZARD || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_TEMPLATES': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_TEMPLATES || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_MULTI_ENTITY': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_MULTI_ENTITY || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_LLM_INSIGHTS': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_LLM_INSIGHTS || 'false'),
+        'process.env.REACT_APP_FEATURE_ENABLE_RELATIONSHIP_GRAPH': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_RELATIONSHIP_GRAPH || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_STATE_PERSISTENCE': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_STATE_PERSISTENCE || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_OPTIMISTIC_LOCKING': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_OPTIMISTIC_LOCKING || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_AUDIT_LOG': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_AUDIT_LOG || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_POLLING': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_POLLING || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_HYBRID_GRAPH': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_HYBRID_GRAPH || 'true'),
+        'process.env.REACT_APP_FEATURE_ENABLE_AUTONOMOUS_MODE': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_AUTONOMOUS_MODE || 'false'),
+        'process.env.REACT_APP_FEATURE_ENABLE_MOCK_DATA': JSON.stringify(process.env.REACT_APP_FEATURE_ENABLE_MOCK_DATA || 'false'),
+
+        // Service Configuration
+        'process.env.REACT_APP_SERVICE_NAME': JSON.stringify(serviceConfig.name),
+
+        // Firebase Configuration (optional)
+        'process.env.REACT_APP_FIREBASE_API_KEY': JSON.stringify(process.env.REACT_APP_FIREBASE_API_KEY || ''),
+        'process.env.REACT_APP_FIREBASE_AUTH_DOMAIN': JSON.stringify(process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || ''),
+        'process.env.REACT_APP_FIREBASE_PROJECT_ID': JSON.stringify(process.env.REACT_APP_FIREBASE_PROJECT_ID || ''),
+        'process.env.REACT_APP_FIREBASE_STORAGE_BUCKET': JSON.stringify(process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || ''),
+        'process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID': JSON.stringify(process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || ''),
+        'process.env.REACT_APP_FIREBASE_APP_ID': JSON.stringify(process.env.REACT_APP_FIREBASE_APP_ID || ''),
+        'process.env.REACT_APP_FIREBASE_MEASUREMENT_ID': JSON.stringify(process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || ''),
+
+        // UI Configuration
+        'process.env.REACT_APP_PAGINATION_SIZE': JSON.stringify(process.env.REACT_APP_PAGINATION_SIZE || '20'),
+
+        // Wizard Configuration
+        'process.env.REACT_APP_MAX_ENTITIES': JSON.stringify(process.env.REACT_APP_MAX_ENTITIES || '10'),
+        'process.env.REACT_APP_MAX_TOOLS': JSON.stringify(process.env.REACT_APP_MAX_TOOLS || '20'),
+        'process.env.REACT_APP_DEFAULT_RISK_THRESHOLD': JSON.stringify(process.env.REACT_APP_DEFAULT_RISK_THRESHOLD || '50'),
+        'process.env.REACT_APP_DEFAULT_CORRELATION_MODE': JSON.stringify(process.env.REACT_APP_DEFAULT_CORRELATION_MODE || 'OR'),
+        'process.env.REACT_APP_DEFAULT_EXECUTION_MODE': JSON.stringify(process.env.REACT_APP_DEFAULT_EXECUTION_MODE || 'parallel'),
+        'process.env.REACT_APP_WIZARD_AUTO_SAVE_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_WIZARD_AUTO_SAVE_INTERVAL_MS || '30000'),
+        'process.env.REACT_APP_WIZARD_VALIDATION_DEBOUNCE_MS': JSON.stringify(process.env.REACT_APP_WIZARD_VALIDATION_DEBOUNCE_MS || '500'),
+        'process.env.REACT_APP_WIZARD_PROGRESS_UPDATE_INTERVAL_MS': JSON.stringify(process.env.REACT_APP_WIZARD_PROGRESS_UPDATE_INTERVAL_MS || '1000'),
+
+        // Event Bus Configuration
+        'process.env.REACT_APP_EVENT_BUS_MAX_QUEUE_SIZE': JSON.stringify(process.env.REACT_APP_EVENT_BUS_MAX_QUEUE_SIZE || '1000'),
+        'process.env.REACT_APP_EVENT_BUS_ENABLE_LOGGING': JSON.stringify(process.env.REACT_APP_EVENT_BUS_ENABLE_LOGGING || 'false'),
+
+        // Investigation ID Generation
+        'process.env.REACT_APP_INVESTIGATION_ID_PREFIX': JSON.stringify(process.env.REACT_APP_INVESTIGATION_ID_PREFIX || 'inv'),
+        'process.env.REACT_APP_INVESTIGATION_ID_TIMESTAMP': JSON.stringify(process.env.REACT_APP_INVESTIGATION_ID_TIMESTAMP || 'true'),
+        'process.env.REACT_APP_INVESTIGATION_ID_CRYPTO_RANDOM': JSON.stringify(process.env.REACT_APP_INVESTIGATION_ID_CRYPTO_RANDOM || 'true'),
+        'process.env.REACT_APP_INVESTIGATION_ID_RANDOM_LENGTH': JSON.stringify(process.env.REACT_APP_INVESTIGATION_ID_RANDOM_LENGTH || '8'),
+
+        // Cache Configuration
+        'process.env.REACT_APP_CACHE_CLEAR_LOCAL_STORAGE': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_LOCAL_STORAGE || 'true'),
+        'process.env.REACT_APP_CACHE_CLEAR_SESSION_STORAGE': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_SESSION_STORAGE || 'true'),
+        'process.env.REACT_APP_CACHE_CLEAR_HTTP_CACHE': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_HTTP_CACHE || 'true'),
+        'process.env.REACT_APP_CACHE_PRESERVE_LOCAL_STORAGE': JSON.stringify(process.env.REACT_APP_CACHE_PRESERVE_LOCAL_STORAGE || 'auth-,user-profile,theme-preference'),
+        'process.env.REACT_APP_CACHE_PRESERVE_SESSION_STORAGE': JSON.stringify(process.env.REACT_APP_CACHE_PRESERVE_SESSION_STORAGE || 'csrf-token,session-id'),
+        'process.env.REACT_APP_CACHE_CLEAR_INDEXED_DB': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_INDEXED_DB || 'false'),
+        'process.env.REACT_APP_CACHE_CLEAR_COOKIES': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_COOKIES || 'false'),
+        'process.env.REACT_APP_CACHE_CLEAR_CACHE_STORAGE': JSON.stringify(process.env.REACT_APP_CACHE_CLEAR_CACHE_STORAGE || 'false'),
+
+        // Hybrid Graph Configuration
+        'process.env.REACT_APP_MAX_CONCURRENT_INVESTIGATIONS': JSON.stringify(process.env.REACT_APP_MAX_CONCURRENT_INVESTIGATIONS || '5'),
+        'process.env.REACT_APP_MAX_INVESTIGATION_HISTORY': JSON.stringify(process.env.REACT_APP_MAX_INVESTIGATION_HISTORY || '50'),
+        'process.env.REACT_APP_INVESTIGATION_HISTORY_STORAGE_KEY': JSON.stringify(process.env.REACT_APP_INVESTIGATION_HISTORY_STORAGE_KEY || 'olorin_investigation_history'),
+        'process.env.REACT_APP_MAX_LOG_ENTRIES_DISPLAY': JSON.stringify(process.env.REACT_APP_MAX_LOG_ENTRIES_DISPLAY || '100'),
+        'process.env.REACT_APP_MAX_FINDINGS_PER_PAGE': JSON.stringify(process.env.REACT_APP_MAX_FINDINGS_PER_PAGE || '20'),
+        'process.env.REACT_APP_MAX_EVIDENCE_PER_FINDING': JSON.stringify(process.env.REACT_APP_MAX_EVIDENCE_PER_FINDING || '10'),
+        'process.env.REACT_APP_MAX_TOOL_EXECUTIONS_DISPLAY': JSON.stringify(process.env.REACT_APP_MAX_TOOL_EXECUTIONS_DISPLAY || '50'),
+
+        // Module Federation URLs
+>>>>>>> 001-modify-analyzer-method
         'process.env.REACT_APP_MF_SHELL_URL': JSON.stringify('http://localhost:3000'),
         'process.env.REACT_APP_MF_INVESTIGATION_URL': JSON.stringify('http://localhost:3001'),
         'process.env.REACT_APP_MF_AGENT_ANALYTICS_URL': JSON.stringify('http://localhost:3002'),
@@ -427,8 +621,14 @@ module.exports = (env, argv) => {
 
     devServer: {
       port: serviceConfig.port,
+<<<<<<< HEAD
       hot: true,
       liveReload: true,
+=======
+      host: 'localhost',
+      hot: true,
+      liveReload: false, // Disable liveReload when hot is enabled to prevent conflicts
+>>>>>>> 001-modify-analyzer-method
       historyApiFallback: true,
       allowedHosts: 'all',
       headers: {
@@ -439,14 +639,31 @@ module.exports = (env, argv) => {
         'X-Service-Version': '1.0.0',
         'X-Build-Timestamp': new Date().toISOString()
       },
+<<<<<<< HEAD
+=======
+      webSocketServer: {
+        type: 'ws'
+      },
+>>>>>>> 001-modify-analyzer-method
       client: {
         overlay: {
           errors: true,
           warnings: isDevelopment && currentService === 'shell' // Only show warnings for shell in dev
         },
+<<<<<<< HEAD
         logging: currentService === 'shell' ? 'info' : 'warn', // Verbose logging only for shell
         progress: true,
         reconnect: 5
+=======
+        logging: 'none', // Suppress webpack-dev-server logs
+        progress: true,
+        reconnect: 5, // Number of reconnection attempts
+        webSocketURL: {
+          protocol: process.env.WS_PROTOCOL || 'ws',
+          hostname: process.env.WS_HOSTNAME || 'localhost',
+          port: process.env.WS_PORT || serviceConfig.port
+        }
+>>>>>>> 001-modify-analyzer-method
       },
       static: {
         directory: path.join(__dirname, 'public'),
@@ -470,6 +687,7 @@ module.exports = (env, argv) => {
         writeToDisk: false
       },
       // Service-specific proxy configurations for API calls
+<<<<<<< HEAD
       proxy: currentService === 'shell' ? {
         '/api': {
           target: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
@@ -486,6 +704,23 @@ module.exports = (env, argv) => {
       } : undefined,
       compress: true,
       open: currentService === 'shell' // Only auto-open shell service
+=======
+      // Convert to array format for webpack dev server v5
+      proxy: currentService === 'shell' ? [
+        {
+          context: ['/api'],
+          target: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090',
+          changeOrigin: true,
+          secure: false,
+          logLevel: 'warn',
+          pathRewrite: {
+            '^/api': ''
+          }
+        }
+      ] : undefined,
+      compress: true,
+      open: currentService === 'shell' ? 'http://localhost:3000' : false // Auto-open shell with explicit URL
+>>>>>>> 001-modify-analyzer-method
     },
 
     optimization: {

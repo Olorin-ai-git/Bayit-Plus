@@ -4,7 +4,11 @@
 **Date**: 2025-09-06  
 **Version**: 1.0  
 **Status**: ⏳ PHASE 4 PLANNING - Ready for Implementation  
+<<<<<<< HEAD
 **Branch**: feature/plan-2025-09-06-autonomous-investigation-orchestrator  
+=======
+**Branch**: feature/plan-2025-09-06-structured-investigation-orchestrator  
+>>>>>>> 001-modify-analyzer-method
 **Previous Phases**: Phase 1 ✅ COMPLETED, Phase 2 ✅ COMPLETED, Phase 3 ✅ COMPLETED  
 **Diagram**: [Deployment Coordination Architecture Visualization](/docs/diagrams/deployment-coordination-monitoring-architecture-2025-09-06.html)
 

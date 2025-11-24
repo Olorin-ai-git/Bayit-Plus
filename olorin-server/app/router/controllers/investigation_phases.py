@@ -1,26 +1,25 @@
 """
-Investigation Phases for Autonomous Investigations
-This module contains the individual phase execution logic for autonomous investigations.
+Investigation Phases for Structured Investigations
+This module contains the individual phase execution logic for structured investigations.
 """
 import json
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 
-from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
+from app.service.logging.autonomous_investigation_logger import structured_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker, NodeType, NodeStatus
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
-from app.router.handlers.websocket_handler import notify_websocket_connections
+from app.router.models.autonomous_investigation_models import StructuredInvestigationRequest
 from app.router.controllers.investigation_controller import update_investigation_status
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
 
-async def execute_agent_initialization_phase(investigation_id: str, request: AutonomousInvestigationRequest):
+async def execute_agent_initialization_phase(investigation_id: str, request: StructuredInvestigationRequest):
     """Execute the agent initialization phase"""
     # Always log phases for monitoring and testing
-    autonomous_investigation_logger.log_investigation_progress(
+    structured_investigation_logger.log_investigation_progress(
         investigation_id=investigation_id,
         progress_type="phase_progress",
         current_phase="agent_initialization",
@@ -48,18 +47,11 @@ async def execute_agent_initialization_phase(investigation_id: str, request: Aut
         "progress_percentage": 5.0,
         "status": "in_progress"
     })
-    
-    await notify_websocket_connections(investigation_id, {
-        "type": "phase_update",
-        "phase": "agent_initialization",
-        "progress": 5.0,
-        "description": "Creating REAL LangGraph agent workflows"
-    })
-    
-    # Create REAL agent graph (parallel for autonomous mode)
+
+    # Create REAL agent graph (hybrid graph is now the default)
     logger.info(f"🔧 Creating REAL LangGraph agent system for {investigation_id}")
     from app.service.agent.agent import create_and_get_agent_graph
-    agent_graph = await create_and_get_agent_graph(parallel=True)
+    agent_graph = await create_and_get_agent_graph(parallel=True, investigation_id=investigation_id)  # Hybrid graph selected by default when investigation_id is provided
     
     # Complete initialization phase
     journey_tracker.track_node_execution(
@@ -86,10 +78,10 @@ async def execute_agent_initialization_phase(investigation_id: str, request: Aut
     return agent_graph
 
 
-async def execute_context_preparation_phase(investigation_id: str, investigation_context: Dict[str, Any], request: AutonomousInvestigationRequest):
+async def execute_context_preparation_phase(investigation_id: str, investigation_context: Dict[str, Any], request: StructuredInvestigationRequest):
     """Execute the context preparation phase"""
     # Always log phases for monitoring and testing
-    autonomous_investigation_logger.log_investigation_progress(
+    structured_investigation_logger.log_investigation_progress(
         investigation_id=investigation_id,
         progress_type="phase_progress",
         current_phase="context_preparation",
@@ -116,14 +108,7 @@ async def execute_context_preparation_phase(investigation_id: str, investigation
         "current_phase": "context_preparation",
         "progress_percentage": 15.0
     })
-    
-    await notify_websocket_connections(investigation_id, {
-        "type": "phase_update",
-        "phase": "context_preparation",
-        "progress": 15.0,
-        "description": "Preparing REAL agent context with investigation data"
-    })
-    
+
     # Create REAL agent context
     logger.info(f"🧠 Creating REAL agent context for {investigation_id}")
     

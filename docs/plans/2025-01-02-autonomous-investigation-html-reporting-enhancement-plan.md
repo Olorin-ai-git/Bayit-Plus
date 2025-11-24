@@ -1,4 +1,4 @@
-# Autonomous Investigation HTML Reporting Enhancement Plan
+# Structured Investigation HTML Reporting Enhancement Plan
 
 **Author**: Gil Klainert  
 **Date**: 2025-01-02  
@@ -7,9 +7,9 @@
 
 ## Executive Summary
 
-This plan enhances the autonomous investigation test flow to generate comprehensive HTML reports with rich visualizations and detailed analysis. Building upon the existing markdown reporting system in `reports/test-runs/`, this enhancement provides professional test reporting capabilities with interactive dashboards, real-time updates, and advanced analytics.
+This plan enhances the structured investigation test flow to generate comprehensive HTML reports with rich visualizations and detailed analysis. Building upon the existing markdown reporting system in `reports/test-runs/`, this enhancement provides professional test reporting capabilities with interactive dashboards, real-time updates, and advanced analytics.
 
-**Current State**: Basic markdown reports (`autonomous_test_report_2025-09-01_20-55.md`) with text-based metrics  
+**Current State**: Basic markdown reports (`structured_test_report_2025-09-01_20-55.md`) with text-based metrics  
 **Target State**: Interactive HTML reports with charts, dashboards, real-time WebSocket updates, and PDF export capabilities
 
 ## Current System Analysis
@@ -22,7 +22,7 @@ This plan enhances the autonomous investigation test flow to generate comprehens
 - **Integration**: Live OpenAI/Anthropic API calls with cost monitoring
 
 ### Test Execution Infrastructure ✅ IDENTIFIED
-- **File**: `tests/integration/test_autonomous_investigation.py` (1000+ lines - needs refactoring)
+- **File**: `tests/integration/test_structured_investigation.py` (1000+ lines - needs refactoring)
 - **Test Types**: E2E lifecycle, concurrent investigations, webhook testing, error handling
 - **Performance**: 67-74 seconds for 3 concurrent investigations
 - **Agents**: Network, Device, Location, Logs, Risk with real AI analysis
@@ -241,7 +241,7 @@ class AgentHealthMonitor:
 ```
 
 ### Integration with Existing Tests
-- Modify `tests/integration/test_autonomous_investigation.py`
+- Modify `tests/integration/test_structured_investigation.py`
 - Add metrics collection to each test method
 - Integrate with existing `api_cost_monitor` fixture
 - Extend `real_investigation_context` with performance tracking
@@ -705,7 +705,7 @@ def pytest_sessionfinish(session, exitstatus):
 
 ## Conclusion
 
-This comprehensive HTML reporting enhancement transforms the Olorin autonomous investigation testing from basic markdown reports to professional, interactive dashboards. The phased approach ensures systematic implementation while maintaining existing functionality. The final system provides real-time insights, advanced analytics, and professional reporting capabilities essential for enterprise fraud detection platform testing.
+This comprehensive HTML reporting enhancement transforms the Olorin structured investigation testing from basic markdown reports to professional, interactive dashboards. The phased approach ensures systematic implementation while maintaining existing functionality. The final system provides real-time insights, advanced analytics, and professional reporting capabilities essential for enterprise fraud detection platform testing.
 
 **Key Benefits**:
 - **Professional Presentation**: Interactive dashboards with modern UI

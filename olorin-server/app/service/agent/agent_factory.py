@@ -1,7 +1,7 @@
 """
 Agent Factory and Configuration
 
-Factory functions for creating and configuring autonomous investigation agents.
+Factory functions for creating and configuring structured investigation agents.
 Handles agent creation, tool binding, and domain-specific configuration.
 """
 
@@ -104,7 +104,7 @@ class AgentFactory:
             logger.info(f"Created RAG-enhanced {domain} agent with {len(tools)} tools")
             return agent
         else:
-            agent = create_autonomous_agent(domain, tools)
+            agent = create_structured_agent(domain, tools)
             self.stats["standard_agents_created"] += 1
             return agent
     
@@ -138,7 +138,7 @@ class AgentFactory:
         self.stats["agents_created"] += 1
         self.stats["standard_agents_created"] += 1
         
-        agent = create_autonomous_agent(domain, tools)
+        agent = create_structured_agent(domain, tools)
         logger.info(f"Created standard {domain} agent with {len(tools)} tools")
         return agent
     
@@ -167,7 +167,7 @@ class AgentFactory:
         
         Args:
             domain: Investigation domain
-            investigation_context: AutonomousInvestigationContext for recommendations
+            investigation_context: StructuredInvestigationContext for recommendations
             fallback_tools: Static tools to use as fallback
             categories: Optional tool categories for filtering
             tool_names: Optional specific tool names to include
@@ -353,22 +353,22 @@ def get_standard_factory() -> AgentFactory:
     return AgentFactory(enable_rag=False)
 
 
-def create_autonomous_agent(domain: str, tools: List[Any]):
+def create_structured_agent(domain: str, tools: List[Any]):
     """
-    Create a standard autonomous investigation agent for the specified domain.
+    Create a standard structured investigation agent for the specified domain.
     
     Args:
         domain: Investigation domain (network, device, location, logs, risk, authentication)
         tools: List of available tools for the agent
         
     Returns:
-        Configured AutonomousInvestigationAgent instance (standard, non-RAG)
+        Configured StructuredInvestigationAgent instance (standard, non-RAG)
     """
     try:
-        from app.service.agent.base_agents import AutonomousInvestigationAgent
+        from app.service.agent.base_agents import StructuredInvestigationAgent
         
-        agent = AutonomousInvestigationAgent(domain, tools)
-        logger.info(f"Created autonomous {domain} agent with {len(tools)} tools")
+        agent = StructuredInvestigationAgent(domain, tools)
+        logger.info(f"Created structured {domain} agent with {len(tools)} tools")
         return agent
     except Exception as e:
         logger.error(f"Failed to create {domain} agent: {str(e)}")
@@ -535,21 +535,21 @@ def initialize_llm_with_tools(tools: List[Any]) -> Any:
         LLM instance with bound tools
     """
     try:
-        from app.service.agent.base_agents import get_autonomous_llm
+        from app.service.agent.base_agents import get_structured_llm
         
-        autonomous_llm_instance = get_autonomous_llm()
+        structured_llm_instance = get_structured_llm()
         
         if tools:
-            llm_with_tools = autonomous_llm_instance.bind_tools(tools)
+            llm_with_tools = structured_llm_instance.bind_tools(tools)
             logger.info(f"Initialized LLM with {len(tools)} tools")
             return llm_with_tools
         else:
             logger.warning("No tools provided for LLM initialization")
-            return autonomous_llm_instance
+            return structured_llm_instance
     except Exception as e:
         logger.error(f"Failed to initialize LLM with tools: {str(e)}")
-        from app.service.agent.base_agents import get_autonomous_llm
-        return get_autonomous_llm()
+        from app.service.agent.base_agents import get_structured_llm
+        return get_structured_llm()
 
 
 def create_agent(domain: str, tools: List[Any], enable_rag: bool = True):
@@ -561,7 +561,7 @@ def create_rag_agent(domain: str, tools: List[Any], rag_config: Optional[Context
     """Create a RAG-enhanced agent."""
     if not RAG_AVAILABLE:
         logger.warning("RAG not available - creating standard agent")
-        return create_autonomous_agent(domain, tools)
+        return create_structured_agent(domain, tools)
     
     factory = get_rag_enhanced_factory()
     return factory.create_rag_enhanced_agent(domain, tools, rag_config)

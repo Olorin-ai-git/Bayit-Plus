@@ -66,10 +66,16 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         # Generate aggregation narrative
         aggregation_narrative = _generate_aggregation_narrative(facts, domain_findings)
         
+<<<<<<< HEAD
         # Determine fraud floor status for narrative (handle both boolean and integer)
         is_fraud_tx = facts.get("IS_FRAUD_TX")
         fraud_floor = bool(
             (is_fraud_tx is True or is_fraud_tx == 1) or
+=======
+        # Determine fraud floor status for narrative
+        # CRITICAL: IS_FRAUD_TX removed - must not use ground truth labels during investigation
+        fraud_floor = bool(
+>>>>>>> 001-modify-analyzer-method
             facts.get("chargeback_confirmed") or
             facts.get("manual_case_outcome") == "fraud"
         )
@@ -149,6 +155,7 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
             }
         }
         
+<<<<<<< HEAD
         # Synthesize domain findings
         _synthesize_domain_findings(domain_findings, risk_findings)
         
@@ -157,6 +164,34 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         
         # Analyze cross-domain patterns
         _analyze_cross_domain_patterns(domain_findings, risk_findings)
+=======
+        # Synthesize domain findings (basic aggregation)
+        _synthesize_domain_findings(domain_findings, risk_findings)
+        
+        # CRITICAL: Use LLM to synthesize all domain findings with accumulated LLM thoughts
+        try:
+            llm_synthesis = await _synthesize_with_llm(
+                domain_findings=domain_findings,
+                snowflake_data=snowflake_data,
+                tool_results=state.get("tool_results", {}),
+                entity_type=entity_type,
+                entity_id=entity_id,
+                computed_risk_score=real_risk_score
+            )
+            
+            # Store LLM synthesis results
+            risk_findings["llm_analysis"] = llm_synthesis
+            risk_findings["narrative"] = llm_synthesis.get("reasoning", risk_findings.get("narrative", ""))
+            risk_findings["recommendations"] = llm_synthesis.get("recommendations", "")
+            risk_findings["risk_factors"] = llm_synthesis.get("risk_factors", "")
+            
+            logger.info(f"[Step 5.2.6] ✅ LLM synthesis complete - Cross-domain patterns identified")
+        except Exception as e:
+            logger.warning(f"[Step 5.2.6] ⚠️ LLM synthesis failed: {e}, using algorithmic synthesis")
+            # Fallback to algorithmic synthesis
+            _generate_risk_narrative(facts, domain_findings, risk_findings)
+            _analyze_cross_domain_patterns(domain_findings, risk_findings)
+>>>>>>> 001-modify-analyzer-method
         
         # Calculate investigation confidence
         _calculate_investigation_confidence(state, risk_findings)
@@ -165,12 +200,19 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         risk_findings["evidence_summary"] = {
             "domains_synthesized": len(domain_findings),
             "total_risk_indicators": len(risk_indicators),
+<<<<<<< HEAD
             "confidence_level": risk_findings["confidence"]  # Use REAL calculated confidence
         }
         
         # NARRATIVE-ONLY: Generate synthesis narrative (no LLM scoring)
         # Risk domain provides narrative context without numeric score emission
         
+=======
+            "confidence_level": risk_findings["confidence"],  # Use REAL calculated confidence
+            "llm_synthesis_used": "llm_analysis" in risk_findings
+        }
+        
+>>>>>>> 001-modify-analyzer-method
         # Finalize findings
         analysis_duration = time.time() - start_time
         DomainAgentBase.finalize_findings(
@@ -183,6 +225,28 @@ async def risk_agent_node(state: InvestigationState, config: Optional[Dict] = No
         
         logger.info(f"[Step 5.2.6] ✅ Risk synthesis complete - Narrative-only domain with {len(risk_findings.get('evidence', []))} synthesis points")
         
+<<<<<<< HEAD
+=======
+        # Calculate per-transaction risk scores
+        try:
+            # Extract entity info for advanced features
+            entity_type = state.get("entity_type")
+            entity_value = state.get("entity_id")
+            transaction_scores = _calculate_per_transaction_scores(
+                facts, domain_findings, entity_type=entity_type, entity_value=entity_value
+            )
+            if transaction_scores:
+                # Store transaction_scores in state for later persistence
+                state["transaction_scores"] = transaction_scores
+                logger.info(f"[Step 5.2.6] ✅ Per-transaction scores calculated: {len(transaction_scores)} transactions")
+            else:
+                logger.warning(f"[Step 5.2.6] ⚠️ No per-transaction scores calculated")
+        except Exception as e:
+            logger.error(f"[Step 5.2.6] ❌ Per-transaction score calculation failed: {e}", exc_info=True)
+            # Continue with investigation even if per-transaction scoring fails
+            state["transaction_scores"] = {}
+        
+>>>>>>> 001-modify-analyzer-method
         # Update state with risk findings
         return add_domain_findings(state, "risk", risk_findings)
     
@@ -263,6 +327,7 @@ def _generate_aggregation_narrative(facts: Dict[str, Any], domain_findings: Dict
     """Generate narrative explaining aggregation decisions."""
     narrative_parts = []
     
+<<<<<<< HEAD
     # Check for hard evidence that triggers fraud floor (handle both boolean and integer)
     hard_evidence = []
     is_fraud_tx = facts.get("IS_FRAUD_TX")
@@ -270,6 +335,13 @@ def _generate_aggregation_narrative(facts: Dict[str, Any], domain_findings: Dict
         hard_evidence.append("confirmed fraud transaction")
     if facts.get("chargeback_confirmed") is True:
         hard_evidence.append("confirmed chargeback")
+=======
+    # Check for hard evidence that triggers fraud floor
+    # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+    # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+    # Only manual case outcomes can be used (if provided externally, not from Snowflake)
+    hard_evidence = []
+>>>>>>> 001-modify-analyzer-method
     if facts.get("manual_case_outcome") == "fraud":
         hard_evidence.append("manual fraud determination")
     
@@ -325,10 +397,19 @@ def _generate_risk_narrative(facts: Dict[str, Any], domain_findings: Dict[str, A
 def _analyze_cross_domain_patterns(domain_findings: Dict[str, Any], risk_findings: Dict[str, Any]) -> None:
     """Analyze patterns across multiple domains (narrative only)."""
     if len(domain_findings) >= 3:
+<<<<<<< HEAD
         high_risk_domains = [
             d for d, f in domain_findings.items() 
             if isinstance(f, dict) and f.get("risk_score", 0) is not None and f.get("risk_score", 0) > 0.6
         ]
+=======
+        high_risk_domains = []
+        for d, f in domain_findings.items():
+            if isinstance(f, dict):
+                risk_score = f.get("risk_score")
+                if risk_score is not None and risk_score > 0.6:
+                    high_risk_domains.append(d)
+>>>>>>> 001-modify-analyzer-method
         
         if len(high_risk_domains) >= 2:
             risk_findings["evidence"].append(f"Cross-domain pattern: {len(high_risk_domains)} domains ({', '.join(high_risk_domains)}) show elevated risk")
@@ -364,12 +445,18 @@ def _calculate_investigation_confidence(state: InvestigationState, risk_findings
 
 def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str, Any]) -> float:
     """Calculate REAL risk score based on actual domain analysis results with volume weighting."""
+<<<<<<< HEAD
     # Check for confirmed fraud indicators (handle both boolean True and integer 1)
     is_fraud_tx = facts.get("IS_FRAUD_TX")
     if is_fraud_tx is True or is_fraud_tx == 1:
         return 1.0
     if facts.get("chargeback_confirmed") is True:
         return 0.95
+=======
+    # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+    # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+    # Only manual case outcomes can be used (if provided externally, not from Snowflake)
+>>>>>>> 001-modify-analyzer-method
     if facts.get("manual_case_outcome") == "fraud":
         return 0.9
 
@@ -438,6 +525,7 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
             logger.warning(f"⚠️ No domain scores available, using volume-weighted transaction risk: {volume_weighted_risk:.3f}")
             return volume_weighted_risk
         else:
+<<<<<<< HEAD
             # Fallback to simple model scores
             model_scores = []
             for result in facts.get("results", []):
@@ -454,6 +542,10 @@ def _calculate_real_risk_score(domain_findings: Dict[str, Any], facts: Dict[str,
             else:
                 # No valid data available - investigation should not continue with numeric scoring
                 raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
+=======
+            # No valid data available - investigation should not continue with numeric scoring
+            raise ValueError("CRITICAL: Insufficient REAL data for risk calculation - investigation cannot produce valid numeric risk score")
+>>>>>>> 001-modify-analyzer-method
 
     # Calculate confidence-weighted mean of domain scores
     total_weight = sum(weight for _, weight in weighted_scores)
@@ -554,4 +646,1012 @@ def _calculate_real_confidence(domain_findings: Dict[str, Any], tools_used: List
     else:
         weighted_confidence = confidence_factors[0]
 
+<<<<<<< HEAD
     return min(1.0, max(0.0, weighted_confidence))
+=======
+    return min(1.0, max(0.0, weighted_confidence))
+
+
+async def _synthesize_with_llm(
+    domain_findings: Dict[str, Any],
+    snowflake_data: Dict[str, Any],
+    tool_results: Dict[str, Any],
+    entity_type: str,
+    entity_id: str,
+    computed_risk_score: float
+) -> Dict[str, Any]:
+    """
+    Synthesize all domain findings using LLM to generate comprehensive cross-domain analysis.
+    
+    This function:
+    1. Collects all domain LLM analyses and risk scores
+    2. Detects cross-domain patterns (contradictions, correlations)
+    3. Identifies velocity bursts and amount clustering
+    4. Extracts specific values (IPs, devices, emails) for recommendations
+    5. Provides prioritized, actionable recommendations
+    """
+    from app.service.agent.evidence_analyzer import get_evidence_analyzer
+    
+    logger.info("[Step 5.2.6] 🧠 Starting LLM synthesis of all domain findings")
+    
+    # Collect domain LLM analyses and risk scores
+    domain_llm_analyses = {}
+    domain_risk_scores = {}
+    
+    for domain_name, findings in domain_findings.items():
+        if isinstance(findings, dict):
+            # Extract LLM analysis if available
+            llm_analysis = findings.get("llm_analysis", {})
+            if llm_analysis:
+                domain_llm_analyses[domain_name] = {
+                    "risk_score": findings.get("risk_score"),
+                    "confidence": llm_analysis.get("confidence"),
+                    "risk_factors": llm_analysis.get("risk_factors", ""),
+                    "reasoning": llm_analysis.get("reasoning", ""),
+                    "recommendations": llm_analysis.get("recommendations", ""),
+                    "llm_response": llm_analysis.get("llm_response", "")
+                }
+            else:
+                # Fallback: use basic findings
+                domain_llm_analyses[domain_name] = {
+                    "risk_score": findings.get("risk_score"),
+                    "confidence": findings.get("confidence"),
+                    "evidence": findings.get("evidence", []),
+                    "risk_indicators": findings.get("risk_indicators", [])
+                }
+            
+            domain_risk_scores[domain_name] = findings.get("risk_score")
+    
+    # Format domain analyses for LLM
+    domain_analyses_text = _format_domain_analyses_for_synthesis(domain_llm_analyses)
+    
+    # Detect patterns in Snowflake data
+    patterns_text = _detect_patterns_in_data(snowflake_data)
+    
+    # Format tool results
+    tool_results_text = _format_tool_results_for_synthesis(tool_results)
+    
+    # Create synthesis prompt
+    synthesis_prompt = f"""Synthesize findings from all domain analyses to provide comprehensive fraud risk assessment.
+
+## Entity Information
+- Type: {entity_type}
+- ID: {entity_id}
+- Overall Risk Score: {computed_risk_score:.3f}
+
+## Domain Analyses
+{domain_analyses_text}
+
+## Transaction Patterns Detected
+{patterns_text}
+
+## Tool Execution Results
+{tool_results_text}
+
+## Synthesis Requirements
+
+CRITICAL TASKS:
+1. **Cross-Domain Pattern Detection:**
+   - Identify contradictions (e.g., device consistency + IP rotation)
+   - Detect correlations across domains
+   - Explain why patterns are suspicious or legitimate
+
+2. **Velocity & Amount Pattern Analysis:**
+   - Identify velocity bursts (multiple transactions in short time)
+   - Detect identical amounts in rapid succession
+   - Correlate timing patterns with IP/device changes
+   - Flag templated/batch processing patterns
+
+3. **Extract Specific Values:**
+   - Extract exact IP addresses mentioned in analyses
+   - Extract device fingerprints
+   - Extract email addresses
+   - Extract transaction amounts and timing patterns
+
+4. **Data Gap Analysis:**
+   - List specific missing data sources
+   - Explain impact on assessment confidence
+   - Prioritize which gaps are most critical
+
+5. **Prioritized Recommendations:**
+   - Provide specific, actionable recommendations with exact values
+   - Prioritize by criticality (CRITICAL, HIGH, MEDIUM, LOW)
+   - Include exact IPs, devices, emails to check
+   - Format as actionable checklists
+
+## Output Format
+
+Provide comprehensive synthesis with:
+
+1. **RISK FACTORS:**
+   - List key risk factors identified across domains
+   - Highlight cross-domain patterns and contradictions
+   - Include velocity bursts and amount clustering patterns
+
+2. **REASONING:**
+   - Comprehensive multi-paragraph explanation
+   - Synthesize domain findings (don't just list them)
+   - Explain cross-domain patterns
+   - Reference specific evidence and anomalies
+
+3. **RECOMMENDATIONS:**
+   - Prioritized list with exact values to check
+   - Format: [PRIORITY] Action: specific_value
+   - Include IPs, devices, emails extracted from analysis
+   - Provide specific verification steps
+
+4. **DATA GAPS:**
+   - List missing data sources
+   - Explain impact on confidence
+   - Prioritize critical gaps
+
+Focus on actionable insights and specific values for investigation."""
+    
+    # Use evidence analyzer for synthesis (reuse existing LLM infrastructure)
+    evidence_analyzer = get_evidence_analyzer()
+    
+    # Create system prompt for synthesis
+    system_prompt = """You are a fraud risk synthesis expert specializing in cross-domain pattern analysis and comprehensive risk assessment.
+
+Your task is to synthesize findings from multiple domain analyses (network, device, location, logs, authentication) to provide:
+1. Cross-domain pattern detection and explanation
+2. Velocity burst and amount clustering identification
+3. Specific value extraction for actionable recommendations
+4. Data gap analysis with impact assessment
+5. Prioritized, specific recommendations with exact values
+
+CRITICAL: Extract specific values (IPs, devices, emails) from domain analyses and include them in recommendations.
+CRITICAL: Identify contradictions and correlations across domains.
+CRITICAL: Detect velocity bursts and identical amount patterns."""
+    
+    try:
+        # Call LLM for synthesis
+        from langchain_core.messages import SystemMessage, HumanMessage
+        
+        system_msg = SystemMessage(content=system_prompt)
+        human_msg = HumanMessage(content=synthesis_prompt)
+        
+        logger.info("[Step 5.2.6] 🤖 Invoking LLM for cross-domain synthesis...")
+        response = await evidence_analyzer.llm.ainvoke([system_msg, human_msg])
+        
+        # Parse response
+        response_content = response.content if hasattr(response, 'content') else response
+        if isinstance(response_content, dict):
+            response_content = response_content.get('content', str(response_content))
+        
+        # Parse synthesis result
+        synthesis_result = _parse_synthesis_response(response_content, computed_risk_score)
+        
+        logger.info("[Step 5.2.6] ✅ LLM synthesis complete")
+        return synthesis_result
+        
+    except Exception as e:
+        logger.error(f"❌ LLM synthesis failed: {e}")
+        # Return fallback synthesis
+        return {
+            "risk_factors": "Synthesis failed - using algorithmic aggregation",
+            "reasoning": f"LLM synthesis unavailable: {str(e)}",
+            "recommendations": "Manual review recommended",
+            "llm_response": str(response_content) if 'response_content' in locals() else ""
+        }
+
+
+def _format_domain_analyses_for_synthesis(domain_llm_analyses: Dict[str, Any]) -> str:
+    """Format domain LLM analyses for synthesis prompt."""
+    formatted = []
+    
+    for domain_name, analysis in domain_llm_analyses.items():
+        formatted.append(f"\n### {domain_name.upper()} Domain:")
+        formatted.append(f"- Risk Score: {analysis.get('risk_score', 'N/A')}")
+        formatted.append(f"- Confidence: {analysis.get('confidence', 'N/A')}")
+        
+        if analysis.get('risk_factors'):
+            formatted.append(f"- Risk Factors:\n{analysis['risk_factors']}")
+        
+        if analysis.get('reasoning'):
+            formatted.append(f"- Reasoning:\n{analysis['reasoning']}")
+        
+        if analysis.get('recommendations'):
+            formatted.append(f"- Recommendations:\n{analysis['recommendations']}")
+    
+    return "\n".join(formatted)
+
+
+def _detect_patterns_in_data(snowflake_data: Dict[str, Any]) -> str:
+    """Detect velocity bursts and amount clustering patterns in transaction data."""
+    if not isinstance(snowflake_data, dict) or "results" not in snowflake_data:
+        return "No transaction data available for pattern detection"
+    
+    results = snowflake_data["results"]
+    if not isinstance(results, list) or len(results) < 2:
+        return "Insufficient transaction data for pattern detection"
+    
+    # Extract transaction data
+    transactions = []
+    for result in results:
+        if isinstance(result, dict):
+            tx_id = result.get("TX_ID_KEY") or result.get("tx_id_key", "")
+            datetime_str = result.get("TX_DATETIME") or result.get("tx_datetime", "")
+            amount = result.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or result.get("paid_amount_value_in_currency", 0)
+            ip = result.get("IP") or result.get("ip", "")
+            device = result.get("DEVICE_ID") or result.get("device_id", "")
+            
+            try:
+                from datetime import datetime
+                tx_datetime = datetime.fromisoformat(str(datetime_str).replace('Z', '+00:00'))
+                transactions.append({
+                    "id": tx_id,
+                    "datetime": tx_datetime,
+                    "amount": float(amount) if amount else 0,
+                    "ip": ip,
+                    "device": device
+                })
+            except:
+                continue
+    
+    if len(transactions) < 2:
+        return "Insufficient valid transaction data for pattern detection"
+    
+    # Sort by datetime
+    transactions.sort(key=lambda x: x["datetime"])
+    
+    patterns = []
+    
+    # Detect velocity bursts (multiple transactions within short time)
+    for i in range(len(transactions) - 1):
+        time_diff = (transactions[i+1]["datetime"] - transactions[i]["datetime"]).total_seconds() / 60  # minutes
+        if time_diff <= 5:  # Within 5 minutes
+            patterns.append(f"Velocity burst detected: Transaction {i+1} and {i+2} within {time_diff:.1f} minutes")
+    
+    # Detect identical amounts
+    amount_groups = {}
+    for tx in transactions:
+        amount = tx["amount"]
+        if amount not in amount_groups:
+            amount_groups[amount] = []
+        amount_groups[amount].append(tx)
+    
+    for amount, tx_list in amount_groups.items():
+        if len(tx_list) >= 2:
+            patterns.append(f"Identical amount pattern: ${amount:,.2f} appears {len(tx_list)} times")
+            # Check if they're close in time
+            if len(tx_list) >= 2:
+                time_diffs = []
+                for i in range(len(tx_list) - 1):
+                    diff = (tx_list[i+1]["datetime"] - tx_list[i]["datetime"]).total_seconds() / 60
+                    time_diffs.append(diff)
+                if any(diff <= 5 for diff in time_diffs):
+                    patterns.append(f"  → Burst pattern: ${amount:,.2f} transactions within 5 minutes")
+    
+    # Detect IP rotation with same device
+    device_ip_map = {}
+    for tx in transactions:
+        device = tx["device"]
+        ip = tx["ip"]
+        if device not in device_ip_map:
+            device_ip_map[device] = set()
+        device_ip_map[device].add(ip)
+    
+    for device, ips in device_ip_map.items():
+        if len(ips) > 1:
+            patterns.append(f"IP rotation detected: Device {device[:30]}... used {len(ips)} different IPs: {', '.join(list(ips)[:3])}")
+    
+    if patterns:
+        return "\n".join(patterns)
+    else:
+        return "No significant patterns detected in transaction data"
+
+
+def _format_tool_results_for_synthesis(tool_results: Dict[str, Any]) -> str:
+    """Format tool results for synthesis prompt."""
+    if not tool_results:
+        return "No tool execution results available - CRITICAL DATA GAP"
+    
+    formatted = ["Tool Execution Results:"]
+    for tool_name, tool_content in tool_results.items():
+        formatted.append(f"\n- {tool_name}: {str(tool_content)[:200]}...")
+    
+    return "\n".join(formatted)
+
+
+def _parse_synthesis_response(response_content: str, computed_risk_score: float) -> Dict[str, Any]:
+    """Parse LLM synthesis response."""
+    import re
+    
+    # Extract sections
+    risk_factors = _extract_section(response_content, "risk factors")
+    reasoning = _extract_section(response_content, "reasoning")
+    recommendations = _extract_section(response_content, "recommendations")
+    data_gaps = _extract_section(response_content, "data gaps")
+    
+    return {
+        "risk_score": computed_risk_score,
+        "risk_factors": risk_factors or "Risk factors not clearly identified",
+        "reasoning": reasoning or response_content[:1000],  # Fallback to first 1000 chars
+        "recommendations": recommendations or "Recommendations not clearly identified",
+        "data_gaps": data_gaps or "",
+        "llm_response": response_content
+    }
+
+
+def _extract_section(text: str, section_name: str) -> str:
+    """Extract a specific section from LLM response."""
+    import re
+    
+    patterns = [
+        rf"(?:^|\n)\s*\*\*{section_name}[:\s]*\*\*[:\s]*([\s\S]*?)(?=\n\s*\*\*|\n\s*##|\n\s*$|$)",
+        rf"(?:^|\n)\s*#{1,3}\s*{section_name}[:\s]*([\s\S]*?)(?=\n\s*#|\n\s*$|$)",
+        rf"(?:^|\n)\s*\d+\.\s*\*\*{section_name}[:\s]*\*\*[:\s]*([\s\S]*?)(?=\n\s*\d+\.|\n\s*$|$)",
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+    
+    return ""
+
+
+# ============================================================================
+# Per-Transaction Risk Scoring Functions
+# ============================================================================
+
+def _validate_transaction_score(score: float) -> bool:
+    """
+    Validate that a transaction risk score is in valid range [0.0, 1.0].
+    
+    Args:
+        score: Risk score to validate
+        
+    Returns:
+        True if score is in valid range [0.0, 1.0], False otherwise
+    """
+    if not isinstance(score, (int, float)):
+        return False
+    return 0.0 <= score <= 1.0
+
+
+def _extract_transaction_features(tx: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extract and normalize transaction features for per-transaction scoring.
+    
+    CRITICAL: Must NOT access MODEL_SCORE or NSURE_LAST_DECISION per FR-005.
+    
+    Args:
+        tx: Transaction dictionary from facts["results"]
+        
+    Returns:
+        Dictionary with extracted features:
+        - amount: float (PAID_AMOUNT_VALUE_IN_CURRENCY)
+        - merchant: str (MERCHANT_NAME)
+        - device: str (DEVICE_ID)
+        - location: str (IP_COUNTRY_CODE)
+    """
+    features = {
+        "amount": tx.get("PAID_AMOUNT_VALUE_IN_CURRENCY") or 0.0,
+        "merchant": tx.get("MERCHANT_NAME") or None,
+        "device": tx.get("DEVICE_ID") or None,
+        "location": tx.get("IP_COUNTRY_CODE") or None,
+    }
+    
+    # Ensure amount is float
+    try:
+        features["amount"] = float(features["amount"]) if features["amount"] is not None else 0.0
+    except (ValueError, TypeError):
+        features["amount"] = 0.0
+    
+    return features
+
+
+def _count_critical_features(features: Dict[str, Any]) -> int:
+    """
+    Count available critical features (amount, merchant, device, location).
+    
+    Args:
+        features: Dictionary from _extract_transaction_features()
+        
+    Returns:
+        Number of critical features available (0-4)
+    """
+    count = 0
+    
+    # Amount is considered available if > 0
+    if features.get("amount", 0.0) > 0.0:
+        count += 1
+    
+    # Merchant, device, location are considered available if not None and not empty
+    if features.get("merchant"):
+        count += 1
+    if features.get("device"):
+        count += 1
+    if features.get("location"):
+        count += 1
+    
+    return count
+
+
+def _normalize_amount_feature(amount: float, max_amount: float) -> float:
+    """
+    Normalize transaction amount to [0,1] range based on max amount in investigation.
+    
+    Args:
+        amount: Transaction amount
+        max_amount: Maximum amount in investigation (for normalization)
+        
+    Returns:
+        Normalized amount in [0,1] range
+    """
+    if max_amount <= 0:
+        return 0.0
+    
+    normalized = amount / max_amount
+    return min(1.0, max(0.0, normalized))
+
+
+def _normalize_merchant_feature(merchant_name: Optional[str], domain_findings: Dict[str, Any]) -> float:
+    """
+    Extract merchant risk from domain findings.
+    
+    Checks merchant_risks dict first, falls back to aggregate merchant.risk_score.
+    
+    Args:
+        merchant_name: Merchant identifier from transaction
+        domain_findings: Domain findings dictionary
+        
+    Returns:
+        Merchant risk score in [0,1] range, or 0.5 if not found
+    """
+    if not merchant_name:
+        return 0.5  # Default moderate risk for missing merchant
+    
+    merchant_domain = domain_findings.get("merchant", {})
+    if not isinstance(merchant_domain, dict):
+        return 0.5
+    
+    # Check for entity-specific mapping first
+    merchant_risks = merchant_domain.get("merchant_risks", {})
+    if isinstance(merchant_risks, dict) and merchant_name in merchant_risks:
+        risk_score = merchant_risks[merchant_name]
+        if isinstance(risk_score, (int, float)) and 0 <= risk_score <= 1.0:
+            return float(risk_score)
+    
+    # Fallback to aggregate merchant risk score
+    aggregate_score = merchant_domain.get("risk_score")
+    if aggregate_score is not None:
+        try:
+            score_float = float(aggregate_score)
+            if 0 <= score_float <= 1.0:
+                return score_float
+        except (ValueError, TypeError):
+            pass
+    
+    return 0.5  # Default moderate risk
+
+
+def _normalize_device_feature(device_id: Optional[str], domain_findings: Dict[str, Any]) -> float:
+    """
+    Extract device risk from domain findings.
+    
+    Checks device_risks dict first, falls back to aggregate device.risk_score.
+    
+    Args:
+        device_id: Device identifier from transaction
+        domain_findings: Domain findings dictionary
+        
+    Returns:
+        Device risk score in [0,1] range, or 0.5 if not found
+    """
+    if not device_id:
+        return 0.5  # Default moderate risk for missing device
+    
+    device_domain = domain_findings.get("device", {})
+    if not isinstance(device_domain, dict):
+        return 0.5
+    
+    # Check for entity-specific mapping first
+    device_risks = device_domain.get("device_risks", {})
+    if isinstance(device_risks, dict) and device_id in device_risks:
+        risk_score = device_risks[device_id]
+        if isinstance(risk_score, (int, float)) and 0 <= risk_score <= 1.0:
+            return float(risk_score)
+    
+    # Fallback to aggregate device risk score
+    aggregate_score = device_domain.get("risk_score")
+    if aggregate_score is not None:
+        try:
+            score_float = float(aggregate_score)
+            if 0 <= score_float <= 1.0:
+                return score_float
+        except (ValueError, TypeError):
+            pass
+    
+    return 0.5  # Default moderate risk
+
+
+def _normalize_location_feature(location_code: Optional[str], domain_findings: Dict[str, Any]) -> float:
+    """
+    Extract location risk from domain findings.
+    
+    Checks location/network domain findings, falls back to aggregate risk_score.
+    
+    Args:
+        location_code: IP country code from transaction
+        domain_findings: Domain findings dictionary
+        
+    Returns:
+        Location risk score in [0,1] range, or 0.5 if not found
+    """
+    if not location_code:
+        return 0.5  # Default moderate risk for missing location
+    
+    # Check location domain first
+    location_domain = domain_findings.get("location", {})
+    if isinstance(location_domain, dict):
+        aggregate_score = location_domain.get("risk_score")
+        if aggregate_score is not None:
+            try:
+                score_float = float(aggregate_score)
+                if 0 <= score_float <= 1.0:
+                    return score_float
+            except (ValueError, TypeError):
+                pass
+    
+    # Fallback to network domain
+    network_domain = domain_findings.get("network", {})
+    if isinstance(network_domain, dict):
+        aggregate_score = network_domain.get("risk_score")
+        if aggregate_score is not None:
+            try:
+                score_float = float(aggregate_score)
+                if 0 <= score_float <= 1.0:
+                    return score_float
+            except (ValueError, TypeError):
+                pass
+    
+    return 0.5  # Default moderate risk
+
+
+def _calculate_feature_score(
+    normalized_amount: float,
+    normalized_merchant: float,
+    normalized_device: float,
+    normalized_location: float,
+    advanced_features: Optional[Dict[str, Any]] = None
+) -> float:
+    """
+    Calculate feature_score using normalized weighted average with advanced features.
+    
+    Base formula: (normalized_amount + normalized_merchant + normalized_device + normalized_location) / 4
+    Enhanced with: velocity, geovelocity, amount patterns, device stability, merchant consistency
+    
+    Args:
+        normalized_amount: Normalized amount feature [0,1]
+        normalized_merchant: Normalized merchant feature [0,1]
+        normalized_device: Normalized device feature [0,1]
+        normalized_location: Normalized location feature [0,1]
+        advanced_features: Optional advanced features dictionary
+        
+    Returns:
+        Enhanced feature score in [0,1] range
+    """
+    # Base feature score (60% weight)
+    base_score = (normalized_amount + normalized_merchant + normalized_device + normalized_location) / 4.0
+    
+    # Advanced features score (40% weight)
+    advanced_score = 0.0
+    if advanced_features:
+        # Velocity features (25% of advanced score)
+        velocity_score = min(1.0, (
+            (advanced_features.get("tx_per_5min_by_email", 0) / 10.0) * 0.33 +
+            (advanced_features.get("tx_per_5min_by_device", 0) / 10.0) * 0.33 +
+            (advanced_features.get("tx_per_5min_by_ip", 0) / 10.0) * 0.34
+        ))
+        
+        # Geovelocity features (25% of advanced score)
+        geovelocity_score = advanced_features.get("distance_anomaly_score", 0)
+        
+        # Amount patterns (20% of advanced score)
+        amount_score = advanced_features.get("amount_clustering_score", 0)
+        
+        # Device stability (15% of advanced score)
+        device_score = advanced_features.get("device_instability_score", 0)
+        
+        # Merchant consistency (15% of advanced score)
+        merchant_score = 1.0 - advanced_features.get("merchant_diversity_score", 0.5)  # Low diversity = higher risk
+        
+        # Weighted average of advanced features
+        advanced_score = (
+            velocity_score * 0.25 +
+            geovelocity_score * 0.25 +
+            amount_score * 0.20 +
+            device_score * 0.15 +
+            merchant_score * 0.15
+        )
+    
+    # Combine base and advanced scores
+    feature_score = (base_score * 0.6) + (advanced_score * 0.4)
+    return min(1.0, max(0.0, feature_score))
+
+
+def _calculate_domain_score(
+    tx: Dict[str, Any],
+    domain_findings: Dict[str, Any]
+) -> float:
+    """
+    Calculate confidence-weighted average of matched domain findings for a transaction.
+    
+    Properly matches transaction features to entity-specific mappings in domain findings:
+    - merchant → merchant_risks dict (entity-specific) or aggregate merchant.risk_score
+    - device → device_risks dict (entity-specific) or aggregate device.risk_score
+    - location → location/network domain findings
+    
+    Weights each domain by its confidence score, defaults to equal weights if confidence unavailable.
+    
+    Args:
+        tx: Transaction dictionary
+        domain_findings: Domain findings dictionary
+        
+    Returns:
+        Domain score in [0,1] range
+    """
+    matched_scores = []
+    weights = []
+    
+    # Match transaction features to domain findings
+    merchant_name = tx.get("MERCHANT_NAME")
+    device_id = tx.get("DEVICE_ID")
+    location_code = tx.get("IP_COUNTRY_CODE")
+    
+    # Merchant domain - check entity-specific mapping first
+    merchant_domain = domain_findings.get("merchant", {})
+    if isinstance(merchant_domain, dict):
+        score = None
+        confidence = merchant_domain.get("confidence", 0.5)
+        
+        # Check for entity-specific merchant_risks mapping first
+        if merchant_name:
+            merchant_risks = merchant_domain.get("merchant_risks", {})
+            if isinstance(merchant_risks, dict) and merchant_name in merchant_risks:
+                score = merchant_risks[merchant_name]
+        
+        # Fallback to aggregate merchant risk_score if no entity-specific mapping
+        if score is None:
+            score = merchant_domain.get("risk_score")
+        
+        if score is not None:
+            try:
+                score_float = float(score)
+                if 0 <= score_float <= 1.0:
+                    matched_scores.append(score_float)
+                    weights.append(float(confidence) if confidence is not None else 0.5)
+            except (ValueError, TypeError):
+                pass
+    
+    # Device domain - check entity-specific mapping first
+    device_domain = domain_findings.get("device", {})
+    if isinstance(device_domain, dict):
+        score = None
+        confidence = device_domain.get("confidence", 0.5)
+        
+        # Check for entity-specific device_risks mapping first
+        if device_id:
+            device_risks = device_domain.get("device_risks", {})
+            if isinstance(device_risks, dict) and device_id in device_risks:
+                score = device_risks[device_id]
+        
+        # Fallback to aggregate device risk_score if no entity-specific mapping
+        if score is None:
+            score = device_domain.get("risk_score")
+        
+        if score is not None:
+            try:
+                score_float = float(score)
+                if 0 <= score_float <= 1.0:
+                    matched_scores.append(score_float)
+                    weights.append(float(confidence) if confidence is not None else 0.5)
+            except (ValueError, TypeError):
+                pass
+    
+    # Location/Network domain - use aggregate score (no entity-specific mappings typically)
+    location_domain = domain_findings.get("location", {}) or domain_findings.get("network", {})
+    if isinstance(location_domain, dict):
+        score = location_domain.get("risk_score")
+        confidence = location_domain.get("confidence", 0.5)
+        if score is not None:
+            try:
+                score_float = float(score)
+                if 0 <= score_float <= 1.0:
+                    matched_scores.append(score_float)
+                    weights.append(float(confidence) if confidence is not None else 0.5)
+            except (ValueError, TypeError):
+                pass
+    
+    # Calculate weighted average
+    if not matched_scores:
+        return 0.5  # Default moderate risk if no domain scores available
+    
+    total_weight = sum(weights)
+    if total_weight > 0:
+        weighted_avg = sum(score * weight for score, weight in zip(matched_scores, weights)) / total_weight
+    else:
+        weighted_avg = sum(matched_scores) / len(matched_scores)
+    
+    return min(1.0, max(0.0, weighted_avg))
+
+
+def _calculate_per_transaction_score(
+    feature_score: float,
+    domain_score: float
+) -> float:
+    """
+    Calculate single transaction score using formula: tx_score = 0.6 * feature_score + 0.4 * domain_score
+    
+    Args:
+        feature_score: Feature score in [0,1] range
+        domain_score: Domain score in [0,1] range
+        
+    Returns:
+        Transaction risk score in [0,1] range
+    """
+    tx_score = (0.6 * feature_score) + (0.4 * domain_score)
+    return min(1.0, max(0.0, tx_score))
+
+
+def _calculate_per_transaction_scores(
+    facts: Dict[str, Any],
+    domain_findings: Dict[str, Any],
+    entity_type: Optional[str] = None,
+    entity_value: Optional[str] = None
+) -> Dict[str, float]:
+    """
+    Process all transactions in facts["results"], validate features, calculate scores.
+    
+    CRITICAL: Must NOT use MODEL_SCORE or NSURE_LAST_DECISION per FR-005.
+    
+    Features:
+    - Batch processing for large volumes (100 transactions per batch)
+    - Timeout handling to ensure completion within investigation timeout
+    - Comprehensive error handling for missing features, invalid values, missing domain findings
+    - Detailed logging for progress tracking and debugging
+    - Advanced feature engineering (entity-scoped velocity, geovelocity, amount patterns)
+    - Calibration and rule-overrides (clean-intel veto, impossible travel hard block)
+    
+    Args:
+        facts: Facts dictionary containing "results" list of transactions
+        domain_findings: Domain findings dictionary
+        entity_type: Optional entity type for entity-scoped features
+        entity_value: Optional entity value for entity-scoped features
+        
+    Returns:
+        Dictionary mapping TX_ID_KEY to risk score (float 0.0-1.0)
+    """
+    import time
+    
+    transaction_scores = {}
+    start_time = time.time()
+    timeout_seconds = 300.0  # 5 minutes default timeout (investigation timeout is typically 30 minutes)
+    
+    if not isinstance(facts, dict) or "results" not in facts:
+        logger.warning("⚠️ No transaction results found in facts for per-transaction scoring")
+        return transaction_scores
+    
+    results = facts["results"]
+    if not isinstance(results, list):
+        logger.warning("⚠️ facts['results'] is not a list for per-transaction scoring")
+        return transaction_scores
+    
+    if not results:
+        logger.warning("⚠️ Empty transaction results list for per-transaction scoring")
+        return transaction_scores
+    
+    total_transactions = len(results)
+    logger.info(f"📊 Starting per-transaction scoring for {total_transactions} transactions")
+    
+    # FR-005 Compliance: Validate that MODEL_SCORE and NSURE_LAST_DECISION are not used
+    # Check first transaction as sample - if these fields exist, log warning but continue
+    # (they may exist in data but we must not use them)
+    sample_tx = results[0] if results else {}
+    if isinstance(sample_tx, dict):
+        if "MODEL_SCORE" in sample_tx or "model_score" in sample_tx:
+            logger.debug("⚠️ MODEL_SCORE field detected in transaction data - will not be used per FR-005")
+        if "NSURE_LAST_DECISION" in sample_tx or "nsure_last_decision" in sample_tx:
+            logger.debug("⚠️ NSURE_LAST_DECISION field detected in transaction data - will not be used per FR-005")
+    
+    # Calculate max amount for normalization
+    max_amount = 0.0
+    for result in results:
+        if isinstance(result, dict):
+            amount = result.get("PAID_AMOUNT_VALUE_IN_CURRENCY", 0.0) or 0.0
+            try:
+                amount_float = float(amount)
+                max_amount = max(max_amount, amount_float)
+            except (ValueError, TypeError):
+                pass
+    
+    # Extract advanced features once for all transactions (entity-scoped features need full context)
+    advanced_features = {}
+    try:
+        from app.service.agent.orchestration.domain_agents.advanced_features import extract_all_advanced_features
+        advanced_features = extract_all_advanced_features(
+            results,  # Use all transactions for context
+            entity_type=entity_type or "unknown",
+            entity_value=entity_value or "unknown"
+        )
+        logger.info(f"📊 Extracted advanced features: {len(advanced_features)} metrics")
+    except Exception as e:
+        logger.debug(f"Failed to extract advanced features: {e}")
+        advanced_features = {}
+    
+    # Process transactions in batches of 100 for large volumes
+    batch_size = 100
+    excluded_count = 0
+    processed_count = 0
+    
+    for batch_start in range(0, total_transactions, batch_size):
+        # Check timeout
+        elapsed_time = time.time() - start_time
+        if elapsed_time > timeout_seconds:
+            logger.warning(
+                f"⚠️ Per-transaction scoring timeout after {elapsed_time:.1f}s "
+                f"(processed {processed_count}/{total_transactions} transactions). "
+                f"Returning partial results."
+            )
+            break
+        
+        batch_end = min(batch_start + batch_size, total_transactions)
+        batch = results[batch_start:batch_end]
+        
+        logger.debug(
+            f"📊 Processing batch {batch_start // batch_size + 1} "
+            f"(transactions {batch_start + 1}-{batch_end} of {total_transactions})"
+        )
+        
+        # Process each transaction in batch
+        for result in batch:
+            try:
+                if not isinstance(result, dict):
+                    excluded_count += 1
+                    logger.debug("⚠️ Transaction is not a dict, excluding")
+                    continue
+                
+                tx_id = result.get("TX_ID_KEY")
+                if not tx_id:
+                    excluded_count += 1
+                    logger.debug(f"⚠️ Transaction missing TX_ID_KEY, excluding from per-transaction scoring")
+                    continue
+                
+                # Extract features with error handling
+                try:
+                    features = _extract_transaction_features(result)
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to extract features for transaction {tx_id}: {e}")
+                    continue
+                
+                # Validate critical features (require at least 2 of 4)
+                try:
+                    critical_count = _count_critical_features(features)
+                    if critical_count < 2:
+                        excluded_count += 1
+                        logger.debug(
+                            f"⚠️ Transaction {tx_id} has insufficient features ({critical_count}/4), "
+                            f"excluding from per-transaction scoring"
+                        )
+                        continue
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to count critical features for transaction {tx_id}: {e}")
+                    continue
+                
+                # Advanced features are already extracted above (shared across all transactions)
+                # Normalize features with error handling
+                try:
+                    normalized_amount = _normalize_amount_feature(features["amount"], max_amount if max_amount > 0 else 1.0)
+                    normalized_merchant = _normalize_merchant_feature(features["merchant"], domain_findings)
+                    normalized_device = _normalize_device_feature(features["device"], domain_findings)
+                    normalized_location = _normalize_location_feature(features["location"], domain_findings)
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to normalize features for transaction {tx_id}: {e}")
+                    continue
+                
+                # Calculate feature score with error handling (includes advanced features)
+                try:
+                    feature_score = _calculate_feature_score(
+                        normalized_amount,
+                        normalized_merchant,
+                        normalized_device,
+                        normalized_location,
+                        advanced_features=advanced_features
+                    )
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to calculate feature score for transaction {tx_id}: {e}")
+                    continue
+                
+                # Calculate domain score with error handling
+                try:
+                    domain_score = _calculate_domain_score(result, domain_findings)
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to calculate domain score for transaction {tx_id}: {e}")
+                    continue
+                
+                # Calculate per-transaction score with error handling
+                try:
+                    tx_score = _calculate_per_transaction_score(feature_score, domain_score)
+                except Exception as e:
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Failed to calculate per-transaction score for transaction {tx_id}: {e}")
+                    continue
+                
+                # Apply calibration and rule-overrides
+                try:
+                    from app.service.agent.orchestration.domain_agents.calibration import apply_rule_overrides
+                    
+                    # Extract IP reputation from domain findings
+                    ip_reputation = None
+                    location_domain = domain_findings.get("location", {}) or domain_findings.get("network", {})
+                    if isinstance(location_domain, dict):
+                        ip_reputation = location_domain.get("ip_reputation") or location_domain.get("reputation")
+                    
+                    # Apply rule-overrides (clean-intel veto, impossible travel hard block)
+                    final_score, applied_rules = apply_rule_overrides(
+                        tx_score,
+                        ip_reputation,
+                        advanced_features,
+                        domain_findings
+                    )
+                    
+                    if applied_rules:
+                        logger.debug(
+                            f"📊 Applied rule-overrides for transaction {tx_id}: "
+                            f"{tx_score:.3f} → {final_score:.3f} ({', '.join(applied_rules)})"
+                        )
+                    
+                    tx_score = final_score
+                except Exception as e:
+                    logger.debug(f"Failed to apply rule-overrides for transaction {tx_id}: {e}")
+                    # Continue with original score if calibration fails
+                
+                # Validate score
+                if not _validate_transaction_score(tx_score):
+                    excluded_count += 1
+                    logger.warning(f"⚠️ Transaction {tx_id} has invalid score {tx_score}, excluding")
+                    continue
+                
+                transaction_scores[str(tx_id)] = tx_score
+                processed_count += 1
+                
+            except Exception as e:
+                # Catch-all for any unexpected errors
+                excluded_count += 1
+                tx_id = result.get("TX_ID_KEY", "unknown") if isinstance(result, dict) else "unknown"
+                logger.error(f"❌ Unexpected error processing transaction {tx_id}: {e}", exc_info=True)
+                continue
+        
+        # Log batch progress
+        if batch_end % (batch_size * 5) == 0 or batch_end == total_transactions:
+            elapsed = time.time() - start_time
+            logger.info(
+                f"📊 Per-transaction scoring progress: {processed_count}/{total_transactions} processed, "
+                f"{excluded_count} excluded, {len(transaction_scores)} scores calculated "
+                f"({elapsed:.1f}s elapsed)"
+            )
+    
+    # Final summary
+    elapsed_time = time.time() - start_time
+    if excluded_count > 0:
+        logger.info(
+            f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated, "
+            f"{excluded_count} transactions excluded, {processed_count} processed "
+            f"({elapsed_time:.2f}s elapsed)"
+        )
+    else:
+        logger.info(
+            f"📊 Per-transaction scoring complete: {len(transaction_scores)} scores calculated "
+            f"({elapsed_time:.2f}s elapsed)"
+        )
+    
+    return transaction_scores
+>>>>>>> 001-modify-analyzer-method

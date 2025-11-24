@@ -336,7 +336,7 @@ RAGTypes.ts → Component Props → Runtime Validation → UI Rendering
 
 2. **Existing Component Integration**
    - Investigation dashboard integration
-   - Autonomous investigation panel
+   - Structured investigation panel
    - Agent log sidebar enhancements
    - Risk assessment displays
 

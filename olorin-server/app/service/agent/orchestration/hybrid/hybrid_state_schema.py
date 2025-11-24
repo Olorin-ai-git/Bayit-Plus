@@ -196,7 +196,11 @@ def create_hybrid_initial_state(
         confidence_level = AIConfidenceLevel.UNKNOWN
     
     # Determine test mode for dynamic limits
+<<<<<<< HEAD
     is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'mock'
+=======
+    is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'demo'
+>>>>>>> 001-modify-analyzer-method
     
     # Calculate initial dynamic limits
     base_limits = {

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Test Redis connection with a minimal LangGraph to verify autonomous orchestration works.
+=======
+Test Redis connection with a minimal LangGraph to verify structured orchestration works.
+>>>>>>> 001-modify-analyzer-method
 """
 
 import asyncio

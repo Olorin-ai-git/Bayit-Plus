@@ -1,5 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+<<<<<<< HEAD
+=======
+import mitt from 'mitt';
+import { env } from '@shared/config/env.config';
+import { EventBusManager } from '@shared/events/UnifiedEventBus';
+>>>>>>> 001-modify-analyzer-method
 import './styles/tailwind.css';
 
 // Standalone CoreUI App (no remote imports)
@@ -56,7 +62,11 @@ const initializeCoreUIService = async () => {
 
     // Register service as ready
     if (window.olorin?.eventBus) {
+<<<<<<< HEAD
       window.olorin.eventBus.emit('service:ready', { service: 'coreUi' });
+=======
+      window.olorin.eventBus.emit('service:ready', { service: 'coreUi', timestamp: new Date() });
+>>>>>>> 001-modify-analyzer-method
     }
 
   } catch (error) {
@@ -113,6 +123,7 @@ const initializeCoreUIService = async () => {
   }
 };
 
+<<<<<<< HEAD
 // Initialize global Olorin namespace if not already present
 if (!window.olorin) {
   window.olorin = {
@@ -138,6 +149,27 @@ if (!window.olorin) {
   window.olorin.getService = (name: string) => {
     return window.olorin.services[name];
   };
+=======
+// Initialize global Olorin namespace if not already present (for standalone mode)
+// In production, this will be provided by the shell app
+if (!window.olorin) {
+  const eventBusInstance = mitt();
+  const eventBusManagerInstance = EventBusManager.getInstance();
+
+  window.olorin = {
+    version: env.appVersion,
+    services: new Map<string, any>(),
+    eventBus: eventBusInstance,
+    eventBusManager: eventBusManagerInstance,
+    registerService: (name: string, service: any) => {
+      window.olorin.services.set(name, service);
+      console.log(`[CoreUI] Registered service: ${name}`);
+    },
+    getService: (name: string) => {
+      return window.olorin.services.get(name);
+    }
+  };
+>>>>>>> 001-modify-analyzer-method
 }
 
 // Start the Core UI microservice

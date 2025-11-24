@@ -43,16 +43,16 @@ class DomainState(TypedDict):
 class BaseDomainSubgraph(ABC):
     """Base class for domain-specific investigation subgraphs."""
     
-    def __init__(self, domain_name: str, autonomous: bool = True):
+    def __init__(self, domain_name: str, structured: bool = True):
         """
         Initialize domain subgraph.
         
         Args:
             domain_name: Name of the investigation domain
-            autonomous: Whether to use autonomous agents
+            structured: Whether to use structured agents
         """
         self.domain_name = domain_name
-        self.autonomous = autonomous
+        self.structured = structured
         self.graph = None
         
     @abstractmethod
@@ -107,9 +107,9 @@ class BaseDomainSubgraph(ABC):
 class DeviceAnalysisSubgraph(BaseDomainSubgraph):
     """Subgraph for device fingerprint analysis."""
     
-    def __init__(self, autonomous: bool = True):
+    def __init__(self, structured: bool = True):
         """Initialize device analysis subgraph."""
-        super().__init__("device", autonomous)
+        super().__init__("device", structured)
         
     def create_graph(self) -> StateGraph:
         """Create device analysis graph with specialized tools and validation."""
@@ -153,8 +153,13 @@ class DeviceAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_fingerprint_node(self, state: DomainState) -> DomainState:
         """Analyze device fingerprint patterns."""
         try:
+<<<<<<< HEAD
             # Use appropriate agent based on autonomous setting
             if self.autonomous:
+=======
+            # Use appropriate agent based on structured setting
+            if self.structured:
+>>>>>>> 001-modify-analyzer-method
                 result = await device_agent_node(state)
             else:
                 result = await device_agent(state)
@@ -202,9 +207,9 @@ class DeviceAnalysisSubgraph(BaseDomainSubgraph):
 class NetworkAnalysisSubgraph(BaseDomainSubgraph):
     """Subgraph for network pattern analysis."""
     
-    def __init__(self, autonomous: bool = True):
+    def __init__(self, structured: bool = True):
         """Initialize network analysis subgraph."""
-        super().__init__("network", autonomous)
+        super().__init__("network", structured)
         
     def create_graph(self) -> StateGraph:
         """Create network analysis graph with specialized investigation logic."""
@@ -246,7 +251,11 @@ class NetworkAnalysisSubgraph(BaseDomainSubgraph):
         """Analyze network traffic patterns."""
         try:
             # Use appropriate agent
+<<<<<<< HEAD
             if self.autonomous:
+=======
+            if self.structured:
+>>>>>>> 001-modify-analyzer-method
                 result = await network_agent_node(state)
             else:
                 result = await network_agent(state)
@@ -309,9 +318,9 @@ class NetworkAnalysisSubgraph(BaseDomainSubgraph):
 class LocationAnalysisSubgraph(BaseDomainSubgraph):
     """Subgraph for geographic location analysis."""
     
-    def __init__(self, autonomous: bool = True):
+    def __init__(self, structured: bool = True):
         """Initialize location analysis subgraph."""
-        super().__init__("location", autonomous)
+        super().__init__("location", structured)
         
     def create_graph(self) -> StateGraph:
         """Create location analysis graph."""
@@ -350,7 +359,11 @@ class LocationAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_geographic_patterns_node(self, state: DomainState) -> DomainState:
         """Analyze geographic patterns."""
         try:
+<<<<<<< HEAD
             if self.autonomous:
+=======
+            if self.structured:
+>>>>>>> 001-modify-analyzer-method
                 result = await location_agent_node(state)
             else:
                 result = await location_agent(state)
@@ -393,9 +406,9 @@ class LocationAnalysisSubgraph(BaseDomainSubgraph):
 class LogsAnalysisSubgraph(BaseDomainSubgraph):
     """Subgraph for activity logs analysis."""
     
-    def __init__(self, autonomous: bool = True):
+    def __init__(self, structured: bool = True):
         """Initialize logs analysis subgraph."""
-        super().__init__("logs", autonomous)
+        super().__init__("logs", structured)
         
     def create_graph(self) -> StateGraph:
         """Create logs analysis graph."""
@@ -434,7 +447,11 @@ class LogsAnalysisSubgraph(BaseDomainSubgraph):
     async def analyze_activity_patterns_node(self, state: DomainState) -> DomainState:
         """Analyze activity patterns in logs."""
         try:
+<<<<<<< HEAD
             if self.autonomous:
+=======
+            if self.structured:
+>>>>>>> 001-modify-analyzer-method
                 result = await logs_agent_node(state)
             else:
                 result = await logs_agent(state)
@@ -473,19 +490,19 @@ class LogsAnalysisSubgraph(BaseDomainSubgraph):
 class SubgraphOrchestrator:
     """Orchestrates multiple domain subgraphs for comprehensive investigation."""
     
-    def __init__(self, autonomous: bool = True):
+    def __init__(self, structured: bool = True):
         """
         Initialize subgraph orchestrator.
         
         Args:
-            autonomous: Whether to use autonomous agents
+            structured: Whether to use structured agents
         """
-        self.autonomous = autonomous
+        self.structured = structured
         self.subgraphs = {
-            "device": DeviceAnalysisSubgraph(autonomous),
-            "network": NetworkAnalysisSubgraph(autonomous),
-            "location": LocationAnalysisSubgraph(autonomous),
-            "logs": LogsAnalysisSubgraph(autonomous)
+            "device": DeviceAnalysisSubgraph(structured),
+            "network": NetworkAnalysisSubgraph(structured),
+            "location": LocationAnalysisSubgraph(structured),
+            "logs": LogsAnalysisSubgraph(structured)
         }
         
     async def run_parallel_investigation(self, state: Dict[str, Any]) -> Dict[str, Any]:

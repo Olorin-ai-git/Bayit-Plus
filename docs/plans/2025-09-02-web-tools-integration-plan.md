@@ -151,12 +151,12 @@ This plan outlines the integration of web search and web scraping tools into Olo
 ### Phase 3: Test Integration and Scenarios (1 week)
 **Priority**: High | **Risk**: Low | **Effort**: 40 hours
 
-#### 3.1 Autonomous Investigation Test Scenarios
+#### 3.1 Structured Investigation Test Scenarios
 **Objective**: Create comprehensive test scenarios for web tools
 
 **Tasks**:
 1. **Create Web Tools Test Scenarios**
-   - File: `test_web_tools_autonomous_investigation.py`
+   - File: `test_web_tools_structured_investigation.py`
    - Scenarios to implement:
 
    **Scenario 1: Domain Reputation Investigation**
@@ -400,7 +400,7 @@ This plan requires approval before implementation due to:
 **Implementation Date**: 2025-09-02
 
 **Test Coverage Implemented**:
-1. **TestWebToolsIntegration Class** (added to `tests/integration/test_autonomous_investigation.py`):
+1. **TestWebToolsIntegration Class** (added to `tests/integration/test_structured_investigation.py`):
    - **5 Comprehensive Test Scenarios**:
      - Domain Reputation Investigation with PII protection
      - Business Verification using web scraping with sanitization

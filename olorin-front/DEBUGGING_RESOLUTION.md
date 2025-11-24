@@ -13,8 +13,13 @@ Successfully resolved critical issues preventing the Olorin frontend microservic
 // Before
 import { EventBusManager, eventBus } from '@shared/events/EventBus';
 
+<<<<<<< HEAD
 // After
 import { EventBusManager, eventBus } from '@shared/events/eventBus';
+=======
+// After (Updated to use UnifiedEventBus)
+import { EventBusManager, eventBus } from '@shared/events/UnifiedEventBus';
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ### 2. Missing Export in Shared Events Index
@@ -24,8 +29,13 @@ import { EventBusManager, eventBus } from '@shared/events/eventBus';
 // Before
 export { EventBusManager, useEventBus } from './eventBus';
 
+<<<<<<< HEAD
 // After
 export { EventBusManager, useEventBus, eventBus } from './eventBus';
+=======
+// After (Updated to use UnifiedEventBus)
+export { EventBusManager, useEventBus, eventBus } from './UnifiedEventBus';
+>>>>>>> 001-modify-analyzer-method
 ```
 
 ### 3. Missing Temporary Components

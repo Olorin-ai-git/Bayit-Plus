@@ -1,9 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+<<<<<<< HEAD
 
 // Service-specific imports based on environment variable
 const serviceName = process.env.SERVICE_NAME || 'shell';
+=======
+import { getConfig } from './shared/config/env.config';
+
+const env = getConfig();
+
+// Service-specific imports based on environment variable
+const serviceName = env.serviceName || 'shell';
+>>>>>>> 001-modify-analyzer-method
 
 // Initialize the microservice based on SERVICE_NAME environment variable
 const initializeMicroservice = async () => {
@@ -39,8 +48,13 @@ const initializeMicroservice = async () => {
         break;
 
       case 'coreUi':
+<<<<<<< HEAD
         const { default: CoreUiApp } = await import('./microservices/core-ui/CoreUiApp');
         App = CoreUiApp;
+=======
+        const { default: CoreUIApp } = await import('./microservices/core-ui/CoreUIApp');
+        App = CoreUIApp;
+>>>>>>> 001-modify-analyzer-method
         break;
 
       case 'designSystem':
@@ -48,6 +62,7 @@ const initializeMicroservice = async () => {
         App = DesignSystemApp;
         break;
 
+<<<<<<< HEAD
       case 'autonomousInvestigation':
         const { default: AutonomousInvestigationApp } = await import('./microservices/autonomous-investigation/AutonomousInvestigationApp');
         App = AutonomousInvestigationApp;
@@ -58,6 +73,8 @@ const initializeMicroservice = async () => {
         App = ManualInvestigationApp;
         break;
 
+=======
+>>>>>>> 001-modify-analyzer-method
       default:
         throw new Error(`Unknown service: ${serviceName}`);
     }
@@ -83,7 +100,14 @@ const initializeMicroservice = async () => {
 
     // Register service as ready
     if (window.olorin?.eventBus) {
+<<<<<<< HEAD
       window.olorin.eventBus.emit('service:ready', { service: serviceName });
+=======
+      window.olorin.eventBus.emit('service:ready', {
+        service: serviceName as 'investigation' | 'reporting' | 'agentAnalytics' | 'ragIntelligence' | 'visualization' | 'designSystem' | 'coreUi',
+        timestamp: new Date()
+      });
+>>>>>>> 001-modify-analyzer-method
     }
 
   } catch (error) {
@@ -147,7 +171,11 @@ const initializeMicroservice = async () => {
             >
               Reload Service
             </button>
+<<<<<<< HEAD
             ${process.env.NODE_ENV === 'development' ? `
+=======
+            ${env.nodeEnv === 'development' ? `
+>>>>>>> 001-modify-analyzer-method
               <details style="margin-top: 1rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.375rem; text-align: left;">
                 <summary style="cursor: pointer; font-weight: 500; font-size: 0.875rem;">Error Details</summary>
                 <pre style="margin-top: 0.5rem; white-space: pre-wrap; color: #dc2626; font-size: 0.75rem;">
@@ -163,8 +191,13 @@ const initializeMicroservice = async () => {
     // Emit service error event
     if (window.olorin?.eventBus) {
       window.olorin.eventBus.emit('service:error', {
+<<<<<<< HEAD
         service: serviceName,
         error: error instanceof Error ? error.message : String(error)
+=======
+        service: serviceName as 'investigation' | 'reporting' | 'agentAnalytics' | 'ragIntelligence' | 'visualization' | 'designSystem' | 'coreUi',
+        error: error instanceof Error ? error : new Error(String(error))
+>>>>>>> 001-modify-analyzer-method
       });
     }
 
@@ -173,6 +206,7 @@ const initializeMicroservice = async () => {
 };
 
 // Initialize global Olorin namespace if not already present
+<<<<<<< HEAD
 if (!window.olorin) {
   window.olorin = {
     version: process.env.REACT_APP_VERSION || '1.0.0',
@@ -198,6 +232,10 @@ if (!window.olorin) {
     return window.olorin.services[name];
   };
 }
+=======
+// Note: Full initialization happens in shell/index.tsx
+// This is just a safety check for standalone microservice mode
+>>>>>>> 001-modify-analyzer-method
 
 // Start the microservice
 initializeMicroservice().catch(error => {

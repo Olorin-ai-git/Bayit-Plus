@@ -30,9 +30,9 @@ from app.service.agent.prompts.olorin_prompts import (
     get_supported_olorin_domains,
     validate_olorin_response_format
 )
-from app.service.agent.autonomous_prompts import create_investigation_prompt
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_prompts import create_investigation_prompt
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     EntityType
 )
 
@@ -81,7 +81,7 @@ def test_investigation_prompt_creation():
     print("=" * 50)
     
     # Create test context
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id="test-123",
         entity_id="user-456", 
         entity_type=EntityType.USER_ID

@@ -58,3 +58,7 @@ else
     echo "BRANCH: $CURRENT_BRANCH"
     echo "HAS_GIT: $HAS_GIT"
 fi
+<<<<<<< HEAD
+=======
+
+>>>>>>> 001-modify-analyzer-method

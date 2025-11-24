@@ -84,12 +84,20 @@ async def device_agent_node(state: InvestigationState, config: Optional[Dict] = 
             "metrics_collected": len(device_findings["metrics"])
         }
         
+<<<<<<< HEAD
         # CRITICAL: Analyze evidence with LLM to generate risk scores
+=======
+        # CRITICAL: Analyze evidence with LLM to generate risk scores (with ALL tool results)
+>>>>>>> 001-modify-analyzer-method
         from .base import analyze_evidence_with_llm
         device_findings = await analyze_evidence_with_llm(
             domain="device",
             findings=device_findings,
             snowflake_data=snowflake_data,
+<<<<<<< HEAD
+=======
+            tool_results=tool_results,
+>>>>>>> 001-modify-analyzer-method
             entity_type=entity_type,
             entity_id=entity_id
         )
@@ -122,7 +130,12 @@ async def device_agent_node(state: InvestigationState, config: Optional[Dict] = 
 
 def _analyze_device_id_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze device ID patterns for spoofing indicators."""
+<<<<<<< HEAD
     device_ids = set(r.get("DEVICE_ID") for r in results if r.get("DEVICE_ID"))
+=======
+    # Support both uppercase (Snowflake) and lowercase (PostgreSQL) column names
+    device_ids = set(r.get("DEVICE_ID") or r.get("device_id") for r in results if r.get("DEVICE_ID") or r.get("device_id"))
+>>>>>>> 001-modify-analyzer-method
 
     # CRITICAL FIX: Handle NULL device data properly
     if not device_ids and results:
@@ -153,7 +166,12 @@ def _analyze_device_id_patterns(results: list, findings: Dict[str, Any]) -> None
 
 def _analyze_user_agent_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze user agent patterns for spoofing indicators."""
+<<<<<<< HEAD
     user_agents = set(r.get("USER_AGENT") for r in results if r.get("USER_AGENT"))
+=======
+    # Support both uppercase (Snowflake) and lowercase (PostgreSQL) column names
+    user_agents = set(r.get("USER_AGENT") or r.get("user_agent") for r in results if r.get("USER_AGENT") or r.get("user_agent"))
+>>>>>>> 001-modify-analyzer-method
     
     findings["metrics"]["unique_user_agents"] = len(user_agents)
     findings["evidence"].append(f"User agent variations: {len(user_agents)}")
@@ -166,17 +184,28 @@ def _analyze_user_agent_patterns(results: list, findings: Dict[str, Any]) -> Non
 def _analyze_browser_os_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze browser and OS patterns for consistency using available schema fields."""
 
+<<<<<<< HEAD
     # SCHEMA FIX: Use actual available fields from Snowflake schema
     # BROWSER_NAME and OS_NAME don't exist - use alternative fields
     device_models = set(r.get("DEVICE_MODEL") for r in results if r.get("DEVICE_MODEL"))
     device_os_versions = set(r.get("DEVICE_OS_VERSION") for r in results if r.get("DEVICE_OS_VERSION"))
+=======
+    # Support both uppercase (Snowflake) and lowercase (PostgreSQL) column names
+    device_models = set(r.get("DEVICE_MODEL") or r.get("device_model") for r in results if r.get("DEVICE_MODEL") or r.get("device_model"))
+    device_os_versions = set(r.get("DEVICE_OS_VERSION") or r.get("device_os_version") for r in results if r.get("DEVICE_OS_VERSION") or r.get("device_os_version"))
+>>>>>>> 001-modify-analyzer-method
 
     # Try to extract browser/OS info from PARSED_USER_AGENT if available
     browsers = set()
     os_names = set()
 
     for r in results:
+<<<<<<< HEAD
         parsed_ua = r.get("PARSED_USER_AGENT")
+=======
+        # Support both uppercase and lowercase
+        parsed_ua = r.get("PARSED_USER_AGENT") or r.get("parsed_user_agent")
+>>>>>>> 001-modify-analyzer-method
         if isinstance(parsed_ua, dict):
             if parsed_ua.get("browser"):
                 browsers.add(parsed_ua["browser"])
@@ -184,7 +213,11 @@ def _analyze_browser_os_patterns(results: list, findings: Dict[str, Any]) -> Non
                 os_names.add(parsed_ua["os"])
 
         # Fallback: Parse USER_AGENT string manually for basic browser detection
+<<<<<<< HEAD
         user_agent = r.get("USER_AGENT", "")
+=======
+        user_agent = r.get("USER_AGENT") or r.get("user_agent") or ""
+>>>>>>> 001-modify-analyzer-method
         if user_agent:
             if "Chrome" in user_agent:
                 browsers.add("Chrome")
@@ -204,10 +237,17 @@ def _analyze_browser_os_patterns(results: list, findings: Dict[str, Any]) -> Non
             elif "Mac OS" in user_agent:
                 os_names.add("macOS")
 
+<<<<<<< HEAD
     # Check what data is actually available
     has_parsed_ua = any(r.get("PARSED_USER_AGENT") for r in results)
     has_user_agent = any(r.get("USER_AGENT") for r in results)
     has_device_fields = any(r.get("DEVICE_MODEL") for r in results) or any(r.get("DEVICE_OS_VERSION") for r in results)
+=======
+    # Check what data is actually available (both uppercase and lowercase)
+    has_parsed_ua = any(r.get("PARSED_USER_AGENT") or r.get("parsed_user_agent") for r in results)
+    has_user_agent = any(r.get("USER_AGENT") or r.get("user_agent") for r in results)
+    has_device_fields = any(r.get("DEVICE_MODEL") or r.get("device_model") for r in results) or any(r.get("DEVICE_OS_VERSION") or r.get("device_os_version") for r in results)
+>>>>>>> 001-modify-analyzer-method
 
     # CRITICAL FIX: Handle NULL browser/OS data properly - use "unknown" instead of zero counts
     findings["analysis"]["unique_browsers"] = len(browsers) if browsers else "unknown"
@@ -368,6 +408,7 @@ def _process_device_signals(tool_name: str, signals: Dict[str, Any], findings: D
                 device_risk_level -= (0.2 - normalized_score) * 0.2
                 findings["evidence"].append(f"{tool_name}: Normal device behavior {key} = {value}")
     
+<<<<<<< HEAD
     # Apply risk adjustment based on device assessment
     if device_risk_level > 0.5:
         # High device risk detected - increase risk
@@ -379,6 +420,33 @@ def _process_device_signals(tool_name: str, signals: Dict[str, Any], findings: D
         risk_multiplier = 1.0 + max(-0.1, device_risk_level * 0.15)  # device_risk_level is negative
         findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
         findings["evidence"].append(f"{tool_name}: Device behavior appears normal (level: {device_risk_level:.2f})")
+=======
+    # CRITICAL FIX: Do NOT modify LLM risk score after LLM analysis
+    # Only apply adjustments BEFORE LLM analysis (during evidence collection)
+    if "llm_risk_score" in findings:
+        # LLM has already analyzed - do NOT modify its score
+        logger.debug(f"[Step 5.2.2.3]   ℹ️ LLM risk score already set ({findings.get('llm_risk_score', 'N/A')}), skipping device risk adjustments")
+        # Still add indicators to evidence, but don't modify score
+        if device_risk_level > 0.5:
+            findings["risk_indicators"].append(f"{tool_name}: Device anomalies detected (level: {device_risk_level:.2f})")
+        elif device_risk_level < -0.2:
+            findings["evidence"].append(f"{tool_name}: Device behavior appears normal (level: {device_risk_level:.2f})")
+    else:
+        # Pre-LLM analysis: Apply risk adjustment based on device assessment
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            if device_risk_level > 0.5:
+                # High device risk detected - increase risk
+                risk_multiplier = 1.0 + min(0.15, device_risk_level * 0.1)
+                findings["risk_score"] = min(1.0, current_score * risk_multiplier)
+                findings["risk_indicators"].append(f"{tool_name}: Device anomalies detected (level: {device_risk_level:.2f})")
+            elif device_risk_level < -0.2:
+                # Normal device behavior - reduce risk
+                risk_multiplier = 1.0 + max(-0.1, device_risk_level * 0.15)  # device_risk_level is negative
+                findings["risk_score"] = max(0.1, current_score * risk_multiplier)
+                findings["evidence"].append(f"{tool_name}: Device behavior appears normal (level: {device_risk_level:.2f})")
+>>>>>>> 001-modify-analyzer-method
     
     # Store aggregated metrics
     if evidence_count > 0:

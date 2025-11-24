@@ -1,7 +1,7 @@
 """
-Autonomous Network Analysis Agent
+Structured Network Analysis Agent
 
-Network domain autonomous investigation agent using LLM-driven tool selection.
+Network domain structured investigation agent using LLM-driven tool selection.
 """
 
 import json
@@ -11,7 +11,7 @@ from langchain_core.messages import AIMessage
 
 from app.service.agent.agent_communication import (
     _extract_investigation_info,
-    _get_or_create_autonomous_context,
+    _get_or_create_structured_context,
     _create_error_response,
     get_context_with_retry,
 )
@@ -26,7 +26,6 @@ except ImportError as e:
     logger = get_bridge_logger(__name__)
     logger.warning(f"RAG modules not available: {e}")
     RAG_AVAILABLE = False
-from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.journey_tracker import (
     get_journey_tracker,
     NodeType,
@@ -39,8 +38,11 @@ logger = get_bridge_logger(__name__)
 journey_tracker = get_journey_tracker()
 
 
-async def autonomous_network_agent(state, config) -> dict:
-    """Autonomous network analysis using LLM-driven tool selection with optional RAG enhancement"""
+async def structured_network_agent(state, config) -> dict:
+    """Structured network analysis using LLM-driven tool selection with optional RAG enhancement"""
+    
+    # Track execution start time
+    start_time = time.perf_counter()
     
     # Track execution start time
     start_time = time.perf_counter()
@@ -67,10 +69,11 @@ async def autonomous_network_agent(state, config) -> dict:
         output_state={"network_analysis": "in_progress", "agent_status": "active", "rag_enhancement": "initializing"},
         duration_ms=0,
         status=NodeStatus.IN_PROGRESS,
-        agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "AutonomousNetworkAgent",
+        agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "StructuredNetworkAgent",
         metadata=start_metadata
     )
     
+<<<<<<< HEAD
     # Create or get autonomous context with retry logic
     autonomous_context = await get_context_with_retry(investigation_id, entity_id)
     if not autonomous_context:
@@ -78,14 +81,15 @@ async def autonomous_network_agent(state, config) -> dict:
         return _create_error_response("Unable to access investigation context - race condition")
     
     autonomous_context.start_domain_analysis("network")
+=======
+    # Create or get structured context with retry logic
+    structured_context = await get_context_with_retry(investigation_id, entity_id)
+    if not structured_context:
+        logger.error(f"Failed to get investigation context after retries: {investigation_id}")
+        return _create_error_response("Unable to access investigation context - race condition")
+>>>>>>> 001-modify-analyzer-method
     
-    # Emit progress update
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.NETWORK_ANALYSIS,
-        0.1,
-        "Starting autonomous network analysis..."
-    )
+    structured_context.start_domain_analysis("network")
     
     try:
         # Get available tools from global scope
@@ -112,7 +116,7 @@ async def autonomous_network_agent(state, config) -> dict:
         elif RAG_AVAILABLE and rag_config:
             network_agent = await create_agent_with_intelligent_tools(
                 domain="network",
-                investigation_context=autonomous_context,
+                investigation_context=structured_context,
                 fallback_tools=tools,
                 enable_rag=True,
                 categories=["threat_intelligence", "web", "blockchain", "intelligence", "ml_ai"]
@@ -120,8 +124,13 @@ async def autonomous_network_agent(state, config) -> dict:
             logger.info("🔧 Created network agent with intelligent RAG-enhanced tool selection")
         else:
             # Fallback to standard agent creation
+<<<<<<< HEAD
             from app.service.agent.agent_factory import create_autonomous_agent
             network_agent = create_autonomous_agent("network", tools)
+=======
+            from app.service.agent.agent_factory import create_structured_agent
+            network_agent = create_structured_agent("network", tools)
+>>>>>>> 001-modify-analyzer-method
             logger.info("🔧 Created standard network agent (RAG not available)")
         
         # Get enhanced objectives with MCP/RAG-augmented threat intelligence focus
@@ -130,8 +139,8 @@ async def autonomous_network_agent(state, config) -> dict:
             mcp_enhanced=MCP_ENHANCED
         )
         
-        findings = await network_agent.autonomous_investigate(
-            context=autonomous_context,
+        findings = await network_agent.structured_investigate(
+            context=structured_context,
             config=config,
             specific_objectives=network_objectives
         )
@@ -148,6 +157,7 @@ async def autonomous_network_agent(state, config) -> dict:
                 pass  # Gracefully handle missing RAG stats
         
         # Record findings in context
+<<<<<<< HEAD
         autonomous_context.record_domain_findings("network", findings)
         
         # Emit completion update with RAG enhancement info
@@ -166,6 +176,9 @@ async def autonomous_network_agent(state, config) -> dict:
             findings.raw_data or {},
             completion_message
         )
+=======
+        structured_context.record_domain_findings("network", findings)
+>>>>>>> 001-modify-analyzer-method
         
         # Track network agent completion with RAG metrics
         completion_metadata = create_network_agent_metadata(RAG_AVAILABLE and rag_config is not None, rag_stats, MCP_ENHANCED)
@@ -189,7 +202,7 @@ async def autonomous_network_agent(state, config) -> dict:
             },
             duration_ms=int((time.perf_counter() - start_time) * 1000),
             status=NodeStatus.COMPLETED,
-            agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "AutonomousNetworkAgent",
+            agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "StructuredNetworkAgent",
             metadata=completion_metadata
         )
         
@@ -211,7 +224,7 @@ async def autonomous_network_agent(state, config) -> dict:
             error_context += f" (RAG context: {rag_stats['knowledge_retrieval_count']} retrievals)"
         
         logger.error(error_context)
-        autonomous_context.fail_domain_analysis("network", str(e))
+        structured_context.fail_domain_analysis("network", str(e))
         
         # Track failure with RAG metadata
         error_metadata = create_network_agent_metadata(RAG_AVAILABLE, rag_stats, MCP_ENHANCED)
@@ -225,7 +238,7 @@ async def autonomous_network_agent(state, config) -> dict:
             output_state={"network_analysis": "failed", "error": str(e), "rag_enabled": RAG_AVAILABLE},
             duration_ms=0,
             status=NodeStatus.FAILED,
-            agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "AutonomousNetworkAgent",
+            agent_name="RAG-Enhanced-NetworkAgent" if RAG_AVAILABLE else "StructuredNetworkAgent",
             metadata=error_metadata
         )
         

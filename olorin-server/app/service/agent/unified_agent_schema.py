@@ -61,13 +61,21 @@ class AgentRiskResponse(BaseModel):
     
     risk_factors: List[str] = Field(
         ...,
+<<<<<<< HEAD
         min_items=0,
+=======
+        min_length=0,
+>>>>>>> 001-modify-analyzer-method
         description="Specific risk indicators found during analysis"
     )
     
     mitigation_measures: List[str] = Field(
         ...,
+<<<<<<< HEAD
         min_items=0,
+=======
+        min_length=0,
+>>>>>>> 001-modify-analyzer-method
         description="Recommended actions to address identified risks"
     )
     

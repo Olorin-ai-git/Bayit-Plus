@@ -57,7 +57,7 @@ Phase 4 represents the **most successful phase** of the OLORIN WebPlugin test in
 
 **Major Service Fixes**:
 - **ChatService**: Fixed snake_case vs camelCase data processing expectations
-- **AutonomousInvestigationClient**: Corrected logging mechanism (`onLog` vs `console.log`)
+- **StructuredInvestigationClient**: Corrected logging mechanism (`onLog` vs `console.log`)
 - **MCPClient**: Resolved autoConnect behavior and state management issues
 - **URL Construction**: Fixed double-slash concatenation patterns in API calls
 
@@ -107,7 +107,7 @@ Phase 4 represents the **most successful phase** of the OLORIN WebPlugin test in
 
 2. **Service Layer Understanding Critical**
    - **Insight**: Deep understanding of service layer data transformations is essential
-   - **Evidence**: Required implementation analysis for ChatService and AutonomousInvestigationClient
+   - **Evidence**: Required implementation analysis for ChatService and StructuredInvestigationClient
    - **Value**: Prevented fix regressions and improved test reliability
 
 3. **Compound Impact Strategy**

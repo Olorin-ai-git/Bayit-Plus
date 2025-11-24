@@ -1,4 +1,4 @@
-"""Test fixtures for Olorin autonomous investigation system."""
+"""Test fixtures for Olorin structured investigation system."""
 
 from .real_investigation_scenarios import (
     RealInvestigationScenario,

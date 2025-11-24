@@ -2,7 +2,11 @@
 """
 Comprehensive Investigation System Validation Test
 
+<<<<<<< HEAD
 This script runs extensive tests to validate the autonomous investigation system
+=======
+This script runs extensive tests to validate the structured investigation system
+>>>>>>> 001-modify-analyzer-method
 and ensure NO ERRORS remain. Based on the user's explicit requirements:
 1. Evidence strength should be 0.2-0.4 range, not 1.0
 2. Remove authoritative finalized risk score override 

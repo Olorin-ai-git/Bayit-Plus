@@ -1,7 +1,7 @@
 """
-RAG-Enhanced Autonomous Investigation Agent
+RAG-Enhanced Structured Investigation Agent
 
-Extension of AutonomousInvestigationAgent with RAG (Retrieval-Augmented Generation) 
+Extension of StructuredInvestigationAgent with RAG (Retrieval-Augmented Generation) 
 capabilities for knowledge-augmented fraud investigation analysis.
 """
 
@@ -11,8 +11,8 @@ from typing import Any, Dict, List, Optional
 
 from langchain_core.runnables.config import RunnableConfig
 
-from .autonomous_base import AutonomousInvestigationAgent
-from .autonomous_context import AutonomousInvestigationContext, DomainFindings
+from .autonomous_base import StructuredInvestigationAgent
+from .autonomous_context import StructuredInvestigationContext, DomainFindings
 from app.service.logging import get_bridge_logger
 from .rag import (
     RAGOrchestrator, 
@@ -26,11 +26,11 @@ from .rag import (
 logger = get_bridge_logger(__name__)
 
 
-class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
+class RAGEnhancedInvestigationAgent(StructuredInvestigationAgent):
     """
-    RAG-Enhanced Autonomous Investigation Agent
+    RAG-Enhanced Structured Investigation Agent
     
-    Extends the base AutonomousInvestigationAgent with RAG capabilities:
+    Extends the base StructuredInvestigationAgent with RAG capabilities:
     - Knowledge-augmented decision making
     - Context-aware prompt generation
     - Domain-specific knowledge retrieval
@@ -96,14 +96,14 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
             "knowledge_chunks_used": 0
         }
     
-    async def autonomous_investigate(
+    async def structured_investigate(
         self,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         config: RunnableConfig,
         specific_objectives: List[str] = None
     ) -> DomainFindings:
         """
-        Perform RAG-enhanced autonomous investigation
+        Perform RAG-enhanced structured investigation
         
         Args:
             context: Rich investigation context
@@ -127,11 +127,11 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
         
         # Fallback to standard investigation
         self.rag_stats["investigations_without_rag"] += 1
-        return await super().autonomous_investigate(context, config, specific_objectives)
+        return await super().structured_investigate(context, config, specific_objectives)
     
     async def _rag_enhanced_investigation(
         self,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         config: RunnableConfig,
         specific_objectives: List[str] = None
     ) -> DomainFindings:
@@ -183,7 +183,7 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
     
     async def _create_rag_enhanced_prompt(
         self,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         knowledge_context: KnowledgeContext,
         specific_objectives: List[str] = None
     ) -> str:
@@ -192,7 +192,7 @@ class RAGEnhancedInvestigationAgent(AutonomousInvestigationAgent):
         """
         
         # Generate base investigation prompt
-        from .autonomous_prompts import create_investigation_prompt
+        from .structured_prompts import create_investigation_prompt
         
         llm_context = context.generate_llm_context(self.domain)
         base_prompt = create_investigation_prompt(
@@ -226,7 +226,7 @@ Knowledge Context Summary:
 - Background knowledge pieces: {len(knowledge_context.background_knowledge)}
 - Knowledge sources: {', '.join(sorted(knowledge_context.knowledge_sources))}
 
-Remember: The knowledge context provides expert domain knowledge to enhance your autonomous decision-making process.
+Remember: The knowledge context provides expert domain knowledge to enhance your structured decision-making process.
 === END RAG ENHANCEMENT INSTRUCTIONS ===
 
 """
@@ -238,7 +238,7 @@ Remember: The knowledge context provides expert domain knowledge to enhance your
     async def _execute_enhanced_investigation(
         self,
         enhanced_prompt: str,
-        context: AutonomousInvestigationContext,
+        context: StructuredInvestigationContext,
         config: RunnableConfig,
         knowledge_context: KnowledgeContext,
         specific_objectives: List[str] = None
@@ -249,7 +249,7 @@ Remember: The knowledge context provides expert domain knowledge to enhance your
         
         # Import modules needed for investigation execution
         from langchain_core.messages import HumanMessage, SystemMessage
-        from .autonomous_parsing import parse_autonomous_result
+        from .structured_parsing import parse_structured_result
         
         # Create enhanced system message
         system_msg = SystemMessage(content=f"""
@@ -257,13 +257,13 @@ You are an intelligent fraud investigation agent specializing in {self.domain.up
 
 ENHANCED CAPABILITIES:
 - Access to comprehensive domain knowledge from investigation knowledge base
-- Autonomous tool selection based on investigation needs and knowledge insights
+- Structured tool selection based on investigation needs and knowledge insights
 - Advanced reasoning with retrieved knowledge validation
 - Cross-domain correlation and analysis with background knowledge
 - Evidence-based risk assessment using established patterns
 - Knowledge-augmented decision making
 
-Your mission: Conduct a thorough {self.domain} analysis for fraud investigation {context.investigation_id} using both your autonomous reasoning and the provided knowledge context.
+Your mission: Conduct a thorough {self.domain} analysis for fraud investigation {context.investigation_id} using both your structured reasoning and the provided knowledge context.
 
 Key principles:
 1. SELECT TOOLS AUTONOMOUSLY based on investigation needs AND knowledge insights
@@ -278,7 +278,7 @@ Key principles:
 Available tools: {', '.join(self.tool_map.keys())}
 Knowledge context: {knowledge_context.total_chunks} relevant knowledge pieces available
 
-IMPORTANT: The investigation prompt contains exact format requirements. Follow these precisely while leveraging both your autonomous capabilities and the retrieved knowledge context.
+IMPORTANT: The investigation prompt contains exact format requirements. Follow these precisely while leveraging both your structured capabilities and the retrieved knowledge context.
 
 Remember: You have full autonomy to choose tools and analyze data, now enhanced with domain expertise from the knowledge base.
 """)
@@ -313,7 +313,7 @@ Remember: You have full autonomy to choose tools and analyze data, now enhanced 
             logger.info(console_prompt)
             
             logger.info(f"        🤖🧠 Starting RAG-Enhanced {self.domain.title()} Agent analysis...")
-            logger.info(f"Starting RAG-enhanced autonomous {self.domain} investigation for {context.investigation_id}")
+            logger.info(f"Starting RAG-enhanced structured {self.domain} investigation for {context.investigation_id}")
             
             messages = [system_msg, HumanMessage(content=final_enhanced_prompt)]
             
@@ -383,7 +383,7 @@ Based on the tool execution results and the provided knowledge context, provide 
 IMPORTANT: Your analysis should integrate:
 1. Tool execution results
 2. Retrieved knowledge context ({knowledge_context.total_chunks} knowledge pieces)
-3. Your autonomous reasoning capabilities
+3. Your structured reasoning capabilities
 
 YOU MUST USE THIS EXACT FORMAT - NO EXCEPTIONS:
 
@@ -435,8 +435,8 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 
                 logger.info(f"🔍🧠 Requesting RAG-enhanced final analysis for {self.domain} domain")
                 
-                from .autonomous_base import get_autonomous_llm
-                final_result = await get_autonomous_llm().ainvoke(analysis_messages, config=config)
+                from .autonomous_base import get_structured_llm
+                final_result = await get_structured_llm().ainvoke(analysis_messages, config=config)
                 result = final_result
                 
             else:
@@ -466,12 +466,12 @@ MANDATORY: Begin your response with "1. Risk Level:" right now.
                 
                 logger.info(f"🔍🧠 Requesting RAG-enhanced formatted response for {self.domain} domain")
                 
-                from .autonomous_base import get_autonomous_llm
-                formatted_result = await get_autonomous_llm().ainvoke(format_messages, config=config)
+                from .autonomous_base import get_structured_llm
+                formatted_result = await get_structured_llm().ainvoke(format_messages, config=config)
                 result = formatted_result
             
             # Parse results with enhanced logging
-            findings = parse_autonomous_result(result, context, self.domain)
+            findings = parse_structured_result(result, context, self.domain)
             
             # Enhanced completion logging
             risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.3f}"

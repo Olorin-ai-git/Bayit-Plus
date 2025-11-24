@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * Jest Setup Configuration for Olorin Microservices
  * Common setup for all test environments
  */
@@ -36,6 +37,18 @@ console.warn = (...args: any[]) => {
 };
 
 // Mock window.matchMedia
+=======
+ * Jest Setup File
+ * Feature: 001-extensive-investigation-report
+ * Task: T078
+ *
+ * Global test setup and configuration for Jest tests
+ */
+
+import '@testing-library/jest-dom';
+
+// Mock window.matchMedia (required for responsive components)
+>>>>>>> 001-modify-analyzer-method
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -46,6 +59,7 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: jest.fn(), // deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
+<<<<<<< HEAD
     dispatchEvent: jest.fn()
   }))
 });
@@ -352,3 +366,26 @@ afterEach(() => {
 });
 
 export {};
+=======
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Suppress console errors during tests (optional)
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('Warning: ReactDOM.render')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+>>>>>>> 001-modify-analyzer-method

@@ -14,6 +14,142 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 
+<<<<<<< HEAD
+=======
+def _summarize_snowflake_data_for_logging(snowflake_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Create a summarized version of snowflake_data for logging purposes.
+    Prevents verbose logging of large result sets.
+    
+    Args:
+        snowflake_data: Full snowflake_data dictionary
+        
+    Returns:
+        Summarized dictionary with row count instead of full results
+    """
+    if not snowflake_data:
+        return None
+    
+    if not isinstance(snowflake_data, dict):
+        return {"type": type(snowflake_data).__name__, "preview": str(snowflake_data)[:100]}
+    
+    summary = {
+        "success": snowflake_data.get("success"),
+        "source": snowflake_data.get("source", "unknown"),
+    }
+    
+    if "results" in snowflake_data:
+        results = snowflake_data["results"]
+        if isinstance(results, list):
+            summary["row_count"] = len(results)
+            # Include sample of first record keys if available
+            if results and isinstance(results[0], dict):
+                summary["columns"] = list(results[0].keys())[:5]  # First 5 column names
+        else:
+            summary["results_type"] = type(results).__name__
+    else:
+        summary["keys"] = list(snowflake_data.keys())[:10]  # First 10 keys
+    
+    return summary
+
+
+def _summarize_tool_results_for_logging(tool_results: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Create a summarized version of tool_results for logging purposes.
+    Prevents verbose logging of full SQL queries and large result sets.
+    
+    Args:
+        tool_results: Full tool_results dictionary
+        
+    Returns:
+        Summarized dictionary with query summaries instead of full queries
+    """
+    if not tool_results:
+        return {}
+    
+    if not isinstance(tool_results, dict):
+        return {"type": type(tool_results).__name__, "preview": str(tool_results)[:100]}
+    
+    summarized = {}
+    for tool_name, result in tool_results.items():
+        if isinstance(result, str):
+            # Check if it's a JSON string with a query
+            try:
+                import json
+                parsed = json.loads(result)
+                if isinstance(parsed, dict):
+                    # Summarize JSON result
+                    if "query" in parsed:
+                        summarized[tool_name] = {
+                            "type": "json_with_query",
+                            "query_preview": parsed["query"][:100] + "..." if len(parsed["query"]) > 100 else parsed["query"],
+                            "has_results": "results" in parsed or "data" in parsed,
+                            "result_count": len(parsed.get("results", [])) if isinstance(parsed.get("results"), list) else 0
+                        }
+                    elif "results" in parsed:
+                        results = parsed["results"]
+                        summarized[tool_name] = {
+                            "type": "json_results",
+                            "result_count": len(results) if isinstance(results, list) else 0,
+                            "columns": list(results[0].keys())[:5] if results and isinstance(results, list) and results and isinstance(results[0], dict) else []
+                        }
+                    elif "row_count" in parsed:
+                        # Handle database query results with row_count (like snowflake_query_tool)
+                        row_count = parsed.get("row_count", 0)
+                        columns = parsed.get("columns", [])
+                        summarized[tool_name] = {
+                            "type": "json_with_row_count",
+                            "row_count": row_count,
+                            "column_count": len(columns) if isinstance(columns, list) else 0,
+                            "columns": columns[:5] if isinstance(columns, list) and len(columns) > 0 else []
+                        }
+                    else:
+                        summarized[tool_name] = {"type": "json", "keys": list(parsed.keys())[:5]}
+                else:
+                    # Non-dict JSON - summarize by type
+                    summarized[tool_name] = {"type": "json_parsed", "parsed_type": type(parsed).__name__, "length": len(str(parsed))}
+            except (json.JSONDecodeError, Exception):
+                # Not JSON, check if it looks like a SQL query
+                if "SELECT" in result.upper() or "FROM" in result.upper() or "WHERE" in result.upper():
+                    summarized[tool_name] = {
+                        "type": "sql_query",
+                        "length": len(result)
+                    }
+                else:
+                    summarized[tool_name] = {"type": "string", "length": len(result)}
+        elif isinstance(result, dict):
+            # Summarize dict result
+            if "query" in result:
+                summarized[tool_name] = {
+                    "type": "dict_with_query",
+                    "query_preview": result["query"][:100] + "..." if len(str(result["query"])) > 100 else str(result["query"]),
+                    "has_results": "results" in result or "data" in result,
+                    "result_count": len(result.get("results", [])) if isinstance(result.get("results"), list) else 0
+                }
+            elif "results" in result:
+                results = result["results"]
+                summarized[tool_name] = {
+                    "type": "dict_results",
+                    "result_count": len(results) if isinstance(results, list) else 0,
+                    "columns": list(results[0].keys())[:5] if results and isinstance(results, list) and results and isinstance(results[0], dict) else []
+                }
+            else:
+                summarized[tool_name] = {"type": "dict", "keys": list(result.keys())[:5]}
+        else:
+            # For other types, summarize instead of showing preview
+            if isinstance(result, str):
+                # Check if it looks like SQL
+                if "SELECT" in result.upper() or "FROM" in result.upper() or "WHERE" in result.upper():
+                    summarized[tool_name] = {"type": "sql_query", "length": len(result)}
+                else:
+                    summarized[tool_name] = {"type": "string", "length": len(result)}
+            else:
+                summarized[tool_name] = {"type": type(result).__name__, "length": len(str(result))}
+    
+    return summarized
+
+
+>>>>>>> 001-modify-analyzer-method
 def _normalize_snowflake_data_type(data):
     """
     Normalize snowflake data to expected type (object instead of JSON string).
@@ -73,6 +209,10 @@ class InvestigationState(TypedDict):
     
     # Configuration parameters
     date_range_days: int  # Number of days for Snowflake analysis (default 7)
+<<<<<<< HEAD
+=======
+    time_range: Optional[Dict[str, str]]  # Optional explicit time range with start_time and end_time (ISO 8601)
+>>>>>>> 001-modify-analyzer-method
     tool_count: str  # Number of tools to select (default "5-6")
     
     # Snowflake data (configurable day analysis)
@@ -127,6 +267,10 @@ def create_initial_state(
     max_tools: int = 52,
     custom_user_prompt: Optional[str] = None,
     date_range_days: int = 7,
+<<<<<<< HEAD
+=======
+    time_range: Optional[Dict[str, str]] = None,
+>>>>>>> 001-modify-analyzer-method
     tool_count: int = 5
 ) -> InvestigationState:
     """
@@ -196,6 +340,10 @@ def create_initial_state(
         
         # Configuration parameters
         "date_range_days": date_range_days,
+<<<<<<< HEAD
+=======
+        "time_range": time_range,
+>>>>>>> 001-modify-analyzer-method
         "tool_count": tool_count,
         
         # Snowflake data
@@ -247,6 +395,12 @@ def create_initial_state(
         "end_time": None,
         "total_duration_ms": None,
         
+<<<<<<< HEAD
+=======
+        # Performance metrics (for hybrid graph compatibility)
+        "performance_metrics": {},
+        
+>>>>>>> 001-modify-analyzer-method
         # Optional context
         "agent_context": None
     }
@@ -263,7 +417,14 @@ def create_initial_state(
     logger.debug(f"[Step 9.1]     date_range_days: {initial_state['date_range_days']}")
     logger.debug(f"[Step 9.1]     tool_count: '{initial_state['tool_count']}'")
     logger.debug(f"[Step 9.1]   Data fields verified:")
+<<<<<<< HEAD
     logger.debug(f"[Step 9.1]     snowflake_data: {initial_state['snowflake_data']}")
+=======
+    # Reduce verbosity for large result sets - always use summary
+    snowflake_data = initial_state.get('snowflake_data')
+    snowflake_summary = _summarize_snowflake_data_for_logging(snowflake_data)
+    logger.debug(f"[Step 9.1]     snowflake_data: {snowflake_summary}")
+>>>>>>> 001-modify-analyzer-method
     logger.debug(f"[Step 9.1]     snowflake_completed: {initial_state['snowflake_completed']}")
     logger.debug(f"[Step 9.1]     tool_results: {len(initial_state['tool_results'])} entries")
     logger.debug(f"[Step 9.1]     domain_findings: {len(initial_state['domain_findings'])} domains")
@@ -358,19 +519,34 @@ def add_tool_result(state: InvestigationState, tool_name: str, result: Any) -> D
         "tools_used": tools_used,
         "tool_results": tool_results
     }
+<<<<<<< HEAD
     
     if "snowflake" in tool_name.lower():
+=======
+
+    # CRITICAL FIX A0: Recognize both "database" and "snowflake" tool names
+    # PostgreSQL uses "database_query" tool, legacy Snowflake used "snowflake" tools
+    if "snowflake" in tool_name.lower() or "database" in tool_name.lower():
+>>>>>>> 001-modify-analyzer-method
         # CRITICAL FIX: Normalize snowflake data type (JSON string → object)
         snowflake_data = _normalize_snowflake_data_type(result)
         updates["snowflake_data"] = snowflake_data
         updates["snowflake_completed"] = True
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 001-modify-analyzer-method
     return updates
 
 
 def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[str, Any]) -> Dict[str, Any]:
     """
+<<<<<<< HEAD
     Add findings from a domain agent.
+=======
+    Add findings from a domain agent and persist to database.
+>>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Current investigation state
@@ -400,14 +576,106 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
     }
     
     # Handle both old risk_score format and new evidence-based format
+<<<<<<< HEAD
     if "risk_score" in findings:
         # Legacy format - still update for compatibility
         updates["risk_score"] = max(state.get("risk_score", 0.0), findings["risk_score"])
+=======
+    # CRITICAL: No fallback scores - only update if findings has a valid risk_score
+    if "risk_score" in findings and findings["risk_score"] is not None:
+        # Legacy format - still update for compatibility
+        state_risk_score = state.get("risk_score")
+        if state_risk_score is not None:
+            # Both are not None - take the maximum
+            updates["risk_score"] = max(state_risk_score, findings["risk_score"])
+        else:
+            # State has None, findings has a value - use findings value
+            updates["risk_score"] = findings["risk_score"]
+>>>>>>> 001-modify-analyzer-method
     elif "metrics" in findings and "avg_model_score" in findings["metrics"]:
         # New evidence-based format - use MODEL_SCORE as temporary risk indicator
         # The actual risk score will be determined by LLM in the summary phase
         model_score = findings["metrics"]["avg_model_score"]
+<<<<<<< HEAD
         updates["risk_score"] = max(state.get("risk_score", 0.0), model_score)
+=======
+        if model_score is not None:
+            state_risk_score = state.get("risk_score")
+            if state_risk_score is not None:
+                # Both are not None - take the maximum
+                updates["risk_score"] = max(state_risk_score, model_score)
+            else:
+                # State has None, model_score has a value - use model_score value
+                updates["risk_score"] = model_score
+    
+    # CRITICAL: Persist domain findings to database (including LLM analysis)
+    investigation_id = state.get("investigation_id")
+    if investigation_id:
+        try:
+            from app.service.domain_findings_service import DomainFindingsService
+            from app.persistence.database import get_db_session
+            
+            # Use a separate session to avoid conflicts with graph execution
+            with get_db_session() as db:
+                service = DomainFindingsService(db)
+                # Get current version for optimistic locking
+                from app.models.investigation_state import InvestigationState as InvestigationStateModel
+                db_state = db.query(InvestigationStateModel).filter(
+                    InvestigationStateModel.investigation_id == investigation_id
+                ).first()
+                current_version = db_state.version if db_state else None
+                
+                success = service.persist_domain_findings(
+                    investigation_id=investigation_id,
+                    domain=domain,
+                    findings=findings,
+                    from_version=current_version
+                )
+                if success:
+                    logger.debug(f"✅ Persisted {domain} domain findings to database for {investigation_id}")
+                    
+                    # If this is the risk domain and transaction_scores exist in state, persist them too
+                    if domain == "risk" and "transaction_scores" in state:
+                        transaction_scores = state.get("transaction_scores", {})
+                        if transaction_scores:
+                            try:
+                                # Get updated state to ensure we have latest progress_json
+                                db_state = db.query(InvestigationStateModel).filter(
+                                    InvestigationStateModel.investigation_id == investigation_id
+                                ).first()
+                                if db_state:
+                                    progress_data = json.loads(db_state.progress_json) if db_state.progress_json else {}
+                                    # Validate all scores are in [0.0, 1.0] range
+                                    validated_scores = {}
+                                    invalid_count = 0
+                                    for tx_id, score in transaction_scores.items():
+                                        try:
+                                            score_float = float(score)
+                                            if 0.0 <= score_float <= 1.0:
+                                                validated_scores[str(tx_id)] = score_float
+                                            else:
+                                                invalid_count += 1
+                                                logger.warning(f"⚠️ Invalid transaction score {score_float} for {tx_id}, excluding")
+                                        except (ValueError, TypeError):
+                                            invalid_count += 1
+                                            logger.warning(f"⚠️ Invalid transaction score type for {tx_id}, excluding")
+                                    
+                                    if validated_scores:
+                                        progress_data["transaction_scores"] = validated_scores
+                                        db_state.progress_json = json.dumps(progress_data)
+                                        db_state.version += 1
+                                        db.commit()
+                                        logger.info(f"✅ Persisted {len(validated_scores)} transaction scores for {investigation_id}")
+                                        if invalid_count > 0:
+                                            logger.warning(f"⚠️ Excluded {invalid_count} invalid transaction scores")
+                            except Exception as tx_error:
+                                logger.warning(f"⚠️ Failed to persist transaction_scores: {tx_error}", exc_info=True)
+                else:
+                    logger.warning(f"⚠️ Failed to persist {domain} domain findings to database for {investigation_id}")
+        except Exception as e:
+            # Don't fail the investigation if persistence fails - log and continue
+            logger.warning(f"Failed to persist domain findings to database: {str(e)}", exc_info=True)
+>>>>>>> 001-modify-analyzer-method
     
     return updates
 
@@ -415,7 +683,12 @@ def add_domain_findings(state: InvestigationState, domain: str, findings: Dict[s
 def calculate_final_risk_score(state: InvestigationState) -> float:
     """
     Calculate the final risk score based on all findings.
+<<<<<<< HEAD
     NOTE: This is now a fallback - the actual risk score should come from LLM analysis.
+=======
+    NOTE: This function is deprecated - use risk agent calculation instead.
+    This is kept for backward compatibility only.
+>>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Current investigation state
@@ -423,15 +696,20 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
     Returns:
         Final risk score (0.0 - 1.0)
     """
+<<<<<<< HEAD
     # First check if we have an LLM-determined risk score
     if state.get("llm_risk_score") is not None:
         return state["llm_risk_score"]
     
+=======
+    # Use risk agent calculation method
+>>>>>>> 001-modify-analyzer-method
     domain_findings = state.get("domain_findings", {})
     
     if not domain_findings:
         raise ValueError("CRITICAL: No domain findings available - cannot calculate risk score without REAL data")
     
+<<<<<<< HEAD
     # Collect MODEL_SCORES from new evidence-based format
     model_scores = []
     for domain, findings in domain_findings.items():
@@ -459,6 +737,12 @@ def calculate_final_risk_score(state: InvestigationState) -> float:
         return 0.3
     else:
         return 0.1
+=======
+    # Use risk agent's calculation method
+    from app.service.agent.orchestration.domain_agents.risk_agent import _calculate_real_risk_score
+    facts = state.get("facts", {})
+    return _calculate_real_risk_score(domain_findings, facts)
+>>>>>>> 001-modify-analyzer-method
 
 
 def is_investigation_complete(state: InvestigationState) -> bool:

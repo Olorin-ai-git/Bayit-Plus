@@ -11,8 +11,8 @@
 - [Comments API](#comments-api)
 - [Agent API](#agent-api)
 - [WebSocket API](#websocket-api)
-- [Autonomous Investigation APIs](#autonomous-investigation-apis)
-- [Autonomous Investigation Guide](#autonomous-investigation-guide)
+- [Structured Investigation APIs](#structured-investigation-apis)
+- [Structured Investigation Guide](#structured-investigation-guide)
 - [Demo Mode APIs](#demo-mode-apis)
 - [Additional Endpoints](#additional-endpoints)
 - [Authentication Headers](#authentication-headers)
@@ -851,7 +851,7 @@ Add comment to investigation
 
 ### **POST /api/agent/start**
 
-Start autonomous investigation for an entity
+Start structured investigation for an entity
 
 **Request:**
 
@@ -868,7 +868,7 @@ POST /api/agent/start?entity_id=user123456&entity_type=user_id
 ```json
 {
   "agentOutput": {
-    "plainText": "Starting autonomous investigation for user123456. Investigation ID: inv-abc123-def456",
+    "plainText": "Starting structured investigation for user123456. Investigation ID: inv-abc123-def456",
     "outputs": []
   },
   "agentMetadata": {
@@ -879,7 +879,7 @@ POST /api/agent/start?entity_id=user123456&entity_type=user_id
 
 ### **WebSocket: /ws/{investigation_id}**
 
-Real-time autonomous investigation progress monitoring
+Real-time structured investigation progress monitoring
 
 **Connection:**
 
@@ -1016,7 +1016,7 @@ Invoke AI agent for analysis
 
 ### **POST /api/agent/stop/{investigation_id}**
 
-Stop a running autonomous investigation
+Stop a running structured investigation
 
 **Request:**
 
@@ -1037,7 +1037,7 @@ POST /api/agent/stop/inv-abc123-def456
 
 ### **POST /api/agent/pause/{investigation_id}**
 
-Pause a running autonomous investigation
+Pause a running structured investigation
 
 **Request:**
 
@@ -1059,7 +1059,7 @@ POST /api/agent/pause/inv-abc123-def456
 
 ### **POST /api/agent/resume/{investigation_id}**
 
-Resume a paused autonomous investigation
+Resume a paused structured investigation
 
 **Request:**
 
@@ -1081,7 +1081,7 @@ POST /api/agent/resume/inv-abc123-def456
 
 ### **GET /api/agent/status/{investigation_id}**
 
-Get current status of autonomous investigation
+Get current status of structured investigation
 
 **Request:**
 
@@ -1116,7 +1116,7 @@ GET /api/agent/status/inv-abc123-def456
 
 ### **WebSocket Endpoint: /ws/{investigation_id}**
 
-Real-time monitoring of autonomous investigation progress with complete API
+Real-time monitoring of structured investigation progress with complete API
 response data.
 
 **Connection URL:**
@@ -1242,7 +1242,7 @@ investigations:
 
 ### **Investigation Phases**
 
-The autonomous investigation progresses through these phases:
+The structured investigation progresses through these phases:
 
 | Phase               | Description                       | Typical Duration |
 | ------------------- | --------------------------------- | ---------------- |
@@ -1275,7 +1275,7 @@ The autonomous investigation progresses through these phases:
 **JavaScript Example:**
 
 ```javascript
-class AutonomousInvestigationClient {
+class StructuredInvestigationClient {
   constructor(investigationId, parallel = true) {
     this.investigationId = investigationId;
     this.parallel = parallel;
@@ -1288,7 +1288,7 @@ class AutonomousInvestigationClient {
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
-      console.log('Connected to autonomous investigation');
+      console.log('Connected to structured investigation');
     };
 
     this.ws.onmessage = (event) => {
@@ -1394,7 +1394,7 @@ class AutonomousInvestigationClient {
 }
 
 // Usage
-const client = new AutonomousInvestigationClient('inv-123', true);
+const client = new StructuredInvestigationClient('inv-123', true);
 client.connect();
 ```
 
@@ -1405,7 +1405,7 @@ import asyncio
 import json
 import websockets
 
-class AutonomousInvestigationClient:
+class StructuredInvestigationClient:
     def __init__(self, investigation_id, parallel=True):
         self.investigation_id = investigation_id
         self.parallel = parallel
@@ -1467,7 +1467,7 @@ class AutonomousInvestigationClient:
 
 # Usage
 async def main():
-    client = AutonomousInvestigationClient('inv-123', parallel=True)
+    client = StructuredInvestigationClient('inv-123', parallel=True)
     await client.connect()
 
 asyncio.run(main())
@@ -1564,11 +1564,11 @@ async def handle_status_update(self, status_data):
 
 ---
 
-## 🤖 **Autonomous Investigation APIs**
+## 🤖 **Structured Investigation APIs**
 
-### **POST /api/autonomous/start**
+### **POST /api/structured/start**
 
-Start an autonomous investigation with AI-powered analysis
+Start an structured investigation with AI-powered analysis
 
 **Request:**
 
@@ -1604,9 +1604,9 @@ Start an autonomous investigation with AI-powered analysis
 }
 ```
 
-### **POST /api/autonomous/pause**
+### **POST /api/structured/pause**
 
-Pause a running autonomous investigation
+Pause a running structured investigation
 
 **Request:**
 
@@ -1629,9 +1629,9 @@ Pause a running autonomous investigation
 }
 ```
 
-### **POST /api/autonomous/resume**
+### **POST /api/structured/resume**
 
-Resume a paused autonomous investigation
+Resume a paused structured investigation
 
 **Request:**
 
@@ -1654,9 +1654,9 @@ Resume a paused autonomous investigation
 }
 ```
 
-### **POST /api/autonomous/cancel**
+### **POST /api/structured/cancel**
 
-Cancel a running autonomous investigation
+Cancel a running structured investigation
 
 **Request:**
 
@@ -1684,9 +1684,9 @@ Cancel a running autonomous investigation
 }
 ```
 
-### **GET /api/autonomous/status/{investigation_id}**
+### **GET /api/structured/status/{investigation_id}**
 
-Get current status of autonomous investigation
+Get current status of structured investigation
 
 **Response:**
 
@@ -1715,9 +1715,9 @@ Get current status of autonomous investigation
 }
 ```
 
-### **GET /api/autonomous/results/{investigation_id}**
+### **GET /api/structured/results/{investigation_id}**
 
-Get results from completed autonomous investigation
+Get results from completed structured investigation
 
 **Response:**
 
@@ -1764,9 +1764,9 @@ Get results from completed autonomous investigation
 }
 ```
 
-### **GET /api/autonomous/history**
+### **GET /api/structured/history**
 
-Get history of autonomous investigations
+Get history of structured investigations
 
 **Query Parameters:**
 
@@ -1808,9 +1808,9 @@ Get history of autonomous investigations
 }
 ```
 
-### **DELETE /api/autonomous/cleanup**
+### **DELETE /api/structured/cleanup**
 
-Clean up completed autonomous investigations older than specified days
+Clean up completed structured investigations older than specified days
 
 **Request:**
 
@@ -1833,16 +1833,16 @@ Clean up completed autonomous investigations older than specified days
 
 ---
 
-## 🚀 **Autonomous Investigation Guide**
+## 🚀 **Structured Investigation Guide**
 
 ### **Step-by-Step Client Implementation**
 
-This guide shows how to implement autonomous investigation monitoring in your
+This guide shows how to implement structured investigation monitoring in your
 client application.
 
-#### **Step 1: Start Autonomous Investigation**
+#### **Step 1: Start Structured Investigation**
 
-First, initiate the autonomous investigation for a user or device:
+First, initiate the structured investigation for a user or device:
 
 ```javascript
 async function startInvestigation(entityId, entityType = 'user_id') {
@@ -2088,7 +2088,7 @@ class InvestigationMonitor {
 Here's a complete implementation that ties everything together:
 
 ```javascript
-class AutonomousInvestigationClient {
+class StructuredInvestigationClient {
   constructor(apiBaseUrl = '/api', wsBaseUrl = 'ws://localhost:8090') {
     this.apiBaseUrl = apiBaseUrl;
     this.wsBaseUrl = wsBaseUrl;
@@ -2242,7 +2242,7 @@ class AutonomousInvestigationClient {
 
 // Usage Example
 async function runInvestigation() {
-  const client = new AutonomousInvestigationClient();
+  const client = new StructuredInvestigationClient();
 
   try {
     // Start parallel investigation
@@ -2268,7 +2268,7 @@ runInvestigation();
 #### **Step 6: Error Handling and Best Practices**
 
 ```javascript
-class RobustInvestigationClient extends AutonomousInvestigationClient {
+class RobustInvestigationClient extends StructuredInvestigationClient {
   constructor(apiBaseUrl, wsBaseUrl) {
     super(apiBaseUrl, wsBaseUrl);
     this.retryAttempts = 3;
@@ -2346,7 +2346,7 @@ class RobustInvestigationClient extends AutonomousInvestigationClient {
 ```jsx
 import React, { useState, useEffect } from 'react';
 
-const AutonomousInvestigation = ({ entityId, entityType }) => {
+const StructuredInvestigation = ({ entityId, entityType }) => {
   const [status, setStatus] = useState('idle');
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState('');
@@ -2356,7 +2356,7 @@ const AutonomousInvestigation = ({ entityId, entityType }) => {
   const startInvestigation = async () => {
     setStatus('starting');
 
-    const client = new AutonomousInvestigationClient();
+    const client = new StructuredInvestigationClient();
 
     try {
       const { investigationId, monitor } = await client.startInvestigation(
@@ -2433,7 +2433,7 @@ const AutonomousInvestigation = ({ entityId, entityType }) => {
 };
 ```
 
-This comprehensive guide provides everything needed to implement autonomous
+This comprehensive guide provides everything needed to implement structured
 investigation monitoring in client applications, with support for both parallel
 and sequential execution modes.
 

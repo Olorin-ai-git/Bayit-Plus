@@ -16,7 +16,14 @@ logger = get_bridge_logger(__name__)
 class _SumoLogicQueryArgs(BaseModel):
     """Arguments for SumoLogic query."""
     query: str = Field(..., description="The SumoLogic search query to execute.")
-    time_range: str = Field("-15m", description="Time range for the query (e.g., '-15m', '-1h', '-24h').")
+    time_range: str = Field(
+        ...,
+        description=(
+            "Time range for the query. REQUIRED. "
+            "Use investigation time range from context in ISO format 'YYYY-MM-DDTHH:MM:SSZ to YYYY-MM-DDTHH:MM:SSZ' "
+            "or relative format like '-15m', '-1h', '-24h', '-7d'."
+        )
+    )
 
 
 class SumoLogicClient:
@@ -66,12 +73,12 @@ class SumoLogicQueryTool(BaseTool):
         description="SumoLogic API endpoint"
     )
     
-    def _run(self, query: str, time_range: str = "-15m") -> Dict[str, Any]:
+    def _run(self, query: str, time_range: str) -> Dict[str, Any]:
         """Synchronous execution wrapper."""
         import asyncio
         return asyncio.run(self._arun(query, time_range))
-    
-    async def _arun(self, query: str, time_range: str = "-15m") -> Dict[str, Any]:
+
+    async def _arun(self, query: str, time_range: str) -> Dict[str, Any]:
         """Async execution of the SumoLogic query."""
         from app.service.config import get_settings_for_env
         from app.utils.firebase_secrets import get_app_secret

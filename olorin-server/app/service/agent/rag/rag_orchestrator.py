@@ -16,6 +16,8 @@ import uuid
 from .knowledge_base import KnowledgeBase, KnowledgeBaseConfig, DocumentChunk
 from ..communication.ice_events import ICEEventBus, ICEEventType, get_event_bus
 from app.service.logging import get_bridge_logger
+from app.service.llm_manager import get_llm_manager
+from langchain_core.messages import SystemMessage, HumanMessage
 
 logger = get_bridge_logger(__name__)
 
@@ -41,7 +43,7 @@ class RAGRequest:
     
     # Generation parameters
     max_response_length: int = 1000
-    temperature: float = 0.7
+    temperature: float = 0.1  # Low temperature for consistent results
     include_sources: bool = True
     
     # Request metadata
@@ -173,19 +175,26 @@ class RAGOrchestrator:
         # Use explicit logger name to avoid undefined __name__ issues
         self.logger = get_bridge_logger("app.service.agent.rag.rag_orchestrator")
         
+<<<<<<< HEAD
         # LLM client placeholder
         self.llm_client = None
+=======
+        # LLM client
+        self.llm_manager = None
+>>>>>>> 001-modify-analyzer-method
         self._initialize_llm_client()
     
     def _initialize_llm_client(self) -> None:
         """Initialize LLM client"""
         try:
-            # Placeholder for actual LLM client initialization
-            # In real implementation, would initialize OpenAI, Anthropic, or other LLM client
-            self.llm_client = "placeholder_llm_client"
-            self.logger.info(f"Initialized LLM client: {self.config.llm_model}")
+            self.llm_manager = get_llm_manager()
+            if self.llm_manager and self.llm_manager.selected_model:
+                self.logger.info(f"Initialized LLM client: {self.config.llm_model}")
+            else:
+                self.logger.warning("LLM manager initialized but no model available - will use fallback")
         except Exception as e:
             self.logger.error(f"Failed to initialize LLM client: {str(e)}")
+            self.llm_manager = None
     
     async def process_request(self, request: RAGRequest) -> RAGResponse:
         """Process RAG request"""
@@ -334,22 +343,31 @@ class RAGOrchestrator:
     def _create_augmented_prompt(self, request: RAGRequest, chunks: List[DocumentChunk]) -> str:
         """Create augmented prompt with retrieved knowledge"""
         
-        # Base system prompt
-        system_prompt = """You are an expert fraud investigation assistant with access to comprehensive domain knowledge. 
-Use the provided knowledge context to give accurate, detailed, and actionable responses to investigation queries."""
+        # Base system prompt - explicitly state that knowledge context contains actual data
+        system_prompt = """You are an expert fraud investigation assistant with direct access to investigation data and results.
+
+IMPORTANT: The "RELEVANT KNOWLEDGE" section below contains ACTUAL investigation data, transaction records, investigation results, and findings from the fraud investigation system. This is real data from completed investigations, not general knowledge.
+
+Your task:
+1. Use the provided investigation data to answer the user's query directly
+2. If the user asks about transactions, entities, or investigation details, extract and present the relevant information from the knowledge context
+3. If the data contains specific values (amounts, dates, IDs, risk scores, etc.), use those exact values in your response
+4. If the user's query cannot be answered from the provided data, clearly state what information is missing
+5. Do NOT say you don't have access to data - you DO have access through the knowledge context provided below"""
         
         # Add knowledge context
         knowledge_context = ""
         if chunks:
-            knowledge_context = "\n\n=== RELEVANT KNOWLEDGE ===\n"
+            knowledge_context = "\n\n=== RELEVANT KNOWLEDGE (ACTUAL INVESTIGATION DATA) ===\n"
+            knowledge_context += "The following contains real investigation results, transaction data, and findings:\n\n"
             for i, chunk in enumerate(chunks, 1):
-                knowledge_context += f"\n[Source {i}] {chunk.content}\n"
-            knowledge_context += "\n=== END KNOWLEDGE ===\n"
+                knowledge_context += f"\n[Investigation Data Source {i}]\n{chunk.content}\n"
+            knowledge_context += "\n=== END INVESTIGATION DATA ===\n"
         
         # Add investigation context
         investigation_context = ""
         if request.investigation_id or request.entity_type:
-            investigation_context = "\n=== INVESTIGATION CONTEXT ===\n"
+            investigation_context = "\n=== CURRENT INVESTIGATION CONTEXT ===\n"
             if request.investigation_id:
                 investigation_context += f"Investigation ID: {request.investigation_id}\n"
             if request.entity_type:
@@ -364,11 +382,11 @@ Use the provided knowledge context to give accurate, detailed, and actionable re
             knowledge_context,
             investigation_context,
             f"\nUser Query: {request.query}",
-            "\nPlease provide a comprehensive response based on the available knowledge and context."
+            "\n\nInstructions: Answer the user's query using the ACTUAL investigation data provided above. Extract specific details, values, and findings from the knowledge context. If the data contains transaction information, entity details, risk scores, or other specific values, present them directly in your response."
         ]
         
         if request.include_sources and chunks:
-            prompt_parts.append("\nInclude relevant source references in your response.")
+            prompt_parts.append("\nInclude references to the investigation data sources you used.")
         
         return "\n".join(prompt_parts)
     
@@ -376,35 +394,115 @@ Use the provided knowledge context to give accurate, detailed, and actionable re
         """Call LLM for text generation"""
         
         try:
-            # Placeholder for actual LLM call
-            # In real implementation, would call OpenAI, Anthropic, or other LLM API
+            # Try to use real LLM if available
+            if self.llm_manager and self.llm_manager.selected_model:
+                try:
+                    # Parse the prompt to extract system and user messages
+                    # The prompt format from _create_augmented_prompt includes:
+                    # 1. System prompt (expert fraud investigation assistant)
+                    # 2. Knowledge context (=== RELEVANT KNOWLEDGE ===)
+                    # 3. Investigation context (=== INVESTIGATION CONTEXT ===)
+                    # 4. User query
+                    
+                    system_parts = []
+                    user_parts = []
+                    
+                    # Extract system prompt (before knowledge context)
+                    if "=== RELEVANT KNOWLEDGE ===" in prompt:
+                        system_end = prompt.find("=== RELEVANT KNOWLEDGE ===")
+                        system_parts.append(prompt[:system_end].strip())
+                        
+                        # Extract knowledge context
+                        knowledge_start = prompt.find("=== RELEVANT KNOWLEDGE ===")
+                        knowledge_end = prompt.find("=== END KNOWLEDGE ===")
+                        if knowledge_end == -1:
+                            knowledge_end = prompt.find("=== INVESTIGATION CONTEXT ===")
+                        if knowledge_end == -1:
+                            knowledge_end = prompt.find("User Query:")
+                        if knowledge_end > knowledge_start:
+                            knowledge_section = prompt[knowledge_start:knowledge_end].strip()
+                            system_parts.append(knowledge_section)
+                        
+                        # Extract investigation context if present
+                        if "=== INVESTIGATION CONTEXT ===" in prompt:
+                            inv_start = prompt.find("=== INVESTIGATION CONTEXT ===")
+                            inv_end = prompt.find("=== END CONTEXT ===")
+                            if inv_end == -1:
+                                inv_end = prompt.find("User Query:")
+                            if inv_end > inv_start:
+                                inv_section = prompt[inv_start:inv_end].strip()
+                                system_parts.append(inv_section)
+                        
+                        # Extract user query
+                        if "User Query:" in prompt:
+                            query_start = prompt.find("User Query:") + len("User Query:")
+                            user_query = prompt[query_start:].strip()
+                            user_parts.append(user_query)
+                    else:
+                        # Fallback: treat entire prompt as user message
+                        user_parts.append(prompt)
+                    
+                    # Build messages
+                    messages = []
+                    if system_parts:
+                        system_content = "\n\n".join(system_parts)
+                        messages.append(SystemMessage(content=system_content))
+                    
+                    if user_parts:
+                        user_content = "\n\n".join(user_parts)
+                        messages.append(HumanMessage(content=user_content))
+                    else:
+                        # Fallback: use the full prompt as user message
+                        messages.append(HumanMessage(content=prompt))
+                    
+                    # Invoke LLM
+                    response = await self.llm_manager.selected_model.ainvoke(messages)
+                    
+                    # Extract text from response
+                    if hasattr(response, 'content'):
+                        generated_text = response.content
+                    else:
+                        generated_text = str(response)
+                    
+                    # Calculate confidence based on response quality
+                    # Higher confidence if response is substantial and relevant
+                    response_length = len(generated_text)
+                    confidence = min(0.95, 0.6 + min(response_length / 1000, 0.3))
+                    
+                    self.logger.debug(f"LLM generated response: {len(generated_text)} chars, confidence: {confidence:.2f}")
+                    return generated_text, confidence
+                    
+                except Exception as llm_error:
+                    self.logger.warning(f"LLM call failed, using fallback: {llm_error}", exc_info=True)
+                    # Fall through to fallback response
             
-            # Simulate LLM response
-            await asyncio.sleep(0.1)  # Simulate processing time
+            # Fallback: Generate a simple answer from the prompt context
+            # Extract the actual query from the prompt
+            query_text = request.query
+            if not query_text and "User Query:" in prompt:
+                # Try to extract query from prompt
+                query_start = prompt.find("User Query:") + len("User Query:")
+                query_end = prompt.find("\n", query_start)
+                if query_end == -1:
+                    query_end = len(prompt)
+                query_text = prompt[query_start:query_end].strip()
             
-            generated_text = f"""Based on the investigation context and available knowledge, here is my analysis:
-
-The query "{request.query}" requires careful examination of the provided evidence and domain knowledge.
-
-Key findings:
-1. Investigation patterns suggest attention to {request.entity_type or 'entity'} characteristics
-2. The investigation type of {request.investigation_type or 'general'} indicates specific analytical approaches
-3. Available knowledge sources provide relevant context for decision-making
-
-Recommendations:
-- Continue monitoring for additional indicators
-- Cross-reference findings with historical patterns
-- Document all evidence for case progression
-
-This analysis is based on current knowledge and should be validated against additional sources."""
+            # Check if we have knowledge context in the prompt
+            has_knowledge = "=== RELEVANT KNOWLEDGE ===" in prompt or "knowledge_context" in prompt.lower()
             
-            # Simple confidence calculation based on prompt length and chunk relevance
-            confidence = min(0.9, 0.5 + (len(prompt) / 5000) + (len(request.query) / 1000))
+            if has_knowledge:
+                # We have knowledge but LLM failed - provide a helpful message
+                generated_text = f"I found relevant information related to your query: \"{query_text}\". However, I encountered an issue generating a detailed response. Please try rephrasing your question or contact support if the issue persists."
+                confidence = 0.5
+            else:
+                # No knowledge found
+                generated_text = f"I couldn't find specific information about \"{query_text}\" in the knowledge base. The system may not have indexed relevant data yet, or your query may need to be more specific."
+                confidence = 0.3
             
             return generated_text, confidence
             
         except Exception as e:
-            self.logger.error(f"LLM call failed: {str(e)}")
+            self.logger.error(f"LLM call failed: {str(e)}", exc_info=True)
             return "I apologize, but I encountered an error while processing your request. Please try again or contact support if the issue persists.", 0.1
     
     def _calculate_retrieval_quality(self, chunks: List[DocumentChunk], query: str) -> float:

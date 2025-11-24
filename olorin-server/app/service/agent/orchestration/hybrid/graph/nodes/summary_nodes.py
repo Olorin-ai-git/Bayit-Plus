@@ -72,9 +72,76 @@ class SummaryNodes:
             apply_evidence_gating(state)
             logger.info(f"✅ Evidence gating applied: strength={fmt_num(state.get('evidence_strength', 0.0), 3)}")
 
+<<<<<<< HEAD
             # Finalize risk score using uniform computation
             finalize_risk(state)
             logger.info(f"✅ Risk score finalized: {fmt_num(state.get('risk_score', 0.0), 2)}")
+=======
+            # CRITICAL FIX: Transform agent_results to domain_findings structure if missing or empty
+            # finalize.py expects domain_findings with risk scores but state may have empty domain_findings
+            existing_domain_findings = state.get("domain_findings", {})
+            need_transformation = (
+                not existing_domain_findings or  # domain_findings doesn't exist or is empty
+                not any(df.get("risk_score") is not None for df in existing_domain_findings.values() if isinstance(df, dict))  # or has no risk scores
+            )
+
+            if need_transformation and "agent_results" in state:
+                logger.info("🔄 Transforming agent_results to domain_findings structure for finalize.py")
+                logger.info(f"   Reason: existing_domain_findings empty={not existing_domain_findings}, has_scores={any(df.get('risk_score') is not None for df in existing_domain_findings.values() if isinstance(df, dict)) if existing_domain_findings else False}")
+                domain_findings = {}
+                agent_results = state["agent_results"]
+
+                # Transform each domain agent result to domain_findings format
+                # Note: Only transform the 5 domain agents (device, network, location, logs, authentication)
+                # The "risk" agent is a risk aggregation agent, not a domain agent
+                for domain_name in ["device", "network", "location", "logs", "authentication"]:
+                    if domain_name in agent_results:
+                        agent_data = agent_results[domain_name]
+
+                        # Extract evidence from findings if it exists
+                        evidence = []
+                        findings = agent_data.get("findings", {})
+                        if isinstance(findings, dict):
+                            # Try to extract evidence from various finding fields
+                            if "evidence" in findings:
+                                evidence = findings["evidence"]
+                            elif "indicators" in findings:
+                                evidence = findings["indicators"]
+                            elif "analysis" in findings and isinstance(findings["analysis"], list):
+                                evidence = findings["analysis"]
+
+                        # Build domain_findings entry
+                        domain_findings[domain_name] = {
+                            "risk_score": agent_data.get("risk_score"),
+                            "confidence": agent_data.get("confidence", 0.35),
+                            "evidence": evidence if isinstance(evidence, list) else [],
+                            "summary": findings.get("summary", f"{domain_name} domain analysis"),
+                            "status": "OK" if agent_data.get("risk_score") is not None else "INSUFFICIENT_EVIDENCE"
+                        }
+
+                        logger.debug(f"   Transformed {domain_name}: risk={agent_data.get('risk_score')}, evidence={len(evidence) if isinstance(evidence, list) else 0}")
+
+                state["domain_findings"] = domain_findings
+                logger.info(f"✅ Transformed {len(domain_findings)} domains to domain_findings structure")
+
+            # Finalize risk score using uniform computation
+            finalize_risk(state)
+            # CRITICAL FIX: Show domain risk scores when final risk is blocked
+            final_risk = state.get('risk_score')
+            if final_risk is None:
+                # Extract highest domain risk score for logging
+                domain_findings = state.get("domain_findings", {})
+                domain_scores = []
+                for domain_name, domain_data in domain_findings.items():
+                    if isinstance(domain_data, dict):
+                        domain_risk = domain_data.get('risk_score')
+                        if domain_risk is not None:
+                            domain_scores.append(f"{domain_name}={fmt_num(domain_risk, 2)}")
+                domain_info = f" (domain scores: {', '.join(domain_scores[:3])})" if domain_scores else ""
+                logger.info(f"✅ Risk score finalized: N/A (blocked by evidence gating){domain_info}")
+            else:
+                logger.info(f"✅ Risk score finalized: {fmt_num(final_risk, 2)}")
+>>>>>>> 001-modify-analyzer-method
             
             # Finalize all performance metrics
             finalize_all_metrics(state)
@@ -185,6 +252,93 @@ class SummaryNodes:
         state["performance_metrics"]["final_efficiency"] = self.performance_calculator.calculate_investigation_efficiency(state)
         state["investigation_efficiency"] = state["performance_metrics"]["final_efficiency"]
         
+<<<<<<< HEAD
+=======
+        # CRITICAL: Persist risk_score as overall_risk_score to database
+        # This ensures investigations have overall_risk_score for comparison metrics
+        investigation_id = state.get("investigation_id")
+        risk_score = state.get("risk_score")
+        
+        if investigation_id and risk_score is not None:
+            try:
+                from app.router.controllers.investigation_controller import update_investigation_status
+                
+                # Update investigation status with risk_score as overall_risk_score
+                update_investigation_status(investigation_id, {
+                    "findings_summary": {
+                        "risk_score": risk_score,
+                        "overall_risk_score": risk_score,  # CRITICAL: Set overall_risk_score
+                        "status": "completed",
+                        "completed_at": state.get("end_time") or datetime.now().isoformat()
+                    },
+                    "status": "completed",
+                    "current_phase": "complete",
+                    "progress_percentage": 100.0
+                })
+                
+                logger.info(
+                    f"✅ Persisted risk_score={risk_score:.3f} as overall_risk_score "
+                    f"for investigation {investigation_id}"
+                )
+            except Exception as e:
+                logger.warning(
+                    f"Failed to persist risk_score to database for investigation {investigation_id}: {e}"
+                )
+        
+        # CRITICAL: Ensure transaction_scores are persisted to progress_json
+        # This is essential for confusion matrix calculation - transactions MUST have per-transaction scores
+        if investigation_id:
+            try:
+                transaction_scores = state.get("transaction_scores", {})
+                if transaction_scores and isinstance(transaction_scores, dict):
+                    from app.persistence.database import get_db_session
+                    from app.models.investigation_state import InvestigationState as InvestigationStateModel
+                    import json
+                    
+                    with get_db_session() as db:
+                        db_state = db.query(InvestigationStateModel).filter(
+                            InvestigationStateModel.investigation_id == investigation_id
+                        ).first()
+                        if db_state:
+                            progress_data = json.loads(db_state.progress_json) if db_state.progress_json else {}
+                            
+                            # Validate all scores are in [0.0, 1.0] range before storage
+                            validated_scores = {}
+                            invalid_count = 0
+                            for tx_id, score in transaction_scores.items():
+                                try:
+                                    score_float = float(score)
+                                    if 0.0 <= score_float <= 1.0:
+                                        validated_scores[str(tx_id)] = score_float
+                                    else:
+                                        invalid_count += 1
+                                        logger.warning(f"⚠️ Invalid transaction score {score_float} for {tx_id}, excluding")
+                                except (ValueError, TypeError):
+                                    invalid_count += 1
+                                    logger.warning(f"⚠️ Invalid transaction score type for {tx_id}, excluding")
+                            
+                            if validated_scores:
+                                progress_data["transaction_scores"] = validated_scores
+                                db_state.progress_json = json.dumps(progress_data)
+                                db_state.version += 1
+                                db.commit()
+                                logger.info(f"✅ Persisted {len(validated_scores)} transaction scores to progress_json for investigation {investigation_id}")
+                                if invalid_count > 0:
+                                    logger.warning(f"⚠️ Excluded {invalid_count} invalid transaction scores")
+                            else:
+                                logger.warning(f"⚠️ No valid transaction scores to persist for investigation {investigation_id}")
+                        else:
+                            logger.warning(f"⚠️ Investigation state not found in database for {investigation_id}, cannot persist transaction_scores")
+            except Exception as tx_error:
+                logger.error(f"❌ CRITICAL: Failed to persist transaction_scores for investigation {investigation_id}: {tx_error}", exc_info=True)
+                # This is critical - log as error but don't fail investigation
+        else:
+            # Check if transaction_scores exist but weren't persisted
+            transaction_scores = state.get("transaction_scores", {})
+            if transaction_scores:
+                logger.warning(f"⚠️ transaction_scores exist in state but investigation_id is missing - cannot persist")
+        
+>>>>>>> 001-modify-analyzer-method
         # Log final statistics
         self._log_final_statistics(state)
         

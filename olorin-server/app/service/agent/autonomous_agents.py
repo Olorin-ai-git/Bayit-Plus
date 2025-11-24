@@ -6,34 +6,34 @@ os.environ.pop('LANGCHAIN_API_KEY', None)
 os.environ.pop('LANGSMITH_API_KEY', None)
 
 """
-Autonomous Domain Agents
+Structured Domain Agents
 
 Intelligent fraud investigation agents that use LLM-driven decision making
-and autonomous tool selection instead of predetermined service calls.
+and structured tool selection instead of predetermined service calls.
 
 This module has been refactored into smaller modules for better maintainability
 while preserving all existing functionality and imports.
 """
 
 # Import from refactored modules for backward compatibility
-from .base_agents import AutonomousInvestigationAgent, autonomous_llm
+from .base_agents import StructuredInvestigationAgent, structured_llm
 from .domain_agents import (
-    autonomous_network_agent,
-    autonomous_device_agent,
-    autonomous_location_agent,
-    autonomous_logs_agent,
-    autonomous_risk_agent,
+    structured_network_agent,
+    structured_device_agent,
+    structured_location_agent,
+    structured_logs_agent,
+    structured_risk_agent,
 )
 from app.service.logging import get_bridge_logger
 from .agent_communication import (
     _extract_investigation_info,
-    _get_or_create_autonomous_context,
+    _get_or_create_structured_context,
     _create_error_response,
     cleanup_investigation_context,
     get_investigation_contexts,
 )
 from .agent_factory import (
-    create_autonomous_agent,
+    create_structured_agent,
     configure_domain_tools,
     get_default_domain_objectives,
     initialize_llm_with_tools,
@@ -42,25 +42,25 @@ from .agent_factory import (
 # Re-export all functions and classes for backward compatibility
 __all__ = [
     # Base classes and LLM
-    'AutonomousInvestigationAgent',
-    'autonomous_llm',
+    'StructuredInvestigationAgent',
+    'structured_llm',
     
     # Domain agent functions
-    'autonomous_network_agent',
-    'autonomous_device_agent',
-    'autonomous_location_agent',
-    'autonomous_logs_agent',
-    'autonomous_risk_agent',
+    'structured_network_agent',
+    'structured_device_agent',
+    'structured_location_agent',
+    'structured_logs_agent',
+    'structured_risk_agent',
     
     # Communication utilities (private functions but used by other modules)
     '_extract_investigation_info',
-    '_get_or_create_autonomous_context',
+    '_get_or_create_structured_context',
     '_create_error_response',
     'cleanup_investigation_context',
     'get_investigation_contexts',
     
     # Factory functions
-    'create_autonomous_agent',
+    'create_structured_agent',
     'configure_domain_tools',
     'get_default_domain_objectives',
     'initialize_llm_with_tools',

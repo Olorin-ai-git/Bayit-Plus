@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { env } from '@shared/config/env.config';
+>>>>>>> 001-modify-analyzer-method
 import {
   ChartConfig,
   NetworkGraphData,
@@ -106,11 +110,19 @@ export interface TimelineAnalysisResult {
 
 class VisualizationService {
   private baseUrl: string;
+<<<<<<< HEAD
   private apiKey: string;
 
   constructor() {
     this.baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
     this.apiKey = process.env.REACT_APP_API_KEY || '';
+=======
+  private apiKey: string | undefined;
+
+  constructor() {
+    this.baseUrl = env.api.baseUrl;
+    this.apiKey = env.api.apiKey;
+>>>>>>> 001-modify-analyzer-method
   }
 
   private async request<T>(

@@ -29,7 +29,7 @@ graph TB
     end
 
     subgraph "Agent Creation & Execution"
-        K --> L[Autonomous Investigation<br/>Agent Creation]
+        K --> L[Structured Investigation<br/>Agent Creation]
         L --> M[Domain-Specific Agent<br/>- Network<br/>- Device<br/>- Location<br/>- Logs<br/>- Risk]
         M --> N[Agent Investigation<br/>Execution]
     end
@@ -68,7 +68,7 @@ sequenceDiagram
     participant RO as RAG Orchestrator
     participant KB as Knowledge Base
     participant TReg as Tool Registry
-    participant Agent as Autonomous Agent
+    participant Agent as Structured Agent
 
     IR->>AF: Create Agent Request<br/>(domain, context)
     AF->>TS: Request Enhanced Tools<br/>(context, domain, categories)
@@ -116,7 +116,7 @@ graph LR
     subgraph "Phase 4 Component 2 (This Implementation)"
         I[Tool Selection<br/>Service] --> F
         I --> J[Enhanced Agent<br/>Factory]
-        J --> K[Autonomous Agent<br/>Base Enhancement]
+        J --> K[Structured Agent<br/>Base Enhancement]
         K --> L[Domain Agent<br/>Tool Integration]
     end
 

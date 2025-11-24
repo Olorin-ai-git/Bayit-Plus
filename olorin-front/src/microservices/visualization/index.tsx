@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+<<<<<<< HEAD
 import visualizationApp from './App';
 import './styles/tailwind.css';
 
@@ -8,11 +9,38 @@ const initializevisualizationService = async () => {
   console.log('[visualization] Initializing visualization microservice...');
 
   try {
+=======
+import { BrowserRouter } from 'react-router-dom';
+import VisualizationApp from './VisualizationApp';
+import './styles/tailwind.css';
+
+// Global reference to prevent creating multiple roots
+declare global {
+  interface Window {
+    __visualization_root__?: ReactDOM.Root;
+  }
+}
+
+// Initialize the Visualization Service
+const initializeVisualizationService = async () => {
+  // Initializing visualization microservice
+
+  try {
+    // Check if running in shell mode (visualization-root exists) - skip root creation
+    const visualizationRootElement = document.getElementById('visualization-root');
+    if (visualizationRootElement) {
+      console.log('[Visualization] Running in shell mode, skipping root creation');
+      return;
+    }
+
+    // Standalone mode: use root element
+>>>>>>> 001-modify-analyzer-method
     const rootElement = document.getElementById('root');
     if (!rootElement) {
       throw new Error('Root element not found');
     }
 
+<<<<<<< HEAD
     const root = ReactDOM.createRoot(rootElement);
 
     root.render(
@@ -29,6 +57,40 @@ const initializevisualizationService = async () => {
 
   } catch (error) {
     console.error('[visualization] Failed to initialize visualization microservice:', error);
+=======
+    // Prevent multiple root creation
+    if (!window.__visualization_root__) {
+      window.__visualization_root__ = ReactDOM.createRoot(rootElement);
+    }
+
+    const root = window.__visualization_root__;
+
+    root.render(
+      <React.StrictMode>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
+          <VisualizationApp />
+        </BrowserRouter>
+      </React.StrictMode>
+    );
+
+    // Visualization microservice initialized successfully
+
+    if (window.olorin?.eventBus && typeof window.olorin.eventBus.emit === 'function') {
+      try {
+        window.olorin.eventBus.emit('service:ready', { service: 'visualization' });
+      } catch (error) {
+        console.warn('[Visualization] Failed to emit service:ready event:', error);
+      }
+    }
+
+  } catch (error) {
+    console.error('[Visualization] Failed to initialize visualization microservice:', error);
+>>>>>>> 001-modify-analyzer-method
     throw error;
   }
 };
@@ -50,7 +112,11 @@ if (!window.olorin) {
 
   window.olorin.registerService = (name: string, service: any) => {
     window.olorin.services[name] = service;
+<<<<<<< HEAD
     console.log(`[visualization] Registered service: ${name}`);
+=======
+    console.log(`[Visualization] Registered service: ${name}`);
+>>>>>>> 001-modify-analyzer-method
   };
 
   window.olorin.getService = (name: string) => {
@@ -58,6 +124,7 @@ if (!window.olorin) {
   };
 }
 
+<<<<<<< HEAD
 // Start the visualization microservice
 initializevisualizationService().catch(error => {
   console.error('[visualization] Critical initialization error:', error);
@@ -65,3 +132,24 @@ initializevisualizationService().catch(error => {
 
 // Export for Module Federation
 export { initializevisualizationService };
+=======
+// Only auto-initialize in standalone mode (when visualization-root doesn't exist)
+// In shell mode, bootstrap.tsx will handle initialization
+if (!document.getElementById('visualization-root')) {
+  // Start the Visualization microservice
+  initializeVisualizationService().catch(error => {
+    console.error('[Visualization] Critical initialization error:', error);
+  });
+} else {
+  console.log('[Visualization] Running in shell mode, skipping auto-initialization');
+}
+
+// Export for Module Federation
+export { initializeVisualizationService };
+
+// Re-export all visualization components, hooks, and utilities for easy imports
+// This allows: import { RiskGauge, useRiskUpdates } from '@microservices/visualization'
+export * from './components/risk';
+export * from './hooks';
+export * from './utils';
+>>>>>>> 001-modify-analyzer-method

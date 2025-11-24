@@ -12,7 +12,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 ## Completed Tasks
 
 ### ✅ T017: React Query hooks for investigation data fetching
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/hooks/useInvestigationQueries.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/hooks/useInvestigationQueries.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Comprehensive query hooks** for all investigation data types
 - **Type-safe API client** with centralized error handling
@@ -31,7 +35,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - `useUpdateInvestigationStatus()` - Status updates
 
 ### ✅ T018: Zustand stores for UI state management
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/stores/`
+=======
+**Location**: `/src/microservices/structured-investigation/stores/`
+>>>>>>> 001-modify-analyzer-method
 
 - **Investigation Store** (`investigationStore.ts`) - Current investigation and metadata
 - **Graph Store** (`graphStore.ts`) - Node/edge selection, filters, and visual state
@@ -46,7 +54,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **State normalization** for complex nested data
 
 ### ✅ T019: WebSocket integration for real-time updates
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/services/websocketService.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/services/websocketService.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Production-ready WebSocket service** with comprehensive connection management
 - **Automatic reconnection** with exponential backoff
@@ -62,7 +74,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Event types** for investigation, evidence, domain, and progress updates
 
 ### ✅ T020: Data transformation utilities for graph visualization
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/utils/graphTransformers.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/utils/graphTransformers.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **D3.js transformer** with force-directed and hierarchical layouts
 - **React Flow transformer** with auto-layout algorithms
@@ -78,7 +94,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Clustering algorithms** to reduce visual complexity
 
 ### ✅ T021: Caching strategies for large investigation datasets
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/utils/cacheManager.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/utils/cacheManager.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Advanced cache manager** with compression and intelligent eviction
 - **Memory usage monitoring** with configurable limits
@@ -94,7 +114,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Memory pressure handling** with automatic cleanup
 
 ### ✅ T022: Error handling and retry logic for API calls
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/utils/errorHandler.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/utils/errorHandler.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Comprehensive error classification** with user-friendly messages
 - **Circuit breaker pattern** for preventing cascading failures
@@ -110,7 +134,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Development vs production** error handling modes
 
 ### ✅ T023: Loading state management across components
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/hooks/useLoadingStates.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/hooks/useLoadingStates.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Coordinated loading states** across multiple components
 - **Global loading registry** with listener pattern
@@ -126,7 +154,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Async operation wrapper** with automatic error handling
 
 ### ✅ T024: Data validation utilities for investigation entities
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/utils/dataValidation.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/utils/dataValidation.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Runtime type validation** with comprehensive rule engine
 - **Entity-specific validators** for investigations, evidence, and domains
@@ -142,7 +174,11 @@ Successfully implemented Phase 3 (Core Infrastructure) for the Hybrid Graph Inve
 - **Validation result types** with detailed error reporting
 
 ### ✅ T025: Performance monitoring and logging
+<<<<<<< HEAD
 **Location**: `/src/microservices/autonomous-investigation/utils/performanceMonitor.ts`
+=======
+**Location**: `/src/microservices/structured-investigation/utils/performanceMonitor.ts`
+>>>>>>> 001-modify-analyzer-method
 
 - **Comprehensive performance monitoring** with categorized metrics
 - **React component profiling** with render time tracking
@@ -186,7 +222,11 @@ Component Render → Performance Metrics → Threshold Check → Logging → Rep
 ## File Structure
 
 ```
+<<<<<<< HEAD
 /src/microservices/autonomous-investigation/
+=======
+/src/microservices/structured-investigation/
+>>>>>>> 001-modify-analyzer-method
 ├── hooks/
 │   ├── useInvestigationQueries.ts    # React Query hooks
 │   ├── useWebSocket.ts               # WebSocket integration

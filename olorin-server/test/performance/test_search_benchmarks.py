@@ -1,7 +1,7 @@
 """
 Multi-Entity Search Performance Benchmarks
 
-Comprehensive performance tests for multi-entity autonomous investigations.
+Comprehensive performance tests for multi-entity structured investigations.
 Tests search performance, concurrent load handling, and scalability limits.
 """
 

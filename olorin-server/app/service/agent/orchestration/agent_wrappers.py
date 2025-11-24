@@ -87,29 +87,54 @@ def wrap_agent_for_graph(agent_func):
 # Create wrapped versions of all agents
 async def wrapped_network_agent(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
     """Wrapped network agent that ensures proper context."""
+<<<<<<< HEAD
     from app.service.agent.network_agent import autonomous_network_agent
     return await wrap_agent_for_graph(autonomous_network_agent)(state, config)
+=======
+    from app.service.agent.network_agent import structured_network_agent
+    return await wrap_agent_for_graph(structured_network_agent)(state, config)
+>>>>>>> 001-modify-analyzer-method
 
 
 async def wrapped_device_agent(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
     """Wrapped device agent that ensures proper context."""
+<<<<<<< HEAD
     from app.service.agent.device_agent import autonomous_device_agent
     return await wrap_agent_for_graph(autonomous_device_agent)(state, config)
+=======
+    from app.service.agent.device_agent import structured_device_agent
+    return await wrap_agent_for_graph(structured_device_agent)(state, config)
+>>>>>>> 001-modify-analyzer-method
 
 
 async def wrapped_location_agent(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
     """Wrapped location agent that ensures proper context."""
+<<<<<<< HEAD
     from app.service.agent.location_agent import autonomous_location_agent
     return await wrap_agent_for_graph(autonomous_location_agent)(state, config)
+=======
+    from app.service.agent.location_agent import structured_location_agent
+    return await wrap_agent_for_graph(structured_location_agent)(state, config)
+>>>>>>> 001-modify-analyzer-method
 
 
 async def wrapped_logs_agent(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
     """Wrapped logs agent that ensures proper context."""
+<<<<<<< HEAD
     from app.service.agent.logs_agent import autonomous_logs_agent
     return await wrap_agent_for_graph(autonomous_logs_agent)(state, config)
+=======
+    from app.service.agent.logs_agent import structured_logs_agent
+    return await wrap_agent_for_graph(structured_logs_agent)(state, config)
+>>>>>>> 001-modify-analyzer-method
 
 
 async def wrapped_risk_agent(state: Dict[str, Any], config: RunnableConfig) -> Dict[str, Any]:
     """Wrapped risk agent that ensures proper context."""
+<<<<<<< HEAD
     from app.service.agent.risk_agent import autonomous_risk_agent
     return await wrap_agent_for_graph(autonomous_risk_agent)(state, config)
+=======
+    from app.service.agent.risk_agent import structured_risk_agent
+    return await wrap_agent_for_graph(structured_risk_agent)(state, config)
+>>>>>>> 001-modify-analyzer-method

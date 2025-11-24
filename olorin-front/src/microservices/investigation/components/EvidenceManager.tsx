@@ -48,11 +48,16 @@ const EvidenceManager: React.FC<EvidenceManagerProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+<<<<<<< HEAD
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
 
   // Mock data for demonstration
+=======
+
+  // Initialize evidence on component mount
+>>>>>>> 001-modify-analyzer-method
   useEffect(() => {
     const mockEvidence: Evidence[] = [
       {

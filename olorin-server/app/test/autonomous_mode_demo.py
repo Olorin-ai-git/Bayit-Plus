@@ -1,7 +1,7 @@
 """
-Autonomous Mode Demonstration and Validation
+Structured Mode Demonstration and Validation
 
-Quick validation script to demonstrate that the autonomous mode implementation
+Quick validation script to demonstrate that the structured mode implementation
 is working correctly with LLM-driven tool selection.
 """
 
@@ -11,12 +11,12 @@ import logging
 from datetime import datetime
 from unittest.mock import MagicMock, AsyncMock, patch
 
-from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+from app.service.agent.structured_context import (
+    StructuredInvestigationContext,
     EntityType,
     DomainFindings
 )
-from app.service.agent.autonomous_agents import AutonomousInvestigationAgent
+from app.service.agent.structured_agents import StructuredInvestigationAgent
 from app.service.agent.recursion_guard import get_recursion_guard
 
 # Set up logging
@@ -24,12 +24,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def demo_autonomous_context():
-    """Demonstrate autonomous investigation context capabilities"""
+async def demo_structured_context():
+    """Demonstrate structured investigation context capabilities"""
     print("=== AUTONOMOUS INVESTIGATION CONTEXT DEMO ===")
     
     # Create investigation context
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id="demo_investigation_001",
         entity_id="demo_user_123",
         entity_type=EntityType.USER_ID,
@@ -57,7 +57,7 @@ async def demo_autonomous_context():
     risk_display = "MISSING!" if network_findings.risk_score is None else f"{network_findings.risk_score:.2f}"
     print(f"✓ Recorded network findings: risk={risk_display}")
     
-    # Generate LLM context to show autonomous decision-making capabilities
+    # Generate LLM context to show structured decision-making capabilities
     llm_context = context.generate_llm_context("device")
     
     print(f"✓ Generated LLM context: {len(llm_context)} characters")
@@ -107,8 +107,8 @@ async def demo_recursion_guard():
     return guard
 
 
-async def demo_autonomous_agent():
-    """Demonstrate autonomous investigation agent with mock tools"""
+async def demo_structured_agent():
+    """Demonstrate structured investigation agent with mock tools"""
     print("\n=== AUTONOMOUS AGENT DEMO ===")
     
     # Create mock tools
@@ -117,41 +117,41 @@ async def demo_autonomous_agent():
     for i, tool_name in enumerate(["splunk_query_tool", "vector_search_tool"]):
         mock_tool = MagicMock()
         mock_tool.name = tool_name
-        mock_tool.description = f"Mock {tool_name} for testing autonomous behavior"
+        mock_tool.description = f"Mock {tool_name} for testing structured behavior"
         mock_tools.append(mock_tool)
     
-    # Create autonomous agent
-    agent = AutonomousInvestigationAgent("network", mock_tools)
-    print(f"✓ Created autonomous agent for domain: {agent.domain}")
+    # Create structured agent
+    agent = StructuredInvestigationAgent("network", mock_tools)
+    print(f"✓ Created structured agent for domain: {agent.domain}")
     print(f"✓ Agent has {len(agent.tools)} tools available")
     
     # Create investigation context
-    context = AutonomousInvestigationContext(
+    context = StructuredInvestigationContext(
         investigation_id="agent_demo_001",
         entity_id="demo_user_456", 
         entity_type=EntityType.USER_ID,
         investigation_type="fraud_investigation"
     )
     
-    # Mock LLM response for autonomous decision-making
-    with patch('app.service.agent.autonomous_agents.autonomous_llm') as mock_llm:
+    # Mock LLM response for structured decision-making
+    with patch('app.service.agent.structured_agents.structured_llm') as mock_llm:
         mock_response = MagicMock()
         mock_response.content = json.dumps({
-            "autonomous_analysis": "Network analysis completed using LLM-driven tool selection",
+            "structured_analysis": "Network analysis completed using LLM-driven tool selection",
             "tool_selection_reasoning": "Selected splunk_query_tool for network log analysis based on investigation context",
             "risk_score": 0.75,
             "confidence": 0.88,
             "key_findings": [
-                "Autonomous tool selection successfully identified network anomalies",
+                "Structured tool selection successfully identified network anomalies",
                 "LLM-driven investigation approach adapted to case specifics",
                 "Cross-referenced multiple data sources for comprehensive analysis"
             ],
             "suspicious_indicators": [
-                "Autonomous pattern recognition detected fraud indicators",
+                "Structured pattern recognition detected fraud indicators",
                 "Intelligence-driven risk assessment completed"
             ],
             "recommended_actions": [
-                "Continue monitoring with autonomous agents",
+                "Continue monitoring with structured agents",
                 "Implement LLM-recommended security measures"
             ]
         })
@@ -160,47 +160,47 @@ async def demo_autonomous_agent():
         mock_llm_instance.ainvoke.return_value = mock_response
         mock_llm.bind_tools.return_value = mock_llm_instance
         
-        # Execute autonomous investigation
+        # Execute structured investigation
         config = {"configurable": {"agent_context": {}, "thread_id": "demo_thread"}}
         
         try:
-            findings = await agent.autonomous_investigate(
+            findings = await agent.structured_investigate(
                 context=context,
                 config=config,
-                specific_objectives=["Demonstrate autonomous LLM-driven tool selection"]
+                specific_objectives=["Demonstrate structured LLM-driven tool selection"]
             )
             
-            print(f"✓ Autonomous investigation completed!")
+            print(f"✓ Structured investigation completed!")
             print(f"  Domain: {findings.domain}")
             risk_display = "MISSING!" if findings.risk_score is None else f"{findings.risk_score:.2f}"
             print(f"  Risk Score: {risk_display}")
             print(f"  Confidence: {findings.confidence:.2f}")
             print(f"  Key Findings: {len(findings.key_findings)}")
-            print(f"  Autonomous Execution Evidence: {'✓ Yes' if findings.raw_data else '✗ No'}")
+            print(f"  Structured Execution Evidence: {'✓ Yes' if findings.raw_data else '✗ No'}")
             
             return findings
             
         except Exception as e:
-            print(f"✗ Autonomous investigation failed: {str(e)}")
+            print(f"✗ Structured investigation failed: {str(e)}")
             return None
 
 
 async def demo_integration():
-    """Demonstrate complete autonomous mode integration"""
+    """Demonstrate complete structured mode integration"""
     print("\n=== AUTONOMOUS MODE INTEGRATION DEMO ===")
     
     # Test integration of all components
-    context = await demo_autonomous_context()
+    context = await demo_structured_context()
     guard = await demo_recursion_guard()
-    findings = await demo_autonomous_agent()
+    findings = await demo_structured_agent()
     
     if context and guard and findings:
         print("\n✓ AUTONOMOUS MODE VALIDATION SUCCESSFUL!")
         print("\nKey Achievements:")
-        print("  ✓ Autonomous Investigation Context: Provides rich LLM decision-making context")
+        print("  ✓ Structured Investigation Context: Provides rich LLM decision-making context")
         print("  ✓ RecursionGuard System: Prevents infinite loops while enabling autonomy")
-        print("  ✓ Autonomous Agents: Use LLM-driven tool selection instead of predetermined workflows")
-        print("  ✓ Integration Ready: All components work together for autonomous fraud investigation")
+        print("  ✓ Structured Agents: Use LLM-driven tool selection instead of predetermined workflows")
+        print("  ✓ Integration Ready: All components work together for structured fraud investigation")
         
         return True
     else:
@@ -212,7 +212,7 @@ async def main():
     """Main demonstration function"""
     print("OLORIN AUTONOMOUS MODE DEMONSTRATION")
     print("=" * 50)
-    print("Validating that fraud detection system can operate in full autonomous mode")
+    print("Validating that fraud detection system can operate in full structured mode")
     print("with LLM-driven tool selection and intelligent decision making.\n")
     
     try:
@@ -224,14 +224,14 @@ async def main():
             print("=" * 50)
             print("\nThe Olorin fraud detection system now supports:")
             print("• LLM-driven tool selection based on investigation context")
-            print("• Autonomous decision-making without predetermined workflows")
+            print("• Structured decision-making without predetermined workflows")
             print("• RecursionGuard protection against infinite loops")
-            print("• Rich investigation context for intelligent autonomous behavior")
-            print("• Pattern-based agent execution with autonomous capabilities")
+            print("• Rich investigation context for intelligent structured behavior")
+            print("• Pattern-based agent execution with structured capabilities")
             print("\nNext Steps:")
             print("• Deploy to test environment for real-world validation")
-            print("• Monitor autonomous behavior metrics")
-            print("• Validate success criteria (95% autonomous tool selection, etc.)")
+            print("• Monitor structured behavior metrics")
+            print("• Validate success criteria (95% structured tool selection, etc.)")
             
         else:
             print("\n" + "=" * 50)
@@ -240,7 +240,7 @@ async def main():
             
     except Exception as e:
         print(f"\n❌ Demo failed with error: {str(e)}")
-        logger.exception("Autonomous mode demo failed")
+        logger.exception("Structured mode demo failed")
 
 
 if __name__ == "__main__":

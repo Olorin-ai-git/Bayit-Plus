@@ -26,6 +26,7 @@ logger = get_bridge_logger(__name__)
 class GraphFoundation:
     """
     Core foundation for hybrid intelligence graph setup and configuration.
+<<<<<<< HEAD
     
     Handles initialization of core components and graph setup.
     """
@@ -34,6 +35,25 @@ class GraphFoundation:
         """Initialize graph foundation components."""
         self.intelligence_mode = intelligence_mode
         self.confidence_engine = AIConfidenceEngine()
+=======
+
+    Handles initialization of core components and graph setup.
+
+    CRITICAL: Passes LLM to AIConfidenceEngine for intelligent routing in LIVE mode.
+    """
+
+    def __init__(self, intelligence_mode: str = "adaptive", llm=None):
+        """
+        Initialize graph foundation components.
+
+        Args:
+            intelligence_mode: Intelligence mode for the graph
+            llm: Language model instance for intelligent routing (LIVE mode)
+                 If None, uses rule-based heuristics (DEMO mode)
+        """
+        self.intelligence_mode = intelligence_mode
+        self.confidence_engine = AIConfidenceEngine(llm=llm)
+>>>>>>> 001-modify-analyzer-method
         self.safety_manager = AdvancedSafetyManager()
         self.confidence_consolidator = ConfidenceConsolidator()
         self.intelligent_router = IntelligentRouter(
@@ -97,7 +117,11 @@ class GraphFoundation:
         return builder.compile(
             checkpointer=memory,
             interrupt_before=["tools"] if enable_interrupts else [],
+<<<<<<< HEAD
             debug=True
+=======
+            debug=False
+>>>>>>> 001-modify-analyzer-method
         )
         
     def get_components(self) -> Dict[str, Any]:

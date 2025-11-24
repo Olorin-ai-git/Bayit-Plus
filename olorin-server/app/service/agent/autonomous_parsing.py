@@ -2,9 +2,9 @@ from app.service.logging import get_bridge_logger
 logger = get_bridge_logger(__name__)
 
 """
-Autonomous Agent Result Parsing
+Structured Agent Result Parsing
 
-Utilities for parsing and structuring autonomous LLM investigation results.
+Utilities for parsing and structuring structured LLM investigation results.
 """
 
 import json
@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Any, Dict
 
 from app.service.agent.autonomous_context import (
-    AutonomousInvestigationContext,
+    StructuredInvestigationContext,
     DomainFindings,
 )
 
@@ -98,18 +98,18 @@ def extract_content_from_response(response: Any) -> str:
         return str(response)
 
 
-def parse_autonomous_result(
+def parse_structured_result(
     llm_result: Any,
-    context: AutonomousInvestigationContext,
+    context: StructuredInvestigationContext,
     domain: str
 ) -> DomainFindings:
-    """Parse autonomous LLM result into structured findings"""
+    """Parse structured LLM result into structured findings"""
     
     try:
         # Extract content from LLM response using unified utility function
         content = extract_content_from_response(llm_result)
         
-        logger.debug(f"Parsing autonomous {domain} result: {content[:200]}...")
+        logger.debug(f"Parsing structured {domain} result: {content[:200]}...")
         
         # Try to extract structured data if present
         findings_data = extract_findings_from_content(content, domain)
@@ -141,7 +141,7 @@ def parse_autonomous_result(
         return findings
         
     except Exception as e:
-        logger.error(f"Failed to parse autonomous result for {domain}: {str(e)}")
+        logger.error(f"Failed to parse structured result for {domain}: {str(e)}")
         
         # Log the parsing error
         logger.error(
@@ -317,6 +317,6 @@ def extract_findings_from_content(content: str, domain: str) -> Dict[str, Any]:
     
     # Ensure we have some findings
     if not findings["key_findings"] and not findings["suspicious_indicators"]:
-        findings["key_findings"] = [f"Autonomous {domain} analysis completed"]
+        findings["key_findings"] = [f"Structured {domain} analysis completed"]
     
     return findings

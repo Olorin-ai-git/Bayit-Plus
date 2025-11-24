@@ -16,7 +16,11 @@ from .tool_recommender_core import (
 from .tool_recommender_base import ToolRecommenderBase
 from .context_augmentor import ContextAugmentor
 from .rag_orchestrator import RAGOrchestrator
+<<<<<<< HEAD
 from ..autonomous_context import AutonomousInvestigationContext
+=======
+from ..autonomous_context import StructuredInvestigationContext
+>>>>>>> 001-modify-analyzer-method
 # Lazy import to avoid circular dependencies
 # from ..tools.tool_registry import ToolRegistry, get_tools_for_agent
 from app.service.logging import get_bridge_logger
@@ -49,7 +53,7 @@ class KnowledgeBasedToolRecommender(ToolRecommenderBase):
     
     async def recommend_tools(
         self,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         strategy: ToolRecommendationStrategy = ToolRecommendationStrategy.HYBRID,
         requested_categories: Optional[List[str]] = None
@@ -119,7 +123,7 @@ class KnowledgeBasedToolRecommender(ToolRecommenderBase):
     
     async def get_enhanced_tool_list(
         self,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         categories: Optional[List[str]] = None,
         tool_names: Optional[List[str]] = None

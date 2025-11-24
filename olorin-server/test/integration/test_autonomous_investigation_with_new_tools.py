@@ -1,5 +1,5 @@
 """
-Integration tests for autonomous investigations with MCP client and threat intelligence tools.
+Integration tests for structured investigations with MCP client and threat intelligence tools.
 
 Tests the integration of:
 - Threat Intelligence Tools (AbuseIPDB, VirusTotal, Shodan)

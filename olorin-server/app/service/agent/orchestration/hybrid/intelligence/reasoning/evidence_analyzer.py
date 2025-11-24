@@ -87,9 +87,16 @@ class EvidenceAnalyzer:
             return 0.0
         
         # High-confidence findings as quality indicator
+<<<<<<< HEAD
         high_quality_findings = sum(
             1 for findings in domain_findings.values()
             if findings.get("confidence", 0) > 0.6
+=======
+        # CRITICAL FIX: Handle None values to prevent TypeError
+        high_quality_findings = sum(
+            1 for findings in domain_findings.values()
+            if findings.get("confidence") is not None and findings.get("confidence", 0) > 0.6
+>>>>>>> 001-modify-analyzer-method
         )
         total_findings = len(domain_findings)
         

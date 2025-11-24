@@ -15,11 +15,19 @@ async def test_anthropic_api_basic():
     print("🧪 Testing basic Anthropic API access...")
     
     try:
+<<<<<<< HEAD
         from app.service.agent.autonomous_base import get_autonomous_llm
         from langchain_core.messages import HumanMessage
         
         # Get the LLM
         llm = get_autonomous_llm()
+=======
+        from app.service.agent.structured_base import get_structured_llm
+        from langchain_core.messages import HumanMessage
+        
+        # Get the LLM
+        llm = get_structured_llm()
+>>>>>>> 001-modify-analyzer-method
         print(f"   ✅ LLM initialized: {type(llm)}")
         print(f"   📊 Model: {llm.model}")
         
@@ -45,7 +53,11 @@ async def test_anthropic_with_simple_tools():
     print("🧪 Testing Anthropic API with simple tools...")
     
     try:
+<<<<<<< HEAD
         from app.service.agent.autonomous_base import get_autonomous_llm
+=======
+        from app.service.agent.structured_base import get_structured_llm
+>>>>>>> 001-modify-analyzer-method
         from langchain_core.messages import HumanMessage
         from langchain_core.tools import tool
         
@@ -60,7 +72,11 @@ async def test_anthropic_with_simple_tools():
             return f"Weather in {city}: 72°F and sunny"
         
         # Get the LLM and bind tools
+<<<<<<< HEAD
         llm = get_autonomous_llm()
+=======
+        llm = get_structured_llm()
+>>>>>>> 001-modify-analyzer-method
         tools = [simple_calculator, get_weather]
         llm_with_tools = llm.bind_tools(tools)
         
@@ -100,7 +116,11 @@ async def test_tool_registry_tools():
     
     try:
         from app.service.agent.tools.tool_registry import get_tools_for_agent, initialize_tools
+<<<<<<< HEAD
         from app.service.agent.autonomous_base import get_autonomous_llm
+=======
+        from app.service.agent.structured_base import get_structured_llm
+>>>>>>> 001-modify-analyzer-method
         from langchain_core.messages import HumanMessage
         
         # Initialize tools
@@ -118,7 +138,11 @@ async def test_tool_registry_tools():
             print(f"      - {tool.name}")
         
         # Get LLM and bind tools
+<<<<<<< HEAD
         llm = get_autonomous_llm()
+=======
+        llm = get_structured_llm()
+>>>>>>> 001-modify-analyzer-method
         llm_with_tools = llm.bind_tools(tools)
         
         # Test message asking to analyze an IP

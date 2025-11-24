@@ -20,7 +20,7 @@ from ..rag import (
     get_rag_orchestrator,
     create_context_augmentor
 )
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -159,7 +159,7 @@ class ToolExecutionContextEnhancer:
         self,
         tool_name: str,
         input_parameters: Dict[str, Any],
-        investigation_context: Optional[AutonomousInvestigationContext] = None,
+        investigation_context: Optional[StructuredInvestigationContext] = None,
         domain: Optional[str] = None,
         execution_id: Optional[str] = None
     ) -> ToolExecutionContext:
@@ -241,7 +241,7 @@ class ToolExecutionContextEnhancer:
         self,
         tool_name: str,
         input_parameters: Dict[str, Any], 
-        investigation_context: Optional[AutonomousInvestigationContext],
+        investigation_context: Optional[StructuredInvestigationContext],
         domain: Optional[str]
     ) -> ToolContextEnhancementResult:
         """Perform RAG-based parameter enhancement"""
@@ -285,7 +285,7 @@ class ToolExecutionContextEnhancer:
         self,
         tool_name: str,
         parameters: Dict[str, Any],
-        investigation_context: Optional[AutonomousInvestigationContext],
+        investigation_context: Optional[StructuredInvestigationContext],
         domain: Optional[str]
     ) -> Optional[KnowledgeContext]:
         """Retrieve knowledge context specific to tool execution"""

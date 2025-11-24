@@ -1,20 +1,20 @@
-# Multi-Entity Autonomous Investigation System Implementation Plan
+# Multi-Entity Structured Investigation System Implementation Plan
 
 **Author:** Gil Klainert  
 **Date:** 2025-01-09  
-**Plan Type:** Autonomous Investigation Enhancement  
+**Plan Type:** Structured Investigation Enhancement  
 **Complexity:** High  
 **Estimated Duration:** 30 days  
-**Architecture Diagram:** [Multi-Entity Autonomous Investigation Architecture](/docs/diagrams/enhanced-entity-search-architecture-2025-01-09.md)
+**Architecture Diagram:** [Multi-Entity Structured Investigation Architecture](/docs/diagrams/enhanced-entity-search-architecture-2025-01-09.md)
 
 ## Executive Summary
 
-This plan outlines the enhancement of the Olorin autonomous investigation system to support multi-entity investigations with Boolean relationship logic. The system will extend the existing LangGraph-based investigation workflow to simultaneously investigate multiple related entities (derived from the 20-column CSV dataset) using existing investigation tools and agents, providing comprehensive cross-entity fraud analysis.
+This plan outlines the enhancement of the Olorin structured investigation system to support multi-entity investigations with Boolean relationship logic. The system will extend the existing LangGraph-based investigation workflow to simultaneously investigate multiple related entities (derived from the 20-column CSV dataset) using existing investigation tools and agents, providing comprehensive cross-entity fraud analysis.
 
 ## Current State Analysis
 
-### Existing Autonomous Investigation Capabilities
-- **LangGraph Investigation Workflow**: Single-entity autonomous investigation with device, location, network, and logs agents
+### Existing Structured Investigation Capabilities
+- **LangGraph Investigation Workflow**: Single-entity structured investigation with device, location, network, and logs agents
 - **Investigation Tools**: Splunk, vector search, threat intelligence, OSINT tools integrated with agents
 - **EntityManager System**: 48 predefined entity types (DEVICE, LOCATION, NETWORK, USER, ACCOUNT, TRANSACTION, etc.)
 - **Agent Orchestration**: Coordinated multi-agent investigation with real-time WebSocket updates
@@ -29,7 +29,7 @@ The CSV file contains 20 columns requiring new entity type mappings:
 - Processing: `TX_UPLOADED_TO_SNOWFLAKE`, `IS_SENT_FOR_NSURE_REVIEW`, `CLIENT_REQUEST_ID`
 
 ### Gap Analysis
-- **Single Entity Limitation**: Current autonomous investigations limited to one entity (user_id, device_id, etc.)
+- **Single Entity Limitation**: Current structured investigations limited to one entity (user_id, device_id, etc.)
 - **Missing Entity Types**: Transaction-specific entities from CSV not covered by current 48 types
 - **No Multi-Entity Orchestration**: LangGraph agents cannot investigate related entities simultaneously
 - **Limited Relationship Analysis**: No Boolean logic for entity relationship investigations
@@ -84,7 +84,7 @@ REVIEW_QUEUE = "review_queue"
 **Priority:** Critical
 
 #### 2.1 Multi-Entity Investigation Request Model
-**Objective:** Extend autonomous investigation to support multiple entities with relationships
+**Objective:** Extend structured investigation to support multiple entities with relationships
 
 **Core Components:**
 ```python
@@ -164,18 +164,18 @@ class MultiEntityInvestigationCoordinator:
 **Duration:** Days 13-15  
 **Priority:** High
 
-#### 4.1 Autonomous Investigation API Extensions
+#### 4.1 Structured Investigation API Extensions
 **Extended Endpoints:**
 ```
-POST /api/v1/autonomous-investigation/multi-entity
-POST /api/v1/autonomous-investigation/multi-entity/{investigation_id}/status
-GET /api/v1/autonomous-investigation/multi-entity/{investigation_id}/results
-PUT /api/v1/autonomous-investigation/multi-entity/{investigation_id}/relationships
+POST /api/v1/structured-investigation/multi-entity
+POST /api/v1/structured-investigation/multi-entity/{investigation_id}/status
+GET /api/v1/structured-investigation/multi-entity/{investigation_id}/results
+PUT /api/v1/structured-investigation/multi-entity/{investigation_id}/relationships
 GET /api/v1/entities/types/transaction-enhanced
 ```
 
 **Files to Create:**
-- Extend `app/router/autonomous_investigation_router.py` (add multi-entity endpoints)
+- Extend `app/router/structured_investigation_router.py` (add multi-entity endpoints)
 
 #### 4.2 Multi-Entity Investigation API Models
 **Enhanced Models:**

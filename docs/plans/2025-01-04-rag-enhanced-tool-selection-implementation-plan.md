@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This document details the implementation of the RAG-Enhanced Tool Selection Mechanism, the second component of Phase 4: Tools Integration in the RAG-Agent integration plan. Building upon the completed Knowledge-Based Tool Recommender (Component 1), this component integrates RAG-enhanced tool selection directly into the autonomous agent workflow for intelligent, context-aware tool selection.
+This document details the implementation of the RAG-Enhanced Tool Selection Mechanism, the second component of Phase 4: Tools Integration in the RAG-Agent integration plan. Building upon the completed Knowledge-Based Tool Recommender (Component 1), this component integrates RAG-enhanced tool selection directly into the structured agent workflow for intelligent, context-aware tool selection.
 
 ## Current State Analysis
 
@@ -48,12 +48,12 @@ This document details the implementation of the RAG-Enhanced Tool Selection Mech
 - `/app/service/agent/domain_agents.py`: Domain agent imports
 - `/app/service/agent/risk_agent.py` (line 85): Gets tools from global scope
 - `/app/service/agent/agent_factory.py`: Agent creation with tool binding
-- `/app/service/agent/autonomous_base.py`: AutonomousInvestigationAgent with static tools
+- `/app/service/agent/structured_base.py`: StructuredInvestigationAgent with static tools
 
 ## Implementation Overview
 
 ### OBJECTIVE
-Enhance the autonomous agent tool selection workflow with RAG-based intelligence while maintaining backward compatibility and zero breaking changes.
+Enhance the structured agent tool selection workflow with RAG-based intelligence while maintaining backward compatibility and zero breaking changes.
 
 ### INTEGRATION STRATEGY
 **Composition over Replacement**: Instead of replacing the existing tool selection system, we'll compose it with RAG-enhanced recommendations that can intelligently override or augment the default tool set based on context.
@@ -66,7 +66,7 @@ Enhance the autonomous agent tool selection workflow with RAG-based intelligence
 **Integration Strategy**: Factory pattern enhancement with RAG tool selection
 ```python
 class AgentFactory:
-    def create_agent(self, domain: str, tools: List[Any], investigation_context: AutonomousInvestigationContext = None):
+    def create_agent(self, domain: str, tools: List[Any], investigation_context: StructuredInvestigationContext = None):
         # Enhanced tool selection with RAG recommendations
         if investigation_context and self.enable_rag:
             enhanced_tools = await get_enhanced_tools_for_agent(
@@ -78,13 +78,13 @@ class AgentFactory:
             tools = enhanced_tools if enhanced_tools else tools
 ```
 
-### 2. Autonomous Agent Base Enhancement
+### 2. Structured Agent Base Enhancement
 
-**Component**: Enhance `AutonomousInvestigationAgent` with dynamic tool selection
+**Component**: Enhance `StructuredInvestigationAgent` with dynamic tool selection
 **Integration Strategy**: Optional tool refresh mechanism within existing workflow
 ```python
-class AutonomousInvestigationAgent:
-    async def autonomous_investigate(self, context, config, specific_objectives=None):
+class StructuredInvestigationAgent:
+    async def structured_investigate(self, context, config, specific_objectives=None):
         # Optional: Refresh tools with RAG recommendations before investigation
         if self.enable_rag_tool_selection:
             enhanced_tools = await self._get_enhanced_tools(context)
@@ -106,7 +106,7 @@ from app.service.agent.agent import tools
 
 # After (enhanced):
 tools = await get_enhanced_tools_for_agent(
-    investigation_context=autonomous_context,
+    investigation_context=structured_context,
     domain="risk",  # or network, device, location, logs
     categories=["olorin", "search", "database", "threat_intelligence", "ml_ai"],
     use_rag_recommendations=True
@@ -166,10 +166,10 @@ tools = await get_enhanced_tools_for_agent(
 - Updated factory statistics tracking
 - Comprehensive error handling
 
-#### Task 3: Autonomous Base Agent Enhancement (Priority: High)
+#### Task 3: Structured Base Agent Enhancement (Priority: High)
 
 **Objective**: Add optional tool refresh capability to base agent
-**File**: `app/service/agent/autonomous_base.py`
+**File**: `app/service/agent/structured_base.py`
 
 **Changes**:
 - Add optional tool refresh mechanism
@@ -227,14 +227,14 @@ tools = await get_enhanced_tools_for_agent(
 ## Success Criteria
 
 ### Primary Objectives
-- ✅ RAG-enhanced tool selection integrated into autonomous agent workflow
+- ✅ RAG-enhanced tool selection integrated into structured agent workflow
 - ✅ Improved investigation outcomes through better tool selection
 - ✅ Zero breaking changes to existing agent functionality
 - ✅ Performance metrics tracking for tool selection effectiveness
 - ✅ Graceful degradation when RAG unavailable
 
 ### Technical Requirements
-- ✅ Integration with existing AutonomousInvestigationAgent workflow
+- ✅ Integration with existing StructuredInvestigationAgent workflow
 - ✅ Domain-specific tool categories and recommendations
 - ✅ Knowledge-Based Tool Recommender utilization
 - ✅ Comprehensive error handling and fallback mechanisms
@@ -297,7 +297,7 @@ olorin-server/app/service/agent/
 │   ├── tool_recommender.py               # Existing: Knowledge-based recommender
 │   └── tool_integration_example.py       # Existing: Integration helpers
 ├── agent_factory.py                      # Enhanced: RAG tool selection
-├── autonomous_base.py                     # Enhanced: Optional tool refresh
+├── structured_base.py                     # Enhanced: Optional tool refresh
 ├── risk_agent.py                         # Enhanced: Dynamic tool selection
 ├── network_agent.py                      # Enhanced: Dynamic tool selection  
 ├── device_agent.py                       # Enhanced: Dynamic tool selection
@@ -315,7 +315,7 @@ factory = get_agent_factory(enable_rag=True)
 # Create agent with RAG-enhanced tool selection
 agent = await factory.create_enhanced_agent(
     domain="risk",
-    investigation_context=autonomous_context,
+    investigation_context=structured_context,
     base_tools=global_tools,
     enable_rag_tools=True
 )
@@ -323,13 +323,13 @@ agent = await factory.create_enhanced_agent(
 
 ### Domain Agent Enhancement
 ```python
-async def autonomous_risk_agent(state, config) -> dict:
+async def structured_risk_agent(state, config) -> dict:
     # Create investigation context
-    autonomous_context = _get_or_create_autonomous_context(...)
+    structured_context = _get_or_create_structured_context(...)
     
     # Enhanced tool selection with RAG recommendations
     tools = await get_enhanced_tools_for_agent(
-        investigation_context=autonomous_context,
+        investigation_context=structured_context,
         domain="risk",
         categories=["olorin", "search", "threat_intelligence", "ml_ai"],
         use_rag_recommendations=True
@@ -339,7 +339,7 @@ async def autonomous_risk_agent(state, config) -> dict:
     risk_agent = create_rag_agent("risk", tools, rag_config)
     
     # Rest of agent workflow unchanged
-    findings = await risk_agent.autonomous_investigate(...)
+    findings = await risk_agent.structured_investigate(...)
 ```
 
 ## Next Steps After Completion
@@ -356,7 +356,7 @@ async def autonomous_risk_agent(state, config) -> dict:
 
 ## Conclusion
 
-The RAG-Enhanced Tool Selection Mechanism builds upon the solid foundation of the completed Knowledge-Based Tool Recommender to bring intelligent, context-aware tool selection to the autonomous agent workflow. The implementation focuses on backward compatibility while introducing powerful new capabilities that will significantly enhance investigation effectiveness.
+The RAG-Enhanced Tool Selection Mechanism builds upon the solid foundation of the completed Knowledge-Based Tool Recommender to bring intelligent, context-aware tool selection to the structured agent workflow. The implementation focuses on backward compatibility while introducing powerful new capabilities that will significantly enhance investigation effectiveness.
 
 **Key Benefits:**
 - **Intelligent Tool Selection**: Context-aware recommendations based on investigation specifics

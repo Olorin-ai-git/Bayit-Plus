@@ -38,7 +38,11 @@ def fix_agent_duration(file_path):
         )
     
     # Find the function definition and add start time tracking
+<<<<<<< HEAD
     function_pattern = r'(async def autonomous_\w+_agent\(state, config\) -> dict:\s*"""[^"]*"""\s*\n\s*)'
+=======
+    function_pattern = r'(async def structured_\w+_agent\(state, config\) -> dict:\s*"""[^"]*"""\s*\n\s*)'
+>>>>>>> 001-modify-analyzer-method
     content = re.sub(
         function_pattern,
         r'\1# Track execution start time\n    start_time = time.perf_counter()\n    \n    ',

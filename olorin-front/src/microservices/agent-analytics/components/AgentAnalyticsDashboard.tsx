@@ -33,11 +33,18 @@ export const AgentAnalyticsDashboard: React.FC<AgentAnalyticsDashboardProps> = (
   isLoading = false
 }) => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
+<<<<<<< HEAD
   const [selectedAgentTypes, setSelectedAgentTypes] = useState<string[]>(['autonomous', 'manual', 'hybrid']);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
   const [sortBy, setSortBy] = useState<'name' | 'performance' | 'cost' | 'usage'>('performance');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showAlerts, setShowAlerts] = useState(true);
+=======
+  const [selectedAgentTypes, setSelectedAgentTypes] = useState<string[]>(['structured', 'manual', 'hybrid']);
+  const [showOnlyActive, setShowOnlyActive] = useState(true);
+  const [sortBy, setSortBy] = useState<'name' | 'performance' | 'cost' | 'usage'>('performance');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+>>>>>>> 001-modify-analyzer-method
 
   // Filter agents based on current filters
   const filteredAgents = agents
@@ -109,6 +116,7 @@ export const AgentAnalyticsDashboard: React.FC<AgentAnalyticsDashboardProps> = (
     }
   };
 
+<<<<<<< HEAD
   const getAlertSeverityClass = (severity: string) => {
     switch (severity) {
       case 'critical':
@@ -123,6 +131,8 @@ export const AgentAnalyticsDashboard: React.FC<AgentAnalyticsDashboardProps> = (
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+=======
+>>>>>>> 001-modify-analyzer-method
 
   const getTrendIcon = (trend: number) => {
     if (trend > 0) return '📈';
@@ -354,7 +364,11 @@ export const AgentAnalyticsDashboard: React.FC<AgentAnalyticsDashboardProps> = (
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium text-gray-700">Agent Types:</label>
             <div className="flex gap-2">
+<<<<<<< HEAD
               {['autonomous', 'manual', 'hybrid'].map(type => (
+=======
+              {['structured', 'manual', 'hybrid'].map(type => (
+>>>>>>> 001-modify-analyzer-method
                 <label key={type} className="flex items-center gap-1">
                   <input
                     type="checkbox"

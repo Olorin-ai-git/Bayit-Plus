@@ -76,12 +76,20 @@
       "relative_path": "olorin-server/app/service/reporting/comprehensive_investigation_report.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/router/autonomous_investigation_router_backup.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/router/structured_investigation_router_backup.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 1245,
       "size_category": "extreme_violation",
       "extension": ".py",
       "module": "router",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/router/autonomous_investigation_router_backup.py"
+=======
+      "relative_path": "olorin-server/app/router/structured_investigation_router_backup.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/scripts/investigation/scenario_investigation_runner.py",
@@ -148,12 +156,20 @@
       "relative_path": "olorin-server/app/service/agent/quality_assurance.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/hooks/useAutonomousInvestigation.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/hooks/useStructuredInvestigation.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 1014,
       "size_category": "extreme_violation",
       "extension": ".ts",
       "module": "hooks",
+<<<<<<< HEAD
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/hooks/useAutonomousInvestigation.ts"
+=======
+      "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/hooks/useStructuredInvestigation.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/reporting/components/langgraph_visualization.py",
@@ -172,12 +188,20 @@
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/services/OlorinService.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/logging/autonomous_investigation_logger.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/logging/structured_investigation_logger.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 1000,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "logging",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/logging/autonomous_investigation_logger.py"
+=======
+      "relative_path": "olorin-server/app/service/logging/structured_investigation_logger.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/AgentDetailsTable.tsx",
@@ -300,12 +324,20 @@
       "relative_path": "olorin-front/src/microservices/reporting/hooks/useReporting.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_orchestrator.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_orchestrator.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 913,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "agent",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/agent/autonomous_orchestrator.py"
+=======
+      "relative_path": "olorin-server/app/service/agent/structured_orchestrator.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-web-portal/src/pages/ServicesPage.tsx",
@@ -612,12 +644,20 @@
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/pages/Investigations.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/AgentConfiguration.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/AgentConfiguration.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 732,
       "size_category": "large_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/AgentConfiguration.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/AgentConfiguration.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/shared/testing/performance/performance-test-engine.ts",
@@ -676,12 +716,20 @@
       "relative_path": "olorin-server/app/service/mcp_servers/monitoring/mcp_monitor.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_context.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_context.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 715,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "agent",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/agent/autonomous_context.py"
+=======
+      "relative_path": "olorin-server/app/service/agent/structured_context.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/scripts/enhanced_security_audit.py",
@@ -764,12 +812,20 @@
       "relative_path": "olorin-front/src/microservices/manual-investigation/components/EvidenceManager.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/services/AutonomousInvestigationClient.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/services/StructuredInvestigationClient.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 690,
       "size_category": "large_violation",
       "extension": ".ts",
       "module": "services",
+<<<<<<< HEAD
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/services/AutonomousInvestigationClient.ts"
+=======
+      "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/services/StructuredInvestigationClient.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/deployment/rollback/recovery_automation.py",
@@ -844,12 +900,21 @@
       "relative_path": "olorin-front/src/microservices/design-system/components/DesignSystemFoundation.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/autonomous/run_all_scenarios.py",
       "lines": 666,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "autonomous",
       "relative_path": "olorin-server/tests/autonomous/run_all_scenarios.py"
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/structured/run_all_scenarios.py",
+      "lines": 666,
+      "size_category": "large_violation",
+      "extension": ".py",
+      "module": "structured",
+      "relative_path": "olorin-server/tests/structured/run_all_scenarios.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/shared/testing/playwright-mcp.ts",
@@ -932,12 +997,20 @@
       "relative_path": "olorin-server/app/service/agent/orchestration/custom_tool_builder.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/CreateInvestigation.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/CreateInvestigation.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 644,
       "size_category": "large_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/CreateInvestigation.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/CreateInvestigation.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/persistence/async_ips_redis.py",
@@ -1212,12 +1285,20 @@
       "relative_path": "scripts/investigation/csv_scenario_generator.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_base.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_base.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 598,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "agent",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/agent/autonomous_base.py"
+=======
+      "relative_path": "olorin-server/app/service/agent/structured_base.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/EditStepsModal.tsx",
@@ -1324,12 +1405,20 @@
       "relative_path": "olorin-front/scripts/performance/lighthouse-audit.js"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/ResultsVisualization.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/ResultsVisualization.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 584,
       "size_category": "large_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/ResultsVisualization.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/ResultsVisualization.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/rag/rag_orchestrator.py",
@@ -1500,12 +1589,20 @@
       "relative_path": "deployment/dashboard/analytics_engine.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/router/autonomous_investigation_router.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/router/structured_investigation_router.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 562,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "router",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/router/autonomous_investigation_router.py"
+=======
+      "relative_path": "olorin-server/app/router/structured_investigation_router.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/webpack.config.js",
@@ -1852,20 +1949,35 @@
       "relative_path": "olorin-front/src/microservices/design-system/services/figmaSync.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/run_autonomous_investigation_for_device.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/run_structured_investigation_for_device.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 503,
       "size_category": "large_violation",
       "extension": ".py",
       "module": "tests",
+<<<<<<< HEAD
       "relative_path": "olorin-server/tests/run_autonomous_investigation_for_device.py"
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/services/InvestigationOrchestrator.ts",
+=======
+      "relative_path": "olorin-server/tests/run_structured_investigation_for_device.py"
+    },
+    {
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/services/InvestigationOrchestrator.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 502,
       "size_category": "large_violation",
       "extension": ".ts",
       "module": "services",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/services/InvestigationOrchestrator.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/services/InvestigationOrchestrator.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/mcp_servers/graph_analysis_server.py",
@@ -1892,20 +2004,35 @@
       "relative_path": "olorin-front/src/microservices/manual-investigation/components/ManualInvestigationDashboard.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/ProgressMonitor.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/ProgressMonitor.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 500,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/ProgressMonitor.tsx"
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/LiveMetricsDisplay.tsx",
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/ProgressMonitor.tsx"
+    },
+    {
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/LiveMetricsDisplay.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 500,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/LiveMetricsDisplay.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/LiveMetricsDisplay.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/utils/tool_error_categorization.py",
@@ -1932,12 +2059,20 @@
       "relative_path": "olorin-front/src/services/optimized-api-service.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/AlertCenter.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/AlertCenter.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 499,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/AlertCenter.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/AlertCenter.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/agent-analytics/components/UsageTracking.tsx",
@@ -2236,12 +2371,20 @@
       "relative_path": "olorin-server/app/service/agent/real_llm_responses.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/workflow/InvestigationRunner.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/workflow/InvestigationRunner.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 467,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "workflow",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/workflow/InvestigationRunner.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/workflow/InvestigationRunner.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/cost_management/model_tier_fallback.py",
@@ -2260,12 +2403,20 @@
       "relative_path": "olorin-front/src/microservices/manual-investigation/hooks/useManualInvestigation.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/ExportReporting.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/ExportReporting.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 464,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/ExportReporting.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/ExportReporting.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/run_investigation_workflow_for_user.py",
@@ -2444,12 +2595,20 @@
       "relative_path": "olorin-server/app/service/agent/patterns/routing.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/ReportViewer.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/ReportViewer.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 444,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/ReportViewer.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/ReportViewer.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/core-ui/components/UserProfile.tsx",
@@ -2580,20 +2739,35 @@
       "relative_path": "olorin-server/app/service/rag/cli_manager.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/InvestigationList.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/InvestigationList.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 435,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/InvestigationList.tsx"
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/services/WorkflowEngine.ts",
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/InvestigationList.tsx"
+    },
+    {
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/services/WorkflowEngine.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 434,
       "size_category": "medium_violation",
       "extension": ".ts",
       "module": "services",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/services/WorkflowEngine.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/services/WorkflowEngine.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/fixtures/real_investigation_scenarios.py",
@@ -2612,12 +2786,20 @@
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/MultiEntityInvestigationStarter.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/setup/StepManager.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/setup/StepManager.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 431,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "setup",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/setup/StepManager.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/setup/StepManager.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/mcp_servers/monitoring/example_usage.py",
@@ -2644,12 +2826,20 @@
       "relative_path": "deployment/dashboard/deployment_dashboard.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/InvestigationDetails.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/InvestigationDetails.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 428,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/InvestigationDetails.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/InvestigationDetails.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/investigation/components/ManualInvestigationDetails.tsx",
@@ -2756,12 +2946,20 @@
       "relative_path": "olorin-front/src/microservices/investigation/hooks/useInvestigation.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/run_autonomous_investigation_for_user.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/run_structured_investigation_for_user.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 418,
       "size_category": "medium_violation",
       "extension": ".py",
       "module": "tests",
+<<<<<<< HEAD
       "relative_path": "olorin-server/tests/run_autonomous_investigation_for_user.py"
+=======
+      "relative_path": "olorin-server/tests/run_structured_investigation_for_user.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/deployment/orchestration/master_deployment_coordinator_original.py",
@@ -2852,12 +3050,20 @@
       "relative_path": "olorin-server/app/service/reporting/unified/core/template_engine.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/scripts/validation/autonomous_workflow_validator.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/scripts/validation/structured_workflow_validator.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 411,
       "size_category": "medium_violation",
       "extension": ".py",
       "module": "validation",
+<<<<<<< HEAD
       "relative_path": "olorin-server/scripts/validation/autonomous_workflow_validator.py"
+=======
+      "relative_path": "olorin-server/scripts/validation/structured_workflow_validator.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/verification/verification_logger.py",
@@ -3052,6 +3258,7 @@
       "relative_path": "scripts/security/final_security_validation.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/autonomous/demo_openai_fraud_investigation.py",
       "lines": 383,
       "size_category": "medium_violation",
@@ -3061,11 +3268,26 @@
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/services/exportService.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/tests/structured/demo_openai_fraud_investigation.py",
+      "lines": 383,
+      "size_category": "medium_violation",
+      "extension": ".py",
+      "module": "structured",
+      "relative_path": "olorin-server/tests/structured/demo_openai_fraud_investigation.py"
+    },
+    {
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/services/exportService.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 382,
       "size_category": "medium_violation",
       "extension": ".ts",
       "module": "services",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/services/exportService.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/services/exportService.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/orchestration/enhanced_mcp_client_manager.py",
@@ -3140,12 +3362,20 @@
       "relative_path": "olorin-server/app/service/mcp_servers/fraud_database_server.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/investigation/components/AutonomousInvestigation.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/investigation/components/StructuredInvestigation.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 377,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/investigation/components/AutonomousInvestigation.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/investigation/components/StructuredInvestigation.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/deployment/monitoring/health_aggregator.py",
@@ -3188,12 +3418,20 @@
       "relative_path": "olorin-web-portal/src/pages/ContactPage.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_investigation_fixes.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_investigation_fixes.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 370,
       "size_category": "medium_violation",
       "extension": ".py",
       "module": "agent",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/agent/autonomous_investigation_fixes.py"
+=======
+      "relative_path": "olorin-server/app/service/agent/structured_investigation_fixes.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/deployment/orchestration/deployment_state_manager.py",
@@ -3252,12 +3490,20 @@
       "relative_path": "olorin-front/src/microservices/investigation/components/InvestigationDashboard.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/__tests__/utils/testUtils.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/__tests__/utils/testUtils.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 366,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "utils",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/__tests__/utils/testUtils.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/__tests__/utils/testUtils.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/scripts/security_audit.py",
@@ -3380,12 +3626,20 @@
       "relative_path": "olorin-server/scripts/investigation/run_full_investigation.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/monitoring/LogMonitor.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/monitoring/LogMonitor.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 355,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "monitoring",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/monitoring/LogMonitor.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/monitoring/LogMonitor.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/intelligence_tools/osint_data_aggregator.py",
@@ -3500,12 +3754,20 @@
       "relative_path": "olorin-server/app/service/agent/verification/verification_config.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/InvestigationDashboard.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/InvestigationDashboard.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 348,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/InvestigationDashboard.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/InvestigationDashboard.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/shell/services/ServiceDiscovery.ts",
@@ -3772,12 +4034,20 @@
       "relative_path": "olorin-server/scripts/debugging/debug_performance_metrics.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/hooks/useInvestigationWorkflow.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/hooks/useInvestigationWorkflow.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 326,
       "size_category": "medium_violation",
       "extension": ".ts",
       "module": "hooks",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/hooks/useInvestigationWorkflow.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/hooks/useInvestigationWorkflow.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/shared/services/WebSocketService.tsx",
@@ -3788,12 +4058,20 @@
       "relative_path": "olorin-front/src/microservices/shared/services/WebSocketService.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/ExportHistory.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/ExportHistory.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 324,
       "size_category": "medium_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/ExportHistory.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/ExportHistory.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/agent-analytics/hooks/useModelAnalytics.ts",
@@ -3812,12 +4090,20 @@
       "relative_path": "olorin-server/app/service/agent/orchestration/domain_agents/network_agent.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_parsing.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_parsing.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 322,
       "size_category": "medium_violation",
       "extension": ".py",
       "module": "agent",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/service/agent/autonomous_parsing.py"
+=======
+      "relative_path": "olorin-server/app/service/agent/structured_parsing.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/threat_intelligence_tool/abuseipdb/bulk_analysis_tool.py",
@@ -3916,12 +4202,20 @@
       "relative_path": "olorin-server/app/service/logging/investigation_folder_manager.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/__tests__/setup/setupTests.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/__tests__/setup/setupTests.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 312,
       "size_category": "medium_violation",
       "extension": ".ts",
       "module": "setup",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/__tests__/setup/setupTests.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/__tests__/setup/setupTests.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/mcp_client/ml_ai_client.py",
@@ -4076,12 +4370,20 @@
       "relative_path": "olorin-front/deployment/performance-monitor.js"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/setup/InvestigationSetup.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/setup/InvestigationSetup.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 298,
       "size_category": "small_violation",
       "extension": ".tsx",
       "module": "setup",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/setup/InvestigationSetup.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/setup/InvestigationSetup.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/orchestration/hybrid/safety/limiters/ai_control_authorizer.py",
@@ -4116,12 +4418,20 @@
       "relative_path": "olorin-front/src/shared/utils/index.ts"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/types/investigation.ts",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/types/investigation.ts",
+>>>>>>> 001-modify-analyzer-method
       "lines": 293,
       "size_category": "small_violation",
       "extension": ".ts",
       "module": "types",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/types/investigation.ts"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/types/investigation.ts"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/mcp_client/mcp_integration_bridge.py",
@@ -4260,12 +4570,20 @@
       "relative_path": "olorin-server/app/service/agent/patterns/registry.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/components/VisualizationCharts.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/components/VisualizationCharts.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 280,
       "size_category": "small_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/components/VisualizationCharts.tsx"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/components/VisualizationCharts.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/mock_llm.py",
@@ -4652,12 +4970,20 @@
       "relative_path": "olorin-server/app/utils/security_utils.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation/__tests__/jest.config.js",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation/__tests__/jest.config.js",
+>>>>>>> 001-modify-analyzer-method
       "lines": 250,
       "size_category": "small_violation",
       "extension": ".js",
       "module": "__tests__",
+<<<<<<< HEAD
       "relative_path": "olorin-front/src/microservices/autonomous-investigation/__tests__/jest.config.js"
+=======
+      "relative_path": "olorin-front/src/microservices/structured-investigation/__tests__/jest.config.js"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/utils/firebase_secrets.py",
@@ -4668,12 +4994,20 @@
       "relative_path": "olorin-server/app/utils/firebase_secrets.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/RAGEnhancedAutonomousInvestigationPanel.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/RAGEnhancedStructuredInvestigationPanel.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 249,
       "size_category": "small_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/RAGEnhancedAutonomousInvestigationPanel.tsx"
+=======
+      "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/RAGEnhancedStructuredInvestigationPanel.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/hooks/useMultiEntityInvestigation.ts",
@@ -4724,12 +5058,20 @@
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/rag/tools/RAGAlternativeCard.tsx"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/test/autonomous_mode_demo.py",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-server/app/test/structured_mode_demo.py",
+>>>>>>> 001-modify-analyzer-method
       "lines": 247,
       "size_category": "small_violation",
       "extension": ".py",
       "module": "test",
+<<<<<<< HEAD
       "relative_path": "olorin-server/app/test/autonomous_mode_demo.py"
+=======
+      "relative_path": "olorin-server/app/test/structured_mode_demo.py"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/websocket_auth_fix.py",
@@ -5188,12 +5530,20 @@
       "relative_path": "olorin-server/app/api/routes/analytics.py"
     },
     {
+<<<<<<< HEAD
       "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/AutonomousInvestigationPanel.tsx",
+=======
+      "path": "/Users/gklainert/Documents/olorin/olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/StructuredInvestigationPanel.tsx",
+>>>>>>> 001-modify-analyzer-method
       "lines": 210,
       "size_category": "small_violation",
       "extension": ".tsx",
       "module": "components",
+<<<<<<< HEAD
       "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/AutonomousInvestigationPanel.tsx"
+=======
+      "relative_path": "olorin-front/backups/legacy-frontend/legacy-backup-20250918_125753/src/js/components/StructuredInvestigationPanel.tsx"
+>>>>>>> 001-modify-analyzer-method
     },
     {
       "path": "/Users/gklainert/Documents/olorin/olorin-front/scripts/visual-regression/generate-baselines.js",

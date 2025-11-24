@@ -1,30 +1,30 @@
-# Comprehensive Autonomous Investigation System Fix Plan
+# Comprehensive Structured Investigation System Fix Plan
 
 **Author**: Gil Klainert  
 **Date**: 2025-08-30  
-**Target**: 4 Critical Issues in Autonomous Investigation System
+**Target**: 4 Critical Issues in Structured Investigation System
 **Mermaid Diagram**: [investigation-system-fixes-workflow.mermaid](/docs/diagrams/investigation-system-fixes-workflow.mermaid)
 
 ## Executive Summary
 
-This plan addresses 4 critical issues identified in the autonomous investigation system that impact investigation accuracy, performance, and observability. The issues span risk aggregation logic, agent performance bottlenecks, findings generation quality, and tool usage visibility.
+This plan addresses 4 critical issues identified in the structured investigation system that impact investigation accuracy, performance, and observability. The issues span risk aggregation logic, agent performance bottlenecks, findings generation quality, and tool usage visibility.
 
 ## Issue Analysis & Prioritization
 
 ### Issue 1: Risk Score Aggregation Problem (CRITICAL - Priority 1)
 **Problem**: Individual agents report 0.5 risk scores, but aggregated final score is 0.0
 **Root Cause Areas**: 
-- `/tests/autonomous/run_all_scenarios.py` lines 188-194 (aggregation logic)
-- Risk agent parsing in `/app/service/agent/autonomous_parsing.py`
-- Context aggregation in `/app/service/agent/autonomous_context.py`
+- `/tests/structured/run_all_scenarios.py` lines 188-194 (aggregation logic)
+- Risk agent parsing in `/app/service/agent/structured_parsing.py`
+- Context aggregation in `/app/service/agent/structured_context.py`
 
 **Impact**: HIGH - Incorrect risk assessment affects investigation accuracy
 
 ### Issue 2: Agent Performance Variation (HIGH - Priority 2)  
 **Problem**: Device agent takes 22% longer (20.7s vs ~16s average)
 **Root Cause Areas**:
-- `/app/service/agent/device_agent.py` autonomous investigation flow
-- Tool binding and LLM initialization in `/app/service/agent/autonomous_base.py`
+- `/app/service/agent/device_agent.py` structured investigation flow
+- Tool binding and LLM initialization in `/app/service/agent/structured_base.py`
 - Tool selection efficiency in device domain
 
 **Impact**: MEDIUM-HIGH - Performance bottleneck affecting user experience
@@ -32,8 +32,8 @@ This plan addresses 4 critical issues identified in the autonomous investigation
 ### Issue 3: Limited Findings Generation (MEDIUM - Priority 3)
 **Problem**: Each agent generates only 1 finding instead of comprehensive analysis
 **Root Cause Areas**:
-- `/app/service/agent/autonomous_parsing.py` findings extraction logic
-- Agent prompting in `/app/service/agent/autonomous_prompts.py`
+- `/app/service/agent/structured_parsing.py` findings extraction logic
+- Agent prompting in `/app/service/agent/structured_prompts.py`
 - LLM result processing and structuring
 
 **Impact**: MEDIUM - Reduces investigation depth and value
@@ -42,7 +42,7 @@ This plan addresses 4 critical issues identified in the autonomous investigation
 **Problem**: No tool call details in journey tracking logs
 **Root Cause Areas**:
 - `/app/service/agent/journey_tracker.py` tool call tracking
-- Tool invocation logging in `/app/service/agent/autonomous_base.py`
+- Tool invocation logging in `/app/service/agent/structured_base.py`
 - Journey event integration with LangGraph tool execution
 
 **Impact**: LOW-MEDIUM - Reduces system observability and debugging capability
@@ -53,7 +53,7 @@ This plan addresses 4 critical issues identified in the autonomous investigation
 
 #### 1.1 Investigation Steps
 1. **Examine scenario runner aggregation logic**:
-   - Analyze `/tests/autonomous/run_all_scenarios.py` lines 188-194
+   - Analyze `/tests/structured/run_all_scenarios.py` lines 188-194
    - Verify individual agent result structure and risk_score extraction
    - Test aggregation math with sample data
 
@@ -97,7 +97,7 @@ This plan addresses 4 critical issues identified in the autonomous investigation
    - Compare device agent performance to other agents
 
 2. **Analyze LLM initialization overhead**:
-   - Review autonomous LLM creation and tool binding
+   - Review structured LLM creation and tool binding
    - Check for redundant initialization or inefficient caching
    - Profile tool binding performance
 
@@ -131,12 +131,12 @@ This plan addresses 4 critical issues identified in the autonomous investigation
 
 #### 3.1 Findings Analysis Steps
 1. **Review current findings extraction**:
-   - Analyze `/app/service/agent/autonomous_parsing.py` extraction logic
+   - Analyze `/app/service/agent/structured_parsing.py` extraction logic
    - Review LLM response parsing for findings identification
    - Test with sample LLM outputs to identify parsing gaps
 
 2. **Examine agent prompting strategy**:
-   - Review autonomous investigation prompts
+   - Review structured investigation prompts
    - Check if prompts encourage comprehensive findings
    - Analyze LLM response quality and structure
 

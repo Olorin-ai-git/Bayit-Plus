@@ -1126,8 +1126,25 @@ if ACTUAL_COLUMN_COUNT != EXPECTED_COLUMN_COUNT:
         f"but found {ACTUAL_COLUMN_COUNT} columns"
     )
 
+<<<<<<< HEAD
 # Schema validation passed
 print(f"✅ Schema constants loaded: {ACTUAL_COLUMN_COUNT} columns validated")
+=======
+# Schema validation passed - show which table this validates against
+import os as _os
+db_provider = _os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+if db_provider == 'snowflake':
+    database = _os.getenv('SNOWFLAKE_DATABASE', 'DBT')
+    schema = _os.getenv('SNOWFLAKE_SCHEMA', 'DBT_PROD')
+    table = _os.getenv('SNOWFLAKE_TRANSACTIONS_TABLE', 'TXS')
+    table_name = f"{database}.{schema}.{table}"
+else:
+    pg_schema = _os.getenv('POSTGRES_SCHEMA', 'public')
+    pg_table = _os.getenv('POSTGRES_TRANSACTIONS_TABLE', 'transactions_enriched')
+    table_name = f"{pg_schema}.{pg_table}"
+
+print(f"✅ Schema constants loaded: {ACTUAL_COLUMN_COUNT} columns validated for {table_name} ({db_provider.upper()})")
+>>>>>>> 001-modify-analyzer-method
 
 
 def get_required_env_var(var_name: str) -> str:

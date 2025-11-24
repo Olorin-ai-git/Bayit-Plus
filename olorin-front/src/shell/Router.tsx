@@ -1,6 +1,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+<<<<<<< HEAD
 import ErrorBoundary from '@shared/components/ErrorBoundary';
+=======
+import { ServiceErrorBoundary } from '@shared/components/ServiceErrorBoundary';
+>>>>>>> 001-modify-analyzer-method
 import LoadingSpinner from '@shared/components/LoadingSpinner';
 
 // Lazy load working microservice apps
@@ -12,6 +16,7 @@ const InvestigationApp = React.lazy(() => import('../microservices/investigation
 // RAG Intelligence Service (port 3003) - Fully working
 const RagIntelligenceApp = React.lazy(() => import('../microservices/rag-intelligence/RagIntelligenceApp'));
 
+<<<<<<< HEAD
 // Agent Analytics Service (port 3002) - Working
 const AgentAnalyticsApp = React.lazy(() => import('../microservices/agent-analytics/AgentAnalyticsApp'));
 
@@ -20,6 +25,16 @@ const CoreUIApp = React.lazy(() => import('../microservices/core-ui/CoreUiApp'))
 
 // Autonomous Investigation (sub-service)
 const AutonomousInvestigationApp = React.lazy(() => import('../microservices/autonomous-investigation/AutonomousInvestigationApp'));
+=======
+// Agent Analytics Service (port 3002) - Working (Agent performance monitoring)
+const AgentAnalyticsApp = React.lazy(() => import('../microservices/agent-analytics/AgentAnalyticsApp'));
+
+// Analytics Service (Anomaly detection with replay/detector features)
+const AnalyticsApp = React.lazy(() => import('../microservices/analytics/AnalyticsApp'));
+
+// Core UI Service (port 3006)
+const CoreUIApp = React.lazy(() => import('../microservices/core-ui/CoreUIApp'));
+>>>>>>> 001-modify-analyzer-method
 
 // Visualization Service (port 3004) - Fully implemented
 const VisualizationApp = React.lazy(() => import('../microservices/visualization/VisualizationApp'));
@@ -38,6 +53,7 @@ const routes: RouteConfig[] = [
   // Investigation Service Routes (Port 3001) - Main Investigation Hub
   { path: '/investigations', component: InvestigationApp, serviceName: 'investigation', exact: true },
   { path: '/investigations/*', component: InvestigationApp, serviceName: 'investigation' },
+<<<<<<< HEAD
 
   // Autonomous Investigation Service Routes (Sub-service of investigations)
   { path: '/autonomous', component: AutonomousInvestigationApp, serviceName: 'autonomous-investigation', exact: true },
@@ -46,6 +62,17 @@ const routes: RouteConfig[] = [
   // Agent Analytics Service Routes (Port 3002)
   { path: '/analytics', component: AgentAnalyticsApp, serviceName: 'agent-analytics', exact: true },
   { path: '/analytics/*', component: AgentAnalyticsApp, serviceName: 'agent-analytics' },
+=======
+  { path: '/investigation/*', component: InvestigationApp, serviceName: 'investigation' },
+
+  // Analytics Service Routes (Anomaly detection with replay/detector features)
+  { path: '/analytics', component: AnalyticsApp, serviceName: 'analytics', exact: true },
+  { path: '/analytics/*', component: AnalyticsApp, serviceName: 'analytics' },
+
+  // Agent Analytics Service Routes (Port 3002) - Agent performance monitoring
+  { path: '/agent-analytics', component: AgentAnalyticsApp, serviceName: 'agent-analytics', exact: true },
+  { path: '/agent-analytics/*', component: AgentAnalyticsApp, serviceName: 'agent-analytics' },
+>>>>>>> 001-modify-analyzer-method
 
   // RAG Intelligence Service Routes (Port 3003)
   { path: '/rag', component: RagIntelligenceApp, serviceName: 'rag-intelligence', exact: true },
@@ -86,7 +113,14 @@ const AppRouter: React.FC = () => {
         key={route.path}
         path={route.path}
         element={
+<<<<<<< HEAD
           <ErrorBoundary serviceName={route.serviceName}>
+=======
+          <ServiceErrorBoundary
+            serviceName={route.serviceName}
+            onError={(error, errorInfo) => handleServiceError(route.serviceName, error)}
+          >
+>>>>>>> 001-modify-analyzer-method
             <Suspense fallback={
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
@@ -99,7 +133,11 @@ const AppRouter: React.FC = () => {
             }>
               <Component />
             </Suspense>
+<<<<<<< HEAD
           </ErrorBoundary>
+=======
+          </ServiceErrorBoundary>
+>>>>>>> 001-modify-analyzer-method
         }
       />
     );
@@ -111,9 +149,14 @@ const AppRouter: React.FC = () => {
     // Emit service error event
     if (window.olorin?.eventBus) {
       window.olorin.eventBus.emit('service:error', {
+<<<<<<< HEAD
         service: serviceName,
         error: error.message,
         timestamp: new Date().toISOString()
+=======
+        service: serviceName as 'investigation' | 'reporting' | 'agentAnalytics' | 'ragIntelligence' | 'visualization' | 'designSystem' | 'coreUi',
+        error: error instanceof Error ? error : new Error(error.message)
+>>>>>>> 001-modify-analyzer-method
       });
     }
   };
@@ -156,7 +199,12 @@ const AppRouter: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { name: 'investigation', display: 'Investigation Service', port: '3001', status: 'operational' },
+<<<<<<< HEAD
               { name: 'agent-analytics', display: 'Agent Analytics', port: '3002', status: 'operational' },
+=======
+              { name: 'analytics', display: 'Analytics (Anomaly Detection)', port: 'N/A', status: 'operational' },
+              { name: 'agent-analytics', display: 'Agent Analytics (Monitoring)', port: '3002', status: 'operational' },
+>>>>>>> 001-modify-analyzer-method
               { name: 'rag-intelligence', display: 'RAG Intelligence', port: '3003', status: 'operational' },
               { name: 'visualization', display: 'Visualization', port: '3004', status: 'operational' },
               { name: 'reporting', display: 'Reporting', port: '3005', status: 'operational' },

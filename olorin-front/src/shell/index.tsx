@@ -1,8 +1,46 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+<<<<<<< HEAD
 import App from './App';
 import './index.css';
 
+=======
+import { initializeRuntimeConfig } from '@shared/config/runtimeConfig';
+import App from './App';
+import './index.css';
+
+// Global error handler for browser extension errors
+window.addEventListener('unhandledrejection', (event) => {
+  const errorMessage = event.reason?.message || String(event.reason || '');
+  const isBrowserExtensionError = 
+    errorMessage.includes('message channel closed') ||
+    errorMessage.includes('asynchronous response') ||
+    errorMessage.includes('Extension context invalidated') ||
+    errorMessage.includes('A listener indicated an asynchronous response');
+  
+  if (isBrowserExtensionError) {
+    // Suppress browser extension errors - they're harmless
+    event.preventDefault();
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('[Shell] Suppressed browser extension error (harmless):', errorMessage);
+    }
+    return;
+  }
+  
+  // Let other errors propagate normally
+});
+
+// Initialize runtime configuration from environment variables
+initializeRuntimeConfig();
+
+// Hot Module Replacement type declaration
+declare const module: {
+  hot?: {
+    accept: (path: string, callback: () => void) => void;
+  };
+};
+
+>>>>>>> 001-modify-analyzer-method
 // Error boundary for the shell application
 class ShellErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -20,6 +58,7 @@ class ShellErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Shell application error:', error, errorInfo);
 
+<<<<<<< HEAD
     // Send error to monitoring service
     if (window.olorin?.monitoring) {
       window.olorin.monitoring.captureException(error, {
@@ -27,6 +66,10 @@ class ShellErrorBoundary extends React.Component<
         errorInfo
       });
     }
+=======
+    // Log error (monitoring service would be implemented separately)
+    console.error('Error context:', { context: 'shell', errorInfo });
+>>>>>>> 001-modify-analyzer-method
   }
 
   render() {
@@ -78,6 +121,7 @@ class ShellErrorBoundary extends React.Component<
   }
 }
 
+<<<<<<< HEAD
 // Initialize global Olorin namespace
 declare global {
   interface Window {
@@ -128,6 +172,222 @@ root.render(
     </ShellErrorBoundary>
   </React.StrictMode>
 );
+=======
+// Note: Global Olorin namespace is initialized in globals.ts
+// This file just uses the existing window.olorin object
+
+// Global reference to prevent creating multiple roots
+declare global {
+  interface Window {
+    __olorin_root__?: ReactDOM.Root;
+  }
+}
+
+// Restore root reference from HMR BEFORE any initialization (must be at module level)
+if (typeof module !== 'undefined' && module.hot && module.hot.data && module.hot.data.root) {
+  window.__olorin_root__ = module.hot.data.root;
+  // Root restored from HMR
+}
+
+// Guard to prevent multiple initializations
+// Use a more robust check that persists across module reloads
+let isInitialized = false;
+
+// Initialize the application (prevent multiple root creations)
+const initializeShellApp = () => {
+  // Check if we already have a root in our global (from HMR or previous init)
+  if (window.__olorin_root__) {
+    // React root already exists, re-rendering
+    // Just re-render with the existing root
+    try {
+      window.__olorin_root__.render(
+        <React.StrictMode>
+          <ShellErrorBoundary>
+            <App />
+          </ShellErrorBoundary>
+        </React.StrictMode>
+      );
+      return;
+    } catch (error) {
+      // Root might be invalid, clear it and create a new one
+      // Silently handle - this is expected during HMR
+      window.__olorin_root__ = undefined;
+    }
+  }
+
+  let rootElement = document.getElementById('root') as HTMLElement;
+
+  if (!rootElement) {
+    throw new Error('Root element #root not found');
+  }
+
+  // Check if React has an internal root reference on the element
+  // React 18 stores root references internally - we need to detect and handle this
+  let elementAny = rootElement as any;
+  const hasReactRoot = !!(
+    elementAny._reactRootContainer ||
+    elementAny._reactInternalFiber ||
+    elementAny.__reactContainer$ ||
+    elementAny.__reactFiber$ ||
+    elementAny[Symbol.for('react.root')] ||
+    // Check for React 18's internal root tracking
+    (elementAny._owner && elementAny._owner.tag === 1)
+  );
+
+  // If element has React root markers but we don't have the root object,
+  // we need to replace the element to avoid duplicate root warning
+  if (hasReactRoot && !window.__olorin_root__) {
+    const parent = rootElement.parentNode;
+    if (parent) {
+      // Replace element to get a fresh DOM node without React root references
+      const newElement = document.createElement('div');
+      newElement.id = 'root';
+      parent.replaceChild(newElement, rootElement);
+      rootElement = newElement;
+      elementAny = rootElement as any; // Update reference
+    } else {
+      // Fallback: clear content completely
+      rootElement.innerHTML = '';
+      // Try to clear React internal refs
+      Object.keys(elementAny).forEach(key => {
+        if (key.startsWith('_react') || key.startsWith('__react') || key === Symbol.for('react.root')) {
+          try {
+            delete elementAny[key];
+          } catch (e) {
+            // Ignore non-configurable properties
+          }
+        }
+      });
+    }
+  }
+
+  // Prevent multiple initializations
+  if (isInitialized && window.__olorin_root__) {
+    // Already initialized and root exists, just re-render
+    try {
+      window.__olorin_root__.render(
+        <React.StrictMode>
+          <ShellErrorBoundary>
+            <App />
+          </ShellErrorBoundary>
+        </React.StrictMode>
+      );
+      return;
+    } catch (error) {
+      // Root might be invalid, clear it and continue
+      window.__olorin_root__ = undefined;
+    }
+  }
+  
+  isInitialized = true;
+
+  let root: ReactDOM.Root | undefined;
+
+  // Additional check for React root markers (reuse elementAny from above)
+  // This is a secondary check after the initial element replacement logic
+  const reactRootKey = Object.keys(elementAny).find(key => 
+    key.startsWith('__reactFiber') || key.startsWith('__reactContainer')
+  );
+  
+  if (reactRootKey && !window.__olorin_root__ && !hasReactRoot) {
+    // React has a root but we don't have reference - replace element
+    const parent = rootElement.parentNode;
+    if (parent) {
+      const newElement = document.createElement('div');
+      newElement.id = 'root';
+      parent.replaceChild(newElement, rootElement);
+      rootElement = newElement;
+      elementAny = rootElement as any; // Update reference
+    }
+  }
+
+  // Create new root (element should be clean now)
+  // Suppress React warning about duplicate roots - we handle this gracefully
+  const originalConsoleWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    const message = args[0]?.toString() || '';
+    // Suppress React's duplicate root warning - we handle this case
+    if (message.includes('createRoot') && message.includes('already been passed')) {
+      return; // Suppress this specific warning
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+
+  try {
+    root = ReactDOM.createRoot(rootElement);
+    window.__olorin_root__ = root;
+  } catch (error: any) {
+    // Restore console.warn before error handling
+    console.warn = originalConsoleWarn;
+    
+    // If createRoot fails, React detected an existing root we couldn't clear
+    const errorMessage = error?.message || String(error);
+    const isDuplicateRootError = errorMessage.includes('already been passed to createRoot') ||
+                                  errorMessage.includes('already has a root');
+    
+      if (isDuplicateRootError) {
+      // React detected duplicate root - this can happen during HMR
+      // Try to use existing root if available, otherwise replace element
+      if (window.__olorin_root__) {
+        // Use existing root
+        root = window.__olorin_root__;
+      } else {
+        // Replace element to get a fresh DOM node
+        const parent = rootElement.parentNode;
+        const newElement = document.createElement('div');
+        newElement.id = 'root';
+        
+        if (parent) {
+          parent.replaceChild(newElement, rootElement);
+          try {
+            root = ReactDOM.createRoot(newElement);
+            window.__olorin_root__ = root;
+          } catch (retryError) {
+            // Silently fail - HMR will handle recovery
+            if (process.env.NODE_ENV === 'development') {
+              console.debug('[Shell] Root recovery attempted during HMR');
+            }
+            return; // Exit gracefully - let HMR handle it
+          }
+        } else {
+          // No parent - can't recover, but don't throw in development (HMR will handle)
+          if (process.env.NODE_ENV === 'production') {
+            throw new Error('Root element has no parent node. Please refresh the page.');
+          }
+          return; // Exit gracefully in development
+        }
+      }
+    } else {
+      // Other error - only throw in production
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('React root creation failed. This may indicate a module loading issue.');
+      }
+      // In development, let HMR handle recovery
+      return;
+    }
+  } finally {
+    // Always restore console.warn
+    console.warn = originalConsoleWarn;
+  }
+
+  // Render the app (root should always exist at this point)
+  if (!root) {
+    throw new Error('Failed to obtain React root instance');
+  }
+
+  root.render(
+    <React.StrictMode>
+      <ShellErrorBoundary>
+        <App />
+      </ShellErrorBoundary>
+    </React.StrictMode>
+  );
+};
+
+// Export for bootstrap.tsx to call explicitly
+// DO NOT call initializeShellApp() here - bootstrap.tsx will handle it
+export { initializeShellApp };
+>>>>>>> 001-modify-analyzer-method
 
 // Service worker registration for PWA capabilities
 if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -142,6 +402,7 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   });
 }
 
+<<<<<<< HEAD
 // Performance monitoring
 if (window.olorin.config.enableDebug) {
   // Web Vitals reporting
@@ -151,14 +412,50 @@ if (window.olorin.config.enableDebug) {
     getFCP(console.log);
     getLCP(console.log);
     getTTFB(console.log);
+=======
+// Performance monitoring - disabled console logging to reduce noise
+// Web Vitals are still collected but not logged to console
+if (process.env.NODE_ENV === 'development') {
+  // Web Vitals reporting - silent mode
+  import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+    // Collect metrics but don't log them
+    const noop = () => {};
+    getCLS(noop);
+    getFID(noop);
+    getFCP(noop);
+    getLCP(noop);
+    getTTFB(noop);
+>>>>>>> 001-modify-analyzer-method
   });
 }
 
 // Hot module replacement for development
 if (module.hot && process.env.NODE_ENV === 'development') {
+<<<<<<< HEAD
   module.hot.accept('./App', () => {
     const NextApp = require('./App').default;
     root.render(
+=======
+  // Persist root reference across HMR updates
+  module.hot.dispose((data) => {
+    data.root = window.__olorin_root__;
+  });
+  
+  // Note: Root restoration happens at module level (above) before initialization
+  
+  module.hot.accept('./App', () => {
+    // Ensure we have a root reference
+    const currentRoot = window.__olorin_root__;
+    if (!currentRoot) {
+      console.error('[Shell] HMR: No root reference available');
+      return;
+    }
+    
+    // @ts-ignore - HMR requires dynamic require
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const NextApp = require('./App').default;
+    currentRoot.render(
+>>>>>>> 001-modify-analyzer-method
       <React.StrictMode>
         <ShellErrorBoundary>
           <NextApp />

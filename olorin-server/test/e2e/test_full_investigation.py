@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Complete autonomous investigation flow test with proper agent context.
+=======
+Complete structured investigation flow test with proper agent context.
+>>>>>>> 001-modify-analyzer-method
 This demonstrates the full investigation flow with Redis checkpointing.
 """
 
@@ -110,15 +114,24 @@ Please conduct a comprehensive fraud investigation using all available agents.
         olorin_header=olorin_header,
         input=investigation_prompt,
         metadata=metadata,
+<<<<<<< HEAD
         agent_name="autonomous_investigation_orchestrator",
+=======
+        agent_name="structured_investigation_orchestrator",
+>>>>>>> 001-modify-analyzer-method
         session_id=session_id
     )
     
     return agent_context
 
 async def test_full_investigation_flow():
+<<<<<<< HEAD
     """Test complete autonomous investigation flow"""
     logger.info('🚀 Starting complete autonomous investigation flow test...')
+=======
+    """Test complete structured investigation flow"""
+    logger.info('🚀 Starting complete structured investigation flow test...')
+>>>>>>> 001-modify-analyzer-method
     
     try:
         # Create investigation context data
@@ -160,8 +173,13 @@ async def test_full_investigation_flow():
             }
         }
         
+<<<<<<< HEAD
         # Run the complete autonomous investigation
         logger.info('🚀 Executing autonomous investigation flow...')
+=======
+        # Run the complete structured investigation
+        logger.info('🚀 Executing structured investigation flow...')
+>>>>>>> 001-modify-analyzer-method
         logger.info('   📡 Redis checkpointing enabled')
         logger.info('   🤖 Multi-agent coordination active')
         logger.info('   🛡️ Bulletproof resilience engaged')
@@ -226,7 +244,11 @@ async def main():
     print(f'\n🎯 COMPLETE INVESTIGATION TEST: {"SUCCESS" if success else "FAILED"}')
     
     if success:
+<<<<<<< HEAD
         print('🎉 The autonomous investigation system is working with Redis!')
+=======
+        print('🎉 The structured investigation system is working with Redis!')
+>>>>>>> 001-modify-analyzer-method
         print('✅ Redis connection: WORKING')
         print('✅ Graph compilation: WORKING') 
         print('✅ Multi-agent coordination: WORKING')

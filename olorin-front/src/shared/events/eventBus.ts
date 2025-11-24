@@ -1,374 +1,197 @@
 /**
- * Event Bus for Olorin Microservices Architecture
- * Provides centralized communication between all 8 microservices
+ * Event Bus Singleton for Microservices Communication
+ *
+ * Type-safe pub/sub pattern for inter-service communication.
+ * Configuration via REACT_APP_EVENT_BUS_MAX_QUEUE_SIZE and REACT_APP_EVENT_BUS_ENABLE_LOGGING
  */
 
-import mitt, { type Emitter } from 'mitt';
+import { loadConfig } from '../../shared/config/appConfig';
 
-/**
- * Event types for cross-service communication
- */
-export interface EventBusEvents {
-  // Autonomous Investigation events
-  'auto:investigation:started': { investigation: AutonomousInvestigation };
-  'auto:investigation:completed': { investigationId: string; result: any };
-  'auto:investigation:escalated': { id: string; reason: string; targetService: 'manual' };
-  'auto:ai:decision': { investigationId: string; decision: AIDecision };
-  'auto:risk:calculated': { investigationId: string; score: number; factors: RiskFactor[] };
+export type EventHandler<T = unknown> = (data: T) => void | Promise<void>;
 
-  // Manual Investigation events
-  'manual:investigation:started': { investigation: ManualInvestigation };
-  'manual:investigation:completed': { investigationId: string; result: any };
-  'manual:workflow:updated': { investigationId: string; step: number };
-  'manual:evidence:added': { investigationId: string; evidence: Evidence };
-  'manual:collaboration:invited': { investigationId: string; collaborator: Collaborator };
-
-  // Agent Analytics events
-  'agent:execution:started': { agentId: string; execution: AgentExecution };
-  'agent:execution:completed': { agentId: string; executionId: string; result: any };
-  'agent:performance:updated': { agentId: string; metrics: AgentPerformanceMetrics };
-  'agent:anomaly:detected': { agentId: string; anomaly: AgentAnomaly };
-
-  // RAG Intelligence events
-  'rag:query:executed': { queryId: string; query: string; results: any[] };
-  'rag:knowledge:updated': { source: string; timestamp: Date };
-  'rag:insight:generated': { investigationId: string; insight: RAGInsight };
-
-  // Visualization events
-  'viz:graph:updated': { investigationId: string; nodes: any[]; edges: any[] };
-  'viz:map:location:added': { investigationId: string; location: Location };
-  'viz:chart:data:updated': { chartId: string; data: any };
-
-  // Reporting events
-  'report:generated': { reportId: string; type: string; url: string };
-  'report:export:started': { reportId: string; format: string };
-  'report:export:completed': { reportId: string; downloadUrl: string };
-
-  // Core UI events
-  'ui:navigation:changed': { route: string; user: User };
-  'ui:notification:show': { notification: Notification };
-  'ui:theme:changed': { theme: ThemeConfig };
-  'ui:modal:opened': { modalId: string; data?: any };
-  'ui:modal:closed': { modalId: string };
-
-  // Design System events
-  'design:tokens:updated': { tokens: DesignTokens; source: string };
-  'design:component:generated': { component: ComponentDefinition };
-  'design:figma:synced': { components: string[]; timestamp: Date };
-  'design:validation:failed': { componentId: string; errors: ValidationError[] };
-
-  // WebSocket events
-  'websocket:connected': { connectionId: string };
-  'websocket:disconnected': { connectionId: string };
-  'websocket:message': { type: string; data: any };
-
-  // Service health events
-  'service:health:check': { service: string; status: ServiceHealth };
-  'service:error': { service: string; error: Error };
-  'service:recovery': { service: string; timestamp: Date };
-
-  // Test events (Playwright)
-  'test:suite:started': { suiteId: string; type: string };
-  'test:case:passed': { testId: string; duration: number };
-  'test:case:failed': { testId: string; error: Error; screenshot?: string };
-  'test:visual:regression': { componentId: string; diff: number };
-  'test:coverage:updated': { service: string; coverage: number };
+interface EventSubscription {
+  unsubscribe: () => void;
 }
 
-/**
- * Type definitions for event data
- */
-export interface AutonomousInvestigation {
-  id: string;
-  userId: string;
-  entityType: 'user_id' | 'email' | 'phone' | 'device_id';
-  status: 'initializing' | 'analyzing' | 'orchestrating' | 'completed' | 'escalated';
-  aiMode: 'aggressive' | 'balanced' | 'conservative';
-  created: Date;
+interface QueuedEvent<T = unknown> {
+  event: string;
+  data: T;
+  timestamp: number;
 }
 
-export interface ManualInvestigation {
-  id: string;
-  investigatorId: string;
-  userId: string;
-  entityType: 'user_id' | 'email' | 'phone' | 'device_id';
-  status: 'draft' | 'in_progress' | 'review' | 'completed' | 'archived';
-  created: Date;
-}
+export class EventBus {
+  private static instance: EventBus;
+  private listeners: Map<string, Set<EventHandler>> = new Map();
+  private wildcardListeners: Set<EventHandler> = new Set();
+  private eventQueue: QueuedEvent[] = [];
+  private readonly maxQueueSize: number;
+  private readonly enableLogging: boolean;
 
-export interface AIDecision {
-  id: string;
-  type: 'continue' | 'escalate' | 'complete';
-  confidence: number;
-  reasoning: string;
-}
+  private constructor() {
+    // Lazy-load configuration when EventBus is first instantiated
+    const config = loadConfig();
+    this.maxQueueSize = config.eventBus.maxQueueSize;
+    this.enableLogging = config.eventBus.enableLogging;
 
-export interface RiskFactor {
-  id: string;
-  category: string;
-  score: number;
-  description: string;
-}
-
-export interface Evidence {
-  id: string;
-  type: string;
-  data: any;
-  timestamp: Date;
-}
-
-export interface Collaborator {
-  id: string;
-  name: string;
-  role: 'lead' | 'reviewer' | 'viewer';
-  permissions: string[];
-}
-
-export interface AgentExecution {
-  id: string;
-  agentId: string;
-  status: 'running' | 'completed' | 'failed';
-  startTime: Date;
-  endTime?: Date;
-}
-
-export interface AgentPerformanceMetrics {
-  id: string;
-  agentId: string;
-  averageExecutionTime: number;
-  successRate: number;
-  errorRate: number;
-}
-
-export interface AgentAnomaly {
-  id: string;
-  agentId: string;
-  type: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  description: string;
-}
-
-export interface RAGInsight {
-  id: string;
-  content: string;
-  confidence: number;
-  sources: string[];
-}
-
-export interface Location {
-  id: string;
-  latitude: number;
-  longitude: number;
-  address?: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
-export interface Notification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  duration?: number;
-}
-
-export interface ThemeConfig {
-  mode: 'light' | 'dark';
-  primaryColor: string;
-  customizations?: Record<string, any>;
-}
-
-export interface DesignTokens {
-  colors: Record<string, any>;
-  typography: Record<string, any>;
-  spacing: Record<string, any>;
-  shadows: Record<string, any>;
-}
-
-export interface ComponentDefinition {
-  id: string;
-  name: string;
-  category: string;
-  props: any[];
-  examples: any[];
-}
-
-export interface ValidationError {
-  field: string;
-  message: string;
-  severity: 'error' | 'warning';
-}
-
-export interface ServiceHealth {
-  service: string;
-  status: 'healthy' | 'degraded' | 'down';
-  latency: number;
-  errorRate: number;
-  lastCheck: Date;
-}
-
-/**
- * Global event bus instance
- */
-export const eventBus: Emitter<EventBusEvents> = mitt<EventBusEvents>();
-
-/**
- * Event bus utilities
- */
-export class EventBusManager {
-  private static instance: EventBusManager;
-  private listeners: Map<string, Function[]> = new Map();
-
-  public static getInstance(): EventBusManager {
-    if (!EventBusManager.instance) {
-      EventBusManager.instance = new EventBusManager();
-    }
-    return EventBusManager.instance;
-  }
-
-  /**
-   * Subscribe to events with automatic cleanup
-   */
-  public subscribe<K extends keyof EventBusEvents>(
-    event: K,
-    handler: (data: EventBusEvents[K]) => void,
-    component?: string
-  ): () => void {
-    const wrappedHandler = (data: EventBusEvents[K]) => {
-      try {
-        handler(data);
-      } catch (error) {
-        console.error(`Error in event handler for ${event}:`, error);
-        this.emit('service:error', {
-          service: component || 'unknown',
-          error: error as Error
-        });
-      }
-    };
-
-    eventBus.on(event, wrappedHandler);
-
-    // Track listeners for cleanup
-    const listeners = this.listeners.get(component || 'global') || [];
-    listeners.push(() => eventBus.off(event, wrappedHandler));
-    this.listeners.set(component || 'global', listeners);
-
-    // Return unsubscribe function
-    return () => {
-      eventBus.off(event, wrappedHandler);
-      const componentListeners = this.listeners.get(component || 'global') || [];
-      const index = componentListeners.indexOf(wrappedHandler);
-      if (index > -1) {
-        componentListeners.splice(index, 1);
-      }
-    };
-  }
-
-  /**
-   * Emit events with error handling
-   */
-  public emit<K extends keyof EventBusEvents>(
-    event: K,
-    data: EventBusEvents[K]
-  ): void {
-    try {
-      eventBus.emit(event, data);
-    } catch (error) {
-      console.error(`Error emitting event ${event}:`, error);
+    if (this.enableLogging) {
+      console.log('[EventBus] Initialized', {
+        maxQueueSize: this.maxQueueSize,
+        enableLogging: this.enableLogging
+      });
     }
   }
 
-  /**
-   * Cleanup all listeners for a component
-   */
-  public cleanup(component: string): void {
-    const listeners = this.listeners.get(component) || [];
-    listeners.forEach(unsubscribe => unsubscribe());
-    this.listeners.delete(component);
+  public static getInstance(): EventBus {
+    if (!EventBus.instance) {
+      EventBus.instance = new EventBus();
+    }
+    return EventBus.instance;
   }
 
-  /**
-   * Get event bus statistics
-   */
-  public getStats(): { listeners: number; components: number } {
-    const components = Array.from(this.listeners.keys());
-    const totalListeners = components.reduce(
-      (total, component) => total + (this.listeners.get(component)?.length || 0),
-      0
-    );
+  public on<T = unknown>(event: string, handler: EventHandler<T>): EventSubscription {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, new Set());
+    }
+
+    const typedHandler = handler as EventHandler;
+    this.listeners.get(event)!.add(typedHandler);
+
+    if (this.enableLogging) {
+      console.log(`[EventBus] Subscribed: ${event}`);
+    }
 
     return {
-      listeners: totalListeners,
-      components: components.length,
+      unsubscribe: () => this.off(event, handler)
     };
+  }
+
+  public off<T = unknown>(event: string, handler: EventHandler<T>): void {
+    const listeners = this.listeners.get(event);
+    if (listeners) {
+      listeners.delete(handler as EventHandler);
+      if (listeners.size === 0) {
+        this.listeners.delete(event);
+      }
+      if (this.enableLogging) {
+        console.log(`[EventBus] Unsubscribed: ${event}`);
+      }
+    }
+  }
+
+  public onAll(handler: EventHandler): EventSubscription {
+    this.wildcardListeners.add(handler);
+    if (this.enableLogging) {
+      console.log('[EventBus] Subscribed to all events');
+    }
+    return {
+      unsubscribe: () => this.offAll(handler)
+    };
+  }
+
+  public offAll(handler: EventHandler): void {
+    this.wildcardListeners.delete(handler);
+    if (this.enableLogging) {
+      console.log('[EventBus] Unsubscribed from all events');
+    }
+  }
+
+  public emit<T = unknown>(event: string, data: T): void {
+    const timestamp = Date.now();
+
+    if (this.enableLogging) {
+      console.log(`[EventBus] Emit: ${event}`, data);
+    }
+
+    this.queueEvent(event, data, timestamp);
+
+    const listeners = this.listeners.get(event);
+    if (listeners) {
+      listeners.forEach(handler => this.executeHandler(handler, data, event));
+    }
+
+    this.wildcardListeners.forEach(handler => this.executeHandler(handler, data, event));
+  }
+
+  private executeHandler(handler: EventHandler, data: unknown, event: string): void {
+    try {
+      const result = handler(data);
+      if (result instanceof Promise) {
+        result.catch(error => {
+          console.error(`[EventBus] Async error for "${event}":`, error);
+        });
+      }
+    } catch (error) {
+      console.error(`[EventBus] Handler error for "${event}":`, error);
+    }
+  }
+
+  private queueEvent<T>(event: string, data: T, timestamp: number): void {
+    this.eventQueue.push({ event, data, timestamp });
+
+    if (this.eventQueue.length > this.maxQueueSize) {
+      const removed = this.eventQueue.shift();
+      if (this.enableLogging) {
+        console.warn('[EventBus] Queue full, removed:', removed?.event);
+      }
+    }
+  }
+
+  public getQueue(): ReadonlyArray<QueuedEvent> {
+    return [...this.eventQueue];
+  }
+
+  public clearQueue(): void {
+    this.eventQueue = [];
+    if (this.enableLogging) {
+      console.log('[EventBus] Queue cleared');
+    }
+  }
+
+  public getStats(): {
+    listenerCount: number;
+    wildcardCount: number;
+    queueSize: number;
+    eventTypes: string[];
+  } {
+    return {
+      listenerCount: Array.from(this.listeners.values()).reduce((sum, set) => sum + set.size, 0),
+      wildcardCount: this.wildcardListeners.size,
+      queueSize: this.eventQueue.length,
+      eventTypes: Array.from(this.listeners.keys())
+    };
+  }
+
+  public removeAllListeners(): void {
+    this.listeners.clear();
+    this.wildcardListeners.clear();
+    this.clearQueue();
+    if (this.enableLogging) {
+      console.log('[EventBus] All listeners removed');
+    }
   }
 }
 
 /**
- * React hook for event bus
+ * Lazy-initialized singleton instance
+ *
+ * Uses a Proxy to defer EventBus instantiation until first access.
+ * This ensures Webpack's DefinePlugin has replaced process.env references
+ * before loadConfig() is called in the constructor.
  */
-export function useEventBus() {
-  const manager = EventBusManager.getInstance();
+let eventBusInstance: EventBus | null = null;
 
-  return {
-    subscribe: manager.subscribe.bind(manager),
-    emit: manager.emit.bind(manager),
-    cleanup: manager.cleanup.bind(manager),
-    stats: manager.getStats.bind(manager),
-  };
-}
-
-/**
- * Service-specific event bus helpers
- */
-export const AutonomousInvestigationEvents = {
-  startInvestigation: (investigation: AutonomousInvestigation) =>
-    eventBus.emit('auto:investigation:started', { investigation }),
-
-  completeInvestigation: (investigationId: string, result: any) =>
-    eventBus.emit('auto:investigation:completed', { investigationId, result }),
-
-  escalateToManual: (id: string, reason: string) =>
-    eventBus.emit('auto:investigation:escalated', { id, reason, targetService: 'manual' }),
-
-  updateRiskScore: (investigationId: string, score: number, factors: RiskFactor[]) =>
-    eventBus.emit('auto:risk:calculated', { investigationId, score, factors }),
-};
-
-export const ManualInvestigationEvents = {
-  startInvestigation: (investigation: ManualInvestigation) =>
-    eventBus.emit('manual:investigation:started', { investigation }),
-
-  updateWorkflow: (investigationId: string, step: number) =>
-    eventBus.emit('manual:workflow:updated', { investigationId, step }),
-
-  addEvidence: (investigationId: string, evidence: Evidence) =>
-    eventBus.emit('manual:evidence:added', { investigationId, evidence }),
-
-  inviteCollaborator: (investigationId: string, collaborator: Collaborator) =>
-    eventBus.emit('manual:collaboration:invited', { investigationId, collaborator }),
-};
-
-export const UIEvents = {
-  showNotification: (notification: Notification) =>
-    eventBus.emit('ui:notification:show', { notification }),
-
-  changeTheme: (theme: ThemeConfig) =>
-    eventBus.emit('ui:theme:changed', { theme }),
-
-  navigate: (route: string, user: User) =>
-    eventBus.emit('ui:navigation:changed', { route, user }),
-
-  openModal: (modalId: string, data?: any) =>
-    eventBus.emit('ui:modal:opened', { modalId, data }),
-
-  closeModal: (modalId: string) =>
-    eventBus.emit('ui:modal:closed', { modalId }),
-};
+export const eventBus = new Proxy({} as EventBus, {
+  get(_target, prop) {
+    if (!eventBusInstance) {
+      eventBusInstance = EventBus.getInstance();
+    }
+    const value = eventBusInstance[prop as keyof EventBus];
+    // Bind methods to the instance to preserve 'this' context
+    if (typeof value === 'function') {
+      return value.bind(eventBusInstance);
+    }
+    return value;
+  }
+});
 
 export default eventBus;

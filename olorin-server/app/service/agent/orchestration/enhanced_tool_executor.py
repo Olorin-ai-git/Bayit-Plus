@@ -9,6 +9,7 @@ This module implements Phase 1 of the LangGraph enhancement plan, providing:
 """
 
 import asyncio
+import json
 import time
 import threading
 from typing import Any, Dict, List, Optional, Set, Union, Sequence
@@ -154,16 +155,42 @@ class EnhancedToolNode(ToolNode):
     async def ainvoke(self, input: Union[Dict[str, Any], MessagesState], config: Optional[RunnableConfig] = None) -> Union[Dict[str, Any], MessagesState]:
         """
         Enhanced invoke with resilience patterns.
-        
+
         Args:
             input: Input state or messages
             config: Runtime configuration
-            
+
         Returns:
             Updated state with tool responses
         """
         logger.info(f"🔧 EnhancedToolNode.ainvoke called with input type: {type(input)}")
+<<<<<<< HEAD
         
+=======
+
+        # DEBUG: Log input keys if it's a dict
+        if isinstance(input, dict):
+            logger.info(f"🔧 Input is dict with keys: {list(input.keys())}")
+            if "investigation_id" in input:
+                logger.info(f"🔧 investigation_id found in input: {input['investigation_id']}")
+
+        # Extract investigation_id from state if not set at init time (CRITICAL FIX)
+        if not self.investigation_id:
+            if isinstance(input, dict) and "investigation_id" in input:
+                self.investigation_id = input.get("investigation_id")
+                logger.info(f"🔧 CRITICAL: Extracted investigation_id from state: {self.investigation_id}")
+            elif config:
+                # Try to extract from config.configurable
+                configurable = config.get("configurable", {}) if isinstance(config, dict) else getattr(config, "configurable", {})
+                if isinstance(configurable, dict) and "investigation_id" in configurable:
+                    self.investigation_id = configurable["investigation_id"]
+                    logger.info(f"🔧 CRITICAL: Extracted investigation_id from config: {self.investigation_id}")
+                elif isinstance(configurable, dict) and "thread_id" in configurable:
+                    # Some graphs use thread_id as investigation_id
+                    self.investigation_id = configurable["thread_id"]
+                    logger.info(f"🔧 CRITICAL: Extracted investigation_id from thread_id: {self.investigation_id}")
+
+>>>>>>> 001-modify-analyzer-method
         # Extract messages from input
         if isinstance(input, dict) and "messages" in input:
             messages = input["messages"]
@@ -172,6 +199,178 @@ class EnhancedToolNode(ToolNode):
             # Handle direct message input
             messages = input if isinstance(input, list) else [input]
             logger.info(f"🔧 Processing {len(messages)} direct messages")
+<<<<<<< HEAD
+=======
+        
+        # Check if composio tools should be forced
+        input_state = input if isinstance(input, dict) else {}
+        entity_id = input_state.get('entity_id', '')
+        entity_type = input_state.get('entity_type', '')
+        tools_used = input_state.get('tools_used', [])
+        orchestrator_loops = input_state.get('orchestrator_loops', 0)
+        
+        # Also check messages for composio_search tool results (in case tools_used isn't updated yet)
+        composio_search_in_messages = False
+        if isinstance(input, dict) and "messages" in input:
+            for msg in input["messages"]:
+                if hasattr(msg, 'name') and msg.name == "composio_search":
+                    composio_search_in_messages = True
+                    break
+        
+        # Log state for debugging
+        logger.info(f"🔧 Composio forcing check: entity_id={entity_id}, entity_type={entity_type}, tools_used={tools_used}, orchestrator_loops={orchestrator_loops}, composio_search_in_messages={composio_search_in_messages}")
+        logger.info(f"🔧 Available composio tools: {[t.name for t in self.tools if 'composio' in t.name.lower()]}")
+        
+        # Extract IP addresses, phone numbers, and emails from Snowflake data for threat intelligence tools
+        extracted_ips = []
+        extracted_phones = []
+        extracted_emails = []
+        if isinstance(input, dict):
+            snowflake_data = input.get("snowflake_data", {})
+            if isinstance(snowflake_data, dict) and "results" in snowflake_data:
+                results = snowflake_data.get("results", [])
+                for r in results:
+                    # Extract IP addresses
+                    ip = (r.get("IP") or r.get("ip") or r.get("ip_address") or 
+                          r.get("IP_ADDRESS") or r.get("source_ip") or r.get("SOURCE_IP"))
+                    if ip and isinstance(ip, str) and ip not in extracted_ips:
+                        # Basic IP validation (IPv4 or IPv6)
+                        import re
+                        ipv4_pattern = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                        ipv6_pattern = r'^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::$'
+                        if re.match(ipv4_pattern, ip) or re.match(ipv6_pattern, ip) or ':' in ip:
+                            extracted_ips.append(ip)
+                    
+                    # Extract phone numbers
+                    phone = (r.get("PHONE") or r.get("phone") or r.get("phone_number") or 
+                            r.get("PHONE_NUMBER") or r.get("mobile") or r.get("MOBILE") or
+                            r.get("telephone") or r.get("TELEPHONE"))
+                    if phone and isinstance(phone, str) and phone not in extracted_phones:
+                        # Basic phone validation (contains digits, at least 10 characters)
+                        import re
+                        cleaned_phone = re.sub(r'\D', '', phone)
+                        if len(cleaned_phone) >= 10:  # Minimum 10 digits for a valid phone
+                            extracted_phones.append(phone)
+                    
+                    # Extract email addresses
+                    email = (r.get("EMAIL") or r.get("email") or r.get("email_address") or 
+                            r.get("EMAIL_ADDRESS") or r.get("user_email") or r.get("USER_EMAIL") or
+                            r.get("paypal_email") or r.get("PAYPAL_EMAIL"))
+                    if email and isinstance(email, str) and email not in extracted_emails:
+                        # Basic email validation (contains @ and .)
+                        import re
+                        email_pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
+                        if re.match(email_pattern, email):
+                            extracted_emails.append(email)
+        
+        logger.info(f"🔧 Extracted {len(extracted_ips)} IP address(es) from Snowflake data: {extracted_ips[:3]}..." if len(extracted_ips) > 3 else f"🔧 Extracted {len(extracted_ips)} IP address(es): {extracted_ips}")
+        logger.info(f"🔧 Extracted {len(extracted_phones)} phone number(s) from Snowflake data: {extracted_phones[:3]}..." if len(extracted_phones) > 3 else f"🔧 Extracted {len(extracted_phones)} phone number(s): {extracted_phones}")
+        logger.info(f"🔧 Extracted {len(extracted_emails)} email address(es) from Snowflake data: {extracted_emails[:3]}..." if len(extracted_emails) > 3 else f"🔧 Extracted {len(extracted_emails)} email address(es): {extracted_emails}")
+        
+        # Force composio tools if conditions are met
+        # Force after first tool call OR if we have entity but no tools used yet
+        has_composio_search = any(t.name == "composio_search" for t in self.tools)
+        has_composio_webcrawl = any(t.name == "composio_webcrawl" for t in self.tools)
+        
+        # Check for threat intelligence tools
+        has_abuseipdb = any(t.name == "abuseipdb_ip_reputation" for t in self.tools)
+        has_virustotal = any(t.name == "virustotal_ip_analysis" for t in self.tools)
+        has_shodan = any(t.name == "shodan_infrastructure_analysis" for t in self.tools)
+        has_veriphone = any(t.name == "veriphone_verify_phone" for t in self.tools)
+        has_ipqs_email = any(t.name == "ipqs_email_verification" for t in self.tools)
+        
+        force_composio_search = (
+            "composio_search" not in tools_used and 
+            not composio_search_in_messages and  # Also check messages
+            entity_id and 
+            has_composio_search and
+            (len(tools_used) > 0 or orchestrator_loops >= 0)  # Force after any tool OR always if we have entity
+        )
+        
+        # Force composio_webcrawl after composio_search has been used
+        # Check both tools_used list AND messages for composio_search
+        force_composio_webcrawl = (
+            "composio_webcrawl" not in tools_used and 
+            ("composio_search" in tools_used or composio_search_in_messages) and  # Check both sources
+            entity_id and 
+            has_composio_webcrawl
+        )
+        
+        logger.info(f"🔧 Composio forcing decision: search={force_composio_search}, webcrawl={force_composio_webcrawl}, has_search={has_composio_search}, has_webcrawl={has_composio_webcrawl}")
+        
+        tool_calls_to_add = []
+        
+        if force_composio_search:
+            logger.warning(f"⚠️ FORCING composio_search for {entity_type}={entity_id} (loop {orchestrator_loops}, tools_used: {tools_used})")
+            from uuid import uuid4
+            tool_calls_to_add.append({
+                "name": "composio_search",
+                "args": {
+                    "query": f"{entity_id} fraud",
+                    "max_results": 5,
+                    "entity_id": entity_id
+                },
+                "id": str(uuid4())
+            })
+        
+        # Force threat intelligence tools if we have IP addresses and they haven't been used
+        if extracted_ips and len(tools_used) > 0:  # Only force after some tools have been used (e.g., after Snowflake query)
+            first_ip = extracted_ips[0]  # Use first IP for threat intelligence
+            
+            # Force AbuseIPDB if available and not used
+            if has_abuseipdb and "abuseipdb_ip_reputation" not in tools_used:
+                logger.warning(f"⚠️ FORCING abuseipdb_ip_reputation for IP {first_ip}")
+                from uuid import uuid4
+                tool_calls_to_add.append({
+                    "name": "abuseipdb_ip_reputation",
+                    "args": {"ip": first_ip, "max_age_days": 90},
+                    "id": str(uuid4())
+                })
+            
+            # Force VirusTotal if available and not used
+            if has_virustotal and "virustotal_ip_analysis" not in tools_used:
+                logger.warning(f"⚠️ FORCING virustotal_ip_analysis for IP {first_ip}")
+                from uuid import uuid4
+                tool_calls_to_add.append({
+                    "name": "virustotal_ip_analysis",
+                    "args": {"ip": first_ip, "include_vendor_details": False},
+                    "id": str(uuid4())
+                })
+        
+        # Force Veriphone if we have phone numbers and it hasn't been used
+        if extracted_phones and len(tools_used) > 0:  # Only force after some tools have been used (e.g., after Snowflake query)
+            first_phone = extracted_phones[0]  # Use first phone for verification
+            
+            # Force Veriphone if available and not used
+            if has_veriphone and "veriphone_verify_phone" not in tools_used:
+                logger.warning(f"⚠️ FORCING veriphone_verify_phone for phone {first_phone}")
+                from uuid import uuid4
+                tool_calls_to_add.append({
+                    "name": "veriphone_verify_phone",
+                    "args": {"phone": first_phone, "entity_id": entity_id},
+                    "id": str(uuid4())
+                })
+        
+        # Force IPQS Email if we have email addresses and it hasn't been used
+        if extracted_emails and len(tools_used) > 0:  # Only force after some tools have been used (e.g., after Snowflake query)
+            first_email = extracted_emails[0]  # Use first email for verification
+            
+            # Force IPQS Email if available and not used
+            if has_ipqs_email and "ipqs_email_verification" not in tools_used:
+                logger.warning(f"⚠️ FORCING ipqs_email_verification for email {first_email}")
+                from uuid import uuid4
+                tool_calls_to_add.append({
+                    "name": "ipqs_email_verification",
+                    "args": {"email": first_email, "entity_id": entity_id},
+                    "id": str(uuid4())
+                })
+        
+        # Note: webcrawl forcing will be checked AFTER composio_search executes (see below)
+        
+        if tool_calls_to_add:
+            composio_aimessage = AIMessage(content="", tool_calls=tool_calls_to_add)
+            messages.append(composio_aimessage)
+>>>>>>> 001-modify-analyzer-method
         
         # Process each message that requires tool invocation
         result_messages = []
@@ -190,18 +389,272 @@ class EnhancedToolNode(ToolNode):
                     logger.info(f"🔧 Executing tool {tool_idx + 1}/{len(message.tool_calls)}: {tool_name} (id: {tool_id})")
                     
                     try:
+<<<<<<< HEAD
                         # Execute with resilience
                         result = await self._execute_tool_with_resilience(tool_call, config)
                         logger.info(f"🔧 ✅ Tool {tool_name} executed successfully, result type: {type(result)}")
                         
                         # Create tool message with result
+=======
+                        # Execute with resilience - pass input state to infer agent name
+                        result = await self._execute_tool_with_resilience(tool_call, config, input_state=input)
+                        logger.info(f"🔧 ✅ Tool {tool_name} executed successfully, result type: {type(result)}")
+
+                        # CRITICAL FIX: Serialize result to proper JSON for LLM processing
+                        # This ensures database results (List[Dict]) remain structured objects, not strings
+                        if isinstance(result, (dict, list)):
+                            content = json.dumps(result, default=str, ensure_ascii=False)
+                            logger.debug(f"🔧 Serialized {type(result).__name__} to JSON string (length: {len(content)})")
+                        elif isinstance(result, str):
+                            content = result
+                            logger.debug(f"🔧 Result already string (length: {len(content)})")
+                        else:
+                            content = str(result)
+                            logger.debug(f"🔧 Converted {type(result).__name__} to string")
+
+                        # Create tool message with properly serialized result
+>>>>>>> 001-modify-analyzer-method
                         tool_message = ToolMessage(
-                            content=str(result),
+                            content=content,
                             tool_call_id=tool_call.get("id", ""),
                             name=tool_call.get("name", "unknown")
                         )
                         result_messages.append(tool_message)
                         logger.debug(f"🔧 Created ToolMessage for {tool_name}")
+<<<<<<< HEAD
+=======
+                        
+                        # After snowflake_query_tool completes, extract IPs, phones, and emails, then force threat intelligence tools
+                        if tool_name == "snowflake_query_tool" and isinstance(result, dict):
+                            logger.info(f"🔧 snowflake_query_tool completed, extracting IPs, phones, emails and checking threat intelligence tools...")
+                            # Extract IPs, phones, and emails from Snowflake results
+                            snowflake_results = result.get("results", [])
+                            new_extracted_ips = []
+                            new_extracted_phones = []
+                            new_extracted_emails = []
+                            for r in snowflake_results:
+                                # Extract IP addresses
+                                ip = (r.get("IP") or r.get("ip") or r.get("ip_address") or 
+                                      r.get("IP_ADDRESS") or r.get("source_ip") or r.get("SOURCE_IP"))
+                                if ip and isinstance(ip, str) and ip not in new_extracted_ips:
+                                    import re
+                                    ipv4_pattern = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                                    ipv6_pattern = r'^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::$'
+                                    if re.match(ipv4_pattern, ip) or re.match(ipv6_pattern, ip) or ':' in ip:
+                                        new_extracted_ips.append(ip)
+                                
+                                # Extract phone numbers
+                                phone = (r.get("PHONE") or r.get("phone") or r.get("phone_number") or 
+                                        r.get("PHONE_NUMBER") or r.get("mobile") or r.get("MOBILE") or
+                                        r.get("telephone") or r.get("TELEPHONE"))
+                                if phone and isinstance(phone, str) and phone not in new_extracted_phones:
+                                    import re
+                                    cleaned_phone = re.sub(r'\D', '', phone)
+                                    if len(cleaned_phone) >= 10:  # Minimum 10 digits for a valid phone
+                                        new_extracted_phones.append(phone)
+                                
+                                # Extract email addresses
+                                email = (r.get("EMAIL") or r.get("email") or r.get("email_address") or 
+                                        r.get("EMAIL_ADDRESS") or r.get("user_email") or r.get("USER_EMAIL") or
+                                        r.get("paypal_email") or r.get("PAYPAL_EMAIL"))
+                                if email and isinstance(email, str) and email not in new_extracted_emails:
+                                    import re
+                                    email_pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'
+                                    if re.match(email_pattern, email):
+                                        new_extracted_emails.append(email)
+                            
+                            if new_extracted_ips:
+                                logger.info(f"🔧 Extracted {len(new_extracted_ips)} IP(s) from Snowflake results: {new_extracted_ips[:3]}")
+                                first_ip = new_extracted_ips[0]
+                            
+                            if new_extracted_phones:
+                                logger.info(f"🔧 Extracted {len(new_extracted_phones)} phone(s) from Snowflake results: {new_extracted_phones[:3]}")
+                                first_phone = new_extracted_phones[0]
+                            
+                            if new_extracted_emails:
+                                logger.info(f"🔧 Extracted {len(new_extracted_emails)} email(s) from Snowflake results: {new_extracted_emails[:3]}")
+                                first_email = new_extracted_emails[0]
+                                
+                                # Force AbuseIPDB if available and not used
+                                if has_abuseipdb and "abuseipdb_ip_reputation" not in tools_used:
+                                    logger.warning(f"⚠️ FORCING abuseipdb_ip_reputation after Snowflake query for IP {first_ip}")
+                                    from uuid import uuid4
+                                    try:
+                                        abuseipdb_tool_call = {
+                                            "name": "abuseipdb_ip_reputation",
+                                            "args": {"ip": first_ip, "max_age_days": 90},
+                                            "id": str(uuid4())
+                                        }
+                                        abuseipdb_result = await self._execute_tool_with_resilience(abuseipdb_tool_call, config, input_state=input)
+                                        logger.info(f"🔧 ✅ Tool abuseipdb_ip_reputation executed successfully, result type: {type(abuseipdb_result)}")
+                                        
+                                        # Serialize result
+                                        if isinstance(abuseipdb_result, (dict, list)):
+                                            abuseipdb_content = json.dumps(abuseipdb_result, default=str, ensure_ascii=False)
+                                        elif isinstance(abuseipdb_result, str):
+                                            abuseipdb_content = abuseipdb_result
+                                        else:
+                                            abuseipdb_content = str(abuseipdb_result)
+                                        
+                                        abuseipdb_tool_message = ToolMessage(
+                                            content=abuseipdb_content,
+                                            tool_call_id=abuseipdb_tool_call.get("id", ""),
+                                            name="abuseipdb_ip_reputation"
+                                        )
+                                        result_messages.append(abuseipdb_tool_message)
+                                        logger.debug(f"🔧 Created ToolMessage for abuseipdb_ip_reputation")
+                                    except Exception as e:
+                                        safe_error_msg = sanitize_exception_message(e)
+                                        logger.error(f"🔧 ❌ Tool abuseipdb_ip_reputation execution failed: {safe_error_msg}")
+                                
+                                # Force VirusTotal if available and not used
+                                if has_virustotal and "virustotal_ip_analysis" not in tools_used:
+                                    logger.warning(f"⚠️ FORCING virustotal_ip_analysis after Snowflake query for IP {first_ip}")
+                                    from uuid import uuid4
+                                    try:
+                                        virustotal_tool_call = {
+                                            "name": "virustotal_ip_analysis",
+                                            "args": {"ip": first_ip, "include_vendor_details": False},
+                                            "id": str(uuid4())
+                                        }
+                                        virustotal_result = await self._execute_tool_with_resilience(virustotal_tool_call, config, input_state=input)
+                                        logger.info(f"🔧 ✅ Tool virustotal_ip_analysis executed successfully, result type: {type(virustotal_result)}")
+                                        
+                                        # Serialize result
+                                        if isinstance(virustotal_result, (dict, list)):
+                                            virustotal_content = json.dumps(virustotal_result, default=str, ensure_ascii=False)
+                                        elif isinstance(virustotal_result, str):
+                                            virustotal_content = virustotal_result
+                                        else:
+                                            virustotal_content = str(virustotal_result)
+                                        
+                                        virustotal_tool_message = ToolMessage(
+                                            content=virustotal_content,
+                                            tool_call_id=virustotal_tool_call.get("id", ""),
+                                            name="virustotal_ip_analysis"
+                                        )
+                                        result_messages.append(virustotal_tool_message)
+                                        logger.debug(f"🔧 Created ToolMessage for virustotal_ip_analysis")
+                                    except Exception as e:
+                                        safe_error_msg = sanitize_exception_message(e)
+                                        logger.error(f"🔧 ❌ Tool virustotal_ip_analysis execution failed: {safe_error_msg}")
+                                
+                                # Force Veriphone if available and not used
+                                if new_extracted_phones and has_veriphone and "veriphone_verify_phone" not in tools_used:
+                                    logger.warning(f"⚠️ FORCING veriphone_verify_phone after Snowflake query for phone {first_phone}")
+                                    from uuid import uuid4
+                                    try:
+                                        veriphone_tool_call = {
+                                            "name": "veriphone_verify_phone",
+                                            "args": {"phone": first_phone, "entity_id": entity_id},
+                                            "id": str(uuid4())
+                                        }
+                                        veriphone_result = await self._execute_tool_with_resilience(veriphone_tool_call, config, input_state=input)
+                                        logger.info(f"🔧 ✅ Tool veriphone_verify_phone executed successfully, result type: {type(veriphone_result)}")
+                                        
+                                        # Serialize result
+                                        if isinstance(veriphone_result, (dict, list)):
+                                            veriphone_content = json.dumps(veriphone_result, default=str, ensure_ascii=False)
+                                        elif isinstance(veriphone_result, str):
+                                            veriphone_content = veriphone_result
+                                        else:
+                                            veriphone_content = str(veriphone_result)
+                                        
+                                        veriphone_tool_message = ToolMessage(
+                                            content=veriphone_content,
+                                            tool_call_id=veriphone_tool_call.get("id", ""),
+                                            name="veriphone_verify_phone"
+                                        )
+                                        result_messages.append(veriphone_tool_message)
+                                        logger.debug(f"🔧 Created ToolMessage for veriphone_verify_phone")
+                                    except Exception as e:
+                                        safe_error_msg = sanitize_exception_message(e)
+                                        logger.error(f"🔧 ❌ Tool veriphone_verify_phone execution failed: {safe_error_msg}")
+                                
+                                # Force IPQS Email if available and not used
+                                if new_extracted_emails and has_ipqs_email and "ipqs_email_verification" not in tools_used:
+                                    logger.warning(f"⚠️ FORCING ipqs_email_verification after Snowflake query for email {first_email}")
+                                    from uuid import uuid4
+                                    try:
+                                        ipqs_tool_call = {
+                                            "name": "ipqs_email_verification",
+                                            "args": {"email": first_email, "entity_id": entity_id},
+                                            "id": str(uuid4())
+                                        }
+                                        ipqs_result = await self._execute_tool_with_resilience(ipqs_tool_call, config, input_state=input)
+                                        logger.info(f"🔧 ✅ Tool ipqs_email_verification executed successfully, result type: {type(ipqs_result)}")
+                                        
+                                        # Serialize result
+                                        if isinstance(ipqs_result, (dict, list)):
+                                            ipqs_content = json.dumps(ipqs_result, default=str, ensure_ascii=False)
+                                        elif isinstance(ipqs_result, str):
+                                            ipqs_content = ipqs_result
+                                        else:
+                                            ipqs_content = str(ipqs_result)
+                                        
+                                        ipqs_tool_message = ToolMessage(
+                                            content=ipqs_content,
+                                            tool_call_id=ipqs_tool_call.get("id", ""),
+                                            name="ipqs_email_verification"
+                                        )
+                                        result_messages.append(ipqs_tool_message)
+                                        logger.debug(f"🔧 Created ToolMessage for ipqs_email_verification")
+                                    except Exception as e:
+                                        safe_error_msg = sanitize_exception_message(e)
+                                        logger.error(f"🔧 ❌ Tool ipqs_email_verification execution failed: {safe_error_msg}")
+                        
+                        # After composio_search completes, check if we should force webcrawl
+                        if tool_name == "composio_search" and not force_composio_webcrawl:
+                            logger.info(f"🔧 composio_search completed, checking if webcrawl should be forced...")
+                            # Re-check webcrawl forcing now that search has completed
+                            if (
+                                "composio_webcrawl" not in tools_used and 
+                                entity_id and 
+                                has_composio_webcrawl
+                            ):
+                                logger.warning(f"⚠️ FORCING composio_webcrawl after composio_search completion for {entity_type}={entity_id}")
+                                from uuid import uuid4
+                                # Execute webcrawl immediately
+                                webcrawl_tool_call = {
+                                    "name": "composio_webcrawl",
+                                    "args": {
+                                        "url": f"https://www.google.com/search?q={entity_id.replace('@', '%40')}",
+                                        "max_depth": 1,
+                                        "include_links": False,
+                                        "entity_id": entity_id
+                                    },
+                                    "id": str(uuid4())
+                                }
+                                try:
+                                    webcrawl_result = await self._execute_tool_with_resilience(webcrawl_tool_call, config, input_state=input)
+                                    logger.info(f"🔧 ✅ Tool composio_webcrawl executed successfully, result type: {type(webcrawl_result)}")
+                                    
+                                    # Serialize webcrawl result
+                                    if isinstance(webcrawl_result, (dict, list)):
+                                        webcrawl_content = json.dumps(webcrawl_result, default=str, ensure_ascii=False)
+                                    elif isinstance(webcrawl_result, str):
+                                        webcrawl_content = webcrawl_result
+                                    else:
+                                        webcrawl_content = str(webcrawl_result)
+                                    
+                                    webcrawl_tool_message = ToolMessage(
+                                        content=webcrawl_content,
+                                        tool_call_id=webcrawl_tool_call.get("id", ""),
+                                        name="composio_webcrawl"
+                                    )
+                                    result_messages.append(webcrawl_tool_message)
+                                    logger.debug(f"🔧 Created ToolMessage for composio_webcrawl")
+                                except Exception as e:
+                                    safe_error_msg = sanitize_exception_message(e)
+                                    error_category = get_error_category(e)
+                                    logger.error(f"🔧 ❌ Tool composio_webcrawl execution failed - {error_category}: {safe_error_msg}")
+                                    webcrawl_error_message = ToolMessage(
+                                        content=f"Tool execution failed: {safe_error_msg}",
+                                        tool_call_id=webcrawl_tool_call.get("id", ""),
+                                        name="composio_webcrawl"
+                                    )
+                                    result_messages.append(webcrawl_error_message)
+>>>>>>> 001-modify-analyzer-method
                         
                     except Exception as e:
                         # Sanitize error message for security
@@ -236,26 +689,151 @@ class EnhancedToolNode(ToolNode):
             logger.info(f"🔧 Returning list result with {len(result_messages)} messages")
             return result_messages
     
-    async def _execute_tool_with_resilience(self, tool_call: Dict[str, Any], config: Optional[RunnableConfig]) -> Any:
+    def _infer_agent_name_from_state(self, input: Union[Dict[str, Any], MessagesState]) -> Optional[str]:
+        """
+        Infer the agent name from graph state.
+        
+        Checks current_phase, domains_completed, and messages to determine
+        which agent is currently executing.
+        
+        Args:
+            input: Graph state or messages
+            
+        Returns:
+            Agent name (e.g., "device_agent", "network_agent") or None if cannot determine
+        """
+        if not isinstance(input, dict):
+            return None
+        
+        # Check current_phase to infer agent
+        current_phase = input.get("current_phase", "")
+        domains_completed = input.get("domains_completed", [])
+        
+        # If in domain_analysis phase, check which domain is active
+        if current_phase == "domain_analysis":
+            # Domain execution order
+            domain_order = ["network", "device", "location", "logs", "authentication", "risk"]
+            # Find first domain not yet completed
+            for domain in domain_order:
+                if domain not in domains_completed:
+                    return f"{domain}_agent"
+        
+        # Check if we're in tool_execution phase (orchestrator is calling tools)
+        if current_phase == "tool_execution":
+            return "orchestrator_agent"
+        
+        # Check if we're in snowflake_analysis phase
+        if current_phase == "snowflake_analysis":
+            return "orchestrator_agent"
+        
+        # Check messages for agent hints
+        messages = input.get("messages", [])
+        if messages:
+            # Look at recent messages for agent context
+            for msg in reversed(messages[-5:]):  # Check last 5 messages
+                if hasattr(msg, "additional_kwargs"):
+                    kwargs = msg.additional_kwargs or {}
+                    agent_name = kwargs.get("agent_name") or kwargs.get("agent")
+                    if agent_name:
+                        return agent_name
+                # Check message content for agent mentions
+                if hasattr(msg, "content") and msg.content:
+                    content = str(msg.content).lower()
+                    for domain in ["network", "device", "location", "logs", "authentication", "risk"]:
+                        if domain in content:
+                            return f"{domain}_agent"
+        
+        # Check domain_findings to see which domain was most recently updated
+        domain_findings = input.get("domain_findings", {})
+        if domain_findings:
+            # Return the last domain that has findings
+            for domain in reversed(["network", "device", "location", "logs", "authentication", "risk"]):
+                if domain in domain_findings:
+                    return f"{domain}_agent"
+        
+        return None
+    
+    async def _execute_tool_with_resilience(self, tool_call: Dict[str, Any], config: Optional[RunnableConfig], input_state: Optional[Union[Dict[str, Any], MessagesState]] = None) -> Any:
         """
         Execute tool with resilience patterns and emit WebSocket events.
-        
+
         Args:
             tool_call: Tool invocation details
             config: Runtime configuration
-            
+            input_state: Graph state to infer agent name from
+
         Returns:
             Tool execution result
         """
         tool_name = tool_call.get("name", "unknown")
-        metrics = self.tool_metrics.get(tool_name)
         
+        # Infer agent name from state if available
+        agent_name = None
+        if input_state:
+            agent_name = self._infer_agent_name_from_state(input_state)
+            if agent_name:
+                logger.info(f"🔧 Inferred agent name from state: {agent_name}")
+        
+        # Fallback to graph_agent if cannot infer
+        if not agent_name:
+            agent_name = "graph_agent"
+        
+        # CRITICAL: Ensure investigation_id is available for persistence
+        # Extract from config if not already set
+        if not self.investigation_id and config:
+            configurable = config.get("configurable", {}) if isinstance(config, dict) else getattr(config, "configurable", {})
+            if isinstance(configurable, dict) and "investigation_id" in configurable:
+                self.investigation_id = configurable["investigation_id"]
+                logger.info(f"🔧 CRITICAL: Extracted investigation_id from config: {self.investigation_id}")
+        
+        metrics = self.tool_metrics.get(tool_name)
+
         if not metrics:
             logger.warning(f"No metrics found for tool {tool_name}, executing without resilience")
             # Find and execute tool directly
             tool = self._get_tool_by_name(tool_name)
             if tool:
-                return await tool.ainvoke(tool_call.get("args", {}), config)
+                # Still persist even without metrics
+                if self.investigation_id:
+                    try:
+                        from app.service.tool_execution_service import ToolExecutionService
+                        from app.persistence.database import get_db_session
+                        with get_db_session() as db:
+                            service = ToolExecutionService(db)
+                            tool_exec_id = service.persist_tool_execution(
+                                investigation_id=self.investigation_id,
+                                agent_name=agent_name,  # Use inferred agent name
+                                tool_name=tool_name,
+                                status="running",
+                                input_parameters=tool_call.get("args", {})
+                            )
+                            self._current_tool_exec_id = tool_exec_id
+                            logger.info(f"🔧 ✅ Tool execution persisted (no metrics): {tool_exec_id}")
+                    except Exception as e:
+                        logger.warning(f"🔧 Failed to persist tool execution (no metrics): {e}")
+                
+                result = await tool.ainvoke(tool_call.get("args", {}), config)
+                
+                # Update completion status
+                if self.investigation_id and hasattr(self, '_current_tool_exec_id'):
+                    try:
+                        from app.service.tool_execution_service import ToolExecutionService
+                        from app.persistence.database import get_db_session
+                        with get_db_session() as db:
+                            service = ToolExecutionService(db)
+                            output_result = result if isinstance(result, dict) else {"result": str(result)[:1000]}
+                            service.update_tool_execution_status(
+                                investigation_id=self.investigation_id,
+                                tool_exec_id=self._current_tool_exec_id,
+                                status="completed",
+                                output_result=output_result,
+                                duration_ms=0  # Unknown duration without metrics
+                            )
+                            logger.info(f"🔧 ✅ Tool execution completion persisted (no metrics)")
+                    except Exception as e:
+                        logger.warning(f"🔧 Failed to persist tool completion (no metrics): {e}")
+                
+                return result
             else:
                 raise ValueError(f"Tool {tool_name} not found")
         
@@ -276,13 +854,40 @@ class EnhancedToolNode(ToolNode):
         # Execute with retry logic
         start_time = time.time()
         last_exception = None
-        
+
         # Emit tool execution started event
         await self._emit_tool_event("tool_execution_started", tool_name, {
             "args": tool_call.get("args", {}),
             "attempt": 1,
             "max_retries": self.retry_config['max_retries']
         })
+
+        # Persist to database immediately when tool starts
+        logger.info(f"🔧 Attempting to persist tool execution: investigation_id={self.investigation_id}, tool={tool_name}")
+        if self.investigation_id:
+            try:
+                from app.service.tool_execution_service import ToolExecutionService
+                from app.persistence.database import get_db_session
+
+                logger.info(f"🔧 Getting database session for tool persistence")
+                with get_db_session() as db:
+                    logger.info(f"🔧 Database session obtained, creating ToolExecutionService")
+                    service = ToolExecutionService(db)
+                    logger.info(f"🔧 Persisting tool execution: investigation_id={self.investigation_id}, agent_name={agent_name}, tool_name={tool_name}, status=running")
+                    tool_exec_id = service.persist_tool_execution(
+                        investigation_id=self.investigation_id,
+                        agent_name=agent_name,  # Use inferred agent name from state
+                        tool_name=tool_name,
+                        status="running",
+                        input_parameters=tool_call.get("args", {})
+                    )
+                    # Store the execution ID for later update
+                    self._current_tool_exec_id = tool_exec_id
+                    logger.info(f"🔧 ✅ Tool execution persisted successfully: {tool_exec_id}")
+            except Exception as e:
+                logger.error(f"🔧 ❌ Failed to persist tool execution start to database: {e}", exc_info=True)
+        else:
+            logger.warning(f"🔧 No investigation_id provided, tool execution persistence skipped")
         
         for attempt in range(self.retry_config['max_retries']):
             try:
@@ -291,10 +896,25 @@ class EnhancedToolNode(ToolNode):
                 if not tool:
                     raise ValueError(f"Tool {tool_name} not found")
                 
+                # CRITICAL: Map snowflake_query_tool arguments to database_query arguments
+                # snowflake_query_tool uses: query, database, db_schema
+                # database_query uses: query, parameters, limit
+                tool_args = tool_call.get("args", {}).copy()
+                if tool_name == "snowflake_query_tool" and tool.name == "database_query":
+                    # Extract query from snowflake args and use it directly
+                    # Ignore database and db_schema as PostgreSQL doesn't need them
+                    mapped_args = {
+                        "query": tool_args.get("query", ""),
+                        "parameters": None,  # database_query supports optional parameters
+                        "limit": 100  # Default limit for safety
+                    }
+                    logger.info(f"🔧 Mapped snowflake_query_tool args to database_query: query length={len(mapped_args['query'])}")
+                    tool_args = mapped_args
+                
                 # Execute tool with timeout
                 result = await self._execute_with_timeout(
                     tool, 
-                    tool_call.get("args", {}), 
+                    tool_args, 
                     config
                 )
                 
@@ -328,7 +948,37 @@ class EnhancedToolNode(ToolNode):
                     "circuit_recovered": circuit_recovered,
                     "performance_warning": performance_warning
                 })
-                
+
+                # Persist successful completion to database
+                if self.investigation_id and hasattr(self, '_current_tool_exec_id'):
+                    try:
+                        from app.service.tool_execution_service import ToolExecutionService
+                        from app.persistence.database import get_db_session
+
+                        with get_db_session() as db:
+                            service = ToolExecutionService(db)
+                            # Parse result for findings and risk score
+                            output_result = {}
+                            if result:
+                                if isinstance(result, dict):
+                                    output_result = result
+                                elif isinstance(result, str):
+                                    # Try to extract meaningful data from string result
+                                    output_result = {
+                                        "result": result[:1000],  # Limit string length
+                                        "summary": sanitize_tool_result(result, max_length=200)
+                                    }
+
+                            service.update_tool_execution_status(
+                                investigation_id=self.investigation_id,
+                                tool_exec_id=self._current_tool_exec_id,
+                                status="completed",
+                                output_result=output_result,
+                                duration_ms=int(elapsed * 1000)
+                            )
+                    except Exception as e:
+                        logger.warning(f"Failed to persist tool execution completion to database: {e}")
+
                 return result
                 
             except Exception as e:
@@ -369,7 +1019,25 @@ class EnhancedToolNode(ToolNode):
                         "circuit_opened": circuit_opened,
                         "success_rate": f"{metrics.success_rate * 100:.1f}%"
                     })
-                    
+
+                    # Persist failure to database
+                    if self.investigation_id and hasattr(self, '_current_tool_exec_id'):
+                        try:
+                            from app.service.tool_execution_service import ToolExecutionService
+                            from app.persistence.database import get_db_session
+
+                            with get_db_session() as db:
+                                service = ToolExecutionService(db)
+                                service.update_tool_execution_status(
+                                    investigation_id=self.investigation_id,
+                                    tool_exec_id=self._current_tool_exec_id,
+                                    status="failed",
+                                    error_message=sanitize_exception_message(e),
+                                    duration_ms=int(elapsed * 1000)
+                                )
+                        except Exception as db_e:
+                            logger.warning(f"Failed to persist tool execution failure to database: {db_e}")
+
                     raise
                 
                 # Calculate backoff time
@@ -393,7 +1061,7 @@ class EnhancedToolNode(ToolNode):
             return f"Tool execution failed: {safe_error_msg} (after {self.retry_config['max_retries']} retries)"
     
     def _get_tool_by_name(self, name: str) -> Optional[BaseTool]:
-        """Get tool by name with input validation."""
+        """Get tool by name with input validation and name mapping."""
         if not name or not isinstance(name, str):
             logger.warning(f"🔧 Invalid tool name: {name}")
             return None
@@ -402,6 +1070,7 @@ class EnhancedToolNode(ToolNode):
         
         # Log all available tool names for debugging
         available_tools = []
+<<<<<<< HEAD
         for tool in self.tools:
             if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
                 available_tools.append(tool.name)
@@ -413,6 +1082,32 @@ class EnhancedToolNode(ToolNode):
                 return tool
         
         logger.error(f"🔧 ❌ Tool '{name}' not found in available tools: {available_tools}")
+=======
+        for tool in self.tools:
+            if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
+                available_tools.append(tool.name)
+        logger.debug(f"🔧 Available tools: {available_tools}")
+        
+        # CRITICAL: Map snowflake_query_tool to database_query when PostgreSQL is configured
+        # This handles LLM prompts that reference snowflake_query_tool but the actual tool is database_query
+        tool_name_mapping = {
+            "snowflake_query_tool": "database_query",  # Map Snowflake tool name to PostgreSQL tool name
+        }
+        
+        # Try direct match first
+        mapped_name = tool_name_mapping.get(name, name)
+        if mapped_name != name:
+            logger.info(f"🔧 Mapping tool name '{name}' -> '{mapped_name}' (PostgreSQL mode)")
+        
+        for tool in self.tools:
+            if isinstance(tool, BaseTool) and hasattr(tool, 'name'):
+                # Check both original name and mapped name
+                if tool.name == name or tool.name == mapped_name:
+                    logger.debug(f"🔧 ✅ Found matching tool: {tool.name} (requested: {name})")
+                    return tool
+        
+        logger.error(f"🔧 ❌ Tool '{name}' (mapped: '{mapped_name}') not found in available tools: {available_tools}")
+>>>>>>> 001-modify-analyzer-method
         return None
     
     async def _execute_with_timeout(self, tool: BaseTool, args: Dict[str, Any], config: Optional[RunnableConfig], timeout: float = 30.0) -> Any:
@@ -494,6 +1189,7 @@ class EnhancedToolNode(ToolNode):
                 except Exception as e:
                     logger.warning(f"Tool event handler failed: {e}")
             
+<<<<<<< HEAD
             # Emit via WebSocket if investigation_id is available
             if self.investigation_id:
                 try:
@@ -506,6 +1202,20 @@ class EnhancedToolNode(ToolNode):
                     logger.debug("WebSocket handler not available for tool events")
                 except Exception as e:
                     logger.warning(f"Failed to emit tool event via WebSocket: {e}")
+=======
+            # WebSocket emission removed per spec 005 - using polling-based updates instead
+            # if self.investigation_id:
+            #     try:
+            #         from app.router.handlers.websocket_handler import notify_websocket_connections
+            #         await notify_websocket_connections(self.investigation_id, {
+            #             "type": "tool_execution_event",
+            #             "event": event
+            #         })
+            #     except ImportError:
+            #         logger.debug("WebSocket handler not available for tool events")
+            #     except Exception as e:
+            #         logger.warning(f"Failed to emit tool event via WebSocket: {e}")
+>>>>>>> 001-modify-analyzer-method
         except Exception as e:
             logger.error(f"Critical error in _emit_tool_event: {e}")
 

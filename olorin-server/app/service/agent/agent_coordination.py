@@ -1,7 +1,11 @@
 """
 Intelligent Agent Handoff System
 
+<<<<<<< HEAD
 Advanced agent coordination system for autonomous investigations with intelligent
+=======
+Advanced agent coordination system for structured investigations with intelligent
+>>>>>>> 001-modify-analyzer-method
 handoff capabilities, cross-domain data sharing, and failure-tolerant execution.
 
 Phase 2.1: Agent Coordination & Flow Control Implementation
@@ -16,7 +20,10 @@ from enum import Enum
 from collections import defaultdict
 
 from app.service.logging import get_bridge_logger
+<<<<<<< HEAD
 from app.service.websocket_manager import AgentPhase, websocket_manager
+=======
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.journey_tracker import get_journey_tracker, NodeType, NodeStatus
 
 logger = get_bridge_logger(__name__)
@@ -93,7 +100,11 @@ class CoordinationPlan:
 
 class IntelligentAgentCoordinator:
     """
+<<<<<<< HEAD
     Intelligent Agent Handoff System for autonomous investigations.
+=======
+    Intelligent Agent Handoff System for structured investigations.
+>>>>>>> 001-modify-analyzer-method
     
     Provides smart agent selection, cross-domain data sharing, failure-tolerant
     handoffs, and performance-optimized execution coordination.
@@ -571,6 +582,7 @@ class IntelligentAgentCoordinator:
         self.performance_metrics[agent]["confidence"] = handoff_context.confidence_score
     
     async def _notify_handoff_completion(self, handoff_context: HandoffContext):
+<<<<<<< HEAD
         """Send WebSocket notification for handoff completion"""
         try:
             await websocket_manager.send_agent_phase(
@@ -581,6 +593,11 @@ class IntelligentAgentCoordinator:
             )
         except Exception as e:
             logger.warning(f"Failed to send handoff notification: {e}")
+=======
+        """WebSocket notification removed per spec 005 - using polling instead"""
+        # WebSocket notifications replaced by polling-based updates
+        pass
+>>>>>>> 001-modify-analyzer-method
     
     async def _handle_handoff_failure(self, handoff_context: HandoffContext) -> Tuple[AgentType, HandoffContext]:
         """Handle handoff failure with fallback strategy"""

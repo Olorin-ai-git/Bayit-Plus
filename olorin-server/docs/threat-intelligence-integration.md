@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Olorin fraud detection platform has been enhanced with comprehensive threat intelligence capabilities through the integration of multiple industry-leading threat intelligence providers. This integration enables autonomous agents to make more informed decisions by leveraging real-time threat data from AbuseIPDB, VirusTotal, and Shodan.
+The Olorin fraud detection platform has been enhanced with comprehensive threat intelligence capabilities through the integration of multiple industry-leading threat intelligence providers. This integration enables structured agents to make more informed decisions by leveraging real-time threat data from AbuseIPDB, VirusTotal, and Shodan.
 
 ## Architecture
 
@@ -34,7 +34,7 @@ The Olorin fraud detection platform has been enhanced with comprehensive threat 
 
 ## Tool Registry Integration
 
-All threat intelligence tools are registered in the central tool registry and accessible to autonomous agents:
+All threat intelligence tools are registered in the central tool registry and accessible to structured agents:
 
 ```python
 # Total of 12 threat intelligence tools available:
@@ -146,8 +146,8 @@ from app.service.agent.agent import tools
 threat_intel_tools = [t for t in tools if 'threat' in t.name.lower()]
 ```
 
-### Autonomous Tool Selection
-Agents use LLM-driven decision making to autonomously select appropriate threat intelligence tools based on:
+### Structured Tool Selection
+Agents use LLM-driven decision making to structuredly select appropriate threat intelligence tools based on:
 - Investigation context
 - Available data indicators
 - Specific objectives
@@ -195,7 +195,7 @@ specific_objectives = [
    - Geographic validation
 
 3. **Automated Analysis**
-   - Agents autonomously query threat intelligence
+   - Agents structuredly query threat intelligence
    - Intelligent tool selection based on context
    - Correlation across multiple data sources
 
@@ -245,4 +245,4 @@ Track API calls to manage quotas:
 
 ## Conclusion
 
-The threat intelligence integration significantly enhances Olorin's fraud detection capabilities by providing autonomous agents with real-time, multi-source threat data. This enables more accurate risk assessments, faster threat detection, and comprehensive fraud investigation capabilities.
+The threat intelligence integration significantly enhances Olorin's fraud detection capabilities by providing structured agents with real-time, multi-source threat data. This enables more accurate risk assessments, faster threat detection, and comprehensive fraud investigation capabilities.

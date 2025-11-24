@@ -838,6 +838,7 @@ export interface VisualizationError {
   stack?: string;
   recoverable: boolean;
   suggestions?: string[];
+<<<<<<< HEAD
 }
 
 // Export all types
@@ -875,3 +876,6 @@ export type {
   ValidationResult,
   VisualizationError
 };
+=======
+}
+>>>>>>> 001-modify-analyzer-method

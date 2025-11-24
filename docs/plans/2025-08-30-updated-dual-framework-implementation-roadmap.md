@@ -16,7 +16,7 @@ This roadmap provides detailed implementation steps for integrating OpenAI Agent
 - Enhanced tool ecosystem with 15+ specialized tools
 - Advanced journey tracking with `LangGraphJourneyTracker`
 - Sophisticated orchestration with `InvestigationCoordinator`
-- Claude Opus 4.1 integration via `autonomous_llm`
+- Claude Opus 4.1 integration via `structured_llm`
 - Firebase Secrets and Anthropic API integration
 
 ### Key Files and Modules to Extend
@@ -24,7 +24,7 @@ This roadmap provides detailed implementation steps for integrating OpenAI Agent
 - `/app/service/agent/patterns/registry.py` - Register OpenAI patterns
 - `/app/service/agent/tools/tool_registry.py` - Extend for OpenAI functions
 - `/app/service/agent/journey_tracker.py` - Add OpenAI tracking
-- `/app/service/agent/autonomous_agents.py` - Unified agent interface
+- `/app/service/agent/structured_agents.py` - Unified agent interface
 
 ## Phase 1: Core Infrastructure Extension (Week 1-2)
 
@@ -195,7 +195,7 @@ This roadmap provides detailed implementation steps for integrating OpenAI Agent
 ```bash
 # Files to modify:
 - /app/service/agent/agent_factory.py (if exists)
-- /app/service/agent/autonomous_agents.py
+- /app/service/agent/structured_agents.py
 ```
 
 **Tasks:**
@@ -249,7 +249,7 @@ This roadmap provides detailed implementation steps for integrating OpenAI Agent
 #### Day 1-2: Extended Investigation Context
 ```bash
 # Files to modify:
-- /app/service/agent/autonomous_context.py
+- /app/service/agent/structured_context.py
 ```
 
 **Tasks:**

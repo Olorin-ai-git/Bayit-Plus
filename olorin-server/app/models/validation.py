@@ -140,7 +140,7 @@ class ValidatedEntityType(BaseModel):
 class ValidatedAnalysisMode(BaseModel):
     """Validated analysis mode with restricted values."""
 
-    mode: Literal["manual", "autonomous"] = Field(..., description="Analysis mode")
+    mode: Literal["manual", "structured"] = Field(..., description="Analysis mode")
 
 
 class ValidatedComment(SecureString):
@@ -180,7 +180,7 @@ class ValidatedInvestigationRequest(BaseModel):
         ..., min_length=1, max_length=100, description="Investigation identifier"
     )
     time_range: str = Field(..., description="Time range for analysis")
-    mode: Optional[Literal["manual", "autonomous"]] = Field(
+    mode: Optional[Literal["manual", "structured"]] = Field(
         default="manual", description="Analysis mode"
     )
 

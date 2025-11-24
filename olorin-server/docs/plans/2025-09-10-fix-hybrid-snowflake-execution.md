@@ -162,7 +162,11 @@ async def _execute_snowflake_analysis(self, state, config) -> HybridInvestigatio
 - `/app/service/agent/orchestration/hybrid/hybrid_graph_builder.py` - Main implementation
 - `/app/service/agent/orchestration/assistant.py` - Original assistant function
 - `/app/service/agent/orchestration/hybrid/ai_confidence_engine.py` - Recommendation source
+<<<<<<< HEAD
 - `/scripts/testing/unified_autonomous_test_runner.py` - Testing framework
+=======
+- `/scripts/testing/unified_structured_test_runner.py` - Testing framework
+>>>>>>> 001-modify-analyzer-method
 
 ---
 

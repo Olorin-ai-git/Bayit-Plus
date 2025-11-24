@@ -73,7 +73,7 @@ class MultiEntityWorkflowState(TypedDict):
 
 class MultiEntityInvestigationCoordinator:
     """
-    Coordinates multi-entity autonomous investigations with LangGraph workflow integration.
+    Coordinates multi-entity structured investigations with LangGraph workflow integration.
     
     Implements the missing coordination logic for simultaneous entity investigation
     using existing LangGraph agents with cross-entity context sharing.

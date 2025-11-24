@@ -12,7 +12,7 @@ The OLORIN (Generative AI Investigation Agents) system is an intelligent fraud i
 graph TB
     subgraph "Investigation Entry Points"
         A[Manual Investigation] 
-        B[Autonomous Investigation]
+        B[Structured Investigation]
     end
     
     subgraph "Core Investigation Engine"
@@ -190,7 +190,7 @@ sequenceDiagram
 - Easy integration with existing tools
 - Granular risk assessment
 
-### Autonomous Investigation Mode
+### Structured Investigation Mode
 
 ```mermaid
 sequenceDiagram
@@ -325,7 +325,7 @@ graph LR
 
 ### Migration Strategy
 1. **Phase 1**: Deploy individual domain agents for manual investigations
-2. **Phase 2**: Implement autonomous investigation workflows
+2. **Phase 2**: Implement structured investigation workflows
 3. **Phase 3**: Integrate with existing fraud detection systems
 4. **Phase 4**: Enable real-time streaming analysis
 

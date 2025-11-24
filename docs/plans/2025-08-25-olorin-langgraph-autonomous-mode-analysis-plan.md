@@ -1,13 +1,13 @@
-# Olorin LangGraph Autonomous Mode Analysis & Implementation Plan
+# Olorin LangGraph Structured Mode Analysis & Implementation Plan
 
 **Author:** Gil Klainert  
 **Date:** 2025-08-25  
 **Status:** Planning Phase  
-**Related Diagram:** [LangGraph Autonomous Mode Architecture](../diagrams/2025-08-25-langgraph-autonomous-mode-architecture.mmd)
+**Related Diagram:** [LangGraph Structured Mode Architecture](../diagrams/2025-08-25-langgraph-structured-mode-architecture.mmd)
 
 ## Executive Summary
 
-This plan provides a comprehensive analysis of the current Olorin fraud detection system's LangGraph agents and outlines the implementation strategy to achieve true autonomous mode behavior where agents use LLM reasoning to select tools dynamically instead of predetermined tool selection.
+This plan provides a comprehensive analysis of the current Olorin fraud detection system's LangGraph agents and outlines the implementation strategy to achieve true structured mode behavior where agents use LLM reasoning to select tools dynamically instead of predetermined tool selection.
 
 ## Current Implementation Analysis
 
@@ -43,7 +43,7 @@ async def network_agent(state: MessagesState, config) -> dict:
 **Issues:**
 - ❌ **No LLM Decision Making**: Agents call predefined service classes directly
 - ❌ **No Tool Selection**: Available tools are ignored in favor of hardcoded service calls
-- ❌ **No Autonomous Reasoning**: No LLM involvement in determining investigation approach
+- ❌ **No Structured Reasoning**: No LLM involvement in determining investigation approach
 - ❌ **Fixed JSON Responses**: Return predetermined response structures without LLM analysis
 
 ### 3. Service Layer Analysis
@@ -70,11 +70,11 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
 
 **AugmentedLLMPattern Analysis:**
 - ✅ **Tool Processing**: Properly handles LLM tool calls via `_process_tool_calls()`
-- ✅ **Autonomous Execution**: LLM can decide which tools to use
+- ✅ **Structured Execution**: LLM can decide which tools to use
 - ✅ **WebSocket Integration**: Real-time progress reporting
 - ✅ **Context Augmentation**: Enhances messages with investigation context
 
-## Autonomous Mode Gaps Analysis
+## Structured Mode Gaps Analysis
 
 ### Critical Gaps Identified
 
@@ -85,20 +85,20 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
 
 2. **Domain Agents Bypass LLM Decision Making**
    - Direct service calls instead of LLM-driven analysis
-   - No opportunity for autonomous tool selection
+   - No opportunity for structured tool selection
    - Fixed investigation workflows
 
 3. **Pattern System Integration Missing**
    - Existing pattern-based system not used by main graph
-   - Domain agents don't leverage autonomous patterns
+   - Domain agents don't leverage structured patterns
    - Dual system architecture creating inconsistency
 
 4. **Tool Usage Pattern Mismatch**
-   - Tools available but not used autonomously
+   - Tools available but not used structuredly
    - Hardcoded tool selection in service layers
    - No dynamic tool selection based on investigation context
 
-## Implementation Plan for True Autonomous Mode
+## Implementation Plan for True Structured Mode
 
 ### Phase 1: Graph Architecture Refactoring (Week 1)
 
@@ -127,7 +127,7 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
   - Implement context-aware tool selection prompts
   - Add confidence scoring for LLM decisions
 
-### Phase 2: Autonomous Tool Selection Implementation (Week 2)
+### Phase 2: Structured Tool Selection Implementation (Week 2)
 
 #### 2.1 Enhanced Agent Context System
 - **Objective**: Provide rich context for LLM decision making
@@ -153,7 +153,7 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
   - Add cross-source data correlation logic
   - Enable progressive data gathering based on findings
 
-### Phase 3: Advanced Autonomous Capabilities (Week 3)
+### Phase 3: Advanced Structured Capabilities (Week 3)
 
 #### 3.1 Adaptive Investigation Workflows
 - **Objective**: Enable LLM to modify investigation approach based on findings
@@ -172,38 +172,38 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
   - Enable collaborative decision making
 
 #### 3.3 Quality Assurance and Validation
-- **Objective**: Ensure autonomous decisions meet quality standards
+- **Objective**: Ensure structured decisions meet quality standards
 - **Tasks**:
   - Implement decision validation checks
-  - Add confidence scoring for autonomous actions
+  - Add confidence scoring for structured actions
   - Create fallback mechanisms for low-confidence decisions
-  - Add audit trails for autonomous decision making
+  - Add audit trails for structured decision making
 
-## Testing Strategy for Autonomous Behavior
+## Testing Strategy for Structured Behavior
 
 ### 1. Unit Testing
 - **Tool Selection Tests**: Verify LLM selects appropriate tools for different scenarios
 - **Pattern Integration Tests**: Validate domain agents use pattern-based execution
 - **Context Processing Tests**: Ensure proper context passing between agents
-- **Error Handling Tests**: Validate fallback behavior for failed autonomous decisions
+- **Error Handling Tests**: Validate fallback behavior for failed structured decisions
 
 ### 2. Integration Testing
-- **End-to-End Investigation Tests**: Complete autonomous investigation workflows
+- **End-to-End Investigation Tests**: Complete structured investigation workflows
 - **Cross-Domain Coordination Tests**: Multi-agent collaboration scenarios  
 - **Tool Chain Tests**: Sequential tool usage driven by LLM reasoning
-- **Performance Tests**: Autonomous mode performance vs. fixed workflows
+- **Performance Tests**: Structured mode performance vs. fixed workflows
 
-### 3. Autonomous Behavior Validation
-- **Decision Quality Tests**: Compare autonomous vs. predetermined decisions
+### 3. Structured Behavior Validation
+- **Decision Quality Tests**: Compare structured vs. predetermined decisions
 - **Tool Usage Efficiency Tests**: Validate optimal tool selection
-- **Investigation Completeness Tests**: Ensure autonomous mode covers all aspects
+- **Investigation Completeness Tests**: Ensure structured mode covers all aspects
 - **Confidence Calibration Tests**: Validate LLM confidence scores accuracy
 
 ### 4. Real-World Scenario Testing
-- **Fraud Case Replay**: Test autonomous mode on historical fraud cases
-- **A/B Testing**: Compare autonomous vs. traditional investigation results
-- **Edge Case Handling**: Test autonomous behavior with incomplete data
-- **Performance Benchmarking**: Measure autonomous investigation time and accuracy
+- **Fraud Case Replay**: Test structured mode on historical fraud cases
+- **A/B Testing**: Compare structured vs. traditional investigation results
+- **Edge Case Handling**: Test structured behavior with incomplete data
+- **Performance Benchmarking**: Measure structured investigation time and accuracy
 
 ## Risk Assessment and Mitigation Strategies
 
@@ -220,16 +220,16 @@ Each domain service (NetworkAnalysisService, LocationAnalysisService, etc.) foll
    - **Fallback**: Mandatory tool validation and suggestion mechanisms
 
 3. **Investigation Quality Degradation**
-   - **Risk**: Autonomous investigations missing critical fraud indicators
+   - **Risk**: Structured investigations missing critical fraud indicators
    - **Mitigation**: Quality gates, mandatory checks, and investigation completeness validation
    - **Fallback**: Hybrid mode with mandatory predetermined checks
 
 ### Medium-Risk Areas
 
 4. **Performance Degradation**
-   - **Risk**: Autonomous mode taking longer than predetermined workflows
+   - **Risk**: Structured mode taking longer than predetermined workflows
    - **Mitigation**: Performance monitoring, timeout mechanisms, and efficiency optimizations
-   - **Fallback**: Quick mode with reduced autonomous decision making
+   - **Fallback**: Quick mode with reduced structured decision making
 
 5. **Context Loss Between Agents**
    - **Risk**: Important investigation context not properly passed between agents
@@ -272,7 +272,7 @@ class InvestigationQualityGate:
         pass
     
     def calculate_confidence(self, investigation_path: List[Dict]) -> float:
-        # Calculate confidence in autonomous investigation approach
+        # Calculate confidence in structured investigation approach
         pass
 ```
 
@@ -280,31 +280,31 @@ class InvestigationQualityGate:
 
 ### Primary Success Criteria
 
-1. **Autonomous Tool Selection Rate**: ≥95% of investigations use LLM-driven tool selection
-2. **Investigation Quality Score**: Autonomous investigations achieve ≥90% quality score vs. predetermined workflows
+1. **Structured Tool Selection Rate**: ≥95% of investigations use LLM-driven tool selection
+2. **Investigation Quality Score**: Structured investigations achieve ≥90% quality score vs. predetermined workflows
 3. **Tool Selection Accuracy**: LLM selects appropriate tools ≥85% of the time
 4. **Cross-Domain Coordination**: ≥80% of investigations show evidence of inter-agent collaboration
 
 ### Performance Metrics
 
-5. **Investigation Completion Time**: Autonomous mode completes within 150% of predetermined workflow time
+5. **Investigation Completion Time**: Structured mode completes within 150% of predetermined workflow time
 6. **Tool Call Efficiency**: Average tool calls per investigation ≤ 20
 7. **Context Passing Accuracy**: ≥95% of context is correctly passed between agents
-8. **Error Recovery Rate**: ≥90% of failed autonomous decisions recover via fallback mechanisms
+8. **Error Recovery Rate**: ≥90% of failed structured decisions recover via fallback mechanisms
 
 ### Quality Metrics
 
 9. **Fraud Detection Accuracy**: Maintain or improve fraud detection rates
 10. **False Positive Rate**: No increase in false positives compared to current system
-11. **Investigation Depth**: Autonomous investigations cover ≥100% of aspects covered by predetermined workflows
+11. **Investigation Depth**: Structured investigations cover ≥100% of aspects covered by predetermined workflows
 12. **Confidence Calibration**: LLM confidence scores correlate ≥0.8 with actual investigation quality
 
 ### Operational Metrics
 
-13. **System Stability**: ≤1% of investigations fail due to autonomous mode issues
-14. **Resource Usage**: Autonomous mode uses ≤200% of resources compared to predetermined workflows
-15. **Audit Trail Completeness**: 100% of autonomous decisions are properly logged and auditable
-16. **User Satisfaction**: Investigation analysts rate autonomous mode ≥4/5 for usefulness
+13. **System Stability**: ≤1% of investigations fail due to structured mode issues
+14. **Resource Usage**: Structured mode uses ≤200% of resources compared to predetermined workflows
+15. **Audit Trail Completeness**: 100% of structured decisions are properly logged and auditable
+16. **User Satisfaction**: Investigation analysts rate structured mode ≥4/5 for usefulness
 
 ## Implementation Timeline
 
@@ -313,7 +313,7 @@ class InvestigationQualityGate:
 - **Days 3-4**: Convert first domain agent (network_agent) to pattern-based system
 - **Days 5-7**: Testing and validation of initial implementation
 
-### Week 2: Core Autonomous Features
+### Week 2: Core Structured Features
 - **Days 1-3**: Convert remaining domain agents to pattern-based system
 - **Days 4-5**: Implement dynamic tool selection logic
 - **Days 6-7**: Comprehensive integration testing
@@ -330,10 +330,10 @@ class InvestigationQualityGate:
 
 ## Conclusion
 
-The Olorin fraud detection system has a solid foundation with LangGraph and pattern-based agents, but currently bypasses autonomous capabilities by using predetermined service calls. This plan provides a comprehensive approach to implementing true autonomous mode where LLM reasoning drives tool selection and investigation approaches.
+The Olorin fraud detection system has a solid foundation with LangGraph and pattern-based agents, but currently bypasses structured capabilities by using predetermined service calls. This plan provides a comprehensive approach to implementing true structured mode where LLM reasoning drives tool selection and investigation approaches.
 
-The key insight is that the pattern-based system already exists and provides the autonomous capabilities needed - the main task is integrating it with the current domain agents and enabling proper tool routing at the graph level.
+The key insight is that the pattern-based system already exists and provides the structured capabilities needed - the main task is integrating it with the current domain agents and enabling proper tool routing at the graph level.
 
-Success will be measured not just by technical implementation, but by improved investigation quality, efficiency, and the system's ability to adapt to new fraud patterns autonomously.
+Success will be measured not just by technical implementation, but by improved investigation quality, efficiency, and the system's ability to adapt to new fraud patterns structuredly.
 
 This implementation will transform Olorin from a fixed-workflow fraud detection system to a truly intelligent, adaptive investigation platform that can reason about fraud patterns and select the best tools and approaches for each unique case.

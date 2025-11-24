@@ -4,7 +4,11 @@
  */
 
 import { EventBusManager, eventBus } from '../../eventBus';
+<<<<<<< HEAD
 import type { EventBusEvents, AutonomousInvestigation, ManualInvestigation, User, Notification } from '../../eventBus';
+=======
+import type { EventBusEvents, StructuredInvestigation, ManualInvestigation, User, Notification } from '../../eventBus';
+>>>>>>> 001-modify-analyzer-method
 
 describe('EventBus Integration Tests', () => {
   let eventBusManager: EventBusManager;
@@ -38,7 +42,11 @@ describe('EventBus Integration Tests', () => {
       const unsubscribe = eventBusManager.subscribe('auto:investigation:started', handler, 'test-component');
       unsubscribeFunctions.push(unsubscribe);
 
+<<<<<<< HEAD
       const investigation: AutonomousInvestigation = {
+=======
+      const investigation: StructuredInvestigation = {
+>>>>>>> 001-modify-analyzer-method
         id: 'test-investigation-1',
         userId: 'user-123',
         entityType: 'user_id',
@@ -163,7 +171,11 @@ describe('EventBus Integration Tests', () => {
       eventBusManager.cleanup('test-component');
 
       // Emit events
+<<<<<<< HEAD
       eventBusManager.emit('auto:investigation:started', { investigation: {} as AutonomousInvestigation });
+=======
+      eventBusManager.emit('auto:investigation:started', { investigation: {} as StructuredInvestigation });
+>>>>>>> 001-modify-analyzer-method
       eventBusManager.emit('auto:investigation:completed', { investigationId: 'inv-1', result: {} });
       eventBusManager.emit('manual:investigation:started', { investigation: {} as ManualInvestigation });
 
@@ -205,7 +217,11 @@ describe('EventBus Integration Tests', () => {
       unsubscribeFunctions.push(unsubscribe1, unsubscribe2, unsubscribe3);
 
       // Simulate investigation workflow
+<<<<<<< HEAD
       const investigation: AutonomousInvestigation = {
+=======
+      const investigation: StructuredInvestigation = {
+>>>>>>> 001-modify-analyzer-method
         id: 'workflow-test-1',
         userId: 'user-workflow',
         entityType: 'email',

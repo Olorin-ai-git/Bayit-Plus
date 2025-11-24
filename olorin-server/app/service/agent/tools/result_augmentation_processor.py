@@ -19,7 +19,7 @@ from .result_augmentation_core import (
 )
 from .enhanced_tool_base import ToolResult
 from .rag_tool_context import ToolExecutionContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -28,7 +28,7 @@ logger = get_bridge_logger(__name__)
 async def create_augmented_result_async(
     result: ToolResult,
     context: Optional[ToolExecutionContext],
-    investigation_context: Optional[AutonomousInvestigationContext],
+    investigation_context: Optional[StructuredInvestigationContext],
     domain: Optional[str],
     config: ResultAugmentationConfig,
     start_time: float

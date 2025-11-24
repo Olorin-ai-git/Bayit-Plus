@@ -2,7 +2,7 @@
 Performance Monitoring Router for Olorin Investigation System
 
 This module provides endpoints for monitoring system performance, investigation
-metrics, and autonomous agent performance tracking with real-time data.
+metrics, and structured agent performance tracking with real-time data.
 """
 
 from fastapi import APIRouter, HTTPException, Query
@@ -85,7 +85,7 @@ async def get_performance_metrics():
                     "cpu_usage_percent": process.cpu_percent(),
                     "memory_usage_mb": process.memory_info().rss / 1024 / 1024,
                     "memory_usage_percent": (process.memory_info().rss / system_memory.total) * 100,
-                    "active_connections": len(process.connections())
+                    "active_connections": len(process.net_connections())
                 },
                 "investigation_metrics": {
                     "active_investigations": 0,

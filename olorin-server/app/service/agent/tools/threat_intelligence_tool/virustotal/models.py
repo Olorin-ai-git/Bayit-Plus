@@ -80,7 +80,7 @@ class VirusTotalIPResponse(BaseModel):
     
     # IP information
     country: Optional[str] = Field(None, description="Country code")
-    asn: Optional[int] = Field(None, description="Autonomous System Number")
+    asn: Optional[int] = Field(None, description="Structured System Number")
     as_owner: Optional[str] = Field(None, description="AS owner organization")
     
     # Reputation information

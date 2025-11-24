@@ -26,7 +26,7 @@ from app.service.agent.rag.context_augmentor import (
     ContextAugmentationConfig
 )
 from app.service.agent.rag.knowledge_base import DocumentChunk, DocumentMetadata
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
 
 
 class MockTool(BaseTool):
@@ -144,7 +144,7 @@ def mock_context_augmentor(mock_knowledge_context):
 @pytest.fixture
 def investigation_context():
     """Create investigation context for testing"""
-    return AutonomousInvestigationContext(
+    return StructuredInvestigationContext(
         investigation_id="inv_12345",
         entity_id="192.168.1.100", 
         entity_type=EntityType.IP,

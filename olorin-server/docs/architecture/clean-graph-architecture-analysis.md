@@ -21,7 +21,11 @@
 
 ## Executive Summary
 
+<<<<<<< HEAD
 The **Clean Graph Architecture** is LangGraph-based orchestration system for autonomous fraud investigation. It coordinates 52+ tools across multiple domain agents to analyze entities for fraudulent activity. However, the architecture suffers from **critical recursion bugs** that cause infinite loops in live mode, requiring immediate architectural fixes.
+=======
+The **Clean Graph Architecture** is LangGraph-based orchestration system for structured fraud investigation. It coordinates 52+ tools across multiple domain agents to analyze entities for fraudulent activity. However, the architecture suffers from **critical recursion bugs** that cause infinite loops in live mode, requiring immediate architectural fixes.
+>>>>>>> 001-modify-analyzer-method
 
 ### Key Issues Identified:
 - 🔴 **Infinite recursion loops** in live mode (100+ iterations)
@@ -802,7 +806,11 @@ elif tool_execution_attempts >= max_attempts or len(tools_used) >= 10:
 
 ## Conclusion
 
+<<<<<<< HEAD
 The Clean Graph Architecture represents a sophisticated approach to autonomous fraud investigation, but suffered from critical recursion bugs that rendered it unusable in production. The implemented fixes address the immediate architectural flaws:
+=======
+The Clean Graph Architecture represents a sophisticated approach to structured fraud investigation, but suffered from critical recursion bugs that rendered it unusable in production. The implemented fixes address the immediate architectural flaws:
+>>>>>>> 001-modify-analyzer-method
 
 ### Key Achievements
 - ✅ **Recursion Safety**: Added global loop counting and safety limits

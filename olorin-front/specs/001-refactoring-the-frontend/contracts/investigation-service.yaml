@@ -18,7 +18,11 @@ paths:
           in: query
           schema:
             type: string
+<<<<<<< HEAD
             enum: [manual, autonomous]
+=======
+            enum: [manual, structured]
+>>>>>>> 001-modify-analyzer-method
         - name: limit
           in: query
           schema:
@@ -175,7 +179,11 @@ components:
           enum: [pending, running, completed, failed]
         type:
           type: string
+<<<<<<< HEAD
           enum: [manual, autonomous]
+=======
+          enum: [manual, structured]
+>>>>>>> 001-modify-analyzer-method
         created:
           type: string
           format: date-time
@@ -309,7 +317,11 @@ components:
           enum: [user_id, email, phone, device_id]
         type:
           type: string
+<<<<<<< HEAD
           enum: [manual, autonomous]
+=======
+          enum: [manual, structured]
+>>>>>>> 001-modify-analyzer-method
         agents:
           type: array
           items:

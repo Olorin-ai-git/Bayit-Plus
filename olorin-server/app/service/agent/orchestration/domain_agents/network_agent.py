@@ -22,7 +22,11 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
     Analyzes network patterns, IP reputation, and geographic anomalies.
     """
     try:
+<<<<<<< HEAD
         is_test_mode = os.environ.get("TEST_MODE") == "mock"
+=======
+        is_test_mode = os.environ.get("TEST_MODE") == "demo"
+>>>>>>> 001-modify-analyzer-method
         start_time = time.time()
         
         logger.info("[Step 5.2.1] 🌐 Network agent analyzing investigation")
@@ -54,6 +58,7 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
         # Process Snowflake data for network patterns
         results = DomainAgentBase.process_snowflake_results(snowflake_data, "network")
         
+<<<<<<< HEAD
         if results:
             # CRITICAL FIX: Apply field whitelisting to prevent cross-domain pollution
             from app.service.agent.orchestration.domain.field_whitelist import (
@@ -71,6 +76,28 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
             # Apply whitelist filter - HARD BLOCK on MODEL_SCORE and cross-domain fields
             filtered_metrics = filter_domain_fields("network", raw_metrics)
             network_findings["metrics"].update(filtered_metrics)
+=======
+        # Log snowflake data processing for debugging
+        logger.info(f"📊 Network agent processing Snowflake data:")
+        logger.info(f"   snowflake_data type: {type(snowflake_data).__name__}")
+        if isinstance(snowflake_data, dict):
+            logger.info(f"   snowflake_data keys: {list(snowflake_data.keys())}")
+            if "results" in snowflake_data:
+                logger.info(f"   snowflake_data['results'] count: {len(snowflake_data.get('results', []))}")
+            if "row_count" in snowflake_data:
+                logger.info(f"   snowflake_data['row_count']: {snowflake_data.get('row_count')}")
+        logger.info(f"   Processed results count: {len(results) if results else 0}")
+        
+        if results:
+            # Log actual record structure for debugging
+            if results and isinstance(results[0], dict):
+                logger.info(f"📊 Sample record structure (first record):")
+                logger.info(f"   Record keys: {list(results[0].keys())[:20]}")  # Show first 20 keys
+                logger.info(f"   Sample values: {dict(list(results[0].items())[:5])}")  # Show first 5 key-value pairs
+            
+            # IMPORTANT: Analysis functions need access to ALL raw fields (ip, ip_country_code, etc.)
+            # The whitelist is applied later to filter OUTPUT metrics, not INPUT data
+>>>>>>> 001-modify-analyzer-method
             
             # Check for proxy/VPN indicators
             _analyze_vpn_proxy_indicators(results, network_findings)
@@ -83,20 +110,67 @@ async def network_agent_node(state: InvestigationState, config: Optional[Dict] =
             
             # Analyze IP diversity
             _analyze_ip_diversity(results, network_findings)
+<<<<<<< HEAD
         else:
             # Handle case where Snowflake data format is problematic
+=======
+            
+            # CRITICAL FIX: Apply field whitelisting to OUTPUT metrics only (after analysis)
+            # This prevents cross-domain pollution in the final metrics, but allows analysis functions
+            # to access all raw fields they need
+            from app.service.agent.orchestration.domain.field_whitelist import (
+                filter_domain_fields, assert_no_cross_domain_pollution
+            )
+            
+            # Filter the final metrics to ensure only whitelisted fields are included
+            raw_metrics = network_findings.get("metrics", {})
+            filtered_metrics = filter_domain_fields("network", raw_metrics)
+            network_findings["metrics"] = filtered_metrics
+            
+            # Ensure we always have some evidence - add basic transaction count if nothing else
+            if len(network_findings.get('evidence', [])) == 0:
+                logger.warning("⚠️ No evidence collected from analysis functions, adding basic transaction count")
+                network_findings["evidence"].append(f"Transaction data analyzed: {len(results)} records processed")
+                network_findings["evidence"].append("Network analysis completed on transaction dataset")
+            
+            # Log evidence collected from Snowflake data
+            logger.info(f"📊 Evidence collected from Snowflake data: {len(network_findings.get('evidence', []))} items")
+            if network_findings.get('evidence'):
+                for i, ev in enumerate(network_findings['evidence'][:5]):  # Show first 5
+                    logger.info(f"   Evidence {i+1}: {str(ev)[:100]}...")
+        else:
+            # Handle case where Snowflake data format is problematic
+            logger.warning(f"⚠️ Network agent: No results extracted from snowflake_data")
+            logger.warning(f"   snowflake_data type: {type(snowflake_data).__name__}")
+            if isinstance(snowflake_data, dict):
+                logger.warning(f"   Available keys: {list(snowflake_data.keys())}")
+>>>>>>> 001-modify-analyzer-method
             if isinstance(snowflake_data, str):
                 network_findings["risk_indicators"].append("Snowflake data in non-structured format")
         
         # Analyze threat intelligence results
         _analyze_threat_intelligence(tool_results, network_findings)
         
+<<<<<<< HEAD
         # CRITICAL: Analyze evidence with LLM to generate risk scores
+=======
+        # Log total evidence before LLM analysis
+        total_evidence = len(network_findings.get('evidence', []))
+        logger.info(f"📊 Total evidence before LLM analysis: {total_evidence} items")
+        if total_evidence == 0:
+            logger.warning(f"⚠️ Network agent: No evidence collected! Snowflake data had {snowflake_data.get('row_count', len(snowflake_data.get('results', [])))} rows but evidence list is empty")
+        
+        # CRITICAL: Analyze evidence with LLM to generate risk scores (with ALL tool results)
+>>>>>>> 001-modify-analyzer-method
         from .base import analyze_evidence_with_llm
         network_findings = await analyze_evidence_with_llm(
             domain="network",
             findings=network_findings,
             snowflake_data=snowflake_data,
+<<<<<<< HEAD
+=======
+            tool_results=tool_results,
+>>>>>>> 001-modify-analyzer-method
             entity_type=entity_type,
             entity_id=entity_id
         )
@@ -141,13 +215,22 @@ def _analyze_vpn_proxy_indicators(results: list, findings: Dict[str, Any]) -> No
                 # Check for boolean true or high score
                 if (isinstance(value, bool) and value) or (isinstance(value, (int, float)) and value > 0.5):
                     findings["risk_indicators"].append(f"VPN/Proxy detected ({col}: {value})")
+<<<<<<< HEAD
                     findings["risk_score"] += 0.25
+=======
+                    # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
+                    if "llm_risk_score" not in findings:
+                        current_score = findings.get("risk_score")
+                        if current_score is not None:
+                            findings["risk_score"] = current_score + 0.25
+>>>>>>> 001-modify-analyzer-method
                     findings["evidence"].append(f"Network traffic through VPN/Proxy service: {col}={value}")
                     break
 
 
 def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> None:
     """Analyze geographic patterns in the data."""
+<<<<<<< HEAD
     countries = set(r.get("IP_COUNTRY_CODE") for r in results if r.get("IP_COUNTRY_CODE"))
     
     if len(countries) > 3:
@@ -158,6 +241,43 @@ def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> Non
         findings["risk_indicators"].append(f"Cross-border activity ({len(countries)} countries)")
         findings["risk_score"] += 0.15
         findings["evidence"].append(f"Multi-country activity: {list(countries)}")
+=======
+    # Try multiple possible field names (uppercase, lowercase, variations)
+    countries = set()
+    for r in results:
+        country = (r.get("IP_COUNTRY_CODE") or r.get("ip_country_code") or 
+                  r.get("IP_COUNTRY") or r.get("ip_country") or
+                  r.get("country_code") or r.get("COUNTRY_CODE"))
+        if country:
+            countries.add(country)
+    
+    logger.debug(f"🌍 Geographic analysis: Found {len(countries)} unique countries: {list(countries)[:10]}")
+    
+    # Always add evidence about country count, even if it's 0 or 1
+    if len(countries) > 0:
+        findings["evidence"].append(f"Geographic analysis: {len(countries)} unique country/countries found: {list(countries)}")
+    
+    if len(countries) > 3:
+        findings["risk_indicators"].append(f"Activity from {len(countries)} different countries")
+        # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
+        if "llm_risk_score" not in findings:
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.3
+        findings["evidence"].append(f"Cross-border activity across {len(countries)} countries: {list(countries)}")
+    elif len(countries) > 1:
+        findings["risk_indicators"].append(f"Cross-border activity ({len(countries)} countries)")
+        # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
+        if "llm_risk_score" not in findings:
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.15
+        findings["evidence"].append(f"Multi-country activity: {list(countries)}")
+    elif len(countries) == 1:
+        findings["evidence"].append(f"Single country activity: {list(countries)[0]}")
+    else:
+        findings["evidence"].append("No country data available in transaction records")
+>>>>>>> 001-modify-analyzer-method
     
     # Store metrics
     findings["metrics"]["unique_countries"] = len(countries)
@@ -166,6 +286,7 @@ def _analyze_geographic_patterns(results: list, findings: Dict[str, Any]) -> Non
 
 def _analyze_ip_diversity(results: list, findings: Dict[str, Any]) -> None:
     """Analyze IP address diversity patterns."""
+<<<<<<< HEAD
     ips = set(r.get("IP") for r in results if r.get("IP"))  # Using correct column name
     findings["analysis"]["unique_ips"] = len(ips)
     findings["metrics"]["unique_ip_count"] = len(ips)
@@ -173,6 +294,31 @@ def _analyze_ip_diversity(results: list, findings: Dict[str, Any]) -> None:
     if len(ips) > 10:
         findings["risk_indicators"].append(f"High IP diversity: {len(ips)} unique IPs")
         findings["risk_score"] += 0.2
+=======
+    # Try multiple possible field names (uppercase, lowercase, variations)
+    ips = set()
+    for r in results:
+        ip = (r.get("IP") or r.get("ip") or r.get("ip_address") or 
+              r.get("IP_ADDRESS") or r.get("source_ip") or r.get("SOURCE_IP"))
+        if ip:
+            ips.add(ip)
+    
+    logger.debug(f"🌐 IP diversity analysis: Found {len(ips)} unique IPs")
+    findings["analysis"]["unique_ips"] = len(ips)
+    findings["metrics"]["unique_ip_count"] = len(ips)
+    
+    # Always add evidence about IP count, even if it's 0 or 1
+    if len(ips) > 0:
+        findings["evidence"].append(f"IP analysis: {len(ips)} unique IP address(es) found in transaction data")
+    
+    if len(ips) > 10:
+        findings["risk_indicators"].append(f"High IP diversity: {len(ips)} unique IPs")
+        # CRITICAL FIX: Only modify risk_score if LLM hasn't set it yet AND risk_score is not None
+        if "llm_risk_score" not in findings:
+            current_score = findings.get("risk_score")
+            if current_score is not None:
+                findings["risk_score"] = current_score + 0.2
+>>>>>>> 001-modify-analyzer-method
         findings["evidence"].append(f"Suspicious IP diversity pattern: {len(ips)} unique addresses")
     elif len(ips) > 5:
         findings["evidence"].append(f"Moderate IP diversity: {len(ips)} unique addresses")
@@ -288,6 +434,7 @@ def _process_threat_signals(tool_name: str, signals: Dict[str, Any], findings: D
                 threat_level -= (0.2 - normalized_score) * 0.3
                 findings["evidence"].append(f"{tool_name}: Clean reputation {key} = {value}")
     
+<<<<<<< HEAD
     # Apply risk adjustment based on threat assessment
     if threat_level > 0.5:
         # High threat detected - increase risk
@@ -299,6 +446,34 @@ def _process_threat_signals(tool_name: str, signals: Dict[str, Any], findings: D
         risk_multiplier = 1.0 + max(-0.15, threat_level * 0.2)  # threat_level is negative
         findings["risk_score"] = max(0.1, findings["risk_score"] * risk_multiplier)
         findings["evidence"].append(f"{tool_name}: Network appears clean (level: {threat_level:.2f})")
+=======
+    # CRITICAL FIX: Do NOT modify LLM risk score after LLM analysis
+    # Only apply threat adjustments BEFORE LLM analysis (during evidence collection)
+    # If LLM has already set risk_score, preserve it exactly
+    if "llm_risk_score" in findings:
+        # LLM has already analyzed - do NOT modify its score
+        logger.debug(f"[Step 5.2.1.3]   ℹ️ LLM risk score already set ({findings.get('llm_risk_score', 'N/A')}), skipping threat-level adjustments")
+        # Still add threat indicators to evidence, but don't modify score
+        if threat_level > 0.5:
+            findings["risk_indicators"].append(f"{tool_name}: High threat detected (level: {threat_level:.2f})")
+        elif threat_level < -0.3:
+            findings["evidence"].append(f"{tool_name}: Network appears clean (level: {threat_level:.2f})")
+    else:
+        # Pre-LLM analysis: Apply risk adjustment based on threat assessment
+        # CRITICAL: Only modify risk_score if it exists (no fallback scores)
+        current_score = findings.get("risk_score")
+        if current_score is not None:
+            if threat_level > 0.5:
+                # High threat detected - increase risk
+                risk_multiplier = 1.0 + min(0.2, threat_level * 0.1)
+                findings["risk_score"] = min(1.0, current_score * risk_multiplier)
+                findings["risk_indicators"].append(f"{tool_name}: High threat detected (level: {threat_level:.2f})")
+            elif threat_level < -0.3:
+                # Clean reputation - reduce risk
+                risk_multiplier = 1.0 + max(-0.15, threat_level * 0.2)  # threat_level is negative
+                findings["risk_score"] = max(0.1, current_score * risk_multiplier)
+                findings["evidence"].append(f"{tool_name}: Network appears clean (level: {threat_level:.2f})")
+>>>>>>> 001-modify-analyzer-method
     
     # Store aggregated metrics
     if evidence_count > 0:

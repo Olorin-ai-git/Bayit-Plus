@@ -103,22 +103,37 @@ Target: 60fps during interactions
 #### Event-Driven Architecture Patterns
 
 **Investigation State Management**:
+<<<<<<< HEAD
 - Central investigation state in autonomous-investigation microservice
+=======
+- Central investigation state in structured-investigation microservice
+>>>>>>> 001-modify-analyzer-method
 - Event bus communication for cross-service updates
 - Real-time WebSocket connections for live investigation updates
 
 **Communication Patterns**:
 ```typescript
 // Investigation events
+<<<<<<< HEAD
 investigation.started -> autonomous-investigation
 investigation.updated -> [visualization, reporting, core-ui]
 evidence.found -> [autonomous-investigation, visualization]
 analysis.completed -> [autonomous-investigation, reporting]
+=======
+investigation.started -> structured-investigation
+investigation.updated -> [visualization, reporting, core-ui]
+evidence.found -> [structured-investigation, visualization]
+analysis.completed -> [structured-investigation, reporting]
+>>>>>>> 001-modify-analyzer-method
 ```
 
 **Data Flow Architecture**:
 1. Investigation service manages investigation lifecycle
+<<<<<<< HEAD
 2. Autonomous-investigation microservice handles UI state
+=======
+2. Structured-investigation microservice handles UI state
+>>>>>>> 001-modify-analyzer-method
 3. Visualization components subscribe to investigation events
 4. Timeline components listen to evidence and tool events
 
@@ -286,7 +301,11 @@ test('node selection updates evidence panel', async () => {
    - Lazy load heavy dependencies
 
 3. **Architecture Approach**:
+<<<<<<< HEAD
    - Autonomous-investigation microservice as primary container
+=======
+   - Structured-investigation microservice as primary container
+>>>>>>> 001-modify-analyzer-method
    - Event-driven communication with other services
    - Shared component library for common elements
    - Centralized state management with React Query

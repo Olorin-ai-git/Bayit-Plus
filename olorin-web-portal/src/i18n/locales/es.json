@@ -146,7 +146,7 @@
     "ourServices": {
       "title": "Nuestros servicios de prevención de fraude IA",
       "subtitle": "Soluciones integrales que aprovechan la tecnología IA de vanguardia para proteger tu negocio de las amenazas de fraude en evolución.",
-      "autonomous": {
+      "structured": {
         "title": "Agentes IA autónomos",
         "description": "Despliega agentes inteligentes que trabajan 24/7 para monitorear, detectar e investigar intentos de fraude con capacidades de razonamiento de nivel humano.",
         "features": [

@@ -1,4 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
+<<<<<<< HEAD
+=======
+import { getConfig } from '@shared/config/env.config';
+import { createAxiosErrorInterceptor } from '@shared/utils/axiosErrorHandler';
+>>>>>>> 001-modify-analyzer-method
 import {
   KnowledgeBase,
   Document,
@@ -22,8 +27,14 @@ import {
   ChunkMetadata
 } from '../types/ragIntelligence';
 
+<<<<<<< HEAD
 // Base API configuration
 const API_BASE_URL = process.env.REACT_APP_RAG_API_URL || 'http://localhost:8090/api/v1/rag';
+=======
+// Load validated configuration
+const config = getConfig();
+const API_BASE_URL = `${config.api.baseUrl}/api/v1/rag`;
+>>>>>>> 001-modify-analyzer-method
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -42,6 +53,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+<<<<<<< HEAD
+=======
+// Response interceptor for error handling and toast notifications
+api.interceptors.response.use(
+  (response) => response,
+  createAxiosErrorInterceptor(true)
+);
+
+>>>>>>> 001-modify-analyzer-method
 // Knowledge Base Service
 export class KnowledgeBaseService {
   static async getKnowledgeBases(filter?: RAGFilter): Promise<KnowledgeBase[]> {
@@ -618,6 +638,7 @@ export class RAGHealthService {
   }
 }
 
+<<<<<<< HEAD
 // Export all services
 export {
   KnowledgeBaseService,
@@ -632,3 +653,5 @@ export {
   RAGEventsService,
   RAGHealthService
 };
+=======
+>>>>>>> 001-modify-analyzer-method

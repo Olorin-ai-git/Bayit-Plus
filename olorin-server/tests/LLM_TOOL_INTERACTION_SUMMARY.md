@@ -7,13 +7,13 @@ The test file `/Users/gklainert/Documents/olorin/olorin-server/tests/llm_tool_in
 ## What Was Demonstrated
 
 ### 1. LLM Receives Investigation Context ✅
-- Created `AutonomousInvestigationContext` with real fraud scenario
+- Created `StructuredInvestigationContext` with real fraud scenario
 - Investigation ID: `fraud_demo_001`
 - Entity: `user_1736943425_5678`
 - Generated rich context including available tools, objectives, and investigation parameters
 
 ### 2. LLM Decides to Use SplunkQueryTool ✅
-The LLM (mock) analyzed the context and **autonomously decided** to call the SplunkQueryTool with this sophisticated SPL query:
+The LLM (mock) analyzed the context and **structuredly decided** to call the SplunkQueryTool with this sophisticated SPL query:
 
 ```spl
 search index=security_logs user_id="user_1736943425_5678" earliest=-24h@h 
@@ -94,7 +94,7 @@ tool_result = await splunk_tool._arun(query)
 
 ## Key Findings
 
-1. **Autonomous Decision Making**: The LLM successfully analyzed the investigation context and decided to use SplunkQueryTool without being explicitly told to
+1. **Structured Decision Making**: The LLM successfully analyzed the investigation context and decided to use SplunkQueryTool without being explicitly told to
 2. **Sophisticated Query Generation**: The LLM generated a complex SPL query with risk scoring logic
 3. **Tool Integration**: The SplunkQueryTool properly executed and returned structured data
 4. **End-to-End Flow**: Complete flow from investigation prompt → tool decision → tool execution → results → analysis
@@ -102,9 +102,9 @@ tool_result = await splunk_tool._arun(query)
 ## Files Involved
 
 - **Demo Test**: `/Users/gklainert/Documents/olorin/olorin-server/tests/llm_tool_interaction_demo.py`
-- **Base Agent**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_base.py`
+- **Base Agent**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_base.py`
 - **Splunk Tool**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/tools/splunk_tool/splunk_tool.py`
-- **Investigation Context**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/autonomous_context.py`
+- **Investigation Context**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/agent/structured_context.py`
 
 ## Running the Demo
 

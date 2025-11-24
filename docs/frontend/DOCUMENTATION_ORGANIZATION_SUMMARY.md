@@ -56,11 +56,11 @@ Successfully organized **40+ documentation files** into a clean, maintainable st
 - `FRONTEND_POLLING_SPECIFICATION.md` - Polling implementation (27KB)
 - `POLLING_API_EXAMPLES.md` - Polling usage examples (11KB)
 - `POLLING_SPECIFICATION_IMPLEMENTATION_SUMMARY.md` - Implementation status (8.2KB)
-- `websocket-autonomous-mode-guide.md` - WebSocket guide (20KB)
+- `websocket-structured-mode-guide.md` - WebSocket guide (20KB)
 
 ### **🤖 Investigation & Analysis (3 files)**
 - `AUTONOMOUS_INVESTIGATION_TECHNICAL_GUIDE.md` - Technical details (17KB)
-- `autonomous-investigation-demo.md` - Demo examples (6.8KB)
+- `structured-investigation-demo.md` - Demo examples (6.8KB)
 - `OLORIN_User_Manual.md` - End-user documentation (18KB)
 
 ### **🎨 UI & Design (1 file)**

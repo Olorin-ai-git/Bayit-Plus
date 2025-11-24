@@ -3,7 +3,7 @@ Unified Logging Services for Olorin Server
 
 This package provides comprehensive logging capabilities including:
 - Unified logging system with command-line configuration
-- Autonomous investigation logging for agent workflows
+- Structured investigation logging for agent workflows
 - Multi-format support (human, JSON, structured)
 - Performance monitoring and optimization
 - Backward compatibility with existing logging patterns
@@ -13,9 +13,9 @@ Date: 2025-01-04
 Plan: /docs/plans/2025-01-04-unified-logging-system-plan.md
 """
 
-# Autonomous investigation logging (existing functionality)
+# Structured investigation logging (existing functionality)
 from .autonomous_investigation_logger import (
-    AutonomousInvestigationLogger,
+    StructuredInvestigationLogger,
     LLMInteractionLog,
     AgentDecisionLog,
     ToolExecutionLog,
@@ -23,8 +23,7 @@ from .autonomous_investigation_logger import (
     InvestigationProgressLog,
     InteractionType,
     LogLevel,
-    get_logger,
-    autonomous_investigation_logger
+    get_logger
 )
 
 # Unified logging system (new functionality)
@@ -64,10 +63,21 @@ from .cli import (
     show_logging_configuration_summary,
 )
 
+# Investigation-specific logging (new functionality)
+from .investigation_log_context import (
+    set_investigation_context,
+    get_investigation_id,
+    get_investigation_metadata,
+    clear_investigation_context,
+)
+from .investigation_log_handler import InvestigationLogHandler
+from .investigation_log_formatter import InvestigationLogFormatter
+from .investigation_log_manager import InvestigationLogManager
+
 __all__ = [
-    # Autonomous investigation logging (existing)
-    "AutonomousInvestigationLogger",
-    "LLMInteractionLog", 
+    # Structured investigation logging (existing)
+    "StructuredInvestigationLogger",
+    "LLMInteractionLog",
     "AgentDecisionLog",
     "ToolExecutionLog",
     "LangGraphNodeLog",
@@ -75,7 +85,6 @@ __all__ = [
     "InteractionType",
     "LogLevel",
     "get_logger",
-    "autonomous_investigation_logger",
     
     # Unified logging system (new)
     "UnifiedLoggingCore",
@@ -105,4 +114,13 @@ __all__ = [
     "parse_logging_args",
     "normalize_logging_args",
     "show_logging_configuration_summary",
+    
+    # Investigation-specific logging (new)
+    "set_investigation_context",
+    "get_investigation_id",
+    "get_investigation_metadata",
+    "clear_investigation_context",
+    "InvestigationLogHandler",
+    "InvestigationLogFormatter",
+    "InvestigationLogManager",
 ]

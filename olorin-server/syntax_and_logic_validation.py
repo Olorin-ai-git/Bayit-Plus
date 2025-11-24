@@ -125,7 +125,11 @@ def main():
     critical_files = [
         "app/service/agent/integration_system.py",
         "app/service/agent/orchestration/domain_agents/base.py", 
+<<<<<<< HEAD
         "app/service/agent/autonomous_orchestrator.py",
+=======
+        "app/service/agent/structured_orchestrator.py",
+>>>>>>> 001-modify-analyzer-method
         "app/service/agent/enhanced_validation.py"
     ]
     

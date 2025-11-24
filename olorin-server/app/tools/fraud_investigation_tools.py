@@ -5,6 +5,7 @@ and use real data sources for genuine fraud analysis.
 """
 
 import asyncio
+import os
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
@@ -19,6 +20,89 @@ from app.service.agent.tools.ml_ai_tools.behavioral_analysis import BehavioralAn
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
+<<<<<<< HEAD
+=======
+
+
+def _get_table_and_columns():
+    """Get table name and column names based on DATABASE_PROVIDER."""
+    from app.service.agent.tools.database_tool.database_factory import get_database_provider
+    db_provider = get_database_provider()
+    table_name = db_provider.get_full_table_name()
+    db_provider_name = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+    
+    if db_provider_name == 'snowflake':
+        return {
+            'table': table_name,
+            'email': 'EMAIL',
+            'ip': 'IP',
+            'device_id': 'DEVICE_ID',
+            'user_id': 'UNIQUE_USER_ID',
+            'datetime': 'TX_DATETIME',
+            'first_name': 'FIRST_NAME',
+            'last_name': 'LAST_NAME',
+            'phone': 'PHONE_NUMBER',
+            'country': 'IP_COUNTRY_CODE',
+            'user_agent': 'USER_AGENT',
+            'model_score': 'MODEL_SCORE',
+            'fraud': 'IS_FRAUD_TX',
+            'decision': 'NSURE_LAST_DECISION',
+            'tx_id': 'TX_ID_KEY',
+            'amount': 'PAID_AMOUNT_VALUE_IN_CURRENCY',
+            'payment_method': 'PAYMENT_METHOD',
+            'card_brand': 'CARD_BRAND'
+        }
+    else:
+        return {
+            'table': table_name,
+            'email': 'email',
+            'ip': 'ip',
+            'device_id': 'device_id',
+            'user_id': 'unique_user_id',
+            'datetime': 'tx_datetime',
+            'first_name': 'first_name',
+            'last_name': 'last_name',
+            'phone': 'phone_number',
+            'country': 'ip_country_code',
+            'user_agent': 'user_agent',
+            'model_score': 'model_score',
+            'fraud': 'is_fraud_tx',
+            'decision': 'nSure_last_decision',
+            'tx_id': 'tx_id_key',
+            'amount': 'paid_amount_value_in_currency',
+            'payment_method': 'payment_method',
+            'card_brand': 'card_brand'
+        }
+
+
+def _get_entity_column(entity_type: str) -> str:
+    """
+    Get the database column name for a given entity type.
+    Dynamically maps entity_type to the correct column name based on DATABASE_PROVIDER.
+    
+    Args:
+        entity_type: The entity type (e.g., 'ip', 'email', 'device_id', 'user_id', 'phone')
+    
+    Returns:
+        The column name for the entity type (case-sensitive based on provider)
+    """
+    cols = _get_table_and_columns()
+    entity_type_lower = (entity_type or 'ip').lower()
+    
+    # Map entity_type to column name
+    entity_column_map = {
+        'ip': cols['ip'],
+        'email': cols['email'],
+        'device': cols['device_id'],
+        'device_id': cols['device_id'],
+        'phone': cols['phone'],
+        'user_id': cols['user_id'],
+        'unique_user_id': cols['user_id']
+    }
+    
+    # Return mapped column or default to user_id column
+    return entity_column_map.get(entity_type_lower, cols['user_id'])
+>>>>>>> 001-modify-analyzer-method
 
 
 class ToolResult(BaseModel):
@@ -84,6 +168,7 @@ class TransactionAnalysisTool(BaseFraudTool):
 
         # Implement actual transaction analysis logic
         try:
+<<<<<<< HEAD
             # 1. Query transaction history from Snowflake
             snowflake_tool = SnowflakeQueryTool()
 
@@ -96,6 +181,15 @@ class TransactionAnalysisTool(BaseFraudTool):
                 query = f"SELECT * FROM TRANSACTION_DATA WHERE DEVICE_ID = '{entity_id}' ORDER BY TX_DATETIME DESC LIMIT 1000"
             else:
                 query = f"SELECT * FROM TRANSACTION_DATA WHERE UNIQUE_USER_ID = '{entity_id}' ORDER BY TX_DATETIME DESC LIMIT 1000"
+=======
+            # 1. Query transaction history using database provider
+            cols = _get_table_and_columns()
+            snowflake_tool = SnowflakeQueryTool()
+
+            # Query transactions for the entity using dynamic column mapping
+            entity_column = _get_entity_column(entity_type)
+            query = f"SELECT * FROM {cols['table']} WHERE {entity_column} = '{entity_id}' ORDER BY {cols['datetime']} DESC LIMIT 1000"
+>>>>>>> 001-modify-analyzer-method
 
             snowflake_result = await snowflake_tool.arun(query)
             transactions = json.loads(snowflake_result).get('results', [])
@@ -221,7 +315,12 @@ class AccountBehaviorTool(BaseFraudTool):
             snowflake_tool = SnowflakeQueryTool()
 
             # Get authentication and activity data
+<<<<<<< HEAD
             auth_query = f"SELECT * FROM TRANSACTION_DATA WHERE EMAIL = '{entity_id}' OR UNIQUE_USER_ID = '{entity_id}' ORDER BY TX_DATETIME DESC LIMIT 500"
+=======
+            cols = _get_table_and_columns()
+            auth_query = f"SELECT * FROM {cols['table']} WHERE {cols['email']} = '{entity_id}' OR {cols['user_id']} = '{entity_id}' ORDER BY {cols['datetime']} DESC LIMIT 500"
+>>>>>>> 001-modify-analyzer-method
             auth_result = await snowflake_tool.arun(auth_query)
             auth_data = json.loads(auth_result).get('results', [])
 
@@ -333,6 +432,7 @@ class IdentityVerificationTool(BaseFraudTool):
             snowflake_tool = SnowflakeQueryTool()
 
             # Get user profile and verification data
+<<<<<<< HEAD
             identity_query = f"""
                 SELECT UNIQUE_USER_ID, EMAIL, FIRST_NAME, LAST_NAME, PHONE_NUMBER,
                        IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT, MODEL_SCORE,
@@ -340,6 +440,16 @@ class IdentityVerificationTool(BaseFraudTool):
                 FROM TRANSACTION_DATA
                 WHERE EMAIL = '{entity_id}' OR UNIQUE_USER_ID = '{entity_id}'
                 ORDER BY TX_DATETIME DESC
+=======
+            cols = _get_table_and_columns()
+            identity_query = f"""
+                SELECT {cols['user_id']}, {cols['email']}, {cols['first_name']}, {cols['last_name']}, {cols['phone']},
+                       {cols['country']}, {cols['device_id']}, {cols['user_agent']}, {cols['model_score']},
+                       {cols['fraud']}, {cols['decision']}
+                FROM {cols['table']}
+                WHERE {cols['email']} = '{entity_id}' OR {cols['user_id']} = '{entity_id}'
+                ORDER BY {cols['datetime']} DESC
+>>>>>>> 001-modify-analyzer-method
                 LIMIT 100
             """
 
@@ -446,12 +556,22 @@ class ATODetectionTool(BaseFraudTool):
             snowflake_tool = SnowflakeQueryTool()
 
             # Get recent authentication activities
+<<<<<<< HEAD
             ato_query = f"""
                 SELECT TX_DATETIME, EMAIL, IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT,
                        IS_FRAUD_TX, MODEL_SCORE, NSURE_LAST_DECISION
                 FROM TRANSACTION_DATA
                 WHERE EMAIL = '{entity_id}' OR UNIQUE_USER_ID = '{entity_id}'
                 ORDER BY TX_DATETIME DESC
+=======
+            cols = _get_table_and_columns()
+            ato_query = f"""
+                SELECT {cols['datetime']}, {cols['email']}, {cols['ip']}, {cols['country']}, {cols['device_id']}, {cols['user_agent']},
+                       {cols['fraud']}, {cols['model_score']}, {cols['decision']}
+                FROM {cols['table']}
+                WHERE {cols['email']} = '{entity_id}' OR {cols['user_id']} = '{entity_id}'
+                ORDER BY {cols['datetime']} DESC
+>>>>>>> 001-modify-analyzer-method
                 LIMIT 200
             """
 
@@ -600,6 +720,7 @@ class FraudScoringTool(BaseFraudTool):
             # Query comprehensive transaction data for ML analysis
             snowflake_tool = SnowflakeQueryTool()
 
+<<<<<<< HEAD
             ml_query = f"""
                 SELECT TX_ID_KEY, EMAIL, IP, IP_COUNTRY_CODE, DEVICE_ID, USER_AGENT,
                        PAID_AMOUNT_VALUE_IN_CURRENCY, MODEL_SCORE, IS_FRAUD_TX,
@@ -607,6 +728,16 @@ class FraudScoringTool(BaseFraudTool):
                 FROM TRANSACTION_DATA
                 WHERE EMAIL = '{entity_id}' OR UNIQUE_USER_ID = '{entity_id}' OR IP = '{entity_id}'
                 ORDER BY TX_DATETIME DESC
+=======
+            cols = _get_table_and_columns()
+            ml_query = f"""
+                SELECT {cols['tx_id']}, {cols['email']}, {cols['ip']}, {cols['country']}, {cols['device_id']}, {cols['user_agent']},
+                       {cols['amount']}, {cols['model_score']}, {cols['fraud']},
+                       {cols['payment_method']}, {cols['card_brand']}, {cols['datetime']}
+                FROM {cols['table']}
+                WHERE {cols['email']} = '{entity_id}' OR {cols['user_id']} = '{entity_id}' OR {cols['ip']} = '{entity_id}'
+                ORDER BY {cols['datetime']} DESC
+>>>>>>> 001-modify-analyzer-method
                 LIMIT 100
             """
 
@@ -750,6 +881,7 @@ class GraphAnalysisTool(BaseFraudTool):
             snowflake_tool = SnowflakeQueryTool()
 
             # Get entities that share attributes with the target entity
+<<<<<<< HEAD
             graph_query = f"""
                 WITH target_data AS (
                     SELECT DISTINCT IP, DEVICE_ID, EMAIL, PHONE_NUMBER
@@ -765,6 +897,24 @@ class GraphAnalysisTool(BaseFraudTool):
                         t.PHONE_NUMBER = td.PHONE_NUMBER
                     )
                     WHERE t.EMAIL != '{entity_id}'
+=======
+            cols = _get_table_and_columns()
+            graph_query = f"""
+                WITH target_data AS (
+                    SELECT DISTINCT {cols['ip']}, {cols['device_id']}, {cols['email']}, {cols['phone']}
+                    FROM {cols['table']}
+                    WHERE {cols['email']} = '{entity_id}' OR {cols['user_id']} = '{entity_id}' OR {cols['ip']} = '{entity_id}'
+                ),
+                related_entities AS (
+                    SELECT t.{cols['email']}, t.{cols['ip']}, t.{cols['device_id']}, t.{cols['phone']}, t.{cols['fraud']}, t.{cols['model_score']}
+                    FROM {cols['table']} t
+                    INNER JOIN target_data td ON (
+                        t.{cols['ip']} = td.{cols['ip']} OR
+                        t.{cols['device_id']} = td.{cols['device_id']} OR
+                        t.{cols['phone']} = td.{cols['phone']}
+                    )
+                    WHERE t.{cols['email']} != '{entity_id}'
+>>>>>>> 001-modify-analyzer-method
                     LIMIT 500
                 )
                 SELECT * FROM related_entities

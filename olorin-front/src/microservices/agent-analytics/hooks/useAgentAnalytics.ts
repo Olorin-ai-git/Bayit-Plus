@@ -75,7 +75,11 @@ export function useAgentAnalytics(
   });
 
   const [currentFilters, setCurrentFilters] = useState<AnalyticsFilter | undefined>(defaultFilters);
+<<<<<<< HEAD
   const refreshIntervalRef = useRef<NodeJS.Timeout>();
+=======
+  const refreshIntervalRef = useRef<ReturnType<typeof setTimeout>>();
+>>>>>>> 001-modify-analyzer-method
   const isRealtimeActiveRef = useRef(false);
 
   // Data fetching methods
@@ -357,6 +361,10 @@ export function useAgentAnalytics(
         }
       };
     }
+<<<<<<< HEAD
+=======
+    return undefined;
+>>>>>>> 001-modify-analyzer-method
   }, [autoRefreshInterval, refreshAll, state.isLoading, state.isRefreshing]);
 
   // Auto-load data on mount

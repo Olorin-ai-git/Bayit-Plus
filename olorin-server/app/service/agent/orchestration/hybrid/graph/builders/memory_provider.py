@@ -39,8 +39,23 @@ class MemoryProvider:
             logger.info("🛡️ Using Redis memory for hybrid graph persistence")
             return memory
             
+<<<<<<< HEAD
         except Exception as e:
             logger.warning(f"Redis memory unavailable: {str(e)}")
+=======
+        except ImportError as e:
+            # Missing langgraph.checkpoint.redis module - expected in some environments
+            logger.debug(f"Redis checkpoint module unavailable: {str(e)}")
+            # Fallback to in-memory
+            memory = self._create_memory_fallback()
+            self.memory_type = "memory"
+            self.memory_instance = memory
+            logger.info("🛡️ Using in-memory storage for hybrid graph (Redis checkpoint unavailable)")
+            return memory
+        except Exception as e:
+            # Other Redis errors (connection, configuration, etc.)
+            logger.debug(f"Redis memory unavailable: {str(e)}")
+>>>>>>> 001-modify-analyzer-method
             # Fallback to in-memory
             memory = self._create_memory_fallback()
             self.memory_type = "memory"

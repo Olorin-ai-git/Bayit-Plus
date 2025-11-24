@@ -17,8 +17,8 @@ from app.service.logging import get_bridge_logger
 class MessagesState(TypedDict):
     messages: Annotated[List[BaseMessage], add_messages]
 
-from app.service.websocket_manager import AgentPhase, websocket_manager
 from app.service.agent.core import get_config_value, rehydrate_agent_context, extract_metadata
+from app.service.logging.investigation_log_context import set_investigation_context
 
 logger = get_bridge_logger(__name__)
 
@@ -72,13 +72,7 @@ async def start_investigation(state: MessagesState, config) -> dict:
     from app.models.api_models import InvestigationCreate
     from app.persistence import create_investigation
 
-    # Emit progress update: Starting investigation
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.INITIALIZATION,
-        0.1,
-        f"Starting investigation for {entity_type} {entity_id}",
-    )
+    # WebSocket progress updates removed per spec 005 - using polling instead
 
     # Create investigation record
     create_investigation(
@@ -87,18 +81,23 @@ async def start_investigation(state: MessagesState, config) -> dict:
         )
     )
     
+<<<<<<< HEAD
+=======
+    # Set investigation context for logging (ensures context is available for all async operations)
+    try:
+        set_investigation_context(investigation_id, metadata)
+        logger.info(f"Set investigation context for {investigation_id}")
+    except Exception as e:
+        logger.warning(f"Failed to set investigation context: {e}", exc_info=True)
+        # Don't fail investigation if context setting fails
+    
+>>>>>>> 001-modify-analyzer-method
     # Update metadata with investigation ID (only for legacy path)
     if agent_context is not None:
         agent_context.metadata.additional_metadata["investigation_id"] = investigation_id
         agent_context.metadata.additional_metadata["investigationId"] = investigation_id
 
-    # Emit progress update: Investigation initialized
-    await websocket_manager.broadcast_progress(
-        investigation_id,
-        AgentPhase.INITIALIZATION,
-        1.0,
-        "Investigation initialized successfully",
-    )
+    # WebSocket progress updates removed per spec 005 - using polling instead
 
     # Create initial message for investigation routing
     # Check if raw CSV data is provided in the agent context
@@ -173,24 +172,10 @@ async def update_investigation_with_raw_data(investigation_id: str, raw_data_res
         
         # Update investigation
         update_investigation(investigation_id, raw_data_update)
-        
-        # Emit progress update
-        await websocket_manager.broadcast_progress(
-            investigation_id,
-            AgentPhase.ANALYSIS,
-            0.3,
-            f"Raw data processing completed: {quality_metrics.get('quality_score', 0):.2f} quality score"
-        )
-        
+
+        # WebSocket progress updates removed per spec 005 - using polling instead
+
         logger.info(f"Updated investigation {investigation_id} with raw data results")
-        
+
     except Exception as e:
         logger.error(f"Failed to update investigation {investigation_id} with raw data: {e}")
-        
-        # Emit error progress update
-        await websocket_manager.broadcast_progress(
-            investigation_id,
-            AgentPhase.ERROR,
-            0.0,
-            f"Failed to save raw data results: {str(e)}"
-        )

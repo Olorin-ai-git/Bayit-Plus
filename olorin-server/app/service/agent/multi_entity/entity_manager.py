@@ -202,7 +202,11 @@ class EntityType(Enum):
     IP_ADDRESS_INFO = "ip_address_info"  # IP_ADDRESS_INFO
     ISP = "isp"  # ISP - Internet Service Provider
     ISP_ARRAY = "isp_array"  # ISP_ARRAY
+<<<<<<< HEAD
     ASN = "asn"  # ASN - Autonomous System Number
+=======
+    ASN = "asn"  # ASN - Structured System Number
+>>>>>>> 001-modify-analyzer-method
     
     # Time-based analysis entities
     DAYS_FROM_FIRST_EMAIL_SEEN_TO_TX = "days_from_first_email_seen_to_tx"  # DAYS_FROM_FIRST_EMAIL_SEEN_TO_TX

@@ -15,7 +15,7 @@ from .result_augmentation_core import (
 )
 from .enhanced_tool_base import ToolResult
 from .rag_tool_context import ToolExecutionContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -71,7 +71,7 @@ async def correlate_basic_patterns(
 async def generate_basic_recommendations(
     result: ToolResult,
     context: Optional[ToolExecutionContext],
-    investigation_context: Optional[AutonomousInvestigationContext],
+    investigation_context: Optional[StructuredInvestigationContext],
     max_recommendations: int
 ) -> List[NextStepRecommendation]:
     """Generate basic knowledge-based next step recommendations"""

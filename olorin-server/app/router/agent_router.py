@@ -86,9 +86,16 @@ async def agenerate_chat_response(
             # Add thread configuration if using hybrid graph
             feature_flags = get_feature_flags()
             if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+<<<<<<< HEAD
                 config["configurable"] = {"thread_id": investigation_id}
                 logger.info(f"🧠 Using Hybrid Intelligence graph for fraud investigation: {investigation_id}")
             else:
+=======
+                config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
+                logger.info(f"🧠 Using Hybrid Intelligence graph for fraud investigation: {investigation_id}")
+            else:
+                config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
+>>>>>>> 001-modify-analyzer-method
                 logger.info(f"🔄 Using Clean graph orchestration for fraud investigation: {investigation_id}")
 
             # Execute the clean graph system
@@ -143,7 +150,7 @@ async def astart_investigation(
         from app.utils.auth_utils import get_userid_and_token_from_authn_header
 
         logger.info(
-            f"Starting autonomous investigation for entity_id={entity_id}, entity_type={entity_type}"
+            f"Starting structured investigation for entity_id={entity_id}, entity_type={entity_type}"
         )
         logger.info("Imports completed successfully")
 
@@ -205,7 +212,11 @@ async def astart_investigation(
 
         # CRITICAL FIX: Use clean graph orchestration system instead of old agent service
         # This completes Option C: Remove old system and use only clean graph system
+<<<<<<< HEAD
         logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for autonomous investigation")
+=======
+        logger.info("🚀 EXECUTING CLEAN GRAPH ORCHESTRATION for structured investigation")
+>>>>>>> 001-modify-analyzer-method
 
         from app.service.agent.orchestration.hybrid.migration_utilities import (
             get_investigation_graph,
@@ -243,9 +254,16 @@ async def astart_investigation(
         # Add thread configuration if using hybrid graph
         feature_flags = get_feature_flags()
         if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+<<<<<<< HEAD
             config["configurable"] = {"thread_id": investigation_id}
             logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
         else:
+=======
+            config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
+            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
+        else:
+            config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
+>>>>>>> 001-modify-analyzer-method
             logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
 
         # Execute the clean graph system
@@ -259,7 +277,7 @@ async def astart_investigation(
         trace_id = investigation_id  # Use investigation ID as trace ID
 
         logger.info(
-            f"Autonomous investigation completed successfully with trace_id={trace_id}"
+            f"Structured investigation completed successfully with trace_id={trace_id}"
         )
 
         agent_response = AgentResponse(
@@ -270,12 +288,12 @@ async def astart_investigation(
 
     except Exception as e:
         logger.error(
-            f"Error in autonomous investigation for entity_id={entity_id}: {e}",
+            f"Error in structured investigation for entity_id={entity_id}: {e}",
             exc_info=True,
         )
         # Return a proper error response instead of letting it bubble up as 500
         from fastapi import HTTPException
 
         raise HTTPException(
-            status_code=500, detail=f"Autonomous investigation failed: {str(e)}"
+            status_code=500, detail=f"Structured investigation failed: {str(e)}"
         )

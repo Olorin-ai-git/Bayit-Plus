@@ -26,6 +26,33 @@ agents:
       prd:
         agent_url: "http://localhost:8090"
         path: "/v1/agent/invoke"
+  - name: "web_agent"
+    description: |
+      Web Domain Analysis Agent for fraud detection investigations.
+      Analyzes web-based intelligence, OSINT data, and online reputation for fraud detection.
+      Uses Composio Search and WebCrawl tools to gather web intelligence about entities.
+      Specializes in detecting threat indicators, reputation issues, and fraud patterns from web sources.
+    associated_experience_ids: []
+    framework: langgraph
+    tools:
+      - "composio_search"
+      - "composio_webcrawl"
+      - "web_search"
+      - "web_scrape"
+      - "snowflake_query_tool"
+      - "database_query"
+      - "vector_search"
+    prompt_id: ""
+    environments:
+      qal:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      e2e:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
+      prd:
+        agent_url: "http://localhost:8090"
+        path: "/v1/agent/invoke"
 tools:
   - name: "financial_knowledgebase_retriever"
     scope: "public"
@@ -145,3 +172,58 @@ tools:
     output_schema: ""
     tool_capabilities:
       is_rollback_supported: true
+  - name: "composio_search"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "web"
+      - "intelligence"
+      - "osint"
+    description: "Search the web for information using Composio Search API. Provides OSINT data, online reputation analysis, and threat intelligence. Use to find information about entities (IPs, emails, user IDs, etc.) online for fraud detection."
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "FRAUD_DETECTION"
+      - "WEB_INTELLIGENCE"
+      - "OSINT"
+      - "COMPOSIO"
+      - "SEARCH"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: false
+  - name: "composio_webcrawl"
+    scope: "public"
+    response_type: "sync"
+    tool_category_list:
+      - "web"
+      - "intelligence"
+      - "osint"
+    description: "Crawl and extract content from web pages using Composio FireCrawl API. Provides deep web crawling capabilities for fraud investigation. Use to crawl suspicious URLs or websites related to entities being investigated. Supports depth control and link extraction."
+    environments:
+      qal:
+        tool_url: "http://localhost:8090"
+      e2e:
+        tool_url: "http://localhost:8090"
+      prd:
+        tool_url: "http://localhost:8090"
+    tags:
+      - "FRAUD_DETECTION"
+      - "WEB_INTELLIGENCE"
+      - "OSINT"
+      - "COMPOSIO"
+      - "FIRECRAWL"
+      - "CRAWL"
+    auth: "PrivateAuth"
+    protocol: "mcp"
+    input_schema: ""
+    output_schema: ""
+    tool_capabilities:
+      is_rollback_supported: false

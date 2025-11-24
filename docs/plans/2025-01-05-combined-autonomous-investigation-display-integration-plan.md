@@ -1,14 +1,14 @@
-# Combined Autonomous Investigation Display Integration Plan
+# Combined Structured Investigation Display Integration Plan
 
 **Author**: Gil Klainert  
 **Date**: 2025-01-05  
 **Project**: Olorin Fraud Detection Platform  
-**Plan ID**: plan-2025-01-05-combined-autonomous-investigation-display-integration  
+**Plan ID**: plan-2025-01-05-combined-structured-investigation-display-integration  
 **Architecture Diagram**: [Combined Display Architecture](/docs/diagrams/combined-display-architecture-2025-01-05.md)
 
 ## Executive Summary
 
-This implementation plan transforms the existing `combined-autonomous-investigation-display.html` into a cutting-edge React component system for the Olorin fraud detection platform. The plan focuses on creating a clean, performant autonomous investigation interface featuring Neural Network Flow visualization, Interactive Graph representation, and Command Terminal with typewriter effects - all integrated with the existing WebSocket infrastructure for real-time updates.
+This implementation plan transforms the existing `combined-structured-investigation-display.html` into a cutting-edge React component system for the Olorin fraud detection platform. The plan focuses on creating a clean, performant structured investigation interface featuring Neural Network Flow visualization, Interactive Graph representation, and Command Terminal with typewriter effects - all integrated with the existing WebSocket infrastructure for real-time updates.
 
 ## Current State Analysis
 
@@ -22,17 +22,17 @@ This implementation plan transforms the existing `combined-autonomous-investigat
 - **Responsive Design**: Mobile-optimized with adaptive layouts and touch interactions
 
 **WebSocket Infrastructure:**
-- **AutonomousInvestigationClient.ts**: Comprehensive WebSocket client with event handlers
+- **StructuredInvestigationClient.ts**: Comprehensive WebSocket client with event handlers
 - **Investigation Events**: onPhaseUpdate, onStatusUpdate, onError, onComplete, onCancelled
 - **Real-time Updates**: Live agent coordination and investigation progress streaming
 - **Demo Mode Support**: Simulation capabilities for development and testing
 
 ### 🎯 TRANSFORMATION OBJECTIVE
 
-**Primary Goal:** Convert sophisticated HTML display components into modular React architecture with seamless WebSocket integration, creating a production-ready autonomous investigation visualization system.
+**Primary Goal:** Convert sophisticated HTML display components into modular React architecture with seamless WebSocket integration, creating a production-ready structured investigation visualization system.
 
 **Strategic Focus:**
-1. **Clean Architecture**: No RAG components - focus purely on core autonomous investigation display
+1. **Clean Architecture**: No RAG components - focus purely on core structured investigation display
 2. **Performance Excellence**: Maintain <100ms component load times with smooth 60fps animations
 3. **Modular Design**: Each component ≤200 lines, following established architectural patterns
 4. **WebSocket Integration**: Real-time investigation updates with existing event system
@@ -42,8 +42,8 @@ This implementation plan transforms the existing `combined-autonomous-investigat
 ### Component Structure
 
 ```typescript
-src/components/autonomous/display/
-├── CombinedAutonomousInvestigationDisplay.tsx    // Main orchestrator component
+src/components/structured/display/
+├── CombinedStructuredInvestigationDisplay.tsx    // Main orchestrator component
 ├── neural-network/
 │   ├── NeuralNetworkFlow.tsx                     // Neural network visualization
 │   ├── NeuralNode.tsx                           // Individual neural nodes  
@@ -167,7 +167,7 @@ src/components/autonomous/display/
 
 **Tasks:**
 
-1. **CombinedAutonomousInvestigationDisplay.tsx** (Day 3)
+1. **CombinedStructuredInvestigationDisplay.tsx** (Day 3)
    - Main orchestrator component integration
    - State management coordination across all sub-components
    - WebSocket event distribution and processing
@@ -269,7 +269,7 @@ const eventMappings = {
 
 ### Week 2: Integration & Polish  
 - [ ] CommandTerminal.tsx with typewriter effects
-- [ ] CombinedAutonomousInvestigationDisplay.tsx main orchestrator
+- [ ] CombinedStructuredInvestigationDisplay.tsx main orchestrator
 - [ ] Complete WebSocket event integration
 - [ ] Performance optimization and testing
 - [ ] Mobile-responsive design validation
@@ -291,7 +291,7 @@ const eventMappings = {
 ### Strategic Business Impact
 - **Investigation Efficiency**: 30% faster fraud detection with visual coordination
 - **Analyst Productivity**: Enhanced understanding of multi-agent investigation flow
-- **System Transparency**: Complete visibility into autonomous investigation process
+- **System Transparency**: Complete visibility into structured investigation process
 - **Competitive Advantage**: Industry-leading investigation visualization
 
 ## Risk Mitigation
@@ -329,7 +329,7 @@ const eventMappings = {
 
 ## Conclusion
 
-This Combined Autonomous Investigation Display Integration Plan provides a comprehensive roadmap for transforming existing HTML visualization into a production-ready React component system. By focusing on clean architecture, performance optimization, and seamless WebSocket integration, we create an industry-leading autonomous investigation visualization platform.
+This Combined Structured Investigation Display Integration Plan provides a comprehensive roadmap for transforming existing HTML visualization into a production-ready React component system. By focusing on clean architecture, performance optimization, and seamless WebSocket integration, we create an industry-leading structured investigation visualization platform.
 
 **Key Achievements:**
 - ✅ Complete conversion of sophisticated HTML displays to modular React architecture
@@ -338,7 +338,7 @@ This Combined Autonomous Investigation Display Integration Plan provides a compr
 - ✅ Comprehensive testing and mobile-responsive design
 - ✅ Clean separation from RAG components for focused functionality
 
-**Production Impact**: This implementation establishes Olorin as the leader in autonomous investigation visualization, providing unparalleled transparency into multi-agent fraud detection processes while maintaining exceptional performance and user experience.
+**Production Impact**: This implementation establishes Olorin as the leader in structured investigation visualization, providing unparalleled transparency into multi-agent fraud detection processes while maintaining exceptional performance and user experience.
 
 ---
 
@@ -347,4 +347,4 @@ This Combined Autonomous Investigation Display Integration Plan provides a compr
 **Resource Requirements**: 2 weeks, 2 senior developers, 1 technical lead  
 **Expected ROI**: 30% improvement in investigation efficiency, enhanced analyst productivity
 
-The foundation is solid, the architecture is proven, and the path forward is clear. This plan delivers the world's most advanced autonomous investigation display system.
+The foundation is solid, the architecture is proven, and the path forward is clear. This plan delivers the world's most advanced structured investigation display system.

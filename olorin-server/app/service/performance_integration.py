@@ -65,7 +65,7 @@ class PerformanceMonitor:
         
         self.running = True
         self.monitor_task = asyncio.create_task(self._monitoring_loop())
-        logger.info("Performance monitoring started")
+        logger.debug("Performance monitoring started")
     
     async def stop_monitoring(self):
         """Stop performance monitoring."""
@@ -76,7 +76,7 @@ class PerformanceMonitor:
                 await self.monitor_task
             except asyncio.CancelledError:
                 pass
-        logger.info("Performance monitoring stopped")
+        logger.debug("Performance monitoring stopped")
     
     async def _monitoring_loop(self):
         """Main monitoring loop."""
@@ -109,7 +109,7 @@ class PerformanceMonitor:
                 cpu_usage_percent=process.cpu_percent(),
                 memory_usage_mb=process.memory_info().rss / 1024 / 1024,
                 memory_usage_percent=(process.memory_info().rss / system.total) * 100,
-                active_connections=len(process.connections()),
+                active_connections=len(process.net_connections()),
             )
             
             # Get cache metrics if available
@@ -174,7 +174,11 @@ class ConnectionPoolManager:
     async def initialize_redis_pool(self) -> bool:
         """Initialize Redis connection pool."""
         try:
+<<<<<<< HEAD
             logger.info(f"Attempting to connect to Redis at {self.config.redis_host}:{self.config.redis_port}...")
+=======
+            logger.debug(f"Attempting to connect to Redis at {self.config.redis_host}:{self.config.redis_port}...")
+>>>>>>> 001-modify-analyzer-method
 
             self.redis_pool = redis.ConnectionPool(
                 host=self.config.redis_host,
@@ -194,6 +198,7 @@ class ConnectionPoolManager:
             await asyncio.wait_for(redis_client.ping(), timeout=3.0)
             await redis_client.aclose()
 
+<<<<<<< HEAD
             logger.info(f"✅ Redis connection pool initialized ({self.config.connection_pool_size} connections)")
             return True
 
@@ -203,6 +208,17 @@ class ConnectionPoolManager:
             return False
         except Exception as e:
             logger.info(f"❌ Redis not available, continuing without Redis caching: {e}")
+=======
+            logger.debug(f"✅ Redis connection pool initialized ({self.config.connection_pool_size} connections)")
+            return True
+
+        except asyncio.TimeoutError:
+            logger.debug("⏰ Redis connection timeout - continuing without Redis caching")
+            self.redis_pool = None
+            return False
+        except Exception as e:
+            logger.debug(f"❌ Redis not available, continuing without Redis caching: {e}")
+>>>>>>> 001-modify-analyzer-method
             self.redis_pool = None
             return False
     
@@ -217,7 +233,7 @@ class ConnectionPoolManager:
         if self.redis_pool:
             await self.redis_pool.disconnect()
             self.redis_pool = None
-            logger.info("Redis connection pool closed")
+            logger.debug("Redis connection pool closed")
 
 
 class PerformanceOptimizationManager:
@@ -241,7 +257,7 @@ class PerformanceOptimizationManager:
     async def initialize(self) -> Dict[str, Any]:
         """Initialize performance optimization system."""
         try:
-            logger.info("Initializing performance optimization system...")
+            logger.debug("Initializing performance optimization system...")
             
             # Initialize Redis connection pool
             redis_initialized = await self.connection_manager.initialize_redis_pool()
@@ -281,7 +297,7 @@ class PerformanceOptimizationManager:
                 "timestamp": datetime.now().isoformat()
             }
             
-            logger.info("Performance optimization system initialized successfully")
+            logger.debug("Performance optimization system initialized successfully")
             return result
             
         except Exception as e:
@@ -315,7 +331,7 @@ class PerformanceOptimizationManager:
                 redis_client=redis_client
             )
             
-            logger.info("Cache system initialized successfully")
+            logger.debug("Cache system initialized successfully")
             
         except Exception as e:
             logger.error(f"Failed to initialize cache system: {e}")
@@ -324,7 +340,7 @@ class PerformanceOptimizationManager:
     async def shutdown(self) -> Dict[str, Any]:
         """Shutdown performance optimization system."""
         try:
-            logger.info("Shutting down performance optimization system...")
+            logger.debug("Shutting down performance optimization system...")
             
             # Stop monitoring
             if self.monitor:
@@ -352,7 +368,7 @@ class PerformanceOptimizationManager:
                 "timestamp": datetime.now().isoformat()
             }
             
-            logger.info("Performance optimization system shutdown completed")
+            logger.debug("Performance optimization system shutdown completed")
             return result
             
         except Exception as e:

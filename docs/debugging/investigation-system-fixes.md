@@ -6,7 +6,11 @@
 
 ## Root Cause Analysis Summary
 
+<<<<<<< HEAD
 After systematic debugging, I've identified the core issues causing the autonomous investigation system failures:
+=======
+After systematic debugging, I've identified the core issues causing the structured investigation system failures:
+>>>>>>> 001-modify-analyzer-method
 
 ### ✅ WORKING COMPONENTS
 1. **Tool Registry**: Successfully loads 19 tools including all critical ones

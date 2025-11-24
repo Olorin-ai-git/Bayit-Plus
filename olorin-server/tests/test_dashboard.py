@@ -20,10 +20,10 @@ class TestDashboard:
     def __init__(self):
         self.test_root = Path(__file__).parent
         self.categories = {
-            "autonomous": {
-                "description": "Autonomous investigation tests",
+            "structured": {
+                "description": "Structured investigation tests",
                 "files": [],
-                "featured_command": "poetry run python tests/autonomous/run_all_scenarios.py"
+                "featured_command": "poetry run python tests/structured/run_all_scenarios.py"
             },
             "patterns": {
                 "description": "Pattern-specific tests",
@@ -108,9 +108,9 @@ class TestDashboard:
         print(f"   poetry run pytest tests/ -v --cov=app")
         print()
     
-    def display_autonomous_scenarios(self):
-        """Display available autonomous investigation scenarios."""
-        print("🔍 Autonomous Investigation Scenarios:")
+    def display_structured_scenarios(self):
+        """Display available structured investigation scenarios."""
+        print("🔍 Structured Investigation Scenarios:")
         print("=" * 50)
         
         scenarios = [
@@ -131,10 +131,10 @@ class TestDashboard:
         
         print()
         print("Run all scenarios:")
-        print("   poetry run python tests/autonomous/run_all_scenarios.py")
+        print("   poetry run python tests/structured/run_all_scenarios.py")
         print()
         print("Run specific scenarios (e.g., 1, 3, 5):")
-        print("   poetry run python tests/autonomous/run_all_scenarios.py --scenarios 1 3 5")
+        print("   poetry run python tests/structured/run_all_scenarios.py --scenarios 1 3 5")
         print()
     
     def display_tool_integration(self):
@@ -167,10 +167,10 @@ class TestDashboard:
         print("=" * 50)
         
         quick_commands = [
-            ("Run all autonomous scenarios", 
-             "poetry run python tests/autonomous/run_all_scenarios.py"),
-            ("Run enhanced autonomous test", 
-             "poetry run python tests/autonomous/enhanced_autonomous_investigation_test.py"),
+            ("Run all structured scenarios", 
+             "poetry run python tests/structured/run_all_scenarios.py"),
+            ("Run enhanced structured test", 
+             "poetry run python tests/structured/enhanced_structured_investigation_test.py"),
             ("Test multi-tool integration", 
              "poetry run python tests/tools/multi_tool_demo.py"),
             ("Run OpenAI pattern tests", 
@@ -193,13 +193,13 @@ class TestDashboard:
             print("=" * 80)
             
             menu_options = [
-                "1. Run all autonomous scenarios",
-                "2. Run specific autonomous scenario",
+                "1. Run all structured scenarios",
+                "2. Run specific structured scenario",
                 "3. Test multi-tool integration", 
                 "4. Run pattern tests",
                 "5. Run all tests with coverage",
                 "6. Show test structure",
-                "7. Show autonomous scenarios",
+                "7. Show structured scenarios",
                 "8. Show tool integrations",
                 "0. Exit"
             ]
@@ -214,11 +214,11 @@ class TestDashboard:
                     print("👋 Goodbye!")
                     break
                 elif choice == "1":
-                    self.run_command("poetry run python tests/autonomous/run_all_scenarios.py")
+                    self.run_command("poetry run python tests/structured/run_all_scenarios.py")
                 elif choice == "2":
                     scenario_id = input("Enter scenario ID (1-10): ").strip()
                     if scenario_id.isdigit() and 1 <= int(scenario_id) <= 10:
-                        self.run_command(f"poetry run python tests/autonomous/run_all_scenarios.py --scenarios {scenario_id}")
+                        self.run_command(f"poetry run python tests/structured/run_all_scenarios.py --scenarios {scenario_id}")
                     else:
                         print("❌ Invalid scenario ID")
                 elif choice == "3":
@@ -230,7 +230,7 @@ class TestDashboard:
                 elif choice == "6":
                     self.display_structure()
                 elif choice == "7":
-                    self.display_autonomous_scenarios()
+                    self.display_structured_scenarios()
                 elif choice == "8":
                     self.display_tool_integration()
                 else:
@@ -274,7 +274,7 @@ def main():
     # Show structure overview
     dashboard.display_structure()
     dashboard.display_featured_commands()
-    dashboard.display_autonomous_scenarios()
+    dashboard.display_structured_scenarios()
     dashboard.display_tool_integration()
     dashboard.show_quick_start()
     

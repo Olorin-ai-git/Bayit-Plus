@@ -12,7 +12,7 @@ Design and implement a dual-framework architecture for the Olorin fraud detectio
 ## Current State Analysis
 
 ### LangGraph Implementation (Current)
-- **Autonomous Investigation System**: Complex multi-agent orchestration with autonomous decision-making
+- **Structured Investigation System**: Complex multi-agent orchestration with structured decision-making
 - **Agent Types**: Device, Network, Location, Logs, Risk Assessment, and Anomaly Detection agents
 - **Execution Patterns**: Parallel and sequential agent graph execution
 - **WebSocket Integration**: Real-time streaming updates during investigations
@@ -86,7 +86,7 @@ class FrameworkConfig:
     
     # Feature Flags
     enable_parallel_execution: bool = True
-    enable_autonomous_mode: bool = True
+    enable_structured_mode: bool = True
     enable_tool_validation: bool = True
     
     # Performance Settings
@@ -98,7 +98,7 @@ class FrameworkConfig:
 #### Environment-Based Configuration
 - `OLORIN_AGENT_FRAMEWORK`: Default framework selection
 - `OLORIN_AGENT_PARALLEL_MODE`: Enable/disable parallel execution
-- `OLORIN_AGENT_AUTONOMOUS_MODE`: Enable/disable autonomous investigations
+- `OLORIN_AGENT_AUTONOMOUS_MODE`: Enable/disable structured investigations
 - Agent-specific overrides via configuration files
 
 ### 3. Unified Agent Interface and Factory

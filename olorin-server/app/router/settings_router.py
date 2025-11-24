@@ -23,56 +23,47 @@ def get_default_agents() -> List[str]:
 
 def get_default_agent_tools_mapping() -> Dict[str, List[str]]:
     """
-    Get the default mapping of agents to their tools.
-    By default, all agents have access to all available tools.
-    Users can customize this mapping in their settings.
+    Get the default mapping of agents to their tools with .env filtering.
+
+    Returns agent-specific tool mappings defined in agent_tools_config.py.
+    Tools disabled via USE_*_TOOL=false environment variables are excluded.
+
+    Raises:
+        RuntimeError: If configuration cannot be loaded (FAIL FAST - no fallbacks)
+
+    Returns:
+        Dictionary mapping agent names to lists of enabled tool names
     """
-    # Fallback tool list if registry is not available
-    fallback_tools = [
-        "http_request",
-        "json_api",
-        "web_search",
-        "web_scrape",
-        "file_read",
-        "file_write",
-        "file_search",
-        "directory_list",
-        "database_query",
-        "database_schema",
-        "splunk_query",
-        "vector_search",
-    ]
+    # Import agent tools configuration
+    from app.config.agent_tools_config import get_filtered_agent_tools_mapping
 
-    agents = get_default_agents()
+    # Get filtered mapping (excludes tools disabled in .env)
+    agent_tools_mapping = get_filtered_agent_tools_mapping()
 
-    try:
-        # Import tool registry for agent-tools mapping
-        from app.service.agent.tools.tool_registry import tool_registry
-
-        # Initialize tool registry if not already initialized
-        if not tool_registry.is_initialized():
-            try:
-                tool_registry.initialize()
-            except Exception as e:
-                logger.warning(f"Could not initialize tool registry: {e}")
-                # Return fallback mapping with all fallback tools for each agent
-                return {agent: fallback_tools.copy() for agent in agents}
-
-        # Get all available tool names from registry
-        all_available_tools = tool_registry.get_tool_names()
-
-        # By default, all agents get access to all available tools
-        agent_tools_mapping = {agent: all_available_tools.copy() for agent in agents}
-
-        logger.info(
-            f"Assigned {len(all_available_tools)} tools to each of {len(agents)} agents by default"
+    # Validate mapping is not empty
+    if not agent_tools_mapping:
+        raise RuntimeError(
+            "Agent-tools mapping is empty - refusing to start. "
+            "Check app/config/agent_tools_config.py configuration."
         )
-        return agent_tools_mapping
 
-    except Exception as e:
-        logger.warning(f"Could not access tool registry: {e}. Using fallback mapping.")
-        # Return fallback mapping with all fallback tools for each agent
-        return {agent: fallback_tools.copy() for agent in agents}
+    # Validate each agent has at least one tool
+    for agent, tools in agent_tools_mapping.items():
+        if not tools:
+            raise RuntimeError(
+                f"Agent '{agent}' has no enabled tools - refusing to start. "
+                f"Check .env configuration for USE_*_TOOL settings."
+            )
+
+    logger.info(
+        f"Loaded agent-tools mapping for {len(agent_tools_mapping)} agents with .env filtering"
+    )
+
+    # Log details for each agent
+    for agent, tools in agent_tools_mapping.items():
+        logger.debug(f"Agent '{agent}': {len(tools)} enabled tools")
+
+    return agent_tools_mapping
 
 
 def get_tool_display_names() -> Dict[str, str]:

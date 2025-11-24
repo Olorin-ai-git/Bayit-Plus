@@ -9,7 +9,7 @@ from typing import List, Optional
 from langchain_core.tools import BaseTool
 
 from app.service.agent.tools.tool_registry import tool_registry, get_tools_for_agent
-from app.service.agent.autonomous_context import AutonomousInvestigationContext
+from app.service.agent.autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 # RAG imports with graceful fallback
@@ -56,7 +56,7 @@ def get_tool_recommender() -> Optional[KnowledgeBasedToolRecommender]:
 
 
 async def get_enhanced_tools_for_agent(
-    investigation_context: AutonomousInvestigationContext,
+    investigation_context: StructuredInvestigationContext,
     domain: str,
     categories: Optional[List[str]] = None,
     tool_names: Optional[List[str]] = None,
@@ -110,7 +110,7 @@ async def get_enhanced_tools_for_agent(
 
 
 async def get_tool_recommendations_with_reasoning(
-    investigation_context: AutonomousInvestigationContext,
+    investigation_context: StructuredInvestigationContext,
     domain: str,
     strategy: ToolRecommendationStrategy = ToolRecommendationStrategy.HYBRID,
     categories: Optional[List[str]] = None
@@ -176,7 +176,7 @@ class EnhancedAgentToolSelection:
     """
     
     @staticmethod
-    async def get_risk_agent_tools(investigation_context: AutonomousInvestigationContext) -> List[BaseTool]:
+    async def get_risk_agent_tools(investigation_context: StructuredInvestigationContext) -> List[BaseTool]:
         """Example: Enhanced tool selection for risk agent"""
         
         # Standard categories for risk agent
@@ -191,7 +191,7 @@ class EnhancedAgentToolSelection:
         )
     
     @staticmethod
-    async def get_network_agent_tools(investigation_context: AutonomousInvestigationContext) -> List[BaseTool]:
+    async def get_network_agent_tools(investigation_context: StructuredInvestigationContext) -> List[BaseTool]:
         """Example: Enhanced tool selection for network agent"""
         
         network_categories = ["threat_intelligence", "intelligence", "search", "api"]
@@ -204,7 +204,7 @@ class EnhancedAgentToolSelection:
         )
     
     @staticmethod
-    async def get_logs_agent_tools(investigation_context: AutonomousInvestigationContext) -> List[BaseTool]:
+    async def get_logs_agent_tools(investigation_context: StructuredInvestigationContext) -> List[BaseTool]:
         """Example: Enhanced tool selection for logs agent"""
         
         logs_categories = ["olorin", "database", "search", "ml_ai"]
@@ -238,14 +238,14 @@ def get_tool_recommender_stats() -> dict:
 """
 # In your agent function (e.g., risk_agent.py):
 
-async def autonomous_risk_agent(state, config) -> dict:
+async def structured_risk_agent(state, config) -> dict:
     # ... existing code for context creation ...
     
     # Enhanced tool selection with RAG recommendations
     from app.service.agent.rag.tool_integration_example import get_enhanced_tools_for_agent
     
     tools = await get_enhanced_tools_for_agent(
-        investigation_context=autonomous_context,
+        investigation_context=structured_context,
         domain="risk",
         categories=["olorin", "search", "database", "threat_intelligence", "ml_ai"],
         use_rag_recommendations=True
@@ -257,7 +257,7 @@ async def autonomous_risk_agent(state, config) -> dict:
     from app.service.agent.rag.tool_integration_example import get_tool_recommendations_with_reasoning
     
     recommendations = await get_tool_recommendations_with_reasoning(
-        investigation_context=autonomous_context,
+        investigation_context=structured_context,
         domain="risk"
     )
     

@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Set, Union
 
 from .knowledge_base import DocumentChunk, KnowledgeBase
 from .rag_orchestrator import RAGOrchestrator, RAGRequest
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -114,7 +114,7 @@ class ContextAugmentor:
         
     async def augment_investigation_context(
         self,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         specific_objectives: Optional[List[str]] = None
     ) -> KnowledgeContext:
@@ -300,7 +300,7 @@ IMPORTANT: Use the provided knowledge context to enhance your analysis.
     
     async def _generate_domain_queries(
         self,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         specific_objectives: Optional[List[str]] = None
     ) -> List[str]:
@@ -375,7 +375,7 @@ IMPORTANT: Use the provided knowledge context to enhance your analysis.
     async def _retrieve_domain_knowledge(
         self,
         query: str,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str
     ) -> List[DocumentChunk]:
         """Retrieve knowledge chunks for a specific query"""
@@ -410,7 +410,7 @@ IMPORTANT: Use the provided knowledge context to enhance your analysis.
     async def _categorize_knowledge_by_relevance(
         self,
         chunks: List[DocumentChunk],
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         queries: List[str]
     ) -> KnowledgeContext:
@@ -460,7 +460,7 @@ IMPORTANT: Use the provided knowledge context to enhance your analysis.
     async def _calculate_chunk_relevance(
         self,
         chunk: DocumentChunk,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str,
         queries: List[str]
     ) -> float:
@@ -510,7 +510,7 @@ IMPORTANT: Use the provided knowledge context to enhance your analysis.
     async def _apply_domain_filters(
         self,
         knowledge_context: KnowledgeContext,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         domain: str
     ) -> KnowledgeContext:
         """Apply domain-specific filtering to knowledge context"""

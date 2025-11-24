@@ -163,26 +163,50 @@ class PerformanceTrackingMiddleware(BaseHTTPMiddleware):
         method = request_info["method"]
         path = request_info["path"]
         
+        # Structured logging for API endpoint requests/responses
+        log_extra = {
+            "event_type": "api_request_response",
+            "method": method,
+            "path": path,
+            "status_code": status_code,
+            "duration_ms": duration_ms,
+            "duration_seconds": duration_ms / 1000,
+            "client_host": request_info.get('client_host', 'unknown'),
+            "user_agent": request_info.get('user_agent', 'unknown'),
+            "request_id": request_info.get('request_id', 'unknown'),
+            "error_occurred": request_info.get("error_occurred", False)
+        }
+        
+        # Add size information if available
+        if self.enable_size_tracking:
+            log_extra["request_size_bytes"] = request_info.get("request_size_bytes", 0)
+            log_extra["response_size_bytes"] = request_info.get("response_size_bytes", 0)
+        
         # Always log slow requests
         if duration_ms > self.alert_threshold_ms:
             logger.warning(
-                f"Slow request: {method} {path} - "
-                f"{duration_ms:.2f}ms (status: {status_code})"
+                f"Slow request: {method} {path} - {duration_ms:.2f}ms (status: {status_code})",
+                extra={**log_extra, "alert_type": "slow_request"}
             )
         
         # Log errors
         if request_info.get("error_occurred") or status_code >= 400:
             logger.error(
-                f"Request error: {method} {path} - "
-                f"{duration_ms:.2f}ms (status: {status_code})"
+                f"Request error: {method} {path} - {duration_ms:.2f}ms (status: {status_code})",
+                extra={**log_extra, "alert_type": "request_error"}
             )
         
         # Detailed logging if enabled
         if self.enable_detailed_logging:
             logger.info(
-                f"Request: {method} {path} - "
-                f"{duration_ms:.2f}ms (status: {status_code}) - "
-                f"Client: {request_info.get('client_host', 'unknown')}"
+                f"Request: {method} {path} - {duration_ms:.2f}ms (status: {status_code})",
+                extra=log_extra
+            )
+        elif status_code < 400 and duration_ms <= self.alert_threshold_ms:
+            # Log successful requests at debug level
+            logger.debug(
+                f"Request: {method} {path} - {duration_ms:.2f}ms (status: {status_code})",
+                extra=log_extra
             )
     
     async def _check_performance_alerts(

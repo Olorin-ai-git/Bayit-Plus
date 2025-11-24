@@ -11,12 +11,38 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
 
+<<<<<<< HEAD
 from .data_models import InvestigationSummary, ComponentData, ReportConfig, ReportTheme, GeneratedReport
 from .data_processor import InvestigationDataExtractor, ComponentDataProcessor, SummaryGenerator
 from .styles import StyleManager
 from .scripts import JavaScriptManager
 from .components import HeaderGenerator, SummaryGenerator as ComponentSummaryGenerator, FooterGenerator
 from .utils import DateTimeFormatter
+=======
+from .data_models import (
+    InvestigationSummary,
+    ComponentData,
+    ReportConfig,
+    ReportTheme,
+    GeneratedReport,
+)
+from .data_processor import (
+    InvestigationDataExtractor,
+    ComponentDataProcessor,
+    SummaryGenerator,
+)
+from .styles import StyleManager
+from .scripts import JavaScriptManager
+from .components import (
+    HeaderGenerator,
+    SummaryGenerator as ComponentSummaryGenerator,
+    FooterGenerator,
+)
+from .utils import DateTimeFormatter
+from .core_html_builder import HTMLBuilder
+from .core_validator import ReportValidator
+from .core_component_manager import ComponentManager
+>>>>>>> 001-modify-analyzer-method
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +55,11 @@ class ReportCore:
         self.config = config or ReportConfig()
         self.style_manager = StyleManager(self.config.theme)
         self.js_manager = JavaScriptManager(self.config)
+<<<<<<< HEAD
+=======
+        self.html_builder = HTMLBuilder()
+        self.component_manager = ComponentManager(self.config)
+>>>>>>> 001-modify-analyzer-method
 
         # Initialize processors
         self.data_extractor = InvestigationDataExtractor()
@@ -44,7 +75,11 @@ class ReportCore:
         self,
         folder_path: Path,
         output_path: Optional[Path] = None,
+<<<<<<< HEAD
         title: Optional[str] = None
+=======
+        title: Optional[str] = None,
+>>>>>>> 001-modify-analyzer-method
     ) -> GeneratedReport:
         """
         Generate complete HTML report for an investigation folder.
@@ -58,18 +93,34 @@ class ReportCore:
             GeneratedReport with generation details
         """
         start_time = datetime.now()
+<<<<<<< HEAD
         errors = []
         warnings = []
+=======
+        errors: List[str] = []
+        warnings: List[str] = []
+>>>>>>> 001-modify-analyzer-method
 
         try:
             # Extract data
             extracted_data = self.data_extractor.extract_investigation_data(folder_path)
 
             # Process data for components
+<<<<<<< HEAD
             component_data = self.component_processor.process_component_data(extracted_data)
 
             # Generate summary
             summary = self.summary_generator.generate_investigation_summary(extracted_data)
+=======
+            component_data = self.component_processor.process_component_data(
+                extracted_data
+            )
+
+            # Generate summary
+            summary = self.summary_generator.generate_investigation_summary(
+                extracted_data
+            )
+>>>>>>> 001-modify-analyzer-method
 
             # Generate HTML content
             html_content = self._build_complete_html(summary, component_data, title)
@@ -78,7 +129,11 @@ class ReportCore:
             if output_path is None:
                 output_path = self._generate_output_path(summary)
 
+<<<<<<< HEAD
             with open(output_path, 'w', encoding='utf-8') as f:
+=======
+            with open(output_path, "w", encoding="utf-8") as f:
+>>>>>>> 001-modify-analyzer-method
                 f.write(html_content)
 
             # Calculate generation metrics
@@ -86,15 +141,27 @@ class ReportCore:
             report_size = output_path.stat().st_size
 
             logger.info(f"Generated HTML report: {output_path}")
+<<<<<<< HEAD
             logger.info(f"Generation time: {generation_time:.2f}s, Size: {report_size:,} bytes")
+=======
+            logger.info(
+                f"Generation time: {generation_time:.2f}s, Size: {report_size:,} bytes"
+            )
+>>>>>>> 001-modify-analyzer-method
 
             return GeneratedReport(
                 output_path=str(output_path),
                 generation_time=generation_time,
                 report_size_bytes=report_size,
+<<<<<<< HEAD
                 components_included=self.config.include_components or ['all'],
                 errors=errors,
                 warnings=warnings
+=======
+                components_included=self.config.include_components or ["all"],
+                errors=errors,
+                warnings=warnings,
+>>>>>>> 001-modify-analyzer-method
             )
 
         except Exception as e:
@@ -106,12 +173,17 @@ class ReportCore:
         self,
         summary: InvestigationSummary,
         component_data: ComponentData,
+<<<<<<< HEAD
         title: Optional[str]
+=======
+        title: Optional[str],
+>>>>>>> 001-modify-analyzer-method
     ) -> str:
         """Build the complete HTML report."""
         report_title = title or f"Investigation Report - {summary.investigation_id}"
         timestamp = DateTimeFormatter.get_current_timestamp()
 
+<<<<<<< HEAD
         # Generate all HTML sections
         html_sections = [
             self._build_html_head(report_title),
@@ -124,10 +196,26 @@ class ReportCore:
             self._build_html_scripts(summary, component_data),
             "</body>",
             "</html>"
+=======
+        # Generate all HTML sections using HTMLBuilder
+        html_sections = [
+            self.html_builder.build_html_head(report_title, self.style_manager),
+            self.html_builder.build_html_body_start(),
+            self.header_generator.generate_header(summary, report_title, timestamp),
+            self.component_summary_generator.generate_summary(summary),
+            self.component_manager.generate_investigation_components(component_data),
+            self.footer_generator.generate_footer(),
+            self.html_builder.build_html_body_end(),
+            self.html_builder.build_html_scripts(
+                summary, component_data, self.js_manager
+            ),
+            self.html_builder.build_html_closing(),
+>>>>>>> 001-modify-analyzer-method
         ]
 
         return "\n".join(html_sections)
 
+<<<<<<< HEAD
     def _build_html_head(self, title: str) -> str:
         """Build HTML head section."""
         return f"""<!DOCTYPE html>
@@ -192,6 +280,8 @@ class ReportCore:
 
         return "\n".join(components)
 
+=======
+>>>>>>> 001-modify-analyzer-method
     def _generate_output_path(self, summary: InvestigationSummary) -> Path:
         """Generate output path for the report."""
         reports_dir = Path("reports/generated")
@@ -202,6 +292,7 @@ class ReportCore:
         return reports_dir / filename
 
 
+<<<<<<< HEAD
 class ReportValidator:
     """Validates report generation inputs and outputs."""
 
@@ -227,3 +318,7 @@ class ReportValidator:
             errors.append(f"Invalid theme: {config.theme.value}")
 
         return len(errors) == 0, errors
+=======
+# Re-export ReportValidator for backwards compatibility
+__all__ = ["ReportCore", "ReportValidator"]
+>>>>>>> 001-modify-analyzer-method

@@ -61,9 +61,38 @@ class ToolExecutionHandler:
         # Log LLM interaction
         self.logger_utilities.log_tool_execution_interaction(state, messages, snowflake_data, len(self.tools))
 
+<<<<<<< HEAD
         # Invoke LLM
         response = await self.llm_invoker.invoke_llm_with_error_handling(messages, tool_execution_attempts)
 
+=======
+        # Log full LLM prompt when snowflake data is included
+        if snowflake_data:
+            logger.info("📝 LLM Prompt (with formatted Snowflake data):")
+            for i, msg in enumerate(messages):
+                msg_type = type(msg).__name__
+                content_preview = str(msg.content)[:500] if hasattr(msg, 'content') else str(msg)[:500]
+                logger.info(f"   Message {i+1} ({msg_type}): {content_preview}...")
+                if len(str(msg.content)) > 500:
+                    logger.info(f"   ... (truncated, full length: {len(str(msg.content))} chars)")
+
+        # Invoke LLM
+        response = await self.llm_invoker.invoke_llm_with_error_handling(messages, tool_execution_attempts)
+
+        # Log full LLM response
+        if snowflake_data:
+            logger.info("🤖 LLM Response (after receiving formatted Snowflake data):")
+            if hasattr(response, 'content'):
+                response_preview = str(response.content)[:1000] if response.content else "[Empty response]"
+                logger.info(f"   Response content: {response_preview}")
+                if response.content and len(str(response.content)) > 1000:
+                    logger.info(f"   ... (truncated, full length: {len(str(response.content))} chars)")
+            if hasattr(response, 'tool_calls') and response.tool_calls:
+                logger.info(f"   Tool calls: {len(response.tool_calls)}")
+                for tc in response.tool_calls:
+                    logger.info(f"      - {tc.get('name', 'unknown')}")
+
+>>>>>>> 001-modify-analyzer-method
         # Log response analysis
         self.logger_utilities.log_response_analysis(response, tools_used)
 

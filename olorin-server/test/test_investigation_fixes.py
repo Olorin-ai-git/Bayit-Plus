@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Test Script for Autonomous Investigation System Fixes
+=======
+Test Script for Structured Investigation System Fixes
+>>>>>>> 001-modify-analyzer-method
 Tests the critical fixes applied to resolve tool execution pipeline issues.
 """
 
@@ -151,7 +155,11 @@ async def test_state_management():
 
 async def main():
     """Run all tests"""
+<<<<<<< HEAD
     logger.info("🚀 Starting Autonomous Investigation System Fix Tests...")
+=======
+    logger.info("🚀 Starting Structured Investigation System Fix Tests...")
+>>>>>>> 001-modify-analyzer-method
     logger.info("=" * 60)
     
     test_results = {}

@@ -3,7 +3,7 @@ PostgreSQL + pgvector RAG system for Olorin fraud investigation platform.
 Provides vector-based document retrieval and knowledge management.
 """
 
-from .vector_database_config import (
+from app.service.database.vector_database_config import (
     get_vector_db_config, 
     initialize_vector_database,
     cleanup_vector_database

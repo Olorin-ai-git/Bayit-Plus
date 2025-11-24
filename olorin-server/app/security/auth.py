@@ -202,6 +202,93 @@ def require_scopes(required_scopes: list[str]):
     return check_scopes
 
 
+# Development mode auth bypass helper
+def _get_dev_user() -> User:
+    """Get a mock user for development mode without authentication."""
+    return User(
+        username="dev-user",
+        email="dev@olorin.local",
+        full_name="Development User",
+        disabled=False,
+        scopes=["read", "write", "admin"],
+    )
+
+
+def _create_dev_aware_scope_checker(required_scopes: list[str]):
+    """Create a scope checker that allows dev mode without authentication."""
+
+    async def check_scopes_with_dev(
+        credentials: Optional[HTTPAuthorizationCredentials] = Depends(
+            HTTPBearer(auto_error=False)
+        ),
+    ) -> User:
+        env = os.getenv("APP_ENV", "local")
+
+        # In development/staging, bypass authentication if no credentials provided
+        if env != "prd" and credentials is None:
+            return _get_dev_user()
+
+        # If no credentials in production or credentials not provided, require auth
+        if credentials is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Validate credentials
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+        try:
+            token = credentials.credentials
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get("sub")
+            if username is None:
+                raise credentials_exception
+            token_data = TokenData(
+                username=username, scopes=payload.get("scopes", [])
+            )
+        except JWTError:
+            raise credentials_exception
+
+        user = get_user(fake_users_db, username=token_data.username)
+        if user is None:
+            raise credentials_exception
+
+        current_user = User(
+            username=user.username,
+            email=user.email,
+            full_name=user.full_name,
+            disabled=user.disabled,
+            scopes=user.scopes,
+        )
+
+        # Check if user is active
+        if current_user.disabled:
+            raise HTTPException(status_code=400, detail="Inactive user")
+
+        # Check required scopes
+        for scope in required_scopes:
+            if scope not in current_user.scopes:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Operation requires scope: {scope}",
+                )
+
+        return current_user
+
+    return check_scopes_with_dev
+
+
+# Development-aware permission dependencies
+require_read_or_dev = _create_dev_aware_scope_checker(["read"])
+require_write_or_dev = _create_dev_aware_scope_checker(["write"])
+
+
 # Common permission dependencies
 require_read = require_scopes(["read"])
 require_write = require_scopes(["write"])
@@ -209,15 +296,20 @@ require_admin = require_scopes(["admin"])
 
 
 class SecurityHeaders:
-    """Security headers for responses."""
+    """
+    Security headers for responses.
+
+    This class now delegates to the configurable security headers middleware
+    to comply with SYSTEM MANDATE requirement of no hardcoded values.
+    """
 
     @staticmethod
     def get_headers() -> Dict[str, str]:
-        return {
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "DENY",
-            "X-XSS-Protection": "1; mode=block",
-            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-            "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'",
-            "Referrer-Policy": "strict-origin-when-cross-origin",
-        }
+        """
+        Get security headers from environment-driven configuration.
+
+        Returns:
+            Dictionary of security header names and values from config
+        """
+        from app.middleware.security_headers import get_security_headers
+        return get_security_headers()

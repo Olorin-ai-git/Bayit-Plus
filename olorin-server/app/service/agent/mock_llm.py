@@ -81,31 +81,65 @@ class MockLLM(BaseChatModel):
         run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> ChatResult:
+<<<<<<< HEAD
         """Generate mock response using REAL LLM responses when available."""
         
+=======
+        """Generate mock response using REAL LLM responses when available, with enhanced mock options."""
+
+>>>>>>> 001-modify-analyzer-method
         # Extract domain and context from messages
         domain = self._extract_domain(messages)
         entity_risk_score = self._extract_entity_risk_score(messages, kwargs)
         investigation_id = self._extract_investigation_id(messages, kwargs)
         scenario = self._extract_scenario(messages, kwargs)
+<<<<<<< HEAD
         entity_id = self._extract_entity_id(messages, kwargs) or "117.22.69.113"
         
+=======
+        entity_id = self._extract_entity_id(messages, kwargs) or "192.168.1.100"
+
+        # Detect if this is orchestrator requesting database query
+        is_orchestrator_init = self._is_orchestrator_initialization(messages)
+
+        # If orchestrator initialization, generate database tool call
+        if is_orchestrator_init:
+            logger.warning(f"🎯 MockLLM: Orchestrator initialization detected - generating database query tool call")
+            logger.warning(f"   Entity ID: {entity_id}")
+            return self._generate_database_tool_call(entity_id)
+
+        # Check if enhanced mock responses are enabled
+        use_enhanced = os.getenv("ENHANCED_MOCK_LLM", "true").lower() == "true"
+
+>>>>>>> 001-modify-analyzer-method
         # First try to use REAL LLM responses
         try:
             from app.service.agent.real_llm_responses import get_real_response
             from app.service.agent.tool_name_mapper import update_tool_calls
+<<<<<<< HEAD
             
             if domain:
                 logger.warning(f"🎯 MockLLM: Attempting to use REAL LLM response for domain: {domain}")
                 real_response = get_real_response(domain, entity_id, entity_risk_score or 0.5)
                 
+=======
+
+            if domain:
+                logger.warning(f"🎯 MockLLM: Attempting to use REAL LLM response for domain: {domain}")
+                real_response = get_real_response(domain, entity_id, entity_risk_score or 0.5)
+
+>>>>>>> 001-modify-analyzer-method
                 if real_response and "content" in real_response:
                     # Map tool names to match registry
                     tool_calls = real_response.get("tool_calls", [])
                     if tool_calls:
                         # Update tool names to match what's available in registry
                         tool_calls = update_tool_calls(tool_calls, reverse=False)
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> 001-modify-analyzer-method
                     # Create message with real content and mapped tool calls
                     message = AIMessage(
                         content=real_response["content"],
@@ -119,6 +153,7 @@ class MockLLM(BaseChatModel):
                     return ChatResult(generations=[generation])
         except Exception as e:
             logger.debug(f"Could not get real LLM response: {e}")
+<<<<<<< HEAD
         
         # Fallback to generated mock responses
         logger.warning(f"🎭 MockLLM generating response for domain: {domain}")
@@ -140,14 +175,65 @@ class MockLLM(BaseChatModel):
         message = AIMessage(content=mock_response)
         generation = ChatGeneration(message=message)
         
+=======
+
+        # Use enhanced mock responses if enabled
+        logger.warning(f"🎭 MockLLM generating response for domain: {domain}")
+        if entity_risk_score:
+            logger.warning(f"📊 Using entity risk score: {entity_risk_score:.4f}")
+
+        if use_enhanced:
+            try:
+                from scripts.testing.enhanced_mock_llm_responses import generate_enhanced_mock_response
+
+                logger.warning("🧠 Using ENHANCED mock responses with chain-of-thought reasoning")
+                mock_response = generate_enhanced_mock_response(
+                    agent_type=domain,
+                    scenario=scenario or "default",
+                    investigation_id=investigation_id or "mock-investigation",
+                    entity_risk_score=entity_risk_score,
+                    use_enhanced=True
+                )
+            except Exception as e:
+                logger.warning(f"Could not use enhanced mock responses, falling back to standard: {e}")
+                from scripts.testing.mock_llm_responses import generate_mock_response
+                mock_response = generate_mock_response(
+                    agent_type=domain,
+                    scenario=scenario or "default",
+                    investigation_id=investigation_id or "mock-investigation",
+                    entity_risk_score=entity_risk_score
+                )
+        else:
+            # Use standard mock responses
+            from scripts.testing.mock_llm_responses import generate_mock_response
+            mock_response = generate_mock_response(
+                agent_type=domain,
+                scenario=scenario or "default",
+                investigation_id=investigation_id or "mock-investigation",
+                entity_risk_score=entity_risk_score
+            )
+
+        # Create AIMessage with the mock response
+        message = AIMessage(content=mock_response)
+        generation = ChatGeneration(message=message)
+
+>>>>>>> 001-modify-analyzer-method
         return ChatResult(generations=[generation])
     
     def _extract_domain(self, messages: List[BaseMessage]) -> str:
         """Extract the domain from the messages."""
         for message in messages:
             content = message.content.lower() if hasattr(message, 'content') else str(message).lower()
+<<<<<<< HEAD
             
             if 'network' in content:
+=======
+
+            # Check for verification prompts first (highest priority)
+            if 'verify the quality' in content or 'verification' in content or 'verify quality' in content:
+                return 'verification'
+            elif 'network' in content:
+>>>>>>> 001-modify-analyzer-method
                 return 'network'
             elif 'device' in content:
                 return 'device'
@@ -157,7 +243,11 @@ class MockLLM(BaseChatModel):
                 return 'logs'
             elif 'risk' in content:
                 return 'risk'
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 001-modify-analyzer-method
         return 'unknown'
     
     def _extract_entity_risk_score(self, messages: List[BaseMessage], kwargs: Dict) -> Optional[float]:
@@ -253,7 +343,67 @@ class MockLLM(BaseChatModel):
                         return entity_part
         
         return None
+<<<<<<< HEAD
     
+=======
+
+    def _is_orchestrator_initialization(self, messages: List[BaseMessage]) -> bool:
+        """Detect if this is snowflake analysis phase requesting database query."""
+        for message in messages:
+            if hasattr(message, 'content'):
+                content = str(message.content).lower()
+                # Look for snowflake analysis phase patterns (these are in the HumanMessage during snowflake_analysis phase)
+                if any(pattern in content for pattern in [
+                    'you must use the snowflake_query_tool',  # From snowflake prompt
+                    'this is mandatory - you must query snowflake',  # From snowflake prompt
+                    'entity to investigate:',  # From snowflake prompt
+                    'snowflake_query_tool to analyze',  # From snowflake prompt
+                    'required snowflake queries',  # From snowflake prompt
+                    'query the database',
+                    'starting comprehensive fraud investigation',  # Legacy pattern
+                ]):
+                    return True
+        return False
+
+    def _generate_database_tool_call(self, entity_id: str) -> ChatResult:
+        """Generate a Snowflake/PostgreSQL database query tool call."""
+        # Build SQL query for the entity (IP address)
+        sql_query = f"""
+            SELECT tx_id_key, tx_datetime, email, unique_user_id,
+                   model_score, is_fraud_tx, nsure_last_decision,
+                   paid_amount_value_in_currency, payment_method, card_brand,
+                   ip, ip_country_code, device_id, user_agent, device_type,
+                   device_model, device_os_version, maxmind_risk_score,
+                   first_name, last_name, phone_number, bin, last_four, card_issuer
+            FROM public.transactions_enriched
+            WHERE ip = '{entity_id}'
+            ORDER BY tx_datetime DESC
+            LIMIT 100
+        """
+
+        tool_call = {
+            "name": "snowflake_query_tool",
+            "args": {
+                "query": sql_query.strip(),
+                "limit": 100
+            },
+            "id": "call_db_001",
+            "type": "tool_call"
+        }
+
+        message = AIMessage(
+            content=f"I'll query the database for IP address: {entity_id}",
+            tool_calls=[tool_call]
+        )
+
+        logger.warning(f"✅ Generated database tool call for IP: {entity_id}")
+        logger.warning(f"   Tool: snowflake_query_tool")
+        logger.warning(f"   Query: SELECT from transactions_enriched WHERE ip = '{entity_id}'")
+
+        generation = ChatGeneration(message=message)
+        return ChatResult(generations=[generation])
+
+>>>>>>> 001-modify-analyzer-method
     def bind_tools(self, tools: List[Any], **kwargs) -> 'MockLLM':
         """Bind tools to the mock LLM (no-op for mock)."""
         logger.info(f"MockLLM: Binding {len(tools)} tools (mock - tools not actually used)")

@@ -30,7 +30,11 @@ const config = {
 
   // API contract definitions for each microservice
   contracts: {
+<<<<<<< HEAD
     'autonomous-investigation': {
+=======
+    'structured-investigation': {
+>>>>>>> 001-modify-analyzer-method
       endpoints: [
         {
           path: '/api/investigations',
@@ -934,7 +938,11 @@ Options:
 
 Examples:
   npm run api:contracts
+<<<<<<< HEAD
   node scripts/api/contract-validator.js --service autonomous-investigation
+=======
+  node scripts/api/contract-validator.js --service structured-investigation
+>>>>>>> 001-modify-analyzer-method
   node scripts/api/contract-validator.js --verbose
   `);
   process.exit(0);

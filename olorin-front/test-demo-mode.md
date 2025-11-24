@@ -33,12 +33,12 @@ Try accessing restricted pages directly:
 ### 6. Verify API Calls are Blocked
 In demo mode, all API calls should be intercepted:
 - ✓ OlorinService returns mock data instead of making HTTP requests
-- ✓ GAIAService returns mock data instead of making HTTP requests
+- ✓ OlorinService returns mock data instead of making HTTP requests
 - ✓ RAGApiService returns mock data instead of making HTTP requests
 - ✓ ChatService returns mock data instead of making HTTP requests
 - ✓ SettingsService returns mock data instead of making HTTP requests
 - ✓ ToolsService returns mock data instead of making HTTP requests
-- ✓ AutonomousInvestigationClient simulates WebSocket events without connecting
+- ✓ StructuredInvestigationClient simulates WebSocket events without connecting
 
 ### 7. Test Allowed Pages
 These pages should work normally:

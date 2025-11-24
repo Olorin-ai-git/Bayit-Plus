@@ -20,7 +20,11 @@ const moduleFederationConfig = {
   name: 'shell',
   filename: 'remoteEntry.js',
   remotes: {
+<<<<<<< HEAD
     autonomousInvestigation: 'autonomousInvestigation@http://localhost:3001/remoteEntry.js',
+=======
+    structuredInvestigation: 'structuredInvestigation@http://localhost:3001/remoteEntry.js',
+>>>>>>> 001-modify-analyzer-method
     manualInvestigation: 'manualInvestigation@http://localhost:3002/remoteEntry.js',
     agentAnalytics: 'agentAnalytics@http://localhost:3003/remoteEntry.js',
     ragIntelligence: 'ragIntelligence@http://localhost:3004/remoteEntry.js',

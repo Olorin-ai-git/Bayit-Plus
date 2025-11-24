@@ -1,14 +1,14 @@
 """
 Investigation Agent Tracking
-This module contains agent tracking and logging functionality for autonomous investigations.
+This module contains agent tracking and logging functionality for structured investigations.
 """
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 
-from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
+from app.service.logging.autonomous_investigation_logger import structured_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker, NodeType, NodeStatus
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
+from app.router.models.autonomous_investigation_models import StructuredInvestigationRequest
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -19,17 +19,17 @@ async def log_agent_pre_execution(investigation_id: str, investigation_query: st
     
     # Log LLM interaction start
     logger.info(f"📋 ATTEMPTING TO LOG LLM INTERACTION FOR: {investigation_id}")
-    autonomous_investigation_logger.log_llm_interaction(
+    structured_investigation_logger.log_llm_interaction(
         investigation_id=investigation_id,
         agent_name="MultiAgentOrchestrator",
-        model_name="gpt-4o",
-        prompt_template="autonomous_fraud_investigation_prompt",
+        model_name="gpt-4o-mini",  # Cheaper alternative to gpt-4o
+        prompt_template="structured_fraud_investigation_prompt",
         full_prompt=investigation_query,
         response="[PENDING]",  # Will update after execution
         tokens_used={"prompt_tokens": len(investigation_query.split()) * 1.3, "completion_tokens": 0, "total_tokens": len(investigation_query.split()) * 1.3},
         tools_available=["device_analysis", "location_analysis", "network_analysis", "logs_analysis", "risk_assessment"],
         tools_used=["langgraph_parallel_execution"],
-        reasoning_chain="Initiating real autonomous investigation with Device, Location, Network, Logs, and Risk Analysis agents using comprehensive step-by-step reasoning"
+        reasoning_chain="Initiating real structured investigation with Device, Location, Network, Logs, and Risk Analysis agents using comprehensive step-by-step reasoning"
     )
     
     # Track individual agent node executions in parallel
@@ -47,7 +47,7 @@ async def log_agent_pre_execution(investigation_id: str, investigation_query: st
     )
     
     # Log agent decisions BEFORE execution to ensure they're captured
-    autonomous_investigation_logger.log_agent_decision(
+    structured_investigation_logger.log_agent_decision(
         investigation_id=investigation_id,
         agent_name="DeviceAnalysisAgent",
         decision_type="device_analysis_start",
@@ -62,22 +62,22 @@ async def log_agent_successful_execution(investigation_id: str, investigation_qu
     """Log successful agent execution"""
     
     # Log LLM interaction completion with actual response
-    autonomous_investigation_logger.log_llm_interaction(
+    structured_investigation_logger.log_llm_interaction(
         investigation_id=investigation_id,
         agent_name="MultiAgentOrchestrator",
-        model_name="gpt-4o",
-        prompt_template="autonomous_fraud_investigation_completion",
+        model_name="gpt-4o-mini",  # Cheaper alternative to gpt-4o
+        prompt_template="structured_fraud_investigation_completion",
         full_prompt=investigation_query,
         response=str(result),
         tokens_used={"prompt_tokens": len(investigation_query.split()) * 1.3, "completion_tokens": len(str(result).split()), "total_tokens": len(investigation_query.split()) * 1.3 + len(str(result).split())},
         tools_available=["device_analysis", "location_analysis", "network_analysis", "logs_analysis", "risk_assessment"],
         tools_used=["langgraph_parallel_execution", "recursion_guard"],
-        reasoning_chain=f"Completed real autonomous investigation execution in {int((end_time - start_time).total_seconds() * 1000)}ms with RecursionGuard protection.",
+        reasoning_chain=f"Completed real structured investigation execution in {int((end_time - start_time).total_seconds() * 1000)}ms with RecursionGuard protection.",
         response_time_ms=int((end_time - start_time).total_seconds() * 1000)
     )
     
     # Log completion decisions with analysis findings
-    autonomous_investigation_logger.log_agent_decision(
+    structured_investigation_logger.log_agent_decision(
         investigation_id=investigation_id,
         agent_name="DeviceAnalysisAgent",
         decision_type="device_analysis_complete",
@@ -92,9 +92,9 @@ async def log_agent_failed_execution(investigation_id: str, agent_error: Excepti
     """Log failed agent execution"""
     
     # Log failed agent decision and tool execution
-    autonomous_investigation_logger.log_agent_decision(
+    structured_investigation_logger.log_agent_decision(
         investigation_id=investigation_id,
-        agent_name="AutonomousInvestigationOrchestrator",
+        agent_name="StructuredInvestigationOrchestrator",
         decision_type="investigation_failure",
         context={"error_type": type(agent_error).__name__, "error_occurred": True, "investigation_failed": True},
         reasoning=f"Agent execution failed: {str(agent_error)}",
@@ -102,9 +102,9 @@ async def log_agent_failed_execution(investigation_id: str, agent_error: Excepti
         confidence_score=0.0
     )
     
-    autonomous_investigation_logger.log_tool_execution(
+    structured_investigation_logger.log_tool_execution(
         investigation_id=investigation_id,
-        agent_name="AutonomousInvestigationOrchestrator",
+        agent_name="StructuredInvestigationOrchestrator",
         tool_name="agent_service.ainvoke_agent",
         tool_parameters={"error": str(agent_error)},
         selection_reasoning="Attempted agent service execution but encountered error",
@@ -115,60 +115,77 @@ async def log_agent_failed_execution(investigation_id: str, agent_error: Excepti
     )
 
 
-async def log_langgraph_nodes(investigation_id: str, request: AutonomousInvestigationRequest, execution_duration_ms: int):
+async def log_langgraph_nodes(investigation_id: str, request: StructuredInvestigationRequest, execution_duration_ms: int):
     """Log LangGraph journey nodes for comprehensive tracking"""
     
-    autonomous_investigation_logger.log_langgraph_node(
+    # Base state for all agents
+    base_state_before = {
+        "entity_type": request.entity_type,
+        "entity_id": request.entity_id,
+        "investigation_id": investigation_id
+    }
+    
+    # Device Analysis Agent
+    structured_investigation_logger.log_langgraph_node(
         investigation_id=investigation_id,
         node_name="DeviceAnalysisAgent",
         node_type="analysis_agent",
-        input_data={"entity_type": request.entity_type, "entity_id": request.entity_id},
-        output_data={"analysis_completed": True, "findings_available": True},
+        state_before=base_state_before,
+        state_after={**base_state_before, "device_analysis_completed": True},
+        execution_result={"analysis_completed": True, "findings_available": True},
+        next_nodes=["LocationAnalysisAgent"],
         execution_time_ms=execution_duration_ms // 5,  # Estimated per-agent time
-        success=True,
         metadata={"agent_type": "device_fingerprint_analyzer"}
     )
     
-    autonomous_investigation_logger.log_langgraph_node(
+    # Location Analysis Agent
+    structured_investigation_logger.log_langgraph_node(
         investigation_id=investigation_id,
         node_name="LocationAnalysisAgent",
         node_type="analysis_agent",
-        input_data={"entity_type": request.entity_type, "entity_id": request.entity_id},
-        output_data={"analysis_completed": True, "impossible_travel_detected": False},
+        state_before={**base_state_before, "device_analysis_completed": True},
+        state_after={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True},
+        execution_result={"analysis_completed": True, "impossible_travel_detected": False},
+        next_nodes=["NetworkAnalysisAgent"],
         execution_time_ms=execution_duration_ms // 5,
-        success=True,
         metadata={"agent_type": "location_pattern_analyzer"}
     )
     
-    autonomous_investigation_logger.log_langgraph_node(
+    # Network Analysis Agent
+    structured_investigation_logger.log_langgraph_node(
         investigation_id=investigation_id,
         node_name="NetworkAnalysisAgent",
         node_type="analysis_agent",
-        input_data={"entity_type": request.entity_type, "entity_id": request.entity_id},
-        output_data={"analysis_completed": True, "vpn_proxy_detected": False},
+        state_before={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True},
+        state_after={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True, "network_analysis_completed": True},
+        execution_result={"analysis_completed": True, "vpn_proxy_detected": False},
+        next_nodes=["LogsAnalysisAgent"],
         execution_time_ms=execution_duration_ms // 5,
-        success=True,
         metadata={"agent_type": "network_behavior_analyzer"}
     )
     
-    autonomous_investigation_logger.log_langgraph_node(
+    # Logs Analysis Agent
+    structured_investigation_logger.log_langgraph_node(
         investigation_id=investigation_id,
         node_name="LogsAnalysisAgent",
         node_type="analysis_agent",
-        input_data={"entity_type": request.entity_type, "entity_id": request.entity_id},
-        output_data={"analysis_completed": True, "behavioral_anomalies": []},
+        state_before={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True, "network_analysis_completed": True},
+        state_after={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True, "network_analysis_completed": True, "logs_analysis_completed": True},
+        execution_result={"analysis_completed": True, "behavioral_anomalies": []},
+        next_nodes=["RiskAssessmentAgent"],
         execution_time_ms=execution_duration_ms // 5,
-        success=True,
         metadata={"agent_type": "activity_log_analyzer"}
     )
     
-    autonomous_investigation_logger.log_langgraph_node(
+    # Risk Assessment Agent (final synthesis)
+    structured_investigation_logger.log_langgraph_node(
         investigation_id=investigation_id,
         node_name="RiskAssessmentAgent",
         node_type="synthesis_agent",
-        input_data={"all_agent_findings": "consolidated"},
-        output_data={"risk_score": 46, "risk_level": "medium", "assessment_complete": True},
+        state_before={**base_state_before, "device_analysis_completed": True, "location_analysis_completed": True, "network_analysis_completed": True, "logs_analysis_completed": True},
+        state_after={**base_state_before, "all_analyses_completed": True, "risk_assessment_completed": True},
+        execution_result={"risk_score": 46, "risk_level": "medium", "assessment_complete": True},
+        next_nodes=[],  # Final node
         execution_time_ms=execution_duration_ms // 5,
-        success=True,
         metadata={"agent_type": "risk_score_synthesizer"}
     )

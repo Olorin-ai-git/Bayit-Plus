@@ -4,12 +4,20 @@ import '@testing-library/jest-dom';
 
 // Import components to test they compile without errors
 import InvestigationDashboard from '../components/InvestigationDashboard';
+<<<<<<< HEAD
 import AutonomousInvestigation from '../components/AutonomousInvestigation';
+=======
+import StructuredInvestigation from '../components/StructuredInvestigation';
+>>>>>>> 001-modify-analyzer-method
 import EvidenceManager from '../components/EvidenceManager';
 import InvestigationStepTracker from '../components/InvestigationStepTracker';
 import CollaborationPanel from '../components/CollaborationPanel';
 import ManualInvestigationDetails from '../components/ManualInvestigationDetails';
+<<<<<<< HEAD
 import InvestigationWizard from '../components/InvestigationWizard';
+=======
+import InvestigationWizard from '../containers/InvestigationWizard';
+>>>>>>> 001-modify-analyzer-method
 
 describe('Investigation Components', () => {
   test('InvestigationDashboard renders without crashing', () => {
@@ -17,9 +25,15 @@ describe('Investigation Components', () => {
     expect(screen.getByText('Investigation Dashboard')).toBeInTheDocument();
   });
 
+<<<<<<< HEAD
   test('AutonomousInvestigation renders without crashing', () => {
     render(<AutonomousInvestigation />);
     expect(screen.getByText('Autonomous Investigation')).toBeInTheDocument();
+=======
+  test('StructuredInvestigation renders without crashing', () => {
+    render(<StructuredInvestigation />);
+    expect(screen.getByText('Structured Investigation')).toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
   });
 
   test('EvidenceManager renders without crashing', () => {

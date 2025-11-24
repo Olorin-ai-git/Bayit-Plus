@@ -18,7 +18,6 @@ from .communication.agent_communication import get_communication_hub
 from .communication.investigation_state import get_state_manager, InvestigationState
 from .rag.rag_orchestrator import get_rag_orchestrator, RAGRequest
 from .multi_entity.entity_manager import get_entity_manager, EntityType
-from .websocket_streaming_service import WebSocketStreamingService
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)

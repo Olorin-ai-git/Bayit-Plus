@@ -418,5 +418,8 @@ export const withErrorHandling = async <T>(
 };
 
 // Export types and utilities
+<<<<<<< HEAD
 export type { RAGError, RAGErrorType };
 export { RAGErrorService, handleRAGError, withErrorHandling };
+=======
+>>>>>>> 001-modify-analyzer-method

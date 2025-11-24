@@ -251,12 +251,20 @@ export class InputValidator {
                   /[A-Z]/.test(password) && 
                   /\d/.test(password);
     
-    return {
-      valid,
-      error: valid ? undefined : 'Password does not meet minimum requirements',
-      strength,
-      suggestions: suggestions.slice(0, 3) // Limit suggestions
-    };
+    if (valid) {
+      return {
+        valid,
+        strength,
+        suggestions: suggestions.slice(0, 3) // Limit suggestions
+      };
+    } else {
+      return {
+        valid,
+        error: 'Password does not meet minimum requirements',
+        strength,
+        suggestions: suggestions.slice(0, 3) // Limit suggestions
+      };
+    }
   }
 
   /**
@@ -408,8 +416,8 @@ export class SessionSecurity {
   private static setupActivityTracking(): void {
     // Track user interactions
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
-    let activityTimer: NodeJS.Timeout | null = null;
+
+    let activityTimer: ReturnType<typeof setTimeout> | null = null;
     
     const updateActivityDebounced = () => {
       if (activityTimer) {

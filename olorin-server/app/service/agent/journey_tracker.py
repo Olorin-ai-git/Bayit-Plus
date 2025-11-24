@@ -3,7 +3,7 @@ LangGraph Journey Tracking and Visualization System
 
 This module provides comprehensive tracking and visualization of LangGraph investigation
 journeys, capturing every node execution, state transition, and agent coordination
-to provide complete visibility into autonomous investigation workflows.
+to provide complete visibility into structured investigation workflows.
 """
 
 import asyncio

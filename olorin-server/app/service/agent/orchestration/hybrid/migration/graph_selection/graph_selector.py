@@ -27,12 +27,17 @@ logger = get_bridge_logger(__name__)
 class GraphSelector:
     """
     Safe graph selection with feature flags and rollback capability.
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 001-modify-analyzer-method
     Selects appropriate graph implementation based on:
     - Feature flag configuration
     - A/B testing assignments
     - Rollback triggers
     - Investigation characteristics
+<<<<<<< HEAD
     
     Returns typed results to prevent silent failures and track fallbacks.
     """
@@ -41,6 +46,26 @@ class GraphSelector:
         self.feature_flags = FeatureFlags()
         self.rollback_triggers = RollbackTriggers()
         self.graph_builders = GraphBuilders()
+=======
+
+    Returns typed results to prevent silent failures and track fallbacks.
+
+    CRITICAL: In LIVE mode, passes LLM to graph builders for intelligent routing.
+             In DEMO mode, uses rule-based heuristics (no API costs).
+    """
+
+    def __init__(self, llm=None):
+        """
+        Initialize graph selector with optional LLM.
+
+        Args:
+            llm: Language model instance for intelligent routing (LIVE mode)
+                 If None, uses rule-based heuristics (DEMO mode)
+        """
+        self.feature_flags = FeatureFlags()
+        self.rollback_triggers = RollbackTriggers()
+        self.graph_builders = GraphBuilders(llm=llm)
+>>>>>>> 001-modify-analyzer-method
         self.ab_test_manager = ABTestManager(self.feature_flags)
         self.performance_metrics = {}
         self.fallback_counter = 0  # Track fallbacks for CI monitoring
@@ -84,7 +109,11 @@ class GraphSelector:
             if force_graph_type:
                 logger.info(f"   🎯 Forced graph type: {force_graph_type.value}")
                 try:
+<<<<<<< HEAD
                     graph = await self.graph_builders.build_graph(force_graph_type)
+=======
+                    graph = await self.graph_builders.build_graph(force_graph_type, investigation_id)
+>>>>>>> 001-modify-analyzer-method
                     self._record_graph_selection(investigation_id, force_graph_type, SelectionReason.FORCED)
                     return create_success_result(
                         graph, force_graph_type, SelectionReason.FORCED, investigation_id,
@@ -103,7 +132,11 @@ class GraphSelector:
                 self.fallback_counter += 1
                 increment_counter("graph_selection_fallbacks", metadata={"reason": "rollback_triggered"})
                 try:
+<<<<<<< HEAD
                     graph = await self.graph_builders.build_graph(GraphType.CLEAN)
+=======
+                    graph = await self.graph_builders.build_graph(GraphType.CLEAN, investigation_id)
+>>>>>>> 001-modify-analyzer-method
                     self._record_graph_selection(investigation_id, GraphType.CLEAN, SelectionReason.ROLLBACK)
                     return create_success_result(
                         graph, GraphType.CLEAN, SelectionReason.ROLLBACK, investigation_id,
@@ -123,7 +156,11 @@ class GraphSelector:
                 if ab_assignment:
                     logger.info(f"   🧪 A/B testing assignment: {ab_assignment.value}")
                     try:
+<<<<<<< HEAD
                         graph = await self.graph_builders.build_graph(ab_assignment)
+=======
+                        graph = await self.graph_builders.build_graph(ab_assignment, investigation_id)
+>>>>>>> 001-modify-analyzer-method
                         self._record_graph_selection(investigation_id, ab_assignment, SelectionReason.AB_TEST)
                         return create_success_result(
                             graph, ab_assignment, SelectionReason.AB_TEST, investigation_id,
@@ -140,7 +177,11 @@ class GraphSelector:
                 if self.feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
                     logger.info(f"   🧠 Hybrid intelligence graph selected")
                     try:
+<<<<<<< HEAD
                         graph = await self.graph_builders.build_graph(GraphType.HYBRID)
+=======
+                        graph = await self.graph_builders.build_graph(GraphType.HYBRID, investigation_id)
+>>>>>>> 001-modify-analyzer-method
                         self._record_graph_selection(investigation_id, GraphType.HYBRID, SelectionReason.FEATURE_FLAG)
                         return create_success_result(
                             graph, GraphType.HYBRID, SelectionReason.FEATURE_FLAG, investigation_id,
@@ -153,6 +194,7 @@ class GraphSelector:
             except Exception as e:
                 logger.warning(f"Feature flag check failed: {str(e)} - using default")
             
+<<<<<<< HEAD
             # Default to clean graph
             logger.info(f"   📋 Clean graph selected (default)")
             try:
@@ -160,12 +202,26 @@ class GraphSelector:
                 self._record_graph_selection(investigation_id, GraphType.CLEAN, SelectionReason.DEFAULT)
                 return create_success_result(
                     graph, GraphType.CLEAN, SelectionReason.DEFAULT, investigation_id,
+=======
+            # Default to hybrid graph (changed from clean graph)
+            logger.info(f"   🧠 Hybrid graph selected (default)")
+            try:
+                graph = await self.graph_builders.build_graph(GraphType.HYBRID, investigation_id)
+                self._record_graph_selection(investigation_id, GraphType.HYBRID, SelectionReason.DEFAULT)
+                return create_success_result(
+                    graph, GraphType.HYBRID, SelectionReason.DEFAULT, investigation_id,
+>>>>>>> 001-modify-analyzer-method
                     context={"entity_type": entity_type, "selection_method": "default"}
                 )
             except Exception as e:
                 return create_failure_result(
+<<<<<<< HEAD
                     f"Failed to build default clean graph: {str(e)}",
                     investigation_id, GraphType.CLEAN,
+=======
+                    f"Failed to build default hybrid graph: {str(e)}",
+                    investigation_id, GraphType.HYBRID,
+>>>>>>> 001-modify-analyzer-method
                     context={"entity_type": entity_type, "default_failed": True}
                 )
             

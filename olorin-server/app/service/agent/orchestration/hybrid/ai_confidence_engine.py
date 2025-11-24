@@ -33,6 +33,7 @@ logger = get_bridge_logger(__name__)
 class AIConfidenceEngine:
     """
     BACKWARD COMPATIBILITY WRAPPER for modular AI confidence system.
+<<<<<<< HEAD
     
     This class maintains the original interface while delegating all functionality
     to the new modular DecisionEngine for improved maintainability and performance.
@@ -44,6 +45,29 @@ class AIConfidenceEngine:
         # Initialize the new modular decision engine
         self._decision_engine = DecisionEngine()
         
+=======
+
+    This class maintains the original interface while delegating all functionality
+    to the new modular DecisionEngine for improved maintainability and performance.
+
+    CRITICAL: In LIVE mode, passes LLM to DecisionEngine for intelligent routing.
+             In DEMO mode, uses heuristic routing (no API costs).
+
+    DEPRECATED: Use intelligence.DecisionEngine directly for new implementations.
+    """
+
+    def __init__(self, llm=None):
+        """
+        Initialize AI Confidence Engine with optional LLM.
+
+        Args:
+            llm: Language model instance for intelligent routing (LIVE mode)
+                 If None, uses rule-based heuristics (DEMO mode)
+        """
+        # Initialize the new modular decision engine with LLM support
+        self._decision_engine = DecisionEngine(llm=llm)
+
+>>>>>>> 001-modify-analyzer-method
         # Maintain original interface properties for backward compatibility
         self.confidence_weights = self._decision_engine.confidence_weights
         self.strategy_confidence_thresholds = self._decision_engine.strategy_selector.strategy_confidence_thresholds

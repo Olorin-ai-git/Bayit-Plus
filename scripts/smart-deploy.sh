@@ -304,8 +304,13 @@ fallback_to_existing_deployment() {
     
     # Look for existing deployment scripts in order of preference
     local existing_scripts=(
+<<<<<<< HEAD
         "$PROJECT_ROOT/deploy-backend.sh"
         "$PROJECT_ROOT/deploy-cloudrun-direct.sh"
+=======
+        "$PROJECT_ROOT/scripts/deployment/deploy-backend.sh"
+        "$PROJECT_ROOT/scripts/deployment/deploy-cloudrun-direct.sh"
+>>>>>>> 001-modify-analyzer-method
     )
     
     for script in "${existing_scripts[@]}"; do

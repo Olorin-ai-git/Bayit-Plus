@@ -317,10 +317,33 @@ pentest_*
 *.orig
 *.save
 *.tmp
+*.copy
+*.cp
+*.disabled
+*.rej
 backup/
 backups/
 **/*.backup
 **/*.bak
+backup_*
+old_*
+legacy_*
+copy_*
+UNUSED_*
+DEPRECATED_*
+tmp_*
+
+# Backup directories
+legacy/
+deprecated/
+attic/
+archive/
+archived/
+.history/
+.trash/
+.recycle_bin/
+copies/
+zzz_deprecated/
 
 # IDE Security Files
 .vscode/settings.json
@@ -379,6 +402,7 @@ mock_ips_cache_client.py
 # Test directories
 # olorin-server/app/test/ - Commented out to allow essential test files to be tracked
 
+<<<<<<< HEAD
 # ===== Fraud Detection Artifacts and Packages =====
 # Generated investigation packages
 olorin-server/packages/
@@ -391,6 +415,43 @@ packages/
 **/*report*.zip
 **/*comparison*.zip
 **/*fraud*.zip
+=======
+# ===== Contract Testing - Generated Files =====
+# OpenAPI schema generation output (backend)
+olorin-server/openapi.json
+olorin-server/app/openapi.json
+
+.claude/commands/speckit.analyze.md
+.claude/commands/speckit.checklist.md
+.claude/commands/speckit.clarify.md
+.claude/commands/speckit.constitution.md
+.claude/commands/speckit.implement.md
+.claude/commands/speckit.plan.md
+.claude/commands/speckit.specify.md
+.claude/commands/speckit.tasks.md
+.specify/scripts/bash/check-prerequisites.sh
+.specify/scripts/bash/create-new-feature.sh
+.specify/scripts/bash/update-agent-context.sh
+.specify/templates/plan-template.md
+.specify/templates/spec-template.md
+.specify/templates/tasks-template.md
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+olorin_test.db
+*.db
+rag_vector.db
+
+# Artifacts directory - generated investigation reports, comparisons, and analysis files
+olorin-server/artifacts/
+artifacts/
+olorin-server/workspace/registry/registry.sqlite
+olorin-server/env
+>>>>>>> 001-modify-analyzer-method
 
 # Claude Agent Files (AI Assistant State)
 .claude/

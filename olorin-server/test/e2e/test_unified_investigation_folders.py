@@ -6,7 +6,11 @@ Tests the new unified investigation folder system to ensure:
 1. Folders are created with correct naming pattern: {MODE}_{INVESTIGATION_ID}_{TIMESTAMP}
 2. All log files are created in the unified structure
 3. Journey tracking integration works properly
+<<<<<<< HEAD
 4. Autonomous investigation logger integration works properly
+=======
+4. Structured investigation logger integration works properly
+>>>>>>> 001-modify-analyzer-method
 """
 
 import sys
@@ -24,7 +28,11 @@ from app.service.logging.investigation_folder_manager import (
     InvestigationMode
 )
 from app.service.logging.autonomous_investigation_logger import (
+<<<<<<< HEAD
     AutonomousInvestigationLogger
+=======
+    StructuredInvestigationLogger
+>>>>>>> 001-modify-analyzer-method
 )
 from app.service.logging.journey_tracker import JourneyTracker
 
@@ -72,7 +80,11 @@ def test_folder_creation():
         
         # Test file path generation
         file_paths = folder_manager.get_log_file_paths(investigation_id)
+<<<<<<< HEAD
         expected_files = ["main_log", "autonomous_log", "journey_log", "metadata", "results_dir"]
+=======
+        expected_files = ["main_log", "structured_log", "journey_log", "metadata", "results_dir"]
+>>>>>>> 001-modify-analyzer-method
         
         for file_type in expected_files:
             assert file_type in file_paths, f"Missing file path: {file_type}"
@@ -80,16 +92,26 @@ def test_folder_creation():
         
         print("✅ File paths generated correctly")
 
+<<<<<<< HEAD
 def test_autonomous_logger_integration():
     """Test autonomous investigation logger integration"""
     print("\n🧪 Testing autonomous investigation logger integration...")
+=======
+def test_structured_logger_integration():
+    """Test structured investigation logger integration"""
+    print("\n🧪 Testing structured investigation logger integration...")
+>>>>>>> 001-modify-analyzer-method
     
     # Create temporary directory for testing
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir) / "test_investigations"
         
         # Initialize logger with custom directory
+<<<<<<< HEAD
         logger = AutonomousInvestigationLogger(temp_path)
+=======
+        logger = StructuredInvestigationLogger(temp_path)
+>>>>>>> 001-modify-analyzer-method
         
         # Test data
         investigation_id = "test_device_spoofing_456"
@@ -137,16 +159,28 @@ def test_autonomous_logger_integration():
         
         # Verify log files exist
         file_paths = logger.folder_manager.get_log_file_paths(investigation_id)
+<<<<<<< HEAD
         autonomous_log_file = file_paths["autonomous_log"]
         assert autonomous_log_file.exists(), "Autonomous log file should exist"
         
         # Verify log file has content
         with open(autonomous_log_file) as f:
+=======
+        structured_log_file = file_paths["structured_log"]
+        assert structured_log_file.exists(), "Structured log file should exist"
+        
+        # Verify log file has content
+        with open(structured_log_file) as f:
+>>>>>>> 001-modify-analyzer-method
             content = f.read()
             assert len(content) > 0, "Log file should have content"
             assert "test_agent" in content, "Log should contain agent name"
             
+<<<<<<< HEAD
         print("✅ Autonomous investigation logging integration works")
+=======
+        print("✅ Structured investigation logging integration works")
+>>>>>>> 001-modify-analyzer-method
 
 def test_journey_tracker_integration():
     """Test journey tracker integration"""
@@ -269,14 +303,22 @@ def run_all_tests():
     
     try:
         test_folder_creation()
+<<<<<<< HEAD
         test_autonomous_logger_integration() 
+=======
+        test_structured_logger_integration() 
+>>>>>>> 001-modify-analyzer-method
         test_journey_tracker_integration()
         test_folder_listing_and_cleanup()
         
         print("\n✅ All tests passed! Unified investigation folder structure is working correctly.")
         print("\n📋 Summary:")
         print("   ✅ Folder creation with {MODE}_{ID}_{TIMESTAMP} pattern")
+<<<<<<< HEAD
         print("   ✅ Autonomous investigation logger integration")
+=======
+        print("   ✅ Structured investigation logger integration")
+>>>>>>> 001-modify-analyzer-method
         print("   ✅ Journey tracker integration")
         print("   ✅ File structure and organization")
         print("   ✅ Listing and filtering capabilities")

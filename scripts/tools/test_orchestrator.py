@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Olorin Autonomous Investigation Test Orchestrator
+Olorin Structured Investigation Test Orchestrator
 Integrates with python-tests-expert subagent for intelligent test execution
 """
 
@@ -26,41 +26,41 @@ BACKEND_URL = "http://localhost:8090"
 
 # Test phases configuration
 TEST_PHASES = {
-    "unit_autonomous": {
-        "name": "Unit Tests - Autonomous Agents",
-        "command": "pytest tests/unit/service/agent/test_autonomous_agents.py -v",
+    "unit_structured": {
+        "name": "Unit Tests - Structured Agents",
+        "command": "pytest tests/unit/service/agent/test_structured_agents.py -v",
         "description": "Testing individual agent components in isolation",
         "timeout": 60,
         "required_coverage": 30
     },
-    "integration_autonomous": {
-        "name": "Integration - Autonomous Investigation",
-        "command": "pytest tests/integration/test_autonomous_investigation.py -v --asyncio-mode=auto",
-        "description": "Testing full autonomous investigation workflow",
+    "integration_structured": {
+        "name": "Integration - Structured Investigation",
+        "command": "pytest tests/integration/test_structured_investigation.py -v --asyncio-mode=auto",
+        "description": "Testing full structured investigation workflow",
         "timeout": 300,
         "critical": True
     },
     "websocket_updates": {
         "name": "WebSocket Real-time Updates",
-        "command": "pytest tests/integration/test_autonomous_investigation.py::test_websocket_updates -v",
+        "command": "pytest tests/integration/test_structured_investigation.py::test_websocket_updates -v",
         "description": "Testing real-time progress updates via WebSocket",
         "timeout": 120
     },
     "agent_orchestration": {
         "name": "Agent Orchestration",
-        "command": "pytest tests/integration/test_autonomous_investigation.py::test_multi_agent_coordination -v",
+        "command": "pytest tests/integration/test_structured_investigation.py::test_multi_agent_coordination -v",
         "description": "Testing coordination between agents",
         "timeout": 180
     },
     "error_scenarios": {
         "name": "Error Handling",
-        "command": "pytest tests/integration/test_autonomous_investigation.py::test_error_scenarios -v",
+        "command": "pytest tests/integration/test_structured_investigation.py::test_error_scenarios -v",
         "description": "Testing error handling and recovery",
         "timeout": 120
     },
     "performance": {
         "name": "Performance Testing",
-        "command": "pytest tests/integration/test_autonomous_investigation.py::test_performance_benchmarks -v",
+        "command": "pytest tests/integration/test_structured_investigation.py::test_performance_benchmarks -v",
         "description": "Testing performance requirements",
         "timeout": 240
     },
@@ -99,7 +99,7 @@ class TestOrchestrator:
         REPORTS_DIR.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        self.report_file = REPORTS_DIR / f"autonomous_test_report_{timestamp}.md"
+        self.report_file = REPORTS_DIR / f"structured_test_report_{timestamp}.md"
         self.log_file = REPORTS_DIR / f"test_logs_{timestamp}.log"
         
         # Initialize report
@@ -108,7 +108,7 @@ class TestOrchestrator:
     
     def _generate_report_header(self) -> str:
         """Generate report header with environment details"""
-        return f"""# Autonomous Investigation Test Report
+        return f"""# Structured Investigation Test Report
 
 **Generated**: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Backend URL**: {BACKEND_URL}

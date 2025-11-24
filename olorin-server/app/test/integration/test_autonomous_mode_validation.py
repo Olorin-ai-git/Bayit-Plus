@@ -1,8 +1,8 @@
 """
-Autonomous Mode Validation Tests
+Structured Mode Validation Tests
 
 Comprehensive validation tests to verify that the Olorin fraud detection system
-operates in true autonomous mode with LLM-driven tool selection.
+operates in true structured mode with LLM-driven tool selection.
 """
 
 import json
@@ -15,14 +15,14 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import StateGraph
 
 from app.service.agent.agent import create_and_get_agent_graph
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
 from app.service.agent.recursion_guard import get_recursion_guard
 from app.service.config import get_settings_for_env
 
 
-class TestAutonomousModeValidation:
+class TestStructuredModeValidation:
     """
-    Validation tests to verify autonomous mode meets success criteria:
+    Validation tests to verify structured mode meets success criteria:
     - 95% of investigations use LLM-driven tool selection
     - 90% investigation quality score vs predetermined workflows
     - 85% tool selection accuracy by LLM
@@ -31,8 +31,8 @@ class TestAutonomousModeValidation:
     """
     
     @pytest.fixture
-    def autonomous_graph(self):
-        """Create autonomous agent graph for testing"""
+    def structured_graph(self):
+        """Create structured agent graph for testing"""
         with patch('app.service.agent.agent.tools') as mock_tools:
             # Mock tools to avoid external dependencies
             mock_tool1 = MagicMock()
@@ -51,34 +51,34 @@ class TestAutonomousModeValidation:
     def investigation_context(self):
         """Create test investigation context"""
         return {
-            "investigation_id": "autonomous_test_001",
+            "investigation_id": "structured_test_001",
             "entity_id": "test_user_123",
             "entity_type": "user_id",
             "investigation_type": "fraud_investigation",
             "time_range": "24h"
         }
     
-    async def test_llm_driven_tool_selection_coverage(self, autonomous_graph, investigation_context):
+    async def test_llm_driven_tool_selection_coverage(self, structured_graph, investigation_context):
         """
         Validate that 95% of investigations use LLM-driven tool selection.
         
-        Success Criteria: ≥95% of domain agents use autonomous tool selection
+        Success Criteria: ≥95% of domain agents use structured tool selection
         """
         tool_selection_count = 0
         total_investigations = 20
         
         for i in range(total_investigations):
-            with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent:
-                # Mock autonomous investigation with tool selection
+            with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent:
+                # Mock structured investigation with tool selection
                 mock_instance = AsyncMock()
                 mock_findings = MagicMock()
                 mock_findings.domain = "network"
                 mock_findings.raw_data = {
                     "tool_selection_evidence": ["Used splunk_query_tool based on LLM decision"],
                     "llm_reasoning": "Selected Splunk for network log analysis",
-                    "autonomous_execution": True
+                    "structured_execution": True
                 }
-                mock_instance.autonomous_investigate.return_value = mock_findings
+                mock_instance.structured_investigate.return_value = mock_findings
                 mock_agent.return_value = mock_instance
                 
                 # Simulate investigation
@@ -90,12 +90,12 @@ class TestAutonomousModeValidation:
                 }
                 
                 try:
-                    # Import and test one autonomous agent
-                    from app.service.agent.autonomous_agents import autonomous_network_agent
-                    result = await autonomous_network_agent({}, config)
+                    # Import and test one structured agent
+                    from app.service.agent.structured_agents import structured_network_agent
+                    result = await structured_network_agent({}, config)
                     
-                    # Verify autonomous tool selection occurred
-                    if self._verify_autonomous_tool_selection(result):
+                    # Verify structured tool selection occurred
+                    if self._verify_structured_tool_selection(result):
                         tool_selection_count += 1
                         
                 except Exception as e:
@@ -108,9 +108,9 @@ class TestAutonomousModeValidation:
             f"below 95% target (passed: {tool_selection_count}/{total_investigations})"
         )
     
-    async def test_investigation_quality_score(self, autonomous_graph, investigation_context):
+    async def test_investigation_quality_score(self, structured_graph, investigation_context):
         """
-        Validate that autonomous investigations achieve 90% quality score.
+        Validate that structured investigations achieve 90% quality score.
         
         Success Criteria: Quality metrics ≥90% compared to predetermined workflows
         """
@@ -118,8 +118,8 @@ class TestAutonomousModeValidation:
         num_tests = 10
         
         for i in range(num_tests):
-            # Mock high-quality autonomous investigation
-            with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent:
+            # Mock high-quality structured investigation
+            with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent:
                 mock_instance = AsyncMock()
                 
                 # High-quality findings
@@ -138,7 +138,7 @@ class TestAutonomousModeValidation:
                     "Evidence-based next steps"
                 ]
                 
-                mock_instance.autonomous_investigate.return_value = mock_findings
+                mock_instance.structured_investigate.return_value = mock_findings
                 mock_agent.return_value = mock_instance
                 
                 config = {
@@ -148,9 +148,9 @@ class TestAutonomousModeValidation:
                     }
                 }
                 
-                # Test autonomous agent
-                from app.service.agent.autonomous_agents import autonomous_device_agent
-                result = await autonomous_device_agent({}, config)
+                # Test structured agent
+                from app.service.agent.structured_agents import structured_device_agent
+                result = await structured_device_agent({}, config)
                 
                 # Calculate quality score
                 quality_score = self._calculate_investigation_quality(result, mock_findings)
@@ -200,13 +200,13 @@ class TestAutonomousModeValidation:
         total_selections = len(scenarios)
         
         for scenario in scenarios:
-            with patch('app.service.agent.autonomous_agents.autonomous_llm') as mock_llm:
+            with patch('app.service.agent.structured_agents.structured_llm') as mock_llm:
                 # Mock LLM to simulate tool selection reasoning
                 mock_response = MagicMock()
                 mock_response.content = json.dumps({
                     "tool_selection_reasoning": f"For {scenario['context']}, I need tools that provide {scenario['domain']} data",
                     "selected_tools": scenario['expected_tools'][:2],  # Select appropriate tools
-                    "analysis": f"Autonomous {scenario['domain']} analysis completed"
+                    "analysis": f"Structured {scenario['domain']} analysis completed"
                 })
                 
                 mock_llm_instance = AsyncMock()
@@ -230,11 +230,11 @@ class TestAutonomousModeValidation:
             f"(correct: {correct_selections}/{total_selections})"
         )
     
-    async def test_completion_time_performance(self, autonomous_graph, investigation_context):
+    async def test_completion_time_performance(self, structured_graph, investigation_context):
         """
-        Validate that autonomous mode completes within 150% of baseline time.
+        Validate that structured mode completes within 150% of baseline time.
         
-        Success Criteria: Autonomous investigations complete in ≤150% of current system time
+        Success Criteria: Structured investigations complete in ≤150% of current system time
         """
         baseline_time_seconds = 120  # Baseline: 2 minutes for typical investigation
         max_allowed_time = baseline_time_seconds * 1.5  # 150% = 3 minutes max
@@ -245,7 +245,7 @@ class TestAutonomousModeValidation:
         for i in range(num_performance_tests):
             start_time = datetime.now()
             
-            with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent:
+            with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent:
                 # Mock realistic investigation timing
                 mock_instance = AsyncMock()
                 
@@ -261,7 +261,7 @@ class TestAutonomousModeValidation:
                     mock_findings.timestamp = datetime.now()
                     return mock_findings
                 
-                mock_instance.autonomous_investigate = mock_investigate
+                mock_instance.structured_investigate = mock_investigate
                 mock_agent.return_value = mock_instance
                 
                 # Execute performance test
@@ -272,8 +272,8 @@ class TestAutonomousModeValidation:
                     }
                 }
                 
-                from app.service.agent.autonomous_agents import autonomous_risk_agent
-                await autonomous_risk_agent({}, config)
+                from app.service.agent.structured_agents import structured_risk_agent
+                await structured_risk_agent({}, config)
             
             completion_time = (datetime.now() - start_time).total_seconds()
             completion_times.append(completion_time)
@@ -288,7 +288,7 @@ class TestAutonomousModeValidation:
             f"(avg: {average_time:.1f}s, baseline: {baseline_time_seconds}s)"
         )
     
-    async def test_system_failure_rate(self, autonomous_graph, investigation_context):
+    async def test_system_failure_rate(self, structured_graph, investigation_context):
         """
         Validate that system failure rate is ≤1%.
         
@@ -299,16 +299,16 @@ class TestAutonomousModeValidation:
         
         for i in range(total_tests):
             try:
-                with patch('app.service.agent.autonomous_agents.AutonomousInvestigationAgent') as mock_agent:
+                with patch('app.service.agent.structured_agents.StructuredInvestigationAgent') as mock_agent:
                     mock_instance = AsyncMock()
                     
                     # Simulate occasional failures (should be rare)
                     if i == 0:  # Simulate 1 failure out of 100 (1% failure rate)
-                        mock_instance.autonomous_investigate.side_effect = Exception("Simulated failure")
+                        mock_instance.structured_investigate.side_effect = Exception("Simulated failure")
                     else:
                         mock_findings = MagicMock()
                         mock_findings.domain = "reliability_test"
-                        mock_instance.autonomous_investigate.return_value = mock_findings
+                        mock_instance.structured_investigate.return_value = mock_findings
                     
                     mock_agent.return_value = mock_instance
                     
@@ -319,32 +319,32 @@ class TestAutonomousModeValidation:
                         }
                     }
                     
-                    # Test different autonomous agents
+                    # Test different structured agents
                     agents_to_test = [
-                        "autonomous_network_agent",
-                        "autonomous_device_agent", 
-                        "autonomous_location_agent",
-                        "autonomous_logs_agent",
-                        "autonomous_risk_agent"
+                        "structured_network_agent",
+                        "structured_device_agent", 
+                        "structured_location_agent",
+                        "structured_logs_agent",
+                        "structured_risk_agent"
                     ]
                     
                     agent_name = agents_to_test[i % len(agents_to_test)]
                     
-                    if agent_name == "autonomous_network_agent":
-                        from app.service.agent.autonomous_agents import autonomous_network_agent
-                        await autonomous_network_agent({}, config)
-                    elif agent_name == "autonomous_device_agent":
-                        from app.service.agent.autonomous_agents import autonomous_device_agent
-                        await autonomous_device_agent({}, config)
-                    elif agent_name == "autonomous_location_agent":
-                        from app.service.agent.autonomous_agents import autonomous_location_agent
-                        await autonomous_location_agent({}, config)
-                    elif agent_name == "autonomous_logs_agent":
-                        from app.service.agent.autonomous_agents import autonomous_logs_agent
-                        await autonomous_logs_agent({}, config)
-                    elif agent_name == "autonomous_risk_agent":
-                        from app.service.agent.autonomous_agents import autonomous_risk_agent
-                        await autonomous_risk_agent({}, config)
+                    if agent_name == "structured_network_agent":
+                        from app.service.agent.structured_agents import structured_network_agent
+                        await structured_network_agent({}, config)
+                    elif agent_name == "structured_device_agent":
+                        from app.service.agent.structured_agents import structured_device_agent
+                        await structured_device_agent({}, config)
+                    elif agent_name == "structured_location_agent":
+                        from app.service.agent.structured_agents import structured_location_agent
+                        await structured_location_agent({}, config)
+                    elif agent_name == "structured_logs_agent":
+                        from app.service.agent.structured_agents import structured_logs_agent
+                        await structured_logs_agent({}, config)
+                    elif agent_name == "structured_risk_agent":
+                        from app.service.agent.structured_agents import structured_risk_agent
+                        await structured_risk_agent({}, config)
                 
             except Exception:
                 failures += 1
@@ -360,7 +360,7 @@ class TestAutonomousModeValidation:
         """
         Validate that RecursionGuard prevents infinite loops while enabling autonomy.
         
-        Success Criteria: No infinite loops, autonomous behavior preserved
+        Success Criteria: No infinite loops, structured behavior preserved
         """
         guard = get_recursion_guard()
         
@@ -387,23 +387,23 @@ class TestAutonomousModeValidation:
         # Should prevent excessive tool calls
         assert not guard.record_tool_call("recursion_test_001", "thread_001", "overflow_tool")
         
-        # Test 3: Verify autonomous behavior preservation
+        # Test 3: Verify structured behavior preservation
         guard.exit_node("recursion_test_001", "thread_001", "device")
         guard.exit_node("recursion_test_001", "thread_001", "network")
         
-        # Should allow new autonomous decisions after exiting
+        # Should allow new structured decisions after exiting
         assert guard.enter_node("recursion_test_001", "thread_001", "location")
         
         stats = guard.get_system_stats()
         assert stats["active_investigations"] == 1
     
-    def test_autonomous_context_comprehensive_coverage(self):
+    def test_structured_context_comprehensive_coverage(self):
         """
-        Validate that autonomous context provides comprehensive information for LLM decisions.
+        Validate that structured context provides comprehensive information for LLM decisions.
         
-        Success Criteria: Context includes all necessary information for autonomous decisions
+        Success Criteria: Context includes all necessary information for structured decisions
         """
-        context = AutonomousInvestigationContext(
+        context = StructuredInvestigationContext(
             investigation_id="context_test_001",
             entity_id="test_entity_123",
             entity_type=EntityType.USER_ID,
@@ -432,7 +432,7 @@ class TestAutonomousModeValidation:
         assert "Best Used For:" in llm_context
         
         # Verify investigation guidance
-        assert "autonomous tool selection" in llm_context.lower()
+        assert "structured tool selection" in llm_context.lower()
         assert "let the investigation data guide" in llm_context.lower()
         assert "choose tools based on investigation needs" in llm_context.lower()
     
@@ -452,21 +452,21 @@ class TestAutonomousModeValidation:
         }
         return mock_context
     
-    def _verify_autonomous_tool_selection(self, result: Dict) -> bool:
-        """Verify that result indicates autonomous tool selection occurred"""
+    def _verify_structured_tool_selection(self, result: Dict) -> bool:
+        """Verify that result indicates structured tool selection occurred"""
         try:
             if "messages" not in result:
                 return False
             
             message_content = json.loads(result["messages"][0].content)
             
-            # Check for autonomous execution indicators
+            # Check for structured execution indicators
             risk_assessment = message_content.get("risk_assessment") or message_content.get("llm_assessment")
             
             if not risk_assessment:
                 return False
             
-            return risk_assessment.get("autonomous_execution", False)
+            return risk_assessment.get("structured_execution", False)
             
         except (json.JSONDecodeError, KeyError, IndexError):
             return False
@@ -478,7 +478,7 @@ class TestAutonomousModeValidation:
             "has_confidence": 20, 
             "has_findings": 25,
             "has_recommendations": 20,
-            "autonomous_execution": 15
+            "structured_execution": 15
         }
         
         total_score = 0
@@ -499,8 +499,8 @@ class TestAutonomousModeValidation:
             if len(findings.recommended_actions) > 0:
                 total_score += quality_factors["has_recommendations"]
             
-            if assessment.get("autonomous_execution", False):
-                total_score += quality_factors["autonomous_execution"]
+            if assessment.get("structured_execution", False):
+                total_score += quality_factors["structured_execution"]
                 
         except (json.JSONDecodeError, KeyError, AttributeError):
             total_score = 0

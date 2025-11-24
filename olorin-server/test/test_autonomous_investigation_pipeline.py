@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 End-to-End Test for Autonomous Investigation Pipeline
 
 This script runs a full test of the autonomous investigation system
+=======
+End-to-End Test for Structured Investigation Pipeline
+
+This script runs a full test of the structured investigation system
+>>>>>>> 001-modify-analyzer-method
 to verify that both fixes work in the complete pipeline:
 
 1. Snowflake data is properly parsed from JSON strings
@@ -340,7 +346,11 @@ async def run_comprehensive_pipeline_test():
     all_passed = all(test_results)
     
     if all_passed:
+<<<<<<< HEAD
         print(f"\n🎉 ALL TESTS PASSED! The autonomous investigation pipeline is working correctly.")
+=======
+        print(f"\n🎉 ALL TESTS PASSED! The structured investigation pipeline is working correctly.")
+>>>>>>> 001-modify-analyzer-method
         print("\n✅ CRITICAL FIXES VALIDATED:")
         print("   • Snowflake data is properly parsed from JSON strings")  
         print("   • Risk scores are calculated correctly from high MODEL_SCORE values")
@@ -371,7 +381,11 @@ async def main():
         
         if exit_code == 0:
             print(f"\n🎊 PIPELINE VALIDATION SUCCESSFUL!")
+<<<<<<< HEAD
             print("The autonomous investigation system is now working correctly.")
+=======
+            print("The structured investigation system is now working correctly.")
+>>>>>>> 001-modify-analyzer-method
         else:
             print(f"\n💥 PIPELINE VALIDATION FAILED!")
             print("Some components still need fixing.")

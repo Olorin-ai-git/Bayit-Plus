@@ -80,7 +80,11 @@ class SafetyThresholdManager:
     
     def _is_test_mode(self) -> bool:
         """Check if running in test mode."""
+<<<<<<< HEAD
         return os.environ.get('TEST_MODE', '').lower() == 'mock'
+=======
+        return os.environ.get('TEST_MODE', '').lower() == 'demo'
+>>>>>>> 001-modify-analyzer-method
     
     def _get_test_mode_config(self) -> SafetyThresholdConfig:
         """Get test mode configuration with more lenient thresholds."""
@@ -221,12 +225,21 @@ class SafetyThresholdManager:
     def log_current_thresholds(self) -> None:
         """Log current threshold configuration for debugging."""
         mode = "TEST" if self._is_test_mode() else "LIVE"
+<<<<<<< HEAD
         logger.info(f"🛡️ Safety Threshold Configuration ({mode} mode):")
         logger.info(f"   Max safety overrides: {self.config.max_safety_overrides_before_termination}")
         logger.info(f"   Override rate rollback: {self.config.safety_override_rate_rollback_threshold:.1%}")
         logger.info(f"   Warning threshold: {self.config.warning_threshold_percentage:.1%}")
         logger.info(f"   Critical threshold: {self.config.critical_threshold_percentage:.1%}")
         logger.info(f"   Critical pressure: {self.config.critical_pressure_threshold:.1%}")
+=======
+        logger.debug(f"🛡️ Safety Threshold Configuration ({mode} mode):")
+        logger.debug(f"   Max safety overrides: {self.config.max_safety_overrides_before_termination}")
+        logger.debug(f"   Override rate rollback: {self.config.safety_override_rate_rollback_threshold:.1%}")
+        logger.debug(f"   Warning threshold: {self.config.warning_threshold_percentage:.1%}")
+        logger.debug(f"   Critical threshold: {self.config.critical_threshold_percentage:.1%}")
+        logger.debug(f"   Critical pressure: {self.config.critical_pressure_threshold:.1%}")
+>>>>>>> 001-modify-analyzer-method
 
 
 # Global threshold manager instance

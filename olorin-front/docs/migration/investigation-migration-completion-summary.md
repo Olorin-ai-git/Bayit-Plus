@@ -6,13 +6,21 @@
 
 ## Migration Overview
 
+<<<<<<< HEAD
 Successfully migrated the core Investigation workflow functionality from the massive legacy `InvestigationPage.tsx` (1,913 lines) into a modern, modular microservices architecture using Tailwind CSS components for the Autonomous Investigation Service.
+=======
+Successfully migrated the core Investigation workflow functionality from the massive legacy `InvestigationPage.tsx` (1,913 lines) into a modern, modular microservices architecture using Tailwind CSS components for the Structured Investigation Service.
+>>>>>>> 001-modify-analyzer-method
 
 ## ✅ What Was Successfully Migrated
 
 ### 1. Investigation Workflow Execution - COMPLETED ✅
 **Source:** `src/js/pages/InvestigationPage.tsx` (lines 600-750, workflow execution)
+<<<<<<< HEAD
 **Destination:** `src/microservices/autonomous-investigation/components/workflow/`
+=======
+**Destination:** `src/microservices/structured-investigation/components/workflow/`
+>>>>>>> 001-modify-analyzer-method
 
 #### New Components Created:
 - **`InvestigationRunner.tsx`** (199 lines) - Core investigation workflow with start/pause/resume/stop controls
@@ -28,7 +36,11 @@ Successfully migrated the core Investigation workflow functionality from the mas
 
 ### 2. Investigation Setup and Configuration - COMPLETED ✅
 **Source:** `src/js/components/InvestigationHeader.tsx` (lines 1-400, setup interface)
+<<<<<<< HEAD
 **Destination:** `src/microservices/autonomous-investigation/components/setup/`
+=======
+**Destination:** `src/microservices/structured-investigation/components/setup/`
+>>>>>>> 001-modify-analyzer-method
 
 #### New Components Created:
 - **`InvestigationSetup.tsx`** (199 lines) - Investigation initialization and parameter configuration
@@ -36,7 +48,11 @@ Successfully migrated the core Investigation workflow functionality from the mas
 #### Key Features Implemented:
 - ✅ **Entity Configuration** - User ID and Device ID investigation types
 - ✅ **Time Range Selection** - Historical data range configuration (1d-360d)
+<<<<<<< HEAD
 - ✅ **Investigation Mode** - Autonomous vs Manual investigation mode selection
+=======
+- ✅ **Investigation Mode** - Structured vs Manual investigation mode selection
+>>>>>>> 001-modify-analyzer-method
 - ✅ **Form Validation** - Input validation and error prevention
 - ✅ **Investigation Metadata** - Optional title and description fields
 - ✅ **Responsive Design** - Mobile-first Tailwind CSS implementation
@@ -44,7 +60,11 @@ Successfully migrated the core Investigation workflow functionality from the mas
 
 ### 3. Investigation Step Management - COMPLETED ✅
 **Source:** `src/js/components/EditStepsModal.tsx` (596 lines, step configuration)
+<<<<<<< HEAD
 **Destination:** `src/microservices/autonomous-investigation/components/setup/`
+=======
+**Destination:** `src/microservices/structured-investigation/components/setup/`
+>>>>>>> 001-modify-analyzer-method
 
 #### New Components Created:
 - **`StepManager.tsx`** (199 lines) - Comprehensive step configuration and tools management
@@ -60,7 +80,11 @@ Successfully migrated the core Investigation workflow functionality from the mas
 
 ### 4. Real-time Log Monitoring - COMPLETED ✅
 **Source:** `src/js/components/AgentLogSidebar.tsx` + `RAGEnhancedAgentLogSidebar.tsx` (549+62 lines)
+<<<<<<< HEAD
 **Destination:** `src/microservices/autonomous-investigation/components/monitoring/`
+=======
+**Destination:** `src/microservices/structured-investigation/components/monitoring/`
+>>>>>>> 001-modify-analyzer-method
 
 #### New Components Created:
 - **`LogMonitor.tsx`** (199 lines) - Real-time investigation log display and monitoring
@@ -76,7 +100,11 @@ Successfully migrated the core Investigation workflow functionality from the mas
 - ✅ **RAG Enhancement Section** - Optional AI-powered log analysis display
 
 ### 5. Enhanced Type Definitions - COMPLETED ✅
+<<<<<<< HEAD
 **Updated:** `src/microservices/autonomous-investigation/types/investigation.ts`
+=======
+**Updated:** `src/microservices/structured-investigation/types/investigation.ts`
+>>>>>>> 001-modify-analyzer-method
 
 #### New Types Added:
 - ✅ **`StepStatus`** - Investigation step status enumeration
@@ -219,7 +247,11 @@ The Investigation Service migration has been **successfully completed** with sig
 - **Enhanced user experience** with modern UI patterns and responsive design
 - **Improved maintainability** through modular architecture and TypeScript
 
+<<<<<<< HEAD
 The new Investigation Service provides a **solid foundation** for autonomous fraud investigation workflows while maintaining complete compatibility with existing OlorinService API infrastructure.
+=======
+The new Investigation Service provides a **solid foundation** for structured fraud investigation workflows while maintaining complete compatibility with existing OlorinService API infrastructure.
+>>>>>>> 001-modify-analyzer-method
 
 ---
 

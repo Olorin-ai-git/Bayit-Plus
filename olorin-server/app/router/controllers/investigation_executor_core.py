@@ -1,6 +1,6 @@
 """
 Investigation Executor Core - Agent Execution Logic
-This module contains the core agent execution logic for autonomous investigations.
+This module contains the core agent execution logic for structured investigations.
 """
 import logging
 from datetime import datetime, timezone
@@ -9,10 +9,9 @@ from typing import Dict, Any
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables.config import RunnableConfig
 
-from app.service.logging.autonomous_investigation_logger import autonomous_investigation_logger
+from app.service.logging.autonomous_investigation_logger import structured_investigation_logger
 from app.service.agent.journey_tracker import journey_tracker, NodeType, NodeStatus
-from app.router.models.autonomous_investigation_models import AutonomousInvestigationRequest
-from app.router.handlers.websocket_handler import notify_websocket_connections
+from app.router.models.autonomous_investigation_models import StructuredInvestigationRequest
 from app.router.controllers.investigation_controller import update_investigation_status
 from app.service.logging import get_bridge_logger
 
@@ -25,7 +24,7 @@ __all__ = ["_execute_agent_investigation_phase"]
 async def _execute_agent_investigation_phase(
     investigation_id: str, 
     investigation_context: Dict[str, Any], 
-    request: AutonomousInvestigationRequest,
+    request: StructuredInvestigationRequest,
     thread_id: str
 ) -> str:
     """Execute the main agent investigation phase"""
@@ -34,7 +33,7 @@ async def _execute_agent_investigation_phase(
     logger.info(f"🔍 EXECUTING REAL AGENT INVESTIGATION: {investigation_id}")
     
     # Always log execution phase progress
-    autonomous_investigation_logger.log_investigation_progress(
+    structured_investigation_logger.log_investigation_progress(
         investigation_id=investigation_id,
         progress_type="phase_progress",
         current_phase="agent_execution",
@@ -61,14 +60,7 @@ async def _execute_agent_investigation_phase(
         "current_phase": "agent_execution",
         "progress_percentage": 25.0
     })
-    
-    await notify_websocket_connections(investigation_id, {
-        "type": "phase_update",
-        "phase": "agent_execution",
-        "progress": 25.0,
-        "description": "EXECUTING REAL AI agents with LLM reasoning"
-    })
-    
+
     # Prepare investigation query
     investigation_query = f"""
     AUTONOMOUS FRAUD INVESTIGATION REQUEST
@@ -108,7 +100,7 @@ async def _execute_agent_investigation_phase(
             "agent_context": agent_context,
             "thread_id": agent_context.thread_id,
             "investigation_id": investigation_id,
-            "autonomous_mode": True
+            "structured_mode": True
         }
     )
     
@@ -127,13 +119,24 @@ async def _execute_agent_investigation_phase(
         )
         from app.service.agent.orchestration.state_schema import create_initial_state
 
+<<<<<<< HEAD
+=======
+        # Extract time_range from investigation_context if provided
+        time_range = investigation_context.get("time_range") if investigation_context else None
+
+>>>>>>> 001-modify-analyzer-method
         # Create initial state for clean graph execution
         initial_state = create_initial_state(
             investigation_id=investigation_id,
             entity_id=request.entity_id,
             entity_type=request.entity_type,
             parallel_execution=True,
+<<<<<<< HEAD
             max_tools=52
+=======
+            max_tools=52,
+            time_range=time_range
+>>>>>>> 001-modify-analyzer-method
         )
 
         # Add investigation query to messages
@@ -152,9 +155,16 @@ async def _execute_agent_investigation_phase(
         # Add thread configuration if using hybrid graph
         feature_flags = get_feature_flags()
         if feature_flags.is_enabled("hybrid_graph_v1", investigation_id):
+<<<<<<< HEAD
             config["configurable"] = {"thread_id": investigation_id}
             logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
         else:
+=======
+            config["configurable"] = {"thread_id": investigation_id, "investigation_id": investigation_id}
+            logger.info(f"🧠 Using Hybrid Intelligence graph for investigation: {investigation_id}")
+        else:
+            config["configurable"] = {"investigation_id": investigation_id}  # CRITICAL: Always pass investigation_id
+>>>>>>> 001-modify-analyzer-method
             logger.info(f"🔄 Using Clean graph orchestration for investigation: {investigation_id}")
 
         # Execute the clean graph system
@@ -177,12 +187,26 @@ async def _execute_agent_investigation_phase(
         await log_agent_successful_execution(investigation_id, investigation_query, result, start_time, end_time, trace_id)
         
     except Exception as agent_error:
-        logger.error(f"❌ REAL AGENT EXECUTION FAILED: {agent_error}")
-        logger.exception("Full agent execution error traceback:")
+        error_message = str(agent_error)
+        error_type = type(agent_error).__name__
+        logger.error(f"❌ REAL AGENT EXECUTION FAILED: {error_type}: {error_message}")
+        logger.exception(f"Full agent execution error traceback for investigation {investigation_id}:")
         
         # Log failed execution
         from .investigation_agent_tracking import log_agent_failed_execution
         await log_agent_failed_execution(investigation_id, agent_error)
+        
+        # Update investigation status with error before re-raising
+        try:
+            update_investigation_status(investigation_id, {
+                "status": "failed",
+                "error_message": f"Agent execution failed: {error_type}: {error_message}",
+                "current_phase": "agent_execution",
+                "completion_time": datetime.now(timezone.utc).isoformat()
+            })
+        except Exception as status_error:
+            logger.error(f"Failed to update investigation status after agent error: {str(status_error)}")
+        
         raise agent_error
     
     execution_duration_ms = int((end_time - start_time).total_seconds() * 1000)
@@ -195,7 +219,7 @@ async def _execute_agent_investigation_phase(
     return result
 
 
-async def _create_agent_context(investigation_id: str, investigation_query: str, request: AutonomousInvestigationRequest):
+async def _create_agent_context(investigation_id: str, investigation_query: str, request: StructuredInvestigationRequest):
     """Create agent context for investigation execution"""
     
     from app.models.agent_context import AgentContext
@@ -204,7 +228,7 @@ async def _create_agent_context(investigation_id: str, investigation_query: str,
     
     # Create authentication context for the agent
     auth_context = AuthContext(
-        olorin_user_id="autonomous_investigation_user",
+        olorin_user_id="structured_investigation_user",
         olorin_user_token="auto_investigation_token",
         olorin_realmid="investigation_realm"
     )
@@ -212,7 +236,7 @@ async def _create_agent_context(investigation_id: str, investigation_query: str,
     olorin_header = OlorinHeader(
         auth_context=auth_context,
         experience_id=investigation_id,
-        originating_assetalias="autonomous_investigation"
+        originating_assetalias="structured_investigation"
     )
     
     # Create agent context
@@ -228,7 +252,7 @@ async def _create_agent_context(investigation_id: str, investigation_query: str,
                     "investigation_id": investigation_id,
                     "entity_type": request.entity_type,
                     "entity_id": request.entity_id,
-                    "autonomous_mode": "true"  # String value as required by Dict[str, str]
+                    "structured_mode": "true"  # String value as required by Dict[str, str]
                 }
             }
         )

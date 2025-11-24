@@ -1,15 +1,15 @@
 """
-Base Autonomous Investigation Agents
+Base Structured Investigation Agents
 
-Core classes and functionality for autonomous fraud investigation agents that use 
-LLM-driven decision making and autonomous tool selection.
+Core classes and functionality for structured fraud investigation agents that use 
+LLM-driven decision making and structured tool selection.
 """
 
 # Import from the split modules for backward compatibility
 from .autonomous_base import (
-    AutonomousInvestigationAgent,
-    autonomous_llm,
-    get_autonomous_llm,
+    StructuredInvestigationAgent,
+    structured_llm,
+    get_structured_llm,
 )
 
 # Import RAG-enhanced agent if available
@@ -26,9 +26,9 @@ except ImportError:
 
 # Re-export for backward compatibility
 __all__ = [
-    'AutonomousInvestigationAgent',
-    'autonomous_llm', 
-    'get_autonomous_llm',
+    'StructuredInvestigationAgent',
+    'structured_llm', 
+    'get_structured_llm',
 ]
 
 # Add RAG-enhanced agent if available

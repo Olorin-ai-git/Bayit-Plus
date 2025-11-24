@@ -8,12 +8,17 @@ Provides HTML generation for headers, summaries, timelines, and other report sec
 from ..data_models import InvestigationSummary, ComponentData
 from ..utils import DateTimeFormatter, DataFormatter, StatusFormatter, ListFormatter
 from typing import Dict, List, Any
+<<<<<<< HEAD
+=======
+from app.service.reporting.olorin_logo import get_olorin_header, OLORIN_FOOTER
+>>>>>>> 001-modify-analyzer-method
 
 
 class HeaderGenerator:
     """Generates HTML headers for reports."""
 
     def generate_header(self, summary: InvestigationSummary, title: str, timestamp: str) -> str:
+<<<<<<< HEAD
         """Generate the enhanced report header."""
         status_class = StatusFormatter.get_status_class(summary.status)
 
@@ -40,6 +45,33 @@ class HeaderGenerator:
                 </div>
             </div>
         </header>
+=======
+        """Generate the enhanced report header with Olorin logo."""
+        status_class = StatusFormatter.get_status_class(summary.status)
+        
+        # Use Olorin logo header
+        logo_header = get_olorin_header(title)
+        
+        return f"""
+        {logo_header}
+        <div class="header-grid" style="margin-top: 20px;">
+            <div class="investigation-badge">
+                <strong>Mode:</strong> {summary.mode or "Unknown"}
+            </div>
+            <div class="investigation-badge">
+                <strong>Investigation ID:</strong> {summary.investigation_id or "Unknown"}
+            </div>
+            <div class="investigation-badge status-{status_class}">
+                <strong>Status:</strong> {summary.status or "Unknown"}
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <div class="investigation-badge">
+                <strong>Scenario:</strong> {summary.scenario or "Unknown"}
+            </div>
+        </div>
+>>>>>>> 001-modify-analyzer-method
         """
 
 
@@ -121,6 +153,7 @@ class FooterGenerator:
     """Generates HTML footers for reports."""
 
     def generate_footer(self) -> str:
+<<<<<<< HEAD
         """Generate report footer."""
         return """
         <footer class="footer">
@@ -132,6 +165,10 @@ class FooterGenerator:
             </p>
         </footer>
         """
+=======
+        """Generate report footer with Olorin branding."""
+        return OLORIN_FOOTER
+>>>>>>> 001-modify-analyzer-method
 
 
 # Placeholder component generators - minimal implementations

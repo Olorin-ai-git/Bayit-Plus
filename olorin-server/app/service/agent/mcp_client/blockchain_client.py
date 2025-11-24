@@ -29,7 +29,7 @@ class BlockchainMCPClient(BaseTool):
     LangChain tool that acts as an MCP client for blockchain analysis.
     
     This tool connects to external blockchain analysis MCP servers
-    and can be used by Olorin's autonomous agents.
+    and can be used by Olorin's structured agents.
     """
     
     name: str = "blockchain_mcp_client"

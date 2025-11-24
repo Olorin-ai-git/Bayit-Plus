@@ -1,12 +1,20 @@
 """
+<<<<<<< HEAD
 Comprehensive Test Suite for Autonomous Investigation Orchestrator
+=======
+Comprehensive Test Suite for Structured Investigation Orchestrator
+>>>>>>> 001-modify-analyzer-method
 
 Tests for the core orchestrator functionality, AI-driven decision making,
 agent coordination, and bulletproof resilience patterns.
 
 Author: Gil Klainert  
 Date: 2025-09-06
+<<<<<<< HEAD
 Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
+=======
+Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
+>>>>>>> 001-modify-analyzer-method
 Phase: 5.1 - Comprehensive Test Suite
 """
 
@@ -17,7 +25,11 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from typing import Dict, Any, List
 
+<<<<<<< HEAD
 from app.service.agent.autonomous_orchestrator import AutonomousInvestigationOrchestrator, OrchestratorDecision
+=======
+from app.service.agent.structured_orchestrator import StructuredInvestigationOrchestrator, OrchestratorDecision
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestrator_state import OrchestratorStateManager, InvestigationPhase
 from app.service.agent.agent_coordination import IntelligentAgentCoordinator, CoordinationMode
 from app.service.agent.flow_continuity import FlowContinuityManager, ContinuityStrategy
@@ -28,7 +40,11 @@ from app.service.monitoring.orchestrator_monitoring import OrchestratorMonitorin
 @pytest.fixture
 async def orchestrator():
     """Create orchestrator instance for testing"""
+<<<<<<< HEAD
     orchestrator = AutonomousInvestigationOrchestrator()
+=======
+    orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
     await orchestrator.initialize()
     return orchestrator
 
@@ -67,7 +83,11 @@ def mock_ai_client():
     return mock_client
 
 
+<<<<<<< HEAD
 class TestAutonomousInvestigationOrchestrator:
+=======
+class TestStructuredInvestigationOrchestrator:
+>>>>>>> 001-modify-analyzer-method
     """Test cases for the main orchestrator class"""
     
     @pytest.mark.asyncio
@@ -585,7 +605,11 @@ class TestOrchestratorIntegration:
     @pytest.mark.asyncio
     async def test_end_to_end_investigation_orchestration(self, sample_investigation_data):
         """Test complete end-to-end investigation orchestration"""
+<<<<<<< HEAD
         orchestrator = AutonomousInvestigationOrchestrator()
+=======
+        orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
         await orchestrator.initialize()
         
         # Mock AI responses for different phases
@@ -635,7 +659,11 @@ class TestOrchestratorIntegration:
     @pytest.mark.asyncio
     async def test_investigation_with_agent_failures(self, sample_investigation_data):
         """Test investigation handling when agents fail"""
+<<<<<<< HEAD
         orchestrator = AutonomousInvestigationOrchestrator()
+=======
+        orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
         await orchestrator.initialize()
         
         # Mock AI client
@@ -667,7 +695,11 @@ class TestOrchestratorIntegration:
     @pytest.mark.asyncio
     async def test_monitoring_during_investigation(self, sample_investigation_data):
         """Test monitoring system during actual investigation"""
+<<<<<<< HEAD
         orchestrator = AutonomousInvestigationOrchestrator()
+=======
+        orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
         await orchestrator.initialize()
         
         # Start monitoring

@@ -19,7 +19,7 @@ from .result_augmentation_core import (
 )
 from .enhanced_tool_base import ToolResult
 from .rag_tool_context import ToolExecutionContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -74,7 +74,7 @@ class ToolResultAugmentationService:
         self,
         result: ToolResult,
         context: Optional[ToolExecutionContext] = None,
-        investigation_context: Optional[AutonomousInvestigationContext] = None,
+        investigation_context: Optional[StructuredInvestigationContext] = None,
         domain: Optional[str] = None,
         augmentation_config: Optional[ResultAugmentationConfig] = None
     ) -> Union[AugmentedToolResult, ToolResult]:

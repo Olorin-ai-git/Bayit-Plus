@@ -1,7 +1,7 @@
 """
 Multi-Entity Investigation Models
 
-This module contains all Pydantic models for multi-entity autonomous investigations
+This module contains all Pydantic models for multi-entity structured investigations
 including request models, relationship models, and comprehensive result models.
 
 Phase 2.1 Implementation: Multi-Entity Investigation Request Models
@@ -14,6 +14,7 @@ import uuid
 import re
 
 from app.service.agent.multi_entity.entity_manager import EntityType
+from app.router.models.autonomous_investigation_models import TimeRange
 
 
 class RelationshipType(Enum):
@@ -62,48 +63,53 @@ class EntityRelationship(BaseModel):
 
 
 class MultiEntityInvestigationRequest(BaseModel):
-    """Request model for multi-entity autonomous investigation"""
-    
+    """Request model for multi-entity structured investigation"""
+
     investigation_id: str = Field(
-        default_factory=lambda: f"multi_{uuid.uuid4().hex[:8]}", 
+        default_factory=lambda: f"multi_{uuid.uuid4().hex[:8]}",
         description="Unique investigation identifier"
     )
-    
+
     entities: List[Dict[str, str]] = Field(
-        ..., 
-        min_length=2, 
+        ...,
+        min_length=2,
         max_length=10,
         description="List of entities to investigate - format: [{'entity_id': 'user123', 'entity_type': 'user'}]"
     )
-    
+
     relationships: List[EntityRelationship] = Field(
         default_factory=list,
         description="Relationships between entities"
     )
-    
+
     boolean_logic: str = Field(
         default="AND",
         description="Boolean logic for entity investigation: 'AND', 'OR', '(A AND B) OR C'"
     )
-    
+
+    time_range: Optional[TimeRange] = Field(
+        None,
+        description="Optional time range filter for investigation data across all entities"
+    )
+
     investigation_scope: List[str] = Field(
         default=["device", "location", "network", "logs"],
         description="Investigation agent scopes to execute"
     )
-    
+
     priority: str = Field(
         default="normal",
         pattern="^(low|normal|high|critical)$",
         description="Investigation priority level"
     )
-    
+
     enable_verbose_logging: bool = Field(default=True, description="Enable comprehensive logging")
     enable_journey_tracking: bool = Field(default=True, description="Enable LangGraph journey tracking")
     enable_chain_of_thought: bool = Field(default=True, description="Enable agent reasoning logging")
     enable_cross_entity_analysis: bool = Field(default=True, description="Enable cross-entity pattern analysis")
-    
+
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional investigation metadata")
-    
+
     class Config:
         """Pydantic model configuration"""
         use_enum_values = True
@@ -220,7 +226,7 @@ class InvestigationResult(BaseModel):
 
 
 class MultiEntityInvestigationResult(BaseModel):
-    """Complete results from multi-entity autonomous investigation"""
+    """Complete results from multi-entity structured investigation"""
     
     investigation_id: str = Field(..., description="Investigation identifier")
     status: str = Field(default="completed", description="Investigation status")

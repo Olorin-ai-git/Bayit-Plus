@@ -7,7 +7,7 @@ import { InvestigationStepId, StepStatus } from 'src/js/constants/definitions';
 const theme = createTheme();
 
 const defaultProps = {
-  autonomousMode: false,
+  structuredMode: false,
   stepStates: [],
   selectedInvestigationSteps: [],
   currentStep: InvestigationStepId.INIT,
@@ -31,17 +31,17 @@ describe('ManualInvestigationPanel', () => {
     renderWithTheme(<ManualInvestigationPanel {...defaultProps} />);
   });
 
-  it('shows the panel when autonomousMode is false', () => {
+  it('shows the panel when structuredMode is false', () => {
     renderWithTheme(
-      <ManualInvestigationPanel {...defaultProps} autonomousMode={false} />
+      <ManualInvestigationPanel {...defaultProps} structuredMode={false} />
     );
     // The panel should be visible
     expect(screen.getByText('Risk Assessment Pending...')).toBeInTheDocument();
   });
 
-  it('hides the panel when autonomousMode is true', () => {
+  it('hides the panel when structuredMode is true', () => {
     renderWithTheme(
-      <ManualInvestigationPanel {...defaultProps} autonomousMode={true} />
+      <ManualInvestigationPanel {...defaultProps} structuredMode={true} />
     );
     // The panel should not be visible
     expect(screen.queryByText('Risk Assessment Pending...')).not.toBeInTheDocument();

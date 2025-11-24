@@ -12,8 +12,8 @@ from typing import Dict, Any
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
-from app.service.agent.autonomous_agents import autonomous_device_agent
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
+from app.service.agent.structured_agents import structured_device_agent
 
 
 class PerformanceBenchmarker:
@@ -32,7 +32,7 @@ class PerformanceBenchmarker:
             print(f"   Iteration {i+1}/{iterations}")
             
             # Create test context
-            context = AutonomousInvestigationContext(
+            context = StructuredInvestigationContext(
                 entity_type=EntityType.DEVICE,
                 entity_id=f"benchmark_device_{i}",
                 investigation_id=f"benchmark_investigation_{i}",
@@ -42,7 +42,7 @@ class PerformanceBenchmarker:
             # Measure execution time
             start_time = time.time()
             try:
-                result = await autonomous_device_agent.ainvoke({"context": context})
+                result = await structured_device_agent.ainvoke({"context": context})
                 end_time = time.time()
                 execution_time = end_time - start_time
                 execution_times.append(execution_time)
@@ -82,7 +82,7 @@ class PerformanceBenchmarker:
         # Create test contexts
         contexts = []
         for i in range(concurrent_count):
-            context = AutonomousInvestigationContext(
+            context = StructuredInvestigationContext(
                 entity_type=EntityType.DEVICE,
                 entity_id=f"concurrent_device_{i}",
                 investigation_id=f"concurrent_investigation_{i}",
@@ -94,7 +94,7 @@ class PerformanceBenchmarker:
         start_time = time.time()
         try:
             # Run agents concurrently
-            tasks = [autonomous_device_agent.ainvoke({"context": ctx}) for ctx in contexts]
+            tasks = [structured_device_agent.ainvoke({"context": ctx}) for ctx in contexts]
             results = await asyncio.gather(*tasks, return_exceptions=True)
             end_time = time.time()
             
@@ -135,7 +135,7 @@ class PerformanceBenchmarker:
             # Run multiple agents to stress test memory
             contexts = []
             for i in range(10):
-                context = AutonomousInvestigationContext(
+                context = StructuredInvestigationContext(
                     entity_type=EntityType.DEVICE,
                     entity_id=f"memory_test_device_{i}",
                     investigation_id=f"memory_test_investigation_{i}",
@@ -148,7 +148,7 @@ class PerformanceBenchmarker:
             
             for i, context in enumerate(contexts):
                 try:
-                    await autonomous_device_agent.ainvoke({"context": context})
+                    await structured_device_agent.ainvoke({"context": context})
                     current_memory = process.memory_info().rss / 1024 / 1024  # MB
                     memory_measurements.append(current_memory)
                     print(f"   After agent {i+1}: {current_memory:.1f} MB")

@@ -23,7 +23,7 @@ from app.service.agent.rag_tool_integration import (
     AgentRAGToolOrchestrator,
     RAGToolFactory
 )
-from app.service.agent.autonomous_context import AutonomousInvestigationContext, EntityType
+from app.service.agent.structured_context import StructuredInvestigationContext, EntityType
 
 
 class MockRAGOrchestrator:
@@ -89,7 +89,7 @@ class TestToolForRAG(RAGEnhancedToolBase):
 @pytest.fixture
 async def mock_investigation_context():
     """Create mock investigation context"""
-    return AutonomousInvestigationContext(
+    return StructuredInvestigationContext(
         investigation_id="test_investigation_123",
         entity_id="test_entity_456",
         entity_type=EntityType.USER,

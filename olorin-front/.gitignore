@@ -67,3 +67,10 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Legacy archived code (excluded from builds)
+src/legacy/
+
+# ===== Contract Testing - Generated TypeScript Types =====
+# Auto-generated API types from OpenAPI schema
+src/api/generated/

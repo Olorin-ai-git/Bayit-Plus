@@ -5,7 +5,7 @@ This module implements Phase 2 of the LangGraph enhancement plan, providing:
 - Real-time investigation progress streaming
 - Agent coordination streaming
 - Performance metrics streaming
-- WebSocket integration for live updates
+- WebSocket integration removed per spec 005 - using polling instead
 """
 
 import asyncio
@@ -344,69 +344,70 @@ class PerformanceTracker:
         }
 
 
-class WebSocketStreamAdapter:
-    """Adapts stream events for WebSocket transmission."""
-    
-    def __init__(self, websocket_manager):
-        """
-        Initialize WebSocket adapter.
-        
-        Args:
-            websocket_manager: WebSocket connection manager
-        """
-        self.websocket_manager = websocket_manager
-        
-    async def stream_to_websocket(
-        self,
-        streamer: InvestigationStreamer,
-        input_data: Dict[str, Any],
-        config: RunnableConfig,
-        investigation_id: str,
-        connection_id: str
-    ):
-        """
-        Stream investigation updates to WebSocket.
-        
-        Args:
-            streamer: Investigation streamer
-            input_data: Investigation input
-            config: Runtime configuration
-            investigation_id: Investigation ID
-            connection_id: WebSocket connection ID
-        """
-        try:
-            async for event in streamer.stream_investigation(
-                input_data,
-                config,
-                investigation_id
-            ):
-                # Convert event to JSON
-                event_json = json.dumps(event.to_dict())
-                
-                # Send to WebSocket
-                await self.websocket_manager.send_message(
-                    connection_id,
-                    event_json
-                )
-                
-                # Log progress
-                if event.event_type in [
-                    StreamEventType.AGENT_COMPLETE,
-                    StreamEventType.RISK_UPDATE
-                ]:
-                    logger.info(f"Streamed {event.event_type.value} for {investigation_id}")
-                    
-        except Exception as e:
-            logger.error(f"WebSocket streaming error: {e}")
-            error_event = StreamEvent(
-                event_type=StreamEventType.ERROR,
-                timestamp=datetime.now().isoformat(),
-                data={"error": str(e)}
-            )
-            await self.websocket_manager.send_message(
-                connection_id,
-                json.dumps(error_event.to_dict())
-            )
+# WebSocketStreamAdapter class removed per spec 005 - using polling-based updates instead
+# class WebSocketStreamAdapter:
+#     """Adapts stream events for WebSocket transmission."""
+#
+#     def __init__(self, websocket_manager):
+#         """
+#         Initialize WebSocket adapter.
+#
+#         Args:
+#             websocket_manager: WebSocket connection manager
+#         """
+#         self.websocket_manager = websocket_manager
+#
+#     async def stream_to_websocket(
+#         self,
+#         streamer: InvestigationStreamer,
+#         input_data: Dict[str, Any],
+#         config: RunnableConfig,
+#         investigation_id: str,
+#         connection_id: str
+#     ):
+#         """
+#         Stream investigation updates to WebSocket.
+#
+#         Args:
+#             streamer: Investigation streamer
+#             input_data: Investigation input
+#             config: Runtime configuration
+#             investigation_id: Investigation ID
+#             connection_id: WebSocket connection ID
+#         """
+#         try:
+#             async for event in streamer.stream_investigation(
+#                 input_data,
+#                 config,
+#                 investigation_id
+#             ):
+#                 # Convert event to JSON
+#                 event_json = json.dumps(event.to_dict())
+#
+#                 # Send to WebSocket
+#                 await self.websocket_manager.send_message(
+#                     connection_id,
+#                     event_json
+#                 )
+#
+#                 # Log progress
+#                 if event.event_type in [
+#                     StreamEventType.AGENT_COMPLETE,
+#                     StreamEventType.RISK_UPDATE
+#                 ]:
+#                     logger.info(f"Streamed {event.event_type.value} for {investigation_id}")
+#
+#         except Exception as e:
+#             logger.error(f"WebSocket streaming error: {e}")
+#             error_event = StreamEvent(
+#                 event_type=StreamEventType.ERROR,
+#                 timestamp=datetime.now().isoformat(),
+#                 data={"error": str(e)}
+#             )
+#             await self.websocket_manager.send_message(
+#                 connection_id,
+#                 json.dumps(error_event.to_dict())
+#             )
 
 
 async def stream_investigation_updates(

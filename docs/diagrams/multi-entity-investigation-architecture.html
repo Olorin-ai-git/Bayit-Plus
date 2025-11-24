@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Entity Autonomous Investigation System Architecture</title>
+    <title>Multi-Entity Structured Investigation System Architecture</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
         body {
@@ -90,19 +90,19 @@
     </style>
 </head>
 <body>
-    <h1>🔍 Multi-Entity Autonomous Investigation System Architecture</h1>
+    <h1>🔍 Multi-Entity Structured Investigation System Architecture</h1>
     
     <div class="metadata">
         <strong>Date:</strong> 2025-01-09<br>
         <strong>Author:</strong> Gil Klainert<br>
-        <strong>Plan Reference:</strong> <a href="/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md">Multi-Entity Autonomous Investigation System Plan</a><br>
+        <strong>Plan Reference:</strong> <a href="/docs/plans/2025-01-09-enhanced-entity-search-system-plan.md">Multi-Entity Structured Investigation System Plan</a><br>
         <strong>System:</strong> Olorin Fraud Detection Platform
     </div>
 
     <div class="diagram-container">
         <div class="diagram-title">🏗️ Multi-Entity Investigation Architecture Overview</div>
         <div class="diagram-description">
-            <strong>Purpose:</strong> This diagram shows the complete architecture for multi-entity autonomous investigations, extending the existing LangGraph workflow to support multiple related entities with Boolean relationship logic.
+            <strong>Purpose:</strong> This diagram shows the complete architecture for multi-entity structured investigations, extending the existing LangGraph workflow to support multiple related entities with Boolean relationship logic.
         </div>
         <div class="mermaid">
 graph TB
@@ -113,8 +113,8 @@ graph TB
         A --> E[InvestigationHistoryPanel]
     end
 
-    subgraph "Autonomous Investigation API"
-        F[AutonomousInvestigationRouter] --> G[MultiEntityInvestigationRequest]
+    subgraph "Structured Investigation API"
+        F[StructuredInvestigationRouter] --> G[MultiEntityInvestigationRequest]
         G --> H[MultiEntityInvestigationResponse]
         F --> I[InvestigationStatusEndpoint]
         F --> J[WebSocketUpdates]
@@ -169,7 +169,7 @@ graph TB
             <strong>Key Architecture Components:</strong>
             <ul>
                 <li><strong>Frontend Interface:</strong> React components for multi-entity investigation management</li>
-                <li><strong>API Layer:</strong> Extended autonomous investigation endpoints</li>
+                <li><strong>API Layer:</strong> Extended structured investigation endpoints</li>
                 <li><strong>Investigation Engine:</strong> LangGraph orchestrator with cross-entity analysis</li>
                 <li><strong>Existing Tools:</strong> Reuse all current investigation tools across multiple entities</li>
                 <li><strong>Enhanced Entities:</strong> Extended entity types from transaction CSV data</li>
@@ -178,7 +178,7 @@ graph TB
     </div>
 
     <div class="diagram-container">
-        <div class="diagram-title">🔄 Multi-Entity Autonomous Investigation Flow</div>
+        <div class="diagram-title">🔄 Multi-Entity Structured Investigation Flow</div>
         <div class="diagram-description">
             <strong>Purpose:</strong> This sequence diagram illustrates how a multi-entity investigation request flows through the system, showing how LangGraph agents coordinate to investigate multiple related entities using existing tools.
         </div>
@@ -440,7 +440,7 @@ gantt
         <div class="feature-list">
             <strong>Integration Points:</strong>
             <ul>
-                <li><strong>Existing LangGraph Workflow:</strong> Extends current autonomous investigation system</li>
+                <li><strong>Existing LangGraph Workflow:</strong> Extends current structured investigation system</li>
                 <li><strong>Investigation Tools:</strong> Reuses Splunk, vector search, OSINT, threat intelligence tools</li>
                 <li><strong>Entity Management:</strong> Builds on current EntityManager with 48 entity types</li>
                 <li><strong>WebSocket Infrastructure:</strong> Leverages existing real-time update system</li>

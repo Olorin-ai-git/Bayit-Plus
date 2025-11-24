@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+<<<<<<< HEAD
 
 export interface RAGQuery {
   query: string;
@@ -7,11 +8,34 @@ export interface RAGQuery {
   max_tokens?: number;
   top_k?: number;
   top_p?: number;
+=======
+import { getConfig } from '../config/env.config';
+
+export interface RAGQuery {
+  query_text: string;
+  data_source_ids?: string[];
+  limit?: number;
+  similarity_threshold?: number;
+  investigation_id?: string;
+  entity_id?: string;
+  user_id?: string;
+}
+
+export interface Citation {
+  chunk_id: string;
+  source_type: string;
+  source_name: string;
+  similarity_score: number;
+  investigation_id?: string;
+  document_id?: string;
+  metadata?: Record<string, any>;
+>>>>>>> 001-modify-analyzer-method
 }
 
 export interface RAGResponse {
   answer: string;
   sources: {
+<<<<<<< HEAD
     id: string;
     content: string;
     score: number;
@@ -20,6 +44,19 @@ export interface RAGResponse {
   confidence: number;
   processing_time: number;
   model_used: string;
+=======
+    chunk_id: string;
+    content: string;
+    similarity_score: number;
+    source_type: string;
+    source_name: string;
+    metadata?: Record<string, any>;
+  }[];
+  citations: Citation[];
+  confidence: number;
+  processing_time_ms: number;
+  query_id?: string;
+>>>>>>> 001-modify-analyzer-method
 }
 
 export interface RAGConfiguration {
@@ -55,8 +92,15 @@ class RAGApiService {
   private apiKey?: string;
 
   constructor() {
+<<<<<<< HEAD
     this.baseURL = process.env.REACT_APP_RAG_API_URL || 'http://localhost:8090/api/rag';
     this.apiKey = process.env.REACT_APP_RAG_API_KEY;
+=======
+    const config = getConfig();
+    this.baseURL = `${config.api.baseUrl}/api/v1/rag`;
+    // Get API key from config (handles browser environment)
+    this.apiKey = config.api.apiKey;
+>>>>>>> 001-modify-analyzer-method
   }
 
   private getHeaders() {
@@ -85,7 +129,19 @@ class RAGApiService {
     try {
       const response: AxiosResponse<RAGResponse> = await axios.post(
         `${this.baseURL}/query`,
+<<<<<<< HEAD
         queryData,
+=======
+        {
+          query_text: queryData.query_text,
+          data_source_ids: queryData.data_source_ids,
+          limit: queryData.limit || 10,
+          similarity_threshold: queryData.similarity_threshold || 0.7,
+          investigation_id: queryData.investigation_id,
+          entity_id: queryData.entity_id,
+          user_id: queryData.user_id
+        },
+>>>>>>> 001-modify-analyzer-method
         { headers: this.getHeaders() }
       );
       return response.data;
@@ -213,6 +269,167 @@ class RAGApiService {
       throw new Error('Failed to get system status');
     }
   }
+<<<<<<< HEAD
+=======
+
+  async getDataSources(): Promise<any[]> {
+    try {
+      const response: AxiosResponse<any[]> = await axios.get(
+        `${this.baseURL}/data-sources`,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get data sources:', error);
+      throw new Error('Failed to get data sources');
+    }
+  }
+
+  async createDataSource(data: any): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.baseURL}/data-sources`,
+        data,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create data source:', error);
+      throw new Error('Failed to create data source');
+    }
+  }
+
+  async updateDataSource(id: string, data: any): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.put(
+        `${this.baseURL}/data-sources/${id}`,
+        data,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update data source:', error);
+      throw new Error('Failed to update data source');
+    }
+  }
+
+  async deleteDataSource(id: string): Promise<void> {
+    try {
+      await axios.delete(
+        `${this.baseURL}/data-sources/${id}`,
+        { headers: this.getHeaders() }
+      );
+    } catch (error) {
+      console.error('Failed to delete data source:', error);
+      throw new Error('Failed to delete data source');
+    }
+  }
+
+  async testDataSourceConnection(id: string): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.baseURL}/data-sources/${id}/test`,
+        {},
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to test data source connection:', error);
+      throw new Error('Failed to test data source connection');
+    }
+  }
+
+  // Chat Session Methods
+  async createChatSession(title?: string, metadata?: Record<string, any>): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.baseURL}/chats`,
+        { title, metadata },
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create chat session:', error);
+      throw new Error('Failed to create chat session');
+    }
+  }
+
+  async getChatSessions(includeInactive: boolean = false): Promise<any[]> {
+    try {
+      const response: AxiosResponse<any[]> = await axios.get(
+        `${this.baseURL}/chats`,
+        {
+          params: { include_inactive: includeInactive },
+          headers: this.getHeaders()
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get chat sessions:', error);
+      throw new Error('Failed to get chat sessions');
+    }
+  }
+
+  async getChatSession(sessionId: string): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.get(
+        `${this.baseURL}/chats/${sessionId}`,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get chat session:', error);
+      throw new Error('Failed to get chat session');
+    }
+  }
+
+  async updateChatSession(sessionId: string, data: { title?: string; is_active?: boolean; metadata?: Record<string, any> }): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.put(
+        `${this.baseURL}/chats/${sessionId}`,
+        data,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update chat session:', error);
+      throw new Error('Failed to update chat session');
+    }
+  }
+
+  async deleteChatSession(sessionId: string): Promise<void> {
+    try {
+      await axios.delete(
+        `${this.baseURL}/chats/${sessionId}`,
+        { headers: this.getHeaders() }
+      );
+    } catch (error) {
+      console.error('Failed to delete chat session:', error);
+      throw new Error('Failed to delete chat session');
+    }
+  }
+
+  async addChatMessage(sessionId: string, message: {
+    sender: string;
+    content: string;
+    natural_query?: string;
+    translated_query?: string;
+    query_metadata?: Record<string, any>;
+    structured_data?: Record<string, any>;
+  }): Promise<any> {
+    try {
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.baseURL}/chats/${sessionId}/messages`,
+        message,
+        { headers: this.getHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add chat message:', error);
+      throw new Error('Failed to add chat message');
+    }
+  }
+>>>>>>> 001-modify-analyzer-method
 }
 
 export default new RAGApiService();

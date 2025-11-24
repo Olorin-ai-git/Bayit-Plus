@@ -3,11 +3,16 @@
 **Feature Branch**: `003-hybrid-graph-investigation`
 **Created**: 2025-01-21
 **Status**: Draft
+<<<<<<< HEAD
 **Input**: User description: "Hybrid Graph Investigation: Create 4 contrasting UI concepts (AD) that help analysts run, inspect, and report on autonomous investigations that orchestrate 'hybrid graph' agents (domains, tools, decisions, evidence). Optimize for clarity, speed, and auditability."
+=======
+**Input**: User description: "Hybrid Graph Investigation: Create 4 contrasting UI concepts (AD) that help analysts run, inspect, and report on structured investigations that orchestrate 'hybrid graph' agents (domains, tools, decisions, evidence). Optimize for clarity, speed, and auditability."
+>>>>>>> 001-modify-analyzer-method
 
 ## Execution Flow (main)
 ```
 1. Parse user description from Input
+<<<<<<< HEAD
    ’ Identified: 4 contrasting UI concepts for hybrid graph investigation interface
 2. Extract key concepts from description
    ’ Actors: investigators, leads/managers, compliance/audit teams, SRE/platform teams
@@ -24,12 +29,34 @@
    ’ Investigation, Domain, Agent/Tool, Event, RiskSignal, Summary, Telemetry
 7. Run Review Checklist
    ’ All sections complete and clear for 4 distinct concepts
+=======
+   ï¿½ Identified: 4 contrasting UI concepts for hybrid graph investigation interface
+2. Extract key concepts from description
+   ï¿½ Actors: investigators, leads/managers, compliance/audit teams, SRE/platform teams
+   ï¿½ Actions: run investigations, inspect results, generate reports, monitor operations
+   ï¿½ Data: investigations, domains, agents/tools, events, risk signals, summaries, telemetry
+   ï¿½ Constraints: clarity, speed, auditability, accessibility (WCAG AA), performance
+3. For each UI concept (A-D):
+   ï¿½ Define unique design approach and target persona
+4. Fill User Scenarios & Testing section
+   ï¿½ Cover investigation workflows across all user types
+5. Generate Functional Requirements
+   ï¿½ Each UI concept requirement is testable and measurable
+6. Identify Key Entities
+   ï¿½ Investigation, Domain, Agent/Tool, Event, RiskSignal, Summary, Telemetry
+7. Run Review Checklist
+   ï¿½ All sections complete and clear for 4 distinct concepts
+>>>>>>> 001-modify-analyzer-method
 8. Return: SUCCESS (spec ready for planning)
 ```
 
 ---
 
+<<<<<<< HEAD
 ## ¡ Quick Guidelines
+=======
+## ï¿½ Quick Guidelines
+>>>>>>> 001-modify-analyzer-method
 -  Focus on WHAT users need and WHY
 - L Avoid HOW to implement (no tech stack, APIs, code structure)
 - =e Written for business stakeholders, not developers
@@ -81,6 +108,7 @@ As a platform engineer, I need tool health monitoring, latency tracking, failure
 
 ### Edge Cases
 - What happens when graph visualization exceeds 300 nodes?
+<<<<<<< HEAD
   ’ System should cluster long-tail nodes and provide expansion controls
 - How does system handle tool failures during investigation?
   ’ Fail-soft behavior with clear error indicators and actionable recovery steps
@@ -88,6 +116,15 @@ As a platform engineer, I need tool health monitoring, latency tracking, failure
   ’ Investigation continues with internal data and clear indicators of missing intelligence
 - How does system handle concurrent access to same investigation?
   ’ Real-time collaboration with conflict resolution and change indicators
+=======
+  ï¿½ System should cluster long-tail nodes and provide expansion controls
+- How does system handle tool failures during investigation?
+  ï¿½ Fail-soft behavior with clear error indicators and actionable recovery steps
+- What happens when external intelligence sources are unavailable?
+  ï¿½ Investigation continues with internal data and clear indicators of missing intelligence
+- How does system handle concurrent access to same investigation?
+  ï¿½ Real-time collaboration with conflict resolution and change indicators
+>>>>>>> 001-modify-analyzer-method
 
 ## Requirements *(mandatory)*
 
@@ -98,7 +135,11 @@ As a platform engineer, I need tool health monitoring, latency tracking, failure
 - **FR-002**: Each UI concept MUST handle the complete investigation lifecycle (initiation, monitoring, analysis, reporting)
 - **FR-003**: System MUST display real-time investigation status with confidence scores and quality metrics
 - **FR-004**: Users MUST be able to switch between active investigations with preserved context
+<<<<<<< HEAD
 - **FR-005**: System MUST support manual and autonomous investigation modes
+=======
+- **FR-005**: System MUST support manual and structured investigation modes
+>>>>>>> 001-modify-analyzer-method
 
 #### Graph Visualization & Interaction
 - **FR-006**: System MUST render hybrid graphs with nodes (Domain, Tool, Evidence, Decision) and edges (causal, temporal)

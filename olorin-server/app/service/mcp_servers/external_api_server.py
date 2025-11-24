@@ -21,6 +21,9 @@ logger = get_bridge_logger(__name__)
 class ReputationLevel(str, Enum):
     """IP reputation levels."""
     CLEAN = "clean"
+    LOW_RISK = "low_risk"
+    MEDIUM_RISK = "medium_risk"
+    HIGH_RISK = "high_risk"
     SUSPICIOUS = "suspicious"
     MALICIOUS = "malicious"
     UNKNOWN = "unknown"
@@ -63,17 +66,44 @@ async def check_ip_reputation(
     include_details: bool = True
 ) -> Dict[str, Any]:
     """
-    Check IP address reputation using external threat intelligence services.
+    Check IP address reputation using MaxMind minFraud API.
     
-    This tool queries multiple IP reputation databases to determine
-    if an IP address is associated with malicious activity.
+    This tool queries MaxMind minFraud for IP risk scoring, proxy/VPN/TOR detection,
+    and geolocation data. Falls back to AbuseIPDB if MaxMind unavailable.
     """
     try:
+<<<<<<< HEAD
         logger.info(f"Checking IP reputation: {ip}")
+=======
+        logger.info(f"Checking IP reputation using MaxMind: {ip}")
+        
+        # Use MaxMind client for IP risk scoring
+        from app.service.ip_risk.maxmind_client import MaxMindClient
+        
+        maxmind_client = MaxMindClient()
+        
+        # Score IP using MaxMind minFraud
+        score_data = await maxmind_client.score_transaction_with_fallback(
+            transaction_id=f"mcp_ip_reputation_{ip}",
+            ip_address=ip
+        )
+        
+        # Map MaxMind risk score to reputation level
+        risk_score = score_data.get("risk_score", 0.0)
+        if risk_score >= 75:
+            reputation_level = ReputationLevel.HIGH_RISK
+        elif risk_score >= 50:
+            reputation_level = ReputationLevel.MEDIUM_RISK
+        elif risk_score >= 25:
+            reputation_level = ReputationLevel.LOW_RISK
+        else:
+            reputation_level = ReputationLevel.CLEAN
+>>>>>>> 001-modify-analyzer-method
         
         reputation_data = {
             "status": "success",
             "ip": ip,
+<<<<<<< HEAD
             "reputation_level": ReputationLevel.UNKNOWN,
             "risk_score": 0.0,
             "is_proxy": False,
@@ -81,21 +111,34 @@ async def check_ip_reputation(
             "is_tor": False,
             "is_hosting": False,
             "timestamp": datetime.now().isoformat()
+=======
+            "reputation_level": reputation_level,
+            "risk_score": risk_score,
+            "is_proxy": score_data.get("is_proxy", False),
+            "is_vpn": score_data.get("is_vpn", False),
+            "is_tor": score_data.get("is_tor", False),
+            "is_hosting": False,  # MaxMind doesn't provide this
+            "provider": score_data.get("provider", "maxmind"),
+            "timestamp": score_data.get("scored_at", datetime.now().isoformat())
+>>>>>>> 001-modify-analyzer-method
         }
         
         if include_details:
+            geolocation = score_data.get("geolocation", {})
             reputation_data["details"] = {
-                "country": None,
-                "region": None,
-                "city": None,
-                "isp": None,
+                "country": geolocation.get("country", {}).get("code") if geolocation.get("country") else None,
+                "region": geolocation.get("region", {}).get("name") if geolocation.get("region") else None,
+                "city": geolocation.get("city", {}).get("name") if geolocation.get("city") else None,
+                "isp": None,  # MaxMind doesn't provide ISP in minFraud
                 "organization": None,
                 "abuse_reports": 0,
                 "threat_categories": [],
                 "last_seen_malicious": None,
-                "data_sources": []
+                "data_sources": [score_data.get("provider", "maxmind")],
+                "velocity_signals": score_data.get("velocity_signals", {})
             }
         
+<<<<<<< HEAD
         # TODO: Implement actual API calls to IP reputation services
         # Services to integrate:
         # - IPQualityScore
@@ -117,13 +160,17 @@ async def check_ip_reputation(
             reputation_data["status"] = "error"
             reputation_data["error"] = "Invalid IP address format"
         
+=======
+>>>>>>> 001-modify-analyzer-method
         return reputation_data
         
     except Exception as e:
-        logger.error(f"IP reputation check failed: {e}")
+        logger.error(f"IP reputation check failed: {e}", exc_info=True)
         return {
             "status": "error",
-            "error": str(e)
+            "ip": ip,
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
         }
 
 

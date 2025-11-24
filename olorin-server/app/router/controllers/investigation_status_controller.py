@@ -1,6 +1,6 @@
 """
 Investigation Status Controller
-This module handles status and logs retrieval for autonomous investigations.
+This module handles status and logs retrieval for structured investigations.
 """
 import logging
 from datetime import datetime, timezone
@@ -8,7 +8,7 @@ from typing import Dict, List, Any, Optional
 from fastapi import HTTPException
 
 from app.service.logging.autonomous_investigation_logger import (
-    autonomous_investigation_logger, InteractionType
+    structured_investigation_logger, InteractionType
 )
 from app.service.logging import get_bridge_logger
 from app.service.agent.journey_tracker import journey_tracker
@@ -23,7 +23,7 @@ logger = get_bridge_logger(__name__)
 
 async def get_investigation_status(investigation_id: str, active_investigations: Dict[str, Dict[str, Any]]) -> InvestigationStatusResponse:
     """
-    Get real-time status of an autonomous investigation.
+    Get real-time status of an structured investigation.
     
     Args:
         investigation_id: The investigation ID to get status for
@@ -51,7 +51,7 @@ async def get_investigation_status(investigation_id: str, active_investigations:
     # Get recent timeline from logs
     investigation_timeline = []
     try:
-        logs = autonomous_investigation_logger.get_investigation_logs(investigation_id)
+        logs = structured_investigation_logger.get_investigation_logs(investigation_id)
         investigation_timeline = [
             {
                 "timestamp": log["logged_at"],
@@ -83,7 +83,7 @@ async def get_investigation_status(investigation_id: str, active_investigations:
 
 async def get_investigation_logs(investigation_id: str) -> InvestigationLogsResponse:
     """
-    Get comprehensive logs for an autonomous investigation.
+    Get comprehensive logs for an structured investigation.
     
     Args:
         investigation_id: The investigation ID to get logs for
@@ -93,17 +93,17 @@ async def get_investigation_logs(investigation_id: str) -> InvestigationLogsResp
     """
     try:
         # Get comprehensive log summary
-        log_summary = autonomous_investigation_logger.generate_investigation_summary(investigation_id)
+        log_summary = structured_investigation_logger.generate_investigation_summary(investigation_id)
         
         # Get specific interaction types
-        all_logs = autonomous_investigation_logger.get_investigation_logs(investigation_id)
-        llm_interactions = autonomous_investigation_logger.get_investigation_logs(
+        all_logs = structured_investigation_logger.get_investigation_logs(investigation_id)
+        llm_interactions = structured_investigation_logger.get_investigation_logs(
             investigation_id, [InteractionType.LLM_CALL]
         )
-        agent_decisions = autonomous_investigation_logger.get_investigation_logs(
+        agent_decisions = structured_investigation_logger.get_investigation_logs(
             investigation_id, [InteractionType.AGENT_DECISION]
         )
-        tool_executions = autonomous_investigation_logger.get_investigation_logs(
+        tool_executions = structured_investigation_logger.get_investigation_logs(
             investigation_id, [InteractionType.TOOL_EXECUTION]
         )
         
@@ -125,7 +125,7 @@ async def get_investigation_logs(investigation_id: str) -> InvestigationLogsResp
 
 async def get_investigation_journey(investigation_id: str) -> LangGraphJourneyResponse:
     """
-    Get LangGraph journey visualization for an autonomous investigation.
+    Get LangGraph journey visualization for an structured investigation.
     
     Args:
         investigation_id: The investigation ID to get journey for

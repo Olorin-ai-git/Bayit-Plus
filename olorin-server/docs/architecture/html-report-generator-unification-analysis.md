@@ -10,17 +10,29 @@ This document analyzes two HTML generation systems in the Olorin codebase and pr
 
 ## Current Systems Analysis
 
+<<<<<<< HEAD
 ### System 1: Simple HTML Generator (`AutonomousInvestigationHTMLReporter`)
 
 **Location**: `/Users/gklainert/Documents/olorin/olorin-server/scripts/reporting/html_report_generator.py`
 
 **Primary Use Case**: Test runner reporting for autonomous investigation tests
+=======
+### System 1: Simple HTML Generator (`StructuredInvestigationHTMLReporter`)
+
+**Location**: `/Users/gklainert/Documents/olorin/olorin-server/scripts/reporting/html_report_generator.py`
+
+**Primary Use Case**: Test runner reporting for structured investigation tests
+>>>>>>> 001-modify-analyzer-method
 
 **Key Characteristics**:
 - **Size**: 928 lines (exceeds 200-line limit)
 - **Architecture**: Monolithic class with embedded HTML templates
 - **Data Source**: Test results dictionary from test runner
+<<<<<<< HEAD
 - **Primary User**: `unified_autonomous_test_runner.py`
+=======
+- **Primary User**: `unified_structured_test_runner.py`
+>>>>>>> 001-modify-analyzer-method
 
 **Capabilities**:
 1. **Executive Summary** - Test metrics (passed/failed/pass rate)
@@ -75,7 +87,11 @@ test_results = {
 
 **Location**: `/Users/gklainert/Documents/olorin/olorin-server/app/service/reporting/enhanced_html_report_generator.py`
 
+<<<<<<< HEAD
 **Primary Use Case**: Investigation folder reporting for autonomous investigations
+=======
+**Primary Use Case**: Investigation folder reporting for structured investigations
+>>>>>>> 001-modify-analyzer-method
 
 **Key Characteristics**:
 - **Size**: 2,284 lines (severely exceeds 200-line limit)
@@ -101,7 +117,11 @@ test_results = {
 
 **Data Sources Supported**:
 - `metadata.json` - Investigation configuration
+<<<<<<< HEAD
 - `autonomous_activities.jsonl` - Structured activity logs
+=======
+- `structured_activities.jsonl` - Structured activity logs
+>>>>>>> 001-modify-analyzer-method
 - `journey_tracking.json` - Investigation progress
 - `investigation.log` - General logs
 
@@ -273,7 +293,11 @@ class BaseComponent:
 #### For System 1 Users (Test Runner)
 ```python
 # Existing code continues to work
+<<<<<<< HEAD
 from scripts.reporting.html_report_generator import AutonomousInvestigationHTMLReporter
+=======
+from scripts.reporting.html_report_generator import StructuredInvestigationHTMLReporter
+>>>>>>> 001-modify-analyzer-method
 
 # New unified system (drop-in replacement)
 from app.service.reporting.unified import UnifiedHTMLReportGenerator

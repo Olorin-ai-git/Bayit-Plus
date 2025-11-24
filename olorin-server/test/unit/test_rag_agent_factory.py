@@ -13,7 +13,7 @@ from app.service.agent.agent_factory import (
     get_rag_enhanced_factory,
     get_standard_factory
 )
-from app.service.agent.autonomous_base import AutonomousInvestigationAgent
+from app.service.agent.structured_base import StructuredInvestigationAgent
 from app.service.agent.rag import ContextAugmentationConfig
 
 
@@ -105,7 +105,7 @@ class TestEnhancedAgentFactory:
     
     def test_create_agent_standard(self, mock_tools):
         """Test creating standard agent"""
-        with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+        with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
             mock_agent = Mock()
             mock_create_standard.return_value = mock_agent
             
@@ -122,7 +122,7 @@ class TestEnhancedAgentFactory:
     
     def test_create_agent_fallback_to_standard(self, mock_tools):
         """Test fallback to standard agent when RAG unavailable"""
-        with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+        with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
             mock_agent = Mock()
             mock_create_standard.return_value = mock_agent
             
@@ -160,7 +160,7 @@ class TestEnhancedAgentFactory:
     
     def test_create_rag_enhanced_agent_unavailable(self, mock_tools):
         """Test creating RAG-enhanced agent when RAG unavailable"""
-        with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+        with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
             mock_agent = Mock()
             mock_create_standard.return_value = mock_agent
             
@@ -173,7 +173,7 @@ class TestEnhancedAgentFactory:
     
     def test_create_standard_agent_explicit(self, mock_tools):
         """Test explicitly creating standard agent"""
-        with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+        with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
             mock_agent = Mock()
             mock_create_standard.return_value = mock_agent
             
@@ -289,7 +289,7 @@ class TestFactoryFunctions:
     def test_create_rag_agent_function_unavailable(self, mock_tools):
         """Test create_rag_agent when RAG unavailable"""
         with patch('app.service.agent.agent_factory.RAG_AVAILABLE', False):
-            with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create:
+            with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create:
                 mock_agent = Mock()
                 mock_create.return_value = mock_agent
                 
@@ -325,7 +325,7 @@ class TestFactoryIntegration:
     
     def test_agent_creation_stats_tracking(self, mock_tools):
         """Test agent creation statistics tracking"""
-        with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create:
+        with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create:
             mock_create.return_value = Mock()
             
             factory = AgentFactory(enable_rag=False)
@@ -345,7 +345,7 @@ class TestFactoryIntegration:
         with patch('app.service.agent.agent_factory.RAG_AVAILABLE', True):
             with patch('app.service.agent.agent_factory.get_rag_orchestrator') as mock_get_rag:
                 with patch('app.service.agent.agent_factory.create_rag_enhanced_agent') as mock_create_rag:
-                    with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+                    with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
                         mock_get_rag.return_value = Mock()
                         mock_create_rag.return_value = Mock()
                         mock_create_standard.return_value = Mock()
@@ -389,7 +389,7 @@ class TestFactoryErrorHandling:
         """Test fallback when RAG agent creation fails"""
         with patch('app.service.agent.agent_factory.RAG_AVAILABLE', True):
             with patch('app.service.agent.agent_factory.create_rag_enhanced_agent') as mock_create_rag:
-                with patch('app.service.agent.agent_factory.create_autonomous_agent') as mock_create_standard:
+                with patch('app.service.agent.agent_factory.create_structured_agent') as mock_create_standard:
                     mock_create_rag.side_effect = Exception("RAG agent creation failed")
                     mock_standard_agent = Mock()
                     mock_create_standard.return_value = mock_standard_agent

@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import React from 'react';
+=======
+>>>>>>> 001-modify-analyzer-method
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { NotificationSystem } from '../../components/NotificationSystem';
@@ -29,8 +32,13 @@ describe('NotificationSystem', () => {
   });
 
   it('renders nothing when no notifications', () => {
+<<<<<<< HEAD
     const { container } = render(<NotificationSystem />);
     expect(container.firstChild).toBeNull();
+=======
+    render(<NotificationSystem />);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('displays notification when event is triggered', async () => {
@@ -118,10 +126,18 @@ describe('NotificationSystem', () => {
     }
 
     await waitFor(() => {
+<<<<<<< HEAD
       const notification = screen.getByRole('alert');
       expect(notification).toHaveClass('bg-red-50', 'border-red-200');
       expect(screen.getByText('Error notification')).toBeInTheDocument();
     });
+=======
+      expect(screen.getByText('Error notification')).toBeInTheDocument();
+    });
+    
+    const notification = screen.getByRole('alert');
+    expect(notification).toHaveClass('bg-red-50', 'border-red-200');
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('displays notification with actions', async () => {
@@ -146,8 +162,14 @@ describe('NotificationSystem', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Notification with action')).toBeInTheDocument();
+<<<<<<< HEAD
       expect(screen.getByText('Test Action')).toBeInTheDocument();
     });
+=======
+    });
+    
+    expect(screen.getByText('Test Action')).toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
 
     // Click action button
     fireEvent.click(screen.getByText('Test Action'));
@@ -167,9 +189,16 @@ describe('NotificationSystem', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Notification 2')).toBeInTheDocument();
+<<<<<<< HEAD
       expect(screen.getByText('Notification 3')).toBeInTheDocument();
       expect(screen.queryByText('Notification 1')).not.toBeInTheDocument();
     });
+=======
+    });
+    
+    expect(screen.getByText('Notification 3')).toBeInTheDocument();
+    expect(screen.queryByText('Notification 1')).not.toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
   });
 
   it('shows clear all button when multiple notifications', async () => {
@@ -190,7 +219,13 @@ describe('NotificationSystem', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('First notification')).not.toBeInTheDocument();
+<<<<<<< HEAD
       expect(screen.queryByText('Second notification')).not.toBeInTheDocument();
     });
+=======
+    });
+    
+    expect(screen.queryByText('Second notification')).not.toBeInTheDocument();
+>>>>>>> 001-modify-analyzer-method
   });
 });

@@ -33,12 +33,26 @@ logger = get_bridge_logger(__name__)
 
 class SplunkQueryInput(BaseModel):
     """Input model for Splunk queries with validation"""
-    
+
     query: str = Field(..., description="The complete SPL search query to execute")
     max_results: int = Field(1000, description="Maximum number of results to return", ge=1, le=10000)
     timeout_seconds: int = Field(300, description="Query timeout in seconds", ge=1, le=3600)
-    earliest_time: Optional[str] = Field(None, description="Earliest time for search (e.g., '-1d', '2023-01-01')")
-    latest_time: Optional[str] = Field(None, description="Latest time for search (e.g., 'now', '2023-01-02')")
+    earliest_time: Optional[str] = Field(
+        None,
+        description=(
+            "Earliest time for search. MUST use investigation time range if provided. "
+            "Format: ISO datetime 'YYYY-MM-DDTHH:MM:SSZ' or relative '-1d', '-24h', etc. "
+            "Example from investigation: '2025-05-12T15:49:36Z'"
+        )
+    )
+    latest_time: Optional[str] = Field(
+        None,
+        description=(
+            "Latest time for search. MUST use investigation time range if provided. "
+            "Format: ISO datetime 'YYYY-MM-DDTHH:MM:SSZ' or 'now' or relative. "
+            "Example from investigation: '2025-11-08T15:49:36Z'"
+        )
+    )
     search_mode: str = Field("normal", description="Search mode: normal, fast, smart, verbose")
     enable_preview: bool = Field(False, description="Enable search preview for faster results")
     

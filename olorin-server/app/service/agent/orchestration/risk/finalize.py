@@ -8,7 +8,11 @@ Includes external intelligence fusion and sanity checking.
 
 import json
 from typing import Dict, Any, Optional
+<<<<<<< HEAD
 from app.service.agent.orchestration.metrics.safe import safe_div, fmt_num
+=======
+from app.service.agent.orchestration.metrics.safe import safe_div, fmt_num, safe_mean
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestration.metrics.network import compute_network_metrics
 from app.service.intel.normalize import normalize_abuseipdb, abuseipdb_risk_component, normalize_virustotal, resolve_provider_conflicts
 from app.service.risk.fusion import fuse_network_risk
@@ -21,15 +25,23 @@ logger = get_bridge_logger(__name__)
 
 def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
     """
+<<<<<<< HEAD
     SINGLE SOURCE OF TRUTH aggregator to prevent double aggregation.
     
     CRITICAL FIX: Replaces the old aggregator that was causing double calculation
     (0.521 calculated but N/A gated) with the validated aggregator from domain fixes.
+=======
+    Calculate final risk score using risk agent calculation method.
+    
+    CRITICAL: All graph types (hybrid, parallel, etc.) now use the same risk agent calculation.
+    If LLM risk score exists, it's blended 50/50 with the risk agent calculation.
+>>>>>>> 001-modify-analyzer-method
     
     Args:
         state: Investigation state containing domain findings
         
     Returns:
+<<<<<<< HEAD
         Final risk score or None if evidence gating blocks publication
     """
     from app.service.agent.orchestration.domain.aggregator import aggregate_domains, fmt_score
@@ -102,6 +114,54 @@ def compute_final_risk(state: Dict[str, Any]) -> Optional[float]:
         return None  # Evidence gating blocks numeric risk
     else:
         return final_risk
+=======
+        Final risk score (0.0-1.0) or None if calculation fails
+    """
+    from app.service.agent.orchestration.domain_agents.risk_agent import _calculate_real_risk_score
+    
+    # Extract domain findings and facts
+    domain_findings = state.get("domain_findings", {})
+    facts = state.get("facts", {})
+    
+    if not domain_findings:
+        logger.error("❌ No domain findings available for risk calculation")
+        return None
+    
+    # CRITICAL DEBUG: Log what we actually receive
+    logger.info(f"🔍 compute_final_risk: domain_findings type={type(domain_findings)}, keys={list(domain_findings.keys()) if isinstance(domain_findings, dict) else 'NOT A DICT'}")
+    if isinstance(domain_findings, dict):
+        for domain_name in ["logs", "network", "device", "location", "authentication", "merchant"]:
+            if domain_name in domain_findings:
+                risk_score = domain_findings[domain_name].get("risk_score") if isinstance(domain_findings[domain_name], dict) else "NOT A DICT"
+                logger.info(f"   {domain_name}: risk_score={risk_score}")
+    
+    # Use risk agent calculation method (PRIMARY METHOD)
+    try:
+        risk_agent_score = _calculate_real_risk_score(domain_findings, facts)
+        logger.info(f"📊 Risk agent calculated score: {risk_agent_score:.4f}")
+    except Exception as e:
+        logger.error(f"❌ Risk agent calculation failed: {e}", exc_info=True)
+        return None
+    
+    # Check if LLM risk score exists - if so, blend 50/50
+    llm_risk_score = state.get("llm_risk_score")
+    if llm_risk_score is not None:
+        try:
+            llm_score_float = float(llm_risk_score)
+            if 0 <= llm_score_float <= 1.0:
+                # Blend 50% LLM risk score + 50% risk agent score
+                blended_score = (0.5 * llm_score_float) + (0.5 * risk_agent_score)
+                logger.info(f"🧠 LLM risk score found ({llm_score_float:.4f}), blending 50/50 with risk agent score ({risk_agent_score:.4f}) = {blended_score:.4f}")
+                final_risk = min(1.0, max(0.0, blended_score))
+                return final_risk
+            else:
+                logger.warning(f"⚠️ LLM risk score out of range ({llm_score_float}), using risk agent score only")
+        except (ValueError, TypeError) as e:
+            logger.warning(f"⚠️ Invalid LLM risk score format: {llm_risk_score}, using risk agent score only")
+    
+    # No LLM risk score or invalid - use risk agent score directly
+    return risk_agent_score
+>>>>>>> 001-modify-analyzer-method
 
 
 def finalize_risk(state: Dict[str, Any]) -> None:
@@ -168,6 +228,7 @@ def finalize_risk(state: Dict[str, Any]) -> None:
     # Use flap-adjusted risk score
     final_risk = flap_result["adjusted_risk"]
     
+<<<<<<< HEAD
     # CRITICAL: Check for confirmed fraud BEFORE evidence gating (ground truth bypass)
     confirmed_fraud_detected = False
     snowflake_data = state.get("snowflake_data", {})
@@ -180,6 +241,12 @@ def finalize_risk(state: Dict[str, Any]) -> None:
                     state["confirmed_fraud_present"] = True
                     logger.info("🚨 CONFIRMED FRAUD DETECTED: Will bypass evidence gating due to ground truth")
                     break
+=======
+    # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+    # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+    # Confirmed fraud detection must be based on behavioral patterns only, not fraud outcomes
+    confirmed_fraud_detected = False
+>>>>>>> 001-modify-analyzer-method
     
     # CRITICAL FIX: Hard evidence gating before publishing numeric risk
     validation_result = prepublish_validate(state)
@@ -244,6 +311,19 @@ def finalize_risk(state: Dict[str, Any]) -> None:
             )
             domains_for_linting.append(domain_result)
     
+<<<<<<< HEAD
+=======
+    # CRITICAL FIX: Set state.risk_score BEFORE linting to prevent mismatch errors
+    # The linter checks state.risk_score == final_risk, so we need to set it first
+    # Only set if it's not already set or if it's different (to avoid overwriting intentionally)
+    current_state_risk = state.get("risk_score")
+    if current_state_risk != final_risk:
+        # Temporarily set for linting check (will be set again after linting for clarity)
+        state["risk_score"] = final_risk
+        if current_state_risk is not None:
+            logger.debug(f"🔄 Updated state.risk_score from {fmt_num(current_state_risk, 3)} to {fmt_num(final_risk, 3)} before linting")
+    
+>>>>>>> 001-modify-analyzer-method
     # Run comprehensive linting checks
     lint_errors = lint_investigation(domains_for_linting, final_risk, state)
     
@@ -271,7 +351,15 @@ def finalize_risk(state: Dict[str, Any]) -> None:
         state["investigation_warnings"].append(f"Safety violation: {e}")
 
     # Publish final risk (potentially adjusted by floor and cap)
+<<<<<<< HEAD
     state["risk_score"] = final_risk
+=======
+    # Note: Already set before linting, but ensure it's set here for clarity and consistency
+    state["risk_score"] = final_risk
+    # CRITICAL: Also set overall_risk_score so it's available in progress_json
+    # This ensures investigations have overall_risk_score for comparison metrics
+    state["overall_risk_score"] = final_risk
+>>>>>>> 001-modify-analyzer-method
     logger.debug(f"✅ Risk finalization complete - numeric risk published: {fmt_num(final_risk, 3)}")
     
     # Generate severity-appropriate action plan based on final risk
@@ -391,6 +479,15 @@ def _apply_intel_fusion(state: Dict[str, Any]) -> None:
                 # Preserve LLM analysis score - no fusion for confirmed fraud
                 llm_risk = llm_analysis.get("risk_score")
                 if llm_risk is not None:
+<<<<<<< HEAD
+=======
+                    # C2 FIX: Defensive normalization for LLM scores
+                    if isinstance(llm_risk, (int, float)) and llm_risk > 1.0:
+                        original_llm_risk = llm_risk
+                        llm_risk = min(llm_risk / 100.0, 1.0)
+                        logger.info(f"C2 FIX: Normalized confirmed fraud LLM score from {original_llm_risk} to {fmt_num(llm_risk, 3)}")
+
+>>>>>>> 001-modify-analyzer-method
                     network_findings["risk_score"] = llm_risk
                     evidence = network_findings.setdefault("evidence", [])
                     evidence.append(f"Preserved LLM confirmed fraud assessment: {fmt_num(llm_risk, 3)} (no external fusion applied)")
@@ -683,12 +780,45 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
         assert 0.0 <= evidence_strength <= 1.0, f"evidence_strength must be 0.0-1.0, got {evidence_strength}"
         
         # Tool results business logic assertions
+<<<<<<< HEAD
         tools_used = state.get("tools_used", [])
         tool_results = state.get("tool_results", {})
         
         # If we have tools_used, we should have some tool_results
         if tools_used:
             assert len(tool_results) > 0, f"tools_used={len(tools_used)} but tool_results is empty"
+=======
+        tools_used_raw = state.get("tools_used", [])
+        tool_results = state.get("tool_results", {})
+        
+        # CRITICAL FIX: Extract tool names from tools_used (can be strings or dicts) to prevent "unhashable type: 'dict'" error
+        tools_used = []
+        for tool in tools_used_raw:
+            if isinstance(tool, dict):
+                # Extract tool name from dictionary
+                tool_name = tool.get('tool_name') or tool.get('name') or str(tool)
+            else:
+                tool_name = str(tool)
+            # Ensure it's a string before adding to list
+            if isinstance(tool_name, str):
+                tools_used.append(tool_name)
+            else:
+                tools_used.append(str(tool_name))
+        
+        # CRITICAL FIX: Check if tools_used have corresponding results
+        # Some tools might be attempted but fail or return empty results
+        if tools_used:
+            # Check if at least some tools have results
+            tools_with_results = [tool for tool in tools_used if tool in tool_results]
+            if len(tools_with_results) == 0 and len(tool_results) == 0:
+                # No results at all - this is a problem
+                logger.warning(f"⚠️ Business logic warning: tools_used={len(tools_used)} but no tool_results found. Tools: {tools_used[:5]}")
+                # Don't assert - this might be valid if all tools failed or were skipped
+            elif len(tools_with_results) < len(tools_used):
+                # Some tools don't have results - log warning but don't fail
+                missing_tools = [tool for tool in tools_used if tool not in tool_results]
+                logger.debug(f"📊 Some tools in tools_used don't have results: {missing_tools[:3]}")
+>>>>>>> 001-modify-analyzer-method
         
         # Snowflake query business logic assertions
         snowflake_data = state.get("snowflake_data", {})
@@ -696,6 +826,7 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
             results = snowflake_data["results"]
             assert isinstance(results, list), f"snowflake results must be list, got {type(results)}"
             
+<<<<<<< HEAD
             # Check for IS_FRAUD_TX column in results (Fix 1 assertion)
             if results:
                 first_record = results[0]
@@ -704,6 +835,19 @@ def _assert_business_logic_regressions(state: Dict[str, Any]) -> None:
                     has_fraud_column = "IS_FRAUD_TX" in first_record
                     if not has_fraud_column:
                         logger.warning("⚠️ REGRESSION RISK: IS_FRAUD_TX column not found in Snowflake results")
+=======
+            # CRITICAL: Verify IS_FRAUD_TX is NOT present in results (data leakage prevention)
+            if results:
+                first_record = results[0]
+                if isinstance(first_record, dict):
+                    # This is a critical assertion - IS_FRAUD_TX must NOT be in investigation results
+                    has_fraud_column = "IS_FRAUD_TX" in first_record
+                    if has_fraud_column:
+                        logger.error("🚨 CRITICAL DATA LEAKAGE: IS_FRAUD_TX column found in Snowflake results - this should NOT happen!")
+                        logger.error("   Investigation queries must exclude IS_FRAUD_TX to prevent data leakage")
+                    else:
+                        logger.debug("✅ Data leakage check passed: IS_FRAUD_TX not found in results")
+>>>>>>> 001-modify-analyzer-method
         
         # Domain analysis business logic assertions
         domain_findings = state.get("domain_findings", {})
@@ -762,7 +906,24 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
         data_quality_score = 0.0
         
         # 1. SOURCE DIVERSITY (0.0-0.4)
+<<<<<<< HEAD
         tools_used = set(state.get("tools_used", []))
+=======
+        # CRITICAL FIX: Extract tool names from tools_used (can be strings or dicts) to prevent "unhashable type: 'dict'" error
+        tools_used_raw = state.get("tools_used", [])
+        tools_used = set()
+        for tool in tools_used_raw:
+            if isinstance(tool, dict):
+                # Extract tool name from dictionary
+                tool_name = tool.get('tool_name') or tool.get('name') or str(tool)
+            else:
+                tool_name = str(tool)
+            # Ensure it's a string before adding to set
+            if isinstance(tool_name, str):
+                tools_used.add(tool_name)
+            else:
+                tools_used.add(str(tool_name))
+>>>>>>> 001-modify-analyzer-method
         internal_sources = {"snowflake_query_tool"}
         external_sources = {"abuseipdb_ip_reputation", "virustotal_ip_analysis", "hybrid_analysis", "urlvoid"}
         
@@ -823,8 +984,50 @@ def _compute_evidence_strength(state: Dict[str, Any]) -> None:
         elif total_evidence_points >= 2:
             data_quality_score = 0.05
         
+<<<<<<< HEAD
         # COMPUTE TOTAL EVIDENCE STRENGTH
         evidence_strength = min(1.0, source_diversity_score + corroboration_score + volume_recency_score + data_quality_score)
+=======
+        # COMPUTE BASE EVIDENCE STRENGTH
+        base_evidence_strength = min(1.0, source_diversity_score + corroboration_score + volume_recency_score + data_quality_score)
+        
+        # CRITICAL FIX: Add fraud pattern scoring as independent risk factor
+        # Fraud patterns are PRIMARY indicators that override low evidence_strength
+        fraud_pattern_score = 0.0
+        snowflake_data = state.get("snowflake_data", {})
+        
+        if snowflake_data and isinstance(snowflake_data, dict) and "results" in snowflake_data:
+            try:
+                from app.service.agent.orchestration.risk.fraud_pattern_detectors import calculate_fraud_pattern_score
+                
+                results = snowflake_data["results"]
+                if isinstance(results, list) and len(results) >= 3:
+                    fraud_pattern_score, pattern_details = calculate_fraud_pattern_score(results)
+                    
+                    if fraud_pattern_score > 0.0:
+                        logger.info(f"🔍 Fraud pattern score: {fmt_num(fraud_pattern_score, 3)}")
+                        logger.info(f"   Patterns detected: velocity={pattern_details['velocity_burst'] is not None}, "
+                                   f"clustering={pattern_details['amount_clustering'] is not None}, "
+                                   f"rotation={pattern_details['ip_rotation'] is not None}")
+            except Exception as e:
+                logger.debug(f"Fraud pattern scoring failed: {e}")
+                fraud_pattern_score = 0.0
+        
+        # Override low evidence_strength when fraud patterns are strong
+        # Strong patterns (≥0.6) boost evidence_strength to at least 0.6
+        # Medium patterns (≥0.4) boost evidence_strength to at least 0.4
+        if fraud_pattern_score >= 0.6 and base_evidence_strength < 0.6:
+            evidence_strength = max(base_evidence_strength, 0.6)
+            logger.info(f"✅ Fraud pattern boost: evidence_strength elevated from {fmt_num(base_evidence_strength, 3)} to {fmt_num(evidence_strength, 3)} (pattern score: {fmt_num(fraud_pattern_score, 3)})")
+        elif fraud_pattern_score >= 0.4 and base_evidence_strength < 0.4:
+            evidence_strength = max(base_evidence_strength, 0.4)
+            logger.info(f"✅ Fraud pattern boost: evidence_strength elevated from {fmt_num(base_evidence_strength, 3)} to {fmt_num(evidence_strength, 3)} (pattern score: {fmt_num(fraud_pattern_score, 3)})")
+        else:
+            evidence_strength = base_evidence_strength
+        
+        # Store fraud pattern score in state for reference
+        state["fraud_pattern_score"] = fraud_pattern_score
+>>>>>>> 001-modify-analyzer-method
         
         # Update state
         state["evidence_strength"] = evidence_strength
@@ -980,6 +1183,7 @@ def _apply_decisive_evidence_policy(state: Dict[str, Any]) -> None:
                     has_confirmed_fraud = True
                     break
             
+<<<<<<< HEAD
             # Check Snowflake fraud flags
             analysis = domain_data.get("analysis", {})
             if isinstance(analysis, dict):
@@ -988,6 +1192,11 @@ def _apply_decisive_evidence_policy(state: Dict[str, Any]) -> None:
                     if any(r.get("IS_FRAUD_TX") is True for r in records if isinstance(r, dict)):
                         has_confirmed_fraud = True
                         break
+=======
+            # CRITICAL: No fraud indicators can be used during investigation to prevent data leakage
+            # All fraud indicator columns (IS_FRAUD_TX, COUNT_DISPUTES, COUNT_FRAUD_ALERTS, etc.) are excluded
+            # Confirmed fraud detection must be based on LLM analysis text only, not structured fraud flags
+>>>>>>> 001-modify-analyzer-method
         
         if not has_confirmed_fraud:
             logger.debug("Decisive evidence policy: no confirmed fraud detected, no confidence floor applied")

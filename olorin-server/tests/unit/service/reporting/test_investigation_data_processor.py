@@ -69,7 +69,11 @@ def sample_metadata():
 
 @pytest.fixture
 def sample_activities():
+<<<<<<< HEAD
     """Sample autonomous_activities.jsonl content"""
+=======
+    """Sample structured_activities.jsonl content"""
+>>>>>>> 001-modify-analyzer-method
     return [
         {
             "interaction_type": "llm_call",
@@ -220,8 +224,13 @@ def temp_investigation_folder(sample_metadata, sample_activities, sample_journey
         with open(folder_path / "metadata.json", 'w') as f:
             json.dump(sample_metadata, f)
         
+<<<<<<< HEAD
         # Create autonomous_activities.jsonl
         with open(folder_path / "autonomous_activities.jsonl", 'w') as f:
+=======
+        # Create structured_activities.jsonl
+        with open(folder_path / "structured_activities.jsonl", 'w') as f:
+>>>>>>> 001-modify-analyzer-method
             for activity in sample_activities:
                 f.write(json.dumps(activity) + '\n')
         
@@ -265,7 +274,11 @@ class TestFileProcessing:
                 processor._process_metadata_file(Path(f.name))
     
     def test_process_activities_file_streaming(self, processor, sample_activities):
+<<<<<<< HEAD
         """Test autonomous_activities.jsonl processing with streaming"""
+=======
+        """Test structured_activities.jsonl processing with streaming"""
+>>>>>>> 001-modify-analyzer-method
         with tempfile.NamedTemporaryFile(mode='w', suffix='.jsonl', delete=False) as f:
             for activity in sample_activities:
                 f.write(json.dumps(activity) + '\n')

@@ -20,19 +20,19 @@
       "description": "AI detected multiple failed login attempts from suspicious IP."
     },
     {
-      "type": "autonomous_alert",
+      "type": "structured_alert",
       "timestamp": "2024-06-01T10:05:00Z",
-      "description": "Autonomous investigation triggered due to anomalous behavior pattern."
+      "description": "Structured investigation triggered due to anomalous behavior pattern."
     }
   ],
   "risk_assessment": {
     "risk_level": 0.8,
     "risk_factors": [
       "AI-detected failed login from new device in different region/country",
-      "Autonomous pattern recognition flagged unusual access sequence"
+      "Structured pattern recognition flagged unusual access sequence"
     ],
     "confidence": 0.85,
-    "summary": "Autonomous AI analysis detected high-risk activity: User had successful login from US followed by immediate failed login from India on new device. AI recommends immediate investigation.",
+    "summary": "Structured AI analysis detected high-risk activity: User had successful login from US followed by immediate failed login from India on new device. AI recommends immediate investigation.",
     "timestamp": "2025-05-18T00:49:12.558564+00:00"
   },
   "splunk_data": [
@@ -60,12 +60,12 @@
       "region": "MH",
       "device_ids": "dev-002",
       "device_first_seen": "2024-04-01T09:05:00Z",
-      "ai_analysis": "Autonomous detection: Geographic anomaly detected - impossible travel scenario"
+      "ai_analysis": "Structured detection: Geographic anomaly detected - impossible travel scenario"
     }
   ],
-  "autonomous_insights": {
+  "structured_insights": {
     "pattern_analysis": "AI detected impossible travel scenario between US and India within 5 minutes",
-    "risk_escalation": "Autonomous system escalated to high priority due to geographic anomaly",
+    "risk_escalation": "Structured system escalated to high priority due to geographic anomaly",
     "ml_confidence": 0.92,
     "recommended_actions": [
       "Immediate account lockdown",

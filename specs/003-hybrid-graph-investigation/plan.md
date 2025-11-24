@@ -8,8 +8,13 @@
 ## Input Analysis
 
 **Source**: Feature specification for Hybrid Graph Investigation UI Concepts
+<<<<<<< HEAD
 **Scope**: Create 4 contrasting UI concepts (A-D) for autonomous investigation workflows
 **Target Location**: `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation`
+=======
+**Scope**: Create 4 contrasting UI concepts (A-D) for structured investigation workflows
+**Target Location**: `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation`
+>>>>>>> 001-modify-analyzer-method
 
 ### Key Requirements Extracted
 - 4 distinct UI concepts optimized for different user personas
@@ -22,7 +27,11 @@
 - Integration with existing Olorin investigation infrastructure
 
 ### Technical Context
+<<<<<<< HEAD
 **Implementation Location**: The hybrid graph investigation UI belongs in `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/autonomous-investigation` microservice as part of the ongoing frontend refactoring initiative.
+=======
+**Implementation Location**: The hybrid graph investigation UI belongs in `/Users/gklainert/Documents/olorin/olorin-front/src/microservices/structured-investigation` microservice as part of the ongoing frontend refactoring initiative.
+>>>>>>> 001-modify-analyzer-method
 
 **Microservice Architecture Context**:
 - Part of the 6-microservice frontend architecture
@@ -83,7 +92,11 @@
 - [ ] Bundle size under 200KB per concept
 - [ ] WCAG 2.1 Level AA compliance verified
 - [ ] Responsive design working across all breakpoints
+<<<<<<< HEAD
 - [ ] Integration with autonomous-investigation microservice
+=======
+- [ ] Integration with structured-investigation microservice
+>>>>>>> 001-modify-analyzer-method
 - [ ] Test coverage above 80%
 
 ### Business Success
@@ -189,7 +202,11 @@
    - Define API contracts
 
 2. **Short-term (Next week)**:
+<<<<<<< HEAD
    - Set up autonomous-investigation microservice structure
+=======
+   - Set up structured-investigation microservice structure
+>>>>>>> 001-modify-analyzer-method
    - Implement core graph visualization components
    - Create timeline component foundation
 

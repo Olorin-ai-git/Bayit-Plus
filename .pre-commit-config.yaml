@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Pre-commit Configuration for Mock Data Detection and Quality Enforcement
 # Author: Gil Klainert
 # Created: 2025-01-08
@@ -358,3 +359,77 @@ ci:
     autoupdate_schedule: weekly
     skip: []
     submodules: false
+=======
+# Pre-commit hooks to prevent reintroduction of dead code and garbage files
+# Install: pip install pre-commit && pre-commit install
+
+repos:
+  # Prevent backup files
+  - repo: local
+    hooks:
+      - id: no-backup-files
+        name: No backup files allowed
+        entry: 'backup|\.bak$|\.backup$|\.old$|\.orig$|\.copy$|\.tmp$|\.temp$|~$'
+        language: pygrep
+        types: [file]
+        exclude: '^(node_modules|\.git|dist|build|\.next|coverage)/'
+
+  # Prevent macOS garbage
+  - repo: local
+    hooks:
+      - id: no-ds-store
+        name: No .DS_Store files
+        entry: \.DS_Store$
+        language: pygrep
+        types: [file]
+
+  # Prevent log files (except structured logs)
+  - repo: local
+    hooks:
+      - id: no-log-files
+        name: No log files (except structured logs)
+        entry: '\.log$'
+        language: pygrep
+        types: [file]
+        exclude: '^(logs/|olorin-server/logs/investigations/).*\.log$'
+
+  # Python: Check for unused imports and variables
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+      - id: autoflake
+        name: Remove unused imports and variables
+        args: ['--remove-all-unused-imports', '--remove-unused-variables', '--in-place']
+        exclude: '^(\.tox|node_modules|\.mypy_cache|__pycache__)/'
+
+  # Python: Ruff linting (includes unused code checks)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.6
+    hooks:
+      - id: ruff
+        name: Ruff linter (unused code detection)
+        args: ['--select', 'F401,F841', '--fix']
+        exclude: '^(\.tox|node_modules|\.mypy_cache|__pycache__)/'
+
+  # File size compliance check (200 line limit)
+  - repo: local
+    hooks:
+      - id: check-file-size
+        name: Check file size compliance (200 line limit)
+        entry: scripts/git-hooks/check-file-size.py
+        language: system
+        types: [python, javascript, typescript]
+        pass_filenames: false
+        always_run: false
+
+  # Hardcoded value detection
+  - repo: local
+    hooks:
+      - id: detect-hardcoded-values
+        name: Detect hardcoded values
+        entry: scripts/git-hooks/detect-hardcoded-values.py
+        language: system
+        types: [python, javascript, typescript]
+        pass_filenames: false
+        always_run: false
+>>>>>>> 001-modify-analyzer-method

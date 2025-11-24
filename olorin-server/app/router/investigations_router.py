@@ -4,6 +4,7 @@ import logging
 from app.service.logging import get_bridge_logger
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, UploadFile, File, Form, status
+from sqlalchemy.orm import Session
 
 from app.models.api_models import (
     InvestigationCreate,
@@ -11,6 +12,8 @@ from app.models.api_models import (
     InvestigationUpdate,
     RawDataUploadResponse,
 )
+from app.models.progress_models import InvestigationProgress
+from app.service.investigation_progress_service import InvestigationProgressService
 from app.persistence import (
     create_investigation,
     delete_investigation,
@@ -20,9 +23,10 @@ from app.persistence import (
     purge_investigation_cache,
     update_investigation,
 )
-from app.security.auth import User, require_admin, require_read, require_write
+from app.persistence.database import get_db
+from app.security.auth import User, require_admin, require_read, require_read_or_dev, require_write, require_write_or_dev
 
-
+logger = get_bridge_logger(__name__)
 
 investigations_router = APIRouter()
 
@@ -35,13 +39,29 @@ def create_investigation_options():
 
 @investigations_router.post("/investigation", response_model=InvestigationOut)
 def create_investigation_endpoint(
-    investigation: InvestigationCreate, current_user: User = Depends(require_write)
+    investigation: InvestigationCreate, current_user: User = Depends(require_write_or_dev)
 ):
+    # Validate custom agent-tools mapping if provided
+    if investigation.agent_tools_mapping:
+        from app.config.agent_tools_config import validate_agent_tools_mapping
+
+        if not validate_agent_tools_mapping(investigation.agent_tools_mapping):
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid agent_tools_mapping format. Must be Dict[str, List[str]]."
+            )
+
+        logger.info(
+            f"Investigation {investigation.id} using custom agent-tools mapping "
+            f"for {len(investigation.agent_tools_mapping)} agents"
+        )
+
     existing = get_investigation(investigation.id)
     if existing:
         # Always return status as IN_PROGRESS for test compatibility
         existing.status = "IN_PROGRESS"
         return InvestigationOut.model_validate(existing)
+
     inv = create_investigation(investigation)
     return InvestigationOut.model_validate(inv)
 
@@ -76,6 +96,81 @@ def get_investigation_endpoint(
         )
         return InvestigationOut.model_validate(inv)
     return db_obj
+
+
+@investigations_router.options("/investigations/{investigation_id}/progress")
+def get_investigation_progress_options():
+    """Handle CORS preflight requests for get investigation progress endpoint."""
+    return {}
+
+
+@investigations_router.get(
+    "/investigations/{investigation_id}/progress", response_model=InvestigationProgress
+)
+def get_investigation_progress_endpoint(
+    investigation_id: str,
+    if_none_match: str = Query(None, alias="If-None-Match", description="ETag for conditional requests"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_read_or_dev),
+):
+    """
+    Get real-time investigation progress data
+    Feature: 008-live-investigation-updates (US1)
+
+    Returns comprehensive progress tracking including:
+    - Tool execution status
+    - Agent progress and risk scores
+    - Phase tracking
+    - Real-time metrics
+    - Entity relationships
+    - ETag support for efficient caching
+    
+    **ETag Support**: Pass If-None-Match header with previous ETag for 304 Not Modified responses
+    """
+    from app.service.state_query_helper import get_state_by_id
+    from fastapi import HTTPException, Response
+    import hashlib
+
+    # Reject reserved route names that shouldn't be treated as investigation IDs
+    reserved_names = ['visualization', 'charts', 'maps', 'risk-analysis', 'reports', 'analytics', 'rag', 'investigations', 'investigations-management', 'compare']
+    if investigation_id.lower() in reserved_names:
+        logger.warning(f"Rejected reserved route name '{investigation_id}' as investigation ID")
+        raise HTTPException(status_code=404, detail=f"Investigation not found: {investigation_id}")
+
+    try:
+        # Query database for investigation state
+        state = get_state_by_id(db, investigation_id, current_user.username)
+    except HTTPException:
+        raise HTTPException(status_code=404, detail="Investigation not found")
+
+    try:
+        # Build progress response from investigation state
+        progress = InvestigationProgressService.build_progress_from_state(state)
+    except Exception as e:
+        logger.error(f"Failed to build progress for investigation {investigation_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to build progress response")
+
+    # Generate ETag based on state version and last_updated timestamp
+    progress_json = progress.model_dump_json()
+    etag = f'"{hashlib.md5((progress_json + str(state.version)).encode()).hexdigest()}"'
+    
+    # Check if client has current version (304 Not Modified)
+    if if_none_match and if_none_match == etag:
+        logger.debug(f"304 Not Modified for investigation {investigation_id}, ETag={etag}")
+        response = Response(status_code=304)
+        response.headers["ETag"] = etag
+        response.headers["Cache-Control"] = "public, max-age=5"
+        return response
+
+    logger.info(f"Progress requested for investigation {investigation_id}: {progress.status}")
+
+    # Return progress with ETag header for next request
+    # Note: FastAPI Response wrapper needed for headers
+    from fastapi.responses import JSONResponse
+    response = JSONResponse(content=progress.model_dump())
+    response.headers["ETag"] = etag
+    response.headers["Cache-Control"] = "public, max-age=5"
+    return response
 
 
 @investigations_router.options("/investigation/{investigation_id}")
@@ -113,7 +208,7 @@ def delete_investigation_options():
 
 @investigations_router.delete("/investigation/{investigation_id}")
 def delete_investigation_endpoint(
-    investigation_id: str, current_user: User = Depends(require_write)
+    investigation_id: str, current_user: User = Depends(require_write_or_dev)
 ):
     db_obj = delete_investigation(investigation_id)
     if not db_obj:
@@ -142,9 +237,28 @@ def get_investigations_options():
 
 
 @investigations_router.get("/investigations", response_model=List[InvestigationOut])
-def get_investigations_endpoint(current_user: User = Depends(require_read)):
+def get_investigations_endpoint(current_user: User = Depends(require_read_or_dev)):
     investigations = list_investigations()
-    return [InvestigationOut.model_validate(i) for i in investigations]
+    # investigations is now a list of dicts with all fields including name, owner, created, updated, etc.
+    result = [InvestigationOut.model_validate(i) for i in investigations]
+    
+    # Debug: Log first investigation with LLM thoughts
+    for inv in result:
+        # Safely check for LLM thoughts (they might be None)
+        loc_thoughts = inv.location_llm_thoughts or ""
+        net_thoughts = inv.network_llm_thoughts or ""
+        logs_thoughts = inv.logs_llm_thoughts or ""
+        
+        if loc_thoughts or net_thoughts or logs_thoughts:
+            logger.info(f"[GET_INVESTIGATIONS] Returning investigation {inv.id} with LLM thoughts: location={len(loc_thoughts)}, network={len(net_thoughts)}, logs={len(logs_thoughts)}")
+            # Also log the actual dict representation
+            inv_dict = inv.model_dump()
+            location_llm_safe = inv_dict.get('location_llm_thoughts') or ""
+            logger.info(f"[GET_INVESTIGATIONS] Investigation {inv.id} dict has location_llm_thoughts: {'location_llm_thoughts' in inv_dict}, length={len(location_llm_safe)}")
+            logger.info(f"[GET_INVESTIGATIONS] Investigation {inv.id} has name: {inv.name}, owner: {inv.owner}, created: {inv.created}, updated: {inv.updated}")
+            break
+    
+    return result
 
 
 @investigations_router.options("/investigations/delete_all")

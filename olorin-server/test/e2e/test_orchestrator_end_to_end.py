@@ -1,12 +1,20 @@
 """
+<<<<<<< HEAD
 End-to-End Tests for Autonomous Investigation Orchestrator
+=======
+End-to-End Tests for Structured Investigation Orchestrator
+>>>>>>> 001-modify-analyzer-method
 
 Complete end-to-end tests simulating real investigation scenarios with
 external service interactions, performance validation, and production workflows.
 
 Author: Gil Klainert  
 Date: 2025-09-06
+<<<<<<< HEAD
 Plan Reference: /docs/plans/2025-09-06-autonomous-investigation-orchestrator-langgraph-plan.md
+=======
+Plan Reference: /docs/plans/2025-09-06-structured-investigation-orchestrator-langgraph-plan.md
+>>>>>>> 001-modify-analyzer-method
 Phase: 5.1 - Comprehensive Test Suite (End-to-End Tests)
 """
 
@@ -18,7 +26,11 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock, patch
 from typing import Dict, Any, List
 
+<<<<<<< HEAD
 from app.service.agent.autonomous_orchestrator import AutonomousInvestigationOrchestrator
+=======
+from app.service.agent.structured_orchestrator import StructuredInvestigationOrchestrator
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent.orchestration.orchestrator_graph import create_orchestrator_driven_graph
 from app.service.monitoring.orchestrator_monitoring import OrchestratorMonitoring, MonitoringMetric
 
@@ -26,7 +38,11 @@ from app.service.monitoring.orchestrator_monitoring import OrchestratorMonitorin
 @pytest.fixture
 async def production_orchestrator_system():
     """Create production-like orchestrator system for E2E testing"""
+<<<<<<< HEAD
     orchestrator = AutonomousInvestigationOrchestrator()
+=======
+    orchestrator = StructuredInvestigationOrchestrator()
+>>>>>>> 001-modify-analyzer-method
     monitoring = OrchestratorMonitoring()
     
     await orchestrator.initialize()

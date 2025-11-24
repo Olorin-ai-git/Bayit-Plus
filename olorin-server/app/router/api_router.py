@@ -24,7 +24,6 @@ from app.models.api_models import (
     LocationRiskAnalysisResponse,
 )
 from app.service.logging import get_bridge_logger
-logger = get_bridge_logger(__name__)
 from app.models.device_risk import (
     AnalyzeDeviceResponse,
     DeviceSignalDetail,
@@ -47,6 +46,7 @@ from app.persistence import (
 )
 from app.router.demo_router import demo_cache, demo_mode_users
 from app.security.auth import User, require_read, require_write
+<<<<<<< HEAD
 # Mock implementations for missing ato_agents components
 from app.models.api_models import LocationInfo
 
@@ -70,6 +70,8 @@ LocationDataClient = MockLocationDataClient
 FraudResponse = MockFraudResponse
 get_direct_auth_query = mock_get_direct_auth_query
 # from app.service.agent.tools.oii_tool.oii_tool import OIITool  # Removed non-existent tool
+=======
+>>>>>>> 001-modify-analyzer-method
 from app.service.agent_service import ainvoke_agent
 from app.service.config import get_settings_for_env
 from app.utils.auth_utils import get_auth_token
@@ -83,10 +85,10 @@ from .device_router import analyze_device
 from .device_router import router as device_router
 from .investigations_router import investigations_router
 
-# Configure logging
-logger = logging.getLogger(__name__)
+# Configure logging - use bridge logger for consistency
+logger = get_bridge_logger(__name__)
 
-router = APIRouter(prefix="/api")
+router = APIRouter(prefix="/api/v1")
 
 # Load API key from Firebase Secret Manager
 config_loader = get_config_loader()
@@ -105,9 +107,6 @@ def get_default_headers():
         "olorin_experience_id": "d3d28eaa-7ca9-4aa2-8905-69ac11fd8c58",
         "olorin_originating_assetalias": "Olorin.cas.hri.olorin",
     }
-
-
-location_data_client = LocationDataClient()
 
 
 @router.post("/demo/{user_id}/off")
@@ -145,7 +144,17 @@ from .mcp_http_router import router as mcp_http_router
 from .network_router import router as network_router
 from .risk_assessment_router import risk_assessment_router
 from .settings_router import router as settings_router
+<<<<<<< HEAD
 from app.api.v1.llm_models import router as llm_models_router
+=======
+from .rag_router import router as rag_router
+from app.api.v1.llm_models import router as llm_models_router
+from .composio_router import router as composio_router
+from .tenant_config_router import router as tenant_config_router
+from .device_signals_router import router as device_signals_router
+from .ip_risk_router import router as ip_risk_router
+from .soar_playbooks_router import router as soar_playbooks_router
+>>>>>>> 001-modify-analyzer-method
 
 # --- INCLUDE NEW ROUTERS ---
 router.include_router(network_router)
@@ -159,12 +168,42 @@ router.include_router(settings_router)
 router.include_router(risk_assessment_router)
 router.include_router(investigations_router)
 router.include_router(llm_models_router)
+<<<<<<< HEAD
 
 # Include analytics router if Snowflake is enabled
 if os.getenv('USE_SNOWFLAKE', 'false').lower() == 'true':
     from app.api.routes.analytics import router as analytics_router
     router.include_router(analytics_router)
     logger.info("Analytics router included (USE_SNOWFLAKE=true)")
+=======
+router.include_router(rag_router)
+router.include_router(composio_router)
+router.include_router(tenant_config_router)
+router.include_router(device_signals_router)
+router.include_router(ip_risk_router)
+router.include_router(soar_playbooks_router)
+
+# Include analytics router (works with both PostgreSQL and Snowflake)
+try:
+    # Use print as fallback since logger might not be initialized at module import time
+    import sys
+    print("[API_ROUTER] Attempting to import analytics router...", file=sys.stderr)
+    logger.info("Attempting to import analytics router...")
+    from app.api.routes.analytics import router as analytics_router
+    print(f"[API_ROUTER] Analytics router imported: prefix={analytics_router.prefix}, routes={len(analytics_router.routes)}", file=sys.stderr)
+    logger.info(f"Analytics router imported successfully, prefix: {analytics_router.prefix}, routes: {len(analytics_router.routes)}")
+    router.include_router(analytics_router)
+    print(f"[API_ROUTER] ✅ Analytics router included successfully", file=sys.stderr)
+    logger.info(f"✅ Analytics router included successfully with prefix: {analytics_router.prefix}")
+except ImportError as e:
+    print(f"[API_ROUTER] ❌ Analytics router import failed: {e}", file=sys.stderr)
+    logger.error(f"❌ Analytics router import failed: {e}", exc_info=True)
+except Exception as e:
+    print(f"[API_ROUTER] ❌ Analytics router error: {e}", file=sys.stderr)
+    import traceback
+    traceback.print_exc(file=sys.stderr)
+    logger.error(f"❌ Analytics router not available: {e}", exc_info=True)
+>>>>>>> 001-modify-analyzer-method
 
 
 @router.get("/oii/{user_id}")
@@ -245,24 +284,19 @@ async def analyze_logs(
                         status_code=503,
                         detail="Agent service is not available. The server is still initializing or encountered an error.",
                     )
+<<<<<<< HEAD
                 # Mock implementation for build_base_search
                 def build_base_search(id_value, id_type, **kwargs):
                     """Mock base search builder"""
                     return f"search * | where {id_type}=\"{id_value}\""
+=======
+>>>>>>> 001-modify-analyzer-method
                 from app.service.agent.tools.splunk_tool.splunk_tool import (
                     SplunkQueryTool,
                 )
 
-                # Build the raw SPL query
-                base_query = build_base_search(
-                    id_value=user_id,
-                    id_type="auth_id",
-                )
-                # Add earliest time constraint
-                splunk_query = base_query.replace(
-                    f"search index={settings.splunk_index}",
-                    f"search index={settings.splunk_index} earliest=-{time_range}",
-                )
+                # Build the SPL query directly (no mocks)
+                splunk_query = f'search index={settings.splunk_index} earliest=-{time_range} | where auth_id="{user_id}"'
 
                 logger.info(f"Executing Splunk query for logs: {splunk_query}")
 
@@ -393,52 +427,8 @@ async def analyze_logs(
         }
 
 
-# --- Individual Location Source Endpoints ---
-@router.get("/location/source/oii/{user_id}", response_model=Optional[LocationInfo])
-async def get_oii_source_location(user_id: str) -> Optional[LocationInfo]:
-    try:
-        logger.info(f"Fetching OII location source for user {user_id}")
-        return await location_data_client.get_oii_location_info(user_id)
-    except Exception as e:
-        logger.error(f"Error fetching OII location for {user_id}: {e}", exc_info=True)
-        # Return None or a custom error model, or re-raise as HTTPException
-        # For now, let client return None/LocationInfo with "unavailable"
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get OII location data: {str(e)}"
-        )
-
-
-# Salesforce and Ekata location endpoints removed
-
-
-@router.get(
-    "/location/source/business/{user_id}", response_model=Optional[List[LocationInfo]]
-)
-async def get_business_source_location(user_id: str) -> Optional[List[LocationInfo]]:
-    try:
-        logger.info(f"Fetching Business location source for user {user_id}")
-        return await location_data_client.get_business_location(user_id)
-    except Exception as e:
-        logger.error(
-            f"Error fetching Business location for {user_id}: {e}", exc_info=True
-        )
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get Business location data: {str(e)}"
-        )
-
-
-@router.get(
-    "/location/source/phone/{user_id}", response_model=Optional[List[LocationInfo]]
-)
-async def get_phone_source_location(user_id: str) -> Optional[List[LocationInfo]]:
-    try:
-        logger.info(f"Fetching Phone location source for user {user_id}")
-        return await location_data_client.get_phone_location(user_id)
-    except Exception as e:
-        logger.error(f"Error fetching Phone location for {user_id}: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get Phone location data: {str(e)}"
-        )
+# Location source endpoints removed - no real implementation available
+# These endpoints relied on mock LocationDataClient which has been removed per SYSTEM MANDATE
 
 
 # --- Consolidated Location Risk Analysis Endpoint ---
@@ -455,10 +445,13 @@ async def get_location_risk_analysis(
     try:
         logger.info(f"Starting location risk analysis for user {user_id}")
 
-        # Gather all location data concurrently
-        oii_task = location_data_client.get_oii_location_info(user_id)
-        business_task = location_data_client.get_business_location_info(user_id)
-        phone_task = location_data_client.get_phone_location_info(user_id)
+        # Location data client removed - no real implementation available
+        # Setting location data to None until proper implementation is added
+        oii_location_info = None
+        business_location_info = None
+        phone_location_info = None
+
+        # Get device analysis results
         device_task_obj: Optional[AnalyzeDeviceResponse] = await analyze_device(
             user_id,
             request,
@@ -467,19 +460,6 @@ async def get_location_risk_analysis(
             splunk_host,
             raw_splunk_override=None,
         )
-
-        (
-            oii_loc,
-            business_loc,
-            phone_loc,
-        ) = await asyncio.gather(
-            oii_task,
-            business_task,
-            phone_task,
-            return_exceptions=True,  # Allow individual tasks to fail without stopping others
-        )
-
-        # device_data_raw will be an AnalyzeDeviceResponse object or an Exception
         device_data_raw = device_task_obj
 
         # Helper to process results or log errors
@@ -491,10 +471,6 @@ async def get_location_risk_analysis(
                 )
                 return None
             return result
-
-        oii_location_info = process_result(oii_loc, "OII")
-        business_location_info = process_result(business_loc, "Business")
-        phone_location_info = process_result(phone_loc, "Phone")
 
         # device_analysis_results will be AnalyzeDeviceResponse or None if an exception occurred
         # process_result will pass through device_data_raw (which is AnalyzeDeviceResponse or Exception)

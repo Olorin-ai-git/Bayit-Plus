@@ -2,7 +2,7 @@
 RecursionGuard System
 
 Prevents infinite recursion in LangGraph agent execution while enabling
-autonomous tool selection and LLM-driven decision making.
+structured tool selection and LLM-driven decision making.
 """
 
 import time
@@ -101,7 +101,7 @@ class RecursionGuard:
     """
     Thread-safe recursion guard for LangGraph agent execution.
     
-    Prevents infinite loops while allowing controlled autonomous behavior.
+    Prevents infinite loops while allowing controlled structured behavior.
     """
     
     def __init__(self):

@@ -137,7 +137,11 @@ def create_authentication_agent_metadata(rag_enabled: bool, rag_stats: Dict[str,
     """Create metadata for authentication agent tracking."""
     return {
         "domain": "authentication",
+<<<<<<< HEAD
         "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven",
+=======
+        "analysis_type": "rag_enhanced_llm_driven" if rag_enabled else "structured_llm_driven",
+>>>>>>> 001-modify-analyzer-method
         "objectives_count": 29 if rag_enabled else 26,
         "rag_available": RAG_AVAILABLE,
         "rag_enabled": rag_enabled,
@@ -176,10 +180,17 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,
             "suspicious_indicators": findings.suspicious_indicators,
+<<<<<<< HEAD
             "summary": f"{'RAG-enhanced' if rag_enabled else 'Autonomous'} authentication analysis: {len(findings.key_findings)} findings{summary_suffix}",
             "thoughts": f"Used {analysis_type} tool selection for authentication analysis with domain knowledge integration",
             "timestamp": findings.timestamp.isoformat(),
             "autonomous_execution": True,
+=======
+            "summary": f"{'RAG-enhanced' if rag_enabled else 'Structured'} authentication analysis: {len(findings.key_findings)} findings{summary_suffix}",
+            "thoughts": f"Used {analysis_type} tool selection for authentication analysis with domain knowledge integration",
+            "timestamp": findings.timestamp.isoformat(),
+            "structured_execution": True,
+>>>>>>> 001-modify-analyzer-method
             "domain": "authentication",
             "enhancement_type": "rag_enhanced" if rag_enabled else "standard",
             "rag_performance": rag_stats,

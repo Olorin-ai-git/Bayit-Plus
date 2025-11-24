@@ -409,7 +409,9 @@ class HumanReviewManager:
             True if should escalate
         """
         # Check risk threshold
-        if state.get("risk_score", 0.0) >= self.escalation_thresholds["risk_score"]:
+        # CRITICAL FIX: Handle None values to prevent TypeError
+        risk_score = state.get("risk_score")
+        if risk_score is not None and risk_score >= self.escalation_thresholds["risk_score"]:
             return True
         
         # Check confidence threshold
@@ -417,7 +419,9 @@ class HumanReviewManager:
             return True
         
         # Check complexity threshold
-        if state.get("complexity_score", 0.0) >= self.escalation_thresholds["complexity"]:
+        # CRITICAL FIX: Handle None values to prevent TypeError
+        complexity_score = state.get("complexity_score")
+        if complexity_score is not None and complexity_score >= self.escalation_thresholds["complexity"]:
             return True
         
         # Check for specific flags

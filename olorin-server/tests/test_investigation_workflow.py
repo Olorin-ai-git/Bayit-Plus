@@ -45,14 +45,14 @@ TEST_ENTITIES = [
 # Test configurations - Testing all available modes
 TEST_CONFIGURATIONS = [
     {
-        "mode": "autonomous",
+        "mode": "structured",
         "parallel": True,
-        "name": "Autonomous Parallel",
+        "name": "Structured Parallel",
     },  # Will show 404 error in report
     {
-        "mode": "autonomous",
+        "mode": "structured",
         "parallel": False,
-        "name": "Autonomous Sequential",
+        "name": "Structured Sequential",
     },  # Will show 404 error in report
     {
         "mode": "api_calls",
@@ -207,7 +207,7 @@ def validate_splunk_results(domain_data, domain_name):
 async def websocket_listener(
     investigation_id: str, parallel: bool, websocket_messages: Queue
 ):
-    """Listen to WebSocket messages during autonomous investigation."""
+    """Listen to WebSocket messages during structured investigation."""
     uri = f"{WS_URL}/{investigation_id}?parallel={'true' if parallel else 'false'}"
     print(f"Connecting to WebSocket: {uri}")
 
@@ -254,14 +254,14 @@ def run_websocket_listener(
     )
 
 
-def test_autonomous_investigation(
+def test_structured_investigation(
     entity_id: str, entity_type: str, parallel: bool
 ) -> TestResult:
-    """Test autonomous investigation mode"""
+    """Test structured investigation mode"""
     config = {
-        "mode": "autonomous",
+        "mode": "structured",
         "parallel": parallel,
-        "name": f"Autonomous {'Parallel' if parallel else 'Sequential'}",
+        "name": f"Structured {'Parallel' if parallel else 'Sequential'}",
     }
     result = TestResult(entity_id, entity_type, config)
 
@@ -269,11 +269,11 @@ def test_autonomous_investigation(
 
     try:
         print(
-            f"\n🚀 Testing Autonomous Investigation ({config['name']}) for {entity_type}: {entity_id}"
+            f"\n🚀 Testing Structured Investigation ({config['name']}) for {entity_type}: {entity_id}"
         )
         print("=" * 80)
 
-        # Start autonomous investigation
+        # Start structured investigation
         start_url = f"http://localhost:8090/v1/agent/start/{entity_id}"
         params = {"entity_type": entity_type}
 
@@ -288,17 +288,17 @@ def test_autonomous_investigation(
             print_response(start_resp)
 
             if start_resp.status_code not in (200, 201):
-                # For now, continue with the test even if autonomous investigation fails
-                # This allows us to test other modes while debugging the autonomous issue
+                # For now, continue with the test even if structured investigation fails
+                # This allows us to test other modes while debugging the structured issue
                 result.error_message = (
-                    f"Autonomous investigation endpoint returned {start_resp.status_code}. "
+                    f"Structured investigation endpoint returned {start_resp.status_code}. "
                     f"This may be due to server configuration or authentication issues. "
                     f"Response: {start_resp.text[:200]}"
                 )
                 print(f"⚠️  WARNING: {result.error_message}")
                 # Generate mock data for PDF report
                 result.overall_risk_score = 0.65  # Non-zero risk score
-                result.overall_thoughts = "This is a mock assessment due to server connection issues. The autonomous investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
+                result.overall_thoughts = "This is a mock assessment due to server connection issues. The structured investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
                 result.domain_scores = {
                     "device": 0.7,
                     "location": 0.6,
@@ -325,7 +325,7 @@ def test_autonomous_investigation(
             print(f"❌ Error connecting to server: {e}")
             # Generate mock data for PDF report
             result.overall_risk_score = 0.65  # Non-zero risk score
-            result.overall_thoughts = "This is a mock assessment due to server connection issues. The autonomous investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
+            result.overall_thoughts = "This is a mock assessment due to server connection issues. The structured investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
             result.domain_scores = {
                 "device": 0.7,
                 "location": 0.6,
@@ -431,10 +431,10 @@ def test_autonomous_investigation(
 
     except Exception as e:
         result.error_message = str(e)
-        print(f"❌ Error in autonomous investigation: {e}")
+        print(f"❌ Error in structured investigation: {e}")
         # Generate mock data for PDF report
         result.overall_risk_score = 0.65  # Non-zero risk score
-        result.overall_thoughts = "This is a mock assessment due to server connection issues. The autonomous investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
+        result.overall_thoughts = "This is a mock assessment due to server connection issues. The structured investigation failed to connect to the server, but we're providing this mock data to ensure the PDF report has content."
         result.domain_scores = {
             "device": 0.7,
             "location": 0.6,
@@ -932,7 +932,7 @@ def generate_comprehensive_pdf_report(test_results: List[TestResult]):
 
         pdf.ln(5)
 
-        # WebSocket Messages Summary (for autonomous tests)
+        # WebSocket Messages Summary (for structured tests)
         if result.websocket_messages:
             pdf.set_font("DejaVu", "B", 12)
             pdf.cell(0, 8, "WebSocket Messages Summary", ln=1)
@@ -1064,8 +1064,8 @@ def main():
             print(f"TESTING: {entity['type']} {entity['id']} with {config['name']}")
             print(f"{'='*100}")
 
-            if config["mode"] == "autonomous":
-                result = test_autonomous_investigation(
+            if config["mode"] == "structured":
+                result = test_structured_investigation(
                     entity["id"], entity["type"], config["parallel"]
                 )
             else:  # api_calls

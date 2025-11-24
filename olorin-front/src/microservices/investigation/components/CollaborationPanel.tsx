@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
+<<<<<<< HEAD
   UserGroupIcon,
+=======
+>>>>>>> 001-modify-analyzer-method
   UserPlusIcon,
   ChatBubbleLeftIcon,
   PaperAirplaneIcon,
@@ -8,7 +11,10 @@ import {
   EyeIcon,
   PencilIcon,
   CheckCircleIcon,
+<<<<<<< HEAD
   ExclamationTriangleIcon,
+=======
+>>>>>>> 001-modify-analyzer-method
   ClockIcon,
   UserIcon,
   CalendarIcon,
@@ -69,9 +75,14 @@ const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
   const [comments, setComments] = useState<Comment[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newComment, setNewComment] = useState('');
+<<<<<<< HEAD
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock data for demonstration
+=======
+
+  // Initialize collaboration data on component mount
+>>>>>>> 001-modify-analyzer-method
   useEffect(() => {
     const mockTeamMembers: TeamMember[] = [
       {

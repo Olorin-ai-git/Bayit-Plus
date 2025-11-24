@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This comprehensive testing plan validates the RAG-enhanced autonomous investigation system (Phases 1-4) through systematic testing of all RAG components, domain agents, tools integration, and end-to-end investigation workflows. The plan ensures RAG enhancements are functioning correctly with proper performance targets and graceful fallback mechanisms.
+This comprehensive testing plan validates the RAG-enhanced structured investigation system (Phases 1-4) through systematic testing of all RAG components, domain agents, tools integration, and end-to-end investigation workflows. The plan ensures RAG enhancements are functioning correctly with proper performance targets and graceful fallback mechanisms.
 
 ## Current State Analysis
 
@@ -33,7 +33,7 @@ This comprehensive testing plan validates the RAG-enhanced autonomous investigat
 ### 🔧 Test Infrastructure Status
 - **Unit Tests**: 19 tests in `test/unit/test_rag_enhanced_agent.py` (11 passing, 8 failing)
 - **Integration Tests**: Available at `test/integration/test_rag_tool_integration.py`
-- **E2E Tests**: Autonomous investigation tests at `test/integration/test_autonomous_investigation.py`
+- **E2E Tests**: Structured investigation tests at `test/integration/test_structured_investigation.py`
 - **CRITICAL ISSUE**: EntityType.USER should be EntityType.USER_ID in test fixtures
 
 ## Implementation Plan
@@ -175,7 +175,7 @@ This comprehensive testing plan validates the RAG-enhanced autonomous investigat
 **Duration**: 90 minutes
 **Deliverables**: Complete RAG system validation
 
-#### 5.1 Complete Autonomous Investigation with RAG
+#### 5.1 Complete Structured Investigation with RAG
 - **Target**: Full investigation workflow with RAG enhancement
 - **Tests**: Investigation accuracy, completion rate, quality metrics
 - **Performance Target**: Investigation completion <5 minutes
@@ -234,14 +234,14 @@ poetry run pytest -k "rag" --tb=short -v
 poetry run pytest test/unit/test_rag_*  -v
 
 # Phase 3: Domain Agent Testing
-poetry run pytest test/integration/test_autonomous_investigation.py -k "rag" -v
+poetry run pytest test/integration/test_structured_investigation.py -k "rag" -v
 
 # Phase 4: Tools Integration Testing
 poetry run pytest test/integration/test_rag_tool_integration.py -v
 
 # Phase 5: End-to-End Testing
-poetry run pytest test/integration/test_autonomous_investigation.py -v
-poetry run pytest test/integration/ -k "autonomous" -v
+poetry run pytest test/integration/test_structured_investigation.py -v
+poetry run pytest test/integration/ -k "structured" -v
 
 # Full RAG Test Suite
 poetry run pytest -m "integration" --tb=short

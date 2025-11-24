@@ -59,6 +59,15 @@ async def authentication_agent_node(state: InvestigationState, config: Optional[
     results = DomainAgentBase.process_snowflake_results(snowflake_data, "authentication")
     
     if results:
+<<<<<<< HEAD
+=======
+        # Log record structure for debugging
+        if results and isinstance(results[0], dict):
+            logger.info(f"📊 Authentication agent - Sample record structure (first record):")
+            logger.info(f"   Record keys: {list(results[0].keys())[:20]}")
+            logger.info(f"   Sample values: {dict(list(results[0].items())[:5])}")
+        
+>>>>>>> 001-modify-analyzer-method
         # Process MODEL_SCORE
         DomainAgentBase.process_model_scores(results, auth_findings, "authentication")
         
@@ -66,10 +75,26 @@ async def authentication_agent_node(state: InvestigationState, config: Optional[
         analyze_login_attempts(results, auth_findings)
         analyze_failed_login_ratios(results, auth_findings)
         analyze_security_indicators(results, auth_findings)
+<<<<<<< HEAD
+=======
+        
+        # Ensure we always have some evidence - add basic transaction count if nothing else
+        if len(auth_findings.get('evidence', [])) == 0:
+            logger.warning("⚠️ Authentication agent: No evidence collected from analysis functions, adding basic transaction count")
+            auth_findings["evidence"].append(f"Transaction data analyzed: {len(results)} records processed")
+            auth_findings["evidence"].append("Authentication analysis completed on transaction dataset")
+>>>>>>> 001-modify-analyzer-method
     else:
         # Handle case where Snowflake data format is problematic
         if isinstance(snowflake_data, str):
             auth_findings["risk_indicators"].append("Snowflake data in non-structured format")
+<<<<<<< HEAD
+=======
+        elif isinstance(snowflake_data, dict) and snowflake_data.get('row_count', 0) > 0:
+            # Data exists but wasn't extracted - log this
+            logger.warning(f"⚠️ Authentication agent: Snowflake data has {snowflake_data.get('row_count')} rows but no results extracted")
+            auth_findings["evidence"].append(f"Snowflake data available ({snowflake_data.get('row_count')} rows) but extraction failed")
+>>>>>>> 001-modify-analyzer-method
     
     # Analyze threat intelligence for authentication threats
     analyze_auth_threat_intelligence(tool_results, auth_findings)
@@ -81,12 +106,20 @@ async def authentication_agent_node(state: InvestigationState, config: Optional[
         "metrics_collected": len(auth_findings["metrics"])
     }
     
+<<<<<<< HEAD
     # CRITICAL: Analyze evidence with LLM to generate risk scores
+=======
+    # CRITICAL: Analyze evidence with LLM to generate risk scores (with ALL tool results)
+>>>>>>> 001-modify-analyzer-method
     from .base import analyze_evidence_with_llm
     auth_findings = await analyze_evidence_with_llm(
         domain="authentication",
         findings=auth_findings,
         snowflake_data=snowflake_data,
+<<<<<<< HEAD
+=======
+        tool_results=tool_results,
+>>>>>>> 001-modify-analyzer-method
         entity_type=entity_type,
         entity_id=entity_id
     )
@@ -101,7 +134,16 @@ async def authentication_agent_node(state: InvestigationState, config: Optional[
     log_agent_handover_complete("authentication", auth_findings)
     complete_chain_of_thought(process_id, auth_findings, "authentication")
     
+<<<<<<< HEAD
     logger.info(f"[Step 5.2.5] ✅ Authentication analysis complete - Risk: {auth_findings['risk_score']:.2f}")
+=======
+    # CRITICAL FIX: Handle None risk_score
+    risk_score = auth_findings.get('risk_score')
+    if risk_score is not None:
+        logger.info(f"[Step 5.2.5] ✅ Authentication analysis complete - Risk: {risk_score:.2f}")
+    else:
+        logger.info(f"[Step 5.2.5] ✅ Authentication analysis complete - Risk: INSUFFICIENT_DATA")
+>>>>>>> 001-modify-analyzer-method
     
     # Update state with findings
     return add_domain_findings(state, "authentication", auth_findings)

@@ -11,7 +11,6 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, System
 from langchain_openai import ChatOpenAI
 
 from .base import BasePattern, PatternResult
-from ..websocket_streaming_service import WebSocketStreamingService
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -49,9 +48,9 @@ class AugmentedLLMPattern(BasePattern):
         
         return ChatOpenAI(
             api_key="anything",  # Placeholder for local LLM
-            model="gpt-4",
+            model="gpt-4o-mini",  # Cheaper alternative to gpt-4
             base_url=settings.llm_base_url,
-            temperature=0.7,  # More creative for investigation reasoning
+            temperature=0.1,  # Low temperature for consistent, deterministic results
             max_completion_tokens=4000,
             timeout=60,  # Longer timeout for complex reasoning
         )

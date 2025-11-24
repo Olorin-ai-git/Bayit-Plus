@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
+<<<<<<< HEAD
 Test script for autonomous investigation flow with realistic fraud scenario.
+=======
+Test script for structured investigation flow with realistic fraud scenario.
+>>>>>>> 001-modify-analyzer-method
 This verifies that the Redis connection fix is working properly.
 """
 
@@ -15,8 +19,13 @@ from app.service.agent.orchestration.orchestrator_graph import get_orchestrator_
 
 logger = get_bridge_logger(__name__)
 
+<<<<<<< HEAD
 async def test_autonomous_flow():
     logger.info('🚀 Starting autonomous investigation flow test...')
+=======
+async def test_structured_flow():
+    logger.info('🚀 Starting structured investigation flow test...')
+>>>>>>> 001-modify-analyzer-method
     
     # Realistic fraud detection scenario
     investigation_data = {
@@ -83,8 +92,13 @@ async def test_autonomous_flow():
             }
         }
         
+<<<<<<< HEAD
         # Run the autonomous investigation
         logger.info('🚀 Starting autonomous investigation flow...')
+=======
+        # Run the structured investigation
+        logger.info('🚀 Starting structured investigation flow...')
+>>>>>>> 001-modify-analyzer-method
         result = await graph.ainvoke(initial_state, config=thread_config)
         
         logger.info('✅ Investigation completed successfully!')
@@ -105,7 +119,11 @@ async def test_autonomous_flow():
         return False, str(e)
 
 async def main():
+<<<<<<< HEAD
     success, result = await test_autonomous_flow()
+=======
+    success, result = await test_structured_flow()
+>>>>>>> 001-modify-analyzer-method
     print(f'\n🎯 AUTONOMOUS FLOW TEST RESULT: {"SUCCESS" if success else "FAILED"}')
     if not success:
         print(f'Error: {result}')

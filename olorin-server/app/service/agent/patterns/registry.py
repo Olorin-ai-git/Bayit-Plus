@@ -112,8 +112,15 @@ class PatternRegistry:
         if hasattr(metrics, 'success') and metrics.success:
             stats["successful_executions"] += 1
         
+<<<<<<< HEAD
         if hasattr(metrics, 'duration_ms') and metrics.duration_ms:
             stats["total_duration_ms"] += metrics.duration_ms
+=======
+        # CRITICAL FIX: Handle None values to prevent TypeError
+        duration_ms = getattr(metrics, 'duration_ms', None)
+        if duration_ms is not None:
+            stats["total_duration_ms"] += duration_ms
+>>>>>>> 001-modify-analyzer-method
             # CRITICAL FIX: Enhanced None-safety for duration calculation
             total_duration = stats.get("total_duration_ms") or 0
             total_executions = max(1, stats.get("total_executions", 1))
@@ -129,16 +136,25 @@ class PatternRegistry:
         framework_type = self._framework_mapping.get(pattern_type)
         if framework_type == FrameworkType.OPENAI_AGENTS:
             if hasattr(metrics, 'token_usage'):
-                total_tokens = metrics.token_usage.get('input', 0) + metrics.token_usage.get('output', 0)
-                stats["total_tokens"] += total_tokens
+                # CRITICAL FIX: Handle None values to prevent TypeError
+                token_usage = metrics.token_usage
+                if token_usage is not None and isinstance(token_usage, dict):
+                    input_tokens = token_usage.get('input') or 0
+                    output_tokens = token_usage.get('output') or 0
+                    total_tokens = (input_tokens if input_tokens is not None else 0) + (output_tokens if output_tokens is not None else 0)
+                    stats["total_tokens"] += total_tokens
             
-            if hasattr(metrics, 'api_cost_cents'):
-                stats["total_cost_cents"] += metrics.api_cost_cents
+            # CRITICAL FIX: Handle None values to prevent TypeError
+            api_cost_cents = getattr(metrics, 'api_cost_cents', None)
+            if api_cost_cents is not None:
+                stats["total_cost_cents"] += api_cost_cents
             
             if hasattr(metrics, 'function_calls'):
                 stats["function_calls"] += metrics.function_calls
                 
-            if hasattr(metrics, 'streaming_chunks') and metrics.streaming_chunks > 0:
+            # CRITICAL FIX: Handle None values to prevent TypeError
+            streaming_chunks = getattr(metrics, 'streaming_chunks', None)
+            if streaming_chunks is not None and streaming_chunks > 0:
                 stats["streaming_sessions"] += 1
                 
             if hasattr(metrics, 'openai_run_id') and metrics.openai_run_id:

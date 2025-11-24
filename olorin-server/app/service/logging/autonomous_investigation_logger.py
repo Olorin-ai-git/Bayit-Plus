@@ -15,9 +15,9 @@ def _get_bridge_logger():
     return logger
 
 """
-Comprehensive Autonomous Investigation Logging System
+Comprehensive Structured Investigation Logging System
 
-This module provides verbose logging for ALL interactions during autonomous investigations:
+This module provides verbose logging for ALL interactions during structured investigations:
 - LLM interactions and responses with full prompts/completions
 - Agent decision-making processes and reasoning
 - Tool selection and usage patterns
@@ -25,7 +25,7 @@ This module provides verbose logging for ALL interactions during autonomous inve
 - Investigation progress tracking and findings
 - Error conditions and recovery attempts
 
-Every interaction is captured to provide complete visibility into the autonomous
+Every interaction is captured to provide complete visibility into the structured
 investigation process for testing, debugging, and optimization.
 """
 
@@ -147,16 +147,16 @@ class InvestigationProgressLog:
     agent_status: Dict[str, str]  # agent_name -> status
     estimated_completion_time: Optional[str] = None
 
-class AutonomousInvestigationLogger:
+class StructuredInvestigationLogger:
     """
-    Comprehensive logging system for autonomous investigations.
+    Comprehensive logging system for structured investigations.
     
-    Provides structured, searchable logging of ALL interactions during autonomous
+    Provides structured, searchable logging of ALL interactions during structured
     investigations with real-time monitoring capabilities and detailed audit trails.
     """
     
     def __init__(self, log_directory: Optional[Path] = None, enable_console_output: bool = True):
-        self.log_directory = log_directory or Path("logs/autonomous_investigations")
+        self.log_directory = log_directory or Path("logs/structured_investigations")
         self.log_directory.mkdir(parents=True, exist_ok=True)
         self.enable_console_output = enable_console_output
         
@@ -174,16 +174,16 @@ class AutonomousInvestigationLogger:
         # Real-time monitoring callbacks
         self._monitoring_callbacks: List[callable] = []
         
-        _get_bridge_logger().info(f"Initialized AutonomousInvestigationLogger with directory: {self.log_directory}")
+        _get_bridge_logger().info(f"Initialized StructuredInvestigationLogger with directory: {self.log_directory}")
     
     def _setup_structured_logging(self) -> None:
         """Setup structured logging with custom formatters"""
         # Create investigation-specific logger
-        self.investigation_logger = logging.getLogger("autonomous_investigation")
+        self.investigation_logger = logging.getLogger("structured_investigation")
         self.investigation_logger.setLevel(logging.DEBUG)
         
         # File handler for structured logs
-        log_file = self.log_directory / "autonomous_investigations.jsonl"
+        log_file = self.log_directory / "structured_investigations.jsonl"
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(logging.DEBUG)
         
@@ -237,12 +237,21 @@ class AutonomousInvestigationLogger:
         # Get standardized file paths
         file_paths = self.folder_manager.get_log_file_paths(investigation_id)
         
+<<<<<<< HEAD
         # Create investigation-specific file handler for autonomous activities
         autonomous_log_file = file_paths["autonomous_log"]
         file_handler = logging.FileHandler(autonomous_log_file)
         file_handler.setLevel(logging.DEBUG)
         
         # Custom JSON formatter for autonomous activities
+=======
+        # Create investigation-specific file handler for structured activities
+        structured_log_file = file_paths["structured_log"]
+        file_handler = logging.FileHandler(structured_log_file)
+        file_handler.setLevel(logging.DEBUG)
+        
+        # Custom JSON formatter for structured activities
+>>>>>>> 001-modify-analyzer-method
         json_formatter = logging.Formatter(
             '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "interaction_type": "%(name)s", "data": %(message)s}'
         )
@@ -252,7 +261,11 @@ class AutonomousInvestigationLogger:
         self._investigation_file_handlers[investigation_id] = file_handler
         
         # Add handler to investigation logger
+<<<<<<< HEAD
         investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
+=======
+        investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
+>>>>>>> 001-modify-analyzer-method
         investigation_logger.addHandler(file_handler)
         investigation_logger.setLevel(logging.DEBUG)
         
@@ -381,7 +394,7 @@ class AutonomousInvestigationLogger:
     ) -> str:
         """Log tool selection reasoning and execution results"""
         interaction_id = str(uuid.uuid4())
-        
+
         tool_log = ToolExecutionLog(
             interaction_id=interaction_id,
             investigation_id=investigation_id,
@@ -395,9 +408,30 @@ class AutonomousInvestigationLogger:
             execution_time_ms=execution_time_ms,
             error_message=error_message
         )
-        
+
         self._log_interaction(investigation_id, InteractionType.TOOL_EXECUTION, asdict(tool_log))
-        
+
+        # NEW: Persist to database
+        try:
+            from app.service.tool_execution_service import ToolExecutionService
+            from app.persistence.database import get_db_session
+
+            with get_db_session() as db:
+                service = ToolExecutionService(db)
+                service.persist_tool_execution(
+                    investigation_id=investigation_id,
+                    agent_name=agent_name,
+                    tool_name=tool_name,
+                    status="completed" if success else "failed",
+                    input_parameters=tool_parameters,
+                    output_result=execution_result,
+                    error_message=error_message,
+                    duration_ms=execution_time_ms
+                )
+        except Exception as e:
+            _get_bridge_logger().error(f"Failed to persist tool execution to database: {str(e)}", exc_info=True)
+            # Don't fail the logging operation if database persistence fails
+
         if self.enable_console_output:
             status_icon = "✅" if success else "❌"
             status_text = "SUCCESS" if success else f"FAILED ({error_message})"
@@ -406,7 +440,7 @@ class AutonomousInvestigationLogger:
             _get_bridge_logger().info(f"           Params: {str(tool_parameters)[:80]}{'...' if len(str(tool_parameters)) > 80 else ''}")
             if selection_reasoning:
                 _get_bridge_logger().info(f"           Selection: {selection_reasoning[:80]}{'...' if len(selection_reasoning) > 80 else ''}")
-        
+
         return interaction_id
     
     def log_langgraph_node(
@@ -424,14 +458,110 @@ class AutonomousInvestigationLogger:
         """Log LangGraph node execution with complete state tracking"""
         interaction_id = str(uuid.uuid4())
         
+        # Summarize snowflake_data and tool_results in states to prevent verbose logging
+        def _summarize_state_for_logging(state: Dict[str, Any]) -> Dict[str, Any]:
+            """Create a copy of state with summarized snowflake_data and tool_results"""
+            if not state:
+                return state
+            
+            summarized_state = state.copy()
+            
+            # Summarize snowflake_data
+            if 'snowflake_data' in summarized_state and summarized_state['snowflake_data']:
+                snowflake_data = summarized_state['snowflake_data']
+                if isinstance(snowflake_data, dict) and 'results' in snowflake_data:
+                    results = snowflake_data.get('results', [])
+                    summarized_state['snowflake_data'] = {
+                        'success': snowflake_data.get('success'),
+                        'source': snowflake_data.get('source', 'unknown'),
+                        'row_count': len(results) if isinstance(results, list) else 0,
+                        'columns': list(results[0].keys())[:5] if results and isinstance(results, list) and results and isinstance(results[0], dict) else []
+                    }
+            
+            # Summarize tool_results to prevent verbose SQL query logging
+            if 'tool_results' in summarized_state and summarized_state['tool_results']:
+                tool_results = summarized_state['tool_results']
+                if isinstance(tool_results, dict):
+                    summarized_tool_results = {}
+                    for tool_name, result in tool_results.items():
+                        if isinstance(result, str):
+                            # Check if it's a JSON string with a query
+                            try:
+                                import json
+                                parsed = json.loads(result)
+                                if isinstance(parsed, dict):
+                                    if "query" in parsed:
+                                        summarized_tool_results[tool_name] = {
+                                            "type": "json_with_query",
+                                            "query_preview": parsed["query"][:100] + "..." if len(parsed["query"]) > 100 else parsed["query"],
+                                            "has_results": "results" in parsed or "data" in parsed,
+                                            "result_count": len(parsed.get("results", [])) if isinstance(parsed.get("results"), list) else 0
+                                        }
+                                    elif "results" in parsed:
+                                        results = parsed["results"]
+                                        summarized_tool_results[tool_name] = {
+                                            "type": "json_results",
+                                            "result_count": len(results) if isinstance(results, list) else 0
+                                        }
+                                    elif "row_count" in parsed:
+                                        # Handle database query results with row_count (like snowflake_query_tool)
+                                        row_count = parsed.get("row_count", 0)
+                                        columns = parsed.get("columns", [])
+                                        summarized_tool_results[tool_name] = {
+                                            "type": "json_with_row_count",
+                                            "row_count": row_count,
+                                            "column_count": len(columns) if isinstance(columns, list) else 0,
+                                            "columns": columns[:5] if isinstance(columns, list) and len(columns) > 0 else []
+                                        }
+                                    else:
+                                        summarized_tool_results[tool_name] = {"type": "json", "keys": list(parsed.keys())[:5]}
+                                else:
+                                    # Non-dict JSON - summarize by type
+                                    summarized_tool_results[tool_name] = {"type": "json_parsed", "parsed_type": type(parsed).__name__, "length": len(str(parsed))}
+                            except (json.JSONDecodeError, Exception):
+                                # Not JSON, check if it looks like a SQL query
+                                if "SELECT" in result.upper() or "FROM" in result.upper() or "WHERE" in result.upper():
+                                    summarized_tool_results[tool_name] = {
+                                        "type": "sql_query",
+                                        "length": len(result)
+                                    }
+                                else:
+                                    # Not SQL - summarize string by length
+                                    summarized_tool_results[tool_name] = {"type": "string", "length": len(result)}
+                        elif isinstance(result, dict):
+                            if "query" in result:
+                                summarized_tool_results[tool_name] = {
+                                    "type": "dict_with_query",
+                                    "query_preview": str(result["query"])[:100] + "..." if len(str(result["query"])) > 100 else str(result["query"]),
+                                    "has_results": "results" in result or "data" in result,
+                                    "result_count": len(result.get("results", [])) if isinstance(result.get("results"), list) else 0
+                                }
+                            elif "results" in result:
+                                results = result["results"]
+                                summarized_tool_results[tool_name] = {
+                                    "type": "dict_results",
+                                    "result_count": len(results) if isinstance(results, list) else 0
+                                }
+                            else:
+                                summarized_tool_results[tool_name] = {"type": "dict", "keys": list(result.keys())[:5]}
+                        else:
+                            summarized_tool_results[tool_name] = {"type": type(result).__name__, "preview": str(result)[:100]}
+                    summarized_state['tool_results'] = summarized_tool_results
+            
+            return summarized_state
+        
+        # Summarize states before logging
+        summarized_state_before = _summarize_state_for_logging(state_before)
+        summarized_state_after = _summarize_state_for_logging(state_after)
+        
         node_log = LangGraphNodeLog(
             interaction_id=interaction_id,
             investigation_id=investigation_id,
             timestamp=datetime.now(timezone.utc).isoformat(),
             node_name=node_name,
             node_type=node_type,
-            state_before=state_before,
-            state_after=state_after,
+            state_before=summarized_state_before,
+            state_after=summarized_state_after,
             execution_result=execution_result,
             next_nodes=next_nodes,
             execution_time_ms=execution_time_ms,
@@ -492,7 +622,13 @@ class AutonomousInvestigationLogger:
             # Show risk score progression if available
             if risk_score_progression:
                 latest_risk = risk_score_progression[-1] if risk_score_progression else {}
-                risk_score = latest_risk.get('risk_score')
+                # Handle both dict format and legacy int format for backward compatibility
+                if isinstance(latest_risk, dict):
+                    risk_score = latest_risk.get('risk_score')
+                elif isinstance(latest_risk, (int, float)):
+                    risk_score = latest_risk
+                else:
+                    risk_score = None
                 risk_display = "MISSING!" if risk_score is None else f"{risk_score:.3f}"
                 _get_bridge_logger().info(f"           Current Risk: {risk_display}")
             
@@ -536,7 +672,11 @@ class AutonomousInvestigationLogger:
             handler.close()
             
             # Remove handler from logger
+<<<<<<< HEAD
             investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
+=======
+            investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
+>>>>>>> 001-modify-analyzer-method
             investigation_logger.removeHandler(handler)
             
             # Clean up handler reference
@@ -610,20 +750,49 @@ class AutonomousInvestigationLogger:
         
         # Read investigation data
         metadata_file = folder_path / "metadata.json"
+<<<<<<< HEAD
         autonomous_file = folder_path / "autonomous_activities.jsonl" 
         journey_file = folder_path / "journey_tracking.json"
         log_file = folder_path / "investigation.log"
         
+=======
+        structured_file = folder_path / "structured_activities.jsonl" 
+        journey_file = folder_path / "journey_tracking.json"
+        log_file = folder_path / "investigation.log"
+        
+        # Check for confusion table
+        confusion_table_file = None
+        investigation_id = None
+        if metadata_file.exists():
+            try:
+                with open(metadata_file) as f:
+                    metadata = json.load(f)
+                    investigation_id = metadata.get("investigation_id")
+                    if investigation_id:
+                        confusion_table_file = folder_path / f"confusion_table_{investigation_id}.html"
+                        if not confusion_table_file.exists():
+                            confusion_table_file = None
+            except:
+                pass
+        
+>>>>>>> 001-modify-analyzer-method
         # Load metadata
         metadata = {}
         if metadata_file.exists():
             with open(metadata_file) as f:
                 metadata = json.load(f)
         
+<<<<<<< HEAD
         # Load autonomous activities
         activities = []
         if autonomous_file.exists():
             with open(autonomous_file) as f:
+=======
+        # Load structured activities
+        activities = []
+        if structured_file.exists():
+            with open(structured_file) as f:
+>>>>>>> 001-modify-analyzer-method
                 for line in f:
                     try:
                         activities.append(json.loads(line.strip()))
@@ -818,6 +987,36 @@ class AutonomousInvestigationLogger:
         
         html_content += f"""
         </div>
+<<<<<<< HEAD
+=======
+        """
+        
+        # Add confusion table section if available
+        if confusion_table_file and confusion_table_file.exists():
+            confusion_table_filename = confusion_table_file.name
+            html_content += f"""
+        <div class="section">
+            <div class="section-title">📊 Confusion Table Metrics</div>
+            <p style="color: #718096; margin-bottom: 15px;">
+                Detailed confusion matrix metrics for this investigation are available in a separate report.
+            </p>
+            <a href="{confusion_table_filename}" 
+               target="_blank" 
+               style="display: inline-block; 
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                      color: white; 
+                      padding: 12px 24px; 
+                      border-radius: 8px; 
+                      text-decoration: none; 
+                      font-weight: 600;
+                      margin-top: 10px;">
+                📊 View Confusion Table Report
+            </a>
+        </div>
+        """
+        
+        html_content += f"""
+>>>>>>> 001-modify-analyzer-method
     </div>
     
     <script>
@@ -879,7 +1078,11 @@ class AutonomousInvestigationLogger:
             self._investigation_logs[investigation_id].append(log_entry)
         
         # Write to investigation-specific structured log file
+<<<<<<< HEAD
         investigation_logger = logging.getLogger(f"autonomous_investigation_{investigation_id}")
+=======
+        investigation_logger = logging.getLogger(f"structured_investigation_{investigation_id}")
+>>>>>>> 001-modify-analyzer-method
         if investigation_logger.handlers:  # Only log if investigation-specific logger exists
             investigation_logger.debug(json.dumps(log_entry))
         else:
@@ -989,12 +1192,12 @@ class AutonomousInvestigationLogger:
             raise ValueError(f"Unsupported export format: {format}")
 
 # Global logger instance with console output enabled
-autonomous_investigation_logger = AutonomousInvestigationLogger(enable_console_output=True)
+structured_investigation_logger = StructuredInvestigationLogger(enable_console_output=True)
 
-def get_logger() -> AutonomousInvestigationLogger:
-    """Get the global autonomous investigation logger instance"""
-    return autonomous_investigation_logger
+def get_logger() -> StructuredInvestigationLogger:
+    """Get the global structured investigation logger instance"""
+    return structured_investigation_logger
 
-def get_console_logger() -> AutonomousInvestigationLogger:
-    """Get an autonomous investigation logger with console output enabled"""
-    return AutonomousInvestigationLogger(enable_console_output=True)
+def get_console_logger() -> StructuredInvestigationLogger:
+    """Get an structured investigation logger with console output enabled"""
+    return StructuredInvestigationLogger(enable_console_output=True)

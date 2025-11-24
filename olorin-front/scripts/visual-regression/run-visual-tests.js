@@ -50,7 +50,11 @@ function checkBaselines() {
 async function checkServices() {
   const services = [
     { name: 'core-ui', port: 3000 },
+<<<<<<< HEAD
     { name: 'autonomous-investigation', port: 3001 },
+=======
+    { name: 'structured-investigation', port: 3001 },
+>>>>>>> 001-modify-analyzer-method
     { name: 'manual-investigation', port: 3002 },
     { name: 'agent-analytics', port: 3003 }
   ];

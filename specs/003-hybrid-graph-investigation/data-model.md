@@ -6,13 +6,21 @@
 
 ## Overview
 
+<<<<<<< HEAD
 This document defines the comprehensive data models for the Hybrid Graph Investigation UI concepts. These models support all 4 UI concepts (Power Grid, Command Center, Evidence Trail, Network Explorer) and ensure consistent data flow across the autonomous-investigation microservice.
+=======
+This document defines the comprehensive data models for the Hybrid Graph Investigation UI concepts. These models support all 4 UI concepts (Power Grid, Command Center, Evidence Trail, Network Explorer) and ensure consistent data flow across the structured-investigation microservice.
+>>>>>>> 001-modify-analyzer-method
 
 ## Core Data Models
 
 ### Investigation Entity
 
+<<<<<<< HEAD
 The central entity representing an autonomous investigation instance.
+=======
+The central entity representing an structured investigation instance.
+>>>>>>> 001-modify-analyzer-method
 
 ```typescript
 interface Investigation {
@@ -791,4 +799,8 @@ type InvestigationListResponse = ApiResponse<Investigation[]>;
 type EvidenceResponse = ApiResponse<Evidence>;
 ```
 
+<<<<<<< HEAD
 This comprehensive data model ensures type safety, consistency, and extensibility across all 4 UI concepts while supporting the complex requirements of autonomous investigation workflows.
+=======
+This comprehensive data model ensures type safety, consistency, and extensibility across all 4 UI concepts while supporting the complex requirements of structured investigation workflows.
+>>>>>>> 001-modify-analyzer-method

@@ -11,7 +11,7 @@ from langchain_core.tools import BaseTool
 from .tool_recommender_core import ToolRecommendation, ToolEffectivenessMetrics
 from .tool_analysis_utils import ToolAnalysisUtils
 from .context_augmentor import KnowledgeContext
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -67,7 +67,7 @@ class ToolStrategyImplementations:
     
     async def case_similarity_strategy(
         self,
-        investigation_context: AutonomousInvestigationContext,
+        investigation_context: StructuredInvestigationContext,
         knowledge_context: KnowledgeContext,
         available_tools: List[BaseTool]
     ) -> List[ToolRecommendation]:

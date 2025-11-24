@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Link, useLocation, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from '@shared/components/ErrorBoundary';
@@ -7,12 +8,46 @@ import RemoteInvestigationService from './components/RemoteInvestigationService'
 import RemoteAutonomousInvestigationService from './components/RemoteAutonomousInvestigationService';
 import './globals';
 
+=======
+/**
+ * Shell Application
+ *
+ * Main shell application that coordinates all microservices.
+ * Refactored to maintain < 200 line limit by extracting components and constants.
+ */
+
+import React, { useState, useEffect, Suspense } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@shared/components/ErrorBoundary';
+import LoadingSpinner from '@shared/components/LoadingSpinner';
+import { EventBusManager, eventBus, EventBusProvider } from '@shared/events/UnifiedEventBus';
+import { ToastProvider } from '@shared/components/ui/ToastProvider';
+import { AuthProvider } from '../microservices/core-ui/components/AuthProvider';
+import { InvestigationWizard } from '../microservices/investigation/containers/InvestigationWizard';
+import Breadcrumbs from '@shared/components/Breadcrumbs';
+import { serviceLinks } from './constants/serviceData';
+import NavigationHeader from './components/NavigationHeader';
+import ShellHomePage from './components/ShellHomePage';
+import ServicePlaceholder from './components/ServicePlaceholder';
+import SystemStatusPage from './components/SystemStatusPage';
+import './globals';
+
+const InvestigationApp = React.lazy(() => import('../microservices/investigation/InvestigationApp'));
+const ComparisonPage = React.lazy(() => import('../microservices/investigation/pages/ComparisonPage'));
+const RagIntelligenceApp = React.lazy(() => import('../microservices/rag-intelligence/RagIntelligenceApp'));
+const ReportingApp = React.lazy(() => import('../microservices/reporting/ReportingApp'));
+const VisualizationApp = React.lazy(() => import('../microservices/visualization/VisualizationApp'));
+const InvestigationsManagementApp = React.lazy(() => import('../microservices/investigations-management/InvestigationsManagementApp'));
+const AnalyticsApp = React.lazy(() => import('../microservices/analytics/AnalyticsApp'));
+
+>>>>>>> 001-modify-analyzer-method
 interface ShellState {
   isInitialized: boolean;
   error: string | null;
   servicesStatus: Record<string, 'ready' | 'loading' | 'error'>;
 }
 
+<<<<<<< HEAD
 interface ServiceLink {
   name: string;
   path: string;
@@ -362,6 +397,25 @@ const ServicePlaceholder: React.FC<{
       </div>
     </div>
   );
+=======
+// Component to expose navigate function to window.olorin
+const NavigationExposer: React.FC = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Expose navigate function to window.olorin for cross-microservice navigation
+    window.olorin.navigate = (path: string) => {
+      navigate(path);
+    };
+    
+    return () => {
+      // Cleanup
+      delete window.olorin.navigate;
+    };
+  }, [navigate]);
+  
+  return null;
+>>>>>>> 001-modify-analyzer-method
 };
 
 const App: React.FC = () => {
@@ -377,14 +431,20 @@ const App: React.FC = () => {
 
   const initializeShell = async () => {
     try {
+<<<<<<< HEAD
       console.log('[Shell] Starting shell initialization...');
 
+=======
+>>>>>>> 001-modify-analyzer-method
       const eventBusManager = new EventBusManager();
       window.olorin.eventBus = eventBus;
       window.olorin.eventBusManager = eventBusManager;
 
+<<<<<<< HEAD
       console.log('[Shell] Event bus initialized');
 
+=======
+>>>>>>> 001-modify-analyzer-method
       const servicesStatus = serviceLinks.reduce((acc, service) => {
         acc[service.name.toLowerCase()] = 'ready';
         return acc;
@@ -396,7 +456,11 @@ const App: React.FC = () => {
         servicesStatus
       });
 
+<<<<<<< HEAD
       console.log('[Shell] Shell initialization complete');
+=======
+      // Shell initialization complete
+>>>>>>> 001-modify-analyzer-method
     } catch (error) {
       console.error('[Shell] Shell initialization failed:', error);
       setShellState({
@@ -409,7 +473,11 @@ const App: React.FC = () => {
 
   if (!shellState.isInitialized && !shellState.error) {
     return (
+<<<<<<< HEAD
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+=======
+      <div className="min-h-screen bg-black flex items-center justify-center">
+>>>>>>> 001-modify-analyzer-method
         <div className="text-center">
           <div className="relative mx-auto mb-6">
             <img
@@ -417,6 +485,7 @@ const App: React.FC = () => {
               alt="Olorin Logo"
               className="h-20 w-auto animate-pulse filter drop-shadow-xl"
             />
+<<<<<<< HEAD
             <div className="absolute -inset-2 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-indigo-700/20 rounded-xl opacity-50 animate-pulse blur-lg"></div>
           </div>
           <LoadingSpinner size="lg" />
@@ -424,6 +493,14 @@ const App: React.FC = () => {
             Initializing Olorin Platform
           </h2>
           <p className="mt-2 text-gray-600">
+=======
+          </div>
+          <LoadingSpinner size="lg" />
+          <h2 className="mt-6 text-2xl font-bold text-corporate-textPrimary">
+            Initializing Olorin Platform
+          </h2>
+          <p className="mt-2 text-corporate-textSecondary">
+>>>>>>> 001-modify-analyzer-method
             Setting up AI-powered fraud detection services...
           </p>
         </div>
@@ -433,6 +510,7 @@ const App: React.FC = () => {
 
   if (shellState.error) {
     return (
+<<<<<<< HEAD
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center">
         <div className="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 border border-red-100">
           <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-100 rounded-2xl mb-6">
@@ -444,11 +522,28 @@ const App: React.FC = () => {
             Platform Error
           </h1>
           <p className="text-gray-600 text-center mb-6">
+=======
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="max-w-md w-full bg-black/40 backdrop-blur shadow-xl rounded-lg p-8 border border-corporate-error">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-lg mb-6 border-2 border-corporate-error bg-black/50 backdrop-blur">
+            <svg className="w-8 h-8 text-corporate-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-corporate-textPrimary text-center mb-4">
+            Platform Error
+          </h1>
+          <p className="text-corporate-textSecondary text-center mb-6">
+>>>>>>> 001-modify-analyzer-method
             {shellState.error}
           </p>
           <button
             onClick={() => window.location.reload()}
+<<<<<<< HEAD
             className="w-full bg-gradient-to-r from-red-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-red-700 hover:to-pink-700 transition-all duration-200 font-medium"
+=======
+            className="w-full bg-corporate-error/80 backdrop-blur text-white px-6 py-3 rounded-lg hover:bg-corporate-error transition-all duration-200 font-medium border border-corporate-error"
+>>>>>>> 001-modify-analyzer-method
           >
             Restart Platform
           </button>
@@ -459,6 +554,7 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary serviceName="shell">
+<<<<<<< HEAD
       <BrowserRouter>
         <div className="shell-application min-h-screen bg-gray-50">
           <NavigationHeader />
@@ -559,8 +655,200 @@ const App: React.FC = () => {
           </main>
         </div>
       </BrowserRouter>
+=======
+      <EventBusProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <NavigationExposer />
+            <div className="shell-application min-h-screen bg-black">
+              <NavigationHeader />
+              <Breadcrumbs />
+
+            <main>
+              <Routes>
+                <Route path="/" element={<ShellHomePage />} />
+                <Route path="/compare" element={
+                  <ErrorBoundary serviceName="investigation">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Comparison Page...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ComparisonPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/investigations/*" element={
+                  <ErrorBoundary serviceName="investigation">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Investigation Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <InvestigationApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/investigation/*" element={<InvestigationWizard />} />
+                <Route path="/analytics/*" element={
+                  <ErrorBoundary serviceName="analytics">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Analytics Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <AnalyticsApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/rag/*" element={
+                  <ErrorBoundary serviceName="rag-intelligence">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Knowledge Base...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <RagIntelligenceApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/visualization/*" element={
+                  <ErrorBoundary serviceName="visualization">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Visualization Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <VisualizationApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/reports" element={
+                  <ErrorBoundary serviceName="reporting">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Reports Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ReportingApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/reports/*" element={
+                  <ErrorBoundary serviceName="reporting">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Reports Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ReportingApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/reporting" element={
+                  <ErrorBoundary serviceName="reporting">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Reports Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ReportingApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/reporting/*" element={
+                  <ErrorBoundary serviceName="reporting">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Reports Service...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <ReportingApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+                <Route path="/status" element={<SystemStatusPage />} />
+                <Route path="/investigations-management/*" element={
+                  <ErrorBoundary serviceName="investigations-management">
+                    <Suspense fallback={
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <LoadingSpinner size="md" />
+                          <p className="mt-2 text-sm text-corporate-textSecondary">
+                            Loading Investigations Management...
+                          </p>
+                        </div>
+                      </div>
+                    }>
+                      <InvestigationsManagementApp />
+                    </Suspense>
+                  </ErrorBoundary>
+                } />
+              </Routes>
+            </main>
+          </div>
+        </BrowserRouter>
+          </AuthProvider>
+        </ToastProvider>
+      </EventBusProvider>
+>>>>>>> 001-modify-analyzer-method
     </ErrorBoundary>
   );
 };
 
+<<<<<<< HEAD
 export default App;
+=======
+export default App;
+>>>>>>> 001-modify-analyzer-method

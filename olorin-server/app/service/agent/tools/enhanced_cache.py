@@ -157,14 +157,19 @@ class EnhancedCache:
         
         # Background cleanup task
         self.cleanup_task: Optional[asyncio.Task] = None
-        self.start_cleanup_task()
-        
+        self._cleanup_task_started = False
+
         self.logger = get_bridge_logger(f"{__name__}.cache")
-    
+
     def start_cleanup_task(self) -> None:
-        """Start background cleanup task"""
-        if self.cleanup_task is None or self.cleanup_task.done():
-            self.cleanup_task = asyncio.create_task(self._cleanup_loop())
+        """Start background cleanup task (only when event loop is running)"""
+        try:
+            if self.cleanup_task is None or self.cleanup_task.done():
+                self.cleanup_task = asyncio.create_task(self._cleanup_loop())
+                self._cleanup_task_started = True
+        except RuntimeError:
+            # No event loop running - task will be started on first async operation
+            self._cleanup_task_started = False
     
     async def _cleanup_loop(self) -> None:
         """Background cleanup loop"""
@@ -178,14 +183,18 @@ class EnhancedCache:
                 self.logger.error(f"Cache cleanup error: {str(e)}", exc_info=True)
     
     async def get(
-        self, 
-        key: str, 
+        self,
+        key: str,
         default: Any = None,
         touch: bool = True
     ) -> Any:
         """Get value from cache"""
         start_time = time.time()
-        
+
+        # Ensure cleanup task is started (lazy initialization)
+        if not self._cleanup_task_started:
+            self.start_cleanup_task()
+
         try:
             # Check Redis first if available
             if self.redis_client:
@@ -229,7 +238,11 @@ class EnhancedCache:
     ) -> bool:
         """Set value in cache"""
         start_time = time.time()
-        
+
+        # Ensure cleanup task is started (lazy initialization)
+        if not self._cleanup_task_started:
+            self.start_cleanup_task()
+
         try:
             ttl = ttl_seconds if ttl_seconds is not None else self.default_ttl_seconds
             expires_at = datetime.now() + timedelta(seconds=ttl) if ttl > 0 else None

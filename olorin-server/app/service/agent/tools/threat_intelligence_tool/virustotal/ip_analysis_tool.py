@@ -302,7 +302,7 @@ class VirusTotalIPAnalysisTool(BaseTool):
         
         # ASN-based recommendations
         if network_info.get("asn"):
-            recommendations.append(f"🔢 ASN: Autonomous System {network_info['asn']}")
+            recommendations.append(f"🔢 ASN: Structured System {network_info['asn']}")
         
         return recommendations
 

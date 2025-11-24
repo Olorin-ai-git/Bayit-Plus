@@ -5,6 +5,7 @@ This module handles the creation of both parallel and sequential agent graphs
 for different investigation workflows.
 """
 
+import os
 from typing import Optional, Annotated, List, Dict
 
 from langchain_core.messages import BaseMessage
@@ -131,9 +132,13 @@ async def create_resilient_memory():
 
 
 async def create_parallel_agent_graph(use_enhanced_tools=False):
+<<<<<<< HEAD
     """Create autonomous agent graph for parallel execution with RecursionGuard protection."""
+=======
+    """Create structured agent graph for parallel execution with RecursionGuard protection."""
+>>>>>>> 001-modify-analyzer-method
     guard = get_recursion_guard()
-    logger.info("Creating parallel graph with autonomous agents and RecursionGuard protection")
+    logger.info("Creating parallel graph with structured agents and RecursionGuard protection")
     
     builder = StateGraph(MessagesState)
 
@@ -221,14 +226,18 @@ async def create_parallel_agent_graph(use_enhanced_tools=False):
     builder.add_edge("tools", "fraud_investigation")
     
     # NOTE: Agents have tools bound directly to their LLMs
+<<<<<<< HEAD
     # They invoke tools internally within their autonomous_investigate method
+=======
+    # They invoke tools internally within their structured_investigate method
+>>>>>>> 001-modify-analyzer-method
     # This avoids circular reference issues with the graph-level tools node
 
     # Compile with memory
     memory = await create_resilient_memory()
     graph = builder.compile(checkpointer=memory)
 
-    logger.info("✅ Parallel autonomous agent graph compiled successfully")
+    logger.info("✅ Parallel structured agent graph compiled successfully")
     return graph
 
 
@@ -342,10 +351,10 @@ async def create_modular_graph_with_subgraphs(use_enhanced_tools: bool = True):
     builder = StateGraph(MessagesState)
     
     # Initialize subgraphs
-    device_subgraph = DeviceAnalysisSubgraph(autonomous=True)
-    network_subgraph = NetworkAnalysisSubgraph(autonomous=True)
-    location_subgraph = LocationAnalysisSubgraph(autonomous=True)
-    logs_subgraph = LogsAnalysisSubgraph(autonomous=True)
+    device_subgraph = DeviceAnalysisSubgraph(structured=True)
+    network_subgraph = NetworkAnalysisSubgraph(structured=True)
+    location_subgraph = LocationAnalysisSubgraph(structured=True)
+    logs_subgraph = LogsAnalysisSubgraph(structured=True)
     
     # Add main nodes
     builder.add_node("start_investigation", start_investigation)
@@ -428,7 +437,7 @@ async def create_and_get_agent_graph(
     graph implementation for each investigation.
     
     Args:
-        parallel: If True, creates parallel autonomous agent graph.
+        parallel: If True, creates parallel structured agent graph.
                  If False, creates sequential controlled agent graph.
         use_enhanced_tools: If True, use enhanced tool executor with resilience patterns.
         use_subgraphs: If True, use modular subgraph architecture (Phase 2).
@@ -476,10 +485,22 @@ def _get_configured_tools():
     from app.service.agent.tools.splunk_tool.splunk_tool import SplunkQueryTool
     from app.service.agent.tools.sumologic_tool.sumologic_tool import SumoLogicQueryTool
     from app.service.agent.tools.snowflake_tool.snowflake_tool import SnowflakeQueryTool
+<<<<<<< HEAD
+=======
+    from pathlib import Path
+    from dotenv import load_dotenv
+    import os
+>>>>>>> 001-modify-analyzer-method
     
     try:
         # Initialize the tool registry if not already initialized
         initialize_tools()
+        
+        # Ensure .env file is loaded (in case it wasn't loaded yet)
+        env_path = Path(__file__).parent.parent.parent.parent.parent / '.env'
+        if env_path.exists():
+            load_dotenv(env_path, override=True)
+            logger.debug(f"Loaded .env file from {env_path}")
         
         # Get all essential tools including threat intelligence, MCP clients, blockchain, intelligence, ML/AI, and web tools
         # Load ALL tools from these categories (no specific tool_names filter)
@@ -488,15 +509,112 @@ def _get_configured_tools():
             # All tools from these categories will be loaded
         )
         
+<<<<<<< HEAD
         # CRITICAL: Ensure Snowflake is the FIRST tool for primary data analysis
+=======
+        # CRITICAL: Check DATABASE_PROVIDER FIRST before creating any database tool
+        database_provider = os.getenv('DATABASE_PROVIDER', '').lower()
+        use_postgres = os.getenv('USE_POSTGRES', 'false').lower() == 'true'
+        
+        logger.debug(f"Graph builder database config: DATABASE_PROVIDER={database_provider}, USE_POSTGRES={use_postgres}")
+        
+        # Initialize has_database_query before conditional blocks to avoid UnboundLocalError
+        has_database_query = any(t.name == "database_query" for t in tools)
+        
+        # Only create DatabaseQueryTool if DATABASE_PROVIDER is explicitly PostgreSQL
+        # NEVER use DatabaseQueryTool when DATABASE_PROVIDER=snowflake
+        if database_provider == 'snowflake':
+            logger.info("✅ DATABASE_PROVIDER=snowflake - Skipping DatabaseQueryTool, will use SnowflakeQueryTool instead")
+        elif database_provider == 'postgresql' or use_postgres:
+            # Only create DatabaseQueryTool for PostgreSQL
+            from app.service.agent.tools.database_tool import DatabaseQueryTool
+            
+            has_database_query = any(t.name == "database_query" for t in tools)
+            if not has_database_query:
+                database_connection_string = None
+                
+                # Build PostgreSQL connection string from config (read from .env)
+                postgres_host = os.getenv('POSTGRES_HOST') or os.getenv('DB_HOST')
+                postgres_port = os.getenv('POSTGRES_PORT') or os.getenv('DB_PORT', '5432')
+                postgres_database = os.getenv('POSTGRES_DATABASE') or os.getenv('POSTGRES_DB') or os.getenv('DB_NAME')
+                postgres_user = os.getenv('POSTGRES_USER') or os.getenv('DB_USER')
+                postgres_password = os.getenv('POSTGRES_PASSWORD') or os.getenv('DB_PASSWORD')
+                
+                logger.debug(f"Graph builder PostgreSQL env vars: host={bool(postgres_host)}, port={postgres_port}, db={bool(postgres_database)}, user={bool(postgres_user)}, password={'***' if postgres_password else None}")
+                
+                if postgres_host and postgres_database and postgres_user and postgres_password:
+                    # Add gssencmode=disable to avoid GSSAPI errors on local connections
+                    database_connection_string = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}?gssencmode=disable"
+                    logger.info(f"✅ Built PostgreSQL connection string from .env config (host={postgres_host}, db={postgres_database}, user={postgres_user})")
+                else:
+                    missing = []
+                    if not postgres_host: missing.append('POSTGRES_HOST or DB_HOST')
+                    if not postgres_database: missing.append('POSTGRES_DATABASE/POSTGRES_DB/DB_NAME')
+                    if not postgres_user: missing.append('POSTGRES_USER or DB_USER')
+                    if not postgres_password: missing.append('POSTGRES_PASSWORD or DB_PASSWORD')
+                    logger.warning(f"⚠️ PostgreSQL config incomplete. Missing from .env: {', '.join(missing)}")
+                
+                # Fallback to direct PostgreSQL environment variables (NOT Snowflake)
+                if not database_connection_string:
+                    database_connection_string = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL')
+                    if database_connection_string:
+                        logger.info("✅ Using DATABASE_URL/POSTGRES_URL from .env")
+                
+                if database_connection_string:
+                    try:
+                        database_tool = DatabaseQueryTool(connection_string=database_connection_string)
+                        tools.insert(0, database_tool)  # Add as first tool
+                        logger.info("✅ Added DatabaseQueryTool as PRIMARY tool (PostgreSQL only)")
+                    except Exception as e:
+                        logger.warning(f"Could not add DatabaseQueryTool: {e}")
+                else:
+                    logger.warning("⚠️ DatabaseQueryTool not available: No PostgreSQL connection string found")
+        
+        # CRITICAL: Ensure Snowflake is available (for backward compatibility)
+>>>>>>> 001-modify-analyzer-method
         has_snowflake = any(isinstance(t, SnowflakeQueryTool) for t in tools)
         if not has_snowflake:
             try:
                 snowflake_tool = SnowflakeQueryTool()
+<<<<<<< HEAD
                 tools.insert(0, snowflake_tool)  # Add Snowflake as FIRST tool
                 logger.info("✅ Added SnowflakeQueryTool as PRIMARY tool for 30-day analysis")
             except Exception as e:
                 logger.error(f"Could not add Snowflake tool: {e}")
+=======
+                # Add after database_query if it exists, otherwise as first
+                if has_database_query:
+                    tools.insert(1, snowflake_tool)
+                else:
+                    tools.insert(0, snowflake_tool)
+                logger.info("✅ Added SnowflakeQueryTool as fallback tool")
+            except Exception as e:
+                logger.error(f"Could not add Snowflake tool: {e}")
+        else:
+            # Move Snowflake after database_query if both exist
+            if has_database_query:
+                snowflake_tools = [t for t in tools if isinstance(t, SnowflakeQueryTool)]
+                other_tools = [t for t in tools if not isinstance(t, SnowflakeQueryTool)]
+                tools = other_tools[:1] + snowflake_tools + other_tools[1:]  # Keep database_query first
+        
+        # Verify database tool is available (either database_query or snowflake_query_tool)
+        has_database_query = any(t.name == "database_query" for t in tools)
+        has_snowflake_query = any(isinstance(t, SnowflakeQueryTool) or (hasattr(t, 'name') and t.name == "snowflake_query_tool") for t in tools)
+        
+        # Check DATABASE_PROVIDER to determine which tool is expected
+        database_provider = os.getenv("DATABASE_PROVIDER", "").lower()
+        
+        if not has_database_query and not has_snowflake_query:
+            logger.error("❌ CRITICAL: No database tool available! LLM cannot query database!")
+        elif database_provider == "snowflake" and has_snowflake_query:
+            logger.info(f"✅ SnowflakeQueryTool is available (DATABASE_PROVIDER=snowflake, total {len(tools)} tools)")
+        elif has_database_query:
+            logger.info(f"✅ database_query tool is available (total {len(tools)} tools)")
+        elif has_snowflake_query:
+            logger.info(f"✅ SnowflakeQueryTool is available as fallback (total {len(tools)} tools)")
+        else:
+            logger.warning(f"⚠️ Database tool availability unclear: database_query={has_database_query}, snowflake={has_snowflake_query}, provider={database_provider}")
+>>>>>>> 001-modify-analyzer-method
         
         # Ensure essential SIEM tools are available as fallback
         has_splunk = any(isinstance(t, SplunkQueryTool) for t in tools)

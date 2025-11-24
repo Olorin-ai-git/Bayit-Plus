@@ -5,6 +5,11 @@ This module provides enhanced wrappers for domain agents that add hybrid intelli
 tracking, performance metrics, and audit trail functionality.
 """
 
+<<<<<<< HEAD
+=======
+import asyncio
+import os
+>>>>>>> 001-modify-analyzer-method
 from typing import Dict, Any, Optional, Callable
 from datetime import datetime
 
@@ -15,6 +20,13 @@ from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
 
+<<<<<<< HEAD
+=======
+# D1 FIX: Configurable domain agent timeout from environment (default: 60 seconds)
+# Increased to 60s to accommodate LLM-based evidence analysis which can take 20-30s
+DOMAIN_AGENT_TIMEOUT_SECONDS = int(os.getenv("DOMAIN_AGENT_TIMEOUT_SECONDS", "60"))
+
+>>>>>>> 001-modify-analyzer-method
 
 class DomainAgentEnhancer:
     """
@@ -39,6 +51,7 @@ class DomainAgentEnhancer:
             logger.info(f"🎯 Hybrid Intelligence {domain_name} agent starting")
             logger.debug(f"   Domain analysis: Enhanced with confidence tracking & audit trail")
             logger.debug(f"   Performance metrics: Real-time completion time monitoring")
+<<<<<<< HEAD
             
             try:
                 # Call original domain agent with duration tracking
@@ -48,6 +61,68 @@ class DomainAgentEnhancer:
                 
                 # Update domain completion tracking
                 domains_completed = set(result.get("domains_completed", []))
+=======
+            logger.debug(f"   D1 FIX: Timeout enforcement: {DOMAIN_AGENT_TIMEOUT_SECONDS}s deadline")
+
+            try:
+                # D1 FIX: Call original domain agent with timeout enforcement and duration tracking
+                from app.service.agent.orchestration.timing import domain_timer
+
+                try:
+                    with domain_timer(state, domain_name):
+                        # Enforce timeout using asyncio.wait_for
+                        result = await asyncio.wait_for(
+                            original_agent(state, config),
+                            timeout=DOMAIN_AGENT_TIMEOUT_SECONDS
+                        )
+                except asyncio.TimeoutError:
+                    # D1 FIX: Domain agent exceeded timeout - record failure and continue investigation
+                    logger.error(f"⏱️ D1 FIX: {domain_name} agent exceeded {DOMAIN_AGENT_TIMEOUT_SECONDS}s timeout - short-circuiting")
+                    logger.error(f"   Investigation will continue with partial results")
+
+                    # Record timeout in state for transparency
+                    if "agent_timeouts" not in state:
+                        state["agent_timeouts"] = []
+                    state["agent_timeouts"].append({
+                        "domain": domain_name,
+                        "timeout_seconds": DOMAIN_AGENT_TIMEOUT_SECONDS,
+                        "timestamp": datetime.now().isoformat()
+                    })
+
+                    # Mark domain as insufficient evidence due to timeout
+                    domain_findings = state.get("domain_findings", {})
+                    domain_findings[domain_name] = {
+                        "status": "TIMEOUT",
+                        "risk_score": None,
+                        "evidence": [],
+                        "summary": f"Domain analysis exceeded {DOMAIN_AGENT_TIMEOUT_SECONDS}s timeout and was short-circuited",
+                        "confidence": 0.0,
+                        "timeout": True
+                    }
+                    state["domain_findings"] = domain_findings
+
+                    # Record circuit breaker failure
+                    from app.service.agent.orchestration.circuit_breaker import record_node_failure
+                    timeout_error = TimeoutError(f"{domain_name} agent exceeded {DOMAIN_AGENT_TIMEOUT_SECONDS}s timeout")
+                    record_node_failure(state, f"{domain_name}_agent", timeout_error)
+
+                    # Return state with timeout recorded (investigation continues)
+                    return state
+                
+                # Update domain completion tracking
+                # Extract domain names from domains_completed (can be strings or dicts)
+                domains_completed_raw = result.get("domains_completed", [])
+                domains_completed = set()
+                for domain in domains_completed_raw:
+                    if isinstance(domain, dict):
+                        domain_key = domain.get('domain') or domain.get('name') or str(domain)
+                    else:
+                        domain_key = str(domain)
+                    if isinstance(domain_key, str):
+                        domains_completed.add(domain_key)
+                    else:
+                        domains_completed.add(str(domain_key))
+>>>>>>> 001-modify-analyzer-method
                 domains_completed.add(domain_name)
                 result["domains_completed"] = list(domains_completed)
                 

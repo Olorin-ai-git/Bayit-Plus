@@ -46,7 +46,11 @@ The frontend refactoring from Material-UI to Tailwind CSS with microservices arc
 - **Status**: ✅ **COMPLETED**
 - **Tested Services**:
   - ✅ investigation builds successfully
+<<<<<<< HEAD
   - ✅ autonomous-investigation builds successfully
+=======
+  - ✅ structured-investigation builds successfully
+>>>>>>> 001-modify-analyzer-method
   - ✅ manual-investigation builds successfully
   - ✅ core-ui builds successfully
   - ✅ shell builds successfully
@@ -79,7 +83,11 @@ The frontend refactoring from Material-UI to Tailwind CSS with microservices arc
 - ✅ **Reporting Service** (Port 3005) - PDF generation
 - ✅ **Core UI Service** (Port 3006) - Shared components
 - ✅ **Design System Service** (Port 3007) - Design tokens
+<<<<<<< HEAD
 - ✅ **Autonomous Investigation Service** (Port 3008) - AI investigations
+=======
+- ✅ **Structured Investigation Service** (Port 3008) - AI investigations
+>>>>>>> 001-modify-analyzer-method
 - ✅ **Manual Investigation Service** (Port 3009) - Manual workflows
 - ✅ **Shell Service** (Port 3000) - Main orchestrator
 

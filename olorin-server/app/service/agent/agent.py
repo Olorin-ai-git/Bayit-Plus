@@ -37,21 +37,46 @@ from app.service.agent.core import (
 # Pattern system and legacy compatibility
 from app.service.agent.agent_factory import get_agent_factory, create_agent, execute_agent
 from app.service.agent.patterns import PatternType, PatternConfig
-from app.service.agent.websocket_streaming_service import WebSocketStreamingService
 
-# Import tools for autonomous agents
+# Import tools for structured agents
 from app.service.agent.tools.tool_registry import get_tools_for_agent
 from app.models.upi_response import Interaction, InteractionsResponse
-from app.service.websocket_manager import websocket_manager
 
 logger = get_bridge_logger(__name__)
 
-# Initialize tools for autonomous agents
+# Initialize tools for structured agents
 try:
+    import os
     # Initialize the tool registry first
     from app.service.agent.tools.tool_registry import initialize_tools
-    initialize_tools()
+
+    # CRITICAL: Only create PostgreSQL connection string if DATABASE_PROVIDER is PostgreSQL
+    # When DATABASE_PROVIDER=snowflake, do NOT create DatabaseQueryTool (use SnowflakeQueryTool instead)
+    database_provider = os.getenv('DATABASE_PROVIDER', 'snowflake').lower()
+    database_connection_string = None
     
+<<<<<<< HEAD
+=======
+    if database_provider == 'postgresql':
+        # Build PostgreSQL connection string from environment variables
+        postgres_user = os.getenv('POSTGRES_USER', 'gklainert')
+        postgres_password = os.getenv('POSTGRES_PASSWORD', 'olorin_dev_2025')
+        postgres_host = os.getenv('POSTGRES_HOST', 'localhost')
+        postgres_port = os.getenv('POSTGRES_PORT', '5432')
+        postgres_database = os.getenv('POSTGRES_DATABASE', 'olorin_db')
+
+        # Build connection string for PostgreSQL
+        # Add gssencmode=disable to avoid GSSAPI errors on local connections
+        database_connection_string = f"postgresql://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}?gssencmode=disable"
+
+        logger.debug(f"Initializing tools with PostgreSQL database: {postgres_host}:{postgres_port}/{postgres_database}")
+    else:
+        logger.debug(f"Initializing tools without DatabaseQueryTool (DATABASE_PROVIDER={database_provider}, will use SnowflakeQueryTool)")
+
+    # Initialize tools with database connection (None for Snowflake)
+    initialize_tools(database_connection_string=database_connection_string)
+
+>>>>>>> 001-modify-analyzer-method
     # Get ALL available tools for comprehensive fraud investigation
     # Load all categories to ensure agents have access to the full suite of 45+ tools
     tools = get_tools_for_agent(
@@ -72,9 +97,12 @@ try:
         # Loading ALL categories ensures agents have access to all 45+ enabled tools
     )
     threat_count = len([t for t in tools if 'threat' in t.name or 'virus' in t.name or 'abuse' in t.name])
-    logger.info(f"Initialized {len(tools)} tools for autonomous agents (including {threat_count} threat intelligence tools)")
+    db_tool_count = len([t for t in tools if 'database' in t.name or 'query' in t.name])
+    logger.info(f"Initialized {len(tools)} tools for structured agents (including {threat_count} threat intelligence tools, {db_tool_count} database tools)")
 except Exception as e:
     logger.warning(f"Could not initialize tools: {e}")
+    import traceback
+    logger.warning(f"Tool initialization error: {traceback.format_exc()}")
     tools = []
 
 
@@ -148,40 +176,24 @@ async def investigate_with_enhanced_patterns(
     agent_context=None,
     request=None
 ) -> dict:
-    """Enhanced investigation with WebSocket streaming and pattern-based agents."""
+    """Enhanced investigation with pattern-based agents (WebSocket streaming removed per spec 005)."""
     from uuid import uuid4
-    
+
     if not investigation_id:
         investigation_id = str(uuid4())
-    
+
     logger.info(f"Enhanced investigation: {investigation_type} for {entity_type} {entity_id}")
-    
-    # Create streaming service
-    ws_streaming = WebSocketStreamingService(
-        investigation_id=investigation_id,
-        websocket_manager=websocket_manager,
-        entity_context={
-            "entity_id": entity_id,
-            "entity_type": entity_type,
-            "investigation_type": investigation_type
-        }
-    )
-    
+
     try:
-        await ws_streaming.send_investigation_start(
-            investigation_type=investigation_type,
-            entity_details={"entity_id": entity_id, "entity_type": entity_type}
-        )
-        
         # Pattern mapping
         agent_type = {
             "auto": "routing",
-            "comprehensive": "comprehensive", 
+            "comprehensive": "comprehensive",
             "parallel": "parallel_analysis",
             "orchestration": "orchestration",
             "chaining": investigation_type
         }.get(use_pattern, use_pattern)
-        
+
         # Create context and agent
         context = {
             "entity_id": entity_id,
@@ -192,13 +204,13 @@ async def investigate_with_enhanced_patterns(
             "request": request,
             "time_range": "24h"
         }
-        
-        agent = create_agent(agent_type=agent_type, context=context, ws_streaming=ws_streaming)
-        
+
+        agent = create_agent(agent_type=agent_type, context=context)
+
         # Execute investigation
         message = HumanMessage(content=f"Investigate {entity_type} {entity_id} for fraud")
         result = await execute_agent(agent=agent, messages=[message], context=context)
-        
+
         # Format result
         success = hasattr(result, 'success') and result.success
         investigation_result = {
@@ -210,7 +222,7 @@ async def investigate_with_enhanced_patterns(
             "agent_type": agent_type,
             "timestamp": datetime.utcnow().isoformat()
         }
-        
+
         if success:
             investigation_result.update({
                 "results": result.result,
@@ -218,19 +230,17 @@ async def investigate_with_enhanced_patterns(
             })
         else:
             investigation_result["error"] = getattr(result, 'error_message', 'Investigation failed')
-        
-        await ws_streaming.send_investigation_complete(
-            success=success,
-            results=investigation_result,
-            execution_summary={"pattern": use_pattern, "agent_type": agent_type}
-        )
-        
+
         return investigation_result
-        
+
     except Exception as e:
+<<<<<<< HEAD
         logger.error(f"❌ Enhanced investigation failed")
         logger.error(f"   Error: {e}")
         await ws_streaming.send_error(str(e), {"entity_id": entity_id})
+=======
+        logger.error(f"❌ Enhanced investigation failed: {e}")
+>>>>>>> 001-modify-analyzer-method
         return {
             "investigation_id": investigation_id,
             "entity_id": entity_id,
@@ -238,8 +248,6 @@ async def investigate_with_enhanced_patterns(
             "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
         }
-    finally:
-        await ws_streaming.close()
 
 
 def get_agent_factory_stats() -> dict:

@@ -228,7 +228,11 @@ class AdvancedSafetyManager:
         """Calculate context-aware dynamic limits"""
         
         # Get base limits for test vs live mode
+<<<<<<< HEAD
         is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'mock'
+=======
+        is_test_mode = os.environ.get('TEST_MODE', '').lower() == 'demo'
+>>>>>>> 001-modify-analyzer-method
         base_key = "test" if is_test_mode else "live"
         base = self.base_limits[base_key].copy()
         

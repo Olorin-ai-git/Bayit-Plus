@@ -6,6 +6,10 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from starlette.requests import Request
 
+<<<<<<< HEAD
+=======
+from app.security.auth import User, require_read
+>>>>>>> 001-modify-analyzer-method
 from app.service.llm_logs_risk_service import LLMLogsRiskService
 
 logger = get_bridge_logger(__name__)
@@ -26,6 +30,7 @@ async def analyze_logs(
     time_range: str = "30d",
     raw_splunk_override: Optional[List[Dict[str, Any]]] = None,
     entity_type: str = Query("user_id", pattern="^(user_id|device_id)$"),
+    current_user: User = Depends(require_read),
 ) -> Dict[str, Any]:
     """Analyze logs for a user or device - uses LLMLogsRiskService directly."""
     logs_service = LLMLogsRiskService()

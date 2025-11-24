@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { getConfig } from '@shared/config/env.config';
+>>>>>>> 001-modify-analyzer-method
 import {
   Report,
   ReportConfig,
@@ -65,7 +69,13 @@ class ReportingService {
   private apiKey: string;
 
   constructor() {
+<<<<<<< HEAD
     this.baseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8090';
+=======
+    const config = getConfig();
+    this.baseUrl = config.api.baseUrl;
+    // Note: API_KEY not in schema - using process.env directly
+>>>>>>> 001-modify-analyzer-method
     this.apiKey = process.env.REACT_APP_API_KEY || '';
   }
 

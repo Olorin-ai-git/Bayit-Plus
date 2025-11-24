@@ -1,12 +1,12 @@
 """
 Agent Chain of Thought Logging System
 
-This module captures and logs the complete reasoning process of autonomous investigation
+This module captures and logs the complete reasoning process of structured investigation
 agents, including decision-making chains, tool selection reasoning, confidence assessments,
 and collaborative agent interactions.
 
 Provides complete visibility into how agents think, reason, and make decisions during
-autonomous investigations for testing, debugging, and optimization.
+structured investigations for testing, debugging, and optimization.
 """
 
 import json
@@ -86,7 +86,7 @@ class ChainOfThoughtLogger:
     """
     Comprehensive logging system for agent reasoning and decision-making.
     
-    Captures the complete chain of thought for each agent during autonomous
+    Captures the complete chain of thought for each agent during structured
     investigations, providing transparency into agent decision-making processes.
     """
     

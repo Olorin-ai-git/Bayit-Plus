@@ -10,7 +10,7 @@ from typing import Dict, List
 from langchain_core.tools import BaseTool
 from .context_augmentor import KnowledgeContext
 from .tool_recommender_core import ToolEffectivenessMetrics
-from ..autonomous_context import AutonomousInvestigationContext
+from ..autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -135,7 +135,7 @@ class ToolAnalysisUtils:
     def extract_case_similarity_patterns(
         self,
         knowledge_context: KnowledgeContext,
-        investigation_context: AutonomousInvestigationContext
+        investigation_context: StructuredInvestigationContext
     ) -> Dict[str, float]:
         """Extract case similarity patterns from knowledge"""
         

@@ -3,17 +3,29 @@
  */
 
 import { type Emitter } from 'mitt';
+<<<<<<< HEAD
 import { EventBusEvents, EventBusManager } from '@shared/events/eventBus';
+=======
+import { EventMap, EventBusManager } from '@shared/events/UnifiedEventBus';
+>>>>>>> 001-modify-analyzer-method
 
 declare global {
   interface Window {
     olorin: {
+<<<<<<< HEAD
       eventBus: Emitter<EventBusEvents>;
+=======
+      eventBus: Emitter<EventMap>;
+>>>>>>> 001-modify-analyzer-method
       eventBusManager: EventBusManager;
       services: Map<string, any>;
       registerService: (name: string, service: any) => void;
       getService: (name: string) => any;
       version: string;
+<<<<<<< HEAD
+=======
+      navigate?: (path: string) => void;
+>>>>>>> 001-modify-analyzer-method
     };
   }
 }

@@ -174,12 +174,12 @@ async def test_authentication_flow():
 
 ### Objectives
 - Test AI agent invocation
-- Validate autonomous investigation
+- Validate structured investigation
 - Test agent metadata handling
 
 ### Endpoints to Test
 1. `POST /v1/agent/invoke` - General agent invocation
-2. `POST /v1/agent/start/{entity_id}` - Start autonomous investigation
+2. `POST /v1/agent/start/{entity_id}` - Start structured investigation
 
 ### Test Payload
 ```json

@@ -8,14 +8,22 @@
 
 ## Executive Summary
 
+<<<<<<< HEAD
 This document provides a comprehensive analysis of the real Claude Sonnet 3.5 LLM interactions during Phase 3 (Orchestrator Control) of the autonomous investigation system running in LIVE mode with actual production resources.
+=======
+This document provides a comprehensive analysis of the real Claude Sonnet 3.5 LLM interactions during Phase 3 (Orchestrator Control) of the structured investigation system running in LIVE mode with actual production resources.
+>>>>>>> 001-modify-analyzer-method
 
 **Key Findings:**
 - ✅ Real Claude Sonnet 3.5 API integration working perfectly
 - ✅ Production Snowflake query execution successful
 - ✅ Intelligent tool call generation and SQL query construction
 - ✅ Real costs incurred: Claude API calls + Snowflake compute
+<<<<<<< HEAD
 - ✅ 100% autonomous investigation completion rate
+=======
+- ✅ 100% structured investigation completion rate
+>>>>>>> 001-modify-analyzer-method
 
 ---
 
@@ -365,7 +373,11 @@ response = await self.llm_with_tools.ainvoke(messages)
 
 ## 📋 Conclusion
 
+<<<<<<< HEAD
 This analysis conclusively demonstrates that the autonomous investigation system's Phase 3 Orchestrator Control works perfectly in LIVE mode with real production resources:
+=======
+This analysis conclusively demonstrates that the structured investigation system's Phase 3 Orchestrator Control works perfectly in LIVE mode with real production resources:
+>>>>>>> 001-modify-analyzer-method
 
 **✅ Technical Success:**
 - Real Claude Sonnet 3.5 LLM integration functional
@@ -383,7 +395,11 @@ This analysis conclusively demonstrates that the autonomous investigation system
 - Real costs incurred and accounted for
 - Claude API billing integration working
 - Snowflake compute charges confirmed
+<<<<<<< HEAD
 - ROI-positive autonomous investigation capability
+=======
+- ROI-positive structured investigation capability
+>>>>>>> 001-modify-analyzer-method
 
 **The system is ready for enterprise production deployment.** 🚀
 
@@ -391,7 +407,11 @@ This analysis conclusively demonstrates that the autonomous investigation system
 
 ## 📚 Related Documentation
 
+<<<<<<< HEAD
 - [Autonomous Investigation Flow Analysis](./autonomous_investigation_flow_analysis.md)
+=======
+- [Structured Investigation Flow Analysis](./structured_investigation_flow_analysis.md)
+>>>>>>> 001-modify-analyzer-method
 - [Phase 1-2 Verification Results](./phase-1-2-verification.md)
 - [Snowflake Integration Guide](../technical/snowflake-integration.md)
 - [LLM Configuration Manual](../technical/llm-configuration.md)

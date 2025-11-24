@@ -1,3 +1,3 @@
-"""Unit tests for Olorin autonomous investigation system."""
+"""Unit tests for Olorin structured investigation system."""
 
 __version__ = "1.0.0"

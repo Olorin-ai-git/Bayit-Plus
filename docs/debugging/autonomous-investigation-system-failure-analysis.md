@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Autonomous Investigation System - Comprehensive Failure Analysis
+=======
+# Structured Investigation System - Comprehensive Failure Analysis
+>>>>>>> 001-modify-analyzer-method
 
 **Investigation ID**: unified_test_real_investigation_ip_address_1757512703  
 **Entity**: IP address 67.76.8.209  
@@ -7,7 +11,11 @@
 
 ## Executive Summary
 
+<<<<<<< HEAD
 The autonomous investigation system experienced critical failures across the tool execution pipeline, resulting in zero tool executions despite 4 tool calls being initiated. The investigation remained stuck in 'initialization' phase and failed validation with 9.0/100 score due to insufficient evidence.
+=======
+The structured investigation system experienced critical failures across the tool execution pipeline, resulting in zero tool executions despite 4 tool calls being initiated. The investigation remained stuck in 'initialization' phase and failed validation with 9.0/100 score due to insufficient evidence.
+>>>>>>> 001-modify-analyzer-method
 
 ## Critical Failures Identified
 

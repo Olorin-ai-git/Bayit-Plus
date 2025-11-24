@@ -143,6 +143,7 @@ except ImportError as e:
     THREAT_INTEL_AVAILABLE = False
 
 # Try to import MCP server tools
+<<<<<<< HEAD
 try:
     from ...mcp_servers.fraud_database_server import create_fraud_database_server
     from ...mcp_servers.external_api_server import create_external_api_server  
@@ -152,6 +153,18 @@ try:
 except ImportError as e:
     logger.warning(f"MCP server tools not available: {e}")
     MCP_SERVERS_AVAILABLE = False
+=======
+# COMMENTED OUT: MCP servers disabled to fix broken pipe error in demo mode
+# try:
+#     from ...mcp_servers.fraud_database_server import create_fraud_database_server
+#     from ...mcp_servers.external_api_server import create_external_api_server
+#     from ...mcp_servers.graph_analysis_server import create_graph_analysis_server
+#     import asyncio
+#     MCP_SERVERS_AVAILABLE = True
+# except ImportError as e:
+#     logger.warning(f"MCP server tools not available: {e}")
+MCP_SERVERS_AVAILABLE = False  # Disabled - MCP servers commented out
+>>>>>>> 001-modify-analyzer-method
 
 
 class ToolRegistry:
@@ -278,9 +291,30 @@ class ToolRegistry:
             file_system_base_path: Base path restriction for file system tools
             api_default_headers: Default headers for API tools
         """
+        # CRITICAL: Force reinitialization if:
+        # 1. Database connection is now provided (agent.py providing the connection)
+        # 2. Registry was initialized but has 0 tools (emergency path)
         if self._initialized:
+<<<<<<< HEAD
             logger.debug("Tool registry already initialized (skipping duplicate initialization)")
             return
+=======
+            has_database_connection = database_connection_string is not None
+            has_no_tools = len(self._tools) == 0
+
+            # Allow reinitialization if we now have database connection OR tools are missing
+            if not has_database_connection and not has_no_tools:
+                logger.debug("Tool registry already initialized (skipping duplicate initialization)")
+                return
+
+            # Clear previous tools if reinitializing with database connection or emergency
+            if has_database_connection or has_no_tools:
+                if has_database_connection:
+                    logger.info("Tool registry reinitializing with database connection string")
+                if has_no_tools:
+                    logger.warning("Tool registry detected 0 tools - performing reinitialization")
+                self._tools.clear()
+>>>>>>> 001-modify-analyzer-method
 
         try:
             # Database Tools
@@ -360,6 +394,104 @@ class ToolRegistry:
                     logger.warning(f"Failed to register Snowflake tool: {e}")
             else:
                 logger.debug("Snowflake tool disabled (USE_SNOWFLAKE=false)")
+<<<<<<< HEAD
+=======
+
+            # Anomaly Detection Tools (always available)
+            try:
+                from app.service.agent.tools.anomaly_tools.fetch_series import FetchSeriesTool
+                from app.service.agent.tools.anomaly_tools.detect_anomalies import DetectAnomaliesTool
+                from app.service.agent.tools.anomaly_tools.list_anomalies import ListAnomaliesTool
+                from app.service.agent.tools.anomaly_tools.open_investigation import OpenInvestigationTool
+                from app.service.agent.tools.anomaly_tools.attach_evidence import AttachEvidenceTool
+                from app.service.agent.tools.anomaly_tools.segment_hunter import SegmentHunterTool
+                from app.service.agent.tools.anomaly_tools.entity_extractor import EntityExtractorTool
+                from app.service.agent.tools.anomaly_tools.anomaly_correlator import AnomalyCorrelatorTool
+                
+                self._register_tool(FetchSeriesTool(), "olorin")
+                self._register_tool(DetectAnomaliesTool(), "olorin")
+                self._register_tool(ListAnomaliesTool(), "olorin")
+                self._register_tool(OpenInvestigationTool(), "olorin")
+                self._register_tool(AttachEvidenceTool(), "olorin")
+                self._register_tool(SegmentHunterTool(), "olorin")
+                self._register_tool(EntityExtractorTool(), "olorin")
+                self._register_tool(AnomalyCorrelatorTool(), "olorin")
+                logger.info("Anomaly detection tools registered (fetch_series, detect_anomalies, list_anomalies, open_investigation, attach_evidence, segment_hunter, entity_extractor, anomaly_correlator)")
+            except Exception as e:
+                logger.warning(f"Failed to register anomaly detection tools: {e}")
+
+            # Device Fingerprint Tool (Composio integration)
+            if os.getenv('USE_DEVICE_FINGERPRINT', 'true').lower() == 'true':
+                try:
+                    from .device_fingerprint_tool import DeviceFingerprintTool
+                    self._register_tool(DeviceFingerprintTool(), "olorin")
+                    logger.info("Device fingerprint tool registered (enabled via USE_DEVICE_FINGERPRINT=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register device fingerprint tool: {e}")
+
+            # MaxMind minFraud Tool (Composio integration)
+            if os.getenv('USE_MAXMIND_MINFRAUD', 'true').lower() == 'true':
+                try:
+                    from .maxmind_minfraud_tool import MaxMindMinFraudTool
+                    self._register_tool(MaxMindMinFraudTool(), "olorin")
+                    logger.info("MaxMind minFraud tool registered (enabled via USE_MAXMIND_MINFRAUD=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register MaxMind minFraud tool: {e}")
+
+            # Composio Tool (SOAR + Composio integration)
+            if os.getenv('USE_COMPOSIO', 'true').lower() == 'true':
+                try:
+                    from .composio_tool import ComposioTool
+                    self._register_tool(ComposioTool(), "olorin")
+                    logger.info("Composio tool registered (enabled via USE_COMPOSIO=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Composio tool: {e}")
+            
+            # Composio Search Tool (Web search via Composio MCP)
+            if os.getenv('USE_COMPOSIO_SEARCH', 'true').lower() == 'true':
+                try:
+                    from .composio_search_tool import ComposioSearchTool
+                    self._register_tool(ComposioSearchTool(), "web")
+                    logger.info("Composio Search tool registered (enabled via USE_COMPOSIO_SEARCH=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Composio Search tool: {e}")
+            
+            # Composio WebCrawl Tool (Web crawling via Composio FireCrawl MCP)
+            if os.getenv('USE_COMPOSIO_WEBCRAWL', 'true').lower() == 'true':
+                try:
+                    from .composio_webcrawl_tool import ComposioWebCrawlTool
+                    self._register_tool(ComposioWebCrawlTool(), "web")
+                    logger.info("Composio WebCrawl tool registered (enabled via USE_COMPOSIO_WEBCRAWL=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Composio WebCrawl tool: {e}")
+            
+            # Veriphone Tool (Phone verification via Composio Veriphone)
+            if os.getenv('USE_VERIPHONE', 'true').lower() == 'true':
+                try:
+                    from .veriphone_tool import VeriphoneTool
+                    self._register_tool(VeriphoneTool(), "threat_intelligence")
+                    logger.info("Veriphone tool registered (enabled via USE_VERIPHONE=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register Veriphone tool: {e}")
+            
+            # IP Quality Score Email Tool (Email verification and fraud scoring)
+            if os.getenv('USE_IPQS_EMAIL', 'true').lower() == 'true':
+                try:
+                    from .ipqs_email_tool import IPQSEmailTool
+                    self._register_tool(IPQSEmailTool(), "threat_intelligence")
+                    logger.info("IPQS Email tool registered (enabled via USE_IPQS_EMAIL=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register IPQS Email tool: {e}")
+
+            # Graph Feature Tool (Graph database integration)
+            if os.getenv('USE_GRAPH_FEATURES', 'true').lower() == 'true':
+                try:
+                    from .graph_feature_tool import GraphFeatureTool
+                    self._register_tool(GraphFeatureTool(), "olorin")
+                    logger.info("Graph feature tool registered (enabled via USE_GRAPH_FEATURES=true)")
+                except Exception as e:
+                    logger.warning(f"Failed to register graph feature tool: {e}")
+>>>>>>> 001-modify-analyzer-method
 
             # MCP Client Tools (connect to external MCP servers)
             if MCP_CLIENTS_AVAILABLE:
@@ -628,6 +760,7 @@ class ToolRegistry:
                         logger.warning(f"Failed to register risk scoring ML tool: {e}")
 
             # MCP Server Tools (internal MCP servers)
+<<<<<<< HEAD
             if MCP_SERVERS_AVAILABLE:
                 # Fraud Database MCP Server Tools
                 if os.getenv('USE_FRAUD_DATABASE_MCP_SERVER', 'false').lower() == 'true':
@@ -664,6 +797,46 @@ class ToolRegistry:
                         logger.info(f"Graph Analysis MCP server registered with {len(graph_tools)} tools: {[t.name for t in graph_tools]}")
                     except Exception as e:
                         logger.warning(f"Failed to register Graph Analysis MCP server tools: {e}")
+=======
+            # COMMENTED OUT: MCP servers disabled to fix broken pipe error in demo mode
+            # if MCP_SERVERS_AVAILABLE:
+            #     # Fraud Database MCP Server Tools
+            #     if os.getenv('USE_FRAUD_DATABASE_MCP_SERVER', 'false').lower() == 'true':
+            #         try:
+            #             # Create the server asynchronously and get its tools
+            #             fraud_server = self._safe_async_run(create_fraud_database_server)
+            #             fraud_tools = fraud_server.get_tools() if fraud_server else []
+            #             for tool in fraud_tools:
+            #                 self._register_tool(tool, "mcp_servers")
+            #             logger.info(f"Fraud Database MCP server registered with {len(fraud_tools)} tools: {[t.name for t in fraud_tools]}")
+            #         except Exception as e:
+            #             logger.warning(f"Failed to register Fraud Database MCP server tools: {e}")
+            #
+            #     # External API MCP Server Tools
+            #     if os.getenv('USE_EXTERNAL_API_MCP_SERVER', 'false').lower() == 'true':
+            #         try:
+            #             # Create the server asynchronously and get its tools
+            #             api_server = self._safe_async_run(create_external_api_server)
+            #             api_tools = api_server.get_tools() if api_server else []
+            #             for tool in api_tools:
+            #                 self._register_tool(tool, "mcp_servers")
+            #             logger.info(f"External API MCP server registered with {len(api_tools)} tools: {[t.name for t in api_tools]}")
+            #         except Exception as e:
+            #             logger.warning(f"Failed to register External API MCP server tools: {e}")
+            #
+            #     # Graph Analysis MCP Server Tools
+            #     if os.getenv('USE_GRAPH_ANALYSIS_MCP_SERVER', 'false').lower() == 'true':
+            #         try:
+            #             # Create the server asynchronously and get its tools
+            #             graph_server = self._safe_async_run(create_graph_analysis_server)
+            #             graph_tools = graph_server.get_tools() if graph_server else []
+            #             for tool in graph_tools:
+            #                 self._register_tool(tool, "mcp_servers")
+            #             logger.info(f"Graph Analysis MCP server registered with {len(graph_tools)} tools: {[t.name for t in graph_tools]}")
+            #         except Exception as e:
+            #             logger.warning(f"Failed to register Graph Analysis MCP server tools: {e}")
+            logger.info("MCP servers disabled - skipping MCP server tool registration")
+>>>>>>> 001-modify-analyzer-method
 
             self._initialized = True
             logger.info(f"Tool registry initialized with {len(self._tools)} tools")

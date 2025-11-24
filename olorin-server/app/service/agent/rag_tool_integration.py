@@ -1,7 +1,7 @@
 """
 RAG Tool Integration Module
 
-Provides seamless integration between RAG-enhanced tools and autonomous agents.
+Provides seamless integration between RAG-enhanced tools and structured agents.
 Manages tool execution context injection and agent-level RAG orchestration.
 """
 
@@ -16,7 +16,7 @@ from .tools.rag_tool_context import (
     get_tool_context_enhancer
 )
 from .tools.enhanced_tool_base import EnhancedToolBase, ToolConfig
-from .autonomous_context import AutonomousInvestigationContext
+from .autonomous_context import StructuredInvestigationContext
 from app.service.logging import get_bridge_logger
 
 logger = get_bridge_logger(__name__)
@@ -27,7 +27,7 @@ class AgentRAGToolOrchestrator:
     Agent-level orchestrator for RAG-enhanced tool execution.
     
     Manages tool execution with RAG context injection at the agent level,
-    providing seamless integration with existing autonomous agent workflows.
+    providing seamless integration with existing structured agent workflows.
     """
     
     def __init__(
@@ -68,7 +68,7 @@ class AgentRAGToolOrchestrator:
         tool: EnhancedToolBase,
         input_data: Dict[str, Any],
         agent_context: Dict[str, Any],
-        investigation_context: Optional[AutonomousInvestigationContext] = None
+        investigation_context: Optional[StructuredInvestigationContext] = None
     ) -> Any:
         """
         Execute tool with RAG context enhancement at agent level.
@@ -112,7 +112,7 @@ class AgentRAGToolOrchestrator:
         tool: RAGEnhancedToolBase,
         input_data: Dict[str, Any],
         agent_context: Dict[str, Any],
-        investigation_context: Optional[AutonomousInvestigationContext]
+        investigation_context: Optional[StructuredInvestigationContext]
     ) -> Any:
         """Execute RAG-enhanced tool with full context"""
         
@@ -142,7 +142,7 @@ class AgentRAGToolOrchestrator:
         tool: EnhancedToolBase,
         input_data: Dict[str, Any],
         agent_context: Dict[str, Any],
-        investigation_context: Optional[AutonomousInvestigationContext]
+        investigation_context: Optional[StructuredInvestigationContext]
     ) -> Any:
         """Execute standard tool with optional context injection"""
         
@@ -161,7 +161,7 @@ class AgentRAGToolOrchestrator:
         tool: EnhancedToolBase,
         input_data: Dict[str, Any],
         agent_context: Dict[str, Any],
-        investigation_context: AutonomousInvestigationContext
+        investigation_context: StructuredInvestigationContext
     ) -> Dict[str, Any]:
         """Inject RAG context for standard tools"""
         

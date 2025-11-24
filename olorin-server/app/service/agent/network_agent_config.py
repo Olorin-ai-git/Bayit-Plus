@@ -121,7 +121,11 @@ def create_network_agent_metadata(rag_enabled: bool, rag_stats: Dict[str, Any], 
     mcp_objectives = 5 if mcp_enhanced else 0
     total_objectives = base_objectives + rag_objectives + mcp_objectives
     
+<<<<<<< HEAD
     analysis_type = "mcp_enhanced_llm_driven" if mcp_enhanced else ("rag_enhanced_llm_driven" if rag_enabled else "autonomous_llm_driven")
+=======
+    analysis_type = "mcp_enhanced_llm_driven" if mcp_enhanced else ("rag_enhanced_llm_driven" if rag_enabled else "structured_llm_driven")
+>>>>>>> 001-modify-analyzer-method
     enhancement_type = "mcp_enhanced" if mcp_enhanced else ("rag_enhanced" if rag_enabled else "standard")
     
     return {
@@ -164,10 +168,14 @@ def create_result_structure(findings, rag_enabled: bool, rag_stats: Dict[str, An
             "confidence": findings.confidence,
             "risk_factors": findings.key_findings,
             "suspicious_indicators": findings.suspicious_indicators,
+<<<<<<< HEAD
             "summary": f"{'MCP-enhanced' if mcp_enhanced else ('RAG-enhanced' if rag_enabled else 'Autonomous')} network analysis: {len(findings.key_findings)} findings{summary_suffix}",
+=======
+            "summary": f"{'MCP-enhanced' if mcp_enhanced else ('RAG-enhanced' if rag_enabled else 'Structured')} network analysis: {len(findings.key_findings)} findings{summary_suffix}",
+>>>>>>> 001-modify-analyzer-method
             "thoughts": f"Used {analysis_type} tool selection for network analysis with domain knowledge integration",
             "timestamp": findings.timestamp.isoformat(),
-            "autonomous_execution": True,
+            "structured_execution": True,
             "domain": "network",
             "enhancement_type": "mcp_enhanced" if mcp_enhanced else ("rag_enhanced" if rag_enabled else "standard"),
             "rag_performance": rag_stats,
